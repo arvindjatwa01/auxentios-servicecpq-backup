@@ -53,6 +53,8 @@ import Menu from "@mui/material/Menu";
 import Fade from "@mui/material/Fade";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
+
 import $ from "jquery";
 import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -174,6 +176,20 @@ export const PortfolioSummary = () => {
     { value: "strawberry", label: "Construction-Low" },
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
+  ];
+
+  const validityOptions = [
+    { value: "15", label: "15 days" },
+    { value: "30", label: "1 month" },
+    { value: "45", label: "45 days" },
+    { value: "60", label: "2 months" },
+  ];
+
+  const salesOfficeOptions = [
+    { value: "Location1", label: "Location1" },
+    { value: "Location2", label: "Location2" },
+    { value: "Location3", label: "Location3" },
+    { value: "Location4", label: "Location4" },
   ];
 
   const customStyles = {
@@ -511,30 +527,104 @@ export const PortfolioSummary = () => {
   const handleInputSearch = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
-    console.log(obj)
-    // getSearchForPortfolio(tempArray[id].selectFamily.value, e.target.value)
-    // .then((res) => {
-    //   obj.selectOptions = res;
-    //   tempArray[id] = obj;
-    //   setQuerySearchSelector([...tempArray]);
-    //   $(`.scrollbar-${id}`).css("display", "block");
-    // })
-    // .catch((err) => {
-    //   console.log("err in api call", err);
-    // });
     // obj.inputSearch = e.target.value;
-    // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-    //   .then((res) => {
-    //     obj.selectOptions = res;
-    //     tempArray[id] = obj;
-    //     setQuerySearchSelector([...tempArray]);
-    //     $(`.scrollbar-${id}`).css("display", "block");
-    //   })
-    //   .catch((err) => {
-    //     console.log("err in api call", err);
-    //   });
-    setQuerySearchSelector([...tempArray]);
+    if (selectedItemType === "PORTFOLIO") {
+      var newArr = [];
+      var SearchResArr = [];
+      portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+        .then((res) => {
+          if (tempArray[id].selectFamily.value === "make") {
+            for (let i = 0; i < res.length; i++) {
+              for (let j = 0; j < res[i].coverages.length; j++) {
+                SearchResArr.push(res[i].coverages[j].make)
+              }
+            }
+
+          } else if (tempArray[id].selectFamily.value == "family") {
+            for (let i = 0; i < res.length; i++) {
+              for (let j = 0; j < res[i].coverages.length; j++) {
+                SearchResArr.push(res[i].coverages[j].family)
+              }
+            }
+          } else if (tempArray[id].selectFamily.value == "modelNo") {
+            for (let i = 0; i < res.length; i++) {
+              for (let j = 0; j < res[i].coverages.length; j++) {
+                SearchResArr.push(res[i].coverages[j].modelNo)
+              }
+            }
+          } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+            for (let i = 0; i < res.length; i++) {
+              for (let j = 0; j < res[i].coverages.length; j++) {
+                SearchResArr.push(res[i].coverages[j].serialNumberPrefix)
+              }
+            }
+          } else if (tempArray[id].selectFamily.value == "name") {
+            for (let i = 0; i < res.length; i++) {
+              SearchResArr.push(res[i].name)
+            }
+          } else if (tempArray[id].selectFamily.value == "description") {
+            for (let i = 0; i < res.length; i++) {
+              SearchResArr.push(res[i].description)
+            }
+          }
+          obj.selectOptions = SearchResArr;
+          tempArray[id] = obj;
+          setQuerySearchSelector([...tempArray]);
+          $(`.scrollbar-${id}`).css("display", "block");
+        })
+        .catch((err) => {
+          console.log("err in api call", err);
+        });
+    } else {
+      var bundleServiceSearch;
+      var SearchResArr = [];
+      if (selectedItemType === "BUNDLE_ITEM") {
+        bundleServiceSearch = "bundleFlag:BUNDLE_ITEM AND " + `${tempArray[id].selectFamily.value}~${e.target.value}`;
+      } else if (selectedItemType === "SERVICE") {
+        bundleServiceSearch = "bundleFlag:SERVICE AND " + `${tempArray[id].selectFamily.value}~${e.target.value}`;
+      }
+      itemSearch(bundleServiceSearch)
+        .then((res) => {
+          if (res.length > 0) {
+            if (tempArray[id].selectFamily.value == "itemName") {
+              for (let i = 0; i < res.length; i++) {
+                SearchResArr.push(res[i].itemName)
+              }
+            } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
+              for (let i = 0; i < res.length; i++) {
+                SearchResArr.push(res[i].itemHeaderModel.itemHeaderDescription)
+              }
+            } else if (tempArray[id].selectFamily.value == "make") {
+              for (let i = 0; i < res.length; i++) {
+                SearchResArr.push(res[i].itemHeaderModel.itemHeaderMake)
+              }
+            } else if (tempArray[id].selectFamily.value == "model") {
+              for (let i = 0; i < res.length; i++) {
+                SearchResArr.push(res[i].itemHeaderModel.model)
+              }
+            } else if (tempArray[id].selectFamily.value == "family") {
+              for (let i = 0; i < res.length; i++) {
+                SearchResArr.push(res[i].itemHeaderModel.itemHeaderFamily)
+              }
+            } else if (tempArray[id].selectFamily.value == "prefix") {
+              for (let i = 0; i < res.length; i++) {
+                SearchResArr.push(res[i].itemHeaderModel.prefix)
+              }
+            }
+          }
+          obj.selectOptions = SearchResArr;
+          tempArray[id] = obj;
+          setQuerySearchSelector([...tempArray]);
+          $(`.scrollbar-${id}`).css("display", "block");
+        })
+        .catch((err) => {
+          alert(err)
+          console.log("err in api call", err);
+          return
+        });
+    }
     obj.inputSearch = e.target.value;
+    setQuerySearchSelector([...tempArray]);
   };
 
   const handleModelInputSearch = (e) => {
@@ -567,6 +657,27 @@ export const PortfolioSummary = () => {
         throw "Please fill data properly"
       }
       var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+
+      for (let i = 1; i < querySearchSelector.length; i++) {
+        if (
+          querySearchSelector[i]?.selectFamily?.value == "" ||
+          querySearchSelector[i]?.inputSearch == "" ||
+          querySearchSelector[i]?.selectOperator?.value == ""
+
+        ) {
+          throw "Please fill data properly"
+        }
+        searchStr =
+          searchStr +
+          " " +
+          querySearchSelector[i].selectOperator.value + " " +
+          querySearchSelector[i].selectFamily.value +
+          "~" +
+          querySearchSelector[i].inputSearch;
+      }
+
+      console.log("portfolio search searchStr : ", searchStr);
+
       if (selectedItemType === "PORTFOLIO") {
         var newArr = [];
         const res2 = await portfolioSearch(searchStr)
@@ -740,21 +851,21 @@ export const PortfolioSummary = () => {
         setFamilySelectOption([
           { label: "Make", value: "make", id: i },
           { label: "Family", value: "family", id: i },
-          { label: "Model", value: "model", id: i },
-          { label: "Prefix", value: "prefix", id: i },
+          { label: "Model", value: "modelNo", id: i },
+          { label: "Prefix", value: "serialNumberPrefix", id: i },
           { label: "Name", value: "name", id: i },
           { label: "Description", value: "description", id: i },
         ])
       } else if (e.value === "BUNDLE_ITEM") {
-        setFamilySelectOption([{ label: "Make", value: "make", id: i },
-        { label: "Family", value: "family", id: i },
+        setFamilySelectOption([{ label: "Make", value: "itemHeaderMake", id: i },
+        { label: "Family", value: "itemHeaderFamily", id: i },
         { label: "Model", value: "model", id: i },
         { label: "Prefix", value: "prefix", id: i },
         { label: "Name", value: "itemName", id: i },
         { label: "Description", value: "itemHeaderDescription", id: i },])
       } else if (e.value === "SERVICE") {
-        setFamilySelectOption([{ label: "Make", value: "make", id: i },
-        { label: "Family", value: "family", id: i },
+        setFamilySelectOption([{ label: "Make", value: "itemHeaderMake", id: i },
+        { label: "Family", value: "itemHeaderFamily", id: i },
         { label: "Model", value: "model", id: i },
         { label: "Prefix", value: "prefix", id: i },
         { label: "Name", value: "itemName", id: i },
@@ -883,14 +994,40 @@ export const PortfolioSummary = () => {
 
       setSelectedPrefixOption({ label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix });
 
+      var offerValidityLabel;
+      if (data.itemHeaderModel.offerValidity == "15") {
+        offerValidityLabel = "15 days";
+      } else if (data.itemHeaderModel.offerValidity == "30") {
+        offerValidityLabel = "1 month";
+      } else if (data.itemHeaderModel.offerValidity == "45") {
+        offerValidityLabel = "45 days";
+      } else if (data.itemHeaderModel.offerValidity == "60") {
+        offerValidityLabel = "2 month";
+      } else {
+        offerValidityLabel = data.itemHeaderModel.offerValidity;
+      }
+
+      var offerValidityLabel;
+      if (data.itemHeaderModel.offerValidity == "15") {
+        offerValidityLabel = "15 days";
+      } else if (data.itemHeaderModel.offerValidity == "30") {
+        offerValidityLabel = "1 month";
+      } else if (data.itemHeaderModel.offerValidity == "45") {
+        offerValidityLabel = "45 days";
+      } else if (data.itemHeaderModel.offerValidity == "60") {
+        offerValidityLabel = "2 month";
+      } else {
+        offerValidityLabel = data.itemHeaderModel.offerValidity;
+      }
+
       setAdministrative({
         preparedBy: data.itemHeaderModel.preparedBy,
         approvedBy: data.itemHeaderModel.approvedBy,
         preparedOn: data.itemHeaderModel.preparedOn,
         revisedBy: data.itemHeaderModel.revisedBy,
         revisedOn: data.itemHeaderModel.revisedOn,
-        salesOffice: data.itemHeaderModel.salesOffice,
-        offerValidity: data.itemHeaderModel.offerValidity,
+        salesOffice: { label: data.itemHeaderModel.salesOffice, value: data.itemHeaderModel.salesOffice },
+        offerValidity: { label: offerValidityLabel, value: data.itemHeaderModel.offerValidity },
       });
     } else if (data.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
       setServiceOrBundlePrefix("BUNDLE");
@@ -919,8 +1056,8 @@ export const PortfolioSummary = () => {
         preparedOn: data.itemHeaderModel.preparedOn,
         revisedBy: data.itemHeaderModel.revisedBy,
         revisedOn: data.itemHeaderModel.revisedOn,
-        salesOffice: data.itemHeaderModel.salesOffice,
-        offerValidity: data.itemHeaderModel.offerValidity,
+        salesOffice: { label: data.itemHeaderModel.salesOffice, value: data.itemHeaderModel.salesOffice },
+        offerValidity: { label: data.itemHeaderModel.offerValidity, value: data.itemHeaderModel.offerValidity },
       });
 
       setPassItemEditRowData(data)
@@ -1145,7 +1282,7 @@ export const PortfolioSummary = () => {
         //     revisedBy: administrative.revisedBy,
         //     revisedOn: administrative.revisedOn,
         //     salesOffice: administrative.salesOffice,
-        //     offerValidity: administrative.offerValidity
+        //     offerValidity: administrative.offerValidity?.value
         //   },
         //   itemBodyModel: {
         //     itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -1227,8 +1364,8 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.salesOffice,
-            offerValidity: administrative.offerValidity
+            salesOffice: administrative.salesOffice?.value,
+            offerValidity: administrative.offerValidity?.value
           },
           itemBodyModel: {
             itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -1307,8 +1444,8 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.salesOffice,
-            offerValidity: administrative.offerValidity
+            salesOffice: administrative.salesOffice?.value,
+            offerValidity: administrative.offerValidity?.value
           },
           itemBodyModel: {
             itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -1435,19 +1572,22 @@ export const PortfolioSummary = () => {
     if (serviceOrBundlePrefix === "BUNDLE") {
       const validator = new Validator();
 
-      if ((!validator.emailValidation(administrative.preparedBy) ||
-        administrative.preparedBy == "" ||
+      // if ((!validator.emailValidation(administrative.preparedBy) ||
+      //   administrative.preparedBy == "" ||
+      //   administrative.preparedBy == undefined) ||
+      //   (administrative.approvedBy != "" &&
+      //     administrative.approvedBy != undefined &&
+      //     !validator.emailValidation(administrative.approvedBy)) ||
+      //   (administrative.revisedBy != "" &&
+      //     administrative.revisedBy != undefined &&
+      //     !validator.emailValidation(administrative.revisedBy)) ||
+      //   (administrative.salesOffice?.value == "" ||
+      //     administrative.salesOffice?.value == undefined)
+      // )
+      if ((administrative.preparedBy == "" ||
         administrative.preparedBy == undefined) ||
-        (administrative.approvedBy != "" &&
-          administrative.approvedBy != undefined &&
-          !validator.emailValidation(administrative.approvedBy)) ||
-        (administrative.revisedBy != "" &&
-          administrative.revisedBy != undefined &&
-          !validator.emailValidation(administrative.revisedBy)) ||
         (administrative.salesOffice == "" ||
           administrative.salesOffice == undefined)
-        // || (administrative.offerValidity == "" ||
-        // administrative.offerValidity == undefined)
       ) {
         toast("😐" + "Please fill mandatory Fields.", {
           position: "top-right",
@@ -1499,8 +1639,8 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.salesOffice,
-            offerValidity: administrative.offerValidity
+            salesOffice: administrative.salesOffice?.value,
+            offerValidity: administrative.offerValidity?.value
           },
           itemBodyModel: {
             itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -1623,8 +1763,8 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.salesOffice,
-            offerValidity: administrative.offerValidity
+            salesOffice: administrative.salesOffice?.value,
+            offerValidity: administrative.offerValidity?.value
           },
           itemBodyModel: {
             itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -2913,6 +3053,7 @@ export const PortfolioSummary = () => {
                                     ))}
                                   </ul>
                                 }
+
                               </div>
                             </div>
                           </>
@@ -3701,14 +3842,14 @@ export const PortfolioSummary = () => {
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE/BRANCH</p>
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {(
                               administrative.salesOffice == "" ||
                                 administrative.salesOffice == "string" ||
                                 administrative.salesOffice == undefined ||
                                 administrative.salesOffice == null
-                                ? "NA" : administrative.salesOffice)}
+                                ? "NA" : administrative.salesOffice?.value)}
                           </h6>
                         </div>
                       </div>
@@ -3721,7 +3862,7 @@ export const PortfolioSummary = () => {
                                 administrative.offerValidity == "string" ||
                                 administrative.offerValidity == undefined ||
                                 administrative.offerValidity == null
-                                ? "NA" : administrative.offerValidity)}
+                                ? "NA" : administrative.offerValidity?.value)}
                           </h6>
                         </div>
                       </div>
@@ -3864,16 +4005,29 @@ export const PortfolioSummary = () => {
                             className="text-light-dark font-size-14 font-weight-500"
                             htmlFor="exampleInputEmail1"
                           >
-                            SALSE OFFICE/BRANCH
+                            SALES OFFICE / BRANCH
                           </label>
-                          <input
+                          <Select
+                            onChange={(e) =>
+                              setAdministrative({
+                                ...administrative,
+                                salesOffice: e,
+                              })
+                            }
+                            className="text-primary"
+                            options={salesOfficeOptions}
+                            placeholder="Required"
+                            value={administrative.salesOffice}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
                             name="salesOffice"
                             value={administrative.salesOffice}
                             onChange={handleAdministrativreChange}
                             placeholder="Required"
-                          />
+                          /> */}
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -3884,14 +4038,28 @@ export const PortfolioSummary = () => {
                           >
                             OFFER VALIDITY
                           </label>
-                          <input
+                          <Select
+                            // defaultValue={selectedOption}
+                            onChange={(e) =>
+                              setAdministrative({
+                                ...administrative,
+                                offerValidity: e,
+                              })
+                            }
+                            className="text-primary"
+                            options={validityOptions}
+                            placeholder="Optional"
+                            value={administrative.offerValidity}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
                             placeholder="Optional"
                             name="offerValidity"
                             value={administrative.offerValidity}
                             onChange={handleAdministrativreChange}
-                          />
+                          /> */}
                         </div>
                       </div>
                     </div>

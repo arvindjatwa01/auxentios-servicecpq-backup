@@ -81,6 +81,61 @@ const QuerySearchComp = (props) => {
       setQuerySearchSelector([...tempArray]);
     }
     else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
+      if (props.compoFlag === "bundleSearch") {
+        var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}`;
+        var SearchResArr = [];
+        itemSearch(bundleServiceSearch)
+          .then((res) => {
+            if (res.length > 0) {
+              if (tempArray[id].selectFamily.value == "itemName") {
+                for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].itemName)
+                }
+              } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
+                for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].itemHeaderModel.itemHeaderDescription)
+                }
+              } else if (tempArray[id].selectFamily.value == "make") {
+                for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].itemHeaderModel.itemHeaderMake)
+                }
+              } else if (tempArray[id].selectFamily.value == "model") {
+                for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].itemHeaderModel.model)
+                }
+              } else if (tempArray[id].selectFamily.value == "family") {
+                for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].itemHeaderModel.itemHeaderFamily)
+                }
+              } else if (tempArray[id].selectFamily.value == "prefix") {
+                for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].itemHeaderModel.prefix)
+                }
+              }
+              // obj.selectOptions = SearchResArr;
+              // tempArray[id] = obj;
+              // setQuerySearchSelector([...tempArray]);
+              // $(`.scrollbar-${id}`).css("display", "block");
+            }
+
+            obj.selectOptions = SearchResArr;
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+            // obj.selectOptions = [...res];
+
+            // tempArray[id] = obj;
+            // setQuerySearchSelector([...tempArray]);
+            // $(`.scrollbar-${id}`).css("display", "block");
+          })
+          .catch((err) => {
+            alert(err)
+            console.log("err in api call", err);
+            return
+          });
+      }
+
+
       // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
       //   .then((res) => {
       //     // obj.selectOptions = [...res];
@@ -137,7 +192,7 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "portfolioTempItemSearch" && props?.setPortfolioTempMasterData([]);
     props.compoFlag === "portfolioTempItemSearch" && props?.setSelectedPortfolioTempMasterData([]);
     props.compoFlag === "portfolioTempItemSearch" && props?.setPortfolioTempFilterMasterData([]);
-    
+
     props.compoFlag === "solutionTempItemSearch" && props?.setSolutionTempMasterData([]);
     props.compoFlag === "solutionTempItemSearch" && props?.setSelectedSolutionTempMasterData([]);
 
@@ -145,7 +200,7 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "bundleSearch" && props?.setTempBundleService2([]);
     props.compoFlag === "bundleSearch" && props?.setTempBundleService3([]);
 
-    
+
     props.setTempBundleService1([])
 
   };
