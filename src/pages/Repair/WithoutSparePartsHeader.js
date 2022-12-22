@@ -1,5 +1,5 @@
 // import DateFnsUtils from "@date-io/date-fns";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import TabContext from "@mui/lab/TabContext";
@@ -23,6 +23,7 @@ import {
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
+  fetchSegments,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
@@ -37,7 +38,7 @@ import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
-import WithoutSpareParts from "./WithoutSpareParts";
+import WithoutSparePartsSegments from "./WithoutSparePartsSegments";
 import { Rating, TextField } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
@@ -177,6 +178,7 @@ function WithoutSparePartsHeader(props) {
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
   );
+  const [segments, setSegments] = useState([]);
 
   useEffect(() => {
     if (state && state.type === "new") {
@@ -187,6 +189,17 @@ function WithoutSparePartsHeader(props) {
       setBuilderId(state.builderId);
       setBId(state.bId);
       fetchAllDetails(state.bId);
+      if (state.bId) {
+        fetchSegments(state.bId)
+          .then((result) => {
+            if (result?.length > 0) {
+              setSegments(result);
+            }
+          })
+          .catch((e) => {
+            handleSnack("error", "Error occurred while fetching the segments");
+          });
+      }
     }
   }, []);
 
@@ -1970,31 +1983,54 @@ function WithoutSparePartsHeader(props) {
                   )}
                 </Box>
               </div>
-
               <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
-                {/* <Link to={{pathname: "/WithoutSpareParts", state: state }} className="btn bg-primary text-white">
-              <span className="mr-2">
-                <FontAwesomeIcon icon={faPlus} />
-              </span>
-              Add New Segment
-            </Link> */}
-                <button
-                  onClick={() => setActiveElement({ name: "segment", bId })}
-                  className="btn bg-primary text-white"
-                  disabled={
-                    !Object.values(viewOnlyTab).every((item) => item === true)
-                  }
-                >
-                  <span className="mr-2">
-                    <FontAwesomeIcon icon={faPlus} />
-                  </span>
-                  Add New Segment
-                </button>
+                {segments.length > 0 ? (
+                  <div class="repairbtn-dropdown">
+                    <button className="btn bg-primary text-white ml-2 dropbtn">
+                      View Segments
+                      <span className="ml-2">
+                        <FontAwesomeIcon icon={faAngleDown} />
+                      </span>
+                    </button>
+                    <div class="repairbtn-dropdown-content" id="drp">
+                      {segments.map((element) => (
+                        <li
+                          onClick={() =>
+                            setActiveElement({
+                              ...activeElement,
+                              name: "segment",
+                              bId,
+                              sId: element.id,
+                            })
+                          }
+                        >
+                          {"Segment " +
+                            String(element.segmentNumber).padStart(2, "0") +
+                            " - " +
+                            element.description}
+                        </li>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setActiveElement({ name: "segment", bId })}
+                    className="btn bg-primary text-white"
+                    disabled={
+                      !Object.values(viewOnlyTab).every((item) => item === true)
+                    }
+                  >
+                    <span className="mr-2">
+                      <FontAwesomeIcon icon={faPlus} />
+                    </span>
+                    Add New Segment
+                  </button>
+                )}
               </div>
             </React.Fragment>
           )}
           {activeElement.name === "segment" && (
-            <WithoutSpareParts
+            <WithoutSparePartsSegments
               builderDetails={{
                 activeElement,
                 setActiveElement,
@@ -2161,6 +2197,7 @@ function WithoutSparePartsHeader(props) {
           </div>
         </div>
       </div>
+      <div style={{ height: "200px" }}></div>
     </React.Fragment>
   );
 }

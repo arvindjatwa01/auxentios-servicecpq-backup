@@ -52,9 +52,13 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import FormControl from "@mui/material/FormControl";
 import { Link, useHistory } from "react-router-dom";
 import SelectFilter from "react-select";
-import { DataGrid, getGridStringOperators, GridActionsCellItem, useGridApiContext } from "@mui/x-data-grid";
 import {
-
+  DataGrid,
+  getGridStringOperators,
+  GridActionsCellItem,
+  useGridApiContext,
+} from "@mui/x-data-grid";
+import {
   getSearchQueryCoverage,
   getSearchCoverageForFamily,
   itemCreation,
@@ -77,11 +81,26 @@ import {
 import { useAppSelector } from "app/hooks";
 import LoadingProgress from "./components/Loader";
 import SearchBox from "./components/SearchBox";
-import { customerSearch, machineSearch, sparePartSearch } from "services/searchServices";
+import {
+  customerSearch,
+  machineSearch,
+  sparePartSearch,
+} from "services/searchServices";
 import Validator from "utils/validator";
 import Moment from "react-moment";
-import { FONT_STYLE, FONT_STYLE_SELECT, GRID_STYLE, SPAREPART_SEARCH_Q_OPTIONS } from "./CONSTANTS";
-import { debounce, Rating, TextareaAutosize, TextField, Tooltip } from "@mui/material";
+import {
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
+  GRID_STYLE,
+  SPAREPART_SEARCH_Q_OPTIONS,
+} from "./CONSTANTS";
+import {
+  debounce,
+  Rating,
+  TextareaAutosize,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import QuerySearchComp from "./components/QuerySearchComp";
@@ -135,7 +154,9 @@ function Kits(props) {
   const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [searchModelResults, setSearchModelResults] = useState([]);
-  const [searchCoverageModelResults, setSearchCoverageModelResults] = useState([]);
+  const [searchCoverageModelResults, setSearchCoverageModelResults] = useState(
+    []
+  );
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
   const [selectedMasterData, setSelectedMasterData] = useState([]);
@@ -194,7 +215,7 @@ function Kits(props) {
 
   const handleVersionKit = (e) => {
     handleSnack("info", "Version Update API needs to be created for KIT!");
-    setGeneralData({...generalData, version: e.value})
+    setGeneralData({ ...generalData, version: e.value });
     setVersion(e);
   };
   const [kitDBId, setKITDBId] = useState("");
@@ -372,7 +393,7 @@ function Kits(props) {
     version: "",
     owner: "",
     application: "",
-    nextRivisionDate: new Date(),
+    nextRevisionDate: new Date(),
   });
   const [estimationData, setEstimationData] = useState({
     preparedBy: "user1",
@@ -414,8 +435,8 @@ function Kits(props) {
   };
 
   const filterOperators = getGridStringOperators().filter(({ value }) =>
-  ["equals", "contains"].includes(value)
-);
+    ["equals", "contains"].includes(value)
+  );
   // Select the customer from search result
   const handleCustSelect = (type, currentItem) => {
     setCustomerData({
@@ -475,13 +496,13 @@ function Kits(props) {
     }
   };
 
-    //Close Add part modal
-    const handleAddPartClose = () => {
-      setAddPartOpen(false);
-      setSparePart(initialSparePart);
-      setPartFieldViewonly(false);
-      setAddPartModalTitle("Add Part");
-    };
+  //Close Add part modal
+  const handleAddPartClose = () => {
+    setAddPartOpen(false);
+    setSparePart(initialSparePart);
+    setPartFieldViewonly(false);
+    setAddPartModalTitle("Add Part");
+  };
   // Coverage search based on model and serial number
   const handleCoverageModelSearch = async (searchfieldName, searchText) => {
     let searchQueryCoverage = "";
@@ -639,7 +660,7 @@ function Kits(props) {
       estimationNumber: generalData.estimationNo,
       owner: generalData.owner,
       application: generalData.application?.value,
-      nextRivisionDate: generalData.nextRivisionDate,
+      nextRevisionDate: generalData.nextRevisionDate,
     };
     updateKITGeneralDet(kitDBId, data)
       .then((result) => {
@@ -706,11 +727,11 @@ function Kits(props) {
       });
   };
 
-    // Once parts are selected to add clear the search results
-    const clearFilteredData = () => {
-      setMasterData([]);
-      setSelectedMasterData([]);
-    };
+  // Once parts are selected to add clear the search results
+  const clearFilteredData = () => {
+    setMasterData([]);
+    setSelectedMasterData([]);
+  };
 
   // Logic to make the header tabs editable
   const makeHeaderEditable = () => {
@@ -804,8 +825,8 @@ function Kits(props) {
         (element) => element.value === result.application
       ),
       owner: result.owner,
-      nextRivisionDate: result.nextRivisionDate
-        ? result.nextRivisionDate
+      nextRevisionDate: result.nextRevisionDate
+        ? result.nextRevisionDate
         : new Date(), // Change it to created date + 1 year once API is ready
     });
     setEstimationData({
@@ -954,14 +975,14 @@ function Kits(props) {
       },
     },
   ];
-// Open spare part modal to view or edit
-const openSparePartRow = (row) => {
-  // console.log(row);
-  setSparePart(row);
-  setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
-  setPartFieldViewonly(true);
-  setAddPartOpen(true);
-};
+  // Open spare part modal to view or edit
+  const openSparePartRow = (row) => {
+    // console.log(row);
+    setSparePart(row);
+    setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    setPartFieldViewonly(true);
+    setAddPartOpen(true);
+  };
   const handleDeleteSparePart = (sparePartId) => {
     // RemoveSparepart(partListNo, sparePartId)
     //   .then((res) => {
@@ -998,7 +1019,6 @@ const openSparePartRow = (row) => {
     });
   }, []);
 
-  
   // Add the sparepart edited rows to the state variable to update later
   const processRowUpdate = React.useCallback(
     (newRow, oldRow) =>
@@ -1074,10 +1094,9 @@ const openSparePartRow = (row) => {
       wrap: true,
       sortable: true,
       format: (row) => row.prefix,
-    },    
+    },
   ];
 
- 
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
     // console.log("handleQuerySearchClick", querySearchSelector);
@@ -1118,7 +1137,6 @@ const openSparePartRow = (row) => {
       handleSnack("error", "Error occurred while fetching spare parts!");
     }
   };
-
 
   const customStyles = {
     rows: {
@@ -1245,7 +1263,9 @@ const openSparePartRow = (row) => {
     fleet: "",
     fleetSize: "",
   };
-  const [coverageRowData, setCoverageRowData] = useState(initialCoverageRowData);
+  const [coverageRowData, setCoverageRowData] = useState(
+    initialCoverageRowData
+  );
 
   const handleEditCoverageRow = (e, row) => {
     console.log(row);
@@ -1256,10 +1276,10 @@ const openSparePartRow = (row) => {
       family: row.family,
       model: row.model,
       prefix: row.prefix,
-      startSerialNumber: row.startSerialNumber? row.startSerialNumber: "",
-      endSerialNumber: row.endSerialNumber? row.endSerialNumber: "",
-      fleet: row.fleet? row.fleet : "",
-      fleetSize: row.fleetSize? row.fleetSize : "",
+      startSerialNumber: row.startSerialNumber ? row.startSerialNumber : "",
+      endSerialNumber: row.endSerialNumber ? row.endSerialNumber : "",
+      fleet: row.fleet ? row.fleet : "",
+      fleetSize: row.fleetSize ? row.fleetSize : "",
     };
     console.log(obj);
     setCoverageRowData(obj);
@@ -1331,7 +1351,7 @@ const openSparePartRow = (row) => {
     };
     // addPartToPartList(partListNo, data)
     //   .then((result) => {
-        handleAddPartClose();
+    handleAddPartClose();
     //     if (addPartModalTitle === "Add Part")
     //       handleSnack("success", `👏 New Spare Part has been added!`);
     //     else
@@ -1356,7 +1376,6 @@ const openSparePartRow = (row) => {
       selectedOption: "",
     },
   ]);
-
 
   const handleClose = () => setOpen(false);
   const [open, setOpen] = React.useState(false);
@@ -2123,39 +2142,41 @@ const openSparePartRow = (row) => {
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
+                            <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 <span className=" mr-2">
                                   NEXT REVISION DATE
                                 </span>
                               </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={new Date()}
-                                  closeOnSelect
-                                  value={generalData.nextRivisionDate}
-                                  onChange={(e) =>
-                                    setGeneralData({
-                                      ...generalData,
-                                      estimationDate: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={new Date()}
+                                    closeOnSelect
+                                    value={generalData.nextRevisionDate}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        nextRevisionDate: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2249,7 +2270,7 @@ const openSparePartRow = (row) => {
                           label="NEXT REVISION DATE"
                           value={
                             <Moment format="DD/MM/YYYY">
-                              {generalData.nextRivisionDate}
+                              {generalData.nextRevisionDate}
                             </Moment>
                           }
                           className="col-md-4 col-sm-4"
@@ -2788,7 +2809,15 @@ const openSparePartRow = (row) => {
                     <h5 className="mr-2 mb-0 text-black">
                       <span>Parts Table</span>
                     </h5>
-                    <span style={{backgroundColor: "#DCCB4C", borderRadius: 10, paddingInline: 10}}>{generalData.version}</span>
+                    <span
+                      style={{
+                        backgroundColor: "#DCCB4C",
+                        borderRadius: 10,
+                        paddingInline: 10,
+                      }}
+                    >
+                      {generalData.version}
+                    </span>
                   </div>
                   <SearchComponent
                     querySearchSelector={querySearchSelector}
@@ -3691,7 +3720,7 @@ const openSparePartRow = (row) => {
               <button
                 className="btn text-white bg-primary mr-2"
                 onClick={handleSearchResClose}
-              > 
+              >
                 Cancel
               </button>
               <button

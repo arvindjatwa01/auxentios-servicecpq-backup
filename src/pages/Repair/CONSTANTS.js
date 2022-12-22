@@ -151,10 +151,7 @@ export const OPTIONS_USAGE = [
   { value: "HOUR", label: "Hours" },
   { value: "KM", label: "Kms" },
   { value: "MILE", label: "Miles" },
-  { value: "DAY", label: "Day" },
-  { value: "MONTH", label: "Month" },
-  { value: "QUARTER", label: "Quarter" },
-  { value: "YEAR", label: "Year" },
+  { value: "TONS", label: "Tons" },
 ];
 
 export const CONSUMABLE_SEARCH_Q_OPTIONS = [

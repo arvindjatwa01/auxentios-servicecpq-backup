@@ -17,9 +17,7 @@ import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DataTable from "react-data-table-component";
 import { Link, useHistory } from "react-router-dom";
 import $ from "jquery";
-import {
-  getSearchQueryCoverage,
-} from "../../services/index";
+import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
 import { FONT_STYLE, FONT_STYLE_SELECT, OPTIONS_USAGE } from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
@@ -40,12 +38,13 @@ import {
   selectPricingMethodList,
 } from "./dropdowns/repairSlice";
 import QuerySearchComp from "./components/QuerySearchComp";
-import ServiceOnlyTemplateSegment from "./ServiceOnlySegment";
-import ServiceOnlyTemplateOperation from "./ServiceOnlyOperation";
+import ServiceOnlyTemplateSegment from "./ServiceOnlyTemplateSegment";
+import ServiceOnlyTemplateOperation from "./ServiceOnlyTemplateOperation";
 import { fetchTemplateDetails } from "services/templateService";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import { customerSearch } from "services/searchServices";
+import ServiceOnlyTemplateEstimation from "./ServiceOnlyTemplateEstimation";
 
 function ServiceOnlyTemplates(props) {
   const history = useHistory();
@@ -146,7 +145,11 @@ function ServiceOnlyTemplates(props) {
     unit: OPTIONS_USAGE[0],
     usageInterval: "",
     component: "",
-    nextRevisionDate: new Date(),
+    validFrom: new Date(),
+    validTo: new Date(),
+    nextRevisionDate: new Date(
+      new Date().setFullYear(new Date().getFullYear() + 1)
+    ),
   });
 
   const [estimationData, setEstimationData] = useState({
@@ -213,17 +216,7 @@ function ServiceOnlyTemplates(props) {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
-  const [editSerialNo, setEditSerialNo] = useState({
-    coverageId: "",
-    make: "",
-    family: "",
-    modelNo: "",
-    serialNoPrefix: "",
-    startSerialNo: "",
-    endSerialNo: "",
-    fleet: "",
-    fleetSize: "",
-  });
+
   const customStyles = {
     rows: {
       style: {
@@ -315,13 +308,6 @@ function ServiceOnlyTemplates(props) {
         (element) => element.value == result.validityDays
       ),
       version: result.version,
-      application: APPLICATION_OPTIONS.find(
-        (element) => element.value === result.application
-      ),
-      owner: result.owner,
-      nextRivisionDate: result.nextRivisionDate
-        ? result.nextRivisionDate
-        : new Date(), // Change it to created date + 1 year once API is ready
     });
     setEstimationData({
       approvedBy: result.approver,
@@ -345,6 +331,28 @@ function ServiceOnlyTemplates(props) {
       ),
     });
     setSelectedCoverageData(result.coverages ? result.coverages : []);
+    setUsageData({
+      articleNumber: result.articleNumber,
+      component: result.component,
+      startUsage: result.startUsage,
+      endUsage: result.endUsage,
+      usageInterval: result.usageInterval,
+      lifeStage: LIFE_STAGE_OPTIONS.find(
+        (element) => element.value === result.lifeStage
+      ),
+      unit: result.unit
+        ? OPTIONS_USAGE.find((element) => element.value === result.unit)
+        : OPTIONS_USAGE[0],
+      application: APPLICATION_OPTIONS.find(
+        (element) => element.value === result.application
+      ),
+      owner: result.owner,
+      validFrom: result.validFrom ? result.validFrom : new Date(),
+      validTo: result.validTo ? result.validTo : new Date(),
+      nextRevisionDate: result.nextRevisionDate
+        ? result.nextRevisionDate
+        : new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // Change it to created date + 1 year once API is ready
+    });
   };
 
   const currencyOptions = [{ value: "USD", label: "USD" }];
@@ -903,7 +911,7 @@ function ServiceOnlyTemplates(props) {
                     >
                       Header
                     </span>
-                    <a href="#" className="btn-sm text-white">
+                    <a href={undefined} className="btn-sm text-white">
                       <i
                         class="fa fa-pencil"
                         style={{ cursor: "pointer" }}
@@ -915,10 +923,10 @@ function ServiceOnlyTemplates(props) {
                         }
                       ></i>
                     </a>{" "}
-                    <a href="#" className="text-white btn-sm">
+                    <a href={undefined} className="text-white btn-sm">
                       <i class="fa fa-bookmark-o" aria-hidden="true"></i>
                     </a>{" "}
-                    <a href="#" className="text-white btn-sm">
+                    <a href={undefined} className="text-white btn-sm">
                       <i class="fa fa-folder-o" aria-hidden="true"></i>
                     </a>
                   </div>
@@ -1711,7 +1719,7 @@ function ServiceOnlyTemplates(props) {
                         {!viewOnlyTab.usageViewOnly ? (
                           <React.Fragment>
                             <div className="row input-fields">
-                              <div className="col-md-6 col-sm-6">
+                              <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     APPLICATION
@@ -1731,7 +1739,7 @@ function ServiceOnlyTemplates(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="col-md-6 col-sm-6">
+                              <div className="col-md-4 col-sm-4">
                                 <div class="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     OWNER
@@ -1750,7 +1758,7 @@ function ServiceOnlyTemplates(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="col-md-6 col-sm-6">
+                              <div className="col-md-4 col-sm-4">
                                 <div class="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     ARTICLE #
@@ -1769,37 +1777,15 @@ function ServiceOnlyTemplates(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="col-md-6 col-sm-6">
+
+                              <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
-                                    LIFE STAGE
+                                    START USAGE
                                   </label>
-                                  <Select
-                                    // defaultValue={selectedOption}
-                                    onChange={(e) =>
-                                      setUsageData({
-                                        ...usageData,
-                                        lifeStage: e,
-                                      })
-                                    }
-                                    options={LIFE_STAGE_OPTIONS}
-                                    placeholder="Optional"
-                                    value={usageData.lifeStage}
-                                    styles={FONT_STYLE_SELECT}
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-md-6 col-sm-6">
-                                <div className="form-group">
-                                  <label className="text-light-dark font-size-12 font-weight-500">
-                                    Start Usage
-                                  </label>
-                                  <div
-                                    className=" d-flex form-control-date border left-select-div"
-                                    style={{ borderRadius: "5px" }}
-                                  >
+                                  <div className=" d-flex form-control-date border-radius-10 left-select-div">
                                     <input
-                                      className="form-control border-none text-primary"
+                                      className="form-control border-none border-radius-10 text-primary"
                                       type="text"
                                       id="startUsage"
                                       value={usageData.startUsage}
@@ -1814,7 +1800,7 @@ function ServiceOnlyTemplates(props) {
 
                                     <Select
                                       defaultValue={OPTIONS_USAGE[0]}
-                                      isClearable={true}
+                                      // isClearable={true}
                                       options={OPTIONS_USAGE}
                                       className="text-primary"
                                       value={usageData.unit}
@@ -1825,10 +1811,10 @@ function ServiceOnlyTemplates(props) {
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-md-6 col-sm-6">
+                              <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
-                                    End Usage
+                                    END USAGE
                                   </label>
 
                                   <div
@@ -1852,13 +1838,12 @@ function ServiceOnlyTemplates(props) {
                                       className="hours-div"
                                       style={{ minWidth: 100 }}
                                     >
-                                      {usageData.unit?.value}
+                                      {usageData.unit?.label}
                                     </span>
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="col-md-6 col-sm-6">
+                              <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     USAGE INTERVAL
@@ -1883,45 +1868,158 @@ function ServiceOnlyTemplates(props) {
                                       className="hours-div"
                                       style={{ minWidth: 100 }}
                                     >
-                                      {usageData.unit?.value}
+                                      {usageData.unit?.label}
                                     </span>
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-md-6 col-sm-6">
-                                <div className="align-items-center date-box">
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    <span className=" mr-2">VALID FROM</span>
+                                  </label>
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        // minDate={new Date()}
+                                        closeOnSelect
+                                        value={usageData.validFrom}
+                                        onChange={(e) =>
+                                          setUsageData({
+                                            ...usageData,
+                                            validFrom: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    <span className=" mr-2">VALID TO</span>
+                                  </label>
+                                  <div className="align-items-center date-box w-100">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={usageData.validFrom}
+                                        closeOnSelect
+                                        value={usageData.validTo}
+                                        onChange={(e) =>
+                                          setUsageData({
+                                            ...usageData,
+                                            validTo: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     <span className=" mr-2">
                                       NEXT REVISION DATE
                                     </span>
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={new Date()}
-                                      closeOnSelect
-                                      value={generalData.nextRivisionDate}
-                                      onChange={(e) =>
-                                        setGeneralData({
-                                          ...generalData,
-                                          estimationDate: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={new Date()}
+                                        closeOnSelect
+                                        value={usageData.nextRevisionDate}
+                                        onChange={(e) =>
+                                          setUsageData({
+                                            ...usageData,
+                                            nextRevisionDate: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    LIFE STAGE
+                                  </label>
+                                  <Select
+                                    // defaultValue={selectedOption}
+                                    onChange={(e) =>
+                                      setUsageData({
+                                        ...usageData,
+                                        lifeStage: e,
+                                      })
+                                    }
+                                    options={LIFE_STAGE_OPTIONS}
+                                    placeholder="Optional"
+                                    value={usageData.lifeStage}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    COMPONENT
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={usageData.component}
+                                    onChange={(e) =>
+                                      setUsageData({
+                                        ...usageData,
+                                        component: e.target.value,
+                                      })
+                                    }
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -1961,22 +2059,58 @@ function ServiceOnlyTemplates(props) {
                             />
                             <ReadOnlyField
                               label="START USAGE"
-                              value={usageData.startUsage? usageData.startUsage+" "+usageData.unit?.label: "NA"}
+                              value={
+                                usageData.startUsage
+                                  ? usageData.startUsage +
+                                    " " +
+                                    usageData.unit?.label
+                                  : "NA"
+                              }
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
                               label="END USAGE"
-                              value={usageData.endUsage? usageData.endUsage+" "+usageData.unit?.label : "NA"}
+                              value={
+                                usageData.endUsage
+                                  ? usageData.endUsage +
+                                    " " +
+                                    usageData.unit?.label
+                                  : "NA"
+                              }
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
                               label="USAGE INTERVAL"
-                              value={usageData.usageInterval? usageData.usageInterval+" "+usageData.unit?.label : "NA"}
+                              value={
+                                usageData.usageInterval
+                                  ? usageData.usageInterval +
+                                    " " +
+                                    usageData.unit?.label
+                                  : "NA"
+                              }
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
                               label="COMPONENT"
                               value={usageData.component}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="VALID FROM"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {usageData.validFrom}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="VALID TO"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {usageData.validTo}
+                                </Moment>
+                              }
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
@@ -2020,6 +2154,14 @@ function ServiceOnlyTemplates(props) {
           )}
           {activeElement.name === "operation" && (
             <ServiceOnlyTemplateOperation
+              templateDetails={{
+                activeElement,
+                setActiveElement,
+              }}
+            />
+          )}
+          {activeElement.name === "service" && (
+            <ServiceOnlyTemplateEstimation
               templateDetails={{
                 activeElement,
                 setActiveElement,

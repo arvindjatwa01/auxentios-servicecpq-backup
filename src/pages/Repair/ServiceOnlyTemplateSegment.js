@@ -1,23 +1,33 @@
-import { faAngleDown, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
-
-import AddIcon from "@mui/icons-material/Add";
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { createSegment, fetchSegments } from "services/repairBuilderServices";
-import {
-  getComponentCodeSuggetions,
-  jobCodeSearch,
-} from "services/searchServices";
-import SearchBox from "./components/SearchBox";
+import React,{useEffect, useState} from "react";
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Select from 'react-select';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Checkbox from '@mui/material/Checkbox';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import { MuiMenuComponent } from "pages/Operational";
+import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {faPlus} from '@fortawesome/free-solid-svg-icons'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import AddIcon from '@mui/icons-material/Add';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import {Link, useHistory} from 'react-router-dom'
 import { NEW_SEGMENT } from "./CONSTANTS";
+import { createSegment, fetchSegments } from "services/repairBuilderServices";
+import { getComponentCodeSuggetions, jobCodeSearch } from "services/searchServices";
 import LoadingProgress from "./components/Loader";
-
-function WithoutSpareParts(props) {
-  // const { state } = props.location;
-  const { activeElement, setActiveElement, fetchAllDetails } = props.builderDetails;
+import SearchBox from "./components/SearchBox";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+function ServiceOnlyTemplateSegment(props){  
+  const { activeElement, setActiveElement, fetchAllDetails } = props.templateDetails;
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -28,7 +38,7 @@ function WithoutSpareParts(props) {
   const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
-  const [segmentLoading, setSegmentLoadig] = useState(false);
+  const [segmentLoading, setSegmentLoading] = useState(false);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -54,37 +64,37 @@ function WithoutSpareParts(props) {
   }, []);
 
   const fetchSegmentsOfBuilder = () => {
-    setSegmentLoadig(true);
-    if (activeElement.bId) {
-      fetchSegments(activeElement.bId)
-        .then((result) => {
-          if (result?.length > 0) {
-            setSegments(result);
-            setSegmentViewOnly(true);
-            let segmentToLoad = activeElement.sId ? result.filter(
-              (x) => x.id === activeElement.sId
-            )[0] : result[result.length - 1];
-            setSegmentData({
-              ...segmentToLoad,
-              header: formatSegmentHeader(segmentToLoad)
-                // "Segment " +
-                // segmentToLoad.segmentNumber +
-                // " - " +
-                // segmentToLoad.description,
-            });
-          } else {
-            loadNewSegmentUI();
-          }
-          setSegmentLoadig(false);
-        })
-        .catch((err) => {
-          loadNewSegmentUI();
-          handleSnack("error", "Error occurred while fetching segments!");
-          setSegmentLoadig(false);
-        });
-    } else {
-      handleSnack("error", "Not a valid builder!");
-    }
+    // setSegmentLoading(true);
+    // if (activeElement.templateDBId) {
+    //   fetchSegments(activeElement.templateDBId)
+    //     .then((result) => {
+    //       if (result?.length > 0) {
+    //         setSegments(result);
+    //         setSegmentViewOnly(true);
+    //         let segmentToLoad = activeElement.sId ? result.filter(
+    //           (x) => x.id === activeElement.sId
+    //         )[0] : result[result.length - 1];
+    //         setSegmentData({
+    //           ...segmentToLoad,
+    //           header: formatSegmentHeader(segmentToLoad)
+    //             // "Segment " +
+    //             // segmentToLoad.segmentNumber +
+    //             // " - " +
+    //             // segmentToLoad.description,
+    //         });
+    //       } else {
+    //         loadNewSegmentUI();
+    //       }
+    //       setSegmentLoading(false);
+    //     })
+    //     .catch((err) => {
+    //       loadNewSegmentUI();
+    //       handleSnack("error", "Error occurred while fetching segments!");
+    //       setSegmentLoading(false);
+    //     });
+    // } else {
+    //   handleSnack("error", "Not a valid builder!");
+    // }
   };
 
   // Search Job Code
@@ -199,14 +209,14 @@ function WithoutSpareParts(props) {
   };
 
   const handleCreateSegment = () => {
-    let bid = activeElement?.bId;
+    let templateDBId = activeElement?.templateDBId;
     let data = {
       jobCode: segmentData.jobCode,
       title: segmentData.title,
       componentCode: segmentData.componentCode,
       description: segmentData.description,
     };
-    createSegment(bid, data)
+    createSegment(templateDBId, data)
       .then((result) => {
         setSegmentData({
           ...segmentData,
@@ -445,7 +455,7 @@ function WithoutSpareParts(props) {
               <button
                 className="btn bg-primary text-white"
                 onClick={() =>
-                  {setActiveElement({ ...activeElement, name: "header" }); fetchAllDetails(activeElement.bId);}
+                  {setActiveElement({ ...activeElement, name: "header" }); fetchAllDetails(activeElement.templateDBId);}
                 }
               >
                 Back
@@ -463,7 +473,7 @@ function WithoutSpareParts(props) {
                 <span className="mr-2">
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
-                Add Job Operation
+                Add Operation
                 {/* <span className="ml-2">
                   <FontAwesomeIcon icon={faAngleDown} />
                 </span> */}
@@ -476,4 +486,5 @@ function WithoutSpareParts(props) {
   );
 }
 
-export default WithoutSpareParts;
+
+export default ServiceOnlyTemplateSegment

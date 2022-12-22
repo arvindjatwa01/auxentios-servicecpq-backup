@@ -27,7 +27,7 @@ import Segment01Transmission from "pages/Repair/Segment01Transmission";
 import Segment01Disassemble from "pages/Repair/Segment01Disassemble";
 import RepairOption01 from "pages/Repair/RepairOption01";
 import RepairServiceEstimate from "pages/Repair/RepairServiceEstimate";
-import WithoutSpareParts from "pages/Repair/WithoutSpareParts";
+import WithoutSpareParts from "pages/Repair/WithoutSparePartsSegments";
 import PartList from "pages/Repair/PartList";
 import { RepairPartlist } from "pages/Repair/RepairPartlist";
 import { RepairWithSpareParts } from "pages/Repair/RepairWithSpareParts";
@@ -35,7 +35,6 @@ import { RepairWithoutSpareParts } from "pages/Repair/RepairWithoutSpareParts";
 import { RepairStandardJobs } from "pages/Repair/RepairStandardJobs";
 import { RepairKits } from "pages/Repair/RepairKits";
 import StandardJobs from "pages/Repair/StandardJobs";
-import StandardOnlyTemplates from "pages/Repair/ServiceOnlyTemplates";
 import Kits from "pages/Repair/Kits";
 import { CommanComponents } from "../components/CommanComponents";
 import AddPartlist from "pages/Repair/AddPartlist";
@@ -79,7 +78,7 @@ import PriceDetermination from "pages/Price/PriceDetermination";
 import PriceMaintenance from "pages/Price/PriceMaintenance";
 import PriceComputation from "pages/Price/PriceComputation";
 import { RepairServiceOnlyTemplate } from "pages/Repair/RepairServiceOnlyTemplate";
-import ServiceOnlyTemplates from "pages/Repair/ServiceOnlyTemplates";
+import ServiceOnlyTemplatesHeader from "pages/Repair/ServiceOnlyTemplatesHeader";
 
 
 
@@ -139,7 +138,7 @@ export const RouterConfig = () => {
         <Route exact path={ADD_PARTLIST} component={AddPartlist} />
         <Route exact path={REPAIR_KITS} component={RepairKits} />
         <Route exact path={STANDARD_JOBS} component={StandardJobs} />
-        <Route exact path={SERVICE_ONLY_TEMPLATES} component={ServiceOnlyTemplates} />
+        <Route exact path={SERVICE_ONLY_TEMPLATES} component={ServiceOnlyTemplatesHeader} />
         <Route exact path={KITS} component={Kits} />
         <Route exact path={QUOTE_SPARE_PARTS} component={QuoteSpareParts} />
         <Route exact path={QUOTE_SEARCH_QUOTE} component={QuoteSearchQuote} />

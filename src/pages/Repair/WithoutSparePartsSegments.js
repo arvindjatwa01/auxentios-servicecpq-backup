@@ -1,33 +1,29 @@
-import React,{useEffect, useState} from "react";
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Select from 'react-select';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Checkbox from '@mui/material/Checkbox';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import { MuiMenuComponent } from "pages/Operational";
-import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faPlus} from '@fortawesome/free-solid-svg-icons'
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import AddIcon from '@mui/icons-material/Add';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import {Link, useHistory} from 'react-router-dom'
-import { NEW_SEGMENT } from "./CONSTANTS";
-import { createSegment, fetchSegments } from "services/repairBuilderServices";
-import { getComponentCodeSuggetions, jobCodeSearch } from "services/searchServices";
-import LoadingProgress from "./components/Loader";
-import SearchBox from "./components/SearchBox";
+import { faAngleDown, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect, useState } from "react";
+
+import AddIcon from "@mui/icons-material/Add";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-function ServiceOnlyTemplateSegment(props){  
-  const { activeElement, setActiveElement, fetchAllDetails } = props.templateDetails;
+import {
+  createSegment,
+  fetchOperations,
+  fetchSegments,
+} from "services/repairBuilderServices";
+import {
+  getComponentCodeSuggetions,
+  jobCodeSearch,
+} from "services/searchServices";
+import SearchBox from "./components/SearchBox";
+import { NEW_SEGMENT } from "./CONSTANTS";
+import LoadingProgress from "./components/Loader";
+import { Divider } from "@mui/material";
+
+function WithoutSpareParts(props) {
+  // const { state } = props.location;
+  const { activeElement, setActiveElement, fetchAllDetails } =
+    props.builderDetails;
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -39,15 +35,20 @@ function ServiceOnlyTemplateSegment(props){
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
   const [segmentLoading, setSegmentLoadig] = useState(false);
-
+  const [operations, setOperations] = useState([]);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setOpenSnack(false);
   };
-  function formatSegmentHeader(convertSegment){
-    return "Segment " + String(convertSegment.segmentNumber).padStart(2, '0') + " - " + convertSegment.description
+  function formatSegmentHeader(convertSegment) {
+    return (
+      "Segment " +
+      String(convertSegment.segmentNumber).padStart(2, "0") +
+      " - " +
+      convertSegment.description
+    );
   }
   const newSegment = {
     header: NEW_SEGMENT,
@@ -64,37 +65,47 @@ function ServiceOnlyTemplateSegment(props){
   }, []);
 
   const fetchSegmentsOfBuilder = () => {
-    // setSegmentLoadig(true);
-    // if (activeElement.templateDBId) {
-    //   fetchSegments(activeElement.templateDBId)
-    //     .then((result) => {
-    //       if (result?.length > 0) {
-    //         setSegments(result);
-    //         setSegmentViewOnly(true);
-    //         let segmentToLoad = activeElement.sId ? result.filter(
-    //           (x) => x.id === activeElement.sId
-    //         )[0] : result[result.length - 1];
-    //         setSegmentData({
-    //           ...segmentToLoad,
-    //           header: formatSegmentHeader(segmentToLoad)
-    //             // "Segment " +
-    //             // segmentToLoad.segmentNumber +
-    //             // " - " +
-    //             // segmentToLoad.description,
-    //         });
-    //       } else {
-    //         loadNewSegmentUI();
-    //       }
-    //       setSegmentLoadig(false);
-    //     })
-    //     .catch((err) => {
-    //       loadNewSegmentUI();
-    //       handleSnack("error", "Error occurred while fetching segments!");
-    //       setSegmentLoadig(false);
-    //     });
-    // } else {
-    //   handleSnack("error", "Not a valid builder!");
-    // }
+    setSegmentLoadig(true);
+    if (activeElement.bId) {
+      fetchSegments(activeElement.bId)
+        .then((result) => {
+          if (result?.length > 0) {
+            setSegments(result);
+            setSegmentViewOnly(true);
+            let segmentToLoad = activeElement.sId
+              ? result.filter((x) => x.id === activeElement.sId)[0]
+              : result[result.length - 1];
+            setSegmentData({
+              ...segmentToLoad,
+              header: formatSegmentHeader(segmentToLoad),
+            });
+            if (activeElement.sId) {
+              fetchOperations(activeElement.sId)
+                .then((result) => {
+                  if (result?.length > 0) {
+                    setOperations(result);
+                  }
+                })
+                .catch((e) => {
+                  handleSnack(
+                    "error",
+                    "Error occurred while fetching the operations"
+                  );
+                });
+            }
+          } else {
+            loadNewSegmentUI();
+          }
+          setSegmentLoadig(false);
+        })
+        .catch((err) => {
+          loadNewSegmentUI();
+          handleSnack("error", "Error occurred while fetching segments!");
+          setSegmentLoadig(false);
+        });
+    } else {
+      handleSnack("error", "Not a valid builder!");
+    }
   };
 
   // Search Job Code
@@ -178,11 +189,11 @@ function ServiceOnlyTemplateSegment(props){
 
       setSegmentData({
         ...segmentToLoad[0],
-        header: formatSegmentHeader(segmentToLoad[0])
-          // "Segment " +
-          // segmentToLoad[0].segmentNumber +
-          // " - " +
-          // segmentToLoad[0].description,
+        header: formatSegmentHeader(segmentToLoad[0]),
+        // "Segment " +
+        // segmentToLoad[0].segmentNumber +
+        // " - " +
+        // segmentToLoad[0].description,
       });
     } else if (direction === "forward") {
       let segmentToLoad = [];
@@ -198,32 +209,32 @@ function ServiceOnlyTemplateSegment(props){
         );
         setSegmentData({
           ...segmentToLoad[0],
-          header: formatSegmentHeader(segmentToLoad[0])
-            // "Segment " +
-            // segmentToLoad[0].segmentNumber +
-            // " - " +
-            // segmentToLoad[0].description,
+          header: formatSegmentHeader(segmentToLoad[0]),
+          // "Segment " +
+          // segmentToLoad[0].segmentNumber +
+          // " - " +
+          // segmentToLoad[0].description,
         });
       }
     }
   };
 
   const handleCreateSegment = () => {
-    let templateDBId = activeElement?.templateDBId;
+    let bid = activeElement?.bId;
     let data = {
       jobCode: segmentData.jobCode,
       title: segmentData.title,
       componentCode: segmentData.componentCode,
       description: segmentData.description,
     };
-    createSegment(templateDBId, data)
+    createSegment(bid, data)
       .then((result) => {
         setSegmentData({
           ...segmentData,
           segmentNumber: result.segmentNumber,
           id: result.id,
-          header: formatSegmentHeader(result)
-            // "Segment " + result.segmentNumber + " - " + result.description,
+          header: formatSegmentHeader(result),
+          // "Segment " + result.segmentNumber + " - " + result.description,
         });
         // fetchSegmentsOfBuilder();
         segments[segments.length - 1] = result;
@@ -253,11 +264,11 @@ function ServiceOnlyTemplateSegment(props){
       );
       setSegmentData({
         ...segments[segments.length - 1],
-        header: formatSegmentHeader(segments[segments.length - 1])
-          // "Segment " +
-          // segments[segments.length - 1].segmentNumber +
-          // " - " +
-          // segments[segments.length - 1].description,
+        header: formatSegmentHeader(segments[segments.length - 1]),
+        // "Segment " +
+        // segments[segments.length - 1].segmentNumber +
+        // " - " +
+        // segments[segments.length - 1].description,
       });
       setShowAddNewButton(true);
       setSegmentViewOnly(true);
@@ -317,7 +328,7 @@ function ServiceOnlyTemplateSegment(props){
           <div className="hr"></div>
         </h5>
         {segmentLoading ? (
-          <LoadingProgress/>
+          <LoadingProgress />
         ) : !segmentViewOnly ? (
           <>
             <div className="row mt-4 input-fields">
@@ -454,30 +465,59 @@ function ServiceOnlyTemplateSegment(props){
             <div className="Add-new-segment-div p-3 border-radius-10">
               <button
                 className="btn bg-primary text-white"
-                onClick={() =>
-                  {setActiveElement({ ...activeElement, name: "header" }); fetchAllDetails(activeElement.templateDBId);}
-                }
+                onClick={() => {
+                  setActiveElement({ ...activeElement, name: "header" });
+                  fetchAllDetails(activeElement.bId);
+                }}
               >
-                Back
+                Back To Header
               </button>
-              <button
-                onClick={() =>
-                  setActiveElement({
-                    ...activeElement,
-                    name: "operation",
-                    sId: segmentData.id,
-                  })
-                }
-                className="btn bg-primary text-white ml-2"
-              >
-                <span className="mr-2">
-                  <FontAwesomeIcon icon={faPlus} />
-                </span>
-                Add Operation
-                {/* <span className="ml-2">
-                  <FontAwesomeIcon icon={faAngleDown} />
-                </span> */}
-              </button>
+              {operations.length > 0 ? (
+                <div class="repairbtn-dropdown">
+                  <button className="btn bg-primary text-white ml-2 dropbtn">
+                    View Job Operations
+                    <span className="ml-2">
+                      <FontAwesomeIcon icon={faAngleDown} />
+                    </span>
+                  </button>
+                  <div class="repairbtn-dropdown-content" id="drp">
+                    {operations.map((element) => (
+                      <li
+                        onClick={() =>
+                          setActiveElement({
+                            ...activeElement,
+                            name: "operation",
+                            sId: segmentData.id,
+                            oId: element.id,
+                          })
+                        }
+                      >
+                        {"Operation " +
+                          String(element.operationNumber).padStart(3, "0") +
+                          " - " +
+                          element.jobCode+" "+element.jobCodeDescription+" "+element.componentCodeDescription}
+                      </li>                                             
+                        
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() =>
+                    setActiveElement({
+                      ...activeElement,
+                      name: "operation",
+                      sId: segmentData.id,
+                    })
+                  }
+                  className="btn bg-primary text-white ml-2"
+                >
+                  <span className="mr-2">
+                    <FontAwesomeIcon icon={faPlus} />
+                  </span>
+                  Add Job Operation
+                </button>
+              )}
             </div>
           </React.Fragment>
         )}
@@ -486,5 +526,4 @@ function ServiceOnlyTemplateSegment(props){
   );
 }
 
-
-export default ServiceOnlyTemplateSegment
+export default WithoutSpareParts;
