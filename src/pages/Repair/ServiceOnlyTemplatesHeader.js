@@ -19,7 +19,12 @@ import { Link, useHistory } from "react-router-dom";
 import $ from "jquery";
 import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
-import { FONT_STYLE, FONT_STYLE_SELECT, FONT_STYLE_UNIT_SELECT, OPTIONS_USAGE } from "./CONSTANTS";
+import {
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
+  FONT_STYLE_UNIT_SELECT,
+  OPTIONS_USAGE,
+} from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Rating, TextField } from "@mui/material";
@@ -133,7 +138,7 @@ function ServiceOnlyTemplates(props) {
     version: "",
     customerID: "",
     customerName: "",
-    owner: ""
+    owner: "",
   });
   const [usageData, setUsageData] = useState({
     application: "",
@@ -300,7 +305,7 @@ function ServiceOnlyTemplates(props) {
       version: result.version,
       owner: result.owner,
       customerID: result.customerID,
-      customerName: result.customerName
+      customerName: result.customerName,
     });
     setEstimationData({
       approvedBy: result.approver,
@@ -735,7 +740,7 @@ function ServiceOnlyTemplates(props) {
       estimationNumber: generalData.estimationNo,
       customerID: generalData.customerID,
       customerName: generalData.customerName,
-      owner: generalData.owner
+      owner: generalData.owner,
     };
     updateKITGeneralDet(templateDBId, data)
       .then((result) => {
@@ -776,6 +781,34 @@ function ServiceOnlyTemplates(props) {
           "Error occurred while updating the pricing details!"
         );
       });
+  };
+
+  const updateUsageData = () => {
+    let data = {
+      templateDBId,
+      application: usageData.application?.value,
+      lifeStage: usageData.lifeStage?.value,
+      nextRevisionDate: usageData.nextRevisionDate,
+
+      articleNumber: usageData.articleNumber,
+      startUsage: usageData.startUsage,
+      endUsage: usageData.endUsage,
+      usageInterval: usageData.usageInterval,
+      validFrom: usageData.validFrom,
+      validTo: usageData.validTo,
+      component: usageData.component
+    };
+    // updateUsageDeatils(templateDBId, data)
+    //   .then((result) => {
+        setViewOnlyTab({ ...viewOnlyTab, usageViewOnly: true });
+    //     handleSnack("success", "Pricing details updated!");
+    //   })
+    //   .catch((err) => {
+    //     handleSnack(
+    //       "error",
+    //       "Error occurred while updating the usage details!"
+    //     );
+    //   });
   };
   const handleUpdateCoverage = () => {
     const newCoverageArr = selectedCoverageData.map((obj) => {
@@ -1325,7 +1358,7 @@ function ServiceOnlyTemplates(props) {
                                   !generalData.estimationDate ||
                                   !generalData.description ||
                                   !generalData.estimationNo ||
-                                  !generalData.reference 
+                                  !generalData.reference
                                 }
                               >
                                 Save & Next
@@ -1728,7 +1761,27 @@ function ServiceOnlyTemplates(props) {
                                     styles={FONT_STYLE_SELECT}
                                   />
                                 </div>
-                              </div>                              
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    LIFE STAGE
+                                  </label>
+                                  <Select
+                                    // defaultValue={selectedOption}
+                                    onChange={(e) =>
+                                      setUsageData({
+                                        ...usageData,
+                                        lifeStage: e,
+                                      })
+                                    }
+                                    options={LIFE_STAGE_OPTIONS}
+                                    placeholder="Optional"
+                                    value={usageData.lifeStage}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
                               <div className="col-md-4 col-sm-4">
                                 <div class="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1955,26 +2008,7 @@ function ServiceOnlyTemplates(props) {
                                   </div>
                                 </div>
                               </div>
-                              <div className="col-md-4 col-sm-4">
-                                <div className="form-group">
-                                  <label className="text-light-dark font-size-12 font-weight-500">
-                                    LIFE STAGE
-                                  </label>
-                                  <Select
-                                    // defaultValue={selectedOption}
-                                    onChange={(e) =>
-                                      setUsageData({
-                                        ...usageData,
-                                        lifeStage: e,
-                                      })
-                                    }
-                                    options={LIFE_STAGE_OPTIONS}
-                                    placeholder="Optional"
-                                    value={usageData.lifeStage}
-                                    styles={FONT_STYLE_SELECT}
-                                  />
-                                </div>
-                              </div>
+
                               <div className="col-md-4 col-sm-4">
                                 <div class="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -2002,6 +2036,8 @@ function ServiceOnlyTemplates(props) {
                               <button
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
+                                onClick={updateUsageData}
+                                disabled={!(usageData.application?.value && usageData.nextRevisionDate)}
                               >
                                 Save
                               </button>
@@ -2015,13 +2051,13 @@ function ServiceOnlyTemplates(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
-                              label="ARTICLE #"
-                              value={usageData.articleNumber}
+                              label="LIFE STAGE"
+                              value={usageData.lifeStage?.label}
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
-                              label="LIFE STAGE"
-                              value={usageData.lifeStage?.label}
+                              label="ARTICLE #"
+                              value={usageData.articleNumber}
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
@@ -2058,11 +2094,6 @@ function ServiceOnlyTemplates(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
-                              label="COMPONENT"
-                              value={usageData.component}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
                               label="VALID FROM"
                               value={
                                 <Moment format="DD/MM/YYYY">
@@ -2087,6 +2118,11 @@ function ServiceOnlyTemplates(props) {
                                   {usageData.nextRevisionDate}
                                 </Moment>
                               }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="COMPONENT"
+                              value={usageData.component}
                               className="col-md-4 col-sm-4"
                             />
                           </div>
