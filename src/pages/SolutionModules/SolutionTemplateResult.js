@@ -73,6 +73,7 @@ import AddPortfolioItem from "../PortfolioAndBundle/AddPortfolioItem";
 
 
 import { MuiMenuComponent } from "../Operational/index";
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
 
 
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
@@ -583,7 +584,7 @@ export function SolutionTemplateResult(props) {
       );
 
       if (updateCustomCoverageData.status === 200) {
-         toast("😎 Updated Successfully", {
+         toast("😎 Coverage data updated successfully", {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,
@@ -1403,7 +1404,6 @@ export function SolutionTemplateResult(props) {
                if (updatePortfolioRes.status != 200) {
                   throw `${updatePortfolioRes.status}:Something went wrong`;
                }
-               console.log("portfolio updated:", updatePortfolioRes);
             } else {
                throw `Please Create portfolio`;
             }
@@ -1574,8 +1574,8 @@ export function SolutionTemplateResult(props) {
                preparedOn: administrative.preparedOn,
                revisedBy: administrative.revisedBy,
                revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value
             },
             customItemBodyModel: {
                customItemBodyId: parseInt(addPortFolioItem.id),
@@ -1976,8 +1976,8 @@ export function SolutionTemplateResult(props) {
             //    preparedOn: administrative.preparedOn,
             //    revisedBy: administrative.revisedBy,
             //    revisedOn: administrative.revisedOn,
-            //    salesOffice: administrative.salesOffice,
-            //    offerValidity: administrative.offerValidity,
+            //    salesOffice: administrative.salesOffice?.value,
+            //    offerValidity: administrative.offerValidity?.value,
             //    template: flagTemplate,
             //    visibleInCommerce: flagCommerce,
             //    // portfolioPrice: {},
@@ -2015,8 +2015,8 @@ export function SolutionTemplateResult(props) {
                preparedOn: administrative.preparedOn,
                revisedBy: administrative.revisedBy,
                revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity,
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value,
 
                portfolioPrice: portfolioPriceDataId,
                additionalPrice: portfolioAdditionalPriceDataId,
@@ -2069,8 +2069,8 @@ export function SolutionTemplateResult(props) {
                preparedOn: administrative.preparedOn,
                revisedBy: administrative.revisedBy,
                revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity,
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value,
                template: flagTemplate,
                visibleInCommerce: flagCommerce,
             });
@@ -2081,7 +2081,7 @@ export function SolutionTemplateResult(props) {
             );
 
             if (portfolioRes.status === 200) {
-               toast("👏 Portfolio Update Successfully", {
+               toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                   position: "top-right",
                   autoClose: 5000,
                   hideProgressBar: false,
@@ -2227,8 +2227,8 @@ export function SolutionTemplateResult(props) {
             //    preparedOn: administrative.preparedOn,
             //    revisedBy: administrative.revisedBy,
             //    revisedOn: administrative.revisedOn,
-            //    salesOffice: administrative.salesOffice,
-            //    offerValidity: administrative.offerValidity,
+            //    salesOffice: administrative.salesOffice?.value,
+            //    offerValidity: administrative.offerValidity?.value,
             //    template: flagTemplate,
             //    visibleInCommerce: flagCommerce,
             // };
@@ -2262,8 +2262,8 @@ export function SolutionTemplateResult(props) {
                preparedOn: administrative.preparedOn,
                revisedBy: administrative.revisedBy,
                revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity,
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value,
 
                portfolioPrice: portfolioPriceDataId,
                additionalPrice: portfolioAdditionalPriceDataId,
@@ -2302,7 +2302,7 @@ export function SolutionTemplateResult(props) {
                reqData
             );
             if (strategyRes.status === 200) {
-               toast("👏 Portfolio updated", {
+               toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                   position: "top-right",
                   autoClose: 5000,
                   hideProgressBar: false,
@@ -2433,7 +2433,7 @@ export function SolutionTemplateResult(props) {
             //    preparedOn: administrative.preparedOn,
             //    revisedBy: administrative.revisedBy,
             //    revisedOn: administrative.revisedOn,
-            //    salesOffice: administrative.salesOffice,
+            //    salesOffice: administrative.salesOffice?.value,
             //    offerValidity: administrative.offerValidity,
             //    template: flagTemplate,
             //    visibleInCommerce: flagCommerce,
@@ -2469,8 +2469,8 @@ export function SolutionTemplateResult(props) {
                preparedOn: administrative.preparedOn,
                revisedBy: administrative.revisedBy,
                revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity,
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value,
 
                portfolioPrice: portfolioPriceDataId,
                additionalPrice: portfolioAdditionalPriceDataId,
@@ -2510,7 +2510,7 @@ export function SolutionTemplateResult(props) {
                administrativeObj
             );
             if (administrativeRes.status === 200) {
-               toast("👏 Portfolio updated", {
+               toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                   position: "top-right",
                   autoClose: 5000,
                   hideProgressBar: false,
@@ -2724,8 +2724,8 @@ export function SolutionTemplateResult(props) {
             //    preparedOn: administrative.preparedOn,
             //    revisedBy: administrative.revisedBy,
             //    revisedOn: administrative.revisedOn,
-            //    salesOffice: administrative.salesOffice,
-            //    offerValidity: administrative.offerValidity,
+            //    salesOffice: administrative.salesOffice?.value,
+            //    offerValidity: administrative.offerValidity?.value,
             //    template: flagTemplate,
             //    visibleInCommerce: flagCommerce,
             // };
@@ -2760,8 +2760,8 @@ export function SolutionTemplateResult(props) {
                preparedOn: administrative.preparedOn,
                revisedBy: administrative.revisedBy,
                revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity,
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value,
 
                portfolioPrice: portfolioPriceDataId,
                additionalPrice: portfolioAdditionalPriceDataId,
@@ -2811,7 +2811,7 @@ export function SolutionTemplateResult(props) {
                priceObjData
             )
             if (priceObjRes.status === 200) {
-               toast("👏 Portfolio updated", {
+               toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                   position: "top-right",
                   autoClose: 5000,
                   hideProgressBar: false,
@@ -2936,8 +2936,8 @@ export function SolutionTemplateResult(props) {
                preparedOn: administrative.preparedOn,
                revisedBy: administrative.revisedBy,
                revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity,
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value,
                template: flagTemplate,
                visibleInCommerce: flagCommerce,
             };
@@ -2947,7 +2947,7 @@ export function SolutionTemplateResult(props) {
                   obj
                );
                if (updatePortfolioRes.status === 200) {
-                  toast("👏 Portfolio updated", {
+                  toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                      position: "top-right",
                      autoClose: 5000,
                      hideProgressBar: false,
@@ -3766,6 +3766,19 @@ export function SolutionTemplateResult(props) {
       // set Flag-Commerce 
       setFlagCommerce(result.visibleInCommerce);
 
+      var offerValidityLabel;
+      if (result.offerValidity == "15") {
+         offerValidityLabel = "15 days";
+      } else if (result.offerValidity == "30") {
+         offerValidityLabel = "1 month";
+      } else if (result.offerValidity == "45") {
+         offerValidityLabel = "45 days";
+      } else if (result.offerValidity == "60") {
+         offerValidityLabel = "2 month";
+      } else {
+         offerValidityLabel = result.offerValidity;
+      }
+
       // set Administrative Tab Field state Value
       setAdministrative({
          preparedBy: result.preparedBy,
@@ -3773,8 +3786,8 @@ export function SolutionTemplateResult(props) {
          preparedOn: result.preparedOn,
          revisedBy: result.revisedBy,
          revisedOn: result.revisedOn,
-         salesOffice: result.salesOffice,
-         offerValidity: result.offerValidity,
+         salesOffice: { label: result.salesOffice, value: result.salesOffice },
+         offerValidity: { label: offerValidityLabel, value: result.offerValidity },
       });
 
 
@@ -3987,6 +4000,19 @@ export function SolutionTemplateResult(props) {
       { value: "strawberry", label: "1" },
       { value: "vanilla", label: "2" },
       { value: "Construction", label: "3" },
+   ];
+   const validityOptions = [
+      { value: "15", label: "15 days" },
+      { value: "30", label: "1 month" },
+      { value: "45", label: "45 days" },
+      { value: "60", label: "2 months" },
+   ];
+
+   const salesOfficeOptions = [
+      { value: "Location1", label: "Location1" },
+      { value: "Location2", label: "Location2" },
+      { value: "Location3", label: "Location3" },
+      { value: "Location4", label: "Location4" },
    ];
 
    const [versionOption, setVersionOption] = useState([]);
@@ -5716,13 +5742,13 @@ export function SolutionTemplateResult(props) {
                      <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}><i class="fa fa-pencil" aria-hidden="true" onClick={makeHeaderEditable}></i></a>
                         <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}><i class="fa fa-bookmark-o" aria-hidden="true" ></i></a>
                         <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
-                     <div class="input-group icons border-radius-10 border">
+                     {/* <div class="input-group icons border-radius-10 border">
                         <div class="input-group-prepend">
                            <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
                               <img src={searchLogo} /></span>
                         </div>
                         <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
-                     </div>
+                     </div> */}
                   </h5>
                   <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
                      {headerLoading ? (
@@ -6768,15 +6794,28 @@ export function SolutionTemplateResult(props) {
                                                 className="text-light-dark font-size-14 font-weight-500"
                                                 htmlFor="exampleInputEmail1"
                                              >
-                                                SALSE OFFICE/BRANCH
+                                                SALES OFFICE / BRANCH
                                              </label>
-                                             <input
+                                             <Select
+                                                onChange={(e) =>
+                                                   setAdministrative({
+                                                      ...administrative,
+                                                      salesOffice: e,
+                                                   })
+                                                }
+                                                className="text-primary"
+                                                options={salesOfficeOptions}
+                                                placeholder="Required"
+                                                value={administrative.salesOffice}
+                                                styles={FONT_STYLE_SELECT}
+                                             />
+                                             {/* <input
                                                 type="text"
                                                 className="form-control border-radius-10 text-primary"
                                                 name="salesOffice"
-                                                value={administrative.salesOffice}
+                                                value={administrative.salesOffice?.value}
                                                 onChange={handleAdministrativreChange}
-                                             />
+                                             /> */}
                                           </div>
                                        </div>
                                     </div>
@@ -6789,14 +6828,28 @@ export function SolutionTemplateResult(props) {
                                              >
                                                 OFFER VALIDITY
                                              </label>
-                                             <input
+                                             <Select
+                                                // defaultValue={selectedOption}
+                                                onChange={(e) =>
+                                                   setAdministrative({
+                                                      ...administrative,
+                                                      offerValidity: e,
+                                                   })
+                                                }
+                                                className="text-primary"
+                                                options={validityOptions}
+                                                placeholder="Optional"
+                                                value={administrative.offerValidity}
+                                                styles={FONT_STYLE_SELECT}
+                                             />
+                                             {/* <input
                                                 type="text"
                                                 className="form-control border-radius-10 text-primary"
                                                 placeholder="Optional"
                                                 name="offerValidity"
                                                 value={administrative.offerValidity}
                                                 onChange={handleAdministrativreChange}
-                                             />
+                                             /> */}
                                           </div>
                                        </div>
                                     </div>
@@ -6892,7 +6945,7 @@ export function SolutionTemplateResult(props) {
                                     <div className="col-md-4 col-sm-4">
                                        <div className="form-group">
                                           <p className="font-size-12 font-weight-500 mb-2">
-                                             SALSE OFFICE/BRANCH
+                                             SALES OFFICE / BRANCH
                                           </p>
                                           <h6 className="font-weight-500 text-primary font-size-17">
                                              {(
@@ -6900,7 +6953,7 @@ export function SolutionTemplateResult(props) {
                                                    administrative.salesOffice == "string" ||
                                                    administrative.salesOffice == undefined ||
                                                    administrative.salesOffice == null
-                                                   ? "NA" : administrative.salesOffice)}
+                                                   ? "NA" : administrative.salesOffice?.value)}
                                           </h6>
                                        </div>
                                     </div>
@@ -6915,7 +6968,7 @@ export function SolutionTemplateResult(props) {
                                                    administrative.offerValidity == "string" ||
                                                    administrative.offerValidity == undefined ||
                                                    administrative.offerValidity == null
-                                                   ? "NA" : administrative.offerValidity)}
+                                                   ? "NA" : administrative.offerValidity?.label)}
                                           </h6>
                                        </div>
                                     </div>
@@ -7020,7 +7073,7 @@ export function SolutionTemplateResult(props) {
                                                 className="text-light-dark font-size-14 font-weight-500"
                                                 htmlFor="exampleInputEmail1"
                                              >
-                                                PRICE{" "}
+                                                {/* PRICE{" "} */}NET PRICE{" "}
                                              </label>
                                              <input
                                                 type="email"
@@ -7134,7 +7187,8 @@ export function SolutionTemplateResult(props) {
                                                    className="select-input text-primary"
                                                    defaultValue={selectedOption}
                                                    onChange={setSelectedOption}
-                                                   options={options}
+                                                   options={priceHeadTypeKeyValue}
+                                                   // options={options}
                                                    placeholder="placeholder "
                                                 />
                                                 <input
@@ -7229,7 +7283,7 @@ export function SolutionTemplateResult(props) {
                                        <div className="col-md-4 col-sm-4">
                                           <div className="form-group">
                                              <p className="font-size-12 font-weight-500 mb-2">
-                                                PRICE{" "}
+                                                {/* PRICE{" "} */}NET PRICE{" "}
                                              </p>
                                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(
