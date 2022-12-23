@@ -1176,7 +1176,54 @@ export const Analytics = () => {
    }
    const handleInputSearch = (e, id) => {
       let tempArray = [...querySearchSelector]
-      let obj = tempArray[id]
+      let obj = tempArray[id];
+      var SearchResArr = [];
+      solutionPortfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+         .then((res) => {
+            if (tempArray[id].selectFamily.value === "make") {
+               for (let i = 0; i < res.length; i++) {
+                  for (let j = 0; j < res[i].customCoverages.length; j++) {
+                     SearchResArr.push(res[i].customCoverages[j].make)
+                  }
+               }
+
+            } else if (tempArray[id].selectFamily.value == "family") {
+               for (let i = 0; i < res.length; i++) {
+                  for (let j = 0; j < res[i].customCoverages.length; j++) {
+                     SearchResArr.push(res[i].customCoverages[j].family)
+                  }
+               }
+            } else if (tempArray[id].selectFamily.value == "modelNo") {
+               for (let i = 0; i < res.length; i++) {
+                  for (let j = 0; j < res[i].customCoverages.length; j++) {
+                     SearchResArr.push(res[i].customCoverages[j].modelNo)
+                  }
+               }
+            } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+               for (let i = 0; i < res.length; i++) {
+                  for (let j = 0; j < res[i].customCoverages.length; j++) {
+                     SearchResArr.push(res[i].customCoverages[j].serialNumberPrefix)
+                  }
+               }
+            } else if (tempArray[id].selectFamily.value == "name") {
+               for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].name)
+               }
+            } else if (tempArray[id].selectFamily.value == "description") {
+               for (let i = 0; i < res.length; i++) {
+                  SearchResArr.push(res[i].description)
+               }
+            }
+            obj.selectOptions = SearchResArr;
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+            console.log("search Query Result :", res)
+
+         }).catch((err) => {
+            console.log("error in getSearchQueryCoverage", err)
+         })
+
       // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
       //    obj.selectOptions = res
       //    tempArray[id] = obj
@@ -1185,8 +1232,10 @@ export const Analytics = () => {
       // }).catch((err) => {
       //    console.log("err in api call", err)
       // })
+      // setQuerySearchSelector([...tempArray]);
+      // obj.inputSearch = e.target.value
+      obj.inputSearch = e.target.value;
       setQuerySearchSelector([...tempArray]);
-      obj.inputSearch = e.target.value
 
    }
    const handleQuerySearchClick = () => {
@@ -1257,6 +1306,8 @@ export const Analytics = () => {
       console.log("handleFamily e:", e)
       let obj = tempArray[id]
       obj.selectFamily = e
+      obj.inputSearch = ""
+      obj.selectOptions = []
       tempArray[id] = obj
       setQuerySearchSelector([...tempArray])
    }
@@ -3241,8 +3292,8 @@ export const Analytics = () => {
                                                       options={[
                                                          { label: "Make", value: "make", id: i },
                                                          { label: "Family", value: "family", id: i },
-                                                         { label: "Model", value: "model", id: i },
-                                                         { label: "Prefix", value: "prefix", id: i },
+                                                         { label: "Model", value: "modelNo", id: i },
+                                                         { label: "Prefix", value: "serialNumberPrefix", id: i },
                                                          { label: "Name", value: "name", id: i },
                                                          { label: "Description", value: "description", id: i },
                                                       ]}
@@ -3264,7 +3315,13 @@ export const Analytics = () => {
 
                                                       <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`} id="style">
                                                          {obj.selectOptions.map((currentItem, j) => (
-                                                            <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                                            <li
+                                                               className="list-group-item"
+                                                               key={j}
+                                                               onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
+                                                            >
+                                                               {currentItem}
+                                                            </li>
                                                          ))}
                                                       </ul>
 
@@ -4082,17 +4139,12 @@ export const Analytics = () => {
                            <SolutionQuerySearchComp
                               compoFlag="solutionTempItemSearch"
                               options={[
-                                 // { label: "Make", value: "itemHeaderMake" },
-                                 // { label: "Family", value: "itemHeaderFamily" },
                                  { label: "Make", value: "make" },
                                  { label: "Family", value: "family" },
                                  { label: "Model", value: "modelNo" },
                                  { label: "Prefix", value: "serialNumberPrefix" },
-                                 // { label: "Portfolio Id", value: "customPortfolioId" },
                                  { label: "Name", value: "name" },
                                  { label: "Description", value: "description" },
-                                 // { label: "Model", value: "model" },
-                                 // { label: "Prefix", value: "prefix" },
                               ]}
                               setSolutionTempMasterData={setSolutionTempMasterData}
                               setSelectedSolutionTempMasterData={setSelectedSolutionTempMasterData}

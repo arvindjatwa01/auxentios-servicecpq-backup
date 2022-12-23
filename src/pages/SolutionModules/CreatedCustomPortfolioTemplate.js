@@ -68,6 +68,8 @@ import { useAppSelector } from "../../app/hooks";
 import AddPortfolioItem from "../PortfolioAndBundle/AddPortfolioItem";
 
 import AddCustomPortfolioItem from "./AddCustomPortfolioItem";
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
+
 
 import { MuiMenuComponent } from "../Operational/index";
 import { useHistory } from 'react-router-dom';
@@ -122,6 +124,7 @@ import {
     deleteCustomItem,
     updateCustomItemData,
     getSolutionPortfolioById,
+    getPortfolioPriceById,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -223,7 +226,7 @@ export function CreatedCustomPortfolioTemplate(props) {
     const [headerLoading, setHeaderLoading] = useState(false);
 
     const [selectedOption, setSelectedOption] = useState(null);
-    const [value, setValue] = React.useState('1');
+    const [value, setValue] = React.useState('general');
 
     const [value2, setValue2] = useState({
         value: "DRAFT",
@@ -277,9 +280,16 @@ export function CreatedCustomPortfolioTemplate(props) {
     })
     const [priceTypeKeyValue1, setPriceTypeKeyValue1] = useState([]);
     const [priceAdditionalHeadKeyValue1, setPriceAdditionalHeadKeyValue1] = useState([]);
-    const [priceEscalationHeadKeyValue1, setPriceEscalationKeyValue1] = useState([]);
+    const [priceEscalationHeadKeyValue1, setPriceEscalationHeadKeyValue1] = useState([]);
     const [escalationPriceValue, setEscalationPriceValue] = useState()
     const [additionalPriceValue, setAdditionalPriceValue] = useState()
+
+    const [pricePriceData, setPricePriceData] = useState("");
+    const [priceCalculatedPrice, setPriceCalculatedPrice] = useState("");
+    const [additionalPriceDataId, setAdditionalPriceDataId] = useState("");
+    const [escalationPriceDataId, setEscalationPriceDataId] = useState("");
+    const [portfolioPriceDataIdForExiting, setPortfolioPriceDataIdForExiting] = useState("");
+
 
     const [querySearchModelResult, setQuerySearchModelResult] = useState([])
     const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
@@ -325,8 +335,9 @@ export function CreatedCustomPortfolioTemplate(props) {
     const [needOnlyParts, setNeedOnlyParts] = useState(false)
 
     // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
-    const [selectedCustomItems, setSelectedCustomItems] = useState([]);
-    const [createdCustomPortfolioItems, setCreatedCustomPortfolioItems] = useState([]);
+    const [selectedSolutionCustomItems, setSelectedSolutionCustomItems] = useState([]);
+    const [selectedSolutionCustomCoverages, setSelectedSolutionCustomCoverages] = useState([]);
+    const [selectedSolutionItems, setSelectedSolutionItems] = useState([]);
     const [createCopyPortfolioCoverage, setCreateCopyPortfolioCoverage] = useState([]);
 
     const [coverageData, setCoverageData] = useState({
@@ -618,7 +629,7 @@ export function CreatedCustomPortfolioTemplate(props) {
         );
 
         if (updateCustomCoverageData.status === 200) {
-            toast("😎 Updated Successfully", {
+            toast("😎 Coverage data updated successfully", {
                 position: "top-right",
                 autoClose: 3000,
                 hideProgressBar: false,
@@ -923,7 +934,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                 customCoverages: generalComponentData.coverages
                     ? generalComponentData.coverages
                     : [],
-                customItems: selectedCustomItems,
+                customItems: selectedSolutionCustomItems,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -1224,7 +1235,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                     customCoverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
-                    customItems: selectedCustomItems,
+                    customItems: selectedSolutionCustomItems,
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
                     strategyTask: stratgyTaskUsageKeyValue.value,
@@ -1241,7 +1252,6 @@ export function CreatedCustomPortfolioTemplate(props) {
                     if (updatePortfolioRes.status != 200) {
                         throw `${updatePortfolioRes.status}:Something went wrong`;
                     }
-                    console.log("portfolio updated:", updatePortfolioRes);
                 } else {
                     throw `Please Create portfolio`;
                 }
@@ -1421,8 +1431,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
-                    offerValidity: administrative.offerValidity
+                    salesOffice: administrative.salesOffice?.value,
+                    offerValidity: administrative.offerValidity?.value
                 },
                 customItemBodyModel: {
                     customItemBodyId: parseInt(addPortFolioItem.id),
@@ -1741,7 +1751,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                 //     // responseTime: stratgyResponseTimeKeyValue.value,
                 //     // productHierarchy: stratgyHierarchyKeyValue.value,
                 //     // geographic: stratgyGeographicKeyValue.value,
-                //     customItems: selectedCustomItems,
+                //     customItems: selectedSolutionCustomItems,
 
                 //     template: flagTemplate,
                 //     visibleInCommerce: flagCommerce,
@@ -1758,8 +1768,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                     template: flagTemplate,
                     visibleInCommerce: flagCommerce,
 
-                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                    validTo: validityData.toDate.toISOString().substring(0, 10),
+                    validFrom: validityData.fromDate,
+                    validTo: validityData.toDate,
 
                     responseTime: stratgyResponseTimeKeyValue?.value ?
                         stratgyResponseTimeKeyValue?.value : "PROACTIVE",
@@ -1777,13 +1787,15 @@ export function CreatedCustomPortfolioTemplate(props) {
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
-                    offerValidity: administrative.offerValidity,
+                    salesOffice: administrative.salesOffice?.value,
+                    offerValidity: administrative.offerValidity?.value,
 
                     supportLevel: value3.value,
                     status: value2.value,
 
-                    customItems: selectedCustomItems,
+                    customItems: selectedSolutionCustomItems,
+                    // customCoverages: [],
+                    customCoverages: selectedSolutionCustomCoverages,
 
                     machineType: "NEW",
                     searchTerm: "",
@@ -1804,14 +1816,13 @@ export function CreatedCustomPortfolioTemplate(props) {
                     endUsage: 0,
                     unit: "HOURS",
                     additionals: "",
-                    customCoverages: [],
 
-                    // portfolioPrice: {},
-                    // additionalPrice: {},
-                    // escalationPrice: {},
-                    portfolioPrice: portfolioPriceDataId,
-                    additionalPrice: portfolioAdditionalPriceDataId,
-                    escalationPrice: portfolioEscalationPriceDataId,
+                    portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                        ? portfolioPriceDataId : null,
+                    additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                        ? portfolioAdditionalPriceDataId : null,
+                    escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                        ? portfolioEscalationPriceDataId : null,
                 }
 
                 setGeneralComponentData({
@@ -1833,7 +1844,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                 )
 
                 if (portfolioRes.status === 200) {
-                    toast("👏 Portfolio Update Successfully", {
+                    toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -1842,7 +1853,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                         draggable: true,
                         progress: undefined,
                     });
-                    setValue("2");
+                    setValue("validity");
                     setGeneralComponentData({
                         ...generalComponentData,
                         portfolioId: portfolioRes.data.customPortfolioId,
@@ -1874,7 +1885,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                 } else {
                     throw "Please fill date fields";
                 }
-                setValue("3");
+                setValue("strategy");
                 // if (validityData.fromDate && validityData.toDate) {
                 //     reqData = {
                 //         validFrom: validityData.fromDate.toISOString().substring(0, 10),
@@ -1917,13 +1928,13 @@ export function CreatedCustomPortfolioTemplate(props) {
                         ? generalComponentData.customerSegment.value
                         : "Customer Segment",
 
-                    // status: generalComponentData.status
-                    //     ? generalComponentData.status
-                    //     : "EMPTY",
+
 
                     supportLevel: value3.value,
                     status: value2.value,
-                    customItems: selectedCustomItems,
+
+                    customItems: selectedSolutionCustomItems,
+                    customCoverages: selectedSolutionCustomCoverages,
 
                     strategyTask: generalComponentData.strategyTask
                         ? generalComponentData.strategyTask
@@ -1956,25 +1967,18 @@ export function CreatedCustomPortfolioTemplate(props) {
                         : "EMPTY",
                     machineType: machineTypeKeyValue.value,
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    // supportLevel: generalComponentData.supportLevel
-                    //     ? generalComponentData.supportLevel
-                    //     : "EMPTY",
-                    // customItems: [],
-                    customCoverages: [],
+
                     customerGroup: generalComponentData.customerGroup
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    // supportLevel: "PREMIUM",
-                    supportLevel: value3.value,
 
-                    // portfolioPrice: {},
-                    // additionalPrice: {},
-                    // escalationPrice: {},
-
-                    portfolioPrice: portfolioPriceDataId,
-                    additionalPrice: portfolioAdditionalPriceDataId,
-                    escalationPrice: portfolioEscalationPriceDataId,
+                    portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                        ? portfolioPriceDataId : null,
+                    additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                        ? portfolioAdditionalPriceDataId : null,
+                    escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                        ? portfolioEscalationPriceDataId : null,
 
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
@@ -1987,32 +1991,31 @@ export function CreatedCustomPortfolioTemplate(props) {
                     responseTime: stratgyResponseTimeKeyValue.value,
                     productHierarchy: stratgyHierarchyKeyValue.value,
                     geographic: stratgyGeographicKeyValue.value,
-                    customItems: selectedCustomItems,
+                    customItems: selectedSolutionCustomItems,
                     numberOfEvents: 0,
                     rating: "",
                     startUsage: "",
                     endUsage: "",
                     unit: "HOURS",
                     additionals: "",
+
                     preparedBy: administrative.preparedBy,
                     approvedBy: administrative.approvedBy,
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
-                    offerValidity: administrative.offerValidity,
+                    salesOffice: administrative.salesOffice?.value,
+                    offerValidity: administrative.offerValidity?.value,
                     template: flagTemplate,
                     visibleInCommerce: flagCommerce,
                 };
-                // console.log(" res is : ", res);
-                // console.log("obj", obj);
 
                 const strategyRes = await updateCustomPortfolio(
                     generalComponentData.portfolioId,
                     obj
                 );
                 if (strategyRes.status === 200) {
-                    toast("👏 Portfolio updated", {
+                    toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -2021,169 +2024,11 @@ export function CreatedCustomPortfolioTemplate(props) {
                         draggable: true,
                         progress: undefined,
                     });
-                    setValue("administrative");
-                    // setValue("4");
+                    setValue("price");
                     console.log("strategy updating", strategyRes.data);
                 } else {
                     throw `${strategyRes.status}:error in update portfolio`;
                 };
-            } else if (e.target.id == "administrative") {
-                const validator = new Validator();
-
-                if ((!validator.emailValidation(administrative.preparedBy) ||
-                    administrative.preparedBy == "" ||
-                    administrative.preparedBy == undefined) ||
-                    (administrative.approvedBy != "" &&
-                        administrative.approvedBy != undefined &&
-                        !validator.emailValidation(administrative.approvedBy)) ||
-                    (administrative.revisedBy != "" &&
-                        administrative.revisedBy != undefined &&
-                        !validator.emailValidation(administrative.revisedBy)) ||
-                    (administrative.salesOffice == "" ||
-                        administrative.salesOffice == undefined)
-                    // || (administrative.offerValidity == "" ||
-                    // administrative.offerValidity == undefined)
-                ) {
-                    throw "Please fill mandatory fields with valid data";
-                }
-                setGeneralComponentData({
-                    ...generalComponentData,
-                    preparedBy: administrative.preparedBy,
-                    approvedBy: administrative.approvedBy,
-                    preparedOn: administrative.preparedOn,
-                    revisedBy: administrative.revisedBy,
-                    revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
-                    offerValidity: administrative.offerValidity,
-                });
-
-                const { portfolioId, ...res } = generalComponentData;
-
-                let Administryobj = {
-                    ...res,
-                    visibleInCommerce: true,
-                    customerId: 0,
-                    lubricant: true,
-                    customerSegment: generalComponentData.customerSegment.value
-                        ? generalComponentData.customerSegment.value
-                        : "EMPTY",
-                    // machineType: generalComponentData.machineType
-                    //     ? generalComponentData.machineType
-                    //     : "EMPTY",
-
-
-                    // status: generalComponentData.status
-                    //     ? generalComponentData.status
-                    //     : "EMPTY",
-                    supportLevel: value3.value,
-                    status: value2.value,
-
-
-                    strategyTask: generalComponentData.strategyTask
-                        ? generalComponentData.strategyTask
-                        : "EMPTY",
-                    taskType: generalComponentData.taskType
-                        ? generalComponentData.taskType
-                        : "EMPTY",
-                    usageCategory: generalComponentData.usageCategory
-                        ? generalComponentData.usageCategory
-                        : "EMPTY",
-                    productHierarchy: generalComponentData.productHierarchy
-                        ? generalComponentData.productHierarchy
-                        : "EMPTY",
-                    geographic: generalComponentData.geographic
-                        ? generalComponentData.geographic
-                        : "EMPTY",
-                    availability: generalComponentData.availability
-                        ? generalComponentData.availability
-                        : "EMPTY",
-                    responseTime: generalComponentData.responseTime
-                        ? generalComponentData.responseTime
-                        : "EMPTY",
-                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                    application: generalComponentData.application
-                        ? generalComponentData.application
-                        : "EMPTY",
-                    contractOrSupport: generalComponentData.contractOrSupport
-                        ? generalComponentData.contractOrSupport
-                        : "EMPTY",
-                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    //     ? generalComponentData.lifeStageOfMachine
-                    //     : "EMPTY",
-                    machineType: machineTypeKeyValue.value,
-                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    // supportLevel: generalComponentData.supportLevel
-                    //     ? generalComponentData.supportLevel
-                    //     : "EMPTY",
-                    customItems: selectedCustomItems,
-                    customCoverages: [],
-                    customerGroup: generalComponentData.customerGroup
-                        ? generalComponentData.customerGroup
-                        : "EMPTY",
-                    searchTerm: "EMPTY",
-                    // supportLevel: "PREMIUM",
-                    // supportLevel: value3.value,
-
-
-                    // portfolioPrice: {},
-                    // additionalPrice: {},
-                    // escalationPrice: {},
-
-                    portfolioPrice: portfolioPriceDataId,
-                    additionalPrice: portfolioAdditionalPriceDataId,
-                    escalationPrice: portfolioEscalationPriceDataId,
-
-                    solutionType: solutionTypeListKeyValue.value ?
-                        solutionTypeListKeyValue.value : "EMPTY",
-                    solutionLevel: solutionLevelListKeyValue.value ?
-                        solutionLevelListKeyValue.value : "EMPTY",
-                    usageCategory: categoryUsageKeyValue1.value,
-                    taskType: stratgyTaskTypeKeyValue.value,
-                    strategyTask: stratgyTaskUsageKeyValue.value,
-                    responseTime: stratgyResponseTimeKeyValue.value,
-                    productHierarchy: stratgyHierarchyKeyValue.value,
-                    geographic: stratgyGeographicKeyValue.value,
-                    numberOfEvents: 0,
-                    rating: "",
-                    startUsage: "",
-                    endUsage: "",
-                    unit: "HOURS",
-                    additionals: "",
-                    preparedBy: administrative.preparedBy,
-                    approvedBy: administrative.approvedBy,
-                    preparedOn: administrative.preparedOn,
-                    revisedBy: administrative.revisedBy,
-                    revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
-                    offerValidity: administrative.offerValidity,
-                    template: flagTemplate,
-                    visibleInCommerce: flagCommerce,
-
-                };
-
-                const administryRes = await updateCustomPortfolio(
-                    generalComponentData.portfolioId,
-                    Administryobj
-                );
-                if (administryRes.status === 200) {
-                    toast("👏 Portfolio updated", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                    });
-                    // setValue("administrative");
-                    setValue("4");
-                    console.log("administryRes updating", administryRes.data);
-                } else {
-                    throw `${administryRes.status}:error in update portfolio`;
-                };
-
-                // setValue("4");
-
             } else if (e.target.id == "price") {
 
                 if ((priceMethodKeyValue1.length === 0 ||
@@ -2240,7 +2085,6 @@ export function CreatedCustomPortfolioTemplate(props) {
 
                 const escalationPrice = await escalationPriceCreation(priceEscalation);
 
-
                 const additionalPrice = await additionalPriceCreation(priceAdditional);
 
                 const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
@@ -2254,6 +2098,11 @@ export function CreatedCustomPortfolioTemplate(props) {
                 setPortfolioPriceDataId({
                     portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
                 })
+
+                setPortfolioPriceDataIdForExiting(portfolioPriceAPIData.data.portfolioPriceId);
+                setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
+                setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
+
                 const { portfolioId, ...res } = generalComponentData;
 
                 let priceobjData = {
@@ -2264,9 +2113,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                     customerSegment: generalComponentData.customerSegment.value
                         ? generalComponentData.customerSegment.value
                         : "EMPTY",
-                    // machineType: generalComponentData.machineType
-                    //     ? generalComponentData.machineType
-                    //     : "EMPTY",
+
                     machineType: machineTypeKeyValue.value,
                     status: generalComponentData.status
                         ? generalComponentData.status
@@ -2299,25 +2146,27 @@ export function CreatedCustomPortfolioTemplate(props) {
                     contractOrSupport: generalComponentData.contractOrSupport
                         ? generalComponentData.contractOrSupport
                         : "EMPTY",
-                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    //     ? generalComponentData.lifeStageOfMachine
-                    //     : "EMPTY",
+
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                     supportLevel: generalComponentData.supportLevel
                         ? generalComponentData.supportLevel
                         : "EMPTY",
-                    items: [],
-                    customCoverages: [],
+
+                    // customCoverages: [],
                     customerGroup: generalComponentData.customerGroup
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    // supportLevel: "PREMIUM",
+
+                    status: value2.value,
                     supportLevel: value3.value,
+
+
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
                     solutionLevel: solutionLevelListKeyValue.value ?
                         solutionLevelListKeyValue.value : "EMPTY",
+
                     portfolioPrice: {
                         portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
                     },
@@ -2334,15 +2183,18 @@ export function CreatedCustomPortfolioTemplate(props) {
                     responseTime: stratgyResponseTimeKeyValue.value,
                     productHierarchy: stratgyHierarchyKeyValue.value,
                     geographic: stratgyGeographicKeyValue.value,
-                    customItems: selectedCustomItems,
+
+
+                    customItems: selectedSolutionCustomItems,
+                    customCoverages: selectedSolutionCustomCoverages,
 
                     preparedBy: administrative.preparedBy,
                     approvedBy: administrative.approvedBy,
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
-                    offerValidity: administrative.offerValidity,
+                    salesOffice: administrative.salesOffice?.value,
+                    offerValidity: administrative.offerValidity?.value,
                     template: flagTemplate,
                     visibleInCommerce: flagCommerce,
                 };
@@ -2352,7 +2204,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                     priceobjData
                 )
                 if (priceObjRes.status === 200) {
-                    toast("👏 Portfolio updated", {
+                    toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -2362,17 +2214,19 @@ export function CreatedCustomPortfolioTemplate(props) {
                         progress: undefined,
                     });
                     // setValue("administrative");
-                    setValue("5");
+                    setValue("priceAgreement");
                     // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
                     // console.log("administryRes updating", administryRes.data);
                 } else {
                     throw `${priceObjRes.status}:error in update portfolio`;
                 };
+            } else if (e.target.id == "priceAgreement") {
+                setValue("coverage");
             } else if (e.target.id == "coverage") {
 
 
                 let cvgIds = [];
-                setValue("6");
+                setValue("administrative");
                 for (let i = 0; i < selectedMasterData.length; i++) {
                     let reqObj = {
                         customCoverageId: 0,
@@ -2400,6 +2254,9 @@ export function CreatedCustomPortfolioTemplate(props) {
                     ...generalComponentData,
                     customCoverages: cvgIds,
                 });
+
+                setSelectedSolutionCustomCoverages(cvgIds);
+
                 const { portfolioId, ...res } = generalComponentData;
                 let obj = {
                     ...res,
@@ -2412,12 +2269,7 @@ export function CreatedCustomPortfolioTemplate(props) {
 
                     supportLevel: value3.value,
                     status: value2.value,
-                    // machineType: generalComponentData.machineType
-                    //     ? generalComponentData.machineType
-                    //     : "EMPTY",
-                    // status: generalComponentData.status
-                    //     ? generalComponentData.status
-                    //     : "EMPTY",
+
                     strategyTask: generalComponentData.strategyTask
                         ? generalComponentData.strategyTask
                         : "EMPTY",
@@ -2446,32 +2298,31 @@ export function CreatedCustomPortfolioTemplate(props) {
                     contractOrSupport: generalComponentData.contractOrSupport
                         ? generalComponentData.contractOrSupport
                         : "EMPTY",
-                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    //     ? generalComponentData.lifeStageOfMachine
-                    //     : "EMPTY",
+
                     machineType: machineTypeKeyValue.value,
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    // supportLevel: generalComponentData.supportLevel
-                    //     ? generalComponentData.supportLevel
-                    //     : "EMPTY",
+
                     customerGroup: generalComponentData.customerGroup
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    // supportLevel: "PREMIUM",
-                    // supportLevel: value3.value,
+
 
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
                     solutionLevel: solutionLevelListKeyValue.value ?
                         solutionLevelListKeyValue.value : "EMPTY",
 
-                    portfolioPrice: portfolioPriceDataId,
-                    additionalPrice: portfolioAdditionalPriceDataId,
-                    escalationPrice: portfolioEscalationPriceDataId,
+                    portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                        ? portfolioPriceDataId : null,
+                    additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                        ? portfolioAdditionalPriceDataId : null,
+                    escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                        ? portfolioEscalationPriceDataId : null,
 
-                    customItems: selectedCustomItems,
+                    customItems: selectedSolutionCustomItems,
                     customCoverages: cvgIds,
+
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
                     strategyTask: stratgyTaskUsageKeyValue.value,
@@ -2484,8 +2335,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
-                    offerValidity: administrative.offerValidity,
+                    salesOffice: administrative.salesOffice?.value,
+                    offerValidity: administrative.offerValidity?.value,
                     template: flagTemplate,
                     visibleInCommerce: flagCommerce,
                 };
@@ -2495,7 +2346,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                         obj
                     );
                     if (updatePortfolioRes.status === 200) {
-                        toast("👏 Portfolio updated", {
+                        toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
                             position: "top-right",
                             autoClose: 5000,
                             hideProgressBar: false,
@@ -2504,14 +2355,161 @@ export function CreatedCustomPortfolioTemplate(props) {
                             draggable: true,
                             progress: undefined,
                         });
-                        setValue("6");
+                        setValue("administrative");
                     } else {
                         throw `${updatePortfolioRes.status}:unable to update`;
                     }
                 }
+            } else if (e.target.id == "administrative") {
+                const validator = new Validator();
+
+                // if ((!validator.emailValidation(administrative.preparedBy) ||
+                //     administrative.preparedBy == "" ||
+                //     administrative.preparedBy == undefined) ||
+                //     (administrative.approvedBy != "" &&
+                //         administrative.approvedBy != undefined &&
+                //         !validator.emailValidation(administrative.approvedBy)) ||
+                //     (administrative.revisedBy != "" &&
+                //         administrative.revisedBy != undefined &&
+                //         !validator.emailValidation(administrative.revisedBy)) ||
+                //     (administrative.salesOffice?.value == "" ||
+                //         administrative.salesOffice?.value == undefined)
+                // )
+                if ((
+                    administrative.preparedBy == "" ||
+                    administrative.preparedBy == undefined) ||
+                    (administrative.salesOffice == "" ||
+                        administrative.salesOffice == undefined)
+                ) {
+                    throw "Please fill mandatory fields with valid data";
+                }
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                });
+
+                const { portfolioId, ...res } = generalComponentData;
+
+                let Administryobj = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment.value
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+
+                    supportLevel: value3.value,
+                    status: value2.value,
+
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    machineType: machineTypeKeyValue.value,
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+
+                    customItems: selectedSolutionCustomItems,
+                    customCoverages: selectedSolutionCustomCoverages,
+                    // customCoverages: [],
+
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+
+
+                    portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                        ? portfolioPriceDataId : null,
+                    additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                        ? portfolioAdditionalPriceDataId : null,
+                    escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                        ? portfolioEscalationPriceDataId : null,
+
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    numberOfEvents: 0,
+                    rating: "",
+                    startUsage: "",
+                    endUsage: "",
+                    unit: "HOURS",
+                    additionals: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice?.value,
+                    offerValidity: administrative.offerValidity?.value,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+
+                };
+
+                const administryRes = await updateCustomPortfolio(
+                    generalComponentData.portfolioId,
+                    Administryobj
+                );
+                if (administryRes.status === 200) {
+                    toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    // setValue("administrative");
+                    // setValue("4");
+                    console.log("administryRes updating", administryRes.data);
+                } else {
+                    throw `${administryRes.status}:error in update portfolio`;
+                };
+
+                // setValue("4");
+
             }
         } catch (error) {
-            console.log("somehing went wrong:", error);
+            console.log("something went wrong:", error);
             toast("😐" + error, {
                 position: "top-right",
                 autoClose: 3000,
@@ -2954,10 +2952,22 @@ export function CreatedCustomPortfolioTemplate(props) {
         getPortfolioDetails(portfolioId);
         initFetch();
         dispatch(taskActions.fetchTaskList());
-
-
-
     }, [dispatch]);
+
+    useEffect(() => {
+        if (portfolioPriceDataIdForExiting !== "") {
+            fetchPortfolioPriceDataById(portfolioPriceDataIdForExiting);
+        }
+    }, [value])
+
+    const fetchPortfolioPriceDataById = async (id) => {
+
+        // alert(id)
+        const portfolioPriceDataFetch = await getPortfolioPriceById(id);
+        setPricePriceData(portfolioPriceDataFetch.data.price)
+        setPriceCalculatedPrice(portfolioPriceDataFetch.data.calculatedPrice);
+
+    };
 
 
     localStorage.setItem("distroyAble", true);
@@ -2993,8 +3003,12 @@ export function CreatedCustomPortfolioTemplate(props) {
 
     const populateHeader = (result) => {
         console.log("result ----", result);
+
+        // Set Portfolio Id for Created Copied Portfolio  
+        setPortfolioId(result.customPortfolioId);
+
+        // For set Status state 
         var statusVal, statusLabel;
-        var supportLevelVal, supportLevelLabel;
         if (result.status == "" || result.status == "EMPTY" || result.status == null) {
             statusVal = "DRAFT";
             statusLabel = "Draft";
@@ -3002,7 +3016,10 @@ export function CreatedCustomPortfolioTemplate(props) {
             statusVal = result.status;
             statusLabel = result.status;
         }
+        setValue2({ label: statusLabel, value: statusVal })
 
+        // For set SupportLevel state
+        var supportLevelVal, supportLevelLabel;
         if (result.supportLevel == "" || result.supportLevel == "EMPTY" || result.supportLevel == null) {
             supportLevelVal = "STANDARD";
             supportLevelLabel = "Standard (Bronze)";
@@ -3010,24 +3027,13 @@ export function CreatedCustomPortfolioTemplate(props) {
             supportLevelVal = result.supportLevel;
             supportLevelLabel = result.supportLevel;
         }
-
-        setValue2({ label: statusLabel, value: statusVal })
         setValue3({ label: supportLevelLabel, value: supportLevelVal })
 
-        setPortfolioId(result.customPortfolioId);
-
-        // setViewOnlyTab({
-        //     generalViewOnly: true,
-        //     validityViewOnly: true,
-        //     strategyViewOnly: true,
-        //     administrativeViewOnly: true,
-        //     priceViewOnly: true,
-        //     priceAgreementViewOnly: true,
-        //     coverageViewOnly: true,
-        // });
-
         let itemsArrData = [];
+        let customItemArr = [];
+        let createdCustomCoverages = [];
 
+        // Set Data By Item Relation Data Data
         for (let b = 0; b < result.itemRelations.length; b++) {
             let expendedArrObj = [];
             let obj = result.customItems.find(obj => obj.customItemId == result.itemRelations[b].portfolioItemId);
@@ -3054,21 +3060,15 @@ export function CreatedCustomPortfolioTemplate(props) {
             obj.associatedServiceOrBundle = expendedArrObj;
             itemsArrData.push(obj);
         }
+        setSelectedSolutionItems(itemsArrData);
 
-        // console.log("item arr is 2333 : ", itemsArrData)
+        // for Update  Custom-Item in Portfolio Item Data BY Id 
+        for (let i = 0; i < result.customItems.length; i++) {
+            customItemArr.push({ customItemId: result.customItems[i].customItemId })
+        }
+        setSelectedSolutionCustomItems(customItemArr)
 
-        setCreatedCustomPortfolioItems(itemsArrData);
-
-
-        // setSelectedMasterData(result.coverages);
-
-        let itemIdData = [];
-        // let priceDataId = [];
-        // let copiedCoverage = [];
-        const customItemsId = result.customItems.map((data, i) => {
-            itemIdData.push({ "customItemId": parseInt(data.customItemId) })
-        })
-        setSelectedCustomItems(itemIdData)
+        setSelectedMasterData(result.customCoverages)
 
         // setBundleItems(itemsArrData)
 
@@ -3079,7 +3079,7 @@ export function CreatedCustomPortfolioTemplate(props) {
         setSeverity(snackSeverity);
         setOpenSnack(true);
     };
-    // console.log("selected Custom Items Data are  : ", selectedCustomItems)
+    // console.log("selected Custom Items Data are  : ", selectedSolutionCustomItems)
 
     const categoryList = useAppSelector(
         selectStrategyTaskOption(selectCategoryList)
@@ -3163,6 +3163,20 @@ export function CreatedCustomPortfolioTemplate(props) {
         { value: "strawberry", label: "1" },
         { value: "vanilla", label: "2" },
         { value: "Construction", label: "3" },
+    ];
+
+    const validityOptions = [
+        { value: "15", label: "15 days" },
+        { value: "30", label: "1 month" },
+        { value: "45", label: "45 days" },
+        { value: "60", label: "2 months" },
+    ];
+
+    const salesOfficeOptions = [
+        { value: "Location1", label: "Location1" },
+        { value: "Location2", label: "Location2" },
+        { value: "Location3", label: "Location3" },
+        { value: "Location4", label: "Location4" },
     ];
 
     const [versionOption, setVersionOption] = useState([]);
@@ -4973,16 +4987,16 @@ export function CreatedCustomPortfolioTemplate(props) {
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
-                                        <Tab label="General" value="1" />
-                                        <Tab label="Validity " value="2" />
-                                        <Tab label="Strategy" value="3" />
+                                        <Tab label="General" value={"general"} />
+                                        <Tab label="Validity " value={"validity"} />
+                                        <Tab label="Strategy" value={"strategy"} />
+                                        <Tab label="Price" value={"price"} />
+                                        <Tab label="Price Agreement" value={"priceAgreement"} />
+                                        <Tab label="Coverage" value={"coverage"} />
                                         <Tab label="Administrative" value={"administrative"} />
-                                        <Tab label="Price" value="4" />
-                                        <Tab label="Price Agreement" value="5" />
-                                        <Tab label="Coverage" value="6" />
                                     </TabList>
                                 </Box>
-                                <TabPanel value="1">
+                                <TabPanel value={"general"}>
                                     <div className="row mt-4 input-fields">
                                         {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
@@ -5167,7 +5181,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         <></>
                                     )}
                                 </TabPanel>
-                                <TabPanel value="2">
+
+                                <TabPanel value={"validity"}>
 
                                     <div className="row mt-4 input-fields">
                                         <div className="col-md-12">
@@ -5358,7 +5373,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </button>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="3">
+
+                                <TabPanel value={"strategy"}>
                                     <div className="row input-fields">
                                         {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
@@ -5617,207 +5633,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </button>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value={"administrative"}>
-                                    <div className="row input-fields">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    PREPARED BY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    name="preparedBy"
-                                                    placeholder="Required (ex-abc@gmail.com)"
-                                                    value={administrative.preparedBy}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    APPROVED BY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    placeholder="Optional (ex-abc@gmail.com)"
-                                                    name="approvedBy"
-                                                    value={administrative.approvedBy}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            {/* <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    PREPARED ON
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="preparedOn"
-                                                    value={administrative.preparedOn}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div> */}
-                                            <div className="form-group">
-                                                <div className=" date-box w-100">
-                                                    <label
-                                                        className="text-light-dark font-size-14 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        <span className=" mr-2">PREPARED ON</span>
-                                                    </label>
 
-                                                    <div className="form-group w-100">
-                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                            <DatePicker
-                                                                variant="inline"
-                                                                format="dd/MM/yyyy"
-                                                                className="form-controldate border-radius-10"
-                                                                label=""
-                                                                name="preparedOn"
-                                                                value={administrative.preparedOn}
-                                                                onChange={(e) =>
-                                                                    setAdministrative({
-                                                                        ...administrative,
-                                                                        preparedOn: e,
-                                                                    })
-                                                                }
-                                                            />
-                                                        </MuiPickersUtilsProvider>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row input-fields">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    REVISED BY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    placeholder="Optional (ex-abc@gmail.com)"
-                                                    name="revisedBy"
-                                                    value={administrative.revisedBy}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                {/* <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    REVISED ON
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="revisedOn"
-                                                    value={administrative.revisedOn}
-                                                    onChange={handleAdministrativreChange}
-                                                /> */}
-                                                <div className=" date-box w-100">
-                                                    <label
-                                                        className="text-light-dark font-size-14 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        <span className=" mr-2">PREPARED ON</span>
-                                                    </label>
-
-                                                    <div className="form-group w-100">
-                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                            <DatePicker
-                                                                variant="inline"
-                                                                format="dd/MM/yyyy"
-                                                                className="form-controldate border-radius-10"
-                                                                label=""
-                                                                name="revisedOn"
-                                                                value={administrative.revisedOn}
-                                                                onChange={(e) =>
-                                                                    setAdministrative({
-                                                                        ...administrative,
-                                                                        revisedOn: e,
-                                                                    })
-                                                                }
-                                                            />
-                                                        </MuiPickersUtilsProvider>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    SALSE OFFICE/BRANCH
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    name="salesOffice"
-                                                    placeholder="Required"
-                                                    value={administrative.salesOffice}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row input-fields">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    OFFER VALIDITY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    placeholder="Optional"
-                                                    name="offerValidity"
-                                                    value={administrative.offerValidity}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row" style={{ justifyContent: "right" }}>
-                                        <button
-                                            type="button"
-                                            onClick={handleNextClick}
-                                            className="btn btn-light"
-                                            id="administrative"
-                                        >
-                                            Save & Next
-                                        </button>
-                                    </div>
-                                </TabPanel>
-                                <TabPanel value="4">
+                                <TabPanel value={"price"}>
                                     <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
@@ -5832,6 +5649,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     onChange={(e) => setPriceListKeyValue1(e)}
                                                     className="text-primary"
                                                     options={priceListKeyValue}
+                                                    value={priceListKeyValue1}
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
@@ -5849,6 +5667,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     className="text-primary"
                                                     onChange={(e) => setPriceMethodKeyValue1(e)}
                                                     options={priceMethodKeyValue}
+                                                    value={priceMethodKeyValue1}
                                                     placeholder="required"
                                                 />
                                             </div>
@@ -5870,7 +5689,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 className="form-controldate border-radius-10"
                                                                 label=""
                                                                 name="preparedOn"
-                                                                value={setPriceDetails.priceDate}
+                                                                value={priceDetails.priceDate}
                                                                 onChange={(e) =>
                                                                     setPriceDetails({
                                                                         ...priceDetails,
@@ -5907,6 +5726,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     className="text-primary"
                                                     onChange={(e) => setPriceTypeKeyValue1(e)}
                                                     options={priceTypeKeyValue}
+                                                    value={priceTypeKeyValue1}
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
@@ -5917,14 +5737,18 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     className="text-light-dark font-size-14 font-weight-500"
                                                     for="exampleInputEmail1"
                                                 >
-                                                    PRICE{" "}
+                                                    {/* PRICE{" "} */}
+                                                    NET PRICE{" "}
                                                 </label>
                                                 <input
                                                     type="email"
                                                     className="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
-                                                    placeholder="$100"
+                                                    // placeholder="$100"
+                                                    placeholder="Auto Generated"
+                                                    value={pricePriceData}
+                                                    disabled
                                                 />
                                             </div>
                                         </div>
@@ -5944,6 +5768,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                             className="text-primary"
                                                             isClearable={true}
                                                             // value={options}
+                                                            value={priceAdditionalHeadKeyValue1}
                                                             options={priceHeadTypeKeyValue}
                                                             placeholder="Select"
                                                         />
@@ -5972,8 +5797,9 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <Select
                                                         className="select-input text-primary"
                                                         // defaultValue={selectedOption}
-                                                        onChange={(e) => setPriceEscalationKeyValue1(e)}
+                                                        onChange={(e) => setPriceEscalationHeadKeyValue1(e)}
                                                         options={priceHeadTypeKeyValue}
+                                                        value={priceEscalationHeadKeyValue1}
                                                         placeholder="Select "
                                                     />
                                                     <input
@@ -6007,7 +5833,10 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     className="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
-                                                    placeholder="$100"
+                                                    // placeholder="$100"
+                                                    placeholder="Auto Generated"
+                                                    value={priceCalculatedPrice}
+                                                    disabled
                                                 />
                                             </div>
                                         </div>
@@ -6024,7 +5853,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                         className="select-input text-primary"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
-                                                        options={options}
+                                                        // optionals={options}
+                                                        options={priceHeadTypeKeyValue}
                                                         placeholder="placeholder "
                                                     />
                                                     <input
@@ -6050,7 +5880,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </button>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="5">
+
+                                <TabPanel value={"priceAgreement"}>
                                     <div className="card border">
                                         <div className="d-flex align-items-center justify-content-between px-3">
                                             <div className="">
@@ -6106,7 +5937,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </button>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="6">
+
+                                <TabPanel value={"coverage"}>
                                     <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
                                         <li><a className="cursor result" >Search Coverage</a></li>
                                     </ul>
@@ -6436,11 +6268,239 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 className="btn btn-light"
                                                 id="coverage"
                                             >
-                                                Save
+                                                Save & Next
                                             </button>
                                         ) : (
                                             <></>
                                         )}
+                                    </div>
+                                </TabPanel>
+
+                                <TabPanel value={"administrative"}>
+                                    <div className="row input-fields">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    PREPARED BY
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10 text-primary"
+                                                    name="preparedBy"
+                                                    placeholder="Required (ex-abc@gmail.com)"
+                                                    value={administrative.preparedBy}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    APPROVED BY
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10 text-primary"
+                                                    placeholder="Optional (ex-abc@gmail.com)"
+                                                    name="approvedBy"
+                                                    value={administrative.approvedBy}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            {/* <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    PREPARED ON
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="preparedOn"
+                                                    value={administrative.preparedOn}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div> */}
+                                            <div className="form-group">
+                                                <div className=" date-box w-100">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        <span className=" mr-2">PREPARED ON</span>
+                                                    </label>
+
+                                                    <div className="form-group w-100">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="preparedOn"
+                                                                value={administrative.preparedOn}
+                                                                onChange={(e) =>
+                                                                    setAdministrative({
+                                                                        ...administrative,
+                                                                        preparedOn: e,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row input-fields">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    REVISED BY
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10 text-primary"
+                                                    placeholder="Optional (ex-abc@gmail.com)"
+                                                    name="revisedBy"
+                                                    value={administrative.revisedBy}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                {/* <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    REVISED ON
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="revisedOn"
+                                                    value={administrative.revisedOn}
+                                                    onChange={handleAdministrativreChange}
+                                                /> */}
+                                                <div className=" date-box w-100">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        <span className=" mr-2">PREPARED ON</span>
+                                                    </label>
+
+                                                    <div className="form-group w-100">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="revisedOn"
+                                                                value={administrative.revisedOn}
+                                                                onChange={(e) =>
+                                                                    setAdministrative({
+                                                                        ...administrative,
+                                                                        revisedOn: e,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    SALES OFFICE / BRANCH
+                                                </label>
+                                                <Select
+                                                    onChange={(e) =>
+                                                        setAdministrative({
+                                                            ...administrative,
+                                                            salesOffice: e,
+                                                        })
+                                                    }
+                                                    className="text-primary"
+                                                    options={salesOfficeOptions}
+                                                    placeholder="Required"
+                                                    value={administrative.salesOffice}
+                                                    styles={FONT_STYLE_SELECT}
+                                                />
+                                                {/* <input
+                                                    type="text"
+                                                    className="form-control border-radius-10 text-primary"
+                                                    name="salesOffice"
+                                                    placeholder="Required"
+                                                    value={administrative.salesOffice}
+                                                    onChange={handleAdministrativreChange}
+                                                /> */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row input-fields">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    OFFER VALIDITY
+                                                </label>
+                                                <Select
+                                                    // defaultValue={selectedOption}
+                                                    onChange={(e) =>
+                                                        setAdministrative({
+                                                            ...administrative,
+                                                            offerValidity: e,
+                                                        })
+                                                    }
+                                                    className="text-primary"
+                                                    options={validityOptions}
+                                                    placeholder="Optional"
+                                                    value={administrative.offerValidity}
+                                                    styles={FONT_STYLE_SELECT}
+                                                />
+                                                {/* <input
+                                                    type="text"
+                                                    className="form-control border-radius-10 text-primary"
+                                                    placeholder="Optional"
+                                                    name="offerValidity"
+                                                    value={administrative.offerValidity}
+                                                    onChange={handleAdministrativreChange}
+                                                /> */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row" style={{ justifyContent: "right" }}>
+                                        <button
+                                            type="button"
+                                            onClick={handleNextClick}
+                                            className="btn btn-light"
+                                            id="administrative"
+                                        >
+                                            Save
+                                        </button>
                                     </div>
                                 </TabPanel>
                             </TabContext>
@@ -6460,14 +6520,14 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 </div>
                             </div>
                         </div>
-                        {createdCustomPortfolioItems.length > 0 ? <>
+                        {selectedSolutionItems.length > 0 ? <>
                             <div className="" style={{ minHeight: 200, height: "auto", width: '100%', backgroundColor: '#fff' }}>
 
                                 <DataTable
                                     className=""
                                     title=""
                                     columns={selectedportfolioTempItemsColumn}
-                                    data={createdCustomPortfolioItems}
+                                    data={selectedSolutionItems}
                                     customStyles={customTableStyles}
                                     expandableRows
                                     expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
