@@ -219,7 +219,8 @@ export function CreatePortfolio(props) {
   const [modelKeyValue, setModelKeyValue] = useState([]);
   const [prefixKeyValue, setPrefixKeyValue] = useState([]);
   const [validityKeyValue, setValidityKeyValue] = useState([]);
-  const [headerType, setHeaderType] = useState(null);
+  // const [headerType, setHeaderType] = useState(null);
+  const [headerType, setHeaderType] = useState({ label: "PORTFOLIO", value: "PORTFOLIO" });
   const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
@@ -1553,6 +1554,7 @@ export function CreatePortfolio(props) {
     console.log("editAbleItemPriceData 1122334 : ", editAbleItemPriceData)
     console.log("compoFlagData 1122334 : ", compoFlagData)
     console.log("createServiceOrBundle 1122334 : ", createServiceOrBundle)
+    console.log("itemPriceData 1122334 : ", itemPriceData)
 
     try {
       setEditItemShow(false); //hide screen
@@ -1788,7 +1790,7 @@ export function CreatePortfolio(props) {
             editAbleItemPriceData.itemPriceDataId == "string" ||
             editAbleItemPriceData.itemPriceDataId == undefined) ? [] : [
             {
-              itemPriceDataId: itemPriceData.itemPriceDataId
+              itemPriceDataId: editAbleItemPriceData.itemPriceDataId
             }
           ],
         },
@@ -1904,8 +1906,20 @@ export function CreatePortfolio(props) {
   };
 
   const handleServiceItemEdit = (e, row) => {
-    setEditItemShow(true);
-    setPassItemEditRowData({ ...row, _itemId: row.itemId });
+    if (value2.value == "ACTIVE") {
+      toast("😐" + " Portfolio is Active", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      setEditItemShow(true);
+      setPassItemEditRowData({ ...row, _itemId: row.itemId });
+    }
   };
   const handleServiceItemDelete = async (e, row) => {
     try {
@@ -7395,7 +7409,7 @@ export function CreatePortfolio(props) {
             className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div
+            {/* <div
               className="cursor"
               onClick={(e) =>
                 handleExpandedRowEdit(
@@ -7409,9 +7423,7 @@ export function CreatePortfolio(props) {
                 <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
               </Tooltip>
             </div>
-            {/* <div data-tag="allowRowEvents">
-               {bundleAndService.itemBodyModel.totalPrice}
-            </div> */}
+             */}
           </div>
 
           {/* {bundleItems.length > 0 && (
@@ -8491,7 +8503,10 @@ export function CreatePortfolio(props) {
                       <Tab label="Validity " value={"validity"} />
                       <Tab label="Strategy" value={"strategy"} />
                       <Tab label="Administrative" value={"administrative"} />
-                      <Tab label="Price" value={"price"} />
+                      <Tab
+                        label="Price"
+                        disabled={priceAgreementOption}
+                        value={"price"} />
                       <Tab
                         label="Price Agreement"
                         disabled={!priceAgreementOption}
@@ -9688,7 +9703,8 @@ export function CreatePortfolio(props) {
                                 className="text-light-dark font-size-14 font-weight-500"
                                 htmlFor="exampleInputEmail1"
                               >
-                                PRICE{" "}
+                                {/* PRICE{" "} */}
+                                NET PRICE{" "}
                               </label>
                               <input
                                 type="text"
@@ -9806,8 +9822,9 @@ export function CreatePortfolio(props) {
                                   className="select-input text-primary"
                                   defaultValue={selectedOption}
                                   onChange={setSelectedOption}
-                                  options={options}
-                                  placeholder="placeholder "
+                                  // options={options}
+                                  options={priceHeadTypeKeyValue}
+                                  placeholder="Select "
                                 />
                                 <input
                                   type="text"
@@ -9928,7 +9945,8 @@ export function CreatePortfolio(props) {
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
-                                PRICE{" "}
+                                {/* PRICE{" "} */}
+                                NET PRICE{" "}
                               </p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
@@ -13634,7 +13652,7 @@ export function CreatePortfolio(props) {
             <TabContext value={tabs}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList className="custom-tabs-div"
-                  onChange={(e, newValue) => setTabs(newValue)}
+                  // onChange={(e, newValue) => setTabs(newValue)}
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
@@ -13682,19 +13700,24 @@ export function CreatePortfolio(props) {
                         selectableRows
                         onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
                         pagination
-                      />{tempBundleService2.length > 0 && (<div className="row" style={{ justifyContent: "right" }}>
+                      />
+                      {/* {tempBundleService2.length > 0 && ( */}
+                      <div className="row" style={{ justifyContent: "right" }}>
                         <button
                           type="button"
-                          className="btn btn-light mt-3 mb-4"
+                          // className="btn btn-light mt-3 mb-4"
+                          className="btn bg-primary text-white"
                           // onClick={() => {
                           //   setTempBundleService3(tempBundleService2)
                           //   setTempBundleService1([])
                           // }}
                           onClick={handleBundleServiceItemCheckBoxData}
+                          disabled={tempBundleService2.length === 0}
                         >
-                          Add Selected
+                          + Add Selected
                         </button>
-                      </div>)}
+                      </div>
+                      {/*  )} */}
                     </>)}
                   </>
 
