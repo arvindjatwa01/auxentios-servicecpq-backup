@@ -5601,7 +5601,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Solution Id</div>
+          <div>Solution Sequence</div>
         </>
       ),
       selector: (row) => row.itemId,
@@ -5612,7 +5612,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Description</div>
+          <div>Solution ID</div>
         </>
       ),
       selector: (row) => row.itemHeaderModel.itemHeaderDescription,
@@ -5623,19 +5623,21 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Strategy</div>
+          <div>Solution Description</div>
         </>
       ),
       selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
       wrap: true,
       sortable: true,
       format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     // --------------- New (Add on Update Item Fileds) Start ------------------- //
     {
       name: (
         <>
-          <div>Task Type</div>
+          <div>Strategy</div>
         </>
       ),
       selector: (row) => row.itemBodyModel.taskType,
@@ -5646,7 +5648,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Quantity</div>
+          <div>Task Type</div>
         </>
       ),
       selector: (row) => row.itemBodyModel?.quantity,
@@ -5657,7 +5659,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Net Price</div>
+          <div>Quantity</div>
         </>
       ),
       selector: (row) => row.itemHeaderModel.netPrice,
@@ -5668,7 +5670,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Net Additional</div>
+          <div>Unit Price (per one)</div>
         </>
       ),
       selector: (row) => row.itemHeaderModel.additional,
@@ -5679,7 +5681,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Net Parts Price</div>
+          <div>Net Parts</div>
         </>
       ),
       selector: (row) => row.itemBodyModel?.partsprice,
@@ -5690,7 +5692,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Net Service Price</div>
+          <div>Net Service</div>
         </>
       ),
       selector: (row) => row.itemBodyModel?.servicePrice,
@@ -5701,7 +5703,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Total Price</div>
+          <div>Net Price</div>
         </>
       ),
       selector: (row) => row.itemBodyModel?.totalPrice,
@@ -7282,21 +7284,22 @@ export function CreatePortfolio(props) {
           className="sc-evZas cMMpBL rdt_TableRow"
           style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
         >
-          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2"></div>
           <div
             id="cell-1-undefined"
             data-column-id="1"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div>{bundleAndService.itemId}</div>
+            <div>10</div>
+            {/* <div>{bundleAndService.itemId}</div> */}
           </div>
           <div
             id="cell-2-undefined"
             data-column-id="2"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7307,7 +7310,7 @@ export function CreatePortfolio(props) {
             id="cell-3-undefined"
             data-column-id="3"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7318,7 +7321,7 @@ export function CreatePortfolio(props) {
             id="cell-4-undefined"
             data-column-id="4"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7329,7 +7332,7 @@ export function CreatePortfolio(props) {
             id="cell-5-undefined"
             data-column-id="5"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7340,7 +7343,7 @@ export function CreatePortfolio(props) {
             id="cell-6-undefined"
             data-column-id="6"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7351,7 +7354,7 @@ export function CreatePortfolio(props) {
             id="cell-7-undefined"
             data-column-id="7"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7362,7 +7365,7 @@ export function CreatePortfolio(props) {
             id="cell-8-undefined"
             data-column-id="8"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7373,7 +7376,7 @@ export function CreatePortfolio(props) {
             id="cell-9-undefined"
             data-column-id="9"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7384,7 +7387,7 @@ export function CreatePortfolio(props) {
             id="cell-10-undefined"
             data-column-id="10"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7395,7 +7398,7 @@ export function CreatePortfolio(props) {
             id="cell-10-undefined"
             data-column-id="10"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7406,7 +7409,7 @@ export function CreatePortfolio(props) {
             id="cell-10-undefined"
             data-column-id="11"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             {/* <div
@@ -8519,7 +8522,7 @@ export function CreatePortfolio(props) {
 
                     {!viewOnlyTab.generalViewOnly ? <>
                       <div className="row mt-4 input-fields">
-                        <div className="col-md-3 col-sm-3">
+                        <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               SELECT TYPE
@@ -8534,6 +8537,7 @@ export function CreatePortfolio(props) {
                                 headerTypeKeyValue.length > 0 ? false : true
                               }
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                             {/* <div>
 
                                                     <ToggleButtonGroup
@@ -8563,7 +8567,11 @@ export function CreatePortfolio(props) {
                           />
                         </div>
                       </div> */}
-                        <div className="col-md-3 col-sm-3">
+                        
+                        
+                      </div>
+                      <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               {prefilgabelGeneral} NAME
@@ -8576,9 +8584,10 @@ export function CreatePortfolio(props) {
                               value={generalComponentData.name}
                               onChange={handleGeneralInputChange}
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
-                        <div className="col-md-3 col-sm-3">
+                        <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
@@ -8594,7 +8603,9 @@ export function CreatePortfolio(props) {
                             />
                           </div>
                         </div>
-                        <div className="col-md-3 col-sm-3">
+                      </div>
+                      <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               REFERENCE
@@ -8607,9 +8618,10 @@ export function CreatePortfolio(props) {
                               value={generalComponentData.externalReference}
                               onChange={handleGeneralInputChange}
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
-                        <div className="col-md-3 col-sm-3">
+                        <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               CUSTOMER SEGMENT
@@ -8994,6 +9006,7 @@ export function CreatePortfolio(props) {
                               value={categoryUsageKeyValue1}
                               onChange={(e) => HandleCatUsage(e)}
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                             {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                           </div>
                         </div>
@@ -9011,6 +9024,7 @@ export function CreatePortfolio(props) {
                               value={stratgyTaskUsageKeyValue}
                               onChange={(e) => HandleStrategyUsage(e)}
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
