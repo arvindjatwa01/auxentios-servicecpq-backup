@@ -3351,7 +3351,7 @@ button.bg-primary:hover {
 .rdt_TableRow {
   font-size: 14px !important;
   font-weight: 500 !important;
-  color: #808080 !important;
+  color: #616161 !important;
   min-height: 44px !important;
   border-bottom-style: solid !important;
   border-bottom-width: 1px !important;
@@ -3561,4 +3561,5 @@ width: 18px;}
 }
 .repairbtn-dropdown-content li:hover {background-color: rgb(240, 237, 237); color: #7d35ed !important;}
 .repairbtn-dropdown:hover .repairbtn-dropdown-content {display: block;}
+.m-w-150{min-width: 150px !important;}
 

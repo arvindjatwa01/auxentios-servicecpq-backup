@@ -2943,7 +2943,7 @@ export const PortfolioSummary = () => {
             </div>
           </div>
           <div className="bg-primary px-3 mb-3 border-radius-10 ">
-            <div className="d-block d-md-flex justify-content-between align-items-center">
+            <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
               <div className="mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
                   <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
@@ -2964,7 +2964,7 @@ export const PortfolioSummary = () => {
                       {querySearchSelector.map((obj, i) => {
                         return (
                           <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
+                            <div className="customselect border-white d-flex align-items-center mr-3 my-2 border-radius-10">
                               {i === 0 ?
                                 <>
                                   <Select
@@ -3021,7 +3021,7 @@ export const PortfolioSummary = () => {
                               </div>
                               <div className="customselectsearch">
                                 <input
-                                  className="custom-input-sleact"
+                                  className="custom-input-sleact pr-1"
                                   type="text"
                                   placeholder="Search string"
                                   value={obj.inputSearch}
@@ -3055,6 +3055,9 @@ export const PortfolioSummary = () => {
                                 }
 
                               </div>
+                              <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                      <SearchIcon /><span className="ml-1">Search</span>
+                    </Link>
                             </div>
                           </>
                         );
@@ -3096,11 +3099,11 @@ export const PortfolioSummary = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="pl-3 py-3">
+                  {/* <div className="pl-3 py-3">
                     <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
                       <SearchIcon /><span className="ml-1">Search</span>
                     </Link>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="">
