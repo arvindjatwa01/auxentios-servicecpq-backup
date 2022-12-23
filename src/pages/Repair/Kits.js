@@ -1026,7 +1026,7 @@ function Kits(props) {
       new Promise((resolve, reject) => {
         if (
           newRow.usagePercentage > 0 &&
-          newRow.usagePercentage < 100 &&
+          newRow.usagePercentage <= 100 &&
           newRow.unitPrice > 0
         ) {
           if (

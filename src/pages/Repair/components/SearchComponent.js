@@ -11,13 +11,27 @@ const SearchComponent = (props) => {
   const [count, setCount] = useState(1);
   const iconColor = props.color;
 
-  const handleDeletQuerySearch = () => {
+  const handleDeleteQuerySearch = () => {
     // props.setQuerySearchSelector([]);
     // setCount(0);
-    props.querySearchSelector.pop();
-    props.setQuerySearchSelector(props.querySearchSelector);
-    setCount(props.querySearchSelector.length);
-    props.clearFilteredData();
+    if (count > 1) {
+      props.querySearchSelector.pop();
+      props.setQuerySearchSelector(props.querySearchSelector);
+      setCount(props.querySearchSelector.length);
+      props.clearFilteredData();
+    } else {
+      // Just reset the search criteria when only one element is present
+      props.setQuerySearchSelector([
+        {
+          id: count,
+          selectOperator: "",
+          selectCategory: "",
+          inputSearch: "",
+          selectOptions: [],
+          selectedOption: "",
+        },
+      ]);
+    }
   };
   const handleSearchCategory = (e, id) => {
     let tempArray = [...props.querySearchSelector];
@@ -160,9 +174,13 @@ const SearchComponent = (props) => {
                     onClick={() => props.searchClick(props.type)}
                   >
                     <span className="mr-2">
-                      {props.buttonText === "SEARCH" ? <SearchIcon/> : <AddIcon />}
+                      {props.buttonText === "SEARCH" ? (
+                        <SearchIcon />
+                      ) : (
+                        <AddIcon />
+                      )}
                     </span>
-                    {props.buttonText? props.buttonText : "Add Item"}
+                    {props.buttonText ? props.buttonText : "Add Item"}
                   </div>
                 ) : (
                   <div className="btn" style={{ height: 40, width: 70 }}></div>
@@ -180,7 +198,12 @@ const SearchComponent = (props) => {
                           handleSearchListClick(e, currentItem, obj, i)
                         }
                       >
-                        {props.type === "consumables" && obj.selectCategory.value === "consumableId" ? currentItem[obj.selectCategory.value] + " " + currentItem["name"]: currentItem[obj.selectCategory.value]}
+                        {props.type === "consumables" &&
+                        obj.selectCategory.value === "consumableId"
+                          ? currentItem[obj.selectCategory.value] +
+                            " " +
+                            currentItem["name"]
+                          : currentItem[obj.selectCategory.value]}
                       </li>
                     ))}
                   </ul>
@@ -199,7 +222,7 @@ const SearchComponent = (props) => {
           </Link>
         </div>
 
-        <div onClick={handleDeletQuerySearch}>
+        <div onClick={handleDeleteQuerySearch}>
           <Link to="#" className="btn-sm border mr-2">
             <i class="fa fa-trash fa-lg" style={{ color: iconColor }}></i>
           </Link>
