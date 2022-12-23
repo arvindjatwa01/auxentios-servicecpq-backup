@@ -232,7 +232,7 @@ export const FONT_STYLE_UNIT_SELECT = {
     borderRadius: 10,
     border: 'none !important',
     backgroundColor: '#F5F5F5 !important',
-    minWidth:'80px !important'
+    boxShadow: 'none'
   }),
   singleValue: (provided) => ({
     ...provided,
@@ -248,6 +248,7 @@ export const FONT_STYLE_SELECT = {
   control: (provided) => ({
     ...provided,
     borderRadius: 10,
+    boxShadow: 'none'
   }),
   singleValue: (provided) => ({
     ...provided,

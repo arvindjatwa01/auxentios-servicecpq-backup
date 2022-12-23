@@ -19,7 +19,7 @@ import { Link, useHistory } from "react-router-dom";
 import $ from "jquery";
 import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
-import { FONT_STYLE, FONT_STYLE_SELECT, OPTIONS_USAGE } from "./CONSTANTS";
+import { FONT_STYLE, FONT_STYLE_SELECT, FONT_STYLE_UNIT_SELECT, OPTIONS_USAGE } from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Rating, TextField } from "@mui/material";
@@ -130,14 +130,13 @@ function ServiceOnlyTemplates(props) {
     estimationNo: "",
     description: "",
     reference: "",
-    validity: null,
     version: "",
     customerID: "",
     customerName: "",
+    owner: ""
   });
   const [usageData, setUsageData] = useState({
     application: "",
-    owner: "",
     articleNumber: "",
     lifeStage: "",
     startUsage: "",
@@ -178,12 +177,6 @@ function ServiceOnlyTemplates(props) {
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
   );
-  const validityOptions = [
-    { value: "15", label: "15 days" },
-    { value: "30", label: "1 month" },
-    { value: "45", label: "45 days" },
-    { value: "60", label: "2 months" },
-  ];
   const [viewOnlyTab, setViewOnlyTab] = useState({
     generalViewOnly: false,
     estViewOnly: false,
@@ -304,10 +297,10 @@ function ServiceOnlyTemplates(props) {
         : new Date(),
       estimationNo: result.estimationNumber,
       reference: result.reference,
-      validity: validityOptions.find(
-        (element) => element.value == result.validityDays
-      ),
       version: result.version,
+      owner: result.owner,
+      customerID: result.customerID,
+      customerName: result.customerName
     });
     setEstimationData({
       approvedBy: result.approver,
@@ -346,7 +339,6 @@ function ServiceOnlyTemplates(props) {
       application: APPLICATION_OPTIONS.find(
         (element) => element.value === result.application
       ),
-      owner: result.owner,
       validFrom: result.validFrom ? result.validFrom : new Date(),
       validTo: result.validTo ? result.validTo : new Date(),
       nextRevisionDate: result.nextRevisionDate
@@ -740,10 +732,10 @@ function ServiceOnlyTemplates(props) {
       estimationDate: generalData.estimationDate,
       description: generalData.description,
       reference: generalData.reference,
-      validityDays: generalData.validity?.value,
       estimationNumber: generalData.estimationNo,
       customerID: generalData.customerID,
       customerName: generalData.customerName,
+      owner: generalData.owner
     };
     updateKITGeneralDet(templateDBId, data)
       .then((result) => {
@@ -1253,26 +1245,6 @@ function ServiceOnlyTemplates(props) {
                               <div className="col-md-6 col-sm-6">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
-                                    VALIDITY
-                                  </label>
-                                  <Select
-                                    // defaultValue={selectedOption}
-                                    onChange={(e) =>
-                                      setGeneralData({
-                                        ...generalData,
-                                        validity: e,
-                                      })
-                                    }
-                                    options={validityOptions}
-                                    placeholder="Required"
-                                    value={generalData.validity}
-                                    styles={FONT_STYLE_SELECT}
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-md-6 col-sm-6">
-                                <div className="form-group">
-                                  <label className="text-light-dark font-size-12 font-weight-500">
                                     VERSION
                                   </label>
                                   <input
@@ -1321,6 +1293,25 @@ function ServiceOnlyTemplates(props) {
                                   />
                                 </div>
                               </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div class="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    OWNER
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={generalData.owner}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        owner: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              </div>
                             </div>
                             <div
                               className="row"
@@ -1334,8 +1325,7 @@ function ServiceOnlyTemplates(props) {
                                   !generalData.estimationDate ||
                                   !generalData.description ||
                                   !generalData.estimationNo ||
-                                  !generalData.reference ||
-                                  !generalData.validity
+                                  !generalData.reference 
                                 }
                               >
                                 Save & Next
@@ -1369,11 +1359,6 @@ function ServiceOnlyTemplates(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
-                              label="VALIDTITY (DAYs)"
-                              value={generalData.validity?.value}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
                               label="VERSION"
                               value={generalData.version}
                               className="col-md-4 col-sm-4"
@@ -1386,6 +1371,11 @@ function ServiceOnlyTemplates(props) {
                             <ReadOnlyField
                               label="CUSTOMER NAME"
                               value={generalData.customerName}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="OWNER"
+                              value={generalData.owner}
                               className="col-md-4 col-sm-4"
                             />
                           </div>
@@ -1738,26 +1728,7 @@ function ServiceOnlyTemplates(props) {
                                     styles={FONT_STYLE_SELECT}
                                   />
                                 </div>
-                              </div>
-                              <div className="col-md-4 col-sm-4">
-                                <div class="form-group">
-                                  <label className="text-light-dark font-size-12 font-weight-500">
-                                    OWNER
-                                  </label>
-                                  <input
-                                    type="text"
-                                    class="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
-                                    value={usageData.owner}
-                                    onChange={(e) =>
-                                      setUsageData({
-                                        ...usageData,
-                                        owner: e.target.value,
-                                      })
-                                    }
-                                  />
-                                </div>
-                              </div>
+                              </div>                              
                               <div className="col-md-4 col-sm-4">
                                 <div class="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1800,10 +1771,10 @@ function ServiceOnlyTemplates(props) {
 
                                     <Select
                                       defaultValue={OPTIONS_USAGE[0]}
-                                      // isClearable={true}
+                                      isSearchable={false}
                                       styles={FONT_STYLE_UNIT_SELECT}
                                       options={OPTIONS_USAGE}
-                                      className="text-primary"
+                                      // className="text-primary"
                                       value={usageData.unit}
                                       onChange={(e) =>
                                         setUsageData({ ...usageData, unit: e })
@@ -2041,11 +2012,6 @@ function ServiceOnlyTemplates(props) {
                             <ReadOnlyField
                               label="APPLICATION"
                               value={usageData.application?.label}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="OWNER"
-                              value={usageData.owner}
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField

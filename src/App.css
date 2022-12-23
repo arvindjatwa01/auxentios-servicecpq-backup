@@ -3536,11 +3536,12 @@ width: 18px;}
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 2001;
   border-radius: 10px;
+  /* left: 100%;
+  bottom: 100%; */
 }
 
 #drp::-webkit-scrollbar {
   width: 3px;
-  /* width: 2px; */
   background-color: transparent;
   height: 2px;
 }

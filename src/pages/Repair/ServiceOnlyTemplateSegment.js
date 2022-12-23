@@ -83,7 +83,7 @@ function ServiceOnlyTemplateSegment(props){
     //             // segmentToLoad.description,
     //         });
     //       } else {
-    //         loadNewSegmentUI();
+            loadNewSegmentUI();
     //       }
     //       setSegmentLoading(false);
     //     })

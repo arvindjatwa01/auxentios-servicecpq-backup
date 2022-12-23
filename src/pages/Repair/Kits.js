@@ -389,10 +389,11 @@ function Kits(props) {
     estimationNo: "",
     description: "",
     reference: "",
-    validity: null,
     version: "",
     owner: "",
     application: "",
+    validFrom: new Date(),
+    validTo: new Date(),
     nextRevisionDate: new Date(),
   });
   const [estimationData, setEstimationData] = useState({
@@ -656,10 +657,11 @@ function Kits(props) {
       estimationDate: generalData.estimationDate,
       description: generalData.description,
       reference: generalData.reference,
-      validityDays: generalData.validity?.value,
       estimationNumber: generalData.estimationNo,
       owner: generalData.owner,
       application: generalData.application?.value,
+      validFrom: generalData.validFrom,
+      validTo: generalData.validTo,
       nextRevisionDate: generalData.nextRevisionDate,
     };
     updateKITGeneralDet(kitDBId, data)
@@ -817,17 +819,16 @@ function Kits(props) {
         : new Date(),
       estimationNo: result.estimationNumber,
       reference: result.reference,
-      validity: validityOptions.find(
-        (element) => element.value == result.validityDays
-      ),
       version: result.version,
       application: APPLICATION_OPTIONS.find(
         (element) => element.value === result.application
       ),
       owner: result.owner,
+      validFrom: result.validFrom ? result.validFrom : new Date(),
+      validTo: result.validTo ? result.validTo : new Date(),
       nextRevisionDate: result.nextRevisionDate
         ? result.nextRevisionDate
-        : new Date(), // Change it to created date + 1 year once API is ready
+        : new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // Change it to created date + 1 year once API is ready
     });
     setEstimationData({
       approvedBy: result.approver,
@@ -2088,25 +2089,77 @@ function Kits(props) {
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                VALIDITY
-                              </label>
-                              <Select
-                                // defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setGeneralData({
-                                    ...generalData,
-                                    validity: e,
-                                  })
-                                }
-                                options={validityOptions}
-                                placeholder="Required"
-                                value={generalData.validity}
-                                styles={FONT_STYLE_SELECT}
-                              />
-                            </div>
-                          </div>
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    <span className=" mr-2">VALID FROM</span>
+                                  </label>
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        // minDate={new Date()}
+                                        closeOnSelect
+                                        value={generalData.validFrom}
+                                        onChange={(e) =>
+                                          setGeneralData({
+                                            ...generalData,
+                                            validFrom: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    <span className=" mr-2">VALID TO</span>
+                                  </label>
+                                  <div className="align-items-center date-box w-100">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={generalData.validFrom}
+                                        closeOnSelect
+                                        value={generalData.validTo}
+                                        onChange={(e) =>
+                                          setGeneralData({
+                                            ...generalData,
+                                            validTo: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
+                                </div>
+                              </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -2195,7 +2248,7 @@ function Kits(props) {
                                   })
                                 }
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Placeholder (Required)"
+                                placeholder="Optional"
                               />
                             </div>
                           </div>
@@ -2247,11 +2300,6 @@ function Kits(props) {
                           className="col-md-4 col-sm-4"
                         />
                         <ReadOnlyField
-                          label="VALIDTITY (DAYs)"
-                          value={generalData.validity?.label}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
                           label="VERSION"
                           value={generalData.version}
                           className="col-md-4 col-sm-4"
@@ -2266,6 +2314,24 @@ function Kits(props) {
                           value={generalData.owner}
                           className="col-md-4 col-sm-4"
                         />
+                         <ReadOnlyField
+                              label="VALID FROM"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {generalData.validFrom}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="VALID TO"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {generalData.validTo}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
                         <ReadOnlyField
                           label="NEXT REVISION DATE"
                           value={
