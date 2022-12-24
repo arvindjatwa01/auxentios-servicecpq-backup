@@ -7317,10 +7317,14 @@ export function CreatePortfolio(props) {
           key={i}
           id="row-0"
           role="row"
-          className="sc-evZas cMMpBL rdt_TableRow"
+          className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
           style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
         >
-          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2"></div>
+          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+            {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
+          </div>
           <div
             id="cell-1-undefined"
             data-column-id="1"
@@ -7329,7 +7333,6 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div>10</div>
-            {/* <div>{bundleAndService.itemId}</div> */}
           </div>
           <div
             id="cell-2-undefined"
@@ -7338,19 +7341,22 @@ export function CreatePortfolio(props) {
             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.itemHeaderDescription}
-            </div>
+            <div className="icons-table mr-2 align-items-center d-flex justify-content-center"><img src="../assets/images/bundle.png"></img></div>
+            <div className="align-items-center d-flex justify-content-center">{bundleAndService.itemId}</div>
           </div>
           <div
             id="cell-3-undefined"
             data-column-id="3"
             role="gridcell"
-            className="py-2 m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.itemHeaderStrategy}
+            <div className="d-flex align-items-center" data-tag="allowRowEvents">
+              {bundleAndService.itemHeaderModel.itemHeaderDescription}
+            </div>
+            <div className="d-flex align-items-center">
+                 <div className="icons-table mr-1"><img src="../assets/images/bundle.png"></img></div>
+                 <div className=""><KeyboardArrowDownIcon /></div>
             </div>
           </div>
           <div
@@ -7360,9 +7366,13 @@ export function CreatePortfolio(props) {
             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.taskType}
+            <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center"><img src="../assets/images/bundle.png"></img></div>
+            <div className="align-items-center d-flex" data-tag="allowRowEvents">
+              {bundleAndService.itemHeaderModel.itemHeaderStrategy}
             </div>
+            {/* <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.taskType}
+            </div> */}
           </div>
           <div
             id="cell-5-undefined"
@@ -9382,6 +9392,7 @@ export function CreatePortfolio(props) {
                                 value={priceMethodKeyValue1}
 
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
@@ -9554,6 +9565,7 @@ export function CreatePortfolio(props) {
                                 disabled
                                 value={priceCalculatedPrice}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
