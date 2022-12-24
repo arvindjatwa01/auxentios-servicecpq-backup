@@ -136,37 +136,37 @@ const SolutionQuerySearchComp = (props) => {
                 portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
                     .then((res) => {
                         if (tempArray[id].selectFamily.value === "make") {
-                            for (let i = 0; i < res.length; i++) {
-                                for (let j = 0; j < res[i].coverages.length; j++) {
-                                    SearchResArr.push(res[i].coverages[j].make)
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                                    SearchResArr.push(res.data[i].coverages[j].make)
                                 }
                             }
 
                         } else if (tempArray[id].selectFamily.value == "family") {
-                            for (let i = 0; i < res.length; i++) {
-                                for (let j = 0; j < res[i].coverages.length; j++) {
-                                    SearchResArr.push(res[i].coverages[j].family)
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                                    SearchResArr.push(res.data[i].coverages[j].family)
                                 }
                             }
                         } else if (tempArray[id].selectFamily.value == "modelNo") {
-                            for (let i = 0; i < res.length; i++) {
-                                for (let j = 0; j < res[i].coverages.length; j++) {
-                                    SearchResArr.push(res[i].coverages[j].modelNo)
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                                    SearchResArr.push(res.data[i].coverages[j].modelNo)
                                 }
                             }
                         } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
-                            for (let i = 0; i < res.length; i++) {
-                                for (let j = 0; j < res[i].coverages.length; j++) {
-                                    SearchResArr.push(res[i].coverages[j].serialNumberPrefix)
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                                    SearchResArr.push(res.data[i].coverages[j].serialNumberPrefix)
                                 }
                             }
                         } else if (tempArray[id].selectFamily.value == "name") {
-                            for (let i = 0; i < res.length; i++) {
-                                SearchResArr.push(res[i].name)
+                            for (let i = 0; i < res.data.length; i++) {
+                                SearchResArr.push(res.data[i].name)
                             }
                         } else if (tempArray[id].selectFamily.value == "description") {
-                            for (let i = 0; i < res.length; i++) {
-                                SearchResArr.push(res[i].description)
+                            for (let i = 0; i < res.data.length; i++) {
+                                SearchResArr.push(res.data[i].description)
                             }
                         }
                         obj.selectOptions = SearchResArr;
@@ -312,27 +312,27 @@ const SolutionQuerySearchComp = (props) => {
                 props?.setLoadingItem(true)
                 const res2 = await itemSearch(searchStr)
                 let temArray = []
-                for (let i = 0; i <= res2.length; i++) {
-                    if (res2[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
-                        temArray[0] = res2[i]
-                        res2.splice(i, 1)
+                for (let i = 0; i <= res2.data.length; i++) {
+                    if (res2.data[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+                        temArray[0] = res2.data[i]
+                        res2.data.splice(i, 1)
                         break
                     }
                 }
-                temArray[0].associatedServiceOrBundle = res2
+                temArray[0].associatedServiceOrBundle = res2.data
                 props.setBundleItems(temArray)
                 props.setLoadingItem(false)
             } else if (props.compoFlag === "portfolioTempItemSearch") {
 
                 const res3 = await portfolioSearch(searchStr)
                 console.log("res3 is  : ", res3)
-                if (!res3.length > 0) {
+                if (!res3.data.length > 0) {
                     props.setLoadingStatus("")
                     props.setPortfolioTempMasterData([])
                     // props.ItemSearchResponseFun([], querySearchSelector)
                     throw "No record found"
                 } else {
-                    props.setPortfolioTempMasterData(res3)
+                    props.setPortfolioTempMasterData(res3.data)
                     // props.ItemSearchResponseFun(res3, querySearchSelector)
                     props.setLoadingStatus("")
 
@@ -417,12 +417,12 @@ const SolutionQuerySearchComp = (props) => {
                     querySearchSelector[i].inputSearch;
             }
             const res = await itemSearch(searchStr)
-            if (!res.length > 0) {
+            if (!res.data.length > 0) {
                 props.setLoadingItem("11")
                 props.setTempBundleService1([])
                 throw "No record found"
             } else {
-                props.setTempBundleService1(res)
+                props.setTempBundleService1(res.data)
                 props.setLoadingItem("11")
 
             }

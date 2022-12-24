@@ -67,14 +67,14 @@ export const updatePortfolio = (portfolioId, data) => {
 
 export const portfolioSearch = (searchStr) => {
   console.log("portfolioService > portfolioSearch called...");
-  console.log("PAth is : ", PORTFOLIO_SEARCH_URL+searchStr);
   return new Promise((resolve, reject) => {
     try {
       axios
         .get(PORTFOLIO_SEARCH_URL+searchStr, { headers: headersdata })
         .then((res) => {
           console.log("portfolioSearch > axios res=", res);
-          resolve(res.data);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("portfolioSearch > axios err=", err);

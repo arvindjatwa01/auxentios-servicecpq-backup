@@ -3249,42 +3249,44 @@ export const Analytics = () => {
                      </div> */}
                   </div>
                </div>
-               <div className="bg-primary px-3 mb-3 border-radius-10">
-                  <div className="d-block d-md-flex justify-content-between align-items-center">
-
-                     <div className=" mx-2">
-
+               <div className="bg-primary px-3 mb-3 border-radius-10 ">
+                  <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
+                     <div className="mx-2">
                         <div className="d-flex align-items-center bg-primary w-100">
-                           <div className="d-flex mr-3" style={{ whiteSpace: 'pre' }}>
+                           <div className="d-flex mr-2" style={{ whiteSpace: 'pre' }}>
                               <h5 className="mr-2 mb-0 text-white"><span>Search</span></h5>
                               <p className="ml-4 mb-0">
-                                 <a href="#" className="ml-3 text-white"><EditOutlinedIcon /></a>
-                                 <a href="#" className="ml-3 text-white"><ShareOutlinedIcon /></a>
+                                 <a href="#" className="ml-3 text-white">
+                                    <EditOutlinedIcon />
+                                 </a>
+                                 <a href="#" className="ml-3 text-white">
+                                    <ShareOutlinedIcon />
+                                 </a>
                               </p>
                            </div>
-                           <div className="d-flex justify-content-between align-items-center w-100 mr-5">
+                           <div className="d-flex justify-content-between align-items-center w-100 mr-4">
                               <div className="row align-items-center m-0">
                                  {
                                     querySearchSelector.map((obj, i) => {
                                        return (
                                           <>
-                                             <div className="customselect d-flex align-items-center mr-3 my-2" key={i}>
-                                                {
-                                                   i > 0 ?
-                                                      <SelectFilter
-                                                         isClearable={true}
-                                                         defaultValue={{ label: "And", value: "AND" }}
-                                                         options={[
-                                                            { label: "And", value: "AND", id: i },
-                                                            { label: "Or", value: "OR", id: i },
-                                                         ]}
-                                                         placeholder="AND/OR"
-                                                         onChange={(e) => handleOperator(e, i)}
-                                                         // value={querySearchOperator[i]}
-                                                         value={obj.selectOperator}
+                                             <div className={`customselect ${i < ((querySearchSelector.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-10`}>
+                                                {i > 0 ? (
+                                                   <SelectFilter
+                                                      // isClearable={true}
+                                                      defaultValue={{ label: "And", value: "AND" }}
+                                                      options={[
+                                                         { label: "And", value: "AND", id: i },
+                                                         { label: "Or", value: "OR", id: i },
+                                                      ]}
+                                                      placeholder="AND/OR"
+                                                      onChange={(e) => handleOperator(e, i)}
+                                                      // value={querySearchOperator[i]}
+                                                      value={obj.selectOperator}
 
-                                                      /> : <></>
-                                                }
+                                                   />) : (
+                                                   <></>
+                                                )}
 
                                                 <div>
                                                    <SelectFilter
@@ -3301,8 +3303,13 @@ export const Analytics = () => {
                                                       value={obj.selectFamily}
                                                    />
                                                 </div>
-                                                <div className="customselectsearch">
-                                                   <input className="custom-input-sleact"
+                                                <div className="customselectsearch customize">
+                                                   <span className={(i < (querySearchSelector.length - 1)) ? "search-icon-quote" : "search-icon-postn"}>
+                                                      <SearchIcon className="text-primary" />
+                                                   </span>
+                                                   <input
+                                                      className="custom-input-sleact "
+                                                      style={{ position: "relative" }}
                                                       type="text"
                                                       placeholder="Search string"
                                                       value={obj.inputSearch}
@@ -3311,27 +3318,33 @@ export const Analytics = () => {
                                                       autoComplete="off"
                                                    />
 
-                                                   {
+                                                   {/* {querySearchSelector.length} and {i} */}
+                                                   {(querySearchSelector.length - 1) === i ?
+                                                      <>
+                                                         <div className="bg-primary text-white btn" onClick={handleQuerySearchClick}>
+                                                            <span className="mr-2">
+                                                               <SearchIcon />
+                                                            </span>
+                                                            Search
+                                                         </div>
+                                                      </> : <></>}
 
-                                                      <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`} id="style">
-                                                         {obj.selectOptions.map((currentItem, j) => (
-                                                            <li
-                                                               className="list-group-item"
-                                                               key={j}
-                                                               onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
-                                                            >
-                                                               {currentItem}
-                                                            </li>
-                                                         ))}
-                                                      </ul>
-
-                                                   }
+                                                   {<ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`} id="style">
+                                                      {obj.selectOptions.map((currentItem, j) => (
+                                                         <li
+                                                            className="list-group-item"
+                                                            key={j}
+                                                            onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
+                                                         >
+                                                            {currentItem}
+                                                         </li>
+                                                      ))}
+                                                   </ul>}
                                                 </div>
                                              </div>
                                           </>
                                        );
-                                    })
-                                 }
+                                    })}
                                  <div
                                     onClick={(e) => addSearchQuerryHtml(e)}>
                                     <Link
@@ -3351,11 +3364,11 @@ export const Analytics = () => {
 
                               </div>
                            </div>
-                           <div className="pl-3 py-3">
+                           {/* <div className="pl-3 py-3">
                               <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-                                 <SearchIcon /><span className="ml-1">Search</span>
+                                 <SearchIcon /><span className="ml-1">Search </span>
                               </Link>
-                           </div>
+                           </div> */}
                         </div>
 
                      </div>

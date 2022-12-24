@@ -232,7 +232,7 @@ export function SolutionTemplateResult(props) {
    const [headerLoading, setHeaderLoading] = useState(false);
 
    const [selectedOption, setSelectedOption] = useState(null);
-   const [value, setValue] = React.useState('1');
+   const [value, setValue] = React.useState('general');
 
    const [value2, setValue2] = useState({
       value: "DRAFT",
@@ -325,7 +325,7 @@ export function SolutionTemplateResult(props) {
       generalViewOnly: true,
       validityViewOnly: true,
       strategyViewOnly: true,
-      administryViewOnly: true,
+      administrativeViewOnly: true,
       priceViewOnly: true,
    });
 
@@ -536,8 +536,8 @@ export function SolutionTemplateResult(props) {
       } else if (value === "3" && viewOnlyTab.strategyViewOnly) {
          setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
       }
-      else if (value === "administrative" && viewOnlyTab.administryViewOnly) {
-         setViewOnlyTab({ ...viewOnlyTab, administryViewOnly: false });
+      else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
+         setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
       }
       else if (value === "4" && viewOnlyTab.priceViewOnly) {
          setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: false });
@@ -2090,7 +2090,7 @@ export function SolutionTemplateResult(props) {
                   draggable: true,
                   progress: undefined,
                });
-               setValue("2");
+               setValue("validity");
                setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
                setGeneralComponentData({
                   ...generalComponentData,
@@ -2127,7 +2127,7 @@ export function SolutionTemplateResult(props) {
                   throw "Please fill date fields";
                }
             }
-            setValue("3");
+            setValue("strategy");
             setGeneralComponentData({
                ...generalComponentData,
                ...reqData,
@@ -2311,222 +2311,12 @@ export function SolutionTemplateResult(props) {
                   draggable: true,
                   progress: undefined,
                });
-               setValue("administrative");
+               setValue("price");
                setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
                console.log("strategy updating", strategyRes.data);
             } else {
                throw `${strategyRes.status}:error in update portfolio`;
             };
-         } else if (e.target.id == "administrative") {
-            const validator = new Validator();
-
-            if ((!validator.emailValidation(administrative.preparedBy) ||
-               administrative.preparedBy == "" ||
-               administrative.preparedBy == undefined) ||
-               (administrative.approvedBy != "" &&
-                  administrative.approvedBy != undefined &&
-                  !validator.emailValidation(administrative.approvedBy)) ||
-               (administrative.revisedBy != "" &&
-                  administrative.revisedBy != undefined &&
-                  !validator.emailValidation(administrative.revisedBy)) ||
-               (administrative.salesOffice == "" ||
-                  administrative.salesOffice == undefined)
-               // || (administrative.offerValidity == "" ||
-               // administrative.offerValidity == undefined)
-            ) {
-               throw "Please fill mandatory fields with valid data";
-            }
-            setGeneralComponentData({
-               ...generalComponentData,
-               preparedBy: administrative.preparedBy,
-               approvedBy: administrative.approvedBy,
-               preparedOn: administrative.preparedOn,
-               revisedBy: administrative.revisedBy,
-               revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice,
-               offerValidity: administrative.offerValidity,
-            });
-
-            const { portfolioId, ...res } = generalComponentData;
-
-            // Old Todo
-            // let Administryobj = {
-            //    ...res,
-            //    visibleInCommerce: true,
-            //    customerId: 0,
-            //    lubricant: true,
-            //    customerSegment: generalComponentData.customerSegment.value
-            //       ? generalComponentData.customerSegment.value
-            //       : "EMPTY",
-            //    machineType: generalComponentData.machineType
-            //       ? generalComponentData.machineType
-            //       : "EMPTY",
-            //    status: generalComponentData.status
-            //       ? generalComponentData.status
-            //       : "EMPTY",
-            //    strategyTask: generalComponentData.strategyTask
-            //       ? generalComponentData.strategyTask
-            //       : "EMPTY",
-            //    taskType: generalComponentData.taskType
-            //       ? generalComponentData.taskType
-            //       : "EMPTY",
-            //    usageCategory: generalComponentData.usageCategory
-            //       ? generalComponentData.usageCategory
-            //       : "EMPTY",
-            //    productHierarchy: generalComponentData.productHierarchy
-            //       ? generalComponentData.productHierarchy
-            //       : "EMPTY",
-            //    geographic: generalComponentData.geographic
-            //       ? generalComponentData.geographic
-            //       : "EMPTY",
-            //    availability: generalComponentData.availability
-            //       ? generalComponentData.availability
-            //       : "EMPTY",
-            //    responseTime: generalComponentData.responseTime
-            //       ? generalComponentData.responseTime
-            //       : "EMPTY",
-            //    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-            //    application: generalComponentData.application
-            //       ? generalComponentData.application
-            //       : "EMPTY",
-            //    contractOrSupport: generalComponentData.contractOrSupport
-            //       ? generalComponentData.contractOrSupport
-            //       : "EMPTY",
-            //    solutionType: solutionTypeListKeyValue.value ?
-            //       solutionTypeListKeyValue.value : "EMPTY",
-            //    solutionLevel: solutionLevelListKeyValue.value ?
-            //       solutionLevelListKeyValue.value : "EMPTY",
-            //    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-            //    //     ? generalComponentData.lifeStageOfMachine
-            //    //     : "EMPTY",
-            //    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-            //    supportLevel: generalComponentData.supportLevel
-            //       ? generalComponentData.supportLevel
-            //       : "EMPTY",
-            //    customItems: [],
-            //    items: [],
-            //    customCoverages: [],
-            //    customerGroup: generalComponentData.customerGroup
-            //       ? generalComponentData.customerGroup
-            //       : "EMPTY",
-            //    searchTerm: "EMPTY",
-            //    // supportLevel: "PREMIUM",
-            //    supportLevel: value3.value,
-            //    // portfolioPrice: {},
-            //    // additionalPrice: {},
-            //    // escalationPrice: {},
-
-            //    usageCategory: categoryUsageKeyValue1.value,
-            //    taskType: stratgyTaskTypeKeyValue.value,
-            //    strategyTask: stratgyTaskUsageKeyValue.value,
-            //    responseTime: stratgyResponseTimeKeyValue.value,
-            //    productHierarchy: stratgyHierarchyKeyValue.value,
-            //    geographic: stratgyGeographicKeyValue.value,
-            //    numberOfEvents: 0,
-            //    rating: "",
-            //    startUsage: "",
-            //    endUsage: "",
-            //    unit: "HOURS",
-            //    additionals: "",
-            //    preparedBy: administrative.preparedBy,
-            //    approvedBy: administrative.approvedBy,
-            //    preparedOn: administrative.preparedOn,
-            //    revisedBy: administrative.revisedBy,
-            //    revisedOn: administrative.revisedOn,
-            //    salesOffice: administrative.salesOffice?.value,
-            //    offerValidity: administrative.offerValidity,
-            //    template: flagTemplate,
-            //    visibleInCommerce: flagCommerce,
-
-            // };
-
-            // New Todo
-            let administrativeObj = {
-               name: generalComponentData.name,
-               description: generalComponentData.description,
-               externalReference: generalComponentData.externalReference,
-               customerSegment: generalComponentData?.customerSegment?.value,
-               template: flagTemplate,
-               visibleInCommerce: flagCommerce,
-
-               validFrom: validityData.fromDate,
-               validTo: validityData.toDate,
-
-
-               responseTime: stratgyResponseTimeKeyValue?.value ?
-                  stratgyResponseTimeKeyValue?.value : "PROACTIVE",
-               productHierarchy: stratgyHierarchyKeyValue?.value ?
-                  stratgyHierarchyKeyValue?.value : "END_PRODUCT",
-               geographic: stratgyGeographicKeyValue?.value ?
-                  stratgyGeographicKeyValue?.value : "ONSITE",
-               solutionType: solutionTypeListKeyValue?.value ?
-                  solutionTypeListKeyValue?.value : "CONTRACT",
-               solutionLevel: solutionLevelListKeyValue?.value ?
-                  solutionLevelListKeyValue?.value : "LEVEL_I",
-
-               preparedBy: administrative.preparedBy,
-               approvedBy: administrative.approvedBy,
-               preparedOn: administrative.preparedOn,
-               revisedBy: administrative.revisedBy,
-               revisedOn: administrative.revisedOn,
-               salesOffice: administrative.salesOffice?.value,
-               offerValidity: administrative.offerValidity?.value,
-
-               portfolioPrice: portfolioPriceDataId,
-               additionalPrice: portfolioAdditionalPriceDataId,
-               escalationPrice: portfolioEscalationPriceDataId,
-
-
-               supportLevel: value3.value,
-               status: value2.value,
-
-               machineType: "NEW",
-               searchTerm: "",
-               lubricant: true,
-               customerId: 0,
-               customerGroup: "",
-               strategyTask: "PREVENTIVE_MAINTENANCE",
-               taskType: "PM1",
-               usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-               availability: "AVAILABILITY_GREATER_95",
-               type: "MACHINE",
-               application: "HILL",
-               contractOrSupport: "LEVEL_I",
-               lifeStageOfMachine: "NEW_BREAKIN",
-               numberOfEvents: 0,
-               rating: "",
-               startUsage: 0,
-               endUsage: 0,
-               unit: "HOURS",
-               additionals: "",
-
-               customItems: selectedSolutionCustomItems,
-               customCoverages: selectedSolutionCustomCoverages,
-
-            };
-
-            const administrativeRes = await updateCustomPortfolio(
-               portfolioId,
-               administrativeObj
-            );
-            if (administrativeRes.status === 200) {
-               toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
-                  position: "top-right",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-               });
-               // setValue("administrative");
-               setValue("4");
-               setViewOnlyTab({ ...viewOnlyTab, administryViewOnly: true });
-               console.log("administryRes updating", administrativeRes.data);
-            } else {
-               throw `${administrativeRes.status}:error in update portfolio`;
-            };
-
          } else if (e.target.id == "price") {
 
             // update Exiting Escalation Price
@@ -2820,13 +2610,14 @@ export function SolutionTemplateResult(props) {
                   draggable: true,
                   progress: undefined,
                });
-               setValue("5");
+               setValue("priceAgreement");
                setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
             } else {
                throw `${priceObjRes.status}:error in update portfolio`;
             };
-         }
-         else if (e.target.id == "coverage") {
+         } else if (e.target.id == "priceAgreement") {
+            setValue("coverage");
+         } else if (e.target.id == "coverage") {
 
 
             let cvgIds = [];
@@ -2956,40 +2747,226 @@ export function SolutionTemplateResult(props) {
                      draggable: true,
                      progress: undefined,
                   });
-                  setValue("6");
+                  setValue("administrative");
                } else {
                   throw `${updatePortfolioRes.status}:unable to update`;
                }
             }
+         } else if (e.target.id == "administrative") {
+            const validator = new Validator();
+
+            // if ((!validator.emailValidation(administrative.preparedBy) ||
+            //    administrative.preparedBy == "" ||
+            //    administrative.preparedBy == undefined) ||
+            //    (administrative.approvedBy != "" &&
+            //       administrative.approvedBy != undefined &&
+            //       !validator.emailValidation(administrative.approvedBy)) ||
+            //    (administrative.revisedBy != "" &&
+            //       administrative.revisedBy != undefined &&
+            //       !validator.emailValidation(administrative.revisedBy)) ||
+            //    (administrative.salesOffice == "" ||
+            //       administrative.salesOffice == undefined)
+            // )
+            if ((administrative.preparedBy == "" ||
+               administrative.preparedBy == undefined) ||
+               (administrative.salesOffice == "" ||
+                  administrative.salesOffice == undefined)
+            ) {
+               throw "Please fill mandatory fields with valid data";
+            }
+            setGeneralComponentData({
+               ...generalComponentData,
+               preparedBy: administrative.preparedBy,
+               approvedBy: administrative.approvedBy,
+               preparedOn: administrative.preparedOn,
+               revisedBy: administrative.revisedBy,
+               revisedOn: administrative.revisedOn,
+               salesOffice: administrative.salesOffice,
+               offerValidity: administrative.offerValidity,
+            });
+
+            const { portfolioId, ...res } = generalComponentData;
+
+            // Old Todo
+            // let Administryobj = {
+            //    ...res,
+            //    visibleInCommerce: true,
+            //    customerId: 0,
+            //    lubricant: true,
+            //    customerSegment: generalComponentData.customerSegment.value
+            //       ? generalComponentData.customerSegment.value
+            //       : "EMPTY",
+            //    machineType: generalComponentData.machineType
+            //       ? generalComponentData.machineType
+            //       : "EMPTY",
+            //    status: generalComponentData.status
+            //       ? generalComponentData.status
+            //       : "EMPTY",
+            //    strategyTask: generalComponentData.strategyTask
+            //       ? generalComponentData.strategyTask
+            //       : "EMPTY",
+            //    taskType: generalComponentData.taskType
+            //       ? generalComponentData.taskType
+            //       : "EMPTY",
+            //    usageCategory: generalComponentData.usageCategory
+            //       ? generalComponentData.usageCategory
+            //       : "EMPTY",
+            //    productHierarchy: generalComponentData.productHierarchy
+            //       ? generalComponentData.productHierarchy
+            //       : "EMPTY",
+            //    geographic: generalComponentData.geographic
+            //       ? generalComponentData.geographic
+            //       : "EMPTY",
+            //    availability: generalComponentData.availability
+            //       ? generalComponentData.availability
+            //       : "EMPTY",
+            //    responseTime: generalComponentData.responseTime
+            //       ? generalComponentData.responseTime
+            //       : "EMPTY",
+            //    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            //    application: generalComponentData.application
+            //       ? generalComponentData.application
+            //       : "EMPTY",
+            //    contractOrSupport: generalComponentData.contractOrSupport
+            //       ? generalComponentData.contractOrSupport
+            //       : "EMPTY",
+            //    solutionType: solutionTypeListKeyValue.value ?
+            //       solutionTypeListKeyValue.value : "EMPTY",
+            //    solutionLevel: solutionLevelListKeyValue.value ?
+            //       solutionLevelListKeyValue.value : "EMPTY",
+            //    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+            //    //     ? generalComponentData.lifeStageOfMachine
+            //    //     : "EMPTY",
+            //    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+            //    supportLevel: generalComponentData.supportLevel
+            //       ? generalComponentData.supportLevel
+            //       : "EMPTY",
+            //    customItems: [],
+            //    items: [],
+            //    customCoverages: [],
+            //    customerGroup: generalComponentData.customerGroup
+            //       ? generalComponentData.customerGroup
+            //       : "EMPTY",
+            //    searchTerm: "EMPTY",
+            //    // supportLevel: "PREMIUM",
+            //    supportLevel: value3.value,
+            //    // portfolioPrice: {},
+            //    // additionalPrice: {},
+            //    // escalationPrice: {},
+
+            //    usageCategory: categoryUsageKeyValue1.value,
+            //    taskType: stratgyTaskTypeKeyValue.value,
+            //    strategyTask: stratgyTaskUsageKeyValue.value,
+            //    responseTime: stratgyResponseTimeKeyValue.value,
+            //    productHierarchy: stratgyHierarchyKeyValue.value,
+            //    geographic: stratgyGeographicKeyValue.value,
+            //    numberOfEvents: 0,
+            //    rating: "",
+            //    startUsage: "",
+            //    endUsage: "",
+            //    unit: "HOURS",
+            //    additionals: "",
+            //    preparedBy: administrative.preparedBy,
+            //    approvedBy: administrative.approvedBy,
+            //    preparedOn: administrative.preparedOn,
+            //    revisedBy: administrative.revisedBy,
+            //    revisedOn: administrative.revisedOn,
+            //    salesOffice: administrative.salesOffice?.value,
+            //    offerValidity: administrative.offerValidity,
+            //    template: flagTemplate,
+            //    visibleInCommerce: flagCommerce,
+
+            // };
+
+            // New Todo
+            let administrativeObj = {
+               name: generalComponentData.name,
+               description: generalComponentData.description,
+               externalReference: generalComponentData.externalReference,
+               customerSegment: generalComponentData?.customerSegment?.value,
+               template: flagTemplate,
+               visibleInCommerce: flagCommerce,
+
+               validFrom: validityData.fromDate,
+               validTo: validityData.toDate,
+
+
+               responseTime: stratgyResponseTimeKeyValue?.value ?
+                  stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+               productHierarchy: stratgyHierarchyKeyValue?.value ?
+                  stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+               geographic: stratgyGeographicKeyValue?.value ?
+                  stratgyGeographicKeyValue?.value : "ONSITE",
+               solutionType: solutionTypeListKeyValue?.value ?
+                  solutionTypeListKeyValue?.value : "CONTRACT",
+               solutionLevel: solutionLevelListKeyValue?.value ?
+                  solutionLevelListKeyValue?.value : "LEVEL_I",
+
+               preparedBy: administrative.preparedBy,
+               approvedBy: administrative.approvedBy,
+               preparedOn: administrative.preparedOn,
+               revisedBy: administrative.revisedBy,
+               revisedOn: administrative.revisedOn,
+               salesOffice: administrative.salesOffice?.value,
+               offerValidity: administrative.offerValidity?.value,
+
+               portfolioPrice: portfolioPriceDataId,
+               additionalPrice: portfolioAdditionalPriceDataId,
+               escalationPrice: portfolioEscalationPriceDataId,
+
+
+               supportLevel: value3.value,
+               status: value2.value,
+
+               machineType: "NEW",
+               searchTerm: "",
+               lubricant: true,
+               customerId: 0,
+               customerGroup: "",
+               strategyTask: "PREVENTIVE_MAINTENANCE",
+               taskType: "PM1",
+               usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+               availability: "AVAILABILITY_GREATER_95",
+               type: "MACHINE",
+               application: "HILL",
+               contractOrSupport: "LEVEL_I",
+               lifeStageOfMachine: "NEW_BREAKIN",
+               numberOfEvents: 0,
+               rating: "",
+               startUsage: 0,
+               endUsage: 0,
+               unit: "HOURS",
+               additionals: "",
+
+               customItems: selectedSolutionCustomItems,
+               customCoverages: selectedSolutionCustomCoverages,
+
+            };
+
+            const administrativeRes = await updateCustomPortfolio(
+               portfolioId,
+               administrativeObj
+            );
+            if (administrativeRes.status === 200) {
+               toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+               });
+               // setValue("administrative");
+               // setValue("4");
+               setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+               console.log("administrativeRes updating", administrativeRes.data);
+            } else {
+               throw `${administrativeRes.status}:error in update portfolio`;
+            };
+
          }
-         // else if (e.target.id == "coverage") {
-         //     let cvgIds = [];
 
-         //     for (let i = 0; i < selectedMasterData.length; i++) {
-         //         let reqObj = {
-         //           coverageId: 0,
-         //           serviceId: 0,
-         //           modelNo: "992k",
-         //           serialNumber: "",
-         //           startSerialNumber: "",
-         //           endSerialNumber: "",
-         //           serialNumberPrefix: "",
-         //           family: "10",
-         //           make: "RM5",
-         //           fleet: "",
-         //           fleetSize: "SMALL",
-         //           location: "",
-         //           startDate: "",
-         //           endDate: "",
-         //           actions: "",
-         //           createdAt: "",
-         //         };
-         //         const res = await createCoverage(reqObj);
-         //         console.log("createCoverage res:", res);
-         //         cvgIds.push({ coverageId: res.coverageId });
-         //       }
-
-         // }
       } catch (error) {
          console.log("somehing went wrong:", error);
          toast("😐" + error, {
@@ -5757,17 +5734,17 @@ export function SolutionTemplateResult(props) {
                         <TabContext value={value}>
                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                               <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
-                                 <Tab label="General" value="1" />
-                                 <Tab label="Validity " value="2" />
-                                 <Tab label="Strategy" value="3" />
-                                 <Tab label="Administrative" value={"administrative"} />
-                                 <Tab label="Price" value="4" />
+                                 <Tab label="General" value={"general"} />
+                                 <Tab label="Validity " value={"validity"} />
+                                 <Tab label="Strategy" value={"strategy"} />
+                                 <Tab label="Price" value={"price"} />
                                  {/* <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" /> */}
-                                 <Tab label="Price Agreement" value="5" />
-                                 <Tab label="Coverage" value="6" />
+                                 <Tab label="Price Agreement" value={"priceAgreement"} />
+                                 <Tab label="Coverage" value={"coverage"} />
+                                 <Tab label="Administrative" value={"administrative"} />
                               </TabList>
                            </Box>
-                           <TabPanel value="1">
+                           <TabPanel value={"general"}>
                               {!viewOnlyTab.generalViewOnly ? (
                                  <>
                                     <div className="row mt-4 input-fields">
@@ -6044,7 +6021,8 @@ export function SolutionTemplateResult(props) {
                                         <></>
                                     )} */}
                            </TabPanel>
-                           <TabPanel value="2">
+
+                           <TabPanel value={"validity"}>
 
                               <div className="row mt-4 input-fields">
                                  <div className="col-md-12">
@@ -6238,7 +6216,8 @@ export function SolutionTemplateResult(props) {
                                  </button>
                               </div>
                            </TabPanel>
-                           <TabPanel value="3">
+
+                           <TabPanel value={"strategy"}>
                               {!viewOnlyTab.strategyViewOnly ? (
                                  <>
                                     <div className="row input-fields">
@@ -6636,347 +6615,8 @@ export function SolutionTemplateResult(props) {
                                         <></>
                                     )} */}
                            </TabPanel>
-                           <TabPanel value={"administrative"}>
-                              {!viewOnlyTab.administryViewOnly ?
-                                 <>
-                                    <div className="row input-fields">
-                                       <div className="col-md-4 col-sm-4">
-                                          <div className="form-group">
-                                             <label
-                                                className="text-light-dark font-size-14 font-weight-500"
-                                                htmlFor="exampleInputEmail1"
-                                             >
-                                                PREPARED BY
-                                             </label>
-                                             <input
-                                                type="text"
-                                                className="form-control border-radius-10 text-primary"
-                                                name="preparedBy"
-                                                placeholder="Required (ex-abc@gmail.com)"
-                                                value={administrative.preparedBy}
-                                                onChange={handleAdministrativreChange}
-                                             />
-                                          </div>
-                                       </div>
-                                       <div className="col-md-4 col-sm-4">
-                                          <div className="form-group">
-                                             <label
-                                                className="text-light-dark font-size-14 font-weight-500"
-                                                htmlFor="exampleInputEmail1"
-                                             >
-                                                APPROVED BY
-                                             </label>
-                                             <input
-                                                type="text"
-                                                className="form-control border-radius-10 text-primary"
-                                                placeholder="Optional (ex-abc@gmail.com)"
-                                                name="approvedBy"
-                                                value={administrative.approvedBy}
-                                                onChange={handleAdministrativreChange}
-                                             />
-                                          </div>
-                                       </div>
-                                       <div className="col-md-4 col-sm-4">
-                                          {/* <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    PREPARED ON
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="preparedOn"
-                                                    value={administrative.preparedOn}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div> */}
-                                          <div className="form-group">
-                                             <div className=" date-box w-100">
-                                                <label
-                                                   className="text-light-dark font-size-14 font-weight-500"
-                                                   htmlFor="exampleInputEmail1"
-                                                >
-                                                   <span className=" mr-2">PREPARED ON</span>
-                                                </label>
 
-                                                <div className="form-group w-100">
-                                                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                      <DatePicker
-                                                         variant="inline"
-                                                         format="dd/MM/yyyy"
-                                                         className="form-controldate border-radius-10 text-primary"
-                                                         label=""
-                                                         name="preparedOn"
-                                                         value={administrative.preparedOn}
-                                                         onChange={(e) =>
-                                                            setAdministrative({
-                                                               ...administrative,
-                                                               preparedOn: e,
-                                                            })
-                                                         }
-                                                      />
-                                                   </MuiPickersUtilsProvider>
-                                                </div>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
-                                    <div className="row input-fields">
-                                       <div className="col-md-4 col-sm-4">
-                                          <div className="form-group">
-                                             <label
-                                                className="text-light-dark font-size-14 font-weight-500"
-                                                htmlFor="exampleInputEmail1"
-                                             >
-                                                REVISED BY
-                                             </label>
-                                             <input
-                                                type="text"
-                                                className="form-control border-radius-10 text-primary"
-                                                placeholder="Optional (ex-abc@gmail.com)"
-                                                name="revisedBy"
-                                                value={administrative.revisedBy}
-                                                onChange={handleAdministrativreChange}
-                                             />
-                                          </div>
-                                       </div>
-                                       <div className="col-md-4 col-sm-4">
-                                          <div className="form-group">
-                                             {/* <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    REVISED ON
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="revisedOn"
-                                                    value={administrative.revisedOn}
-                                                    onChange={handleAdministrativreChange}
-                                                /> */}
-                                             <div className=" date-box w-100">
-                                                <label
-                                                   className="text-light-dark font-size-14 font-weight-500"
-                                                   htmlFor="exampleInputEmail1"
-                                                >
-                                                   <span className=" mr-2">REVISED ON</span>
-                                                </label>
-
-                                                <div className="form-group w-100">
-                                                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                      <DatePicker
-                                                         variant="inline"
-                                                         format="dd/MM/yyyy"
-                                                         className="form-controldate border-radius-10 text-primary"
-                                                         label=""
-                                                         name="revisedOn"
-                                                         value={administrative.revisedOn}
-                                                         onChange={(e) =>
-                                                            setAdministrative({
-                                                               ...administrative,
-                                                               revisedOn: e,
-                                                            })
-                                                         }
-                                                      />
-                                                   </MuiPickersUtilsProvider>
-                                                </div>
-                                             </div>
-                                          </div>
-                                       </div>
-                                       <div className="col-md-4 col-sm-4">
-                                          <div className="form-group">
-                                             <label
-                                                className="text-light-dark font-size-14 font-weight-500"
-                                                htmlFor="exampleInputEmail1"
-                                             >
-                                                SALES OFFICE / BRANCH
-                                             </label>
-                                             <Select
-                                                onChange={(e) =>
-                                                   setAdministrative({
-                                                      ...administrative,
-                                                      salesOffice: e,
-                                                   })
-                                                }
-                                                className="text-primary"
-                                                options={salesOfficeOptions}
-                                                placeholder="Required"
-                                                value={administrative.salesOffice}
-                                                styles={FONT_STYLE_SELECT}
-                                             />
-                                             {/* <input
-                                                type="text"
-                                                className="form-control border-radius-10 text-primary"
-                                                name="salesOffice"
-                                                value={administrative.salesOffice?.value}
-                                                onChange={handleAdministrativreChange}
-                                             /> */}
-                                          </div>
-                                       </div>
-                                    </div>
-                                    <div className="row input-fields">
-                                       <div className="col-md-4 col-sm-4">
-                                          <div className="form-group">
-                                             <label
-                                                className="text-light-dark font-size-14 font-weight-500"
-                                                htmlFor="exampleInputEmail1"
-                                             >
-                                                OFFER VALIDITY
-                                             </label>
-                                             <Select
-                                                // defaultValue={selectedOption}
-                                                onChange={(e) =>
-                                                   setAdministrative({
-                                                      ...administrative,
-                                                      offerValidity: e,
-                                                   })
-                                                }
-                                                className="text-primary"
-                                                options={validityOptions}
-                                                placeholder="Optional"
-                                                value={administrative.offerValidity}
-                                                styles={FONT_STYLE_SELECT}
-                                             />
-                                             {/* <input
-                                                type="text"
-                                                className="form-control border-radius-10 text-primary"
-                                                placeholder="Optional"
-                                                name="offerValidity"
-                                                value={administrative.offerValidity}
-                                                onChange={handleAdministrativreChange}
-                                             /> */}
-                                          </div>
-                                       </div>
-                                    </div>
-                                    <div className="row" style={{ justifyContent: "right" }}>
-                                       <button
-                                          type="button"
-                                          onClick={handleNextClick}
-                                          className="btn btn-light"
-                                          id="administrative"
-                                       >
-                                          Save & Next
-                                       </button>
-                                    </div>
-                                 </> : (<div className="row">
-                                    <div className="col-md-4 col-sm-4">
-                                       <div className="form-group">
-                                          <p className="font-size-12 font-weight-500 mb-2">
-                                             PREPARED BY
-                                             {/* {console.log("new dataa : ", coverageData.machineType)} */}
-                                          </p>
-                                          <h6 className="font-weight-500 text-primary font-size-17">
-                                             {(administrative?.preparedBy == "" ||
-                                                administrative?.preparedBy == null ||
-                                                administrative?.preparedBy == "string" ||
-                                                administrative?.preparedBy == undefined)
-                                                ? "NA" : administrative?.preparedBy}
-                                          </h6>
-                                       </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                       <div className="form-group">
-                                          <p className="font-size-12 font-weight-500 mb-2">
-                                             APPROVED BY
-                                          </p>
-                                          <h6 className="font-weight-500 text-primary font-size-17">
-                                             {(administrative?.approvedBy == "" ||
-                                                administrative?.approvedBy == null ||
-                                                administrative?.approvedBy == "string" ||
-                                                administrative?.approvedBy == undefined)
-                                                ? "NA" : administrative?.approvedBy}
-                                          </h6>
-                                       </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                       <div className="form-group">
-                                          <p className="font-size-12 font-weight-500 mb-2">
-                                             PREPARED ON
-                                          </p>
-                                          <h6 className="font-weight-500 text-primary font-size-17">
-                                             {(
-                                                administrative.preparedOn == "" ||
-                                                   administrative.preparedOn == "string" ||
-                                                   administrative.preparedOn == undefined ||
-                                                   administrative.preparedOn == null
-                                                   ? "NA" :
-                                                   getFormattedDateTimeByTimeStamp(administrative.preparedOn)
-                                             )}
-                                          </h6>
-                                       </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                       <div className="form-group">
-                                          <p className="font-size-12 font-weight-500 mb-2">
-                                             REVISED BY
-                                          </p>
-                                          <h6 className="font-weight-500 text-primary font-size-17">
-                                             {(
-                                                administrative.revisedBy == "" ||
-                                                   administrative.revisedBy == "string" ||
-                                                   administrative.revisedBy == undefined ||
-                                                   administrative.revisedBy == null ?
-                                                   "NA" : administrative.revisedBy)}
-                                          </h6>
-                                       </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                       <div className="form-group">
-                                          <p className="font-size-12 font-weight-500 mb-2">
-                                             REVISED  ON
-                                          </p>
-                                          <h6 className="font-weight-500 text-primary font-size-17">
-                                             {(
-                                                administrative.revisedOn == "" ||
-                                                   administrative.revisedOn == "string" ||
-                                                   administrative.revisedOn == undefined ||
-                                                   administrative.revisedOn == null
-                                                   ? "NA" :
-                                                   getFormattedDateTimeByTimeStamp(administrative.revisedOn)
-                                             )}
-                                          </h6>
-                                       </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                       <div className="form-group">
-                                          <p className="font-size-12 font-weight-500 mb-2">
-                                             SALES OFFICE / BRANCH
-                                          </p>
-                                          <h6 className="font-weight-500 text-primary font-size-17">
-                                             {(
-                                                administrative.salesOffice == "" ||
-                                                   administrative.salesOffice == "string" ||
-                                                   administrative.salesOffice == undefined ||
-                                                   administrative.salesOffice == null
-                                                   ? "NA" : administrative.salesOffice?.value)}
-                                          </h6>
-                                       </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                       <div className="form-group">
-                                          <p className="font-size-12 font-weight-500 mb-2">
-                                             OFFER VALIDITY
-                                          </p>
-                                          <h6 className="font-weight-500 text-primary font-size-17">
-                                             {(
-                                                administrative.offerValidity == "" ||
-                                                   administrative.offerValidity == "string" ||
-                                                   administrative.offerValidity == undefined ||
-                                                   administrative.offerValidity == null
-                                                   ? "NA" : administrative.offerValidity?.label)}
-                                          </h6>
-                                       </div>
-                                    </div>
-                                 </div>)}
-
-
-                           </TabPanel>
-                           <TabPanel value="4">
+                           <TabPanel value={"price"}>
                               {!viewOnlyTab.priceViewOnly ?
                                  <>
                                     <div className="row input-fields">
@@ -7361,7 +7001,8 @@ export function SolutionTemplateResult(props) {
                                  </>
                               }
                            </TabPanel>
-                           <TabPanel value="5">
+
+                           <TabPanel value={"priceAgreement"}>
                               <div className="card border">
                                  <div className="d-flex align-items-center justify-content-between px-3">
                                     <div className="">
@@ -7409,15 +7050,20 @@ export function SolutionTemplateResult(props) {
                               </div>
                               <div className="row" style={{ justifyContent: "right" }}>
                                  <button
+                                    // type="button"
+                                    // onClick={() => setValue("6")}
+                                    // className="btn btn-light"
                                     type="button"
-                                    onClick={() => setValue("6")}
+                                    onClick={handleNextClick}
                                     className="btn btn-light"
+                                    id="priceAgreement"
                                  >
                                     Save & Next
                                  </button>
                               </div>
                            </TabPanel>
-                           <TabPanel value="6">
+
+                           <TabPanel value={"coverage"}>
                               <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
                                  <li><a className="cursor result" >Search Coverage</a></li>
                               </ul>
@@ -7755,12 +7401,351 @@ export function SolutionTemplateResult(props) {
                                        className="btn btn-light"
                                        id="coverage"
                                     >
-                                       Save
+                                       Save & Next
                                     </button>
                                  ) : (
                                     <></>
                                  )}
                               </div>
+                           </TabPanel>
+
+                           <TabPanel value={"administrative"}>
+                              {!viewOnlyTab.administrativeViewOnly ?
+                                 <>
+                                    <div className="row input-fields">
+                                       <div className="col-md-4 col-sm-4">
+                                          <div className="form-group">
+                                             <label
+                                                className="text-light-dark font-size-14 font-weight-500"
+                                                htmlFor="exampleInputEmail1"
+                                             >
+                                                PREPARED BY
+                                             </label>
+                                             <input
+                                                type="text"
+                                                className="form-control border-radius-10 text-primary"
+                                                name="preparedBy"
+                                                placeholder="Required (ex-abc@gmail.com)"
+                                                value={administrative.preparedBy}
+                                                onChange={handleAdministrativreChange}
+                                             />
+                                          </div>
+                                       </div>
+                                       <div className="col-md-4 col-sm-4">
+                                          <div className="form-group">
+                                             <label
+                                                className="text-light-dark font-size-14 font-weight-500"
+                                                htmlFor="exampleInputEmail1"
+                                             >
+                                                APPROVED BY
+                                             </label>
+                                             <input
+                                                type="text"
+                                                className="form-control border-radius-10 text-primary"
+                                                placeholder="Optional (ex-abc@gmail.com)"
+                                                name="approvedBy"
+                                                value={administrative.approvedBy}
+                                                onChange={handleAdministrativreChange}
+                                             />
+                                          </div>
+                                       </div>
+                                       <div className="col-md-4 col-sm-4">
+                                          {/* <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    PREPARED ON
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="preparedOn"
+                                                    value={administrative.preparedOn}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div> */}
+                                          <div className="form-group">
+                                             <div className=" date-box w-100">
+                                                <label
+                                                   className="text-light-dark font-size-14 font-weight-500"
+                                                   htmlFor="exampleInputEmail1"
+                                                >
+                                                   <span className=" mr-2">PREPARED ON</span>
+                                                </label>
+
+                                                <div className="form-group w-100">
+                                                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                      <DatePicker
+                                                         variant="inline"
+                                                         format="dd/MM/yyyy"
+                                                         className="form-controldate border-radius-10 text-primary"
+                                                         label=""
+                                                         name="preparedOn"
+                                                         value={administrative.preparedOn}
+                                                         onChange={(e) =>
+                                                            setAdministrative({
+                                                               ...administrative,
+                                                               preparedOn: e,
+                                                            })
+                                                         }
+                                                      />
+                                                   </MuiPickersUtilsProvider>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div className="row input-fields">
+                                       <div className="col-md-4 col-sm-4">
+                                          <div className="form-group">
+                                             <label
+                                                className="text-light-dark font-size-14 font-weight-500"
+                                                htmlFor="exampleInputEmail1"
+                                             >
+                                                REVISED BY
+                                             </label>
+                                             <input
+                                                type="text"
+                                                className="form-control border-radius-10 text-primary"
+                                                placeholder="Optional (ex-abc@gmail.com)"
+                                                name="revisedBy"
+                                                value={administrative.revisedBy}
+                                                onChange={handleAdministrativreChange}
+                                             />
+                                          </div>
+                                       </div>
+                                       <div className="col-md-4 col-sm-4">
+                                          <div className="form-group">
+                                             {/* <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    REVISED ON
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="revisedOn"
+                                                    value={administrative.revisedOn}
+                                                    onChange={handleAdministrativreChange}
+                                                /> */}
+                                             <div className=" date-box w-100">
+                                                <label
+                                                   className="text-light-dark font-size-14 font-weight-500"
+                                                   htmlFor="exampleInputEmail1"
+                                                >
+                                                   <span className=" mr-2">REVISED ON</span>
+                                                </label>
+
+                                                <div className="form-group w-100">
+                                                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                      <DatePicker
+                                                         variant="inline"
+                                                         format="dd/MM/yyyy"
+                                                         className="form-controldate border-radius-10 text-primary"
+                                                         label=""
+                                                         name="revisedOn"
+                                                         value={administrative.revisedOn}
+                                                         onChange={(e) =>
+                                                            setAdministrative({
+                                                               ...administrative,
+                                                               revisedOn: e,
+                                                            })
+                                                         }
+                                                      />
+                                                   </MuiPickersUtilsProvider>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div className="col-md-4 col-sm-4">
+                                          <div className="form-group">
+                                             <label
+                                                className="text-light-dark font-size-14 font-weight-500"
+                                                htmlFor="exampleInputEmail1"
+                                             >
+                                                SALES OFFICE / BRANCH
+                                             </label>
+                                             <Select
+                                                onChange={(e) =>
+                                                   setAdministrative({
+                                                      ...administrative,
+                                                      salesOffice: e,
+                                                   })
+                                                }
+                                                className="text-primary"
+                                                options={salesOfficeOptions}
+                                                placeholder="Required"
+                                                value={administrative.salesOffice}
+                                                styles={FONT_STYLE_SELECT}
+                                             />
+                                             {/* <input
+                                                type="text"
+                                                className="form-control border-radius-10 text-primary"
+                                                name="salesOffice"
+                                                value={administrative.salesOffice?.value}
+                                                onChange={handleAdministrativreChange}
+                                             /> */}
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div className="row input-fields">
+                                       <div className="col-md-4 col-sm-4">
+                                          <div className="form-group">
+                                             <label
+                                                className="text-light-dark font-size-14 font-weight-500"
+                                                htmlFor="exampleInputEmail1"
+                                             >
+                                                OFFER VALIDITY
+                                             </label>
+                                             <Select
+                                                // defaultValue={selectedOption}
+                                                onChange={(e) =>
+                                                   setAdministrative({
+                                                      ...administrative,
+                                                      offerValidity: e,
+                                                   })
+                                                }
+                                                className="text-primary"
+                                                options={validityOptions}
+                                                placeholder="Optional"
+                                                value={administrative.offerValidity}
+                                                styles={FONT_STYLE_SELECT}
+                                             />
+                                             {/* <input
+                                                type="text"
+                                                className="form-control border-radius-10 text-primary"
+                                                placeholder="Optional"
+                                                name="offerValidity"
+                                                value={administrative.offerValidity}
+                                                onChange={handleAdministrativreChange}
+                                             /> */}
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div className="row" style={{ justifyContent: "right" }}>
+                                       <button
+                                          type="button"
+                                          onClick={handleNextClick}
+                                          className="btn btn-light"
+                                          id="administrative"
+                                       >
+                                          Save
+                                       </button>
+                                    </div>
+                                 </> : (<div className="row">
+                                    <div className="col-md-4 col-sm-4">
+                                       <div className="form-group">
+                                          <p className="font-size-12 font-weight-500 mb-2">
+                                             PREPARED BY
+                                             {/* {console.log("new dataa : ", coverageData.machineType)} */}
+                                          </p>
+                                          <h6 className="font-weight-500 text-primary font-size-17">
+                                             {(administrative?.preparedBy == "" ||
+                                                administrative?.preparedBy == null ||
+                                                administrative?.preparedBy == "string" ||
+                                                administrative?.preparedBy == undefined)
+                                                ? "NA" : administrative?.preparedBy}
+                                          </h6>
+                                       </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                       <div className="form-group">
+                                          <p className="font-size-12 font-weight-500 mb-2">
+                                             APPROVED BY
+                                          </p>
+                                          <h6 className="font-weight-500 text-primary font-size-17">
+                                             {(administrative?.approvedBy == "" ||
+                                                administrative?.approvedBy == null ||
+                                                administrative?.approvedBy == "string" ||
+                                                administrative?.approvedBy == undefined)
+                                                ? "NA" : administrative?.approvedBy}
+                                          </h6>
+                                       </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                       <div className="form-group">
+                                          <p className="font-size-12 font-weight-500 mb-2">
+                                             PREPARED ON
+                                          </p>
+                                          <h6 className="font-weight-500 text-primary font-size-17">
+                                             {(
+                                                administrative.preparedOn == "" ||
+                                                   administrative.preparedOn == "string" ||
+                                                   administrative.preparedOn == undefined ||
+                                                   administrative.preparedOn == null
+                                                   ? "NA" :
+                                                   getFormattedDateTimeByTimeStamp(administrative.preparedOn)
+                                             )}
+                                          </h6>
+                                       </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                       <div className="form-group">
+                                          <p className="font-size-12 font-weight-500 mb-2">
+                                             REVISED BY
+                                          </p>
+                                          <h6 className="font-weight-500 text-primary font-size-17">
+                                             {(
+                                                administrative.revisedBy == "" ||
+                                                   administrative.revisedBy == "string" ||
+                                                   administrative.revisedBy == undefined ||
+                                                   administrative.revisedBy == null ?
+                                                   "NA" : administrative.revisedBy)}
+                                          </h6>
+                                       </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                       <div className="form-group">
+                                          <p className="font-size-12 font-weight-500 mb-2">
+                                             REVISED  ON
+                                          </p>
+                                          <h6 className="font-weight-500 text-primary font-size-17">
+                                             {(
+                                                administrative.revisedOn == "" ||
+                                                   administrative.revisedOn == "string" ||
+                                                   administrative.revisedOn == undefined ||
+                                                   administrative.revisedOn == null
+                                                   ? "NA" :
+                                                   getFormattedDateTimeByTimeStamp(administrative.revisedOn)
+                                             )}
+                                          </h6>
+                                       </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                       <div className="form-group">
+                                          <p className="font-size-12 font-weight-500 mb-2">
+                                             SALES OFFICE / BRANCH
+                                          </p>
+                                          <h6 className="font-weight-500 text-primary font-size-17">
+                                             {(
+                                                administrative.salesOffice == "" ||
+                                                   administrative.salesOffice == "string" ||
+                                                   administrative.salesOffice == undefined ||
+                                                   administrative.salesOffice == null
+                                                   ? "NA" : administrative.salesOffice?.value)}
+                                          </h6>
+                                       </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                       <div className="form-group">
+                                          <p className="font-size-12 font-weight-500 mb-2">
+                                             OFFER VALIDITY
+                                          </p>
+                                          <h6 className="font-weight-500 text-primary font-size-17">
+                                             {(
+                                                administrative.offerValidity == "" ||
+                                                   administrative.offerValidity == "string" ||
+                                                   administrative.offerValidity == undefined ||
+                                                   administrative.offerValidity == null
+                                                   ? "NA" : administrative.offerValidity?.label)}
+                                          </h6>
+                                       </div>
+                                    </div>
+                                 </div>)}
                            </TabPanel>
                         </TabContext>
                      )}

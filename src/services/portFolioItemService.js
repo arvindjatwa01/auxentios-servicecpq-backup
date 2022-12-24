@@ -87,7 +87,8 @@ export const itemSearch = (searchStr) => {
         .get(PORTFOLIO_ITEM_SEARCH() + searchStr, { headers: headersdata })
         .then((res) => {
           console.log("itemSearch > axios res=", res);
-          resolve(res.data);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("itemSearch > axios err=", err);

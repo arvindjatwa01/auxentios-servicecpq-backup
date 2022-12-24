@@ -454,6 +454,7 @@ export function CreatePortfolio(props) {
 
   const [portfolioId, setPortfolioId] = useState();
   const [currentItemId, setCurrentItemId] = useState();
+  const [nameIsNotEditAble, setNameIsNotEditAble] = useState(false)
 
   const [createdItemsIdData, setCreatedItemsIdData] = useState([]);
 
@@ -1204,9 +1205,22 @@ export function CreatePortfolio(props) {
           generalComponentData.portfolioId,
           obj
         );
-        if (updatePortfolioRes.status != 200) {
+        if (updatePortfolioRes.status === 200) {
+          toast(`👏 Portfolio <${generalComponentData.name}> saved Successfully`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
           throw `${updatePortfolioRes.status}:Something went wrong`;
         }
+        // if (updatePortfolioRes.status != 200) {
+        //   throw `${updatePortfolioRes.status}:Something went wrong`;
+        // }
       }
 
       setGeneralComponentData(_generalComponentData);
@@ -1436,11 +1450,24 @@ export function CreatePortfolio(props) {
             generalComponentData.portfolioId,
             obj
           );
-          if (updatePortfolioRes.status != 200) {
+          if (updatePortfolioRes.status == 200) {
+            toast(`👏 Portfolio <${generalComponentData.name}> saved Successfully`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else {
             throw `${updatePortfolioRes.status}:Something went wrong`;
           }
+          // if (updatePortfolioRes.status != 200) {
+          //   throw `${updatePortfolioRes.status}:Something went wrong`;
+          // }
         } else {
-          throw `Please Create portfolio`;
+          throw `Please Create portfolio first`;
         }
       } else {
         throw `${res.status}: ${serviceOrBundlePrefix} not created`;
@@ -2152,15 +2179,28 @@ export function CreatePortfolio(props) {
   const handleNextClick = async (e) => {
     try {
       if (e.target.id == "general") {
-        if (
-          generalComponentData.name === "" ||
-          generalComponentData.name == null ||
-          generalComponentData.externalReference === "" ||
-          generalComponentData.externalReference === null ||
-          prefilgabelGeneral === ""
-        ) {
-          throw "Please fill required field properly";
+
+        if (prefilgabelGeneral === "") {
+          throw "Select Type is a required field, you can’t leave it blank";
         }
+        if ((generalComponentData.name === "") ||
+          (generalComponentData.name == null)) {
+          throw `${prefilgabelGeneral == "PORTFOLIO" ? "Portfolio " : prefilgabelGeneral == "PROGRAM" ? "Program " : ""}Name is a required field, you can’t leave it blank`;
+        }
+        if ((generalComponentData.externalReference === "") ||
+          (generalComponentData.externalReference === null)) {
+          throw "Reference is a required field, you can’t leave it blank";
+        }
+
+        // if (
+        //   generalComponentData.name === "" ||
+        //   generalComponentData.name == null ||
+        //   generalComponentData.externalReference === "" ||
+        //   generalComponentData.externalReference === null ||
+        //   prefilgabelGeneral === ""
+        // ) {
+        //   throw "Please fill mandatory field properly";
+        // }
         // alert(state.type)
         if (state && state.type === "fetch") {
           // Old Todo Obj
@@ -2321,51 +2361,139 @@ export function CreatePortfolio(props) {
             throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
           };
         } else {
-          let reqData = {
-            type: prefilgabelGeneral,
-            name: generalComponentData.name,
-            description: generalComponentData.description,
-            externalReference: generalComponentData.externalReference,
-            customerSegment: generalComponentData.customerSegment
-              ? generalComponentData.customerSegment.value
-              : "",
+          if (portfolioId == undefined || portfolioId == null) {
+            let reqData = {
+              type: prefilgabelGeneral,
+              name: generalComponentData.name,
+              description: generalComponentData.description,
+              externalReference: generalComponentData.externalReference,
+              customerSegment: generalComponentData.customerSegment
+                ? generalComponentData.customerSegment.value
+                : "",
 
-            supportLevel: value3.value,
-            status: value2.value,
+              supportLevel: value3.value,
+              status: value2.value,
 
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            productHierarchy: "END_PRODUCT",
-            geographic: "ONSITE",
-            availability: "AVAILABILITY_GREATER_95",
-            responseTime: "PROACTIVE",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
-            serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-          };
-          const portfolioRes = await createPortfolio(reqData);
-          if (portfolioRes.status === 200) {
-            toast(`👏 Portfolio ${generalComponentData.name} Created`, {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
-            setValue("validity");
-            setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-            setGeneralComponentData({
-              ...generalComponentData,
-              portfolioId: portfolioRes.data.portfolioId,
-            });
-            setPortfolioId(portfolioRes.data.portfolioId);
+              strategyTask: "PREVENTIVE_MAINTENANCE",
+              taskType: "PM1",
+              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              productHierarchy: "END_PRODUCT",
+              geographic: "ONSITE",
+              availability: "AVAILABILITY_GREATER_95",
+              responseTime: "PROACTIVE",
+              type: "MACHINE",
+              application: "HILL",
+              contractOrSupport: "LEVEL_I",
+              lifeStageOfMachine: "NEW_BREAKIN",
+              serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+            };
+            const portfolioRes = await createPortfolio(reqData);
+            if (portfolioRes.status === 200) {
+              toast(`👏 Portfolio ${generalComponentData.name} Created`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              setValue("validity");
+              setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+              setGeneralComponentData({
+                ...generalComponentData,
+                portfolioId: portfolioRes.data.portfolioId,
+              });
+              setPortfolioId(portfolioRes.data.portfolioId);
+              setNameIsNotEditAble(true);
+            } else {
+              throw `${portfolioRes.status}:error in portfolio creation`;
+            }
           } else {
-            throw `${portfolioRes.status}:error in portfolio creation`;
+            let reqObj = {
+              portfolioId: portfolioId,
+              name: generalComponentData.name,
+              description: generalComponentData.description,
+              externalReference: generalComponentData.externalReference,
+              customerSegment: generalComponentData.customerSegment?.value,
+
+              validFrom: validityData.fromDate,
+              validTo: validityData.toDate,
+
+              usageCategory: categoryUsageKeyValue1.value
+                ? categoryUsageKeyValue1.value : "EMPTY",
+              strategyTask: stratgyTaskUsageKeyValue.value ?
+                stratgyTaskUsageKeyValue.value : "EMPTY",
+              taskType: stratgyTaskTypeKeyValue.value ?
+                stratgyTaskTypeKeyValue.value : "EMPTY",
+              responseTime: stratgyResponseTimeKeyValue.value ?
+                stratgyResponseTimeKeyValue.value : "EMPTY",
+              productHierarchy: stratgyHierarchyKeyValue.value ?
+                stratgyHierarchyKeyValue.value : "EMPTY",
+              geographic: stratgyGeographicKeyValue.value ?
+                stratgyGeographicKeyValue.value : "EMPTY",
+
+              preparedBy: administrative.preparedBy,
+              approvedBy: administrative.approvedBy,
+              preparedOn: administrative.preparedOn,
+              revisedBy: administrative.revisedBy,
+              revisedOn: administrative.revisedOn,
+              offerValidity: administrative.offerValidity?.value,
+              salesOffice: administrative.salesOffice?.value,
+
+              portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                ? portfolioPriceDataId : null,
+              additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                ? portfolioAdditionalPriceDataId : null,
+              escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                ? portfolioEscalationPriceDataId : null,
+
+              supportLevel: value3.value,
+              status: value2.value,
+
+              items: portfolioItems,
+              coverages: portfolioCoverage,
+
+              machineType: "NEW",
+              searchTerm: "",
+              lubricant: true,
+              customerId: 0,
+              customerGroup: "",
+              availability: "AVAILABILITY_GREATER_95",
+              type: "MACHINE",
+              application: "HILL",
+              contractOrSupport: "LEVEL_I",
+              lifeStageOfMachine: "NEW_BREAKIN",
+              numberOfEvents: 0,
+              rating: "",
+              startUsage: 0,
+              endUsage: 0,
+              unit: "HOURS",
+              additionals: "",
+              template: true,
+              visibleInCommerce: true
+            }
+
+            const exitsPortfolioUpdate = await updatePortfolio(
+              portfolioId,
+              reqObj
+            );
+            if (exitsPortfolioUpdate.status === 200) {
+              toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              // setValue("administrative");
+              setValue("validity");
+              setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+            } else {
+              throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
+            };
           }
         }
       } else if (e.target.id == "validity") {
@@ -2398,16 +2526,25 @@ export function CreatePortfolio(props) {
           ...generalComponentData,
           ...reqData,
         });
+        setNameIsNotEditAble(true);
         setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: true });
       } else if (e.target.id == "strategy") {
-        if (
-          categoryUsageKeyValue1.value == "" ||
-          stratgyTaskUsageKeyValue.value == "" ||
-          categoryUsageKeyValue1.value == undefined ||
-          stratgyTaskUsageKeyValue.value == undefined
-        ) {
-          throw "Please fill mandatory fields properly";
+        if ((categoryUsageKeyValue1.value == "") ||
+          (categoryUsageKeyValue1.value == undefined)) {
+          throw "Category usage is a required field, you can’t leave it blank";
         }
+        if ((stratgyTaskUsageKeyValue.value == "") ||
+          (stratgyTaskUsageKeyValue.value == undefined)) {
+          throw "Strategy Task is a required field, you can’t leave it blank";
+        }
+        // if (
+        //   categoryUsageKeyValue1.value == "" ||
+        //   stratgyTaskUsageKeyValue.value == "" ||
+        //   categoryUsageKeyValue1.value == undefined ||
+        //   stratgyTaskUsageKeyValue.value == undefined
+        // ) {
+        //   throw "Please fill mandatory fields properly";
+        // }
 
         if (state && state.type === "new") {
           setGeneralComponentData({
@@ -2692,13 +2829,17 @@ export function CreatePortfolio(props) {
 
       } else if (e.target.id == "price") {
 
-        if ((priceMethodKeyValue1.length === 0 ||
-          priceMethodKeyValue1?.value === "" ||
-          priceMethodKeyValue1?.value === null ||
-          priceMethodKeyValue1?.value === undefined)
-        ) {
-          throw "Please fill required field properly";
+        if ((priceMethodKeyValue1.value == "") ||
+          (priceMethodKeyValue1.value == undefined)) {
+          throw "Price method is a required field, you can’t leave it blank";
         }
+        // if ((priceMethodKeyValue1.length === 0 ||
+        //   priceMethodKeyValue1?.value === "" ||
+        //   priceMethodKeyValue1?.value === null ||
+        //   priceMethodKeyValue1?.value === undefined)
+        // ) {
+        //   throw "Please fill required field properly";
+        // }
 
         if (state && state.type === "new") {
           if (portfolioId == "") {
@@ -3483,8 +3624,20 @@ export function CreatePortfolio(props) {
           }
         }
       } else if (e.target.id == "administrative") {
-
         const validator = new Validator();
+
+        if ((administrative.preparedBy == "" ||
+          administrative.preparedBy == undefined)) {
+          throw "Prepared By is a required field, you can’t leave it blank";
+        }
+        if ((administrative.salesOffice == "" ||
+          administrative.salesOffice == undefined)) {
+          throw "Sales Office / Branch is a required field, you can’t leave it blank";
+        }
+        if ((administrative.offerValidity == "" ||
+          administrative.offerValidity == undefined)) {
+          throw "Offer validity is a required field, you can’t leave it blank";
+        }
 
         // if ((!validator.emailValidation(administrative.preparedBy) ||
         //   administrative.preparedBy == "" ||
@@ -3498,13 +3651,13 @@ export function CreatePortfolio(props) {
         //   (administrative.salesOffice == "" ||
         //     administrative.salesOffice == undefined)
         // )
-        if ((administrative.preparedBy == "" ||
-          administrative.preparedBy == undefined) ||
-          (administrative.salesOffice == "" ||
-            administrative.salesOffice == undefined)
-        ) {
-          throw "Please fill mandatory fields with valid data";
-        }
+        // if ((administrative.preparedBy == "" ||
+        //   administrative.preparedBy == undefined) ||
+        //   (administrative.salesOffice == "" ||
+        //     administrative.salesOffice == undefined)
+        // ) {
+        //   throw "Please fill mandatory fields with valid data";
+        // }
         if (state && state.type === "new") {
           setGeneralComponentData({
             ...generalComponentData,
@@ -3608,7 +3761,7 @@ export function CreatePortfolio(props) {
               AdministrativeObj
             );
             if (administrativeRes.status === 200) {
-              toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
+              toast(`👏 Portfolio <${generalComponentData.name}> saved Successfully`, {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -3768,7 +3921,7 @@ export function CreatePortfolio(props) {
             reqObj
           );
           if (exitsPortfolioUpdate.status === 200) {
-            toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
+            toast(`👏 Portfolio <${generalComponentData.name}> saved Successfully`, {
               position: "top-right",
               autoClose: 5000,
               hideProgressBar: false,
@@ -3964,6 +4117,9 @@ export function CreatePortfolio(props) {
 
   const populateHeader = (result) => {
     console.log("result ----", result);
+
+    // Name Editable Or not State Set
+    setNameIsNotEditAble(true);
 
     setViewOnlyTab({
       generalViewOnly: true,
@@ -4589,6 +4745,7 @@ export function CreatePortfolio(props) {
       });
     getSolutionPriceCommonConfig("status")
       .then((res) => {
+        console.log("status option is 12345566", res)
         res.pop();
         const options = res.map((d) => ({
           value: d.key,
@@ -5186,7 +5343,7 @@ export function CreatePortfolio(props) {
     // console.log("Data is : ", "helloooooo")
     // if (state && state.type == "fetch") {
     if (value2.value == "ACTIVE") {
-      toast("😐" + " Portfolio is Active", {
+      toast("😐" + " The portfolio data cannot be changed on active status, change to revise status to edit", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -8604,11 +8761,11 @@ export function CreatePortfolio(props) {
                           />
                         </div>
                       </div> */}
-                        
-                        
+
+
                       </div>
                       <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
+                        <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               {prefilgabelGeneral} NAME
@@ -8620,6 +8777,7 @@ export function CreatePortfolio(props) {
                               placeholder="Name"
                               value={generalComponentData.name}
                               onChange={handleGeneralInputChange}
+                              disabled={nameIsNotEditAble}
                             />
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
@@ -8642,7 +8800,7 @@ export function CreatePortfolio(props) {
                         </div>
                       </div>
                       <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
+                        <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               REFERENCE
