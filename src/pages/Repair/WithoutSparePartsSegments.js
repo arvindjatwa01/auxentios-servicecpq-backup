@@ -315,7 +315,7 @@ function WithoutSpareParts(props) {
                 <span className="ml-2">
                   <AddIcon />
                 </span>
-                Add New
+                Add New Segment
               </button>
             )}
           </div>

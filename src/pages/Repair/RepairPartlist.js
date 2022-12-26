@@ -26,17 +26,16 @@ import {
   builderSearch,
   createBuilder,
 } from "services/repairBuilderServices";
-import moment from "moment-timezone";
+import penIcon from "../../assets/images/pen.png";
 import Moment from "react-moment";
 import { GRID_STYLE, PARTLIST_BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
-import { Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
 import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
 
 export const RepairPartlist = () => {
-  const [show, setShow] = React.useState(false);
   const [recentPartlists, setRecentPartlists] = useState([]);
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -54,9 +53,9 @@ export const RepairPartlist = () => {
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
     fetcheRecentPartlists();
-    if (JSON.parse(localStorage.getItem('exitingType'))) {
-      localStorage.removeItem('exitingType');
-   }
+    if (JSON.parse(localStorage.getItem("exitingType"))) {
+      localStorage.removeItem("exitingType");
+    }
   }, []);
 
   const fetcheRecentPartlists = () => {
@@ -100,7 +99,17 @@ export const RepairPartlist = () => {
         </Moment>
       ),
     },
-    { field: "netPrice", headerName: "Total $", flex: 1, width: 130 , renderCell: (params) => <span style={{fontSize: 12}}>{parseFloat(params.value)?.toFixed(2)}</span>},
+    {
+      field: "netPrice",
+      headerName: "Total $",
+      flex: 1,
+      width: 130,
+      renderCell: (params) => (
+        <span style={{ fontSize: 12 }}>
+          {parseFloat(params.value)?.toFixed(2)}
+        </span>
+      ),
+    },
     { field: "status", headerName: "Status", flex: 1, width: 130 },
     {
       field: "actions",
@@ -111,7 +120,13 @@ export const RepairPartlist = () => {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => makePartlistEditable(params.row)}
@@ -279,7 +294,7 @@ export const RepairPartlist = () => {
                         <div className="recent-items mt-3">
                           <div className="d-flex justify-content-between align-items-center ">
                             <p className="mb-0 overflow-hidden white-space">
-                             <FontAwesomeIcon
+                              <FontAwesomeIcon
                                 className=" font-size-14"
                                 icon={faFileAlt}
                               />

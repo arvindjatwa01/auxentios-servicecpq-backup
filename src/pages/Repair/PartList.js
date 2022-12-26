@@ -1,5 +1,3 @@
-import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
-import EditIcon from "@mui/icons-material/EditTwoTone";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -20,7 +18,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import deleteicon from "../../assets/images/delete.png";
 import penIcon from "../../assets/images/pen.png";
 import Divider from "@mui/material/Divider";
 import FormControlLabel from "@mui/material/FormControlLabel";

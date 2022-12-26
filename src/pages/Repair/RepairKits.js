@@ -11,11 +11,9 @@ import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-
-import EditIcon from "@mui/icons-material/EditTwoTone";
 import $ from "jquery";
-
-import { Typography } from "@mui/material";
+import penIcon from "../../assets/images/pen.png";
+import { Tooltip, Typography } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
 import { useDispatch } from "react-redux";
@@ -104,7 +102,13 @@ export const RepairKits = () => {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => makeKitEditable(params.row)}

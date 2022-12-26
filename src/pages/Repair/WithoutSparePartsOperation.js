@@ -71,7 +71,7 @@ function WithoutSparePartsOperation(props) {
                   "Operation " +                  
                   formatOperationNum(opToLoad.operationNumber) +
                   " - " +
-                  opToLoad.description, //Rename after modifications in UI
+                  opToLoad.jobCodeDescription+" "+opToLoad.componentCodeDescription, //Rename after modifications in UI
               });
            
             
@@ -221,7 +221,7 @@ function WithoutSparePartsOperation(props) {
       jobCodeDescription: operationData.jobCodeDescription,
       componentCode: operationData.componentCode,
       componentCodeDescription: operationData.componentCodeDescription,
-      modifier: operationData.modifier,
+      // modifier: operationData.modifier,
       description: operationData.description,
     };
     AddOperation(sid, data)
@@ -320,7 +320,7 @@ function WithoutSparePartsOperation(props) {
                 <span className="ml-2">
                   <AddIcon />
                 </span>
-                Add New
+                Add New Operation
               </button>
             )}
           </div>
@@ -396,7 +396,7 @@ function WithoutSparePartsOperation(props) {
                 </div>
               </div>
 
-              <div className="col-md-4 col-sm-4">
+              {/* <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600">
                     MODIFIER
@@ -414,11 +414,11 @@ function WithoutSparePartsOperation(props) {
                     placeholder="Optional"
                   />
                 </div>
-              </div>
+              </div> */}
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600">
-                    DESCRIPTION
+                    TITLE
                   </label>
                   <input
                     type="text"
@@ -469,6 +469,34 @@ function WithoutSparePartsOperation(props) {
                     {operationData.operationNumber}
                   </h6>
                 </div>
+              </div>              
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    TITLE
+                  </p>
+                  <h6 className="font-weight-600">
+                    {operationData.description}
+                  </h6>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    JOB CODE
+                  </p>
+                  <h6 className="font-weight-600">
+                    {operationData.jobCode}
+                  </h6>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">JOB CODE DESCRIPTION</p>
+                  <h6 className="font-weight-600">
+                    {operationData.jobCodeDescription}
+                  </h6>
+                </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
@@ -480,17 +508,7 @@ function WithoutSparePartsOperation(props) {
                   </h6>
                 </div>
               </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    {" "}
-                    JOB CODE DESCRIPTION{" "}
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.jobCodeDescription}
-                  </h6>
-                </div>
-              </div>
+
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <p className="font-size-12 font-weight-500 mb-2">
@@ -501,30 +519,12 @@ function WithoutSparePartsOperation(props) {
                   </h6>
                 </div>
               </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
-                  <h6 className="font-weight-600">
-                    {operationData.jobCodeDescription}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
+              {/* <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <p className="font-size-12 font-weight-500 mb-2">MODIFIER </p>
                   <h6 className="font-weight-600">{operationData.modifier}</h6>
                 </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    DESCRIPTION
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.description}
-                  </h6>
-                </div>
-              </div>
+              </div> */}
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button

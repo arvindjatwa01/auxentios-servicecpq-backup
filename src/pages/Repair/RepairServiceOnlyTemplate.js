@@ -11,14 +11,14 @@ import "owl.carousel/dist/assets/owl.theme.default.css";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
+import penIcon from "../../assets/images/pen.png";
 import $ from "jquery";
-import EditIcon from "@mui/icons-material/EditTwoTone";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
 import { templateSearch } from "services/templateService";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { Typography } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import Moment from "react-moment";
 import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
@@ -97,7 +97,13 @@ export const RepairServiceOnlyTemplate = () => {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => makeKitEditable(params.row)}

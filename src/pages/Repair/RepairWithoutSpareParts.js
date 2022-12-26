@@ -12,8 +12,8 @@ import "owl.carousel/dist/assets/owl.theme.default.css";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Loader from "react-js-loader";
-import { Typography } from "@mui/material";
-import EditIcon from "@mui/icons-material/EditTwoTone";
+import { Tooltip, Typography } from "@mui/material";
+import penIcon from "../../assets/images/pen.png";
 import $ from "jquery";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
@@ -81,7 +81,13 @@ export const RepairWithoutSpareParts = () => {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => makeBuilderEditable(params.row)}
