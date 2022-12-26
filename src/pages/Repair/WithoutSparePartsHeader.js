@@ -876,7 +876,7 @@ function WithoutSparePartsHeader(props) {
                       className="mr-3 ml-2 text-white"
                       style={{ fontSize: "20px" }}
                     >
-                      Header
+                      Without Spare Parts Header
                     </span>
                     <a
                       href={undefined}

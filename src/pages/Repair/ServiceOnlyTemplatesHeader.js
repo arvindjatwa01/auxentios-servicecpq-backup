@@ -934,7 +934,7 @@ function ServiceOnlyTemplates(props) {
                       className="mr-3 ml-2 text-white"
                       style={{ fontSize: "20px" }}
                     >
-                      Header
+                      Service Only Template Header
                     </span>
                     <a href={undefined} className="btn-sm text-white">
                       <i

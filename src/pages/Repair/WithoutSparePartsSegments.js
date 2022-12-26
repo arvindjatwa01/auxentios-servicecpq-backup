@@ -18,7 +18,6 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_SEGMENT } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
-import { Divider } from "@mui/material";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
