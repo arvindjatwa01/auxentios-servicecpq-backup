@@ -1655,14 +1655,28 @@ export function CreatedCustomPortfolioTemplate(props) {
         try {
             if (e.target.id == "general") {
 
-                if (
-                    generalComponentData.name === "" ||
-                    generalComponentData.name == null ||
-                    generalComponentData.externalReference === "" ||
-                    generalComponentData.externalReference === null
-                ) {
-                    throw "Please fill required field properly";
+                if ((generalComponentData.name === "") ||
+                    (generalComponentData.name == null)) {
+                    throw "Solution code is a required field, you can’t leave it blank";
                 }
+
+                if ((generalComponentData.description === "") ||
+                    (generalComponentData.description === null)) {
+                    throw "Solution description is a required field, you can’t leave it blank";
+                }
+
+                if ((generalComponentData.externalReference === "") ||
+                    (generalComponentData.externalReference === null)) {
+                    throw "Reference is a required field, you can’t leave it blank";
+                }
+                // if (
+                //     generalComponentData.name === "" ||
+                //     generalComponentData.name == null ||
+                //     generalComponentData.externalReference === "" ||
+                //     generalComponentData.externalReference === null
+                // ) {
+                //     throw "Please fill required field properly";
+                // }
 
                 // Old Todo if Error Occurred
 
@@ -1903,6 +1917,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                 });
                 // console.log("validityData Data => ", validityData)
             } else if (e.target.id == "strategy") {
+
+                if ((solutionTypeListKeyValue.value === "") ||
+                    (solutionTypeListKeyValue.value === undefined)) {
+                    throw "Solution Type is a required field, you can’t leave it blank";
+                }
+
                 setGeneralComponentData({
                     ...generalComponentData,
                     usageCategory: categoryUsageKeyValue1.value,
@@ -2036,8 +2056,20 @@ export function CreatedCustomPortfolioTemplate(props) {
                     priceMethodKeyValue1?.value === null ||
                     priceMethodKeyValue1?.value === undefined)
                 ) {
-                    throw "Please fill required field properly";
+                    throw "Price Method is a required field, you can’t leave it blank";
                 }
+
+                if ((priceTypeKeyValue1.value == "") ||
+                    (priceTypeKeyValue1.value == undefined)) {
+                    throw "Price Type is a required field, you can’t leave it blank";
+                }
+                // if ((priceMethodKeyValue1.length === 0 ||
+                //     priceMethodKeyValue1?.value === "" ||
+                //     priceMethodKeyValue1?.value === null ||
+                //     priceMethodKeyValue1?.value === undefined)
+                // ) {
+                //     throw "Please fill required field properly";
+                // }
 
                 let priceEscalation = {
                     priceMethod: priceMethodKeyValue1.value,
@@ -2363,6 +2395,21 @@ export function CreatedCustomPortfolioTemplate(props) {
             } else if (e.target.id == "administrative") {
                 const validator = new Validator();
 
+                if ((administrative.preparedBy == "") ||
+                    (administrative.preparedBy == undefined)) {
+                    throw "Prepared By is a required field, you can’t leave it blank";
+                }
+
+                if ((administrative.salesOffice == "") ||
+                    (administrative.salesOffice == undefined)) {
+                    throw "Sales Office/Branch is a required field, you can’t leave it blank";
+                }
+
+                if ((administrative.offerValidity == "") ||
+                    (administrative.offerValidity == undefined)) {
+                    throw "Offer Validity is a required field, you can’t leave it blank";
+                }
+
                 // if ((!validator.emailValidation(administrative.preparedBy) ||
                 //     administrative.preparedBy == "" ||
                 //     administrative.preparedBy == undefined) ||
@@ -2375,14 +2422,15 @@ export function CreatedCustomPortfolioTemplate(props) {
                 //     (administrative.salesOffice?.value == "" ||
                 //         administrative.salesOffice?.value == undefined)
                 // )
-                if ((
-                    administrative.preparedBy == "" ||
-                    administrative.preparedBy == undefined) ||
-                    (administrative.salesOffice == "" ||
-                        administrative.salesOffice == undefined)
-                ) {
-                    throw "Please fill mandatory fields with valid data";
-                }
+                // if ((
+                //     administrative.preparedBy == "" ||
+                //     administrative.preparedBy == undefined) ||
+                //     (administrative.salesOffice == "" ||
+                //         administrative.salesOffice == undefined)
+                // ) {
+                //     throw "Please fill mandatory fields with valid data";
+                // }
+
                 setGeneralComponentData({
                     ...generalComponentData,
                     preparedBy: administrative.preparedBy,
@@ -5031,8 +5079,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {/* {prefilgabelGeneral} NAME */}
-                                                    SOLUTION NAME
+                                                    SOLUTION{/*  NAME */} CODE
+                                                    {/* SOLUTION NAME */}
                                                 </label>
                                                 <input
                                                     type="text"
@@ -5042,13 +5090,14 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={generalComponentData.name}
                                                     onChange={handleGeneralInputChange}
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                             </div>
                                         </div>
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
-                                                    SOLUTION DESCRIPTION (IF ANY)
+                                                    SOLUTION DESCRIPTION
                                                 </label>
                                                 <input
                                                     type="text"
@@ -5058,6 +5107,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={generalComponentData.description}
                                                     onChange={handleGeneralInputChange}
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                             </div>
                                         </div>
                                         <div className="col-md-3 col-sm-3">
@@ -5073,6 +5123,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={generalComponentData.externalReference}
                                                     onChange={handleGeneralInputChange}
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                             </div>
                                         </div>
                                         <div className="col-md-3 col-sm-3">
@@ -5545,6 +5596,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                 // }
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -5670,6 +5722,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={priceMethodKeyValue1}
                                                     placeholder="required"
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -5729,6 +5782,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={priceTypeKeyValue1}
                                                     placeholder="placeholder (Optional)"
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -5930,8 +5984,9 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     <div className="row" style={{ justifyContent: "right" }}>
                                         <button
                                             type="button"
-                                            onClick={() => setValue("6")}
+                                            onClick={handleNextClick}
                                             className="btn btn-light"
+                                            id="priceAgreement"
                                         >
                                             Save & Next
                                         </button>
@@ -6294,6 +6349,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={administrative.preparedBy}
                                                     onChange={handleAdministrativreChange}
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -6357,6 +6413,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 }
                                                             />
                                                         </MuiPickersUtilsProvider>
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -6447,6 +6504,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={administrative.salesOffice}
                                                     styles={FONT_STYLE_SELECT}
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                                 {/* <input
                                                     type="text"
                                                     className="form-control border-radius-10 text-primary"
@@ -6481,6 +6539,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     value={administrative.offerValidity}
                                                     styles={FONT_STYLE_SELECT}
                                                 />
+                                                <div className="css-w8dmq8">*Mandatory</div>
                                                 {/* <input
                                                     type="text"
                                                     className="form-control border-radius-10 text-primary"

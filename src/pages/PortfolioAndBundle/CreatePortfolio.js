@@ -13920,7 +13920,6 @@ export function CreatePortfolio(props) {
                     { label: "Family", value: "itemHeaderFamily" },
                     { label: "Model", value: "model" },
                     { label: "Prefix", value: "prefix" },
-                    // { label: "Item Id", value: "itemId" },
                     { label: "Item Name", value: "itemName" },
                     { label: "Description", value: "description" },
                   ]}
@@ -13928,6 +13927,7 @@ export function CreatePortfolio(props) {
                   setTempBundleService2={setTempBundleService2}
                   setTempBundleService3={setTempBundleService3}
                   setLoadingItem={setLoadingItem}
+                // cancelSearchCriteria={cancelSearchCriteria}
                 />
                 {loadingItem === "01" ? ("loading") :
                   <>
@@ -13942,20 +13942,40 @@ export function CreatePortfolio(props) {
                         pagination
                       />
                       {/* {tempBundleService2.length > 0 && ( */}
-                      <div className="row" style={{ justifyContent: "right" }}>
-                        <button
+                      <div className="row mb-3 justify-content-end">
+                        <div className="d-flex">
+                          <button
+                            type="button"
+                            className="btn bg-primary text-white mr-3"
+                            onClick={() => {
+                              setTempBundleService1([])
+                            }}
+                          // disabled={tempBundleService2.length === 0}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn bg-primary text-white"
+                            onClick={handleBundleServiceItemCheckBoxData}
+                            // onClick={() => {
+                            //   setTempBundleService3(tempBundleService2)
+                            //   setTempBundleService1([])
+                            // }}
+
+                            disabled={tempBundleService2.length === 0}
+                          >
+                            + Add Selected
+                          </button>
+                        </div>
+                        {/* <button
                           type="button"
-                          // className="btn btn-light mt-3 mb-4"
                           className="btn bg-primary text-white"
-                          // onClick={() => {
-                          //   setTempBundleService3(tempBundleService2)
-                          //   setTempBundleService1([])
-                          // }}
                           onClick={handleBundleServiceItemCheckBoxData}
                           disabled={tempBundleService2.length === 0}
                         >
                           + Add Selected
-                        </button>
+                        </button> */}
                       </div>
                       {/*  )} */}
                     </>)}

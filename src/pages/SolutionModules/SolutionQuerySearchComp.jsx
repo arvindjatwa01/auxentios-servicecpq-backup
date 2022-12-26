@@ -330,7 +330,8 @@ const SolutionQuerySearchComp = (props) => {
                     props.setLoadingStatus("")
                     props.setPortfolioTempMasterData([])
                     // props.ItemSearchResponseFun([], querySearchSelector)
-                    throw "No record found"
+                    // throw "No record found"
+                    throw "No information is found for your search, change the search criteria";
                 } else {
                     props.setPortfolioTempMasterData(res3.data)
                     // props.ItemSearchResponseFun(res3, querySearchSelector)
@@ -352,7 +353,8 @@ const SolutionQuerySearchComp = (props) => {
                 if (!res4.length > 0) {
                     props.setSolutionLoadingStatus("")
                     props.setSolutionTempMasterData([])
-                    throw "No record found"
+                    // throw "No record found"
+                    throw "No information is found for your search, change the search criteria";
                 } else {
                     props.setSolutionTempMasterData(res4)
                     props.setSolutionLoadingStatus("")
@@ -420,7 +422,8 @@ const SolutionQuerySearchComp = (props) => {
             if (!res.data.length > 0) {
                 props.setLoadingItem("11")
                 props.setTempBundleService1([])
-                throw "No record found"
+                // throw "No record found"
+                throw "No information is found for your search, change the search criteria";
             } else {
                 props.setTempBundleService1(res.data)
                 props.setLoadingItem("11")

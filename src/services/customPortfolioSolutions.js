@@ -174,7 +174,8 @@ export const solutionPortfolioSearch = (searchStr) => {
                 .get(CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr, { headers: headersdata })
                 .then((res) => {
                     console.log("solutionPortfolioSearch > axios res=", res);
-                    resolve(res.data);
+                    // resolve(res.data);
+                    resolve(res);
                 })
                 .catch((err) => {
                     console.log("solutionPortfolioSearch > axios err=", err);

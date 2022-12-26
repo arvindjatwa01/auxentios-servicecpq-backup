@@ -1181,37 +1181,37 @@ export const Analytics = () => {
       solutionPortfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
          .then((res) => {
             if (tempArray[id].selectFamily.value === "make") {
-               for (let i = 0; i < res.length; i++) {
-                  for (let j = 0; j < res[i].customCoverages.length; j++) {
-                     SearchResArr.push(res[i].customCoverages[j].make)
+               for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                     SearchResArr.push(res.data[i].customCoverages[j].make)
                   }
                }
 
             } else if (tempArray[id].selectFamily.value == "family") {
-               for (let i = 0; i < res.length; i++) {
-                  for (let j = 0; j < res[i].customCoverages.length; j++) {
-                     SearchResArr.push(res[i].customCoverages[j].family)
+               for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                     SearchResArr.push(res.data[i].customCoverages[j].family)
                   }
                }
             } else if (tempArray[id].selectFamily.value == "modelNo") {
-               for (let i = 0; i < res.length; i++) {
-                  for (let j = 0; j < res[i].customCoverages.length; j++) {
-                     SearchResArr.push(res[i].customCoverages[j].modelNo)
+               for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                     SearchResArr.push(res.data[i].customCoverages[j].modelNo)
                   }
                }
             } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
-               for (let i = 0; i < res.length; i++) {
-                  for (let j = 0; j < res[i].customCoverages.length; j++) {
-                     SearchResArr.push(res[i].customCoverages[j].serialNumberPrefix)
+               for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                     SearchResArr.push(res.data[i].customCoverages[j].serialNumberPrefix)
                   }
                }
             } else if (tempArray[id].selectFamily.value == "name") {
-               for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].name)
+               for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].name)
                }
             } else if (tempArray[id].selectFamily.value == "description") {
-               for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].description)
+               for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].description)
                }
             }
             obj.selectOptions = SearchResArr;
@@ -1253,8 +1253,6 @@ export const Analytics = () => {
             throw "Please fill data properly"
          }
 
-
-
          var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
 
          for (let i = 1; i < querySearchSelector.length; i++) {
@@ -1262,17 +1260,26 @@ export const Analytics = () => {
          }
 
          console.log("searchStr", searchStr)
-         solutionPortfolioSearch(searchStr).then((res) => {
-            console.log("search Query Result :", res)
-            // setMasterData(res)
-            setSearchedPortfolioSolution(res)
-            console.log("res ---------: ", res)
-            // setBundleServiceShow(true)
-
-         }).catch((err) => {
-            console.log("error in getSearchQueryCoverage", err)
-         })
-
+         solutionPortfolioSearch(searchStr)
+            .then((res) => {
+               if (res.status === 200) {
+                  setSearchedPortfolioSolution(res.data)
+               } else {
+                  throw "No information is found for your search, change the search criteria";
+               }
+            }).catch((err) => {
+               console.log("error in getSearchQueryCoverage", err)
+               toast("😐" + err, {
+                  position: "top-right",
+                  autoClose: 3000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+               });
+               return
+            })
       } catch (error) {
          console.log("error in getSearchQueryCoverage", error);
          toast("😐" + error, {
