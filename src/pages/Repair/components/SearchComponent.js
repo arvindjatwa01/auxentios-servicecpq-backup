@@ -203,6 +203,11 @@ const SearchComponent = (props) => {
                           ? currentItem[obj.selectCategory.value] +
                             " " +
                             currentItem["name"]
+                          : props.type === "extwork" &&
+                            obj.selectCategory.value === "activityId"
+                          ? currentItem[obj.selectCategory.value] +
+                            " " +
+                            currentItem["activityDescription"]
                           : currentItem[obj.selectCategory.value]}
                       </li>
                     ))}

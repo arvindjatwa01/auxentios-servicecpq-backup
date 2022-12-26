@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { Autocomplete } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
@@ -14,7 +13,6 @@ import {
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
-import Loader from "react-js-loader";
 import LoadingProgress from "./components/Loader";
 
 function WithoutSparePartsOperation(props) {

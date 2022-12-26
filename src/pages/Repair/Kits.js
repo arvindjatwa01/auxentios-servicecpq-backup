@@ -1553,7 +1553,7 @@ function Kits(props) {
                   className="mr-3 ml-2 text-white"
                   style={{ fontSize: "20px" }}
                 >
-                  Header
+                  Kits Header
                 </span>
                 <a
                   href={undefined}
