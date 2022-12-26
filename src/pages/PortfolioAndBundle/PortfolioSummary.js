@@ -534,37 +534,37 @@ export const PortfolioSummary = () => {
       portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
         .then((res) => {
           if (tempArray[id].selectFamily.value === "make") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].make)
+            for (let i = 0; i < res.data.length; i++) {
+              for (let j = 0; j < res.data[i].coverages.length; j++) {
+                SearchResArr.push(res.data[i].coverages[j].make)
               }
             }
 
           } else if (tempArray[id].selectFamily.value == "family") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].family)
+            for (let i = 0; i < res.data.length; i++) {
+              for (let j = 0; j < res.data[i].coverages.length; j++) {
+                SearchResArr.push(res.data[i].coverages[j].family)
               }
             }
           } else if (tempArray[id].selectFamily.value == "modelNo") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].modelNo)
+            for (let i = 0; i < res.data.length; i++) {
+              for (let j = 0; j < res.data[i].coverages.length; j++) {
+                SearchResArr.push(res.data[i].coverages[j].modelNo)
               }
             }
           } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].serialNumberPrefix)
+            for (let i = 0; i < res.data.length; i++) {
+              for (let j = 0; j < res.data[i].coverages.length; j++) {
+                SearchResArr.push(res.data[i].coverages[j].serialNumberPrefix)
               }
             }
           } else if (tempArray[id].selectFamily.value == "name") {
-            for (let i = 0; i < res.length; i++) {
-              SearchResArr.push(res[i].name)
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].name)
             }
           } else if (tempArray[id].selectFamily.value == "description") {
-            for (let i = 0; i < res.length; i++) {
-              SearchResArr.push(res[i].description)
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].description)
             }
           }
           obj.selectOptions = SearchResArr;
@@ -585,30 +585,30 @@ export const PortfolioSummary = () => {
       }
       itemSearch(bundleServiceSearch)
         .then((res) => {
-          if (res.length > 0) {
+          if (res.data.length > 0) {
             if (tempArray[id].selectFamily.value == "itemName") {
-              for (let i = 0; i < res.length; i++) {
-                SearchResArr.push(res[i].itemName)
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].itemName)
               }
             } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
-              for (let i = 0; i < res.length; i++) {
-                SearchResArr.push(res[i].itemHeaderModel.itemHeaderDescription)
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
               }
             } else if (tempArray[id].selectFamily.value == "make") {
-              for (let i = 0; i < res.length; i++) {
-                SearchResArr.push(res[i].itemHeaderModel.itemHeaderMake)
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
               }
             } else if (tempArray[id].selectFamily.value == "model") {
-              for (let i = 0; i < res.length; i++) {
-                SearchResArr.push(res[i].itemHeaderModel.model)
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].itemHeaderModel.model)
               }
             } else if (tempArray[id].selectFamily.value == "family") {
-              for (let i = 0; i < res.length; i++) {
-                SearchResArr.push(res[i].itemHeaderModel.itemHeaderFamily)
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
               }
             } else if (tempArray[id].selectFamily.value == "prefix") {
-              for (let i = 0; i < res.length; i++) {
-                SearchResArr.push(res[i].itemHeaderModel.prefix)
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].itemHeaderModel.prefix)
               }
             }
           }
@@ -681,33 +681,55 @@ export const PortfolioSummary = () => {
       if (selectedItemType === "PORTFOLIO") {
         var newArr = [];
         const res2 = await portfolioSearch(searchStr)
-        for (var j = 0; j < res2.length; j++) {
-          for (var k = 0; k < res2[j].items.length; k++) {
-            newArr.push(res2[j].items[k]);
+        if (res2.status === 200) {
+          for (var j = 0; j < res2.data.length; j++) {
+            for (var k = 0; k < res2.data[j].items.length; k++) {
+              newArr.push(res2.data[j].items[k]);
+            }
           }
+          var result = newArr.reduce((unique, o) => {
+            if (!unique.some(obj => obj.itemId === o.itemId)) {
+              unique.push(o);
+            }
+            return unique;
+          }, []);
+          // setPortfolioItemData(result);
+          setPortfolioItemData(res2.data);
+
+        } else {
+          throw "No information is found for your search, change the search criteria";
         }
 
-        var result = newArr.reduce((unique, o) => {
-          if (!unique.some(obj => obj.itemId === o.itemId)) {
-            unique.push(o);
-          }
-          return unique;
-        }, []);
-        // setPortfolioItemData(result);
-        setPortfolioItemData(res2);
+
+
 
         console.log("set PortfolioItemData : ", res2)
       } else if (selectedItemType === "BUNDLE_ITEM") {
         searchStr = "bundleFlag:BUNDLE_ITEM AND " + searchStr;
         const res1 = await itemSearch(searchStr);
+
+        if (res1.status === 200) {
+          setBundleServiceItemData(res1.data)
+        } else {
+          throw "No information is found for your search, change the search criteria";
+        }
+
+        console.log("res1 is fsfnasjkvna", res1.data);
         // console.log(res1)
-        setBundleServiceItemData(res1)
+
       }
       else if (selectedItemType === "SERVICE") {
         searchStr = "bundleFlag:SERVICE AND " + searchStr;
         const res1 = await itemSearch(searchStr);
+
+
+        if (res1.status === 200) {
+          setBundleServiceItemData(res1.data);
+        } else {
+          throw "No information is found for your search, change the search criteria";
+        }
         // console.log(res1)
-        setBundleServiceItemData(res1)
+
       }
 
     } catch (error) {
@@ -2946,7 +2968,7 @@ export const PortfolioSummary = () => {
             <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
               <div className="mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
-                  <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                  <div className="d-flex mr-2" style={{ whiteSpace: "pre" }}>
                     <h5 className="mr-2 mb-0 text-white">
                       <span>Search</span>
                     </h5>
@@ -2959,12 +2981,12 @@ export const PortfolioSummary = () => {
                       </a>
                     </p>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center w-100 mr-5">
+                  <div className="d-flex justify-content-between align-items-center w-100 mr-4">
                     <div className="row align-items-center m-0">
                       {querySearchSelector.map((obj, i) => {
                         return (
                           <>
-                            <div className="customselect border-white d-flex align-items-center mr-3 my-2 border-radius-10">
+                            <div className={`customselect ${i < ((querySearchSelector.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-10`}>
                               {i === 0 ?
                                 <>
                                   <Select
@@ -2975,22 +2997,10 @@ export const PortfolioSummary = () => {
                                       { label: "Service", value: "SERVICE" },
 
                                     ])}
-
-                                    // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
                                     value={querySearchSelector.itemType}
                                     onChange={(e) => handleItemType(e, i)}
                                   // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
                                   />
-                                  {/* <Select
-                                    options={[
-                                      { label: "AND", value: "AND" },
-                                      { label: "OR", value: "OR" },
-                                    ]}
-                                    disabled
-                                    placeholder="And"
-                                  // value={querySearchSelector.itemTypeOperator}
-                                  // onChange={(e) => handleitemTypeOperator(e, i)}
-                                  /> */}
                                 </>
                                 : <></>}
                               {i > 0 ? (
@@ -3055,9 +3065,13 @@ export const PortfolioSummary = () => {
                                 }
 
                               </div>
-                              <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
-                      <SearchIcon /><span className="ml-1">Search</span>
-                    </Link>
+                              {(querySearchSelector.length - 1) === i ? <>
+                                <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                                  <SearchIcon />
+                                  <span className="ml-1">Search</span>
+                                </Link>
+                              </> : <></>}
+
                             </div>
                           </>
                         );

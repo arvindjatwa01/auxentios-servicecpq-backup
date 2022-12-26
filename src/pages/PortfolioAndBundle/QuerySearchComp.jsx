@@ -86,30 +86,30 @@ const QuerySearchComp = (props) => {
         var SearchResArr = [];
         itemSearch(bundleServiceSearch)
           .then((res) => {
-            if (res.length > 0) {
+            if (res.data.length > 0) {
               if (tempArray[id].selectFamily.value == "itemName") {
-                for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].itemName)
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].itemName)
                 }
               } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
-                for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].itemHeaderModel.itemHeaderDescription)
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
                 }
               } else if (tempArray[id].selectFamily.value == "make") {
-                for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].itemHeaderModel.itemHeaderMake)
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
                 }
               } else if (tempArray[id].selectFamily.value == "model") {
-                for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].itemHeaderModel.model)
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].itemHeaderModel.model)
                 }
               } else if (tempArray[id].selectFamily.value == "family") {
-                for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].itemHeaderModel.itemHeaderFamily)
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
                 }
               } else if (tempArray[id].selectFamily.value == "prefix") {
-                for (let i = 0; i < res.length; i++) {
-                  SearchResArr.push(res[i].itemHeaderModel.prefix)
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].itemHeaderModel.prefix)
                 }
               }
               // obj.selectOptions = SearchResArr;
@@ -272,26 +272,26 @@ const QuerySearchComp = (props) => {
         props?.setLoadingItem(true)
         const res2 = await itemSearch(searchStr)
         let temArray = []
-        for (let i = 0; i <= res2.length; i++) {
-          if (res2[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
-            temArray[0] = res2[i]
+        for (let i = 0; i <= res2.data.length; i++) {
+          if (res2.data[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+            temArray[0] = res2.data[i]
             res2.splice(i, 1)
             break
           }
         }
-        temArray[0].associatedServiceOrBundle = res2
+        temArray[0].associatedServiceOrBundle = res2.data
         props.setBundleItems(temArray)
         props.setLoadingItem(false)
       } else if (props.compoFlag === "portfolioTempItemSearch") {
         const res3 = await itemSearch(searchStr)
         // console.log("res3 is  : ", res3)
-        if (!res3.length > 0) {
+        if (!res3.data.length > 0) {
           props.setLoadingStatus("")
           props.setPortfolioTempMasterData([])
           // props.ItemSearchResponseFun([], querySearchSelector)
           throw "No record found"
         } else {
-          props.setPortfolioTempMasterData(res3)
+          props.setPortfolioTempMasterData(res3.data)
           // props.ItemSearchResponseFun(res3, querySearchSelector)
           props.setLoadingStatus("")
 
@@ -374,12 +374,12 @@ const QuerySearchComp = (props) => {
           querySearchSelector[i].inputSearch;
       }
       const res = await itemSearch(searchStr)
-      if (!res.length > 0) {
+      if (!res.data.length > 0) {
         props.setLoadingItem("11")
         props.setTempBundleService1([])
         throw "No record found"
       } else {
-        props.setTempBundleService1(res)
+        props.setTempBundleService1(res.data)
         props.setLoadingItem("11")
 
       }
