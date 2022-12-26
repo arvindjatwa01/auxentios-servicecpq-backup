@@ -10,6 +10,8 @@ import "react-toastify/dist/ReactToastify.css";
 import DataTable from "react-data-table-component";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
 
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
@@ -161,6 +163,9 @@ export const PortfolioSummary = () => {
     machine: "",
     additional: "",
   });
+
+  const [createdServiceData, setCreatedServiceData] = useState({});
+
   const [addPortFolioItem, setAddportFolioItem] = useState({})
   const [priceCalculator, setPriceCalculator] = useState({})
 
@@ -1261,9 +1266,6 @@ export const PortfolioSummary = () => {
 
   // SERVICE/BUNDLE MODEL FUNCTIONS
   const saveAddNewServiceOrBundle = async () => {
-    // console.log("editBundleService : ", createServiceOrBundle)
-    // console.log("addPortFolioItem : ", addPortFolioItem)
-    // console.log("passItemEditRowData : ", passItemEditRowData);
     try {
       // if(createServiceOrBundle.description==""||createServiceOrBundle.model==""){
       //   throw "Please fill fields properly"
@@ -1426,7 +1428,10 @@ export const PortfolioSummary = () => {
             draggable: true,
             progress: undefined,
           });
-          setBundleTabs("4");
+          setBundleServiceShow(false);
+          setBundleTabs("1")
+          setAddportFolioItem({})
+          // setBundleTabs("4");
           // setAddportFolioItem({});
 
         }
@@ -1435,7 +1440,6 @@ export const PortfolioSummary = () => {
 
         let reqObj = {
           itemId: 0,
-          // itemName: "",
           itemName: createServiceOrBundle.name,
           itemHeaderModel: {
             itemHeaderId: 0,
@@ -1511,6 +1515,7 @@ export const PortfolioSummary = () => {
           }
         }
 
+
         // const res = await itemCreation(reqObj);
         // if (res.status === 200) {
         //   toast("😎" + `${serviceOrBundlePrefix} created`, {
@@ -1528,8 +1533,6 @@ export const PortfolioSummary = () => {
         // setAddportFolioItem({});
       }
       console.log("editBundleService : ", editBundleService)
-
-
     } catch (error) {
       console.log("itemCreation err:", error);
       toast("😐" + error, {
@@ -1554,77 +1557,198 @@ export const PortfolioSummary = () => {
     setBundleServiceShow(true);
   };
 
-  const handleAddNewServiceOrBundle = () => {
-    if (serviceOrBundlePrefix === "BUNDLE") {
-      if (createServiceOrBundle.name == "" || createServiceOrBundle.description == "" || createServiceOrBundle.model == "") {
-        toast("😐" + "Please fill mandatory Fields.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
+  const handleAddNewServiceOrBundle = async () => {
+    try {
+
+      // ====== Validation for Bundle Item Create/Update ====== //
+      if (serviceOrBundlePrefix === "BUNDLE") {
+        if ((createServiceOrBundle.name == "") ||
+          (createServiceOrBundle.name == undefined)) {
+          throw "Bundle Name is a required field, you can’t leave it blank";
+        }
+        if ((createServiceOrBundle.description == "") ||
+          (createServiceOrBundle.description == undefined)) {
+          throw "Bundle Description is a required field, you can’t leave it blank";
+        }
+        if ((createServiceOrBundle.model == "") ||
+          (createServiceOrBundle.model == undefined)) {
+          throw "Model is a required field, you can’t leave it blank";
+        }
         setBundleTabs("2");
-        // console.log("createServiceOrBundle : ", createServiceOrBundle);
       }
-    }
-    if (serviceOrBundlePrefix === "SERVICE") {
-      if (createServiceOrBundle.name == "" || createServiceOrBundle.description == "" || createServiceOrBundle.model == "") {
-        toast("😐" + "Please fill mandatory Fields.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
-        setBundleTabs("3");
-        // saveAddNewServiceOrBundle();
+
+      // ====== Validation for Service Item Create/Update ====== //
+      if (serviceOrBundlePrefix === "SERVICE") {
+        if ((createServiceOrBundle.name == "") ||
+          (createServiceOrBundle.name == undefined)) {
+          throw "Service Name is a required field, you can’t leave it blank";
+        }
+        if ((createServiceOrBundle.description == "") ||
+          (createServiceOrBundle.description == undefined)) {
+          throw "Service Description is a required field, you can’t leave it blank";
+        }
+        if ((createServiceOrBundle.model == "") ||
+          (createServiceOrBundle.model == undefined)) {
+          throw "Model is a required field, you can’t leave it blank";
+        }
+
+        let reqObj = {
+          itemId: 0,
+          itemName: createServiceOrBundle.name,
+          itemHeaderModel: {
+            itemHeaderId: 0,
+            itemHeaderDescription: createServiceOrBundle.description,
+            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+            portfolioItemId: 0,
+            reference: createServiceOrBundle.reference,
+            itemHeaderMake: createServiceOrBundle.make,
+            itemHeaderFamily: createServiceOrBundle.family,
+            model: createServiceOrBundle.model,
+            prefix: createServiceOrBundle.prefix,
+            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+            currency: "",
+            netPrice: 0,
+            itemProductHierarchy: "END_PRODUCT",
+            itemHeaderGeographic: "ONSITE",
+            responseTime: "PROACTIVE",
+            usage: "",
+            validFrom: "",
+            validTo: "",
+            estimatedTime: "",
+            servicePrice: 0,
+            status: "DRAFT",
+            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+            componentCode: "",
+            componentDescription: "",
+            serialNumber: "",
+            variant: "",
+            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
+            jobCode: "",
+            preparedBy: administrative?.preparedBy ? administrative?.preparedBy : "",
+            approvedBy: administrative?.approvedBy ? administrative?.approvedBy : "",
+            preparedOn: administrative?.preparedOn ? administrative?.preparedOn : "",
+            revisedBy: administrative?.revisedBy ? administrative?.revisedBy : "",
+            revisedOn: administrative?.revisedOn ? administrative?.revisedOn : "",
+            salesOffice: administrative.salesOffice?.value ? administrative.salesOffice?.value : "",
+            offerValidity: administrative.offerValidity?.value ? administrative.offerValidity?.value : "",
+          },
+          itemBodyModel: {
+            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+            spareParts: ["WITH_SPARE_PARTS"],
+            labours: ["WITH_LABOUR"],
+            miscellaneous: ["LUBRICANTS"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+            solutionCode: "",
+            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+            recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+            usage: "",
+            year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+            avgUsage: 0,
+            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
+            ] : [],
+          }
+        }
+        console.log("itemCreation reqObj is : ", reqObj)
+
+        const res = await itemCreation(reqObj);
+        if (res.status === 200) {
+          toast("😎" + `Service ${createServiceOrBundle.name} saved successfully`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setCreatedServiceData(res.data);
+          setBundleTabs("4");
+
+        }
+        console.log("itemCreation response : ", res)
+
       }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
+    // if (serviceOrBundlePrefix === "BUNDLE") {
+    //   if ((createServiceOrBundle.name == "") ||
+    //     (createServiceOrBundle.name == undefined)) {
+
+    //   }
+    //   if (createServiceOrBundle.name == "" ||
+    //     createServiceOrBundle.description == "" ||
+    //     createServiceOrBundle.model == "") {
+    //     toast("😐" + "Please fill mandatory Fields.", {
+    //       position: "top-right",
+    //       autoClose: 3000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //   } else {
+    //     setBundleTabs("2");
+    //     // console.log("createServiceOrBundle : ", createServiceOrBundle);
+    //   }
+    // }
+    // if (serviceOrBundlePrefix === "SERVICE") {
+    //   if (createServiceOrBundle.name == "" ||
+    //     createServiceOrBundle.description == "" ||
+    //     createServiceOrBundle.model == "") {
+    //     toast("😐" + "Please fill mandatory Fields.", {
+    //       position: "top-right",
+    //       autoClose: 3000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //   } else {
+    //     setBundleTabs("3");
+    //     // saveAddNewServiceOrBundle();
+    //   }
+    // }
     // setTabs("4") //moving to component Data tab in create Item model
   };
 
   const handleUpdateNewServiceOrBundle = async () => {
-    if (serviceOrBundlePrefix === "BUNDLE") {
-      const validator = new Validator();
+    try {
+      if (serviceOrBundlePrefix === "BUNDLE") {
+        if ((administrative.preparedBy == "") ||
+          (administrative.preparedBy == undefined)) {
+          throw "Prepared By is a required field, you can’t leave it blank";
+        }
 
-      // if ((!validator.emailValidation(administrative.preparedBy) ||
-      //   administrative.preparedBy == "" ||
-      //   administrative.preparedBy == undefined) ||
-      //   (administrative.approvedBy != "" &&
-      //     administrative.approvedBy != undefined &&
-      //     !validator.emailValidation(administrative.approvedBy)) ||
-      //   (administrative.revisedBy != "" &&
-      //     administrative.revisedBy != undefined &&
-      //     !validator.emailValidation(administrative.revisedBy)) ||
-      //   (administrative.salesOffice?.value == "" ||
-      //     administrative.salesOffice?.value == undefined)
-      // )
-      if ((administrative.preparedBy == "" ||
-        administrative.preparedBy == undefined) ||
-        (administrative.salesOffice == "" ||
-          administrative.salesOffice == undefined)
-      ) {
-        toast("😐" + "Please fill mandatory Fields.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
+        if ((administrative.salesOffice == "") ||
+          (administrative.salesOffice == undefined)) {
+          throw "Sales Office/Branch is a required field, you can’t leave it blank";
+        }
+
+        if ((administrative.offerValidity == "") ||
+          (administrative.offerValidity == undefined)) {
+          throw "Offer Validity is a required field, you can’t leave it blank";
+        }
 
         let reqObj = {
           itemId: 0,
-          // itemName: "",
           itemName: createServiceOrBundle.name,
           itemHeaderModel: {
             itemHeaderId: 0,
@@ -1687,9 +1811,10 @@ export const PortfolioSummary = () => {
           }
         }
 
-        const res = await itemCreation(reqObj);
+
+        const res = await updateItemData(createdServiceData.itemId, reqObj);
         if (res.status === 200) {
-          toast("😎" + `${serviceOrBundlePrefix} created`, {
+          toast("😎" + `${serviceOrBundlePrefix} ${createServiceOrBundle.name} saved successfully.`, {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,
@@ -1698,157 +1823,500 @@ export const PortfolioSummary = () => {
             draggable: true,
             progress: undefined,
           });
+          setBundleServiceShow(false);
+          setBundleTabs("1")
+          setAddportFolioItem({})
           // setAddportFolioItem({});
+        }
+      }
 
+      if (serviceOrBundlePrefix === "SERVICE") {
+        if ((administrative.preparedBy == "") ||
+          (administrative.preparedBy == undefined)) {
+          throw "Prepared By is a required field, you can’t leave it blank";
         }
 
-        if (serviceOrBundlePrefix === "BUNDLE") {
-          const rObj = {
-            standardJobId: itemPriceData.standardJobId,
-            repairKitId: itemPriceData.repairKitId,
-            itemId: res.data.itemId,
+        if ((administrative.salesOffice == "") ||
+          (administrative.salesOffice == undefined)) {
+          throw "Sales Office/Branch is a required field, you can’t leave it blank";
+        }
+
+        if ((administrative.offerValidity == "") ||
+          (administrative.offerValidity == undefined)) {
+          throw "Offer Validity is a required field, you can’t leave it blank";
+        }
+
+        let reqObj = {
+          itemId: 0,
+          itemName: createServiceOrBundle.name,
+          itemHeaderModel: {
+            itemHeaderId: 0,
+            itemHeaderDescription: createServiceOrBundle.description,
+            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+            portfolioItemId: 0,
+            reference: createServiceOrBundle.reference,
+            itemHeaderMake: createServiceOrBundle.make,
+            itemHeaderFamily: createServiceOrBundle.family,
+            model: createServiceOrBundle.model,
+            prefix: createServiceOrBundle.prefix,
+            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+            currency: "",
+            netPrice: 0,
+            itemProductHierarchy: "END_PRODUCT",
+            itemHeaderGeographic: "ONSITE",
+            responseTime: "PROACTIVE",
+            usage: "",
+            validFrom: "",
+            validTo: "",
+            estimatedTime: "",
+            servicePrice: 0,
+            status: "DRAFT",
+            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+            componentCode: "",
+            componentDescription: "",
+            serialNumber: "",
+            variant: "",
+            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+            jobCode: "",
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.salesOffice?.value,
+            offerValidity: administrative.offerValidity?.value
+          },
+          itemBodyModel: {
+            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+            spareParts: ["WITH_SPARE_PARTS"],
+            labours: ["WITH_LABOUR"],
+            miscellaneous: ["LUBRICANTS"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+            solutionCode: "",
+            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+            recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+            usage: "",
+            year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+            avgUsage: 0,
+            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
+            ] : [],
+          }
+        }
+        const res = await updateItemData(createdServiceData.itemId, reqObj)
+
+        // const res = await itemCreation(reqObj);
+        if (res.status === 200) {
+          toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          // setBundleTabs("4");
+          setBundleServiceShow(false);
+          setBundleTabs("1")
+          setAddportFolioItem({})
+        }
+      }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
+    }
+    // ==================== Without Try/catch Method Start ================ //
+
+    // if (serviceOrBundlePrefix === "BUNDLE") {
+    //   const validator = new Validator();
+
+
+
+    //   // if ((!validator.emailValidation(administrative.preparedBy) ||
+    //   //   administrative.preparedBy == "" ||
+    //   //   administrative.preparedBy == undefined) ||
+    //   //   (administrative.approvedBy != "" &&
+    //   //     administrative.approvedBy != undefined &&
+    //   //     !validator.emailValidation(administrative.approvedBy)) ||
+    //   //   (administrative.revisedBy != "" &&
+    //   //     administrative.revisedBy != undefined &&
+    //   //     !validator.emailValidation(administrative.revisedBy)) ||
+    //   //   (administrative.salesOffice?.value == "" ||
+    //   //     administrative.salesOffice?.value == undefined)
+    //   // )
+    //   if ((administrative.preparedBy == "" ||
+    //     administrative.preparedBy == undefined) ||
+    //     (administrative.salesOffice == "" ||
+    //       administrative.salesOffice == undefined)
+    //   ) {
+    //     toast("😐" + "Please fill mandatory Fields.", {
+    //       position: "top-right",
+    //       autoClose: 3000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //   } else {
+
+    //     let reqObj = {
+    //       itemId: 0,
+    //       // itemName: "",
+    //       itemName: createServiceOrBundle.name,
+    //       itemHeaderModel: {
+    //         itemHeaderId: 0,
+    //         itemHeaderDescription: createServiceOrBundle.description,
+    //         bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+    //         portfolioItemId: 0,
+    //         reference: createServiceOrBundle.reference,
+    //         itemHeaderMake: createServiceOrBundle.make,
+    //         itemHeaderFamily: createServiceOrBundle.family,
+    //         model: createServiceOrBundle.model,
+    //         prefix: createServiceOrBundle.prefix,
+    //         type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+    //         additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+    //         currency: "",
+    //         netPrice: 0,
+    //         itemProductHierarchy: "END_PRODUCT",
+    //         itemHeaderGeographic: "ONSITE",
+    //         responseTime: "PROACTIVE",
+    //         usage: "",
+    //         validFrom: "",
+    //         validTo: "",
+    //         estimatedTime: "",
+    //         servicePrice: 0,
+    //         status: "DRAFT",
+    //         itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+    //         componentCode: "",
+    //         componentDescription: "",
+    //         serialNumber: "",
+    //         variant: "",
+    //         itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+    //         jobCode: "",
+    //         preparedBy: administrative.preparedBy,
+    //         approvedBy: administrative.approvedBy,
+    //         preparedOn: administrative.preparedOn,
+    //         revisedBy: administrative.revisedBy,
+    //         revisedOn: administrative.revisedOn,
+    //         salesOffice: administrative.salesOffice?.value,
+    //         offerValidity: administrative.offerValidity?.value
+    //       },
+    //       itemBodyModel: {
+    //         itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+    //         itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+    //         frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+    //         spareParts: ["WITH_SPARE_PARTS"],
+    //         labours: ["WITH_LABOUR"],
+    //         miscellaneous: ["LUBRICANTS"],
+    //         taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+    //         solutionCode: "",
+    //         usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+    //         recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+    //         usage: "",
+    //         year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+    //         avgUsage: 0,
+    //         unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+    //         itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+    //           {
+    //             itemPriceDataId: itemPriceData.itemPriceDataId
+    //           }
+    //         ] : [],
+    //       }
+    //     }
+
+    //     const res = await itemCreation(reqObj);
+    //     if (res.status === 200) {
+    //       toast("😎" + `${serviceOrBundlePrefix} created`, {
+    //         position: "top-right",
+    //         autoClose: 3000,
+    //         hideProgressBar: false,
+    //         closeOnClick: true,
+    //         pauseOnHover: true,
+    //         draggable: true,
+    //         progress: undefined,
+    //       });
+    //       // setAddportFolioItem({});
+
+    //     }
+
+    //     if (serviceOrBundlePrefix === "BUNDLE") {
+    //       const rObj = {
+    //         standardJobId: itemPriceData.standardJobId,
+    //         repairKitId: itemPriceData.repairKitId,
+    //         itemId: res.data.itemId,
+    //         itemPriceDataId: itemPriceData.itemPriceDataId
+    //       }
+    //       const res2 = await portfolioItemPriceSjid(rObj)
+
+    //       console.log("administrative 12345 : ", res2);
+    //     }
+    //     setBundleTabs("4");
+    //     // console.log("createServiceOrBundle : ", createServiceOrBundle);
+    //   }
+    // }
+    // if (serviceOrBundlePrefix === "SERVICE") {
+    //   const validator = new Validator();
+
+    //   if ((!validator.emailValidation(administrative.preparedBy) ||
+    //     administrative.preparedBy == "" ||
+    //     administrative.preparedBy == undefined) ||
+    //     (administrative.approvedBy != "" &&
+    //       administrative.approvedBy != undefined &&
+    //       !validator.emailValidation(administrative.approvedBy)) ||
+    //     (administrative.revisedBy != "" &&
+    //       administrative.revisedBy != undefined &&
+    //       !validator.emailValidation(administrative.revisedBy)) ||
+    //     (administrative.salesOffice == "" ||
+    //       administrative.salesOffice == undefined)
+    //     // || (administrative.offerValidity == "" ||
+    //     // administrative.offerValidity == undefined)
+    //   ) {
+    //     toast("😐" + "Please fill mandatory Fields.", {
+    //       position: "top-right",
+    //       autoClose: 3000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //   } else {
+
+
+    //     let reqObj = {
+    //       itemId: 0,
+    //       // itemName: "",
+    //       itemName: createServiceOrBundle.name,
+    //       itemHeaderModel: {
+    //         itemHeaderId: 0,
+    //         itemHeaderDescription: createServiceOrBundle.description,
+    //         bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+    //         portfolioItemId: 0,
+    //         reference: createServiceOrBundle.reference,
+    //         itemHeaderMake: createServiceOrBundle.make,
+    //         itemHeaderFamily: createServiceOrBundle.family,
+    //         model: createServiceOrBundle.model,
+    //         prefix: createServiceOrBundle.prefix,
+    //         type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+    //         additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+    //         currency: "",
+    //         netPrice: 0,
+    //         itemProductHierarchy: "END_PRODUCT",
+    //         itemHeaderGeographic: "ONSITE",
+    //         responseTime: "PROACTIVE",
+    //         usage: "",
+    //         validFrom: "",
+    //         validTo: "",
+    //         estimatedTime: "",
+    //         servicePrice: 0,
+    //         status: "DRAFT",
+    //         itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+    //         componentCode: "",
+    //         componentDescription: "",
+    //         serialNumber: "",
+    //         variant: "",
+    //         itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+    //         jobCode: "",
+    //         preparedBy: administrative.preparedBy,
+    //         approvedBy: administrative.approvedBy,
+    //         preparedOn: administrative.preparedOn,
+    //         revisedBy: administrative.revisedBy,
+    //         revisedOn: administrative.revisedOn,
+    //         salesOffice: administrative.salesOffice?.value,
+    //         offerValidity: administrative.offerValidity?.value
+    //       },
+    //       itemBodyModel: {
+    //         itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+    //         itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+    //         frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+    //         spareParts: ["WITH_SPARE_PARTS"],
+    //         labours: ["WITH_LABOUR"],
+    //         miscellaneous: ["LUBRICANTS"],
+    //         taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+    //         solutionCode: "",
+    //         usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+    //         recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+    //         usage: "",
+    //         year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+    //         avgUsage: 0,
+    //         unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+    //         itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+    //           {
+    //             itemPriceDataId: itemPriceData.itemPriceDataId
+    //           }
+    //         ] : [],
+    //       }
+    //     }
+
+    //     const res = await itemCreation(reqObj);
+    //     if (res.status === 200) {
+    //       toast("😎" + `${serviceOrBundlePrefix} created`, {
+    //         position: "top-right",
+    //         autoClose: 3000,
+    //         hideProgressBar: false,
+    //         closeOnClick: true,
+    //         pauseOnHover: true,
+    //         draggable: true,
+    //         progress: undefined,
+    //       });
+    //       setBundleTabs("4");
+    //       // setAddportFolioItem({});
+
+    //     }
+
+    //     // console.log("createServiceOrBundle : ", createServiceOrBundle);
+    //   }
+    // }
+
+    // ==================== Without Try/catch Method End ================ //
+  };
+
+  const getAddportfolioItemData = async (data, itemPriceData) => {
+    console.log("Bundle ItemsTabs : ", data)
+
+
+    let reqObj = {
+      itemId: 0,
+      itemName: createServiceOrBundle.name,
+      itemHeaderModel: {
+        itemHeaderId: 0,
+        itemHeaderDescription: createServiceOrBundle.description,
+        bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+        portfolioItemId: 0,
+        reference: createServiceOrBundle.reference,
+        itemHeaderMake: createServiceOrBundle.make,
+        itemHeaderFamily: createServiceOrBundle.family,
+        model: createServiceOrBundle.model,
+        prefix: createServiceOrBundle.prefix,
+        type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+        additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+        currency: "",
+        netPrice: 0,
+        itemProductHierarchy: "END_PRODUCT",
+        itemHeaderGeographic: "ONSITE",
+        responseTime: "PROACTIVE",
+        usage: "",
+        validFrom: "",
+        validTo: "",
+        estimatedTime: "",
+        servicePrice: 0,
+        status: "DRAFT",
+        itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? data.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
+        componentCode: "",
+        componentDescription: "",
+        serialNumber: "",
+        variant: "",
+        itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+        jobCode: "",
+        preparedBy: administrative?.preparedBy ? administrative?.preparedBy : "",
+        approvedBy: administrative?.approvedBy ? administrative?.approvedBy : "",
+        preparedOn: administrative?.preparedOn ? administrative?.preparedOn : "",
+        revisedBy: administrative?.revisedBy ? administrative?.revisedBy : "",
+        revisedOn: administrative?.revisedOn ? administrative?.revisedOn : "",
+        salesOffice: administrative.salesOffice?.value ? administrative.salesOffice?.value : "",
+        offerValidity: administrative.offerValidity?.value ? administrative.offerValidity?.value : "",
+      },
+      itemBodyModel: {
+        itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(data.id) : 0,
+        itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? data.description : "",
+        frequency: serviceOrBundlePrefix === "BUNDLE" ? data.frequency?.value : "",
+        spareParts: ["WITH_SPARE_PARTS"],
+        labours: ["WITH_LABOUR"],
+        miscellaneous: ["LUBRICANTS"],
+        taskType: serviceOrBundlePrefix === "BUNDLE" ? [data.taskType?.value] : ["PM1"],
+        solutionCode: "",
+        usageIn: serviceOrBundlePrefix === "BUNDLE" ? data.usageIn?.value : "",
+        recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(data.recommendedValue) : 0,
+        usage: "",
+        year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+        avgUsage: 0,
+        unit: serviceOrBundlePrefix === "BUNDLE" ? data.unit?.value : "",
+        itemPrices: serviceOrBundlePrefix === "BUNDLE" &&
+          (itemPriceData?.itemPriceDataId != null ||
+            itemPriceData?.itemPriceDataId != undefined) ? [
+          {
             itemPriceDataId: itemPriceData.itemPriceDataId
           }
-          const res2 = await portfolioItemPriceSjid(rObj)
-
-          console.log("administrative 12345 : ", res2);
-        }
-        setBundleTabs("4");
-        // console.log("createServiceOrBundle : ", createServiceOrBundle);
+        ] : [],
       }
     }
-    if (serviceOrBundlePrefix === "SERVICE") {
-      const validator = new Validator();
 
-      if ((!validator.emailValidation(administrative.preparedBy) ||
-        administrative.preparedBy == "" ||
-        administrative.preparedBy == undefined) ||
-        (administrative.approvedBy != "" &&
-          administrative.approvedBy != undefined &&
-          !validator.emailValidation(administrative.approvedBy)) ||
-        (administrative.revisedBy != "" &&
-          administrative.revisedBy != undefined &&
-          !validator.emailValidation(administrative.revisedBy)) ||
-        (administrative.salesOffice == "" ||
-          administrative.salesOffice == undefined)
-        // || (administrative.offerValidity == "" ||
-        // administrative.offerValidity == undefined)
-      ) {
-        toast("😐" + "Please fill mandatory Fields.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
-
-
-        let reqObj = {
-          itemId: 0,
-          // itemName: "",
-          itemName: createServiceOrBundle.name,
-          itemHeaderModel: {
-            itemHeaderId: 0,
-            itemHeaderDescription: createServiceOrBundle.description,
-            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
-            portfolioItemId: 0,
-            reference: createServiceOrBundle.reference,
-            itemHeaderMake: createServiceOrBundle.make,
-            itemHeaderFamily: createServiceOrBundle.family,
-            model: createServiceOrBundle.model,
-            prefix: createServiceOrBundle.prefix,
-            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
-            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-            currency: "",
-            netPrice: 0,
-            itemProductHierarchy: "END_PRODUCT",
-            itemHeaderGeographic: "ONSITE",
-            responseTime: "PROACTIVE",
-            usage: "",
-            validFrom: "",
-            validTo: "",
-            estimatedTime: "",
-            servicePrice: 0,
-            status: "DRAFT",
-            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
-            componentCode: "",
-            componentDescription: "",
-            serialNumber: "",
-            variant: "",
-            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
-            jobCode: "",
-            preparedBy: administrative.preparedBy,
-            approvedBy: administrative.approvedBy,
-            preparedOn: administrative.preparedOn,
-            revisedBy: administrative.revisedBy,
-            revisedOn: administrative.revisedOn,
-            salesOffice: administrative.salesOffice?.value,
-            offerValidity: administrative.offerValidity?.value
-          },
-          itemBodyModel: {
-            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
-            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
-            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
-            spareParts: ["WITH_SPARE_PARTS"],
-            labours: ["WITH_LABOUR"],
-            miscellaneous: ["LUBRICANTS"],
-            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
-            solutionCode: "",
-            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
-            recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
-            usage: "",
-            year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
-            avgUsage: 0,
-            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
-              {
-                itemPriceDataId: itemPriceData.itemPriceDataId
-              }
-            ] : [],
-          }
-        }
-
-        const res = await itemCreation(reqObj);
-        if (res.status === 200) {
-          toast("😎" + `${serviceOrBundlePrefix} created`, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setBundleTabs("4");
-          // setAddportFolioItem({});
-
-        }
-
-        // console.log("createServiceOrBundle : ", createServiceOrBundle);
+    const res = await itemCreation(reqObj);
+    if (res.status === 200) {
+      const rObj = {
+        standardJobId: itemPriceData.standardJobId,
+        repairKitId: itemPriceData.repairKitId,
+        itemId: res.data.itemId,
+        itemPriceDataId: itemPriceData.itemPriceDataId
       }
+      const res2 = await portfolioItemPriceSjid(rObj)
+
+      toast("😎" + `Bundle ${createServiceOrBundle.name} saved successfully`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      // setCreateServiceOrBundle({
+      //   ...createServiceOrBundle,
+      //   id: res.data.itemId,
+      // });
+      setCreatedServiceData(res.data);
+      setAddportFolioItem(data)
+      setItemPriceData(itemPriceData)
+      setBundleTabs("4")
+
     }
-  };
-  const getAddportfolioItemData = (data, itemPriceData) => {
-    console.log("itemPriceData11111111", itemPriceData)
-    setAddportFolioItem(data)
-    setItemPriceData(itemPriceData)
+
+
+
+
+    // setBundleTabs("3")
+    // console.log("itemPriceData11111111", itemPriceData)
+    // setAddportFolioItem(data)
+    // setItemPriceData(itemPriceData)
   }
   const handleItemEditSave = (data, itemPriceData) => {
     setAddportFolioItem(data)
     setItemPriceData(itemPriceData)
-    setBundleTabs("3")
+    // setBundleTabs("3")
+    setBundleTabs("4")
   }
   const getPriceCalculatorDataFun = (data) => {
 
-    console.log("data 123456789 : ", data)
+    if (serviceOrBundlePrefix === "SERVICE") {
+      setBundleTabs("3")
+    } else if (serviceOrBundlePrefix === "BUNDLE") {
+      setBundleTabs("3")
+    } else {
+      console.log("data 123456789 : ", data)
+      setPriceCalculator(data);
+      setBundleServiceShow(false);
+      setBundleTabs("1")
+      saveAddNewServiceOrBundle();//bundle/service creation API called
+    }
 
-    setPriceCalculator(data);
-    setBundleServiceShow(false);
-    setBundleTabs("1")
-    saveAddNewServiceOrBundle();//bundle/service creation API called
+
   };
 
   const handleCreateChange = (e) => {
@@ -3293,13 +3761,29 @@ export const PortfolioSummary = () => {
                   aria-label="lab API tabs example"
                 >
                   <Tab label={`${serviceOrBundlePrefix} HEADER`} value="1" />
+                  <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+                  {/* {serviceOrBundlePrefix === "BUNDLE" && (
+                    <>
+                      <Tab label={`${serviceOrBundlePrefix} ITEMS`} value="2" />
+                      <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+                    </>
+                  )} */}
+
                   {serviceOrBundlePrefix === "BUNDLE" && (
                     <Tab label={`${serviceOrBundlePrefix} ITEMS`} value="2" />
                   )}
+                  {serviceOrBundlePrefix === "BUNDLE" && (
+                    <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+                  )}
+
                   {/* {serviceOrBundlePrefix === "BUNDLE" && ( */}
-                  <Tab label="ADMINISTRATIVE" value="3" />
+
                   {/* )} */}
                   <Tab label="PRICE CALCULATOR" value="4" />
+                  <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+
+                  <Tab label="ADMINISTRATIVE" value="3" />
+
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -3540,6 +4024,7 @@ export const PortfolioSummary = () => {
                                 onChange={handleAddServiceBundleChange}
                                 value={createServiceOrBundle.name}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
@@ -3555,6 +4040,7 @@ export const PortfolioSummary = () => {
                                 value={createServiceOrBundle.description}
                                 onChange={handleAddServiceBundleChange}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
@@ -3575,6 +4061,7 @@ export const PortfolioSummary = () => {
                                 onChange={handleAddServiceBundleChange}
                                 disabled
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
@@ -3635,38 +4122,6 @@ export const PortfolioSummary = () => {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                MAKE
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control text-primary border-radius-10"
-                                name="make"
-                                placeholder="Auto Fill Search Model...."
-                                value={createServiceOrBundle.make}
-                                onChange={handleAddServiceBundleChange}
-                                disabled
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-3">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                FAMILY
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control text-primary border-radius-10"
-                                name="make"
-                                placeholder="Auto Fill Search Model...."
-                                value={createServiceOrBundle.family}
-                                // onChange={handleAddServiceBundleChange}
-                                disabled
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-3">
                             <div className="form-group customselectmodelSerch">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 MODEL(S)
@@ -3680,6 +4135,7 @@ export const PortfolioSummary = () => {
                                 // onChange={handleAddServiceBundleChange}
                                 onChange={(e) => handleModelInputSearch(e)}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                               {
                                 <ul
                                   className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
@@ -3699,6 +4155,38 @@ export const PortfolioSummary = () => {
                                   ))}
                                 </ul>
                               }
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                FAMILY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="make"
+                                placeholder="Auto Fill Search Model...."
+                                value={createServiceOrBundle.family}
+                                // onChange={handleAddServiceBundleChange}
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                MAKE
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="make"
+                                placeholder="Auto Fill Search Model...."
+                                value={createServiceOrBundle.make}
+                                onChange={handleAddServiceBundleChange}
+                                disabled
+                              />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
@@ -3752,14 +4240,16 @@ export const PortfolioSummary = () => {
                       <button
                         type="button"
                         onClick={handleAddNewServiceOrBundle}
-                        className="btn btn-light"
+                        // className="btn btn-light"
+                        className="btn text-white bg-primary"
                       >
-                        Save
+                        Save & Next
                       </button>
                     </div>
                   </div>
                 </div>
               </TabPanel>
+
               <TabPanel value="2">
                 {
                   editBundleService ? <>
@@ -3782,6 +4272,32 @@ export const PortfolioSummary = () => {
                 }
 
               </TabPanel>
+
+              <TabPanel value="4">
+                {
+                  editBundleService ? <>
+                    <PriceCalculator
+                      serviceOrBundlePrefix={serviceOrBundlePrefix}
+                      setBundleTabs={setBundleTabs}
+                      setBundleServiceShow={setBundleServiceShow}
+                      getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                      priceCalculator={itemPriceData}
+                      priceCompFlag="editAble"
+                    />
+                  </> :
+                    <>
+                      <PriceCalculator
+                        serviceOrBundlePrefix={serviceOrBundlePrefix}
+                        setBundleTabs={setBundleTabs}
+                        setBundleServiceShow={setBundleServiceShow}
+                        getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                        priceCalculator={itemPriceData}
+                        priceCompFlagIs="noEditAble"
+                      />
+                    </>
+                }
+              </TabPanel>
+
               <TabPanel value="3">
                 {bundleAndServiceEditAble ?
                   <>
@@ -3879,7 +4395,7 @@ export const PortfolioSummary = () => {
                                 administrative.offerValidity == "string" ||
                                 administrative.offerValidity == undefined ||
                                 administrative.offerValidity == null
-                                ? "NA" : administrative.offerValidity?.value)}
+                                ? "NA" : administrative.offerValidity?.label)}
                           </h6>
                         </div>
                       </div>
@@ -3902,6 +4418,7 @@ export const PortfolioSummary = () => {
                             onChange={handleAdministrativreChange}
                             placeholder="Required (ex-abc@gmail.com)"
                           />
+                          <div className="css-w8dmq8">*Mandatory</div>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -3956,6 +4473,7 @@ export const PortfolioSummary = () => {
                                 }
                               />
                             </MuiPickersUtilsProvider>
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
                         {/* </div> */}
@@ -4037,6 +4555,7 @@ export const PortfolioSummary = () => {
                             value={administrative.salesOffice}
                             styles={FONT_STYLE_SELECT}
                           />
+                          <div className="css-w8dmq8">*Mandatory</div>
                           {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
@@ -4069,6 +4588,7 @@ export const PortfolioSummary = () => {
                             value={administrative.offerValidity}
                             styles={FONT_STYLE_SELECT}
                           />
+                          <div className="css-w8dmq8">*Mandatory</div>
                           {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
@@ -4086,35 +4606,12 @@ export const PortfolioSummary = () => {
                   <button
                     type="button"
                     onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
-                    className="btn btn-light"
+                    // className="btn btn-light"
+                    className="btn text-white bg-primary"
                   >
                     Save
                   </button>
                 </div>
-              </TabPanel>
-              <TabPanel value="4">
-                {
-                  editBundleService ? <>
-                    <PriceCalculator
-                      serviceOrBundlePrefix={serviceOrBundlePrefix}
-                      setBundleTabs={setBundleTabs}
-                      setBundleServiceShow={setBundleServiceShow}
-                      getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                      priceCalculator={itemPriceData}
-                      priceCompFlag="editAble"
-                    />
-                  </> :
-                    <>
-                      <PriceCalculator
-                        serviceOrBundlePrefix={serviceOrBundlePrefix}
-                        setBundleTabs={setBundleTabs}
-                        setBundleServiceShow={setBundleServiceShow}
-                        getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                        priceCalculator={itemPriceData}
-                        priceCompFlagIs="noEditAble"
-                      />
-                    </>
-                }
               </TabPanel>
             </TabContext>
           </Box>

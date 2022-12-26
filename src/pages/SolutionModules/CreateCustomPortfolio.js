@@ -2054,14 +2054,30 @@ export function CreateCustomPortfolio(props) {
     const handleNextClick = async (e) => {
         try {
             if (e.target.id == "general") {
-                if (
-                    generalComponentData.name === "" ||
-                    generalComponentData.name == null ||
-                    generalComponentData.externalReference === "" ||
-                    generalComponentData.externalReference === null
-                ) {
-                    throw "Please fill required field properly";
+                if ((generalComponentData.name === "") ||
+                    (generalComponentData.name == null)) {
+                    throw "Solution code is a required field, you can’t leave it blank";
                 }
+
+                if ((generalComponentData.description === "") ||
+                    (generalComponentData.description === null)) {
+                    throw "Solution description is a required field, you can’t leave it blank";
+                }
+
+                if ((generalComponentData.externalReference === "") ||
+                    (generalComponentData.externalReference === null)) {
+                    throw "Reference is a required field, you can’t leave it blank";
+                }
+
+
+                // if (
+                //     generalComponentData.name === "" ||
+                //     generalComponentData.name == null ||
+                //     generalComponentData.externalReference === "" ||
+                //     generalComponentData.externalReference === null
+                // ) {
+                //     throw "Please fill required field properly";
+                // }
 
                 if (state && state.type === "new") {
 
@@ -2381,6 +2397,10 @@ export function CreateCustomPortfolio(props) {
                 });
             } else if (e.target.id == "strategy") {
 
+                if ((solutionTypeListKeyValue.value === "") ||
+                    (solutionTypeListKeyValue.value === undefined)) {
+                    throw "Solution Type is a required field, you can’t leave it blank";
+                }
                 // if (
                 //     categoryUsageKeyValue1.value == "" ||
                 //     stratgyTaskUsageKeyValue.value == "" ||
@@ -2764,8 +2784,14 @@ export function CreateCustomPortfolio(props) {
                     priceMethodKeyValue1?.value === null ||
                     priceMethodKeyValue1?.value === undefined)
                 ) {
-                    throw "Please fill required field properly";
+                    throw "Price Method is a required field, you can’t leave it blank";
                 }
+
+                if ((priceTypeKeyValue1.value == "") ||
+                    (priceTypeKeyValue1.value == undefined)) {
+                    throw "Price Type is a required field, you can’t leave it blank";
+                }
+
                 if (state && state.type === "new") {
 
 
@@ -3695,6 +3721,22 @@ export function CreateCustomPortfolio(props) {
             } else if (e.target.id == "administrative") {
                 const validator = new Validator();
 
+                if ((administrative.preparedBy == "") ||
+                    (administrative.preparedBy == undefined)) {
+                    throw "Prepared By is a required field, you can’t leave it blank";
+                }
+
+                if ((administrative.salesOffice == "") ||
+                    (administrative.salesOffice == undefined)) {
+                    throw "Sales Office/Branch is a required field, you can’t leave it blank";
+                }
+
+                if ((administrative.offerValidity == "") ||
+                    (administrative.offerValidity == undefined)) {
+                    throw "Offer Validity is a required field, you can’t leave it blank";
+                }
+
+
                 // if ((!validator.emailValidation(administrative.preparedBy) ||
                 //     administrative.preparedBy == "" ||
                 //     administrative.preparedBy == undefined) ||
@@ -3707,13 +3749,13 @@ export function CreateCustomPortfolio(props) {
                 //     (administrative.salesOffice == "" ||
                 //         administrative.salesOffice == undefined)
                 // ) 
-                if ((administrative.preparedBy == "" ||
-                    administrative.preparedBy == undefined) ||
-                    (administrative.salesOffice == "" ||
-                        administrative.salesOffice == undefined)
-                ) {
-                    throw "Please fill mandatory fields with valid data";
-                }
+                // if ((administrative.preparedBy == "" ||
+                //     administrative.preparedBy == undefined) ||
+                //     (administrative.salesOffice == "" ||
+                //         administrative.salesOffice == undefined)
+                // ) {
+                //     throw "Please fill mandatory fields with valid data";
+                // }
 
                 if (state && state.type === "new") {
                     setGeneralComponentData({
@@ -4086,7 +4128,7 @@ export function CreateCustomPortfolio(props) {
                 }
             }
         } catch (error) {
-            console.log("somehing went wrong:", error);
+            console.log("something went wrong:", error);
             toast("😐" + error, {
                 position: "top-right",
                 autoClose: 3000,
@@ -4270,11 +4312,11 @@ export function CreateCustomPortfolio(props) {
         else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
             setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
         }
-        else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
-            setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
-        }
         else if (value === "price" && viewOnlyTab.priceViewOnly) {
             setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: false });
+        }
+        else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
+            setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
         }
     }
 
@@ -4745,7 +4787,7 @@ export function CreateCustomPortfolio(props) {
 
                 })
                 .catch((err) => {
-                    handleSnack("error", "Error occured while fetching header details");
+                    handleSnack("error", "Error occurred while fetching header details");
                 });
             setHeaderLoading(false);
         }
@@ -9144,7 +9186,8 @@ export function CreateCustomPortfolio(props) {
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
                                                             {/* {prefilgabelGeneral} NAME */}
-                                                            SOLUTION NAME
+                                                            SOLUTION{/*  NAME */} CODE
+                                                            {/* SOLUTION NAME */}
                                                         </label>
                                                         <input
                                                             type="text"
@@ -9154,6 +9197,7 @@ export function CreateCustomPortfolio(props) {
                                                             value={generalComponentData.name}
                                                             onChange={handleGeneralInputChange}
                                                         />
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3 col-sm-3">
@@ -9166,10 +9210,11 @@ export function CreateCustomPortfolio(props) {
                                                             type="text"
                                                             className="form-control border-radius-10 text-primary"
                                                             name="description"
-                                                            placeholder="Optional"
+                                                            placeholder="Required"
                                                             value={generalComponentData.description}
                                                             onChange={handleGeneralInputChange}
                                                         />
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3 col-sm-3">
@@ -9185,6 +9230,7 @@ export function CreateCustomPortfolio(props) {
                                                             value={generalComponentData.externalReference}
                                                             onChange={handleGeneralInputChange}
                                                         />
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3 col-sm-3">
@@ -9268,7 +9314,8 @@ export function CreateCustomPortfolio(props) {
                                                 <div className="col-md-4 col-sm-3">
                                                     <div className="form-group">
                                                         <p className="font-size-12 font-weight-500 mb-2">
-                                                            SOLUTION NAME
+                                                            SOLUTION{/*  NAME */} CODE
+                                                            {/* SOLUTION NAME */}
                                                         </p>
                                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(generalComponentData.name == "" ||
@@ -9802,6 +9849,7 @@ export function CreateCustomPortfolio(props) {
                                                         //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                         // }
                                                         />
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -10010,6 +10058,7 @@ export function CreateCustomPortfolio(props) {
                                                                 placeholder="required"
                                                                 value={priceMethodKeyValue1}
                                                             />
+                                                            <div className="css-w8dmq8">*Mandatory</div>
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
@@ -10069,6 +10118,7 @@ export function CreateCustomPortfolio(props) {
                                                                 placeholder="placeholder (Optional)"
                                                                 value={priceTypeKeyValue1}
                                                             />
+                                                            <div className="css-w8dmq8">*Mandatory</div>
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
@@ -10441,8 +10491,9 @@ export function CreateCustomPortfolio(props) {
                                         <div className="row" style={{ justifyContent: "right" }}>
                                             <button
                                                 type="button"
-                                                onClick={() => setValue("coverage")}
+                                                onClick={handleNextClick}
                                                 className="btn btn-light"
+                                                id="priceAgreement"
                                             >
                                                 Save & Next
                                             </button>
@@ -10814,6 +10865,7 @@ export function CreateCustomPortfolio(props) {
                                                             onChange={handleAdministrativreChange}
                                                             placeholder="Required (ex-abc@gmail.com)"
                                                         />
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -10832,6 +10884,7 @@ export function CreateCustomPortfolio(props) {
                                                             value={administrative.approvedBy}
                                                             onChange={handleAdministrativreChange}
                                                         />
+
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -10860,6 +10913,7 @@ export function CreateCustomPortfolio(props) {
                                                                     }
                                                                 />
                                                             </MuiPickersUtilsProvider>
+                                                            <div className="css-w8dmq8">*Mandatory</div>
                                                         </div>
                                                     </div>
                                                     {/* </div> */}
@@ -10943,6 +10997,7 @@ onChange={handleAdministrativreChange}
                                                             value={administrative.salesOffice}
                                                             styles={FONT_STYLE_SELECT}
                                                         />
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                         {/* <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
@@ -10977,6 +11032,7 @@ onChange={handleAdministrativreChange}
                                                             value={administrative.offerValidity}
                                                             styles={FONT_STYLE_SELECT}
                                                         />
+                                                        <div className="css-w8dmq8">*Mandatory</div>
                                                         {/* <input
                         type="text"
                         className="form-control border-radius-10 text-primary"

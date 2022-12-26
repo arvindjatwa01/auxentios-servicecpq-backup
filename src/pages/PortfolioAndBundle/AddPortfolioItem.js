@@ -882,7 +882,7 @@ const AddPortfolioItem = (props) => {
           additional: "",
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: 0,
+          numberOfEvents: addPortFolioItem?.numberOfEvents,
           priceMethod: "LIST_PRICE",
           priceType: "FIXED",
           listPrice: 0,
@@ -911,9 +911,11 @@ const AddPortfolioItem = (props) => {
           labourRequired: true,
           miscRequired: true
         }
+        console.log("props.compoFlag Test :", rObj)
+        console.log("addPortFolioItem Test :", addPortFolioItem)
         const itemPriceData = await createItemPriceData(rObj)
-        props.setBundleTabs("3");
-        props.getAddportfolioItemDataFun(addPortFolioItem, itemPriceData.data);
+        // props.setBundleTabs("3");
+        props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data);
       } else {
         if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
           props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
@@ -965,7 +967,7 @@ const AddPortfolioItem = (props) => {
           props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
         }
 
-        props.setBundleTabs("3");
+        // props.setBundleTabs("3");
       }
     }
 

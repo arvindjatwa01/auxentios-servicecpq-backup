@@ -527,19 +527,22 @@ export function SolutionTemplateResult(props) {
 
    const makeHeaderEditable = () => {
       // console.log("Data is : ", location.selectedTemplateItems[0])
-      console.log("data-------- : ", viewOnlyTab, value);
-      if (value === "1" && viewOnlyTab.generalViewOnly)
+
+      // priceAgreement
+      // coverage
+      // console.log("data-------- : ", viewOnlyTab, value);
+      if (value === "general" && viewOnlyTab.generalViewOnly)
          setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
 
-      else if (value === "2" && viewOnlyTab.validityViewOnly) {
+      else if (value === "validity" && viewOnlyTab.validityViewOnly) {
          setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: false });
-      } else if (value === "3" && viewOnlyTab.strategyViewOnly) {
+      } else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
          setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
       }
       else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
          setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
       }
-      else if (value === "4" && viewOnlyTab.priceViewOnly) {
+      else if (value === "price" && viewOnlyTab.priceViewOnly) {
          setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: false });
       }
    }
@@ -1917,15 +1920,32 @@ export function SolutionTemplateResult(props) {
 
 
          if (e.target.id == "general") {
-            if (
-               generalComponentData.name === "" ||
-               generalComponentData.name == null ||
-               generalComponentData.externalReference === "" ||
-               generalComponentData.externalReference === null ||
-               prefilgabelGeneral === ""
-            ) {
-               throw "Please fill required field properly";
+
+            if ((generalComponentData.name === "") ||
+               (generalComponentData.name == null)) {
+               throw "Solution code is a required field, you can’t leave it blank";
             }
+
+            if ((generalComponentData.description === "") ||
+               (generalComponentData.description === null)) {
+               throw "Solution description is a required field, you can’t leave it blank";
+            }
+
+            if ((generalComponentData.externalReference === "") ||
+               (generalComponentData.externalReference === null)) {
+               throw "Reference is a required field, you can’t leave it blank";
+            }
+
+            // if (
+            //    generalComponentData.name === "" ||
+            //    generalComponentData.name == null ||
+            //    generalComponentData.externalReference === "" ||
+            //    generalComponentData.externalReference === null ||
+            //    prefilgabelGeneral === ""
+            // ) {
+            //    throw "Please fill required field properly";
+            // }
+
 
             // Old Todo
             // let reqData = {
@@ -2134,6 +2154,12 @@ export function SolutionTemplateResult(props) {
             });
             // console.log("validityData Data => ", validityData)
          } else if (e.target.id == "strategy") {
+
+            if ((solutionTypeListKeyValue.value === "") ||
+               (solutionTypeListKeyValue.value === undefined)) {
+               throw "Solution Type is a required field, you can’t leave it blank";
+            }
+
             setGeneralComponentData({
                ...generalComponentData,
                usageCategory: categoryUsageKeyValue1.value,
@@ -2319,6 +2345,18 @@ export function SolutionTemplateResult(props) {
             };
          } else if (e.target.id == "price") {
 
+            if ((priceMethodKeyValue1.length === 0 ||
+               priceMethodKeyValue1?.value === "" ||
+               priceMethodKeyValue1?.value === null ||
+               priceMethodKeyValue1?.value === undefined)
+            ) {
+               throw "Price Method is a required field, you can’t leave it blank";
+            }
+
+            if ((priceTypeKeyValue1.value == "") ||
+               (priceTypeKeyValue1.value == undefined)) {
+               throw "Price Type is a required field, you can’t leave it blank";
+            }
             // update Exiting Escalation Price
             if (escalationPriceDataId !== "" ||
                escalationPriceDataId !== null ||
@@ -2621,7 +2659,7 @@ export function SolutionTemplateResult(props) {
 
 
             let cvgIds = [];
-            setValue("6");
+            setValue("coverage");
             for (let i = 0; i < selectedMasterData.length; i++) {
                let reqObj = {
                   coverageId: 0,
@@ -2755,6 +2793,21 @@ export function SolutionTemplateResult(props) {
          } else if (e.target.id == "administrative") {
             const validator = new Validator();
 
+            if ((administrative.preparedBy == "") ||
+               (administrative.preparedBy == undefined)) {
+               throw "Prepared By is a required field, you can’t leave it blank";
+            }
+
+            if ((administrative.salesOffice == "") ||
+               (administrative.salesOffice == undefined)) {
+               throw "Sales Office/Branch is a required field, you can’t leave it blank";
+            }
+
+            if ((administrative.offerValidity == "") ||
+               (administrative.offerValidity == undefined)) {
+               throw "Offer Validity is a required field, you can’t leave it blank";
+            }
+
             // if ((!validator.emailValidation(administrative.preparedBy) ||
             //    administrative.preparedBy == "" ||
             //    administrative.preparedBy == undefined) ||
@@ -2767,13 +2820,13 @@ export function SolutionTemplateResult(props) {
             //    (administrative.salesOffice == "" ||
             //       administrative.salesOffice == undefined)
             // )
-            if ((administrative.preparedBy == "" ||
-               administrative.preparedBy == undefined) ||
-               (administrative.salesOffice == "" ||
-                  administrative.salesOffice == undefined)
-            ) {
-               throw "Please fill mandatory fields with valid data";
-            }
+            // if ((administrative.preparedBy == "" ||
+            //    administrative.preparedBy == undefined) ||
+            //    (administrative.salesOffice == "" ||
+            //       administrative.salesOffice == undefined)
+            // ) {
+            //    throw "Please fill mandatory fields with valid data";
+            // }
             setGeneralComponentData({
                ...generalComponentData,
                preparedBy: administrative.preparedBy,
@@ -5783,7 +5836,8 @@ export function SolutionTemplateResult(props) {
                                        <div className="col-md-3 col-sm-3">
                                           <div className="form-group">
                                              <label className="text-light-dark font-size-12 font-weight-500">
-                                                SOLUTION NAME
+                                                SOLUTION{/*  NAME */} CODE
+                                                {/* SOLUTION NAME */}
                                              </label>
                                              <input
                                                 type="text"
@@ -5793,6 +5847,7 @@ export function SolutionTemplateResult(props) {
                                                 value={generalComponentData.name}
                                                 onChange={handleGeneralInputChange}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                           </div>
                                        </div>
                                        <div className="col-md-3 col-sm-3">
@@ -5808,6 +5863,7 @@ export function SolutionTemplateResult(props) {
                                                 value={generalComponentData.description}
                                                 onChange={handleGeneralInputChange}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                           </div>
                                        </div>
                                        <div className="col-md-3 col-sm-3">
@@ -5823,6 +5879,7 @@ export function SolutionTemplateResult(props) {
                                                 value={generalComponentData.externalReference}
                                                 onChange={handleGeneralInputChange}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                           </div>
                                        </div>
                                        <div className="col-md-3 col-sm-3">
@@ -5892,7 +5949,8 @@ export function SolutionTemplateResult(props) {
                                  <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
                                        <p className="font-size-12 font-weight-500 mb-2">
-                                          PORTFOLIO NAME
+                                          SOLUTION{/*  NAME */} CODE
+                                          {/* SOLUTION NAME */}
                                        </p>
                                        <h6 className="font-weight-500 text-primary font-size-17">
                                           {(generalComponentData.name == "" ||
@@ -5906,7 +5964,7 @@ export function SolutionTemplateResult(props) {
                                  <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
                                        <p className="font-size-12 font-weight-500 mb-2">
-                                          PORTFOLIO DESCRIPTION (IF ANY)
+                                          SOLUTION DESCRIPTION
                                        </p>
                                        <h6 className="font-weight-500 text-primary font-size-17">
                                           {(generalComponentData.description == "" ||
@@ -6353,6 +6411,7 @@ export function SolutionTemplateResult(props) {
                                              //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                              // }
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                           </div>
                                        </div>
                                        <div className="col-md-4 col-sm-4">
@@ -6653,6 +6712,7 @@ export function SolutionTemplateResult(props) {
                                                 placeholder="required"
                                                 value={priceMethodKeyValue1}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                           </div>
                                        </div>
                                        <div className="col-md-4 col-sm-4">
@@ -6705,6 +6765,7 @@ export function SolutionTemplateResult(props) {
                                                 placeholder="placeholder (Optional)"
                                                 value={priceTypeKeyValue1}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                           </div>
                                        </div>
                                        <div className="col-md-4 col-sm-4">
@@ -7429,6 +7490,7 @@ export function SolutionTemplateResult(props) {
                                                 value={administrative.preparedBy}
                                                 onChange={handleAdministrativreChange}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                           </div>
                                        </div>
                                        <div className="col-md-4 col-sm-4">
@@ -7491,6 +7553,7 @@ export function SolutionTemplateResult(props) {
                                                             })
                                                          }
                                                       />
+                                                      <div className="css-w8dmq8">*Mandatory</div>
                                                    </MuiPickersUtilsProvider>
                                                 </div>
                                              </div>
@@ -7582,6 +7645,7 @@ export function SolutionTemplateResult(props) {
                                                 value={administrative.salesOffice}
                                                 styles={FONT_STYLE_SELECT}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                              {/* <input
                                                 type="text"
                                                 className="form-control border-radius-10 text-primary"
@@ -7615,6 +7679,7 @@ export function SolutionTemplateResult(props) {
                                                 value={administrative.offerValidity}
                                                 styles={FONT_STYLE_SELECT}
                                              />
+                                             <div className="css-w8dmq8">*Mandatory</div>
                                              {/* <input
                                                 type="text"
                                                 className="form-control border-radius-10 text-primary"

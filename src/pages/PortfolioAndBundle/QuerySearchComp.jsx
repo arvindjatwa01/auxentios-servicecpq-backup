@@ -219,7 +219,6 @@ const QuerySearchComp = (props) => {
 
       $(".scrollbar").css("display", "none");
       console.log("handleQuerySearchClick", querySearchSelector);
-      // props.setQuerySearchSelectItem({querySearchSelector});
       if (
         querySearchSelector[0]?.selectFamily?.value == "" ||
         querySearchSelector[0]?.inputSearch == "" ||
@@ -227,13 +226,6 @@ const QuerySearchComp = (props) => {
       ) {
         throw "Please fill data properly"
       }
-
-      // console.log("Try here1 ", querySearchSelector[0].selectFamily.value);
-      // var  searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
-      // var searchStr =
-      //   querySearchSelector[0]?.selectFamily?.value +
-      //   "~" +
-      //   querySearchSelector[0]?.inputSearch;
 
       if (props.compoFlag === "solutionTempItemSearch") {
         var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
@@ -243,7 +235,6 @@ const QuerySearchComp = (props) => {
 
       }
       console.log("searchStr  try : ", searchStr);
-      // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         if (
@@ -284,17 +275,15 @@ const QuerySearchComp = (props) => {
         props.setLoadingItem(false)
       } else if (props.compoFlag === "portfolioTempItemSearch") {
         const res3 = await itemSearch(searchStr)
-        // console.log("res3 is  : ", res3)
         if (!res3.data.length > 0) {
           props.setLoadingStatus("")
           props.setPortfolioTempMasterData([])
           // props.ItemSearchResponseFun([], querySearchSelector)
-          throw "No record found"
+          // throw "No record found"
+          throw "No information is found for your search, change the search criteria";
         } else {
           props.setPortfolioTempMasterData(res3.data)
-          // props.ItemSearchResponseFun(res3, querySearchSelector)
           props.setLoadingStatus("")
-
         }
         let temArray = []
         // for (let i = 0; i <= res2.length; i++) {
@@ -311,7 +300,8 @@ const QuerySearchComp = (props) => {
         if (!res4.length > 0) {
           props.setSolutionLoadingStatus("")
           props.setSolutionTempMasterData([])
-          throw "No record found"
+          // throw "No record found"
+          throw "No information is found for your search, change the search criteria";
         } else {
           props.setSolutionTempMasterData(res4)
           props.setSolutionLoadingStatus("")
@@ -377,7 +367,9 @@ const QuerySearchComp = (props) => {
       if (!res.data.length > 0) {
         props.setLoadingItem("11")
         props.setTempBundleService1([])
-        throw "No record found"
+        // throw "No record found"
+        throw "No information is found for your search, change the search criteria";
+
       } else {
         props.setTempBundleService1(res.data)
         props.setLoadingItem("11")
@@ -510,10 +502,7 @@ const QuerySearchComp = (props) => {
                       {
                         <ul
                           className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-
                         >
-                          {console.log("Obje obj.selectOptions : ", obj.selectOptions)}
-
                           {obj.selectOptions.map(
                             (currentItem, j) => (
                               <li
