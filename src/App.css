@@ -3590,3 +3590,20 @@ input[type="checkbox"]:after {
 .overflow-visible{overflow: visible !important;}
 .table-row-baseline .custom-rdt_TableCell{align-items: baseline !important;}
 .checkbox-input input[type="checkbox"]:checked:after{display: flex !important; align-items: center;}
+input[type="checkbox"]:checked:after {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  content: "\f00c";
+  font-family: 'FontAwesome';
+  color: #872ff7;
+  font-weight: 100;
+  text-align: center;
+  font-size: 14px !important;
+}
+.funds .st0{fill:#fff;}
+.input-search{position: absolute;
+  bottom: 26px;
+  right: 26px;
+  z-index: 1;}

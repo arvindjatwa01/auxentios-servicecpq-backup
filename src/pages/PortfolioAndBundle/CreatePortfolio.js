@@ -7355,8 +7355,8 @@ export function CreatePortfolio(props) {
               {bundleAndService.itemHeaderModel.itemHeaderDescription}
             </div>
             <div className="d-flex align-items-center">
-                 <div className="icons-table mr-1"><img src="../assets/images/bundle.png"></img></div>
-                 <div className=""><KeyboardArrowDownIcon /></div>
+              <div className="icons-table mr-1"><img src="../assets/images/bundle.png"></img></div>
+              <div className=""><KeyboardArrowDownIcon /></div>
             </div>
           </div>
           <div
@@ -8614,11 +8614,11 @@ export function CreatePortfolio(props) {
                           />
                         </div>
                       </div> */}
-                        
-                        
+
+
                       </div>
                       <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
+                        <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               {prefilgabelGeneral} NAME
@@ -8652,7 +8652,7 @@ export function CreatePortfolio(props) {
                         </div>
                       </div>
                       <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
+                        <div className="col-md-6 col-sm-6">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               REFERENCE
@@ -14354,7 +14354,18 @@ export function CreatePortfolio(props) {
                       </div>
                     </div>
                   </div>
-                  <div className="m-3 text-right">
+                  <div className="d-flex align-items-center justify-content-between mt-3">
+                  <div className="d-flex align-items-center">
+                    <div className="d-block mr-4">
+                        <p className="mb-0 font-size-14 text-grey">NET PRICE</p>
+                        <p className="mb-0 font-size-14 text-black">$25,200</p>
+                    </div>
+                    <div className="d-block">
+                        <p className="mb-0 font-size-14 text-grey">TOTAL PRICE</p>
+                        <p className="mb-0 font-size-14 text-black">$100,000</p>
+                    </div>
+                  </div>
+                  <div className="d-flex align-items-center">
                     <a
                       href="#"
                       className="btn text-white bg-primary"
@@ -14362,6 +14373,7 @@ export function CreatePortfolio(props) {
                     >
                       Save
                     </a>
+                  </div>
                   </div>
                 </div>
               </TabPanel>
