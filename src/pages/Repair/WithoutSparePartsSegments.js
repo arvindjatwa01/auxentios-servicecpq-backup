@@ -107,6 +107,11 @@ function WithoutSpareParts(props) {
     }
   };
 
+  const makeHeaderEditable = () => {
+    if (segmentViewOnly)
+      setSegmentViewOnly(false);
+  };
+
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
     setSearchJobCodeResults([]);
@@ -189,10 +194,6 @@ function WithoutSpareParts(props) {
       setSegmentData({
         ...segmentToLoad[0],
         header: formatSegmentHeader(segmentToLoad[0]),
-        // "Segment " +
-        // segmentToLoad[0].segmentNumber +
-        // " - " +
-        // segmentToLoad[0].description,
       });
     } else if (direction === "forward") {
       let segmentToLoad = [];
@@ -221,6 +222,7 @@ function WithoutSpareParts(props) {
   const handleCreateSegment = () => {
     let bid = activeElement?.bId;
     let data = {
+      ...(segmentData.id && { id: segmentData.id }),
       jobCode: segmentData.jobCode,
       title: segmentData.title,
       componentCode: segmentData.componentCode,
@@ -323,6 +325,21 @@ function WithoutSpareParts(props) {
         <h5 className="d-flex align-items-center mb-0">
           <div className="" style={{ display: "contents" }}>
             <span className="mr-3 white-space">{segmentData.header}</span>
+            {/* <a
+              href={undefined}
+              className="btn-sm"
+              style={{ cursor: "pointer" }}
+            >
+              <i
+                className="fa fa-pencil"
+                aria-hidden="true"
+                onClick={() =>
+                  ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1
+                    ? makeHeaderEditable()
+                    : handleSnack("info", "Builder is active!")
+                }
+              ></i>
+            </a>{" "} */}
           </div>
           <div className="hr"></div>
         </h5>

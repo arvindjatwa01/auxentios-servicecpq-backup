@@ -500,7 +500,7 @@ function PartList(props) {
         setVersionDescription("");
         handleSnack(
           "success",
-          `Version ${result.versionNumber} has been created`
+          `Version ${result.versionNumber} created successfully`
         );
       })
       .catch((err) => {

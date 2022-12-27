@@ -156,7 +156,7 @@ function WithoutSparePartsHeader(props) {
     await updateBuilderStatus(bId, e.value)
       .then((result) => {
         setSelBuilderStatus(e);
-        setActiveElement({...activeElement, builderStatus: e.value});
+        setActiveElement({ ...activeElement, builderStatus: e.value });
         handleSnack("success", "Status has been updated!");
       })
       .catch((err) => {
@@ -190,17 +190,6 @@ function WithoutSparePartsHeader(props) {
       setBuilderId(state.builderId);
       setBId(state.bId);
       fetchAllDetails(state.bId);
-      if (state.bId) {
-        fetchSegments(state.bId)
-          .then((result) => {
-            if (result?.length > 0) {
-              setSegments(result);
-            }
-          })
-          .catch((e) => {
-            handleSnack("error", "Error occurred while fetching the segments");
-          });
-      }
     }
   }, []);
 
@@ -217,6 +206,7 @@ function WithoutSparePartsHeader(props) {
         .then((result) => {
           setBuilderId(result.builderId);
           populateHeader(result);
+          populateSegments(builderId);
         })
         .catch((err) => {
           console.log(err);
@@ -225,7 +215,17 @@ function WithoutSparePartsHeader(props) {
       setHeaderLoading(false);
     }
   };
-
+  const populateSegments = (builderId) => {
+    fetchSegments(builderId)
+      .then((result) => {
+        if (result?.length > 0) {
+          setSegments(result);
+        }
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occurred while fetching the segments");
+      });
+  };
   const [headerLoading, setHeaderLoading] = useState(false);
   const [rating, setRating] = useState(0);
   const [builderVersionOptions, setBuilderVersionOptions] = useState([
@@ -2015,7 +2015,13 @@ function WithoutSparePartsHeader(props) {
                   </div>
                 ) : (
                   <button
-                    onClick={() => setActiveElement({ name: "segment", bId, builderStatus: selBuilderStatus?.value})}
+                    onClick={() =>
+                      setActiveElement({
+                        name: "segment",
+                        bId,
+                        builderStatus: selBuilderStatus?.value,
+                      })
+                    }
                     className="btn bg-primary text-white"
                     disabled={
                       !Object.values(viewOnlyTab).every((item) => item === true)
