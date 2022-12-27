@@ -191,7 +191,6 @@ export const CREATE_KIT = (builderId) => REPAIR_BUILDER_URI + `builder/${builder
 export const SEARCH_KIT = (query) => REPAIR_BUILDER_URI + `kit/search?search=${query}`;
 export const FETCH_KIT = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}`;
 export const UPDATE_KIT_CUSTOMER = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/customer`
-export const UPDATE_KIT_MACHINE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/machine`
 export const UPDATE_KIT_ESTIMATION = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimation-team`
 export const UPDATE_KIT_GENERAL_DETAIL = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimation`
 export const UPDATE_KIT_PRICE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/pricing`

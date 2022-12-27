@@ -16,6 +16,7 @@ import copyIcon from "../../assets/icons/svg/Copy.svg";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DataTable from "react-data-table-component";
 import { Link, useHistory } from "react-router-dom";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import $ from "jquery";
 import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
@@ -27,7 +28,7 @@ import {
 } from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { Rating, TextField } from "@mui/material";
+import { IconButton, Menu, MenuItem, Rating, TextField } from "@mui/material";
 import Moment from "react-moment";
 import {
   updateKITCoverage,
@@ -177,7 +178,14 @@ function ServiceOnlyTemplates(props) {
     currency: "",
   });
   const [uploadOpen, setUploadOpen] = React.useState(false);
-
+  const handleClose = () => setOpen(false);
+  const [open, setOpen] = React.useState(false);
+  const handleClick = (event) => {
+    console.log("event", event);
+    setAnchorEl(event.currentTarget);
+    setOpen(true);
+  };
+  const [anchorEl, setAnchorEl] = React.useState(null);
   // Retrieve price methods
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
@@ -898,6 +906,73 @@ function ServiceOnlyTemplates(props) {
               </div>
             </div>
             <div className="d-flex">
+            <div>
+                <React.Fragment>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    <IconButton
+                      className="btn bg-primary text-white font-size-14 pr-0 ml-2"
+                      style={{ borderRadius: "5px" }}
+                      onClick={handleClick}
+                      size="small"
+                      aria-controls={open ? "account-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                    >
+                      <span className="convert mx-2">
+                        Convert to
+                        <span>
+                          <KeyboardArrowDownIcon />
+                        </span>
+                      </span>
+                    </IconButton>
+                  </Box>
+                  <Menu
+                    anchorEl={anchorEl}
+                    id="account-menu"
+                    open={open}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                    PaperProps={{
+                      elevation: 0,
+                      sx: {
+                        overflow: "visible",
+                        filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                        mt: 1.5,
+                        "& .MuiAvatar-root": {
+                          width: 32,
+                          height: 32,
+                          ml: -0.5,
+                          mr: 1,
+                        },
+                        "&:before": {
+                          content: '""',
+                          display: "block",
+                          position: "absolute",
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: "background.paper",
+                          transform: "translateY(-50%) rotate(45deg)",
+                          zIndex: 0,
+                        },
+                      },
+                    }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                    <MenuItem data-toggle="modal" data-target="#quotecreat" sx={{marginInline: 2}}>
+                      Quote
+                    </MenuItem>
+                  </Menu>
+                </React.Fragment>
+              </div>
               <div className="d-flex justify-content-center align-items-center">
                 <a href="#" className="ml-3 font-size-14" title="Share">
                   <img src={shareIcon}></img>

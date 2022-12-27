@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Select from "react-select";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { MuiMenuComponent } from "pages/Operational";
-import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
@@ -18,22 +16,10 @@ import uploadIcon from "../../assets/icons/svg/upload.svg";
 import penIcon from "../../assets/images/pen.png";
 import deleteIcon from "../../assets/icons/svg/delete.svg";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
-// import { Link } from 'react-router-dom'
-
-import CreateNewFolderOutlinedIcon from "@mui/icons-material/CreateNewFolderOutlined";
-import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
-import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import DataTable from "react-data-table-component";
 import SearchIcon from "@mui/icons-material/Search";
 import $ from "jquery";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { Modal, SplitButton, Dropdown, ButtonGroup } from "react-bootstrap";
-import boxicon from "../../assets/icons/png/box.png";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
+import { Modal } from "react-bootstrap";
 import FormGroup from "@mui/material/FormGroup";
 import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
@@ -45,13 +31,8 @@ import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MultiSelect from "@mui/material/Select";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import FormControl from "@mui/material/FormControl";
 import { Link, useHistory } from "react-router-dom";
-import SelectFilter from "react-select";
 import {
   DataGrid,
   getGridStringOperators,
@@ -59,9 +40,7 @@ import {
   useGridApiContext,
 } from "@mui/x-data-grid";
 import {
-  getSearchQueryCoverage,
-  getSearchCoverageForFamily,
-  itemCreation,
+  getSearchQueryCoverage
 } from "../../services/index";
 import {
   fetchKITDetails,
@@ -69,7 +48,6 @@ import {
   updateKITCustomer,
   updateKITEstimation,
   updateKITGeneralDet,
-  updateKITMachine,
   updateKITPrice,
   updateKITStatus,
 } from "services/kitService";
@@ -330,12 +308,6 @@ function Kits(props) {
     estViewOnly: false,
     priceViewOnly: false,
   });
-  const validityOptions = [
-    { value: "15", label: "15 days" },
-    { value: "30", label: "1 month" },
-    { value: "45", label: "45 days" },
-    { value: "60", label: "2 months" },
-  ];
 
   const APPLICATION_OPTIONS = [
     { value: "ROUTINE_MAINTENANCE", label: "Routine Maintenance" },
@@ -1509,13 +1481,9 @@ function Kits(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem>Templates</MenuItem>
-                    <MenuItem>Standard Job</MenuItem>
-                    <MenuItem>Kit</MenuItem>
                     <MenuItem data-toggle="modal" data-target="#quotecreat">
                       Quote
                     </MenuItem>
-                    <Divider />
                   </Menu>
                 </React.Fragment>
               </div>
@@ -2266,7 +2234,8 @@ function Kits(props) {
                               !generalData.description ||
                               !generalData.estimationNo ||
                               !generalData.reference ||
-                              !generalData.validity
+                              !generalData.application?.value ||
+                              !generalData.nextRevisionDate
                             }
                           >
                             Save & Next
@@ -2550,16 +2519,6 @@ function Kits(props) {
                           ]}
                           handleSnack={handleSnack}
                         />
-                        {/* <div className=" ml-3">
-                          <Link
-                            to="#"
-                            onClick={() => setOpen3(true)}
-                            className="btn bg-primary text-white"
-                          >
-                            <FileUploadOutlinedIcon />{" "}
-                            <span className="ml-1">Upload</span>
-                          </Link>
-                        </div> */}
                       </div>
                       {masterData?.length > 0 ? (
                         <>
