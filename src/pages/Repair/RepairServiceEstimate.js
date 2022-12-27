@@ -597,13 +597,18 @@ function RepairServiceEstimate(props) {
       });
   }
   const makeHeaderEditable = (type) => {
-    if (type === "serviceEstHeader" && serviceHeaderViewOnly)
-      setServiceHeaderViewOnly(false);
-    if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
-    else if (value === "consumables" && consumableViewOnly)
-      setConsumableViewOnly(false);
-    else if (value === "extwork" && extWorkViewOnly) setExtWorkViewOnly(false);
-    else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
+    if (["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1) {
+      if (type === "serviceEstHeader" && serviceHeaderViewOnly)
+        setServiceHeaderViewOnly(false);
+      else if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
+      else if (value === "consumables" && consumableViewOnly)
+        setConsumableViewOnly(false);
+      else if (value === "extwork" && extWorkViewOnly)
+        setExtWorkViewOnly(false);
+      else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
+    } else {
+      handleSnack("info", "Builder is Active!");
+    }
   };
   // Search Vendors
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {

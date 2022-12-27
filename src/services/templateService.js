@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_MACHINE, UPDATE_KIT_PRICE, UPDATE_KIT_STATUS } from "./CONSTANTS";
+import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_STATUS } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -35,33 +35,6 @@ export const updateKITCustomer = (kitId, data) => {
           });
       } catch (error) {
         console.error("Genreal Exception updateKITCustomer : ", error);
-        reject(SYSTEM_ERROR);
-      }
-    });
-  };
-  
-  //Update KIT with machine data
-  export const updateKITMachine = (kitId, data) => {
-    console.log("service KIT > updateKITMachine called...");
-    return new Promise((resolve, reject) => {
-      try {
-        axios
-          .put(UPDATE_KIT_MACHINE(kitId), data, config)
-          .then((res) => {
-            console.log("updateKITMachine > axios res=", res);
-            if (res.status === 200) {
-              resolve(res.data);
-            } else {
-              console.log("Error Status:", res.status);
-              reject("Error in updateKITMachine axios!");
-            }
-          })
-          .catch((err) => {
-            console.log("updateKITMachine axios err :", err);
-            reject("Error in updateKITMachine axios!");
-          });
-      } catch (error) {
-        console.error("Genreal Exception updateKITMachine : ", error);
         reject(SYSTEM_ERROR);
       }
     });

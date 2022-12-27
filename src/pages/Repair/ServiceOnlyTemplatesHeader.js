@@ -7,7 +7,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { MuiMenuComponent } from "pages/Operational";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDown, faPlus } from "@fortawesome/free-solid-svg-icons";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
@@ -16,6 +16,7 @@ import copyIcon from "../../assets/icons/svg/Copy.svg";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DataTable from "react-data-table-component";
 import { Link, useHistory } from "react-router-dom";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import $ from "jquery";
 import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
@@ -27,7 +28,7 @@ import {
 } from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { Rating, TextField } from "@mui/material";
+import { IconButton, Menu, MenuItem, Rating, TextField } from "@mui/material";
 import Moment from "react-moment";
 import {
   updateKITCoverage,
@@ -55,11 +56,12 @@ function ServiceOnlyTemplates(props) {
   const history = useHistory();
   const [activeElement, setActiveElement] = useState({
     name: "header",
-    bId: "",
+    templateDBId: "",
     sId: "",
     oId: "",
   });
   const { state } = props.location;
+  const [segments, setSegments] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState("estimation");
   const [templateDBId, setTemplateDBId] = useState("");
@@ -177,7 +179,14 @@ function ServiceOnlyTemplates(props) {
     currency: "",
   });
   const [uploadOpen, setUploadOpen] = React.useState(false);
-
+  const handleClose = () => setOpen(false);
+  const [open, setOpen] = React.useState(false);
+  const handleClick = (event) => {
+    console.log("event", event);
+    setAnchorEl(event.currentTarget);
+    setOpen(true);
+  };
+  const [anchorEl, setAnchorEl] = React.useState(null);
   // Retrieve price methods
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
@@ -242,6 +251,17 @@ function ServiceOnlyTemplates(props) {
       setTemplateId(state.templateId);
       setTemplateDBId(state.templateDBId);
       fetchAllDetails(state.templateDBId);
+      // if (state.templateDBId) {
+      //   fetchSegments(state.templateDBId)
+      //     .then((result) => {
+      //       if (result?.length > 0) {
+      //         setSegments(result);
+      //       }
+      //     })
+      //     .catch((e) => {
+      //       handleSnack("error", "Error occurred while fetching the segments");
+      //     });
+      // }
     }
     var versionHistoryData = {
       builderId: "",
@@ -796,11 +816,11 @@ function ServiceOnlyTemplates(props) {
       usageInterval: usageData.usageInterval,
       validFrom: usageData.validFrom,
       validTo: usageData.validTo,
-      component: usageData.component
+      component: usageData.component,
     };
     // updateUsageDeatils(templateDBId, data)
     //   .then((result) => {
-        setViewOnlyTab({ ...viewOnlyTab, usageViewOnly: true });
+    setViewOnlyTab({ ...viewOnlyTab, usageViewOnly: true });
     //     handleSnack("success", "Pricing details updated!");
     //   })
     //   .catch((err) => {
@@ -898,6 +918,77 @@ function ServiceOnlyTemplates(props) {
               </div>
             </div>
             <div className="d-flex">
+              <div>
+                <React.Fragment>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    <IconButton
+                      className="btn bg-primary text-white font-size-14 pr-0 ml-2"
+                      style={{ borderRadius: "5px" }}
+                      onClick={handleClick}
+                      size="small"
+                      aria-controls={open ? "account-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                    >
+                      <span className="convert mx-2">
+                        Convert to
+                        <span>
+                          <KeyboardArrowDownIcon />
+                        </span>
+                      </span>
+                    </IconButton>
+                  </Box>
+                  <Menu
+                    anchorEl={anchorEl}
+                    id="account-menu"
+                    open={open}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                    PaperProps={{
+                      elevation: 0,
+                      sx: {
+                        overflow: "visible",
+                        filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                        mt: 1.5,
+                        "& .MuiAvatar-root": {
+                          width: 32,
+                          height: 32,
+                          ml: -0.5,
+                          mr: 1,
+                        },
+                        "&:before": {
+                          content: '""',
+                          display: "block",
+                          position: "absolute",
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: "background.paper",
+                          transform: "translateY(-50%) rotate(45deg)",
+                          zIndex: 0,
+                        },
+                      },
+                    }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                    <MenuItem
+                      data-toggle="modal"
+                      data-target="#quotecreat"
+                      sx={{ marginInline: 2 }}
+                    >
+                      Quote
+                    </MenuItem>
+                  </Menu>
+                </React.Fragment>
+              </div>
               <div className="d-flex justify-content-center align-items-center">
                 <a href="#" className="ml-3 font-size-14" title="Share">
                   <img src={shareIcon}></img>
@@ -2037,7 +2128,12 @@ function ServiceOnlyTemplates(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 onClick={updateUsageData}
-                                disabled={!(usageData.application?.value && usageData.nextRevisionDate)}
+                                disabled={
+                                  !(
+                                    usageData.application?.value &&
+                                    usageData.nextRevisionDate
+                                  )
+                                }
                               >
                                 Save
                               </button>
@@ -2133,17 +2229,54 @@ function ServiceOnlyTemplates(props) {
                 </Box>
               </div>
               <div className="Add-new-segment-div p-3 border-radius-10 mb-2">
-                <button
-                  className="btn bg-primary text-white"
-                  onClick={() =>
-                    setActiveElement({ name: "segment", templateDBId })
-                  }
-                >
-                  <span className="mr-2">
-                    <FontAwesomeIcon icon={faPlus} />
-                  </span>
-                  Add New Segment
-                </button>
+                {segments.length > 0 ? (
+                  <div class="repairbtn-dropdown">
+                    <button className="btn bg-primary text-white ml-2 dropbtn">
+                      View Segments
+                      <span className="ml-2">
+                        <FontAwesomeIcon icon={faAngleDown} />
+                      </span>
+                    </button>
+                    <div class="repairbtn-dropdown-content" id="drp">
+                      {segments.map((element) => (
+                        <li
+                          onClick={() =>
+                            setActiveElement({
+                              ...activeElement,
+                              name: "segment",
+                              templateDBId,
+                              sId: element.id,
+                            })
+                          }
+                        >
+                          {"Segment " +
+                            String(element.segmentNumber).padStart(2, "0") +
+                            " - " +
+                            element.description}
+                        </li>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    className="btn bg-primary text-white"
+                    onClick={() =>
+                      setActiveElement({
+                        name: "segment",
+                        templateDBId,
+                        templateStatus: selTemplateStatus?.value,
+                      })
+                    }
+                    disabled={
+                      !Object.values(viewOnlyTab).every((item) => item === true)
+                    }
+                  >
+                    <span className="mr-2">
+                      <FontAwesomeIcon icon={faPlus} />
+                    </span>
+                    Add New Segment
+                  </button>
+                )}
               </div>
             </React.Fragment>
           )}

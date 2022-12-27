@@ -156,6 +156,7 @@ function WithoutSparePartsHeader(props) {
     await updateBuilderStatus(bId, e.value)
       .then((result) => {
         setSelBuilderStatus(e);
+        setActiveElement({...activeElement, builderStatus: e.value});
         handleSnack("success", "Status has been updated!");
       })
       .catch((err) => {
@@ -2014,7 +2015,7 @@ function WithoutSparePartsHeader(props) {
                   </div>
                 ) : (
                   <button
-                    onClick={() => setActiveElement({ name: "segment", bId })}
+                    onClick={() => setActiveElement({ name: "segment", bId, builderStatus: selBuilderStatus?.value})}
                     className="btn bg-primary text-white"
                     disabled={
                       !Object.values(viewOnlyTab).every((item) => item === true)
