@@ -71,6 +71,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import Validator from "../../utils/validator";
 
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
 import DataTable from "react-data-table-component";
 
 import boxicon from "../../assets/icons/png/box.png";
@@ -219,6 +221,8 @@ export function CreatePortfolio(props) {
 
   const [disable, setDisable] = useState(true);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
+  const [bundleServiceNeed, setBundleServiceNeed] = useState(false)
+  const [createdBundleItems, setCreatedBundleItems] = useState("");
 
   const [makeKeyValue, setMakeKeyValue] = useState([]);
   const [modelKeyValue, setModelKeyValue] = useState([]);
@@ -7182,8 +7186,9 @@ export function CreatePortfolio(props) {
     setEditItemShow(true);
   };
 
-  const getAddportfolioItemDataFun = async (data) => {
+  const getAddPortfolioItemDataFun = async (data) => {
     setAddportFolioItem(data);
+    setCreatedBundleItems(data)
     // console.log("data------ : ", data)
 
     const rObj = {
@@ -14365,11 +14370,22 @@ export function CreatePortfolio(props) {
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
-                  <Tab label="Service/Bundle" value="2" />
+                  <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
+                  <Tab
+                    label="Service/Bundle"
+                    value="2"
+                    disabled={bundleServiceNeed}
+                  />
+                  <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
                   {/* <Tab label="Solution" value="3" /> */}
                   {/*use it in useCase-4 */}
                   {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />}
+                  {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" &&
+                    <div className="align-items-center d-flex justidy-content-center">
+                      <ArrowForwardIosIcon />
+                    </div>}
                   <Tab label="Price Calculator" value="5" />
+                  <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
                   <Tab label="Review" value="6" />
                 </TabList>
               </Box>
@@ -14377,8 +14393,10 @@ export function CreatePortfolio(props) {
                 <AddPortfolioItem
                   stratgyTaskTypeKeyValue={stratgyTaskTypeKeyValue}
                   setTabs={setTabs}
-                  getAddportfolioItemDataFun={getAddportfolioItemDataFun}
+                  getAddPortfolioItemDataFun={getAddPortfolioItemDataFun}
                   compoFlag="ITEM"
+                  setBundleServiceNeed={setBundleServiceNeed}
+                  createdBundleItems={createdBundleItems}
                 />
               </TabPanel>
               <TabPanel value="2">

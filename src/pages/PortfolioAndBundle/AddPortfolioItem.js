@@ -75,7 +75,7 @@ import {
 
 
 const AddPortfolioItem = (props) => {
-  const [tabs, setTabs] = useState("1");
+  const [tabs, setTabs] = useState("itemSummary");
   const [subTabs, setSubTabs] = useState("A");
   const [editable, setEditable] = useState(
     props?.compoFlag === "itemEdit" ? true : false
@@ -101,6 +101,7 @@ const AddPortfolioItem = (props) => {
     []
   );
   const [modelShowForTemplate, setModelShowForTemplate] = useState(false);
+  const [noNeedBundleService, setNoNeedBundleService] = useState(false);
   const [editAbleItemPrice, setEditAbleItemPrice] = useState({
     priceMethod: "",
     listPrice: "",
@@ -481,7 +482,7 @@ const AddPortfolioItem = (props) => {
     kitDescription: "",
     strategyTask: "",
     year: "",
-    noOfYear: "",
+    noOfYear: "1",
     headerdescription: "",
     preparedBy: "",
     approvedBy: "",
@@ -490,6 +491,9 @@ const AddPortfolioItem = (props) => {
     revisedOn: new Date(),
     branch: "",
     offerValidity: "",
+    startUsage: "",
+    endUsage: "",
+    usageType: "",
   });
 
   const [bundleFlagType, setBundleFlagType] = useState("");
@@ -506,6 +510,19 @@ const AddPortfolioItem = (props) => {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
+
+  const [yearsOption, seYearsOption] = useState([
+    {
+      value: "1", label: "1"
+    }
+  ])
+  useEffect(() => {
+    var yearsOptionArr = [];
+    for (let i = 1; i <= addPortFolioItem.noOfYear; i++) {
+      yearsOptionArr.push({ value: i, label: i })
+    }
+    seYearsOption(yearsOptionArr);
+  }, [addPortFolioItem.noOfYear])
 
   const initFetch = () => {
 
@@ -660,6 +677,14 @@ const AddPortfolioItem = (props) => {
         label: "rty",
         value: "rty",
       },
+      startUsage: res.data.startUsage,
+      endUsage: res.data.endUsage,
+      year: {
+        label: res.data.year,
+        value: res.data.year,
+      },
+      noOfYear: res.data.noOfYear,
+
 
     });
 
@@ -674,6 +699,40 @@ const AddPortfolioItem = (props) => {
     initFetch();
     dispatch(taskActions.fetchTaskList());
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log("props.createdBundleItems undefined", props.createdBundleItems === undefined)
+    if (props.createdBundleItems !== undefined) {
+      if (props.createdBundleItems !== "") {
+        setAddportFolioItem({
+          ...addPortFolioItem,
+          id: 0,
+          name: props.createdBundleItems?.name,
+          description: props.createdBundleItems?.description,
+          usageIn: props.createdBundleItems?.usageIn,
+          taskType: props.createdBundleItems?.taskType,
+          frequency: props.createdBundleItems?.frequency,
+          unit: props.createdBundleItems?.unit,
+          recommendedValue: props.createdBundleItems?.recommendedValue,
+          quantity: props.createdBundleItems?.quantity,
+          numberOfEvents: props.createdBundleItems?.numberOfEvents,
+          templateId: props.createdBundleItems?.templateId,
+          templateDescription: props.createdBundleItems?.templateDescription,
+          repairOption: props.createdBundleItems?.repairOption,
+          kitDescription: props.createdBundleItems?.kitDescription,
+          strategyTask: props.createdBundleItems?.strategyTask,
+          year: props.createdBundleItems?.year,
+          noOfYear: props.createdBundleItems?.noOfYear,
+          headerdescription: props.createdBundleItems?.headerdescription,
+          startUsage: props.createdBundleItems?.startUsage,
+          endUsage: props.createdBundleItems?.endUsage,
+          usageType: props.createdBundleItems?.usageType,
+        })
+      }
+    }
+
+
+  }, [])
 
   const categoryList = useAppSelector(selectStrategyTaskOption(selectCategoryList));
   const updatedList = useAppSelector(
@@ -758,6 +817,13 @@ const AddPortfolioItem = (props) => {
     $(`.scrollbar-model`).css("display", "none");
   }
 
+  const BundleServiceItemsNeed = (e) => {
+    console.log("event is  : ", e.target.checked)
+    if (props.setBundleServiceNeed !== undefined) {
+      props.setBundleServiceNeed(e.target.checked)
+      setNoNeedBundleService(e.target.checked);
+    }
+  }
 
   const handleSearchRelatedKitListClick = (e, currentItem) => {
 
@@ -773,116 +839,504 @@ const AddPortfolioItem = (props) => {
   // console.log("categoryList --- ", categoryList)
 
   const TabsEnableDisabledFun = async () => {
-    // console.log("Hello");
-    // console.log("tabs : ", tabs)
-    // console.log("props.compoFlag : ", props.compoFlag);
-    // console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId === "");
 
-    if (tabs == 1) {
-      if ((props.compoFlag === "ITEM") &&
-        (addPortFolioItem.name == "" ||
-          addPortFolioItem.headerdescription == "" ||
-          addPortFolioItem.usageIn == "" ||
-          addPortFolioItem.taskType == "" ||
-          addPortFolioItem.quantity == "")) {
-        toast("😐" + "Please fill mandatory fields", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else if ((props.compoFlag === "BUNDLE") &&
-        (addPortFolioItem.usageIn == "" ||
-          addPortFolioItem.taskType == "" ||
-          addPortFolioItem.quantity == "")) {
-        toast("😐" + "Please fill mandatory fields", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+    try {
+      if (tabs == "itemSummary") {
+        if ((props.compoFlag === "ITEM")) {
 
-      } else {
-        if (props.compoFlag == "itemEdit") {
-          setTabs((prev) => `${parseInt(prev) + 1}`)
+          if ((addPortFolioItem.name == "") ||
+            (addPortFolioItem.name == undefined)) {
+            throw "Name is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.headerdescription == "") ||
+            (addPortFolioItem.headerdescription == undefined)) {
+            throw "Description is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.usageIn == "") ||
+            (addPortFolioItem.usageIn == undefined)) {
+            throw "UsageIn is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.usageIn.value == "") ||
+            (addPortFolioItem.usageIn.value == undefined)) {
+            throw "UsageIn is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.taskType.value == "") ||
+            (addPortFolioItem.taskType.value == undefined)) {
+            throw "Task Type is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.startUsage == "") ||
+            (addPortFolioItem.startUsage == undefined)) {
+            throw "Start Usage is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.endUsage == "") ||
+            (addPortFolioItem.endUsage == undefined)) {
+            throw "End Usage is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.recommendedValue == "") ||
+            (addPortFolioItem.recommendedValue == undefined)) {
+            throw "Recommended Value is a required field, you can’t leave it blank";
+          }
+
+          // if ((addPortFolioItem.quantity == "") ||
+          //   (addPortFolioItem.quantity == undefined)) {
+          //   throw "Quantity is a required field, you can’t leave it blank";
+          // }
+
+
+          if ((addPortFolioItem.numberOfEvents == "") ||
+            (addPortFolioItem.numberOfEvents == undefined)) {
+            throw "No of Events is a required field, you can’t leave it blank";
+          }
+
+
+        }
+
+        if ((props.compoFlag === "BUNDLE")) {
+
+          if ((addPortFolioItem.usageIn == "") ||
+            (addPortFolioItem.usageIn == undefined)) {
+            throw "UsageIn is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.usageIn.value == "") ||
+            (addPortFolioItem.usageIn.value == undefined)) {
+            throw "UsageIn is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.taskType.value == "") ||
+            (addPortFolioItem.taskType.value == undefined)) {
+            throw "Task Type is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.startUsage == "") ||
+            (addPortFolioItem.startUsage == undefined)) {
+            throw "Start Usage is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.endUsage == "") ||
+            (addPortFolioItem.endUsage == undefined)) {
+            throw "End Usage is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.recommendedValue == "") ||
+            (addPortFolioItem.recommendedValue == undefined)) {
+            throw "Recommended Value is a required field, you can’t leave it blank";
+          }
+
+          // if ((addPortFolioItem.quantity == "") ||
+          //   (addPortFolioItem.quantity == undefined)) {
+          //   throw "Quantity is a required field, you can’t leave it blank";
+          // }
+
+
+          if ((addPortFolioItem.numberOfEvents == "") ||
+            (addPortFolioItem.numberOfEvents == undefined)) {
+            throw "No of Events is a required field, you can’t leave it blank";
+          }
+        }
+
+        if ((props.compoFlag == "itemEdit")) {
+          if ((addPortFolioItem.templateId == "") ||
+            (addPortFolioItem.repairOption == "")) {
+            setTabs("relatedTemplate")
+          } else if ((addPortFolioItem.templateId != "")) {
+            setTabs("relatedTemplate")
+          } else if ((addPortFolioItem.repairOption != "")) {
+            setTabs("relatedKit")
+          }
+          // setTabs((prev) => `${parseInt(prev) + 1}`)
         } else {
-          setTabs((prev) => `${parseInt(prev) + 1}`)
+          setTabs("relatedTemplate")
+          // setTabs((prev) => `${parseInt(prev) + 1}`)
           setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
         }
+
       }
-    } else if (tabs == 2 && addPortFolioItem.templateId == "") {
-      // if(&& props.compoFlag === "ITEM")
-      setTabs((prev) => `${parseInt(prev) + 1}`)
-    } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
-      if (props.compoFlag === "ITEM") {
-        // const rObj = {
-        //   itemPriceDataId: 0,
-        //   quantity: addPortFolioItem.quantity,
-        //   startUsage: "",
-        //   endUsage: "",
-        //   standardJobId: addPortFolioItem.templateId,
-        //   repairKitId: "",
-        //   templateDescription: addPortFolioItem.templateDescription?.value,
-        //   repairOption: "",
-        //   additional: "",
-        //   partListId: "",
-        //   serviceEstimateId: "",
-        //   numberOfEvents: 0,
-        //   priceMethod: "LIST_PRICE",
-        //   priceType: "FIXED",
-        //   listPrice: 0,
-        //   priceEscalation: "",
-        //   calculatedPrice: 0,
-        //   flatPrice: 0,
-        //   discountType: "",
-        //   year: "",
-        //   noOfYear: 0,
-        //   sparePartsPrice: 0,
-        //   sparePartsPriceBreakDownPercentage: 0,
-        //   servicePrice: 0,
-        //   labourPrice: 0,
-        //   labourPriceBreakDownPercentage: 0,
-        //   miscPrice: 0,
-        //   miscPriceBreakDownPercentage: 0,
-        //   totalPrice: 0,
-        //   netService: 0,
-        //   portfolio: {
-        //     portfolioId: 1
-        //   },
-        //   tenantId: 0,
-        //   createdAt: "2022-12-09T13:52:27.880Z",
-        //   partsRequired: true,
-        //   serviceRequired: true,
-        //   labourRequired: true,
-        //   miscRequired: true
-        // }
-        // const itemPriceData = await createItemPriceData(rObj)
-        props.setTabs("2");
-        props.getAddportfolioItemDataFun(addPortFolioItem);
-        // if (props.compoFlag === "itemEdit") {
-        //   props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
-        // } else {
-        // }
-      } else if (props.compoFlag === "BUNDLE") {
+
+      if (tabs == "relatedTemplate") {
+        if ((addPortFolioItem.templateId == "") ||
+          (addPortFolioItem.templateId == undefined)) {
+          setTabs("relatedKit");
+          // setTabs((prev) => `${parseInt(prev) + 1}`);
+        }
+        if ((addPortFolioItem.templateId !== "")) {
+          if ((props.compoFlag === "ITEM")) {
+            if (noNeedBundleService) {
+              props.setTabs("5");
+              props.getAddPortfolioItemDataFun(addPortFolioItem);
+            } else {
+              props.setTabs("2");
+              props.getAddPortfolioItemDataFun(addPortFolioItem);
+            }
+            // props.setTabs("relatedTemplate");
+          }
+
+          if ((props.compoFlag === "BUNDLE")) {
+            const rObj = {
+              itemPriceDataId: 0,
+              quantity: addPortFolioItem.quantity,
+              startUsage: addPortFolioItem.startUsage,
+              endUsage: addPortFolioItem.endUsage,
+              standardJobId: addPortFolioItem.templateId,
+              repairKitId: "",
+              templateDescription: addPortFolioItem.templateDescription?.value,
+              repairOption: "",
+              additional: "",
+              partListId: "",
+              serviceEstimateId: "",
+              numberOfEvents: addPortFolioItem?.numberOfEvents,
+              priceMethod: "LIST_PRICE",
+              priceType: "FIXED",
+              listPrice: 0,
+              priceEscalation: "",
+              calculatedPrice: 0,
+              flatPrice: 0,
+              discountType: "",
+              year: addPortFolioItem.year?.value,
+              noOfYear: addPortFolioItem.noOfYear,
+              sparePartsPrice: 0,
+              sparePartsPriceBreakDownPercentage: 0,
+              servicePrice: 0,
+              labourPrice: 0,
+              labourPriceBreakDownPercentage: 0,
+              miscPrice: 0,
+              miscPriceBreakDownPercentage: 0,
+              totalPrice: 0,
+              netService: 0,
+              portfolio: {
+                portfolioId: 1
+              },
+              tenantId: 0,
+              partsRequired: true,
+              serviceRequired: false,
+              labourRequired: true,
+              miscRequired: true
+            }
+
+            const itemPriceData = await createItemPriceData(rObj)
+            props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data);
+          }
+
+          if ((props.compoFlag === "itemEdit") &&
+            (props.compoFlagTest === "itemEditPort")) {
+            props.handleItemEditSave(
+              addPortFolioItem,
+              editAbleItemPrice,
+              bundleFlagType
+            );
+          }
+
+          if ((props.compoFlag === "itemEdit") &&
+            (props.compoFlagTest === "itemEditBundle")) {
+            props.handleItemEditSave(
+              addPortFolioItem,
+              editAbleItemPrice,
+              bundleFlagType
+            );
+          }
+
+          // const rObj = {
+          //   itemPriceDataId: 0,
+          //   quantity: addPortFolioItem.quantity,
+          //   startUsage: addPortFolioItem.startUsage,
+          //   endUsage: addPortFolioItem.endUsage,
+          //   standardJobId: addPortFolioItem.templateId,
+          //   repairKitId: "",
+          //   templateDescription: addPortFolioItem.templateDescription?.value,
+          //   repairOption: "",
+          //   additional: "",
+          //   partListId: "",
+          //   serviceEstimateId: "",
+          //   numberOfEvents: addPortFolioItem.numberOfEvents,
+          //   priceMethod: "LIST_PRICE",
+          //   priceType: "FIXED",
+          //   listPrice: 0,
+          //   priceEscalation: "",
+          //   calculatedPrice: 0,
+          //   flatPrice: 0,
+          //   discountType: "",
+          //   year: addPortFolioItem.year?.value,
+          //   noOfYear: addPortFolioItem.noOfYear,
+          //   sparePartsPrice: 0,
+          //   sparePartsPriceBreakDownPercentage: 0,
+          //   servicePrice: 0,
+          //   labourPrice: 0,
+          //   labourPriceBreakDownPercentage: 0,
+          //   miscPrice: 0,
+          //   miscPriceBreakDownPercentage: 0,
+          //   totalPrice: 0,
+          //   netService: 0,
+          //   portfolio: {
+          //     portfolioId: 1
+          //   },
+          //   tenantId: 0,
+          //   partsRequired: true,
+          //   serviceRequired: false,
+          //   labourRequired: true,
+          //   miscRequired: true
+          // }
+          // const itemPriceData = await createItemPriceData(rObj);
+          // props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
+
+        }
+      }
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+
+    // ================== Old Method with Conditions Start ================ //
+
+    // if (tabs == 1) {
+    //   if ((props.compoFlag === "ITEM") &&
+    //     (addPortFolioItem.name == "" ||
+    //       addPortFolioItem.headerdescription == "" ||
+    //       addPortFolioItem.usageIn == "" ||
+    //       addPortFolioItem.taskType == "" ||
+    //       addPortFolioItem.quantity == "")) {
+    //     toast("😐" + "Please fill mandatory fields", {
+    //       position: "top-right",
+    //       autoClose: 3000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+    //   } else if ((props.compoFlag === "BUNDLE") &&
+    //     (addPortFolioItem.usageIn == "" ||
+    //       addPortFolioItem.taskType == "" ||
+    //       addPortFolioItem.quantity == "")) {
+    //     toast("😐" + "Please fill mandatory fields", {
+    //       position: "top-right",
+    //       autoClose: 3000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: true,
+    //       draggable: true,
+    //       progress: undefined,
+    //     });
+
+    //   } else {
+    //     if (props.compoFlag == "itemEdit") {
+    //       setTabs((prev) => `${parseInt(prev) + 1}`)
+    //     } else {
+    //       setTabs((prev) => `${parseInt(prev) + 1}`)
+    //       setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+    //     }
+    //   }
+    // } else if (tabs == 2 && addPortFolioItem.templateId == "") {
+    //   // if(&& props.compoFlag === "ITEM")
+    //   setTabs((prev) => `${parseInt(prev) + 1}`)
+    // } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
+    //   if (props.compoFlag === "ITEM") {
+    //     // const rObj = {
+    //     //   itemPriceDataId: 0,
+    //     //   quantity: addPortFolioItem.quantity,
+    //     //   startUsage: "",
+    //     //   endUsage: "",
+    //     //   standardJobId: addPortFolioItem.templateId,
+    //     //   repairKitId: "",
+    //     //   templateDescription: addPortFolioItem.templateDescription?.value,
+    //     //   repairOption: "",
+    //     //   additional: "",
+    //     //   partListId: "",
+    //     //   serviceEstimateId: "",
+    //     //   numberOfEvents: 0,
+    //     //   priceMethod: "LIST_PRICE",
+    //     //   priceType: "FIXED",
+    //     //   listPrice: 0,
+    //     //   priceEscalation: "",
+    //     //   calculatedPrice: 0,
+    //     //   flatPrice: 0,
+    //     //   discountType: "",
+    //     //   year: "",
+    //     //   noOfYear: 0,
+    //     //   sparePartsPrice: 0,
+    //     //   sparePartsPriceBreakDownPercentage: 0,
+    //     //   servicePrice: 0,
+    //     //   labourPrice: 0,
+    //     //   labourPriceBreakDownPercentage: 0,
+    //     //   miscPrice: 0,
+    //     //   miscPriceBreakDownPercentage: 0,
+    //     //   totalPrice: 0,
+    //     //   netService: 0,
+    //     //   portfolio: {
+    //     //     portfolioId: 1
+    //     //   },
+    //     //   tenantId: 0,
+    //     //   createdAt: "2022-12-09T13:52:27.880Z",
+    //     //   partsRequired: true,
+    //     //   serviceRequired: true,
+    //     //   labourRequired: true,
+    //     //   miscRequired: true
+    //     // }
+    //     // const itemPriceData = await createItemPriceData(rObj)
+    //     props.setTabs("2");
+    //     props.getAddPortfolioItemDataFun(addPortFolioItem);
+    //     // if (props.compoFlag === "itemEdit") {
+    //     //   props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
+    //     // } else {
+    //     // }
+    //   } else if (props.compoFlag === "BUNDLE") {
+    //     const rObj = {
+    //       itemPriceDataId: 0,
+    //       quantity: addPortFolioItem.quantity,
+    //       startUsage: "",
+    //       endUsage: "",
+    //       standardJobId: addPortFolioItem.templateId,
+    //       repairKitId: "",
+    //       templateDescription: addPortFolioItem.templateDescription?.value,
+    //       repairOption: "",
+    //       additional: "",
+    //       partListId: "",
+    //       serviceEstimateId: "",
+    //       numberOfEvents: addPortFolioItem?.numberOfEvents,
+    //       priceMethod: "LIST_PRICE",
+    //       priceType: "FIXED",
+    //       listPrice: 0,
+    //       priceEscalation: "",
+    //       calculatedPrice: 0,
+    //       flatPrice: 0,
+    //       discountType: "",
+    //       year: "",
+    //       noOfYear: 0,
+    //       sparePartsPrice: 0,
+    //       sparePartsPriceBreakDownPercentage: 0,
+    //       servicePrice: 0,
+    //       labourPrice: 0,
+    //       labourPriceBreakDownPercentage: 0,
+    //       miscPrice: 0,
+    //       miscPriceBreakDownPercentage: 0,
+    //       totalPrice: 0,
+    //       netService: 0,
+    //       portfolio: {
+    //         portfolioId: 1
+    //       },
+    //       tenantId: 0,
+    //       createdAt: "2022-12-09T13:52:27.880Z",
+    //       partsRequired: true,
+    //       serviceRequired: false,
+    //       labourRequired: true,
+    //       miscRequired: true
+    //     }
+    //     console.log("props.compoFlag Test :", rObj)
+    //     console.log("addPortFolioItem Test :", addPortFolioItem)
+    //     const itemPriceData = await createItemPriceData(rObj)
+    //     // props.setBundleTabs("3");
+    //     props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data);
+    //   } else {
+    //     if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
+    //       props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+    //     } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
+    //       props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+    //     } else {
+    //       const rObj = {
+    //         itemPriceDataId: 0,
+    //         quantity: addPortFolioItem.quantity,
+    //         startUsage: "",
+    //         endUsage: "",
+    //         standardJobId: addPortFolioItem.templateId,
+    //         repairKitId: "",
+    //         templateDescription: addPortFolioItem.templateDescription?.value,
+    //         repairOption: "",
+    //         additional: "",
+    //         partListId: "",
+    //         serviceEstimateId: "",
+    //         numberOfEvents: 0,
+    //         priceMethod: "LIST_PRICE",
+    //         priceType: "FIXED",
+    //         listPrice: 0,
+    //         priceEscalation: "",
+    //         calculatedPrice: 0,
+    //         flatPrice: 0,
+    //         discountType: "",
+    //         year: "",
+    //         noOfYear: 0,
+    //         sparePartsPrice: 0,
+    //         sparePartsPriceBreakDownPercentage: 0,
+    //         servicePrice: 0,
+    //         labourPrice: 0,
+    //         labourPriceBreakDownPercentage: 0,
+    //         miscPrice: 0,
+    //         miscPriceBreakDownPercentage: 0,
+    //         totalPrice: 0,
+    //         netService: 0,
+    //         portfolio: {
+    //           portfolioId: 1
+    //         },
+    //         tenantId: 0,
+    //         createdAt: "2022-12-09T13:52:27.880Z",
+    //         partsRequired: true,
+    //         serviceRequired: false,
+    //         labourRequired: true,
+    //         miscRequired: true
+    //       }
+    //       const itemPriceData = await createItemPriceData(rObj);
+    //       props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
+    //     }
+
+    //     // props.setBundleTabs("3");
+    //   }
+    // }
+
+    // ================== Old Method with Conditions End ================ //
+
+    // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
+  }
+
+  const handleAddPortfolioSave = async () => {
+
+    try {
+      if (addPortFolioItem.repairOption == "") {
+        throw "you can’t leave blank related Kit field";
+      }
+
+      if ((props.compoFlag === "ITEM")) {
+        if (noNeedBundleService) {
+          props.setTabs("5");
+          props.getAddPortfolioItemDataFun(addPortFolioItem);
+        } else {
+          props.setTabs("2");
+          props.getAddPortfolioItemDataFun(addPortFolioItem);
+        }
+        // props.setTabs("2");
+        // props.getAddPortfolioItemDataFun(addPortFolioItem);
+      } else if ((props.compoFlag === "itemEdit") &&
+        (props.compoFlagTest === "itemEditPort")) {
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+      } else if ((props.compoFlag === "itemEdit") &&
+        (props.compoFlagTest === "itemEditBundle")) {
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+      } else {
         const rObj = {
           itemPriceDataId: 0,
           quantity: addPortFolioItem.quantity,
-          startUsage: "",
-          endUsage: "",
+          startUsage: addPortFolioItem.startUsage,
+          endUsage: addPortFolioItem.endUsage,
           standardJobId: addPortFolioItem.templateId,
-          repairKitId: "",
-          templateDescription: addPortFolioItem.templateDescription?.value,
+          repairKitId: addPortFolioItem.repairOption,
+          templateDescription: addPortFolioItem.templateDescription,
           repairOption: "",
           additional: "",
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: addPortFolioItem?.numberOfEvents,
+          numberOfEvents: addPortFolioItem.numberOfEvents,
           priceMethod: "LIST_PRICE",
           priceType: "FIXED",
           listPrice: 0,
@@ -890,8 +1344,8 @@ const AddPortfolioItem = (props) => {
           calculatedPrice: 0,
           flatPrice: 0,
           discountType: "",
-          year: "",
-          noOfYear: 0,
+          year: addPortFolioItem.year?.value,
+          noOfYear: addPortFolioItem.noOfYear,
           sparePartsPrice: 0,
           sparePartsPriceBreakDownPercentage: 0,
           servicePrice: 0,
@@ -905,155 +1359,103 @@ const AddPortfolioItem = (props) => {
             portfolioId: 1
           },
           tenantId: 0,
-          createdAt: "2022-12-09T13:52:27.880Z",
           partsRequired: true,
           serviceRequired: false,
           labourRequired: true,
           miscRequired: true
         }
-        console.log("props.compoFlag Test :", rObj)
-        console.log("addPortFolioItem Test :", addPortFolioItem)
         const itemPriceData = await createItemPriceData(rObj)
-        // props.setBundleTabs("3");
-        props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data);
-      } else {
-        if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
-          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-        } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
-          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-        } else {
-          const rObj = {
-            itemPriceDataId: 0,
-            quantity: addPortFolioItem.quantity,
-            startUsage: "",
-            endUsage: "",
-            standardJobId: addPortFolioItem.templateId,
-            repairKitId: "",
-            templateDescription: addPortFolioItem.templateDescription?.value,
-            repairOption: "",
-            additional: "",
-            partListId: "",
-            serviceEstimateId: "",
-            numberOfEvents: 0,
-            priceMethod: "LIST_PRICE",
-            priceType: "FIXED",
-            listPrice: 0,
-            priceEscalation: "",
-            calculatedPrice: 0,
-            flatPrice: 0,
-            discountType: "",
-            year: "",
-            noOfYear: 0,
-            sparePartsPrice: 0,
-            sparePartsPriceBreakDownPercentage: 0,
-            servicePrice: 0,
-            labourPrice: 0,
-            labourPriceBreakDownPercentage: 0,
-            miscPrice: 0,
-            miscPriceBreakDownPercentage: 0,
-            totalPrice: 0,
-            netService: 0,
-            portfolio: {
-              portfolioId: 1
-            },
-            tenantId: 0,
-            createdAt: "2022-12-09T13:52:27.880Z",
-            partsRequired: true,
-            serviceRequired: false,
-            labourRequired: true,
-            miscRequired: true
-          }
-          const itemPriceData = await createItemPriceData(rObj);
-          props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
-        }
-
-        // props.setBundleTabs("3");
+        props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
+        props.setBundleTabs("bundleServicePriceCalculator");
       }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
 
-    // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
-  }
+    // if (props.compoFlag === "ITEM") {
+    //   props.setTabs("relatedTemplate");
+    //   props.getAddPortfolioItemDataFun(addPortFolioItem);
+    // } else {
+    //   if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
+    //     props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+    //   } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
+    //     props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+    //   } else {
 
-  const handleAddPortfolioSave = async () => {
-    // if (props.compoFlag === "itemEdit") {
-    //   props.handleItemEditSave(addPortFolioItem);
-    //   // props.setTabs("2");
-    // } else 
-    if (props.compoFlag === "ITEM") {
-      props.setTabs("2");
-      props.getAddportfolioItemDataFun(addPortFolioItem);
-    } else {
-      if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-      } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-      } else {
+    //     if (addPortFolioItem.repairOption == "") {
+    //       toast("😐" + "Please fill related Kit field", {
+    //         position: "top-right",
+    //         autoClose: 3000,
+    //         hideProgressBar: false,
+    //         closeOnClick: true,
+    //         pauseOnHover: true,
+    //         draggable: true,
+    //         progress: undefined,
+    //       });
+    //     } else {
 
-        if (addPortFolioItem.repairOption == "") {
-          toast("😐" + "Please fill related Kit field", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        } else {
+    //       const rObj = {
+    //         itemPriceDataId: 0,
+    //         quantity: addPortFolioItem.quantity,
+    //         startUsage: "",
+    //         endUsage: "",
+    //         standardJobId: addPortFolioItem.templateId,
+    //         repairKitId: addPortFolioItem.repairOption,
+    //         templateDescription: addPortFolioItem.templateDescription,
+    //         repairOption: "",
+    //         additional: "",
+    //         partListId: "",
+    //         serviceEstimateId: "",
+    //         numberOfEvents: 0,
+    //         priceMethod: "LIST_PRICE",
+    //         priceType: "FIXED",
+    //         listPrice: 0,
+    //         priceEscalation: "",
+    //         calculatedPrice: 0,
+    //         flatPrice: 0,
+    //         discountType: "",
+    //         year: "",
+    //         noOfYear: 0,
+    //         sparePartsPrice: 0,
+    //         sparePartsPriceBreakDownPercentage: 0,
+    //         servicePrice: 0,
+    //         labourPrice: 0,
+    //         labourPriceBreakDownPercentage: 0,
+    //         miscPrice: 0,
+    //         miscPriceBreakDownPercentage: 0,
+    //         totalPrice: 0,
+    //         netService: 0,
+    //         portfolio: {
+    //           portfolioId: 1
+    //         },
+    //         tenantId: 0,
+    //         createdAt: "2022-12-09T13:52:27.880Z",
+    //         partsRequired: true,
+    //         serviceRequired: false,
+    //         labourRequired: true,
+    //         miscRequired: true
+    //       }
 
-          const rObj = {
-            itemPriceDataId: 0,
-            quantity: addPortFolioItem.quantity,
-            startUsage: "",
-            endUsage: "",
-            standardJobId: addPortFolioItem.templateId,
-            repairKitId: addPortFolioItem.repairOption,
-            templateDescription: addPortFolioItem.templateDescription,
-            repairOption: "",
-            additional: "",
-            partListId: "",
-            serviceEstimateId: "",
-            numberOfEvents: 0,
-            priceMethod: "LIST_PRICE",
-            priceType: "FIXED",
-            listPrice: 0,
-            priceEscalation: "",
-            calculatedPrice: 0,
-            flatPrice: 0,
-            discountType: "",
-            year: "",
-            noOfYear: 0,
-            sparePartsPrice: 0,
-            sparePartsPriceBreakDownPercentage: 0,
-            servicePrice: 0,
-            labourPrice: 0,
-            labourPriceBreakDownPercentage: 0,
-            miscPrice: 0,
-            miscPriceBreakDownPercentage: 0,
-            totalPrice: 0,
-            netService: 0,
-            portfolio: {
-              portfolioId: 1
-            },
-            tenantId: 0,
-            createdAt: "2022-12-09T13:52:27.880Z",
-            partsRequired: true,
-            serviceRequired: false,
-            labourRequired: true,
-            miscRequired: true
-          }
-
-          const itemPriceData = await createItemPriceData(rObj)
-          props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
-
-          // props.getAddportfolioItemData(addPortFolioItem)
-          props.setBundleTabs("3");
-        }
-      }
-      // alert("hello");
+    //       const itemPriceData = await createItemPriceData(rObj)
+    //       props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
+    //       props.setBundleTabs("3");
+    //     }
+    //   }
+    //   // alert("hello");
 
 
-    }
+    // }
+
+
   };
   return (
     <>
@@ -1625,39 +2027,54 @@ const AddPortfolioItem = (props) => {
               borderRadius: "5px",
             }}
           >
+            {/* <TabList className="custom-tabs-div"
+              onChange={(e, newValue) => setTabs(newValue)}
+              aria-label="lab API tabs example"
+            >
+              <FormatListBulletedOutlinedIcon className=" font-size-16" />
+              <Tab label="Related part list(s)" value="1" />
+              <Tab label="Item Summary(s)" value="1" />
+              <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
+              <AccessAlarmOutlinedIcon className=" font-size-16" />
+              <Tab label="Related template(s)" value="2" disabled={addPortFolioItem.repairOption != "" && editable != true} />
+              <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
+              <SellOutlinedIcon className=" font-size-16" />
+              <Tab label="Related repair option" value="3" />
+              <Tab label="Related Kit" value="3" disabled={addPortFolioItem.templateId != "" && editable != true} />
+            </TabList> */}
             <TabList className="custom-tabs-div"
               onChange={(e, newValue) => setTabs(newValue)}
               aria-label="lab API tabs example"
             >
-              {/* <FormatListBulletedOutlinedIcon className=" font-size-16" /> */}
-              {/* <Tab label="Related part list(s)" value="1" /> */}
-              <Tab label="Item Summary(s)" value="1" />
-              <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
-              {/* <AccessAlarmOutlinedIcon className=" font-size-16" /> */}
-              <Tab label="Related template(s)" value="2" disabled={addPortFolioItem.repairOption != "" && editable != true} />
-              <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
-              {/* <SellOutlinedIcon className=" font-size-16" /> */}
-              {/* <Tab label="Related repair option" value="3" /> */}
-              <Tab label="Related Kit" value="3" disabled={addPortFolioItem.templateId != "" && editable != true} />
+              <Tab label="Item Summary(s)" value="itemSummary" />
+              <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+
+              <Tab label="Related template(s)" value="relatedTemplate" disabled={addPortFolioItem.repairOption != "" && editable != true} />
+              <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+
+              <Tab label="Related Kit" value="relatedKit" disabled={addPortFolioItem.templateId != "" && editable != true} />
             </TabList>
           </Box>
-          <TabPanel value="1">
+          <TabPanel value="itemSummary">
             {/* <p className="mt-4">SUMMARY</p> */}
             {props.compoFlag === "itemEdit" && editable == true ?
               <>
-                <div className="row mt-4 ">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">NAME</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.name == "" ||
-                          addPortFolioItem.name == null ||
-                          addPortFolioItem.name == undefined ||
-                          addPortFolioItem.name == "string")
-                          ? "NA" : addPortFolioItem.name}
-                      </h6>
-                    </div>
-                  </div>
+                <div className="row input-fields">
+                  {(props.compoFlagTest === "itemEditPort") ?
+                    <>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">NAME</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(addPortFolioItem.name == "" ||
+                              addPortFolioItem.name == null ||
+                              addPortFolioItem.name == undefined ||
+                              addPortFolioItem.name == "string")
+                              ? "NA" : addPortFolioItem.name}
+                          </h6>
+                        </div>
+                      </div>
+                    </> : <></>}
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
@@ -1670,113 +2087,182 @@ const AddPortfolioItem = (props) => {
                       </h6>
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE IN</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.usageIn.length == 0 ||
-                          addPortFolioItem.usageIn?.value == "" ||
-                          addPortFolioItem.usageIn?.value == null ||
-                          addPortFolioItem.usageIn?.value == undefined ||
-                          addPortFolioItem.usageIn?.value == "string")
-                          ? "NA" : addPortFolioItem.usageIn?.value}
-                      </h6>
+                </div>
+                <div className="border border-radius-10 py-2 px-3">
+                  <p className="mt-4">STRATEGY</p>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE IN</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.usageIn.length == 0 ||
+                            addPortFolioItem.usageIn?.value == "" ||
+                            addPortFolioItem.usageIn?.value == null ||
+                            addPortFolioItem.usageIn?.value == undefined ||
+                            addPortFolioItem.usageIn?.value == "string")
+                            ? "NA" : addPortFolioItem.usageIn?.value}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">STRATEGY TASK</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.strategyTask.length == 0 ||
+                            addPortFolioItem.strategyTask?.value == "" ||
+                            addPortFolioItem.strategyTask?.value == null ||
+                            addPortFolioItem.strategyTask?.value == undefined ||
+                            addPortFolioItem.strategyTask?.value == "string")
+                            ? "NA" : addPortFolioItem.strategyTask?.value}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">TASK TYPE</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.taskType.length == 0 ||
+                            addPortFolioItem.taskType?.value == "" ||
+                            addPortFolioItem.taskType?.value == null ||
+                            addPortFolioItem.taskType?.value == undefined ||
+                            addPortFolioItem.taskType?.value == "string")
+                            ? "NA" : addPortFolioItem.taskType?.value}
+                        </h6>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <p className="">STRATEGY</p>
-                <div className="row mt-2 ">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">STRATEGY TASK</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.strategyTask.length == 0 ||
-                          addPortFolioItem.strategyTask?.value == "" ||
-                          addPortFolioItem.strategyTask?.value == null ||
-                          addPortFolioItem.strategyTask?.value == undefined ||
-                          addPortFolioItem.strategyTask?.value == "string")
-                          ? "NA" : addPortFolioItem.strategyTask?.value}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">TASK TYPE</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.taskType.length == 0 ||
-                          addPortFolioItem.taskType?.value == "" ||
-                          addPortFolioItem.taskType?.value == null ||
-                          addPortFolioItem.taskType?.value == undefined ||
-                          addPortFolioItem.taskType?.value == "string")
-                          ? "" : addPortFolioItem.taskType?.value}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.frequency.length == 0 ||
-                          addPortFolioItem.frequency?.value == "" ||
-                          addPortFolioItem.frequency?.value == null ||
-                          addPortFolioItem.frequency?.value == undefined ||
-                          addPortFolioItem.frequency?.value == "string")
-                          ? "NA" : addPortFolioItem.frequency?.value}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.unit.length == 0 ||
-                          addPortFolioItem.unit?.value == "" ||
-                          addPortFolioItem.unit?.value == null ||
-                          addPortFolioItem.unit?.value == undefined ||
-                          addPortFolioItem.unit?.value == "string")
-                          ? "NA" : addPortFolioItem.unit?.value}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">RECOMMENDED VALUE</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.recommendedValue == "" ||
-                          addPortFolioItem.recommendedValue == null ||
-                          addPortFolioItem.recommendedValue == undefined ||
-                          addPortFolioItem.recommendedValue == "string")
-                          ? "NA" : addPortFolioItem.recommendedValue}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">QUANTITY</p>
-                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                        {(addPortFolioItem.quantity == "" ||
-                          addPortFolioItem.quantity == null ||
-                          addPortFolioItem.quantity == undefined ||
-                          addPortFolioItem.quantity == "string")
-                          ? "NA" : addPortFolioItem.quantity}
-                      </h6>
-                    </div>
-                  </div>
-                  {props.compoFlagTest == "itemEditPort" ?
-                    <>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF EVENTS</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(addPortFolioItem.numberOfEvents == "" ||
-                              addPortFolioItem.numberOfEvents == null ||
-                              addPortFolioItem.numberOfEvents == undefined ||
-                              addPortFolioItem.numberOfEvents == "string")
-                              ? "NA" : addPortFolioItem.numberOfEvents}
-                          </h6>
-                        </div>
+                <div className="border border-radius-10 mt-3 py-2 px-3">
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">YEAR</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.year.length == 0 ||
+                            addPortFolioItem.year?.value == "" ||
+                            addPortFolioItem.year?.value == null ||
+                            addPortFolioItem.year?.value == undefined ||
+                            addPortFolioItem.year?.value == "string")
+                            ? "NA" : addPortFolioItem.year?.value}
+                        </h6>
                       </div>
-                    </> : <></>}
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF YEARS</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.noOfYear == "" ||
+                            addPortFolioItem.noOfYear == null ||
+                            addPortFolioItem.noOfYear == undefined ||
+                            addPortFolioItem.noOfYear == "string")
+                            ? "NA" : addPortFolioItem.noOfYear}
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">START USAGE</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.startUsage == "" ||
+                            addPortFolioItem.startUsage == null ||
+                            addPortFolioItem.startUsage == undefined ||
+                            addPortFolioItem.startUsage == "string")
+                            ? "NA" : addPortFolioItem.startUsage}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">END USAGE</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.endUsage == "" ||
+                            addPortFolioItem.endUsage == null ||
+                            addPortFolioItem.endUsage == undefined ||
+                            addPortFolioItem.endUsage == "string")
+                            ? "NA" : addPortFolioItem.endUsage}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE TYPE</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem?.usageType.length == 0 ||
+                            addPortFolioItem?.usageType?.value == "" ||
+                            addPortFolioItem?.usageType?.value == null ||
+                            addPortFolioItem?.usageType?.value == undefined ||
+                            addPortFolioItem?.usageType?.value == "string")
+                            ? "NA" : addPortFolioItem?.usageType?.value}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.frequency.length == 0 ||
+                            addPortFolioItem.frequency?.value == "" ||
+                            addPortFolioItem.frequency?.value == null ||
+                            addPortFolioItem.frequency?.value == undefined ||
+                            addPortFolioItem.frequency?.value == "string")
+                            ? "NA" : addPortFolioItem.frequency?.value}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.unit.length == 0 ||
+                            addPortFolioItem.unit?.value == "" ||
+                            addPortFolioItem.unit?.value == null ||
+                            addPortFolioItem.unit?.value == undefined ||
+                            addPortFolioItem.unit?.value == "string")
+                            ? "NA" : addPortFolioItem.unit?.value}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">RECOMMENDED VALUE</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.recommendedValue == "" ||
+                            addPortFolioItem.recommendedValue == null ||
+                            addPortFolioItem.recommendedValue == undefined ||
+                            addPortFolioItem.recommendedValue == "string")
+                            ? "NA" : addPortFolioItem.recommendedValue}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">No. OF EVENTS</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.numberOfEvents == "" ||
+                            addPortFolioItem.numberOfEvents == null ||
+                            addPortFolioItem.numberOfEvents == undefined ||
+                            addPortFolioItem.numberOfEvents == "string")
+                            ? "NA" : addPortFolioItem.numberOfEvents}
+                        </h6>
+                      </div>
+                    </div>
+
+                    {/* <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">QUANTITY</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.quantity == "" ||
+                            addPortFolioItem.quantity == null ||
+                            addPortFolioItem.quantity == undefined ||
+                            addPortFolioItem.quantity == "string")
+                            ? "NA" : addPortFolioItem.quantity}
+                        </h6>
+                      </div>
+                    </div> */}
+                  </div>
                 </div>
               </> :
               <>
@@ -1874,11 +2360,19 @@ const AddPortfolioItem = (props) => {
                   /> */}
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-6 checkbox-input">
-                    <div class="form-group form-check">
-                      <label class="form-check-label" for="exampleCheck1"><input type="checkbox" class="form-check-input" id="exampleCheck1"></input>I don’t need bundles / services</label>
+                  {props.compoFlag == "ITEM" ?
+                    <div className="col-md-6 col-sm-6 checkbox-input">
+                      <div class="form-group form-check">
+                        <label class="form-check-label" for="exampleCheck1">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="exampleCheck1"
+                            onChange={(e) => BundleServiceItemsNeed(e)}
+                          />I don’t need bundles / services</label>
+                      </div>
                     </div>
-                  </div>
+                    : ""}
                 </div>
                 <div className="border border-radius-10 py-2 px-3">
                   <p className="mt-4">STRATEGY</p>
@@ -1996,22 +2490,21 @@ const AddPortfolioItem = (props) => {
                         >
                           YEAR
                         </label>
+
+
                         <Select
-                          options={[
-                            { value: "per Hr", label: "per Hr" },
-                            { value: "per Km", label: "per Km" },
-                            { value: "per Miles", label: "per Miles" },
-                            { value: "per year", label: "per year" },
-                            { value: "per month", label: "per month" },
-                            { value: "per day", label: "per day" },
-                            { value: "per quarter", label: "per quarter" },
-                          ]}
+                          // options={[
+                          //   { value: "1", label: "1" },
+                          //   { value: "2", label: "2" },
+                          //   { value: "3", label: "3" },
+                          // ]}
+                          options={yearsOption}
                           placeholder="Select..."
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                            setAddportFolioItem({ ...addPortFolioItem, year: e })
                           }
-                          value={addPortFolioItem.unit}
+                          value={addPortFolioItem.year}
                         />
                       </div>
                     </div>
@@ -2023,23 +2516,30 @@ const AddPortfolioItem = (props) => {
                         >
                           NO. OF YEARS
                         </label>
-                        <Select
+                        <input
+                          type="number"
+                          // type="text"
+                          className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                          placeholder="No. of Years"
+                          // defaultValue={props?.priceCalculator?.startUsage}
+                          // value={priceCalculator.startUsage}
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
+                          value={addPortFolioItem.noOfYear}
+                          name="noOfYear"
+                        />
+                        {/* <Select
                           options={[
-                            { value: "per Hr", label: "per Hr" },
-                            { value: "per Km", label: "per Km" },
-                            { value: "per Miles", label: "per Miles" },
-                            { value: "per year", label: "per year" },
-                            { value: "per month", label: "per month" },
-                            { value: "per day", label: "per day" },
-                            { value: "per quarter", label: "per quarter" },
+                            { value: "1", label: "1" },
+                            { value: "2", label: "2" },
+                            { value: "3", label: "3" },
                           ]}
                           placeholder="Select..."
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                            setAddportFolioItem({ ...addPortFolioItem, noOfYear: e })
                           }
-                          value={addPortFolioItem.unit}
-                        />
+                          value={addPortFolioItem.noOfYear}
+                        /> */}
                       </div>
                     </div>
                   </div>
@@ -2064,11 +2564,11 @@ const AddPortfolioItem = (props) => {
                             placeholder="10,000 hours"
                             // defaultValue={props?.priceCalculator?.startUsage}
                             // value={priceCalculator.startUsage}
-                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
-                            value={addPortFolioItem.recommendedValue}
-                            name="recommendedValue"
+                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
+                            value={addPortFolioItem.startUsage}
+                            name="startUsage"
                           />
-                          <span className="hours-div text-primary">Hours</span>
+                          <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
                         </div>
                         <div className="css-w8dmq8">*Mandatory</div>
                       </div>
@@ -2092,11 +2592,11 @@ const AddPortfolioItem = (props) => {
                             placeholder="16,000 hours"
                             // defaultValue={props?.priceCalculator?.startUsage}
                             // value={priceCalculator.startUsage}
-                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
-                            value={addPortFolioItem.recommendedValue}
-                            name="recommendedValue"
+                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
+                            value={addPortFolioItem.endUsage}
+                            name="endUsage"
                           />
-                          <span className="hours-div text-primary">Hours</span>
+                          <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
                         </div>
                         <div className="css-w8dmq8">*Mandatory</div>
                       </div>
@@ -2110,16 +2610,16 @@ const AddPortfolioItem = (props) => {
                           USAGE TYPE
                         </label>
                         <Select
-                          options={frequencyOptions}
+                          options={options}
                           placeholder="Planned Usage"
                           className="text-primary"
                           onChange={(e) =>
                             setAddportFolioItem({
                               ...addPortFolioItem,
-                              frequency: e,
+                              usageType: e,
                             })
                           }
-                          value={addPortFolioItem.frequency}
+                          value={addPortFolioItem.usageType}
                         />
                       </div>
                     </div>
@@ -2216,7 +2716,7 @@ const AddPortfolioItem = (props) => {
                           NO. OF EVENTS
                         </label>
                         <input
-                          type="email"
+                          type="number"
                           className="form-control border-radius-10 text-primary"
                           placeholder="NO. OF EVENTS"
                           onChange={(e) =>
@@ -2325,7 +2825,7 @@ const AddPortfolioItem = (props) => {
 
 
           </TabPanel>
-          <TabPanel value="2">
+          <TabPanel value="relatedTemplate">
             {" "}
             <p className="mt-4">TEMPLATES</p>
             {props.compoFlag === "itemEdit" && editable == true ?
@@ -2367,10 +2867,10 @@ const AddPortfolioItem = (props) => {
                       >
                         TEMPLATE ID
                       </label>
-                      <a 
-                      href={undefined} 
-                      className="input-search cursor text-primary"
-                      onClick={() => setModelShowForTemplate(true)}
+                      <a
+                        href={undefined}
+                        className="input-search cursor text-primary"
+                        onClick={() => setModelShowForTemplate(true)}
                       ><SearchIcon style={{ fontSize: "34px" }} /></a>
                       <input
                         type="text"
@@ -2507,7 +3007,7 @@ const AddPortfolioItem = (props) => {
 
 
           </TabPanel>
-          <TabPanel value="3">
+          <TabPanel value="relatedKit">
             {/* <p className="mt-4">REPAIR OPTIONS</p> */}
             <p className="mt-4">RELATED KIT</p>
             {props.compoFlag === "itemEdit" && editable == true ?
@@ -2679,6 +3179,19 @@ const AddPortfolioItem = (props) => {
 
           </TabPanel>
         </TabContext>
+        {/* {tabs} */}
+        {(tabs == "itemSummary") ||
+          (tabs == "relatedTemplate") ? (
+          <div className="pull-right mt-3">
+            <Link
+              to={undefined}
+              className="btn cursor bg-primary text-white border mr-4"
+              onClick={TabsEnableDisabledFun}
+            >
+              Save & Next
+            </Link>
+          </div>
+        ) : ("")}
         {tabs < 3 && (
           <div className="pull-right mt-3">
             <Link
@@ -2700,28 +3213,29 @@ const AddPortfolioItem = (props) => {
         onHide={() => setModelShowForTemplate(false)}
       >
         <Modal.Body className="bg-primary">
-        <div className="d-flex justify-content-between align-items-center w-100 mr-5">
-                    <div className="row align-items-center m-0">
-                      {querySearchSelector.map((obj, i) => {
-                        return (
-                          <>
-                            <div className="customselect border-white d-flex align-items-center mr-3 my-2 border-radius-10">
-                              {i === 0 ?
-                                <>
-                                  <Select
-                                    placeholder="Select Type."
-                                    options={([
-                                      { label: "Template", value: "TEMPLATE" },
-                                      { label: "Kit", value: "KIT" },
+          <div className="d-flex justify-content-between align-items-center w-100 mr-5">
+            <div className="row align-items-center m-0">
+              {querySearchSelector.map((obj, i) => {
+                return (
+                  <>
+                    <div className="customselect border-white d-flex align-items-center mr-3 my-2 border-radius-10">
+                      {i === 0 ?
+                        <>
+                          <Select
+                            placeholder="Select Type."
+                            options={([
+                              { label: "Portfolio", value: "PORTFOLIO" },
+                              { label: "Bundle", value: "BUNDLE_ITEM" },
+                              { label: "Service", value: "SERVICE" },
 
-                                    ])}
+                            ])}
 
-                                    // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
-                                    value={querySearchSelector.itemType}
-                                    onChange={(e) => handleItemType(e, i)}
-                                  // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
-                                  />
-                                  {/* <Select
+                            // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
+                            value={querySearchSelector.itemType}
+                            onChange={(e) => handleItemType(e, i)}
+                          // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
+                          />
+                          {/* <Select
                                     options={[
                                       { label: "AND", value: "AND" },
                                       { label: "OR", value: "OR" },
@@ -2731,114 +3245,114 @@ const AddPortfolioItem = (props) => {
                                   // value={querySearchSelector.itemTypeOperator}
                                   // onChange={(e) => handleitemTypeOperator(e, i)}
                                   /> */}
-                                </>
-                                : <></>}
-                              {i > 0 ? (
-                                <Select
-                                  isClearable={true}
-                                  defaultValue={{ label: "AND", value: "AND" }}
-                                  options={[
-                                    { label: "AND", value: "AND", id: i },
-                                    { label: "OR", value: "OR", id: i },
-                                  ]}
-                                  // placeholder="&amp;"
-                                  placeholder="AND/OR"
-                                  onChange={(e) => handleOperator(e, i)}
-                                  // value={querySearchOperator[i]}
-                                  value={obj.selectOperator}
-                                />
-                              ) : (
-                                <></>
-                              )}
+                        </>
+                        : <></>}
+                      {i > 0 ? (
+                        <Select
+                          isClearable={true}
+                          defaultValue={{ label: "AND", value: "AND" }}
+                          options={[
+                            { label: "AND", value: "AND", id: i },
+                            { label: "OR", value: "OR", id: i },
+                          ]}
+                          // placeholder="&amp;"
+                          placeholder="AND/OR"
+                          onChange={(e) => handleOperator(e, i)}
+                          // value={querySearchOperator[i]}
+                          value={obj.selectOperator}
+                        />
+                      ) : (
+                        <></>
+                      )}
 
-                              <div>
-                                <Select
-                                  // isClearable={true}
-                                  options={familySelectOption}
-                                  onChange={(e) => handleFamily(e, i)}
-                                  value={obj.selectFamily}
-                                />
-                              </div>
-                              <div className="customselectsearch">
-                                <input
-                                  className="custom-input-sleact pr-1"
-                                  type="text"
-                                  placeholder="Search string"
-                                  value={obj.inputSearch}
-                                  onChange={(e) => handleInputSearch(e, i)}
-                                  id={"inputSearch-" + i}
-                                  autoComplete="off"
-                                />
-
-                                {
-                                  <ul
-                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                    id="style"
-                                  >
-                                    {obj.selectOptions.map((currentItem, j) => (
-                                      <li
-                                        className="list-group-item"
-                                        key={j}
-                                        onClick={(e) =>
-                                          handleSearchListClick(
-                                            e,
-                                            currentItem,
-                                            obj,
-                                            i
-                                          )
-                                        }
-                                      >
-                                        {currentItem}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                }
-
-                              </div>
-                              <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
-                      <SearchIcon /><span className="ml-1">Search</span>
-                    </Link>
-                            </div>
-                          </>
-                        );
-                      })}
-                      <div onClick={(e) => addSearchQuerryHtml(e)}>
-                        <Link
-                          to="#"
-                          className="btn-sm text-white border mr-2"
-                          style={{ border: "1px solid #872FF7" }}
-                        >
-                          +
-                        </Link>
+                      <div>
+                        <Select
+                          // isClearable={true}
+                          options={familySelectOption}
+                          onChange={(e) => handleFamily(e, i)}
+                          value={obj.selectFamily}
+                        />
                       </div>
-                      <div onClick={handleDeletQuerySearch}>
-                        <Link to="#" className="btn-sm border">
-                          <svg
-                            data-name="Layer 41"
-                            id="Layer_41"
-                            fill="white"
-                            viewBox="0 0 50 50"
-                            xmlns="http://www.w3.org/2000/svg"
+                      <div className="customselectsearch">
+                        <input
+                          className="custom-input-sleact pr-1"
+                          type="text"
+                          placeholder="Search string"
+                          value={obj.inputSearch}
+                          onChange={(e) => handleInputSearch(e, i)}
+                          id={"inputSearch-" + i}
+                          autoComplete="off"
+                        />
+
+                        {
+                          <ul
+                            className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                            id="style"
                           >
-                            <title />
-                            <path
-                              className="cls-1"
-                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                            />
-                            <path
-                              class="cls-1"
-                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                            />
-                            <path
-                              class="cls-1"
-                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                            />
-                          </svg>
-                          {/* <DeleteIcon className="font-size-16" /> */}
-                        </Link>
+                            {obj.selectOptions.map((currentItem, j) => (
+                              <li
+                                className="list-group-item"
+                                key={j}
+                                onClick={(e) =>
+                                  handleSearchListClick(
+                                    e,
+                                    currentItem,
+                                    obj,
+                                    i
+                                  )
+                                }
+                              >
+                                {currentItem}
+                              </li>
+                            ))}
+                          </ul>
+                        }
+
                       </div>
+                      <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                        <SearchIcon /><span className="ml-1">Search</span>
+                      </Link>
                     </div>
-                  </div>
+                  </>
+                );
+              })}
+              <div onClick={(e) => addSearchQuerryHtml(e)}>
+                <Link
+                  to="#"
+                  className="btn-sm text-white border mr-2"
+                  style={{ border: "1px solid #872FF7" }}
+                >
+                  +
+                </Link>
+              </div>
+              <div onClick={handleDeletQuerySearch}>
+                <Link to="#" className="btn-sm border">
+                  <svg
+                    data-name="Layer 41"
+                    id="Layer_41"
+                    fill="white"
+                    viewBox="0 0 50 50"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <title />
+                    <path
+                      className="cls-1"
+                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                    />
+                    <path
+                      class="cls-1"
+                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                    />
+                    <path
+                      class="cls-1"
+                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                    />
+                  </svg>
+                  {/* <DeleteIcon className="font-size-16" /> */}
+                </Link>
+              </div>
+            </div>
+          </div>
         </Modal.Body>
       </Modal>
       {/* <ToastContainer /> */}
