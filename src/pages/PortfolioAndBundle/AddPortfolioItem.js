@@ -2711,9 +2711,8 @@ const AddPortfolioItem = (props) => {
                                   <Select
                                     placeholder="Select Type."
                                     options={([
-                                      { label: "Portfolio", value: "PORTFOLIO" },
-                                      { label: "Bundle", value: "BUNDLE_ITEM" },
-                                      { label: "Service", value: "SERVICE" },
+                                      { label: "Template", value: "TEMPLATE" },
+                                      { label: "Kit", value: "KIT" },
 
                                     ])}
 

@@ -3603,7 +3603,17 @@ input[type="checkbox"]:checked:after {
   font-size: 14px !important;
 }
 .funds .st0{fill:#fff;}
+.funds-grey .st0{fill:#616161;}
 .input-search{position: absolute;
   bottom: 26px;
   right: 26px;
   z-index: 1;}
+.bundle .st0{fill:#616161;}
+.portfolio-icon svg {
+  fill: #ffffff;
+}
+.description .st0{fill:#616161;}
+.table-child .sc-iBkjds:last-child {
+  min-width: 120px !important;
+}
+.border-radius-5{border-radius: 5px !important;}
