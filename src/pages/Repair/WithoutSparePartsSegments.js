@@ -310,7 +310,7 @@ function WithoutSpareParts(props) {
             >
               <KeyboardArrowRightIcon />
             </button>
-            {showAddNewButton && (
+            {showAddNewButton && ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1 && (
               <button className="btn-no-border ml-2" onClick={loadNewSegmentUI}>
                 <span className="ml-2">
                   <AddIcon />
