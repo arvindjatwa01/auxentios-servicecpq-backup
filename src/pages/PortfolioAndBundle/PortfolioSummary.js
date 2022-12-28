@@ -92,6 +92,7 @@ import {
   portfolioSearch,
   itemSearch,
   portfolioItemPriceSjid,
+  getSolutionPriceCommonConfig,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
@@ -124,6 +125,23 @@ export const PortfolioSummary = () => {
     { label: "Model", value: "model" },
     { label: "Prefix", value: "prefix" },
   ]);
+  const [value3, setValue3] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
+  const [value4, setValue4] = useState({ value: "FREE", label: "Free" });
+  const handleOption2 = (e) => {
+    setValue2(e);
+  };
+  const handleOption3 = (e) => {
+    setValue3(e);
+  };
+  const handleOption4 = (e) => {
+    setValue4(e);
+  };
+  const [value2, setValue2] = useState({
+    value: "DRAFT",
+    label: "Draft",
+  });
+  const [versionOption, setVersionOption] = useState([]);
+  const [statusOption, setStatusOption] = useState([]);
   const [columnSearchText, setColumnSearchText] = useState("");
   const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1);
   const [buildSolutionValue, setBuildSolutionValue] = useState(-1);
@@ -277,6 +295,34 @@ export const PortfolioSummary = () => {
       .then((res) => {
         setRecentBundleService(res);
       })
+
+    getSolutionPriceCommonConfig("support-level")
+      .then((res) => {
+
+        // console.log("res --- 12333 : ", res);
+        res.pop();
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setVersionOption(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+    getSolutionPriceCommonConfig("status")
+      .then((res) => {
+        console.log("status option is 12345566", res)
+        res.pop();
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setStatusOption(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
 
     if (JSON.parse(localStorage.getItem('exitingType'))) {
       localStorage.removeItem('exitingType');
@@ -3893,10 +3939,38 @@ export const PortfolioSummary = () => {
               <TabPanel value="bundleServiceHeader">
                 <div className="container-fluid ">
                   <div className="d-flex align-items-center justify-content-between mt-2">
-                    <h5 className="font-weight-600 mb-0">
-                      {/* ADD {serviceOrBundlePrefix} */}
-                    </h5>
+                    {/* <h5 className="font-weight-600 mb-0">
+                      ADD {serviceOrBundlePrefix}
+                    </h5> */}
+                    <div className="ml-3 green-custom-btn ">
+                      <Select
+                        className="customselectbtn1 p-2 border-radius-10 bg-green-light "
+                        onChange={(e) => handleOption4(e)}
+                        options={[
+                          { value: "free", label: "Free" },
+                          { value: "costly", label: "Costly" },
+                        ]}
+                        value={value4}
+                      />
+                    </div>
                     <div className="d-flex justify-content-center align-items-center">
+                      <div className="ml-3">
+                        <Select
+                          className="customselectbtn1"
+                          onChange={(e) => handleOption3(e)}
+                          options={versionOption}
+                          value={value3}
+                        />
+                      </div>
+
+                      <div className="ml-3">
+                        <Select
+                          className="customselectbtn"
+                          onChange={(e) => handleOption2(e)}
+                          options={statusOption}
+                          value={value2}
+                        />
+                      </div>
                       <a href="#" className="ml-3 font-size-14">
                         <img src={shareIcon}></img>
                       </a>
@@ -4298,6 +4372,33 @@ export const PortfolioSummary = () => {
                           /> */}
                             </div>
                           </div>
+                          <div className="col-md-4 col-sm-4">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  ESTIMATED HOURS
+                                </label>
+                                <div
+                                  className=" d-flex form-control-date"
+                                  style={{ overflow: "hidden" }}
+                                >
+                                  <input
+                                    type="number"
+                                    // type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                    placeholder="10,000 hours"
+                                    // defaultValue={props?.priceCalculator?.startUsage}
+                                    // value={priceCalculator.startUsage}
+                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
+                                    value={addPortFolioItem.startUsage}
+                                    name="startUsage"
+                                  />
+                                  <span className="hours-div text-primary">hours/day</span>
+                                </div>
+                              </div>
+                            </div>
 
                           {/* <div className="col-md-4 col-sm-3">
                         <div className="form-group">

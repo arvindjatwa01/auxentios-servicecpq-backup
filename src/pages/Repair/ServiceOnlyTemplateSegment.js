@@ -29,6 +29,7 @@ import {
 import LoadingProgress from "./components/Loader";
 import SearchBox from "./components/SearchBox";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 function ServiceOnlyTemplateSegment(props) {
   const { activeElement, setActiveElement, fetchAllDetails } =
     props.templateDetails;
@@ -66,6 +67,7 @@ function ServiceOnlyTemplateSegment(props) {
     componentCode: "",
     description: "",
     id: "",
+    requiredIndicator: true,
   };
   const [segmentData, setSegmentData] = useState(newSegment);
   useEffect(() => {
@@ -116,6 +118,22 @@ function ServiceOnlyTemplateSegment(props) {
     // }
   };
 
+  // To indicate whether segment price will be included in total price
+  const handleChangeSwitch = (event) => {
+    setSegmentData({
+      ...segmentData,
+      requiredIndicator: event.target.checked,
+    });
+    // updateSegment(activeElement.templateDBId, {
+    //   requiredIndicator: event.target.checked,
+    // })
+    //   .then((result) => {
+    //     handleSnack("success", "Segment updated successfully!");
+    //   })
+    //   .catch((e) => {
+    //     handleSnack("error", "Error occured while updating the details!");
+    //   });
+  };
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
     setSearchJobCodeResults([]);
@@ -235,27 +253,27 @@ function ServiceOnlyTemplateSegment(props) {
       componentCode: segmentData.componentCode,
       description: segmentData.description,
     };
-    createSegment(templateDBId, data)
-      .then((result) => {
-        setSegmentData({
-          ...segmentData,
-          segmentNumber: result.segmentNumber,
-          id: result.id,
-          header: formatSegmentHeader(result),
-          // "Segment " + result.segmentNumber + " - " + result.description,
-        });
-        // fetchSegmentsOfBuilder();
-        segments[segments.length - 1] = result;
-        setShowAddNewButton(true);
-        setSegmentViewOnly(true);
-        handleSnack(
-          "success",
-          `Successfully added Segment ${result.segmentNumber} details!`
-        );
-      })
-      .catch((e) => {
-        handleSnack("error", "Error occurred while saving the segment data!");
-      });
+    // createSegment(templateDBId, data)
+    //   .then((result) => {
+    //     setSegmentData({
+    //       ...segmentData,
+    //       segmentNumber: result.segmentNumber,
+    //       id: result.id,
+    //       header: formatSegmentHeader(result),
+    //       // "Segment " + result.segmentNumber + " - " + result.description,
+    //     });
+    //     // fetchSegmentsOfBuilder();
+    //     segments[segments.length - 1] = result;
+    //     setShowAddNewButton(true);
+    setSegmentViewOnly(true);
+    //     handleSnack(
+    //       "success",
+    //       `Successfully added Segment ${result.segmentNumber} details!`
+    //     );
+    //   })
+    //   .catch((e) => {
+    //     handleSnack("error", "Error occurred while saving the segment data!");
+    //   });
   };
   const loadNewSegmentUI = () => {
     setSegmentViewOnly(false);
@@ -342,200 +360,230 @@ function ServiceOnlyTemplateSegment(props) {
         </h5>
         {segmentLoading ? (
           <LoadingProgress />
-        ) : !segmentViewOnly ? (
-          <>
-            <div className="row mt-4 input-fields">
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
-                    JOB CODE
-                  </label>
-                  <SearchBox
-                    value={segmentData.jobCode}
-                    onChange={(e) => handleJobCodeSearch(e.target.value)}
-                    type="jobCode"
-                    result={searchJobCodeResults}
-                    onSelect={handleJobCodeSelect}
-                    noOptions={noOptionsJobCode}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
-                    TITLE
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control border-radius-10"
-                    placeholder="Required"
-                    value={segmentData.title}
-                    onChange={(e) =>
-                      setSegmentData({
-                        ...segmentData,
-                        title: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
-                    COMPONENT CODE
-                  </label>
-                  <SearchBox
-                    value={segmentData.componentCode}
-                    onChange={(e) => handleComponentCodeSearch(e.target.value)}
-                    type="componentCode"
-                    result={searchCompCodeResults}
-                    onSelect={handleCompCodeSelect}
-                    noOptions={noOptionsCompCode}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
-                    COMPONENT CODE DESCRIPTION
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control border-radius-10"
-                    placeholder="Required"
-                    value={segmentData.description}
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-            <div className=" text-right">
-              {segments.length > 0 && (
-                <button
-                  className="btn border bg-primary text-white mr-2"
-                  onClick={handleCancelSegment}
-                >
-                  Cancel
-                </button>
-              )}
-              <button
-                className="btn border bg-primary text-white"
-                onClick={handleCreateSegment}
-                disabled={
-                  !(
-                    segmentData.componentCode &&
-                    segmentData.description &&
-                    segmentData.title
-                  ) || noOptionsCompCode
-                }
-              >
-                Save
-              </button>
-            </div>
-          </>
         ) : (
-          <React.Fragment>
-            <div className="row mt-4">
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">SEGMENT #</p>
-                  <h6 className="font-weight-500">
-                    {segmentData.segmentNumber}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
-                  <h6 className="font-weight-500">{segmentData.jobCode}</h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">TITLE</p>
-                  <h6 className="font-weight-500">{segmentData.title} </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE
-                  </p>
-                  <h6 className="font-weight-500">
-                    {segmentData.componentCode}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE DESCRIPTION{" "}
-                  </p>
-                  <h6 className="font-weight-500">{segmentData.description}</h6>
+          <>
+            <div className="col-md-12 col-sm-12">
+              <div className=" d-flex justify-content-between align-items-center">
+                <div>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={segmentData.requiredIndicator}
+                          onChange={handleChangeSwitch}
+                          name="segmentRequired"
+                        />
+                      }
+                      label="REQUIRED"
+                    />
+                  </FormGroup>
                 </div>
               </div>
             </div>
-            <div className="Add-new-segment-div p-3 border-radius-10">
-              <button
-                className="btn bg-primary text-white"
-                onClick={() => {
-                  setActiveElement({ ...activeElement, name: "header" });
-                  fetchAllDetails(activeElement.templateDBId);
-                }}
-              >
-                Back To Header
-              </button>
-              {operations.length > 0 ? (
-                <div class="repairbtn-dropdown">
-                  <button className="btn bg-primary text-white ml-2 dropbtn">
-                    View Job Operations
-                    <span className="ml-2">
-                      <FontAwesomeIcon icon={faAngleDown} />
-                    </span>
-                  </button>
-                  <div class="repairbtn-dropdown-content" id="drp">
-                    {operations.map((element) => (
-                      <li
-                        onClick={() =>
-                          setActiveElement({
-                            ...activeElement,
-                            name: "operation",
-                            sId: segmentData.id,
-                            oId: element.id,
+            {!segmentViewOnly ? (
+              <>
+                <div className="row mt-4 input-fields">
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        JOB CODE
+                      </label>
+                      <SearchBox
+                        value={segmentData.jobCode}
+                        onChange={(e) => handleJobCodeSearch(e.target.value)}
+                        type="jobCode"
+                        result={searchJobCodeResults}
+                        onSelect={handleJobCodeSelect}
+                        noOptions={noOptionsJobCode}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        TITLE
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control border-radius-10"
+                        placeholder="Required"
+                        value={segmentData.title}
+                        onChange={(e) =>
+                          setSegmentData({
+                            ...segmentData,
+                            title: e.target.value,
                           })
                         }
-                      >
-                        {"Operation " +
-                          String(element.operationNumber).padStart(3, "0") +
-                          " - " +
-                          element.jobCode +
-                          " " +
-                          element.jobCodeDescription +
-                          " " +
-                          element.componentCodeDescription}
-                      </li>
-                    ))}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        COMPONENT CODE
+                      </label>
+                      <SearchBox
+                        value={segmentData.componentCode}
+                        onChange={(e) =>
+                          handleComponentCodeSearch(e.target.value)
+                        }
+                        type="componentCode"
+                        result={searchCompCodeResults}
+                        onSelect={handleCompCodeSelect}
+                        noOptions={noOptionsCompCode}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        COMPONENT CODE DESCRIPTION
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control border-radius-10"
+                        placeholder="Required"
+                        value={segmentData.description}
+                        disabled
+                      />
+                    </div>
                   </div>
                 </div>
-              ) : (
-                <button
-                  onClick={() =>
-                    setActiveElement({
-                      ...activeElement,
-                      name: "operation",
-                      sId: segmentData.id,
-                    })
-                  }
-                  className="btn bg-primary text-white ml-2"
-                >
-                  <span className="mr-2">
-                    <FontAwesomeIcon icon={faPlus} />
-                  </span>
-                  Add Job Operation
-                </button>
-              )}
-            </div>
-          </React.Fragment>
+                <div className=" text-right">
+                  {segments.length > 0 && (
+                    <button
+                      className="btn border bg-primary text-white mr-2"
+                      onClick={handleCancelSegment}
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    className="btn border bg-primary text-white"
+                    onClick={handleCreateSegment}
+                    disabled={
+                      !(
+                        segmentData.componentCode &&
+                        segmentData.description &&
+                        segmentData.title
+                      ) || noOptionsCompCode
+                    }
+                  >
+                    Save
+                  </button>
+                </div>
+              </>
+            ) : (
+              <React.Fragment>
+                <div className="row mt-4">
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        SEGMENT #
+                      </p>
+                      <h6 className="font-weight-500">
+                        {segmentData.segmentNumber}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        JOB CODE
+                      </p>
+                      <h6 className="font-weight-500">{segmentData.jobCode}</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">TITLE</p>
+                      <h6 className="font-weight-500">{segmentData.title} </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        COMPONENT CODE
+                      </p>
+                      <h6 className="font-weight-500">
+                        {segmentData.componentCode}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        COMPONENT CODE DESCRIPTION{" "}
+                      </p>
+                      <h6 className="font-weight-500">
+                        {segmentData.description}
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+                <div className="Add-new-segment-div p-3 border-radius-10">
+                  <button
+                    className="btn bg-primary text-white"
+                    onClick={() => {
+                      setActiveElement({ ...activeElement, name: "header" });
+                      fetchAllDetails(activeElement.templateDBId);
+                    }}
+                  >
+                    Back To Header
+                  </button>
+                  {operations.length > 0 ? (
+                    <div class="repairbtn-dropdown">
+                      <button className="btn bg-primary text-white ml-2 dropbtn">
+                        View Job Operations
+                        <span className="ml-2">
+                          <FontAwesomeIcon icon={faAngleDown} />
+                        </span>
+                      </button>
+                      <div class="repairbtn-dropdown-content" id="drp">
+                        {operations.map((element) => (
+                          <li
+                            onClick={() =>
+                              setActiveElement({
+                                ...activeElement,
+                                name: "operation",
+                                sId: segmentData.id,
+                                oId: element.id,
+                              })
+                            }
+                          >
+                            {"Operation " +
+                              String(element.operationNumber).padStart(3, "0") +
+                              " - " +
+                              element.jobCode +
+                              " " +
+                              element.jobCodeDescription +
+                              " " +
+                              element.componentCodeDescription}
+                          </li>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() =>
+                        setActiveElement({
+                          ...activeElement,
+                          name: "operation",
+                          sId: segmentData.id,
+                        })
+                      }
+                      className="btn bg-primary text-white ml-2"
+                    >
+                      <span className="mr-2">
+                        <FontAwesomeIcon icon={faPlus} />
+                      </span>
+                      Add Job Operation
+                    </button>
+                  )}
+                </div>
+              </React.Fragment>
+            )}
+          </>
         )}
       </div>
     </>

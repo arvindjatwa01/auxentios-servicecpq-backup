@@ -14,9 +14,10 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
+import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 
 function ServiceOnlyTemplateOperation(props) {
-  const { activeElement, setActiveElement } = props.builderDetails;
+  const { activeElement, setActiveElement } = props.templateDetails;
 
   const history = useHistory();
   const [severity, setSeverity] = useState("");
@@ -46,6 +47,7 @@ function ServiceOnlyTemplateOperation(props) {
     jobCodeDescription: "",
     modifier: "",
     description: "",
+    requiredIndicator: true,
   };
   const [operationData, setOperationData] = useState(newOperation);
   useEffect(() => {
@@ -54,47 +56,47 @@ function ServiceOnlyTemplateOperation(props) {
 
   const fetchOperationsOfSegment = () => {
     setOperationLoading(true);
-    if (activeElement.sId) {
-      fetchOperations(activeElement.sId)
-        .then((result) => {
-          if (result?.length > 0) {
-            setOperations(result);
-            setOperationViewOnly(true);
-            // Default last operation or selected operation for back traverse from service estimate
-            let opToLoad = activeElement.oId ? result.filter(
-              (x) => x.id === activeElement.oId
-            )[0] : result[result.length - 1];
-              
-              setOperationData({
-                ...opToLoad,
-                header:
-                  "Operation " +                  
-                  formatOperationNum(opToLoad.operationNumber) +
-                  " - " +
-                  opToLoad.description, //Rename after modifications in UI
-              });
-           
-            
-          } else {
-            loadNewOperationUI();
-          }
-          setOperationLoading(false);
-        })
-        .catch((err) => {
-          loadNewOperationUI();
-          handleSnack(
-            "error",
-            "Error occurred while fetching the existing operations!"
-          );
-          setOperationLoading(false);
-        });
-    } else {
-      handleSnack("error", "Not a valid segment!");
-    }
+    // if (activeElement.sId) {
+    //   fetchOperations(activeElement.sId)
+    //     .then((result) => {
+    //       if (result?.length > 0) {
+    //         setOperations(result);
+    //         setOperationViewOnly(true);
+    //         // Default last operation or selected operation for back traverse from service estimate
+    //         let opToLoad = activeElement.oId ? result.filter(
+    //           (x) => x.id === activeElement.oId
+    //         )[0] : result[result.length - 1];
+
+    //           setOperationData({
+    //             ...opToLoad,
+    //             header:
+    //               "Operation " +
+    //               formatOperationNum(opToLoad.operationNumber) +
+    //               " - " +
+    //               opToLoad.description, //Rename after modifications in UI
+    //           });
+
+    //       } else {
+    loadNewOperationUI();
+    //       }
+    setOperationLoading(false);
+    //     })
+    //     .catch((err) => {
+    //       loadNewOperationUI();
+    //       handleSnack(
+    //         "error",
+    //         "Error occurred while fetching the existing operations!"
+    //       );
+    //       setOperationLoading(false);
+    //     });
+    // } else {
+    //   handleSnack("error", "Not a valid segment!");
+    //   setOperationLoading(false);
+    // }
   };
 
-  function formatOperationNum(num){
-    return String(num).padStart(3, '0') 
+  function formatOperationNum(num) {
+    return String(num).padStart(3, "0");
   }
 
   // Search Job Code
@@ -266,7 +268,9 @@ function ServiceOnlyTemplateOperation(props) {
         ...operations[operations.length - 1],
         header:
           "Operation " +
-          formatOperationNum(operations[operations.length - 1].operationNumber) +
+          formatOperationNum(
+            operations[operations.length - 1].operationNumber
+          ) +
           " - " +
           operations[operations.length - 1].description,
       });
@@ -276,7 +280,22 @@ function ServiceOnlyTemplateOperation(props) {
       setActiveElement({ ...activeElement, name: "segment" });
     }
   };
-
+  // To indicate whether operation price will be included in total price
+  const handleChangeSwitch = (event) => {
+    setOperationData({
+      ...operationData,
+      requiredIndicator: event.target.checked,
+    });
+    // updateOperation(activeElement.sId, {
+    //   requiredIndicator: event.target.checked,
+    // })
+    //   .then((result) => {
+    //     handleSnack("success", "Segment updated successfully!");
+    //   })
+    //   .catch((e) => {
+    //     handleSnack("error", "Error occured while updating the details!");
+    //   });
+  };
   return (
     <>
       <CustomizedSnackbar
@@ -332,8 +351,27 @@ function ServiceOnlyTemplateOperation(props) {
           <div className="hr"></div>
         </h5>
         {operationLoading ? (
-          <LoadingProgress/>
-        ) : !operationViewOnly ? (
+          <LoadingProgress />
+        ) : <>
+        <div className="col-md-12 col-sm-12">
+          <div className=" d-flex justify-content-between align-items-center">
+            <div>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={operationData.requiredIndicator}
+                      onChange={handleChangeSwitch}
+                      name="operationRequired"
+                    />
+                  }
+                  label="REQUIRED"
+                />
+              </FormGroup>
+            </div>
+          </div>
+        </div>
+        {!operationViewOnly ? (
           <>
             <div className="row mt-4 input-fields">
               <div className="col-md-4 col-sm-4">
@@ -395,26 +433,6 @@ function ServiceOnlyTemplateOperation(props) {
                   />
                 </div>
               </div>
-
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600">
-                    MODIFIER
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control border-radius-10"
-                    value={operationData.modifier}
-                    onChange={(e) =>
-                      setOperationData({
-                        ...operationData,
-                        modifier: e.target.value,
-                      })
-                    }
-                    placeholder="Optional"
-                  />
-                </div>
-              </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600">
@@ -450,7 +468,9 @@ function ServiceOnlyTemplateOperation(props) {
                     operationData.jobCode &&
                     operationData.jobCodeDescription &&
                     operationData.description
-                  ) || noOptionsCompCode || noOptionsJobCode
+                  ) ||
+                  noOptionsCompCode ||
+                  noOptionsJobCode
                 }
               >
                 Save
@@ -511,12 +531,6 @@ function ServiceOnlyTemplateOperation(props) {
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">MODIFIER </p>
-                  <h6 className="font-weight-600">{operationData.modifier}</h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
                   <p className="font-size-12 font-weight-500 mb-2">
                     DESCRIPTION
                   </p>
@@ -538,7 +552,11 @@ function ServiceOnlyTemplateOperation(props) {
               <button
                 // to="/RepairServiceEstimate"
                 onClick={() =>
-                  setActiveElement({ ...activeElement, name: "service", oId: operationData.id })
+                  setActiveElement({
+                    ...activeElement,
+                    name: "service",
+                    oId: operationData.id,
+                  })
                 }
                 className="btn bg-primary text-white ml-2"
               >
@@ -549,7 +567,8 @@ function ServiceOnlyTemplateOperation(props) {
               </button>
             </div>
           </React.Fragment>
-        )}
+        )} 
+        </>}
       </div>
     </>
   );

@@ -71,8 +71,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import Validator from "../../utils/validator";
 
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-
 import DataTable from "react-data-table-component";
 
 import boxicon from "../../assets/icons/png/box.png";
@@ -221,8 +219,6 @@ export function CreatePortfolio(props) {
 
   const [disable, setDisable] = useState(true);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
-  const [bundleServiceNeed, setBundleServiceNeed] = useState(false)
-  const [createdBundleItems, setCreatedBundleItems] = useState("");
 
   const [makeKeyValue, setMakeKeyValue] = useState([]);
   const [modelKeyValue, setModelKeyValue] = useState([]);
@@ -270,7 +266,7 @@ export function CreatePortfolio(props) {
   const [isView, setIsView] = useState(false); //Use for show data into label format
   const [showExitPrompt, setShowExitPrompt] = useState(true);
   const [createNewBundle, setCreateNewBundle] = useState(false);
-  const [openSearchSolution, setOpenSearchSolution] = useState(false);
+  const [openSearchSolution, setOpenSearchSolution] = useState(true);
   const [typeOfSearch, setTypeOfSearch] = useState(null);
   const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null);
   const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([
@@ -7407,9 +7403,8 @@ export function CreatePortfolio(props) {
     setEditItemShow(true);
   };
 
-  const getAddPortfolioItemDataFun = async (data) => {
+  const getAddportfolioItemDataFun = async (data) => {
     setAddportFolioItem(data);
-    setCreatedBundleItems(data)
     // console.log("data------ : ", data)
 
     const rObj = {
@@ -14673,26 +14668,16 @@ export function CreatePortfolio(props) {
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
-                  <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
-                  <Tab
-                    label="Service/Bundle"
-                    value="2"
-                    disabled={bundleServiceNeed}
-                  />
-                  <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
+                  <Tab label="Service/Bundle" value="2" />
                   {/* <Tab label="Solution" value="3" /> */}
                   {/*use it in useCase-4 */}
                   {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />}
-                  {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" &&
-                    <div className="align-items-center d-flex justidy-content-center">
-                      <ArrowForwardIosIcon />
-                    </div>}
                   <Tab label="Price Calculator" value="5" />
-                  <div className="align-items-center d-flex justidy-content-center"><ArrowForwardIosIcon /></div>
                   <Tab label="Review" value="6" />
                 </TabList>
               </Box>
               <TabPanel value="1">
+
                 {!portfolioItemDataEditable ?
                   <>
                     <AddPortfolioItem
@@ -14712,6 +14697,7 @@ export function CreatePortfolio(props) {
                       compoFlagTest="itemEditPort"
                     />
                   </>}
+
               </TabPanel>
               <TabPanel value="2">
                 <QuerySearchComp
