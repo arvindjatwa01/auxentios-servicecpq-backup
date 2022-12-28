@@ -1295,6 +1295,9 @@ const AddPortfolioItem = (props) => {
 
     try {
       if (tabs == "itemSummary") {
+        console.log("addPortFolioItem?.kitDescription : ", addPortFolioItem?.kitDescription)
+        console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId)
+        console.log("addPortFolioItem.repairOption : ", addPortFolioItem.repairOption)
         if ((props.compoFlag === "ITEM")) {
 
           if ((addPortFolioItem.name == "") ||
@@ -1396,7 +1399,7 @@ const AddPortfolioItem = (props) => {
         }
 
         if ((props.compoFlag == "itemEdit")) {
-          if ((addPortFolioItem.templateId == "") ||
+          if ((addPortFolioItem.templateId == "") &&
             (addPortFolioItem.repairOption == "")) {
             setTabs("relatedTemplate")
           } else if ((addPortFolioItem.templateId != "")) {
@@ -2737,7 +2740,9 @@ const AddPortfolioItem = (props) => {
                   />
                 </div>
               </div> */}
-                  {props.compoFlag == "ITEM" ?
+                  {(props.compoFlag == "ITEM") ||
+                    (props.compoFlag == "itemEdit" &&
+                      props.compoFlagTest == "itemEditPort") ?
                     <>
                       <div className="col-md-6 col-sm-6">
                         <div className="form-group w-100">
@@ -2813,7 +2818,7 @@ const AddPortfolioItem = (props) => {
                   /> */}
                     </div>
                   </div>
-                  {props.compoFlag == "ITEM" ?
+                  {(props.compoFlag == "ITEM") ?
                     <div className="col-md-6 col-sm-6 checkbox-input">
                       <div class="form-group form-check">
                         <label class="form-check-label" for="exampleCheck1">
@@ -2821,6 +2826,7 @@ const AddPortfolioItem = (props) => {
                             type="checkbox"
                             class="form-check-input"
                             id="exampleCheck1"
+                            checked={noNeedBundleService}
                             onChange={(e) => BundleServiceItemsNeed(e)}
                           />I don’t need bundles / services</label>
                       </div>
@@ -3822,7 +3828,7 @@ const AddPortfolioItem = (props) => {
                         className="form-control text-primary border-radius-10"
                         name="repairOption"
                         placeholder="KIT DESCRIPTION"
-                        value={addPortFolioItem.kitDescription}
+                        value={addPortFolioItem.kitDescription?.value}
                         onChange={(e) => handleRelatedKitInputSearch(e)}
                         disabled
                       />
