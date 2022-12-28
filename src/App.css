@@ -3618,3 +3618,26 @@ input[type="checkbox"]:checked:after {
   min-width: 120px !important;
 }
 .border-radius-5{border-radius: 5px !important;}
+.green-custom-btn .css-1s2u09g-control {
+  font-size: 0.76563rem;
+  line-height: 1.5;
+  border-radius: 0;
+  min-height: auto;
+  background: transparent;
+  padding: 0 10px;
+}
+.green-custom-btn .css-qc6sy-singleValue {
+  color: #fff !important;
+}
+.green-custom-btn .css-tlfecz-indicatorContainer {
+  color: #fff !important;
+}
+.green-custom-btn .css-1s2u09g-control {
+  background: transparent !important;
+}
+.green-custom-btn .css-1pahdxg-control {
+  background: transparent;
+  border-radius: 0;
+  border: none;
+}
+.green-custom-btn .css-1s2u09g-control {border: none;}

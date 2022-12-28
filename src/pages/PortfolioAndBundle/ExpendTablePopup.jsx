@@ -495,6 +495,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             placeholder="Service/Bundle ID"
                             disabled
                         />
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -516,6 +517,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             // onChange={handlePriceMethodSelect}
                             autoComplete="off"
                         />
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -552,6 +554,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             // onChange={handleExpandePriceChange}
                             autoComplete="off"
                         />
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -580,9 +583,9 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             // value={expandedPriceCalculator.priceAdditionalSelect}
                             // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
                             />
-
+                        
                         </div>
-
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -607,6 +610,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
                             <span className="hours-div">hours</span>
                         </div>
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
 
@@ -625,6 +629,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         // value={expandedPriceCalculator.numberOfEvents}
                         // onChange={handleExpandePriceChange}
                         />
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
             </div>
@@ -645,6 +650,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             // onChange={handlePriceMethodSelect}
                             onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
                         />
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -723,6 +729,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         // value={expandedPriceCalculator.calculatedPrice}
                         // onChange={handleExpandePriceChange}
                         />
+                        <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">

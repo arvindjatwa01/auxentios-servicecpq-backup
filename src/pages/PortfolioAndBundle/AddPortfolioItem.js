@@ -100,6 +100,82 @@ const AddPortfolioItem = (props) => {
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
     []
   );
+  const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null);
+  const [typeOfSearchColumnKeyValue, setTypeOfSearchColumnKeyValue] = useState([
+    { label: "Make", value: "make" },
+    { label: "Model", value: "model" },
+    { label: "Prefix", value: "prefix" },
+  ]);
+  const handleTypeOfSearchColumnChange = (e) => {
+    setTypeOfSearchColumn(e);
+    if (e == null) {
+      setColumnSearchText("");
+    }
+  };
+  const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("");
+  const [openSearchSolution, setOpenSearchSolution] = useState(true);
+  const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([
+    { label: "Bundle", value: "bundle" },
+    { label: "Service", value: "service" },
+    { label: "Portfolio Item", value: "portfolioItem" },
+  ]);
+  const handleTypeOfSearchChange = (e) => {
+    setTypeOfSearch(e);
+    if (e == null) {
+      setColumnSearchText("");
+    }
+  };
+  const [portfolioCoverage, setPortfolioCoverage] = useState([]);
+  const [createNewBundle, setCreateNewBundle] = useState(false);
+  const [tempBundleItems, setTempBundleItems] = useState([]);
+  const [value2, setValue2] = useState({
+    value: "DRAFT",
+    label: "Draft",
+  });
+  const [value3, setValue3] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
+  const [portfolioEscalationPriceDataId, setPortfolioEscalationPriceDataId] = useState({})
+  const [administrative, setAdministrative] = useState({
+    preparedBy: null,
+    approvedBy: null,
+    preparedOn: new Date(),
+    revisedBy: null,
+    revisedOn: new Date(),
+    salesOffice: null,
+    offerValidity: null,
+  });
+  const [portfolioAdditionalPriceDataId, setPortfolioAdditionalPriceDataId] = useState({})
+  const [portfolioPriceDataId, setPortfolioPriceDataId] = useState({})
+  const [portfolioItems, setPortfolioItems] = useState([]);
+  const [stratgyGeographicKeyValue, setStratgyGeographicKeyValue] = useState(
+    []
+  );
+  const [stratgyHierarchyKeyValue, setStratgyHierarchyKeyValue] = useState([]);
+  const [stratgyResponseTimeKeyValue, setStratgyResponseTimeKeyValue] =
+    useState([]);
+  const [createdItemsIdData, setCreatedItemsIdData] = useState([]);
+  const [currentItemId, setCurrentItemId] = useState();
+  const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
+    id: "",
+    description: "",
+    bundleFlag: "",
+    reference: "",
+    customerSegment: "",
+    make: "",
+    models: "",
+    prefix: "",
+    machine: "",
+    additional: "",
+  });
+  const [openAddBundleItem, setOpenAddBundleItem] = useState(false);
+  const [generalComponentData, setGeneralComponentData] = useState({
+    name: "",
+    description: "",
+    serviceDescription: "",
+    externalReference: "",
+    customerSegment: null,
+    items: [],
+    coverages: [],
+  });
   const [modelShowForTemplate, setModelShowForTemplate] = useState(false);
   const [noNeedBundleService, setNoNeedBundleService] = useState(false);
   const [editAbleItemPrice, setEditAbleItemPrice] = useState({
@@ -162,6 +238,383 @@ const AddPortfolioItem = (props) => {
     //   },
     // ]);
     // setCount(count + 1);
+  };
+  const handleBundleItemSaveAndContinue = async (data, itemPriceData) => {
+
+
+    try {
+      // let reqObj = {
+      //   itemId: 0,
+      //   itemName: addPortFolioItem.name,
+      //   itemHeaderModel: {
+      //     itemHeaderId: 0,
+      //     // itemHeaderId: parseInt(generalComponentData.portfolioId),
+      //     // itemHeaderDescription: generalComponentData.description,
+      //     itemHeaderDescription: addPortFolioItem.headerdescription,
+      //     bundleFlag: "PORTFOLIO",
+      //     reference: generalComponentData.externalReference,
+      //     itemHeaderMake: "",
+      //     itemHeaderFamily: "",
+      //     model: "",
+      //     prefix: "",
+      //     type: "MACHINE",
+      //     additional: "",
+      //     currency: "",
+      //     netPrice: 0,
+      //     itemProductHierarchy: generalComponentData.productHierarchy,
+      //     itemHeaderGeographic: generalComponentData.geographic,
+      //     responseTime: generalComponentData.responseTime,
+      //     usage: "",
+      //     validFrom: generalComponentData.validFrom,
+      //     validTo: generalComponentData.validTo,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "NEW",
+      //   },
+      //   itemBodyModel: {
+      //     itemBodyId: parseInt(addPortFolioItem.id),
+      //     itemBodyDescription: addPortFolioItem.description,
+      //     quantity: parseInt(addPortFolioItem.quantity),
+      //     startUsage: priceCalculator.startUsage,
+      //     endUsage: priceCalculator.endUsage,
+      //     standardJobId: "",
+      //     frequency: addPortFolioItem.frequency.value,
+      //     additional: "",
+      //     spareParts: ["WITH_SPARE_PARTS"],
+      //     labours: ["WITH_LABOUR"],
+      //     miscellaneous: ["LUBRICANTS"],
+      //     taskType: [addPortFolioItem.taskType.value],
+      //     solutionCode: "",
+      //     usageIn: addPortFolioItem.usageIn.value,
+      //     recommendedValue: 0,
+      //     usage: "",
+      //     repairKitId: "",
+      //     templateDescription: addPortFolioItem.description.value,
+      //     partListId: "",
+      //     serviceEstimateId: "",
+      //     numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
+      //     repairOption: addPortFolioItem.repairOption.value,
+      //     priceMethod: "LIST_PRICE",
+      //     listPrice: parseInt(priceCalculator.listPrice),
+      //     priceEscalation: "",
+      //     calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+      //     flatPrice: parseInt(priceCalculator.flatPrice),
+      //     discountType: "",
+      //     // year: priceCalculator.priceYear.value,
+      //     year: addPortFolioItem.year,
+      //     avgUsage: 0,
+      //     unit: addPortFolioItem.unit.value,
+      //     sparePartsPrice: 0,
+      //     sparePartsPriceBreakDownPercentage: 0,
+      //     servicePrice: 0,
+      //     servicePriceBreakDownPercentage: 0,
+      //     miscPrice: 0,
+      //     miscPriceBreakDownPercentage: 0,
+      //     totalPrice: 0,
+      //   },
+      // };
+
+      //  Old Todo
+      // let reqObj = {
+      //   itemId: 0,
+      //   itemName: data.name,
+      //   itemHeaderModel: {
+      //     itemHeaderId: 0,
+      //     // itemHeaderId: parseInt(generalComponentData.portfolioId),
+      //     // itemHeaderDescription: generalComponentData.description,
+      //     itemHeaderDescription: data.headerdescription,
+      //     bundleFlag: "PORTFOLIO",
+      //     reference: generalComponentData.externalReference,
+      //     itemHeaderMake: "",
+      //     itemHeaderFamily: "",
+      //     model: "",
+      //     prefix: "",
+      //     type: "MACHINE",
+      //     additional: "",
+      //     currency: "",
+      //     netPrice: 0,
+      //     itemProductHierarchy: generalComponentData.productHierarchy,
+      //     itemHeaderGeographic: generalComponentData.geographic,
+      //     responseTime: generalComponentData.responseTime,
+      //     usage: "",
+      //     validFrom: generalComponentData.validFrom,
+      //     validTo: generalComponentData.validTo,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "DRAFT",
+      //   },
+      //   itemBodyModel: {
+      //     itemBodyId: parseInt(data.id),
+      //     itemBodyDescription: data.description,
+      //     quantity: parseInt(data.quantity),
+      //     startUsage: priceCalculator.startUsage,
+      //     endUsage: priceCalculator.endUsage,
+      //     standardJobId: "",
+      //     frequency: data.frequency.value,
+      //     additional: "",
+      //     spareParts: ["WITH_SPARE_PARTS"],
+      //     labours: ["WITH_LABOUR"],
+      //     miscellaneous: ["LUBRICANTS"],
+      //     taskType: [data.taskType.value],
+      //     solutionCode: "",
+      //     usageIn: data.usageIn.value,
+      //     recommendedValue: 0,
+      //     usage: "",
+      //     repairKitId: "",
+      //     templateDescription: data.description.value,
+      //     partListId: "",
+      //     serviceEstimateId: "",
+      //     numberOfEvents: parseInt(data.numberOfEvents),
+      //     repairOption: data.repairOption.value,
+      //     priceMethod: "LIST_PRICE",
+      //     listPrice: parseInt(priceCalculator.listPrice),
+      //     priceEscalation: "",
+      //     calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+      //     flatPrice: parseInt(priceCalculator.flatPrice),
+      //     discountType: "",
+      //     // year: priceCalculator.priceYear.value,
+      //     year: data.year,
+      //     avgUsage: 0,
+      //     unit: data.unit.value,
+      //     sparePartsPrice: 0,
+      //     sparePartsPriceBreakDownPercentage: 0,
+      //     servicePrice: 0,
+      //     servicePriceBreakDownPercentage: 0,
+      //     miscPrice: 0,
+      //     miscPriceBreakDownPercentage: 0,
+      //     totalPrice: 0,
+      //   },
+      // };
+
+      // New Todo
+      let reqObj = {
+        itemId: 0,
+        itemName: data.name,
+        itemHeaderModel: {
+          itemHeaderId: 0,
+          itemHeaderDescription: data.headerdescription,
+          bundleFlag: "PORTFOLIO",
+          portfolioItemId: 0,
+          reference: generalComponentData.externalReference,
+          itemHeaderMake: data?.make,
+          itemHeaderFamily: data?.family,
+          model: data.model,
+          prefix: data.prefix,
+          type: "MACHINE",
+          additional: "",
+          currency: "",
+          netPrice: 0,
+          itemProductHierarchy: "END_PRODUCT",
+          itemHeaderGeographic: "ONSITE",
+          responseTime: "PROACTIVE",
+          usage: "",
+          validFrom: generalComponentData.validFrom,
+          validTo: generalComponentData.validTo,
+          estimatedTime: "",
+          servicePrice: 0,
+          status: "DRAFT",
+          itemHeaderStrategy: data.strategyTask !== "" ? data.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
+          componentCode: "",
+          componentDescription: "",
+          serialNumber: "",
+          variant: "",
+          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+          jobCode: "",
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          salesOffice: administrative.branch,
+          offerValidity: administrative.offerValidity
+        },
+        itemBodyModel: {
+          itemBodyId: 0,
+          itemBodyDescription: data.description,
+          frequency: data.frequency != "" ? data.frequency?.value : "once",
+          spareParts: ["WITH_SPARE_PARTS"],
+          labours: ["WITH_LABOUR"],
+          miscellaneous: ["LUBRICANTS"],
+          taskType: data.taskType != "" ? [data.taskType.value] : ["PM1"],
+          solutionCode: "",
+          usageIn: data.usageIn != "" ? data.usageIn.value : "REPAIR_OR_REPLACE",
+          recommendedValue: parseInt(data.recommendedValue),
+          usage: "",
+          year: data.year,
+          avgUsage: 0,
+          unit: data.unit != "" ? data.unit?.value : "",
+          itemPrices: [
+            {
+              itemPriceDataId: itemPriceData.itemPriceDataId
+            }
+          ],
+        }
+      }
+
+      console.log("new reqObj : 12345 ----- : ", reqObj)
+
+      console.log("requested obj : ", reqObj);
+      console.log("requested obj 2 : ", addPortFolioItem);
+      const itemRes = await itemCreation(reqObj);
+      if (itemRes.status !== 200) {
+        throw "Something went wrong/Item not created"
+      }
+      setCurrentItemId(itemRes.data.itemId);
+      setCreatedItemsIdData([...createdItemsIdData, itemRes.data.itemId]);
+      const _generalComponentData = { ...generalComponentData };
+      _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
+      var _itemArrData = [...portfolioItems];
+      _itemArrData.push({ itemId: itemRes.data.itemId })
+      setPortfolioItems(_itemArrData);
+      // put API for porfolio update Item id
+      // call here
+      const { portfolioId, ...res } = generalComponentData;
+      let obj = {
+        ...res,
+        visibleInCommerce: true,
+        customerId: 0,
+        lubricant: true,
+        customerSegment: generalComponentData.customerSegment
+          ? generalComponentData.customerSegment.value
+          : "EMPTY",
+        machineType: generalComponentData.machineType
+          ? generalComponentData.machineType
+          : "EMPTY",
+        strategyTask: generalComponentData.strategyTask
+          ? generalComponentData.strategyTask
+          : "EMPTY",
+        taskType: generalComponentData.taskType
+          ? generalComponentData.taskType
+          : "EMPTY",
+        usageCategory: generalComponentData.usageCategory
+          ? generalComponentData.usageCategory
+          : "EMPTY",
+        productHierarchy: generalComponentData.productHierarchy
+          ? generalComponentData.productHierarchy
+          : "EMPTY",
+        geographic: generalComponentData.geographic
+          ? generalComponentData.geographic
+          : "EMPTY",
+        availability: generalComponentData.availability
+          ? generalComponentData.availability
+          : "EMPTY",
+        responseTime: generalComponentData.responseTime
+          ? generalComponentData.responseTime
+          : "EMPTY",
+        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+        application: generalComponentData.application
+          ? generalComponentData.application
+          : "EMPTY",
+        contractOrSupport: generalComponentData.contractOrSupport
+          ? generalComponentData.contractOrSupport
+          : "EMPTY",
+        lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+          ? generalComponentData.lifeStageOfMachine
+          : "EMPTY",
+        supportLevel: generalComponentData.supportLevel
+          ? generalComponentData.supportLevel
+          : "EMPTY",
+        customerGroup: generalComponentData.customerGroup
+          ? generalComponentData.customerGroup
+          : "EMPTY",
+        searchTerm: "EMPTY",
+
+        usageCategory: categoryUsageKeyValue1.value
+          ? categoryUsageKeyValue1.value : "EMPTY",
+        strategyTask: stratgyTaskUsageKeyValue.value ?
+          stratgyTaskUsageKeyValue.value : "EMPTY",
+        taskType: stratgyTaskTypeKeyValue.value ?
+          stratgyTaskTypeKeyValue.value : "EMPTY",
+        responseTime: stratgyResponseTimeKeyValue.value ?
+          stratgyResponseTimeKeyValue.value : "EMPTY",
+        productHierarchy: stratgyHierarchyKeyValue.value ?
+          stratgyHierarchyKeyValue.value : "EMPTY",
+        geographic: stratgyGeographicKeyValue.value ?
+          stratgyGeographicKeyValue.value : "EMPTY",
+
+        preparedBy: administrative.preparedBy,
+        approvedBy: administrative.approvedBy,
+        preparedOn: administrative.preparedOn,
+        revisedBy: administrative.revisedBy,
+        revisedOn: administrative.revisedOn,
+        offerValidity: administrative.offerValidity?.value,
+        salesOffice: administrative.salesOffice?.value,
+
+        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+          ? portfolioPriceDataId : null,
+        additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+          ? portfolioAdditionalPriceDataId : null,
+        escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+          ? portfolioEscalationPriceDataId : null,
+
+        supportLevel: value3.value,
+        status: value2.value,
+
+        items: _itemArrData,
+        coverages: portfolioCoverage,
+
+      };
+      if (generalComponentData.portfolioId) {
+        const updatePortfolioRes = await updatePortfolio(
+          generalComponentData.portfolioId,
+          obj
+        );
+        if (updatePortfolioRes.status === 200) {
+          toast(`👏 Portfolio <${generalComponentData.name}> saved Successfully`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          throw `${updatePortfolioRes.status}:Something went wrong`;
+        }
+        // if (updatePortfolioRes.status != 200) {
+        //   throw `${updatePortfolioRes.status}:Something went wrong`;
+        // }
+      }
+
+      setGeneralComponentData(_generalComponentData);
+      setTempBundleItems([...tempBundleItems, itemRes.data]);
+
+      setOpenAddBundleItem(false);
+      setOpenSearchSolution(false);
+    } catch (error) {
+      console.log("error in item creation err:", error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+  };
+  const [columnSearchText, setColumnSearchText] = useState("");
+  const [typeOfSearch, setTypeOfSearch] = useState(null);
+  const handleCreateNewServiceBundle = () => {
+    if (typeOfSearch.value == "bundle") {
+      setOpenAddBundleItem(false);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(true);
+      setOpenAddBundleItemHeader("Add New Bundle");
+    } else if (typeOfSearch.value == "service") {
+      setOpenAddBundleItem(true);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(false);
+      setOpenAddBundleItemHeader("Add New Service");
+    } else if (typeOfSearch.value == "portfolioItem") {
+      setOpenAddBundleItem(true);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(false);
+      setOpenAddBundleItemHeader("Add New Portfolio Item");
+    }
   };
   const [selectedItemType, setSelectedItemType] = useState("");
   const [portfolioItemData, setPortfolioItemData] = useState([]);
@@ -3003,6 +3456,245 @@ const AddPortfolioItem = (props) => {
                     </div>
                   </div>
                 </div>
+                {modelShowForTemplate ?
+                  <>
+                    {/* <div className="mt-3 p-2 bg-primary" >
+                      <div className="d-flex justify-content-between align-items-center w-100 mr-5">
+                        <div className="row align-items-center m-0">
+                          {querySearchSelector.map((obj, i) => {
+                            return (
+                              <>
+                                <div className="customselect border-white d-flex align-items-center mr-3 my-2 border-radius-10">
+                                  {i === 0 ?
+                                    <>
+                                      <Select
+                                        placeholder="Select Type."
+                                        options={([
+                                          { label: "Portfolio", value: "PORTFOLIO" },
+                                          { label: "Bundle", value: "BUNDLE_ITEM" },
+                                          { label: "Service", value: "SERVICE" },
+
+                                        ])}
+                                        value={querySearchSelector.itemType}
+                                        onChange={(e) => handleItemType(e, i)}
+                                      />
+                                    </>
+                                    : <></>}
+                                  {i > 0 ? (
+                                    <Select
+                                      isClearable={true}
+                                      defaultValue={{ label: "AND", value: "AND" }}
+                                      options={[
+                                        { label: "AND", value: "AND", id: i },
+                                        { label: "OR", value: "OR", id: i },
+                                      ]}
+                                      placeholder="AND/OR"
+                                      onChange={(e) => handleOperator(e, i)}
+                                      value={obj.selectOperator}
+                                    />
+                                  ) : (
+                                    <></>
+                                  )}
+
+                                  <div>
+                                    <Select
+                                      options={familySelectOption}
+                                      onChange={(e) => handleFamily(e, i)}
+                                      value={obj.selectFamily}
+                                    />
+                                  </div>
+                                  <div className="customselectsearch">
+                                    <input
+                                      className="custom-input-sleact pr-1"
+                                      type="text"
+                                      placeholder="Search string"
+                                      value={obj.inputSearch}
+                                      onChange={(e) => handleInputSearch(e, i)}
+                                      id={"inputSearch-" + i}
+                                      autoComplete="off"
+                                    />
+
+                                    {
+                                      <ul
+                                        className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                        id="style"
+                                      >
+                                        {obj.selectOptions.map((currentItem, j) => (
+                                          <li
+                                            className="list-group-item"
+                                            key={j}
+                                            onClick={(e) =>
+                                              handleSearchListClick(
+                                                e,
+                                                currentItem,
+                                                obj,
+                                                i
+                                              )
+                                            }
+                                          >
+                                            {currentItem}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    }
+
+                                  </div>
+                                  <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                                    <SearchIcon /><span className="ml-1">Search</span>
+                                  </Link>
+                                </div>
+                              </>
+                            );
+                          })}
+                          <div onClick={(e) => addSearchQuerryHtml(e)}>
+                            <Link
+                              to="#"
+                              className="btn-sm text-white border mr-2"
+                              style={{ border: "1px solid #872FF7" }}
+                            >
+                              +
+                            </Link>
+                          </div>
+                          <div onClick={handleDeletQuerySearch}>
+                            <Link to="#" className="btn-sm border">
+                              <svg
+                                data-name="Layer 41"
+                                id="Layer_41"
+                                fill="white"
+                                viewBox="0 0 50 50"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <title />
+                                <path
+                                  className="cls-1"
+                                  d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                />
+                                <path
+                                  class="cls-1"
+                                  d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                />
+                                <path
+                                  class="cls-1"
+                                  d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                />
+                              </svg>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div> */}
+                    <div className="maintableheader py-3 px-2 bg-primary mt-3 border-radius-10">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center">
+                          <div className="customselect d-flex align-items-center border-white border-radius-10 d-flex ml-3">
+                            {/* <span>
+                                        <a href="#" className="btn-sm">+</a>
+                                    </span> */}
+                            <Select
+                              onChange={handleTypeOfSearchChange}
+                              isClearable={true}
+                              className="p-2"
+                              value={typeOfSearch}
+                              options={columnSearchKeyValue}
+                              placeholder="Add by"
+                            />
+                              {typeOfSearch != null ? (
+                            <div className="customselect d-flex align-items-center border-radius-10 d-flex ml-3">
+                              <span>
+                                <a href="#" className="btn-sm">
+                                  +
+                                </a>
+                              </span>
+                              <Select
+                                onChange={handleTypeOfSearchColumnChange}
+                                isClearable={true}
+                                value={typeOfSearchColumn}
+                                options={typeOfSearchColumnKeyValue}
+                                placeholder="Select"
+                              />
+                              {typeOfSearchColumn != null ? (
+                                // <></>
+                                <input
+                                  type="email"
+                                  className="mr-2"
+                                  id="exampleInputEmail1"
+                                  aria-describedby="emailHelp"
+                                  placeholder="Enter text"
+                                  style={{
+                                    border: "none",
+                                    background: "transparent",
+                                    width: "95px",
+                                    fontWeight: "600",
+                                    paddingLeft: "10px",
+                                  }}
+                                  value={columnSearchText}
+                                  onChange={(e) => setColumnSearchText(e.target.value)}
+                                ></input>
+                              ) : (
+                                <></>
+                              )}
+                              <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                                    <SearchIcon /><span className="ml-1">Search</span>
+                                  </Link>
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                          </div>
+                        
+                        </div>
+                        <div>
+                        </div>
+                      </div>
+                      {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
+                        <div className="tableheader">
+                          <ul
+                            className="submenu accordion mt-2"
+                            style={{ display: "block" }}
+                          >
+                            <li>
+                              <a className="result cursor">RESULTS</a>
+                            </li>
+                            <li>
+                              <a
+                                className="cursor"
+                                onClick={handleBundleItemSaveAndContinue}
+                              >
+                                PM125
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                className="cursor"
+                                onClick={handleBundleItemSaveAndContinue}
+                              >
+                                PM2
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                onClick={handleCreateNewServiceBundle}
+                                className="lastOption text-violet cursor"
+                              >
+                                <span className="mr-2">+</span>Create New{" "}
+                                {typeOfSearch != null
+                                  ? typeOfSearch.value == "bundle"
+                                    ? "Bundle"
+                                    : typeOfSearch.value == "service"
+                                      ? "Service"
+                                      : typeOfSearch.value == "portfolioItem"
+                                        ? "Portfolio Item"
+                                        : ""
+                                  : ""}
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </> : <></>}
               </>}
 
 
@@ -3207,154 +3899,6 @@ const AddPortfolioItem = (props) => {
           </div>
         )}
       </div>
-      <Modal
-        size="xl"
-        show={modelShowForTemplate}
-        onHide={() => setModelShowForTemplate(false)}
-      >
-        <Modal.Body className="bg-primary">
-          <div className="d-flex justify-content-between align-items-center w-100 mr-5">
-            <div className="row align-items-center m-0">
-              {querySearchSelector.map((obj, i) => {
-                return (
-                  <>
-                    <div className="customselect border-white d-flex align-items-center mr-3 my-2 border-radius-10">
-                      {i === 0 ?
-                        <>
-                          <Select
-                            placeholder="Select Type."
-                            options={([
-                              { label: "Portfolio", value: "PORTFOLIO" },
-                              { label: "Bundle", value: "BUNDLE_ITEM" },
-                              { label: "Service", value: "SERVICE" },
-
-                            ])}
-
-                            // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
-                            value={querySearchSelector.itemType}
-                            onChange={(e) => handleItemType(e, i)}
-                          // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
-                          />
-                          {/* <Select
-                                    options={[
-                                      { label: "AND", value: "AND" },
-                                      { label: "OR", value: "OR" },
-                                    ]}
-                                    disabled
-                                    placeholder="And"
-                                  // value={querySearchSelector.itemTypeOperator}
-                                  // onChange={(e) => handleitemTypeOperator(e, i)}
-                                  /> */}
-                        </>
-                        : <></>}
-                      {i > 0 ? (
-                        <Select
-                          isClearable={true}
-                          defaultValue={{ label: "AND", value: "AND" }}
-                          options={[
-                            { label: "AND", value: "AND", id: i },
-                            { label: "OR", value: "OR", id: i },
-                          ]}
-                          // placeholder="&amp;"
-                          placeholder="AND/OR"
-                          onChange={(e) => handleOperator(e, i)}
-                          // value={querySearchOperator[i]}
-                          value={obj.selectOperator}
-                        />
-                      ) : (
-                        <></>
-                      )}
-
-                      <div>
-                        <Select
-                          // isClearable={true}
-                          options={familySelectOption}
-                          onChange={(e) => handleFamily(e, i)}
-                          value={obj.selectFamily}
-                        />
-                      </div>
-                      <div className="customselectsearch">
-                        <input
-                          className="custom-input-sleact pr-1"
-                          type="text"
-                          placeholder="Search string"
-                          value={obj.inputSearch}
-                          onChange={(e) => handleInputSearch(e, i)}
-                          id={"inputSearch-" + i}
-                          autoComplete="off"
-                        />
-
-                        {
-                          <ul
-                            className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                            id="style"
-                          >
-                            {obj.selectOptions.map((currentItem, j) => (
-                              <li
-                                className="list-group-item"
-                                key={j}
-                                onClick={(e) =>
-                                  handleSearchListClick(
-                                    e,
-                                    currentItem,
-                                    obj,
-                                    i
-                                  )
-                                }
-                              >
-                                {currentItem}
-                              </li>
-                            ))}
-                          </ul>
-                        }
-
-                      </div>
-                      <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
-                        <SearchIcon /><span className="ml-1">Search</span>
-                      </Link>
-                    </div>
-                  </>
-                );
-              })}
-              <div onClick={(e) => addSearchQuerryHtml(e)}>
-                <Link
-                  to="#"
-                  className="btn-sm text-white border mr-2"
-                  style={{ border: "1px solid #872FF7" }}
-                >
-                  +
-                </Link>
-              </div>
-              <div onClick={handleDeletQuerySearch}>
-                <Link to="#" className="btn-sm border">
-                  <svg
-                    data-name="Layer 41"
-                    id="Layer_41"
-                    fill="white"
-                    viewBox="0 0 50 50"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <title />
-                    <path
-                      className="cls-1"
-                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                    />
-                    <path
-                      class="cls-1"
-                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                    />
-                    <path
-                      class="cls-1"
-                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                    />
-                  </svg>
-                  {/* <DeleteIcon className="font-size-16" /> */}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
       {/* <ToastContainer /> */}
     </>
   );
