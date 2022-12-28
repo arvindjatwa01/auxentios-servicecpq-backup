@@ -3618,3 +3618,7 @@ input[type="checkbox"]:checked:after {
   min-width: 120px !important;
 }
 .border-radius-5{border-radius: 5px !important;}
+.required:after {
+  content:" *";
+  color: red;
+}

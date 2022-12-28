@@ -5,7 +5,7 @@ const SearchBox = (props) => {
       <input
         type="text"
         className="form-control border-radius-10 text-primary"
-        placeholder="Search (Required)"
+        // placeholder="Search (Required)"
         value={props.value}
         autoComplete="off"
         onChange={props.onChange}

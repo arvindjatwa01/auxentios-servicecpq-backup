@@ -89,7 +89,7 @@ import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 function ServiceOnlyTemplateEstimation(props) {
-  const { activeElement, setActiveElement } = props.builderDetails;
+  const { activeElement, setActiveElement } = props.templateDetails;
   const [serviceEstHeaderLoading, setServiceEstHeaderLoading] = useState(true);
   const [searchResultConsOpen, setSearchResultConsOpen] = useState(false);
   const [searchResultExtWorkOpen, setSearchResultExtWorkOpen] = useState(false);

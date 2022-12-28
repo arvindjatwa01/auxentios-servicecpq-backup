@@ -2002,6 +2002,7 @@ function WithoutSparePartsHeader(props) {
                               name: "segment",
                               bId,
                               sId: element.id,
+                              builderStatus: selBuilderStatus?.value
                             })
                           }
                         >

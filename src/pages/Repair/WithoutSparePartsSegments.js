@@ -18,6 +18,7 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_SEGMENT } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
+import { ReadOnlyField } from "./components/ReadOnlyField";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
@@ -57,6 +58,7 @@ function WithoutSpareParts(props) {
     componentCode: "",
     description: "",
     id: "",
+    jobCodeDescription: ""
   };
   const [segmentData, setSegmentData] = useState(newSegment);
   useEffect(() => {
@@ -78,20 +80,7 @@ function WithoutSpareParts(props) {
               ...segmentToLoad,
               header: formatSegmentHeader(segmentToLoad),
             });
-            if (activeElement.sId) {
-              fetchOperations(activeElement.sId)
-                .then((result) => {
-                  if (result?.length > 0) {
-                    setOperations(result);
-                  }
-                })
-                .catch((e) => {
-                  handleSnack(
-                    "error",
-                    "Error occurred while fetching the operations"
-                  );
-                });
-            }
+            if(activeElement.sId) populateOperations(activeElement.sId);
           } else {
             loadNewSegmentUI();
           }
@@ -99,6 +88,7 @@ function WithoutSpareParts(props) {
         })
         .catch((err) => {
           loadNewSegmentUI();
+          console.log(err)
           handleSnack("error", "Error occurred while fetching segments!");
           setSegmentLoadig(false);
         });
@@ -106,6 +96,25 @@ function WithoutSpareParts(props) {
       handleSnack("error", "Not a valid builder!");
     }
   };
+
+  const populateOperations = (segmentId) => {
+    if (segmentId) {
+      fetchOperations(segmentId)
+        .then((result) => {
+          if (result?.length > 0) {
+            setOperations(result);
+          } else {
+            setOperations([]);
+          }          
+        })
+        .catch((e) => {
+          handleSnack(
+            "error",
+            "Error occurred while fetching the operations"
+          );
+        });
+    }
+  }
 
   const makeHeaderEditable = () => {
     if (segmentViewOnly)
@@ -136,6 +145,8 @@ function WithoutSpareParts(props) {
     setSegmentData({
       ...segmentData,
       jobCode: currentItem.jobCode,
+      jobCodeDescription: currentItem.description,
+      title: currentItem.jobCodeDescription && segmentData.description ? currentItem.jobCodeDescription && segmentData.description : ""
     });
     setSearchJobCodeResults([]);
   };
@@ -165,7 +176,7 @@ function WithoutSpareParts(props) {
       ...segmentData,
       componentCode: currentItem.componentCode,
       description: currentItem.description,
-      title: currentItem.componentCode + " - " + currentItem.description,
+      title: segmentData.jobCodeDescription && currentItem.description ? segmentData.jobCodeDescription + " - " + currentItem.description: "",
     });
     setSearchCompCodeResults([]);
   };
@@ -189,8 +200,8 @@ function WithoutSpareParts(props) {
         segmentToLoad = segments.filter(
           (x) => x.segmentNumber === segmentData.segmentNumber - 1
         );
+        populateOperations(segmentToLoad[0].id);
       }
-
       setSegmentData({
         ...segmentToLoad[0],
         header: formatSegmentHeader(segmentToLoad[0]),
@@ -210,11 +221,8 @@ function WithoutSpareParts(props) {
         setSegmentData({
           ...segmentToLoad[0],
           header: formatSegmentHeader(segmentToLoad[0]),
-          // "Segment " +
-          // segmentToLoad[0].segmentNumber +
-          // " - " +
-          // segmentToLoad[0].description,
         });
+        populateOperations(segmentToLoad[0].id);
       }
     }
   };
@@ -348,9 +356,29 @@ function WithoutSpareParts(props) {
         ) : !segmentViewOnly ? (
           <>
             <div className="row mt-4 input-fields">
+            <div className="col-md-6 col-sm-6">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                    TITLE
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control border-radius-10"
+                    placeholder="Auto Filled"
+                    value={segmentData.title}
+                    onChange={(e) =>
+                      setSegmentData({
+                        ...segmentData,
+                        title: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6"></div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     JOB CODE
                   </label>
                   <SearchBox
@@ -365,26 +393,28 @@ function WithoutSpareParts(props) {
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
-                    TITLE
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                    JOB CODE DESCRIPTION
                   </label>
                   <input
                     type="text"
+                    disabled
                     class="form-control border-radius-10"
-                    placeholder="Required"
-                    value={segmentData.title}
+                    placeholder="Auto Filled"
+                    value={segmentData.jobCodeDescription}
                     onChange={(e) =>
                       setSegmentData({
                         ...segmentData,
-                        title: e.target.value,
+                        jobCodeDescription: e.target.value,
                       })
                     }
                   />
                 </div>
               </div>
+              
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     COMPONENT CODE
                   </label>
                   <SearchBox
@@ -399,13 +429,13 @@ function WithoutSpareParts(props) {
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     COMPONENT CODE DESCRIPTION
                   </label>
                   <input
                     type="text"
                     class="form-control border-radius-10"
-                    placeholder="Required"
+                    placeholder="Auto Filled"
                     value={segmentData.description}
                     disabled
                   />
@@ -427,6 +457,7 @@ function WithoutSpareParts(props) {
                 disabled={
                   !(
                     segmentData.componentCode &&
+                    segmentData.jobCode &&
                     segmentData.description &&
                     segmentData.title
                   ) || noOptionsCompCode
@@ -439,44 +470,26 @@ function WithoutSpareParts(props) {
         ) : (
           <React.Fragment>
             <div className="row mt-4">
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">SEGMENT #</p>
-                  <h6 className="font-weight-500">
-                    {segmentData.segmentNumber}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
-                  <h6 className="font-weight-500">{segmentData.jobCode}</h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">TITLE</p>
-                  <h6 className="font-weight-500">{segmentData.title} </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE
-                  </p>
-                  <h6 className="font-weight-500">
-                    {segmentData.componentCode}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE DESCRIPTION{" "}
-                  </p>
-                  <h6 className="font-weight-500">{segmentData.description}</h6>
-                </div>
-              </div>
+              <ReadOnlyField
+                label="SEGMENT #"
+                value={segmentData.segmentNumber}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="TITLE"
+                value={segmentData.title}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="JOB CODE"
+                value={segmentData.jobCode}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="COMPONENT CODE"
+                value={segmentData.componentCode+ " - "+ segmentData.description}
+                className="col-md-6 col-sm-6"
+              />
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10">
               <button

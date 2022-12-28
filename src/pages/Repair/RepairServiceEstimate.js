@@ -421,22 +421,22 @@ function RepairServiceEstimate(props) {
             setLabourData({
               ...labourData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
             setConsumableData({
               ...consumableData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
             setExtWorkData({
               ...extWorkData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
             setMiscData({
               ...miscData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
           }
           setServiceEstHeaderLoading(false);
@@ -1910,25 +1910,7 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PAYER
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={labourData.payer}
-                                  onChange={(e) =>
-                                    setLabourData({
-                                      ...labourData,
-                                      payer: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group  mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-500">
@@ -1948,6 +1930,27 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TOTAL HOURS (PLANNED/RECOMMENDED)
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.totalHours}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      totalHours: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group  mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-500">
@@ -1978,6 +1981,20 @@ function RepairServiceEstimate(props) {
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Required"
                                   value={labourData.ratePerHourOrDay}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.totalPrice}
                                 />
                               </div>
                             </div>
@@ -2033,39 +2050,8 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={labourData.totalPrice}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL HOURS (PLANNED/RECOMMENDED)
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={labourData.totalHours}
-                                  onChange={(e) =>
-                                    setLabourData({
-                                      ...labourData,
-                                      totalHours: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+                            
+                            
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
