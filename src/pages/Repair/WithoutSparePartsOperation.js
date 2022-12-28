@@ -14,6 +14,7 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
+import { ReadOnlyField } from "./components/ReadOnlyField";
 
 function WithoutSparePartsOperation(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
@@ -30,7 +31,7 @@ function WithoutSparePartsOperation(props) {
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
-
+  const [builderStatus, setBuilderStatus] = useState("");
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -55,26 +56,27 @@ function WithoutSparePartsOperation(props) {
   const fetchOperationsOfSegment = () => {
     setOperationLoading(true);
     if (activeElement.sId) {
+      setBuilderStatus(activeElement.builderStatus);
       fetchOperations(activeElement.sId)
         .then((result) => {
           if (result?.length > 0) {
             setOperations(result);
             setOperationViewOnly(true);
             // Default last operation or selected operation for back traverse from service estimate
-            let opToLoad = activeElement.oId ? result.filter(
-              (x) => x.id === activeElement.oId
-            )[0] : result[result.length - 1];
-              
-              setOperationData({
-                ...opToLoad,
-                header:
-                  "Operation " +                  
-                  formatOperationNum(opToLoad.operationNumber) +
-                  " - " +
-                  opToLoad.jobCodeDescription+" "+opToLoad.componentCodeDescription, //Rename after modifications in UI
-              });
-           
-            
+            let opToLoad = activeElement.oId
+              ? result.filter((x) => x.id === activeElement.oId)[0]
+              : result[result.length - 1];
+
+            setOperationData({
+              ...opToLoad,
+              header:
+                "Operation " +
+                formatOperationNum(opToLoad.operationNumber) +
+                " - " +
+                opToLoad.jobCodeDescription +
+                " " +
+                opToLoad.componentCodeDescription, //Rename after modifications in UI
+            });
           } else {
             loadNewOperationUI();
           }
@@ -93,8 +95,8 @@ function WithoutSparePartsOperation(props) {
     }
   };
 
-  function formatOperationNum(num){
-    return String(num).padStart(3, '0') 
+  function formatOperationNum(num) {
+    return String(num).padStart(3, "0");
   }
 
   // Search Job Code
@@ -266,7 +268,9 @@ function WithoutSparePartsOperation(props) {
         ...operations[operations.length - 1],
         header:
           "Operation " +
-          formatOperationNum(operations[operations.length - 1].operationNumber) +
+          formatOperationNum(
+            operations[operations.length - 1].operationNumber
+          ) +
           " - " +
           operations[operations.length - 1].description,
       });
@@ -312,17 +316,18 @@ function WithoutSparePartsOperation(props) {
             >
               <KeyboardArrowRightIcon />
             </button>
-            {showAddNewButton && ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1 && (
-              <button
-                className="btn-no-border ml-2"
-                onClick={loadNewOperationUI}
-              >
-                <span className="ml-2">
-                  <AddIcon />
-                </span>
-                Add New Operation
-              </button>
-            )}
+            {showAddNewButton &&
+              ["DRAFT", "REVISED"].indexOf(builderStatus) > -1 && (
+                <button
+                  className="btn-no-border ml-2"
+                  onClick={loadNewOperationUI}
+                >
+                  <span className="ml-2">
+                    <AddIcon />
+                  </span>
+                  Add New Operation
+                </button>
+              )}
           </div>
         </div>
         <h5 className="d-flex align-items-center mb-0">
@@ -332,13 +337,33 @@ function WithoutSparePartsOperation(props) {
           <div className="hr"></div>
         </h5>
         {operationLoading ? (
-          <LoadingProgress/>
+          <LoadingProgress />
         ) : !operationViewOnly ? (
           <>
             <div className="row mt-4 input-fields">
-              <div className="col-md-4 col-sm-4">
+              <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600">
+                  <label className="text-light-dark font-size-12 font-weight-600 required">
+                    TITLE
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control border-radius-10"
+                    value={operationData.description}
+                    onChange={(e) =>
+                      setOperationData({
+                        ...operationData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Auto Filled"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6"></div>
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600 required">
                     JOB CODE
                   </label>
                   <SearchBox
@@ -351,9 +376,9 @@ function WithoutSparePartsOperation(props) {
                   />
                 </div>
               </div>
-              <div className="col-md-4 col-sm-4">
+              <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600">
+                  <label className="text-light-dark font-size-12 font-weight-600 required">
                     JOB CODE DESCRIPTION
                   </label>
                   <input
@@ -361,13 +386,13 @@ function WithoutSparePartsOperation(props) {
                     class="form-control border-radius-10"
                     value={operationData.jobCodeDescription}
                     disabled
-                    placeholder="Required"
+                    placeholder="Auto Filled"
                   />
                 </div>
               </div>
-              <div className="col-md-4 col-sm-4">
+              <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600">
+                  <label className="text-light-dark font-size-12 font-weight-600 required">
                     COMPONENT CODE
                   </label>
                   <SearchBox
@@ -381,51 +406,17 @@ function WithoutSparePartsOperation(props) {
                 </div>
               </div>
 
-              <div className="col-md-4 col-sm-4">
+              <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600">
+                  <label className="text-light-dark font-size-12 font-weight-600 required">
                     COMPONENT CODE DESCRIPTION
                   </label>
                   <input
                     type="email"
                     class="form-control border-radius-10"
                     value={operationData.componentCodeDescription}
-                    placeholder="Required"
+                    placeholder="Auto Filled"
                     disabled
-                  />
-                </div>
-              </div>
-
-              {/* <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600">
-                    MODIFIER
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control border-radius-10"
-                    value={operationData.modifier}
-                    onChange={(e) =>
-                      setOperationData({
-                        ...operationData,
-                        modifier: e.target.value,
-                      })
-                    }
-                    placeholder="Optional"
-                  />
-                </div>
-              </div> */}
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600">
-                    TITLE
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control border-radius-10"
-                    value={operationData.description}
-                    disabled
-                    placeholder="Required"
                   />
                 </div>
               </div>
@@ -450,7 +441,9 @@ function WithoutSparePartsOperation(props) {
                     operationData.jobCode &&
                     operationData.jobCodeDescription &&
                     operationData.description
-                  ) || noOptionsCompCode || noOptionsJobCode
+                  ) ||
+                  noOptionsCompCode ||
+                  noOptionsJobCode
                 }
               >
                 Save
@@ -460,71 +453,36 @@ function WithoutSparePartsOperation(props) {
         ) : (
           <React.Fragment>
             <div className="row mt-4">
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    OPERATION #
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.operationNumber}
-                  </h6>
-                </div>
-              </div>              
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    TITLE
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.description}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    JOB CODE
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.jobCode}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">JOB CODE DESCRIPTION</p>
-                  <h6 className="font-weight-600">
-                    {operationData.jobCodeDescription}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.componentCode}
-                  </h6>
-                </div>
-              </div>
+              <ReadOnlyField
+                label="OPERATION #"
+                value={operationData.operationNumber}
+                className="col-md-6 col-sm-6"
+              />
 
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE DESCRIPTION
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.componentCodeDescription}
-                  </h6>
-                </div>
-              </div>
-              {/* <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">MODIFIER </p>
-                  <h6 className="font-weight-600">{operationData.modifier}</h6>
-                </div>
-              </div> */}
+              <ReadOnlyField
+                label="TITLE"
+                value={operationData.description}
+                className="col-md-6 col-sm-6"
+              />
+
+              <ReadOnlyField
+                label="JOB CODE"
+                value={
+                  operationData.jobCode +
+                  " - " +
+                  operationData.jobCodeDescription
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="COMPONENT CODE"
+                value={
+                  operationData.componentCode +
+                  " - " +
+                  operationData.componentCodeDescription
+                }
+                className="col-md-4 col-sm-4"
+              />
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
@@ -538,7 +496,11 @@ function WithoutSparePartsOperation(props) {
               <button
                 // to="/RepairServiceEstimate"
                 onClick={() =>
-                  setActiveElement({ ...activeElement, name: "service", oId: operationData.id })
+                  setActiveElement({
+                    ...activeElement,
+                    name: "service",
+                    oId: operationData.id,
+                  })
                 }
                 className="btn bg-primary text-white ml-2"
               >
