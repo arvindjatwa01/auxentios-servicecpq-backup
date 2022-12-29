@@ -3618,6 +3618,10 @@ input[type="checkbox"]:checked:after {
   min-width: 120px !important;
 }
 .border-radius-5{border-radius: 5px !important;}
+.required:after {
+  content:" *";
+  color: red;
+}
 
 .green-custom-btn .css-1s2u09g-control {
   font-size: 0.76563rem;
