@@ -381,6 +381,16 @@ export function CreatePortfolio(props) {
     offerValidity: null,
   });
 
+  const [bundleOrServiceAdministrative, setBundleOrServiceAdministrative] = useState({
+    preparedBy: null,
+    approvedBy: null,
+    preparedOn: new Date(),
+    revisedBy: null,
+    revisedOn: new Date(),
+    salesOffice: null,
+    offerValidity: null,
+  });
+
   const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
   const [priceMethodKeyValue1, setPriceMethodKeyValue1] = useState([]);
 
@@ -593,6 +603,8 @@ export function CreatePortfolio(props) {
   const [createdBundleItems, setCreatedBundleItems] = useState("");
   const [updatedServiceBundleItemData, setUpdatedServiceBundleItemData] = useState("");
   const [associatedServiceOrBundleIndex, setAssociatedServiceOrBundleIndex] = useState(0);
+
+  const [editBundleService, setEditBundleService] = useState(false);
 
 
   const [tabs, setTabs] = useState("1");
@@ -6042,10 +6054,10 @@ export function CreatePortfolio(props) {
           </div>
         </>
       ),
-      selector: (row) => row.itemId,
+      selector: (row, i) => ((i + 1) * 10), // row.itemId,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemId,
+      format: (row, i) => ((i + 1) * 10), // row.itemId,
     },
     {
       name: (
@@ -8023,7 +8035,7 @@ export function CreatePortfolio(props) {
             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div>10</div>
+            <div>{(i + 1) * 10}</div>
           </div>
           <div
             id="cell-2-undefined"
@@ -8052,7 +8064,10 @@ export function CreatePortfolio(props) {
                   c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
               </svg></span>
             </div>
-            <div className="align-items-center d-flex justify-content-center">{bundleAndService.itemId}</div>
+            <div className="align-items-center d-flex justify-content-center">
+              {/* {bundleAndService.itemId} */}
+              {bundleAndService.itemName}
+            </div>
           </div>
           <div
             id="cell-3-undefined"
@@ -8522,7 +8537,8 @@ export function CreatePortfolio(props) {
 
     // alert(i)
     setAssociatedServiceOrBundleIndex(i)
-
+    setEditBundleService(true);
+    setBundleAndServiceEditAble(true)
     setBundleTabs("bundleServiceHeader");
 
     const newData = await getItemDataById(data.itemId)
@@ -8534,7 +8550,6 @@ export function CreatePortfolio(props) {
     } else if (newData.itemHeaderModel.bundleFlag === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
     }
-
 
 
     setCreateServiceOrBundle({
@@ -8559,6 +8574,36 @@ export function CreatePortfolio(props) {
     setBundleServicePortfolioItemId(newData.itemHeaderModel.portfolioItemId);
 
     setBundleServiceItemPriceData(newData.itemBodyModel.itemPrices)
+
+
+    var offerValidityLabel;
+    if (newData.itemHeaderModel.offerValidity == "15") {
+      offerValidityLabel = "15 days";
+    } else if (newData.itemHeaderModel.offerValidity == "30") {
+      offerValidityLabel = "1 month";
+    } else if (newData.itemHeaderModel.offerValidity == "45") {
+      offerValidityLabel = "45 days";
+    } else if (newData.itemHeaderModel.offerValidity == "60") {
+      offerValidityLabel = "2 month";
+    } else {
+      offerValidityLabel = newData.itemHeaderModel.offerValidity;
+    }
+
+    setBundleOrServiceAdministrative({
+      preparedBy: newData.itemHeaderModel.preparedBy,
+      approvedBy: newData.itemHeaderModel.approvedBy,
+      preparedOn: newData.itemHeaderModel.preparedOn,
+      revisedBy: newData.itemHeaderModel.revisedBy,
+      revisedOn: newData.itemHeaderModel.revisedOn,
+      salesOffice: {
+        value: newData.itemHeaderModel.salesOffice,
+        label: newData.itemHeaderModel.salesOffice,
+      },
+      offerValidity: {
+        value: newData.itemHeaderModel.offerValidity,
+        label: offerValidityLabel,
+      },
+    })
 
     setBundleServiceShow(true);
   }
@@ -9244,6 +9289,7 @@ export function CreatePortfolio(props) {
   const handleItemPriceCalculatorSave = () => {
     setLoadingItem("02")
     setTabs("6")
+    // console.log("tempBundleService2 9999999 ", tempBundleService2)
     const _tempBundleItems = [...tempBundleItems]
     for (let i = 0; i < _tempBundleItems.length; i++) {
       if (currentItemId === _tempBundleItems[i].itemId) {
@@ -9274,6 +9320,8 @@ export function CreatePortfolio(props) {
     } else {
       // let find that id and get reqData for API
       let reqObj = {}
+
+      console.log("tempBundleItems data 12345 : ", tempBundleService3);
       console.log("tempBundleItems : ", tempBundleItems);
       for (let i = 0; i < tempBundleItems.length; i++) {
         if (tempBundleItems[i].itemId === currentItemId) {
@@ -9288,9 +9336,7 @@ export function CreatePortfolio(props) {
             repairKitId: itemPriceData.repairKitId,
 
             itemPriceDataId: itemPriceData.itemPriceDataId
-
           }
-
           console.log("my reqObj : ", reqObj)
           break;
         }
@@ -9312,6 +9358,82 @@ export function CreatePortfolio(props) {
 
         const res = await getItemPriceData(itemPriceData.itemPriceDataId)
 
+        var UpdatedBundleService3Data = [];
+        for (let a = 0; a < tempBundleService3.length; a++) {
+          var reqObjUpdatebundleService = {
+            itemId: tempBundleService3[a].itemId,
+            itemName: tempBundleService3[a].itemName,
+            itemHeaderModel: {
+              itemHeaderId: tempBundleService3[a].itemHeaderModel.itemHeaderId,
+              itemHeaderDescription: tempBundleService3[a].itemHeaderModel.itemHeaderDescription,
+              bundleFlag: tempBundleService3[a].itemHeaderModel.bundleFlag,
+              portfolioItemId: currentItemId,
+              reference: tempBundleService3[a].itemHeaderModel.reference,
+              itemHeaderMake: tempBundleService3[a].itemHeaderModel.itemHeaderMake,
+              itemHeaderFamily: tempBundleService3[a].itemHeaderModel.itemHeaderFamily,
+              model: tempBundleService3[a].itemHeaderModel.model,
+              prefix: tempBundleService3[a].itemHeaderModel.prefix,
+              type: tempBundleService3[a].itemHeaderModel.type,
+              additional: tempBundleService3[a].itemHeaderModel.additional,
+              currency: tempBundleService3[a].itemHeaderModel.currency,
+              netPrice: tempBundleService3[a].itemHeaderModel.netPrice,
+              itemProductHierarchy: tempBundleService3[a].itemHeaderModel.itemProductHierarchy,
+              itemHeaderGeographic: tempBundleService3[a].itemHeaderModel.itemHeaderGeographic,
+              responseTime: tempBundleService3[a].itemHeaderModel.responseTime,
+              usage: tempBundleService3[a].itemHeaderModel.usage,
+              validFrom: tempBundleService3[a].itemHeaderModel.validFrom,
+              validTo: tempBundleService3[a].itemHeaderModel.validTo,
+              estimatedTime: tempBundleService3[a].itemHeaderModel.estimatedTime,
+              servicePrice: tempBundleService3[a].itemHeaderModel.servicePrice,
+              status: tempBundleService3[a].itemHeaderModel.status,
+              itemHeaderStrategy: tempBundleService3[a].itemHeaderModel.itemHeaderStrategy,
+              componentCode: tempBundleService3[a].itemHeaderModel.componentCode,
+              componentDescription: tempBundleService3[a].itemHeaderModel.componentDescription,
+              serialNumber: tempBundleService3[a].itemHeaderModel.serialNumber,
+              variant: tempBundleService3[a].itemHeaderModel.variant,
+              itemHeaderCustomerSegment: tempBundleService3[a].itemHeaderModel.itemHeaderCustomerSegment,
+              jobCode: tempBundleService3[a].itemHeaderModel.jobCode,
+              preparedBy: tempBundleService3[a].itemHeaderModel.preparedBy,
+              approvedBy: tempBundleService3[a].itemHeaderModel.approvedBy,
+              preparedOn: tempBundleService3[a].itemHeaderModel.preparedOn,
+              revisedBy: tempBundleService3[a].itemHeaderModel.revisedBy,
+              revisedOn: tempBundleService3[a].itemHeaderModel.revisedOn,
+              salesOffice: tempBundleService3[a].itemHeaderModel.salesOffice,
+              offerValidity: tempBundleService3[a].itemHeaderModel.offerValidity
+            },
+            itemBodyModel: {
+              itemBodyId: tempBundleService3[a].itemBodyModel.itemBodyId,
+              itemBodyDescription: tempBundleService3[a].itemBodyModel.itemBodyDescription,
+              frequency: tempBundleService3[a].itemBodyModel.frequency,
+              spareParts: tempBundleService3[a].itemBodyModel.spareParts,
+              labours: tempBundleService3[a].itemBodyModel.labours,
+              miscellaneous: tempBundleService3[a].itemBodyModel.miscellaneous,
+              taskType: tempBundleService3[a].itemBodyModel.taskType,
+              solutionCode: tempBundleService3[a].itemBodyModel.solutionCode,
+              usageIn: tempBundleService3[a].itemBodyModel.usageIn,
+              recommendedValue: tempBundleService3[a].itemBodyModel.recommendedValue,
+              usage: tempBundleService3[a].itemBodyModel.usage,
+              year: tempBundleService3[a].itemBodyModel.year,
+              avgUsage: tempBundleService3[a].itemBodyModel.avgUsage,
+              unit: tempBundleService3[a].itemBodyModel.unit,
+              itemPrices: tempBundleService3[a].itemBodyModel.itemPrices,
+            }
+          };
+
+          console.log("reqObjUpdatebundleService : ", reqObjUpdatebundleService)
+
+          updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
+            .then((res) => {
+              // console.log("response are : ", res)
+              UpdatedBundleService3Data.push(res.data)
+            })
+            .catch((err) => {
+              console.log("err in api call", err);
+            });
+        }
+
+        setTempBundleService3(UpdatedBundleService3Data);
+        setTempBundleService2(UpdatedBundleService3Data);
 
         // const itemPriceRes = await getItemPrice(reqObj)
         setItemPriceCalculator({
@@ -11251,6 +11373,7 @@ export function CreatePortfolio(props) {
                                 onChange={handleAdministrativreChange}
                                 placeholder="Required (ex-abc@gmail.com)"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
@@ -11305,6 +11428,7 @@ export function CreatePortfolio(props) {
                                     }
                                   />
                                 </MuiPickersUtilsProvider>
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             {/* </div> */}
@@ -11388,6 +11512,7 @@ export function CreatePortfolio(props) {
                                 value={administrative.salesOffice}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                               {/* <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
@@ -11422,6 +11547,7 @@ export function CreatePortfolio(props) {
                                 value={administrative.offerValidity}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                               {/* <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
@@ -15975,54 +16101,155 @@ export function CreatePortfolio(props) {
                 /> */}
               </TabPanel>
               <TabPanel value="bundleServiceAdministrative">
-
-                <div className="row mt-4 input-fields">
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        PREPARED BY
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        name="preparedBy"
-                        value={administrative.preparedBy}
-                        onChange={handleAdministrativreChange}
-                        placeholder="Required (ex-abc@gmail.com)"
-                      />
-                      <div className="css-w8dmq8">*Mandatory</div>
+                {bundleAndServiceEditAble ?
+                  <>
+                    <div className="row mt-4">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(
+                              bundleOrServiceAdministrative.preparedBy == "" ||
+                                bundleOrServiceAdministrative.preparedBy == "string" ||
+                                bundleOrServiceAdministrative.preparedBy == undefined ||
+                                bundleOrServiceAdministrative.preparedBy == null
+                                ? "NA" : bundleOrServiceAdministrative.preparedBy
+                            )}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(
+                              bundleOrServiceAdministrative.approvedBy == "" ||
+                                bundleOrServiceAdministrative.approvedBy == "string" ||
+                                bundleOrServiceAdministrative.approvedBy == undefined ||
+                                bundleOrServiceAdministrative.approvedBy == null
+                                ? "NA" : bundleOrServiceAdministrative.approvedBy
+                            )}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(
+                              bundleOrServiceAdministrative.preparedOn == "" ||
+                                bundleOrServiceAdministrative.preparedOn == "string" ||
+                                bundleOrServiceAdministrative.preparedOn == undefined ||
+                                bundleOrServiceAdministrative.preparedOn == null
+                                ? "NA" :
+                                getFormattedDateTimeByTimeStamp(bundleOrServiceAdministrative.preparedOn)
+                            )}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(
+                              bundleOrServiceAdministrative.revisedBy == "" ||
+                                bundleOrServiceAdministrative.revisedBy == "string" ||
+                                bundleOrServiceAdministrative.revisedBy == undefined ||
+                                bundleOrServiceAdministrative.revisedBy == null ?
+                                "NA" : bundleOrServiceAdministrative.revisedBy)}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(
+                              bundleOrServiceAdministrative.revisedOn == "" ||
+                                bundleOrServiceAdministrative.revisedOn == "string" ||
+                                bundleOrServiceAdministrative.revisedOn == undefined ||
+                                bundleOrServiceAdministrative.revisedOn == null
+                                ? "NA" :
+                                getFormattedDateTimeByTimeStamp(bundleOrServiceAdministrative.revisedOn)
+                            )}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(
+                              bundleOrServiceAdministrative.salesOffice == "" ||
+                                bundleOrServiceAdministrative.salesOffice == undefined ||
+                                bundleOrServiceAdministrative.salesOffice?.value == "string" ||
+                                bundleOrServiceAdministrative.salesOffice == null
+                                ? "NA" : bundleOrServiceAdministrative.salesOffice?.value)}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                            {(
+                              bundleOrServiceAdministrative.offerValidity == "" ||
+                                bundleOrServiceAdministrative.offerValidity == undefined ||
+                                bundleOrServiceAdministrative.offerValidity?.value == "string" ||
+                                bundleOrServiceAdministrative.offerValidity == null
+                                ? "NA" : bundleOrServiceAdministrative.offerValidity?.label)}
+                          </h6>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        APPROVED BY
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        placeholder="Optional  (ex-abc@gmail.com)"
-                        name="approvedBy"
-                        value={administrative.approvedBy}
-                        onChange={handleAdministrativreChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    {/* <div className="form-group"> */}
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      PREPARED ON
-                    </label>
-                    {/* <input
+                  </> : <>
+                    <div className="row mt-4 input-fields">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PREPARED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control text-primary border-radius-10"
+                            name="preparedBy"
+                            value={administrative.preparedBy}
+                            onChange={handleAdministrativreChange}
+                            placeholder="Required (ex-abc@gmail.com)"
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            APPROVED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control text-primary border-radius-10"
+                            placeholder="Optional  (ex-abc@gmail.com)"
+                            name="approvedBy"
+                            value={administrative.approvedBy}
+                            onChange={handleAdministrativreChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        {/* <div className="form-group"> */}
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PREPARED ON
+                        </label>
+                        {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -16030,56 +16257,56 @@ export function CreatePortfolio(props) {
                           value={administrative.preparedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                    <div className="d-flex align-items-center date-box w-100">
-                      <div className="form-group w-100">
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                          <DatePicker
-                            variant="inline"
-                            format="dd/MM/yyyy"
-                            className="form-controldate border-radius-10"
-                            label=""
-                            name="preparedOn"
-                            value={administrative.preparedOn}
-                            onChange={(e) =>
-                              setAdministrative({
-                                ...administrative,
-                                preparedOn: e,
-                              })
-                            }
-                          />
-                        </MuiPickersUtilsProvider>
-                        <div className="css-w8dmq8">*Mandatory</div>
+                        <div className="d-flex align-items-center date-box w-100">
+                          <div className="form-group w-100">
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                name="preparedOn"
+                                value={administrative.preparedOn}
+                                onChange={(e) =>
+                                  setAdministrative({
+                                    ...administrative,
+                                    preparedOn: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        {/* </div> */}
                       </div>
-                    </div>
-                    {/* </div> */}
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        REVISED BY
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        placeholder="Optional  (ex-abc@gmail.com)"
-                        name="revisedBy"
-                        value={administrative.revisedBy}
-                        onChange={handleAdministrativreChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        REVISED ON
-                      </label>
-                      {/* <input
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            REVISED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            placeholder="Optional  (ex-abc@gmail.com)"
+                            name="revisedBy"
+                            value={administrative.revisedBy}
+                            onChange={handleAdministrativreChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            REVISED ON
+                          </label>
+                          {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -16087,51 +16314,51 @@ export function CreatePortfolio(props) {
                           value={administrative.revisedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div className="form-group w-100 m-0">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="revisedOn"
-                              value={administrative.revisedOn}
-                              onChange={(e) =>
-                                setAdministrative({
-                                  ...administrative,
-                                  revisedOn: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
+                          <div className="d-flex align-items-center date-box w-100">
+                            <div className="form-group w-100 m-0">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  name="revisedOn"
+                                  value={administrative.revisedOn}
+                                  onChange={(e) =>
+                                    setAdministrative({
+                                      ...administrative,
+                                      revisedOn: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        SALES OFFICE / BRANCH
-                      </label>
-                      <Select
-                        onChange={(e) =>
-                          setAdministrative({
-                            ...administrative,
-                            salesOffice: e,
-                          })
-                        }
-                        className="text-primary"
-                        options={salesOfficeOptions}
-                        placeholder="Required"
-                        value={administrative.salesOffice}
-                        styles={FONT_STYLE_SELECT}
-                      />
-                      <div className="css-w8dmq8">*Mandatory</div>
-                      {/* <input
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            SALES OFFICE / BRANCH
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              setAdministrative({
+                                ...administrative,
+                                salesOffice: e,
+                              })
+                            }
+                            className="text-primary"
+                            options={salesOfficeOptions}
+                            placeholder="Required"
+                            value={administrative.salesOffice}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                          {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
                             name="salesOffice"
@@ -16139,32 +16366,32 @@ export function CreatePortfolio(props) {
                             onChange={handleAdministrativreChange}
                             placeholder="Required"
                           /> */}
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        OFFER VALIDITY
-                      </label>
-                      <Select
-                        // defaultValue={selectedOption}
-                        onChange={(e) =>
-                          setAdministrative({
-                            ...administrative,
-                            offerValidity: e,
-                          })
-                        }
-                        className="text-primary"
-                        options={validityOptions}
-                        placeholder="Optional"
-                        value={administrative.offerValidity}
-                        styles={FONT_STYLE_SELECT}
-                      />
-                      <div className="css-w8dmq8">*Mandatory</div>
-                      {/* <input
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            OFFER VALIDITY
+                          </label>
+                          <Select
+                            // defaultValue={selectedOption}
+                            onChange={(e) =>
+                              setAdministrative({
+                                ...administrative,
+                                offerValidity: e,
+                              })
+                            }
+                            className="text-primary"
+                            options={validityOptions}
+                            placeholder="Optional"
+                            value={administrative.offerValidity}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                          {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
                             placeholder="Optional"
@@ -16172,9 +16399,11 @@ export function CreatePortfolio(props) {
                             value={administrative.offerValidity}
                             onChange={handleAdministrativreChange}
                           /> */}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  </>
+                }
 
                 <div className="row" style={{ justifyContent: "right" }}>
                   <button

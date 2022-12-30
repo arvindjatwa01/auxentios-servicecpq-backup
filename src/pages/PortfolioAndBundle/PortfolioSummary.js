@@ -93,6 +93,7 @@ import {
   itemSearch,
   portfolioItemPriceSjid,
   getSolutionPriceCommonConfig,
+  getItemDataById,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
@@ -751,7 +752,7 @@ export const PortfolioSummary = () => {
         querySearchSelector[0]?.selectFamily?.value === undefined) {
         throw "Please fill data properly"
       }
-      var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+      var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         if (
@@ -767,7 +768,7 @@ export const PortfolioSummary = () => {
           " " +
           querySearchSelector[i].selectOperator.value + " " +
           querySearchSelector[i].selectFamily.value +
-          "~" +
+          ":" +
           querySearchSelector[i].inputSearch;
       }
 
@@ -1017,7 +1018,7 @@ export const PortfolioSummary = () => {
     setSelectedPrefixOption(e)
     setCreateServiceOrBundle({
       ...createServiceOrBundle,
-      prefix: e.value,
+      prefix: e,
     })
   }
 
@@ -1083,107 +1084,109 @@ export const PortfolioSummary = () => {
     });
   }
 
-  const makeBundleServiceEditable = (data) => {
+  const makeBundleServiceEditable = async (data) => {
 
-    setBundleServicePortfolioItemId(data.itemHeaderModel.portfolioItemId)
+    const editAbleBundleService = await getItemDataById(data.itemId);
 
-    console.log("data is ------ ", data);
+    setBundleServicePortfolioItemId(editAbleBundleService.itemHeaderModel.portfolioItemId)
+
+    console.log("editAbleBundleService is ------ ", editAbleBundleService);
     setEditBundleService(true);
     setBundleAndServiceEditAble(true)
 
-    if (data.itemHeaderModel.bundleFlag === "SERVICE") {
+    if (editAbleBundleService.itemHeaderModel.bundleFlag === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
       setBundleTabs("bundleServiceHeader")
       setBundleServiceShow(true);
       setCreateServiceOrBundle({
-        id: data.itemId,
-        name: data.itemName,
-        description: data.itemHeaderModel.itemHeaderDescription,
-        bundleFlag: data.itemHeaderModel.bundleFlag,
-        reference: data.itemHeaderModel.reference,
-        customerSegment: { label: data.itemHeaderModel.itemHeaderCustomerSegment, value: data.itemHeaderModel.itemHeaderCustomerSegment },
-        make: data.itemHeaderModel.itemHeaderMake,
-        model: data.itemHeaderModel.model,
-        family: data.itemHeaderModel.itemHeaderFamily,
-        prefix: { label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix },
-        machine: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+        id: editAbleBundleService.itemId,
+        name: editAbleBundleService.itemName,
+        description: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
+        bundleFlag: editAbleBundleService.itemHeaderModel.bundleFlag,
+        reference: editAbleBundleService.itemHeaderModel.reference,
+        customerSegment: { label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment },
+        make: editAbleBundleService.itemHeaderModel.itemHeaderMake,
+        model: editAbleBundleService.itemHeaderModel.model,
+        family: editAbleBundleService.itemHeaderModel.itemHeaderFamily,
+        prefix: { label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix },
+        machine: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
         additional: "",
-        machineComponent: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+        machineComponent: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
       });
 
-      setSelectedCustomerSegmentOption({ label: data.itemHeaderModel.itemHeaderCustomerSegment, value: data.itemHeaderModel.itemHeaderCustomerSegment })
+      setSelectedCustomerSegmentOption({ label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment })
 
-      setSelectedPrefixOption({ label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix });
+      setSelectedPrefixOption({ label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix });
 
       var offerValidityLabel;
-      if (data.itemHeaderModel.offerValidity == "15") {
+      if (editAbleBundleService.itemHeaderModel.offerValidity == "15") {
         offerValidityLabel = "15 days";
-      } else if (data.itemHeaderModel.offerValidity == "30") {
+      } else if (editAbleBundleService.itemHeaderModel.offerValidity == "30") {
         offerValidityLabel = "1 month";
-      } else if (data.itemHeaderModel.offerValidity == "45") {
+      } else if (editAbleBundleService.itemHeaderModel.offerValidity == "45") {
         offerValidityLabel = "45 days";
-      } else if (data.itemHeaderModel.offerValidity == "60") {
+      } else if (editAbleBundleService.itemHeaderModel.offerValidity == "60") {
         offerValidityLabel = "2 month";
       } else {
-        offerValidityLabel = data.itemHeaderModel.offerValidity;
+        offerValidityLabel = editAbleBundleService.itemHeaderModel.offerValidity;
       }
 
       setValue2({
-        value: data.itemHeaderModel.status,
-        label: data.itemHeaderModel.status,
+        value: editAbleBundleService.itemHeaderModel.status,
+        label: editAbleBundleService.itemHeaderModel.status,
       });
-      if (data.itemHeaderModel.status === "ACTIVE") {
+      if (editAbleBundleService.itemHeaderModel.status === "ACTIVE") {
         setIsActiveStatus(true)
       } else {
         setIsActiveStatus(false)
       }
 
       setAdministrative({
-        preparedBy: data.itemHeaderModel.preparedBy,
-        approvedBy: data.itemHeaderModel.approvedBy,
-        preparedOn: data.itemHeaderModel.preparedOn,
-        revisedBy: data.itemHeaderModel.revisedBy,
-        revisedOn: data.itemHeaderModel.revisedOn,
-        salesOffice: { label: data.itemHeaderModel.salesOffice, value: data.itemHeaderModel.salesOffice },
-        offerValidity: { label: offerValidityLabel, value: data.itemHeaderModel.offerValidity },
+        preparedBy: editAbleBundleService.itemHeaderModel.preparedBy,
+        approvedBy: editAbleBundleService.itemHeaderModel.approvedBy,
+        preparedOn: editAbleBundleService.itemHeaderModel.preparedOn,
+        revisedBy: editAbleBundleService.itemHeaderModel.revisedBy,
+        revisedOn: editAbleBundleService.itemHeaderModel.revisedOn,
+        salesOffice: { label: editAbleBundleService.itemHeaderModel.salesOffice, value: editAbleBundleService.itemHeaderModel.salesOffice },
+        offerValidity: { label: offerValidityLabel, value: editAbleBundleService.itemHeaderModel.offerValidity },
       });
-    } else if (data.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+    } else if (editAbleBundleService.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
       setServiceOrBundlePrefix("BUNDLE");
       setBundleTabs("bundleServiceHeader")
       setBundleServiceShow(true);
       setCreateServiceOrBundle({
-        id: data.itemId,
-        name: data.itemName,
-        description: data.itemHeaderModel.itemHeaderDescription,
-        bundleFlag: data.itemHeaderModel.bundleFlag,
-        reference: data.itemHeaderModel.itemHeaderDescription,
+        id: editAbleBundleService.itemId,
+        name: editAbleBundleService.itemName,
+        description: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
+        bundleFlag: editAbleBundleService.itemHeaderModel.bundleFlag,
+        reference: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
         customerSegment: "",
-        make: data.itemHeaderModel.itemHeaderMake,
-        model: data.itemHeaderModel.model,
-        family: data.itemHeaderModel.itemHeaderFamily,
-        prefix: { label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix },
-        machine: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+        make: editAbleBundleService.itemHeaderModel.itemHeaderMake,
+        model: editAbleBundleService.itemHeaderModel.model,
+        family: editAbleBundleService.itemHeaderModel.itemHeaderFamily,
+        prefix: { label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix },
+        machine: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
         additional: "",
-        machineComponent: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+        machineComponent: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
       });
 
-      setSelectedPrefixOption({ label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix });
+      setSelectedPrefixOption({ label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix });
       setAdministrative({
-        preparedBy: data.itemHeaderModel.preparedBy,
-        approvedBy: data.itemHeaderModel.approvedBy,
-        preparedOn: data.itemHeaderModel.preparedOn,
-        revisedBy: data.itemHeaderModel.revisedBy,
-        revisedOn: data.itemHeaderModel.revisedOn,
-        salesOffice: { label: data.itemHeaderModel.salesOffice, value: data.itemHeaderModel.salesOffice },
-        offerValidity: { label: data.itemHeaderModel.offerValidity, value: data.itemHeaderModel.offerValidity },
+        preparedBy: editAbleBundleService.itemHeaderModel.preparedBy,
+        approvedBy: editAbleBundleService.itemHeaderModel.approvedBy,
+        preparedOn: editAbleBundleService.itemHeaderModel.preparedOn,
+        revisedBy: editAbleBundleService.itemHeaderModel.revisedBy,
+        revisedOn: editAbleBundleService.itemHeaderModel.revisedOn,
+        salesOffice: { label: editAbleBundleService.itemHeaderModel.salesOffice, value: editAbleBundleService.itemHeaderModel.salesOffice },
+        offerValidity: { label: editAbleBundleService.itemHeaderModel.offerValidity, value: editAbleBundleService.itemHeaderModel.offerValidity },
       });
 
       setValue2({
-        value: data.itemHeaderModel.status,
-        label: data.itemHeaderModel.status,
+        value: editAbleBundleService.itemHeaderModel.status,
+        label: editAbleBundleService.itemHeaderModel.status,
       });
 
-      if (data.itemHeaderModel.status === "ACTIVE") {
+      if (editAbleBundleService.itemHeaderModel.status === "ACTIVE") {
         setIsActiveStatus(true)
       } else {
         setIsActiveStatus(false)
@@ -1740,7 +1743,7 @@ export const PortfolioSummary = () => {
                 itemHeaderMake: createServiceOrBundle.make,
                 itemHeaderFamily: createServiceOrBundle.family,
                 model: createServiceOrBundle.model,
-                prefix: createServiceOrBundle.prefix?.value,
+                prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
                 type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
                 additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
                 currency: "",
@@ -1822,7 +1825,7 @@ export const PortfolioSummary = () => {
               itemHeaderMake: createServiceOrBundle.make,
               itemHeaderFamily: createServiceOrBundle.family,
               model: createServiceOrBundle.model,
-              prefix: createServiceOrBundle.prefix,
+              prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
               type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
               additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
               currency: "",
@@ -1977,7 +1980,7 @@ export const PortfolioSummary = () => {
             itemHeaderMake: createServiceOrBundle.make,
             itemHeaderFamily: createServiceOrBundle.family,
             model: createServiceOrBundle.model,
-            prefix: createServiceOrBundle.prefix,
+            prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
             type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
             additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
             currency: "",
@@ -2076,7 +2079,7 @@ export const PortfolioSummary = () => {
             itemHeaderMake: createServiceOrBundle.make,
             itemHeaderFamily: createServiceOrBundle.family,
             model: createServiceOrBundle.model,
-            prefix: createServiceOrBundle.prefix,
+            prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
             type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
             additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
             currency: "",
@@ -2423,7 +2426,7 @@ export const PortfolioSummary = () => {
         itemHeaderMake: createServiceOrBundle.make,
         itemHeaderFamily: createServiceOrBundle.family,
         model: createServiceOrBundle.model,
-        prefix: createServiceOrBundle.prefix,
+        prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
         type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
         additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
         currency: "",
@@ -2828,10 +2831,10 @@ export const PortfolioSummary = () => {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.quantity,
+      selector: (row) => row.itemBodyModel?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.quantity,
+      format: (row) => row.itemBodyModel?.quantity,
     },
     {
       name: (
@@ -2839,10 +2842,10 @@ export const PortfolioSummary = () => {
           <div>Net Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.netPrice,
+      selector: (row) => row.itemHeaderModel?.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.netPrice,
+      format: (row) => row.itemHeaderModel?.netPrice,
     },
     {
       name: (
@@ -2850,10 +2853,10 @@ export const PortfolioSummary = () => {
           <div>Net Additional</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.additional,
+      selector: (row) => row.itemHeaderModel?.additional,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.additional,
+      format: (row) => row.itemHeaderModel?.additional,
     },
     {
       name: (
@@ -4223,15 +4226,15 @@ export const PortfolioSummary = () => {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
-                            <div className="form-group">
-                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">MAKE</p>
+                            <div className="form-group customselectmodelSerch">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">MODEL(S)</p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
-                                {(createServiceOrBundle.make == "" ||
-                                  createServiceOrBundle.make == null ||
-                                  createServiceOrBundle.make == undefined ||
-                                  createServiceOrBundle.make == "string") ?
-                                  "NA" : createServiceOrBundle.make}
+                                {(createServiceOrBundle.model == "" ||
+                                  createServiceOrBundle.model == null ||
+                                  createServiceOrBundle.model == undefined ||
+                                  createServiceOrBundle.model == "string") ?
+                                  "NA" : createServiceOrBundle.model}
 
                               </h6>
                             </div>
@@ -4251,15 +4254,15 @@ export const PortfolioSummary = () => {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
-                            <div className="form-group customselectmodelSerch">
-                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">MODEL(S)</p>
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">MAKE</p>
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
-                                {(createServiceOrBundle.model == "" ||
-                                  createServiceOrBundle.model == null ||
-                                  createServiceOrBundle.model == undefined ||
-                                  createServiceOrBundle.model == "string") ?
-                                  "NA" : createServiceOrBundle.model}
+                                {(createServiceOrBundle.make == "" ||
+                                  createServiceOrBundle.make == null ||
+                                  createServiceOrBundle.make == undefined ||
+                                  createServiceOrBundle.make == "string") ?
+                                  "NA" : createServiceOrBundle.make}
 
                               </h6>
                             </div>

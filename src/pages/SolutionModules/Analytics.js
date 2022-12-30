@@ -1253,10 +1253,10 @@ export const Analytics = () => {
             throw "Please fill data properly"
          }
 
-         var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+         var searchStr = querySearchSelector[0].selectFamily.value + ":" + querySearchSelector[0].inputSearch
 
          for (let i = 1; i < querySearchSelector.length; i++) {
-            searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+            searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + ":" + querySearchSelector[i].inputSearch
          }
 
          console.log("searchStr", searchStr)
