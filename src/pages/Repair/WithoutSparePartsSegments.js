@@ -472,7 +472,7 @@ function WithoutSpareParts(props) {
             <div className="row mt-4">
               <ReadOnlyField
                 label="SEGMENT #"
-                value={segmentData.segmentNumber}
+                value={String(segmentData.segmentNumber).padStart(2, "0")}
                 className="col-md-6 col-sm-6"
               />
               <ReadOnlyField

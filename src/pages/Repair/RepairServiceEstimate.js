@@ -1553,6 +1553,7 @@ function RepairServiceEstimate(props) {
                       </label>
                       <input
                         type="text"
+                        disabled
                         class="form-control border-radius-10 text-primary"
                         placeholder="Optional"
                         value={serviceEstimateData.jobCode}
@@ -1693,12 +1694,10 @@ function RepairServiceEstimate(props) {
                       !(serviceEstimateData.jobOperation &&
                       serviceEstimateData.description &&
                       serviceEstimateData.currency &&
-                      // serviceEstimateData.netPrice &&
                       serviceEstimateData.priceDate &&
-                      // serviceEstimateData.priceMethod?.value &&
                       serviceEstimateData.reference &&
                       serviceEstimateData.segmentTitle &&
-                      serviceEstimateData.priceMethod?.value === "FLAT_RATE"
+                      serviceEstimateData.flatRateIndicator
                         ? serviceEstimateData.adjustedPrice > 0
                         : true)
                     }
@@ -2018,96 +2017,48 @@ function RepairServiceEstimate(props) {
                           </div>
                         ) : (
                           <div className="row mt-4">
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.jobCode}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE DESCRIPTION{" "}
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.jobCodeDescription}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.payer}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  LABOR CODE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.laborCode?.label}{" "}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PRICE METHOD
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.pricingMethod?.label}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  RATE PER HOUR / DAY
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.ratePerHourOrDay}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  ADJUSTED PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.adjustedPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  TOTAL HOURS (PLANNED / RECOMMENDED)
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.totalHours}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="JOB CODE"
+                              value={labourData.jobCode}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="JOB CODE DESCRIPTION"
+                              value={labourData.jobCodeDescription}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <div className="col-md-4 col-sm-4"></div>
+                            <ReadOnlyField
+                              label="LABOR CODE"
+                              value={labourData.laborCode?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="TOTAL HOURS (PLANNED / RECOMMENDED)"
+                              value={labourData.totalHours}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <div className="col-md-4 col-sm-4"></div>
+                            <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={labourData.pricingMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="RATE PER HOUR / DAY"
+                              value={labourData.ratePerHourOrDay}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={labourData.totalPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={labourData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                         <hr />
@@ -2431,6 +2382,11 @@ function RepairServiceEstimate(props) {
                             <ReadOnlyField
                               label="JOB CODE DESCRIPTION"
                               value={consumableData.jobCodeDescription}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="PAYER"
+                              value={consumableData.payer}
                               className="col-md-4 col-sm-4"
                             />
                             {!consumableData.flatRateIndicator ? (
@@ -3225,60 +3181,35 @@ function RepairServiceEstimate(props) {
                             />
                             {!miscData.flatRateIndicator ? (
                               <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      PRICE METHOD
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {miscData.pricingMethod?.label}
-                                    </h6>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      PERCENTAGE OF BASE
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {miscData.percentageOfBase}
-                                    </h6>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      TOTAL BASE
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {miscData.basePrice}
-                                    </h6>
-                                  </div>
-                                </div>
+                                <ReadOnlyField
+                                  label="PRICE METHOD"
+                                  value={miscData.pricingMethod?.label}
+                                  className="col-md-4 col-sm-4"
+                                />
+                                <ReadOnlyField
+                                  label="PERCENTAGE OF BASE"
+                                  value={miscData.percentageOfBase}
+                                  className="col-md-4 col-sm-4"
+                                />
+                                <ReadOnlyField
+                                  label="TOTAL BASE"
+                                  value={miscData.basePrice}
+                                  className="col-md-4 col-sm-4"
+                                />
                               </>
                             ) : (
                               <></>
                             )}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  ADJUSTED PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.adjustedPrice}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={miscData.totalPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={miscData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                       </React.Fragment>

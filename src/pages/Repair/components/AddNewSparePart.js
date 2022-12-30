@@ -4,6 +4,7 @@ import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlin
 import SearchBox from "./SearchBox";
 import { useState } from "react";
 import { TextareaAutosize } from "@material-ui/core";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 const AddNewSparepartModal = (props) => {
   const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
@@ -435,120 +436,76 @@ const AddNewSparepartModal = (props) => {
         ) : (
           <div className="p-3">
             <div className="row mt-4">
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    GROUP NUMBER
-                  </p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.groupNumber}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">TYPE</p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.partType}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    PART NUMBER
-                  </p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.partNumber}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">QTY</p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.quantity}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    UNIT OF MESASURES
-                  </p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.unitOfMeasure}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    UNIT PRICE
-                  </p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.unitPrice
-                      ? parseFloat(props.sparePart.unitPrice).toFixed(2)
-                      : 0.0}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    EXTENDED PRICE
-                  </p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.extendedPrice
-                      ? parseFloat(props.sparePart.extendedPrice).toFixed(2)
-                      : 0.0}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">CURRENCY</p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.currency}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">% USAGE</p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.usagePercentage}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    TOTAL PRICE
-                  </p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.totalPrice
-                      ? props.sparePart.totalPrice
-                      : 0.0}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">COMMENT</p>
-                  <h6 className="font-weight-500">{props.sparePart.comment}</h6>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    DESCRIPTION
-                  </p>
-                  <h6 className="font-weight-500">
-                    {props.sparePart.description}
-                  </h6>
-                </div>
-              </div>
+              <ReadOnlyField
+                label="GROUP NUMBER"
+                value={props.sparePart.groupNumber}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="TYPE"
+                value={props.sparePart.partType}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="PART NUMBER"
+                value={props.sparePart.partNumber}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="QTY"
+                value={props.sparePart.quantity}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="UNIT OF MESASURES"
+                value={props.sparePart.unitOfMeasure}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="UNIT PRICE"
+                value={
+                  props.sparePart.unitPrice
+                    ? parseFloat(props.sparePart.unitPrice).toFixed(2)
+                    : 0.0
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="EXTENDED PRICE"
+                value={
+                  props.sparePart.extendedPrice
+                    ? parseFloat(props.sparePart.extendedPrice).toFixed(2)
+                    : 0.0
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="CURRENCY"
+                value={props.sparePart.currency}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="% USAGE"
+                value={props.sparePart.usagePercentage}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="TOTAL PRICE"
+                value={
+                  props.sparePart.totalPrice ? props.sparePart.totalPrice : 0.0
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="COMMENT"
+                value={props.sparePart.comment}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="DESCRIPTION"
+                value={props.sparePart.description}
+                className="col-md-6 col-sm-6"
+              />
             </div>
           </div>
         )}

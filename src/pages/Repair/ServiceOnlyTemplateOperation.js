@@ -15,6 +15,7 @@ import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { ReadOnlyField } from "./components/ReadOnlyField";
 
 function ServiceOnlyTemplateOperation(props) {
   const { activeElement, setActiveElement } = props.templateDetails;
@@ -480,65 +481,36 @@ function ServiceOnlyTemplateOperation(props) {
         ) : (
           <React.Fragment>
             <div className="row mt-4">
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    OPERATION #
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.operationNumber}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.componentCode}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    {" "}
-                    JOB CODE DESCRIPTION{" "}
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.jobCodeDescription}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    COMPONENT CODE DESCRIPTION
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.componentCodeDescription}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
-                  <h6 className="font-weight-600">
-                    {operationData.jobCodeDescription}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    DESCRIPTION
-                  </p>
-                  <h6 className="font-weight-600">
-                    {operationData.description}
-                  </h6>
-                </div>
-              </div>
+              <ReadOnlyField
+                label="OPERATION #"
+                value={operationData.operationNumber}
+                className="col-md-4 col-sm-4"
+              />
+              <ReadOnlyField
+                label="COMPONENT CODE"
+                value={operationData.componentCode}
+                className="col-md-4 col-sm-4"
+              />
+              <ReadOnlyField
+                label="JOB CODE DESCRIPTION"
+                value={operationData.jobCodeDescription}
+                className="col-md-4 col-sm-4"
+              />
+              <ReadOnlyField
+                label="COMPONENT CODE DESCRIPTION"
+                value={operationData.componentCodeDescription}
+                className="col-md-4 col-sm-4"
+              />
+              <ReadOnlyField
+                label="JOB CODE"
+                value={operationData.jobCodeDescription}
+                className="col-md-4 col-sm-4"
+              />
+              <ReadOnlyField
+                label="DESCRIPTION"
+                value={operationData.description}
+                className="col-md-4 col-sm-4"
+              />
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button

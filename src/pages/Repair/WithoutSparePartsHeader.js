@@ -39,7 +39,7 @@ import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
 import WithoutSparePartsSegments from "./WithoutSparePartsSegments";
-import { Rating, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
@@ -227,7 +227,6 @@ function WithoutSparePartsHeader(props) {
       });
   };
   const [headerLoading, setHeaderLoading] = useState(false);
-  const [rating, setRating] = useState(0);
   const [builderVersionOptions, setBuilderVersionOptions] = useState([
     { label: "Version 1", value: 1 },
   ]);
@@ -261,7 +260,6 @@ function WithoutSparePartsHeader(props) {
           : false,
     });
     setBId(result.id);
-    setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
     );
@@ -752,7 +750,6 @@ function WithoutSparePartsHeader(props) {
                     value={selBuilderStatus}
                   />
                 </div>
-                <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} />
               </div>
             </div>
             <div className="d-flex">

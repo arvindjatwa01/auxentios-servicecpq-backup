@@ -1614,7 +1614,7 @@ function ServiceOnlyTemplates(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="col-md-4 col-sm-4">
+                              {/* <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     NET PRICE (PARTS)
@@ -1627,7 +1627,7 @@ function ServiceOnlyTemplates(props) {
                                     value={pricingData.netPriceParts}
                                   />
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1695,8 +1695,13 @@ function ServiceOnlyTemplates(props) {
                         ) : (
                           <div className="row mt-3">
                             <ReadOnlyField
-                              label="NET PRICE"
-                              value={pricingData.netPrice}
+                              label="PRICE METHOD"
+                              value={pricingData.priceMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CURRENCY"
+                              value={pricingData.currency?.label}
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
@@ -1709,20 +1714,25 @@ function ServiceOnlyTemplates(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
-                              label="PRICE METHOD"
-                              value={pricingData.priceMethod?.label}
+                              label="NET PRICE (LABOR)"
+                              value={pricingData.netPriceLabor}
                               className="col-md-4 col-sm-4"
                             />
+                            <ReadOnlyField
+                              label="NET PRICE (MISC)"
+                              value={pricingData.netPriceMisc}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={pricingData.netPrice}
+                              className="col-md-4 col-sm-4"
+                            />                            
                             <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={pricingData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="CURRENCY"
-                              value={pricingData.currency?.label}
-                              className="col-md-4 col-sm-4"
-                            />
+                            />                            
                           </div>
                         )}
                       </TabPanel>

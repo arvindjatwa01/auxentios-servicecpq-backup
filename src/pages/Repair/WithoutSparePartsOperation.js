@@ -455,7 +455,7 @@ function WithoutSparePartsOperation(props) {
             <div className="row mt-4">
               <ReadOnlyField
                 label="OPERATION #"
-                value={operationData.operationNumber}
+                value={String(operationData.operationNumber).padStart(3, "0")}
                 className="col-md-6 col-sm-6"
               />
 

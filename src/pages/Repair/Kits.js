@@ -39,9 +39,9 @@ import {
   GridActionsCellItem,
   useGridApiContext,
 } from "@mui/x-data-grid";
-import {
-  getSearchQueryCoverage
-} from "../../services/index";
+import { getSearchQueryCoverage } from "../../services/index";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import ReplayIcon from "@mui/icons-material/Replay";
 import {
   fetchKITDetails,
   updateKITCoverage,
@@ -85,6 +85,7 @@ import QuerySearchComp from "./components/QuerySearchComp";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import AddNewSparepartModal from "./components/AddNewSparePart";
 import SearchComponent from "./components/SearchComponent";
+import { Typography } from "@material-ui/core";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -167,12 +168,10 @@ function Kits(props) {
   const [spareparts, setSpareparts] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [noOptionsCust, setNoOptionsCust] = useState(false);
-  const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsModelCoverage, setNoOptionsModelCoverage] = useState(false);
   const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
   const [partFieldViewonly, setPartFieldViewonly] = useState(false);
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
-  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -197,11 +196,12 @@ function Kits(props) {
     setVersion(e);
   };
   const [kitDBId, setKITDBId] = useState("");
-  const [version, setVersion] = useState({ value: "Gold", label: "Gold" });
+  const [version, setVersion] = useState({ value: "GOLD", label: "Gold" });
   const versionOptions = [
     { value: "GOLD", label: "Gold" },
     { value: "SILVER", label: "Silver" },
     { value: "BRONZE", label: "Bronze" },
+    { value: "STANDARD", label: "Bronze" },
   ];
   const [selKITStatus, setSelKITStatus] = useState({
     value: "DRAFT",
@@ -225,7 +225,7 @@ function Kits(props) {
       setFile(file);
     }
   };
-  const builderStatusOptions = [
+  const templateStatusOptions = [
     { value: "DRAFT", label: "Draft" },
     { value: "ACTIVE", label: "Active" },
     { value: "REVISED", label: "Revised" },
@@ -545,36 +545,7 @@ function Kits(props) {
     setMasterData([]);
   };
 
-  // Select machine from the search result
-  const handleModelSelect = (type, currentItem) => {
-    if (type === "model") {
-      setMachineData({
-        ...machineData,
-        model: currentItem.model,
-      });
-      setSearchModelResults([]);
-    } else if (type === "model-coverage") {
-      setCoverageRowData({
-        ...coverageRowData,
-        model: currentItem.model,
-      });
-      setSearchModelResults([]);
-    } else if (type === "equipmentNumber") {
-      setMachineData({
-        ...machineData,
-        model: currentItem.model,
-        fleetNo: currentItem.stockNumber,
-        serialNo: currentItem.equipmentNumber,
-        smu: currentItem.sensorId,
-        make: currentItem.maker,
-        family: currentItem.market,
-        productSegment: currentItem.productSegment,
-        productGroup: currentItem.productGroup,
-      });
-      setSearchSerialResults([]);
-    }
-  };
-
+  
   // Select model from the search result
   const handleCoverageModelSelect = (type, currentItem) => {
     if (type === "model") {
@@ -745,7 +716,7 @@ function Kits(props) {
     });
     setRating(result.rating);
     setSelKITStatus(
-      builderStatusOptions.filter((x) => x.value === result.status)[0]
+      templateStatusOptions.filter((x) => x.value === result.status)[0]
     );
     setVersion(
       versionOptions.find((element) => element.value === result.version)
@@ -1393,7 +1364,7 @@ function Kits(props) {
         message={snackMessage}
       />
       <div className="content-body" style={{ minHeight: "884px" }}>
-        <div class="container-fluid ">
+        <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
               <h5 className="font-weight-600 mb-0">Kits</h5>
@@ -1412,11 +1383,18 @@ function Kits(props) {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
-                    options={builderStatusOptions}
+                    options={templateStatusOptions}
                     value={selKITStatus}
                   />
                 </div>
-                <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} />
+                <Rating
+                  value={rating}
+                  size="small"
+                  sx={{ ml: 2 }}
+                  onChange={(event, newValue) => {
+                    setRating(newValue);
+                  }}
+                />
               </div>
             </div>
             <div className="d-flex">
@@ -1523,28 +1501,23 @@ function Kits(props) {
                 >
                   Kits Header
                 </span>
-                <a
-                  href={undefined}
-                  className="btn-sm text-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  <i
-                    className="fa fa-pencil"
-                    style={{ cursor: "pointer" }}
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <EditIcon
                     onClick={() =>
                       selKITStatus?.value === "DRAFT" ||
                       selKITStatus?.value === "REVISED"
                         ? makeHeaderEditable()
                         : handleSnack("info", "Builder is active!")
                     }
-                  ></i>
-                </a>{" "}
-                <a href="#" className="btn-sm text-white">
-                  <i class="fa fa-bookmark-o" aria-hidden="true"></i>
-                </a>{" "}
-                <a href="#" className="btn-sm text-white">
-                  <i class="fa fa-folder-o" aria-hidden="true"></i>
-                </a>
+                  />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <ReplayIcon />
+                  </Tooltip>
+                </div>
               </div>
               {/* <div className="hr"></div> */}
             </h5>
@@ -2057,77 +2030,77 @@ function Kits(props) {
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                                <div className="form-group">
-                                  <label className="text-light-dark font-size-12 font-weight-500">
-                                    <span className=" mr-2">VALID FROM</span>
-                                  </label>
-                                  <div className="align-items-center date-box">
-                                    <LocalizationProvider
-                                      dateAdapter={AdapterDateFns}
-                                    >
-                                      <MobileDatePicker
-                                        inputFormat="dd/MM/yyyy"
-                                        className="form-controldate border-radius-10"
-                                        // minDate={new Date()}
-                                        closeOnSelect
-                                        value={generalData.validFrom}
-                                        onChange={(e) =>
-                                          setGeneralData({
-                                            ...generalData,
-                                            validFrom: e,
-                                          })
-                                        }
-                                        renderInput={(params) => (
-                                          <TextField
-                                            {...params}
-                                            variant="standard"
-                                            inputProps={{
-                                              ...params.inputProps,
-                                              style: FONT_STYLE,
-                                            }}
-                                          />
-                                        )}
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                <span className=" mr-2">VALID FROM</span>
+                              </label>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    // minDate={new Date()}
+                                    closeOnSelect
+                                    value={generalData.validFrom}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        validFrom: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
                                       />
-                                    </LocalizationProvider>
-                                  </div>
-                                </div>
+                                    )}
+                                  />
+                                </LocalizationProvider>
                               </div>
-                              <div className="col-md-6 col-sm-6">
-                                <div className="form-group">
-                                  <label className="text-light-dark font-size-12 font-weight-500">
-                                    <span className=" mr-2">VALID TO</span>
-                                  </label>
-                                  <div className="align-items-center date-box w-100">
-                                    <LocalizationProvider
-                                      dateAdapter={AdapterDateFns}
-                                    >
-                                      <MobileDatePicker
-                                        inputFormat="dd/MM/yyyy"
-                                        className="form-controldate border-radius-10"
-                                        minDate={generalData.validFrom}
-                                        closeOnSelect
-                                        value={generalData.validTo}
-                                        onChange={(e) =>
-                                          setGeneralData({
-                                            ...generalData,
-                                            validTo: e,
-                                          })
-                                        }
-                                        renderInput={(params) => (
-                                          <TextField
-                                            {...params}
-                                            variant="standard"
-                                            inputProps={{
-                                              ...params.inputProps,
-                                              style: FONT_STYLE,
-                                            }}
-                                          />
-                                        )}
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                <span className=" mr-2">VALID TO</span>
+                              </label>
+                              <div className="align-items-center date-box w-100">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={generalData.validFrom}
+                                    closeOnSelect
+                                    value={generalData.validTo}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        validTo: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
                                       />
-                                    </LocalizationProvider>
-                                  </div>
-                                </div>
+                                    )}
+                                  />
+                                </LocalizationProvider>
                               </div>
+                            </div>
+                          </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -2283,24 +2256,24 @@ function Kits(props) {
                           value={generalData.owner}
                           className="col-md-4 col-sm-4"
                         />
-                         <ReadOnlyField
-                              label="VALID FROM"
-                              value={
-                                <Moment format="DD/MM/YYYY">
-                                  {generalData.validFrom}
-                                </Moment>
-                              }
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="VALID TO"
-                              value={
-                                <Moment format="DD/MM/YYYY">
-                                  {generalData.validTo}
-                                </Moment>
-                              }
-                              className="col-md-4 col-sm-4"
-                            />
+                        <ReadOnlyField
+                          label="VALID FROM"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {generalData.validFrom}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="VALID TO"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {generalData.validTo}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
                         <ReadOnlyField
                           label="NEXT REVISION DATE"
                           value={
@@ -2582,242 +2555,6 @@ function Kits(props) {
                         <></>
                       )}
                     </div>
-
-                    {/* <div className="row" style={{ display: "none" }}>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            <Checkbox className="text-white" {...label} />
-                          </label>
-                          {makeKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
-                              isClearable={true}
-                              value={coverageData.makeSelect}
-                              isLoading={makeKeyValue.length > 0 ? false : true}
-                              options={makeKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="email"
-                              className="form-control border-radius-10"
-                              name="make"
-                              placeholder=""
-                              value={coverageData.make}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MAKE
-                          </label>
-                          {makeKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
-                              isClearable={true}
-                              value={coverageData.makeSelect}
-                              isLoading={makeKeyValue.length > 0 ? false : true}
-                              options={makeKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="make"
-                              placeholder=""
-                              value={coverageData.make}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MODEL(S)
-                          </label>
-                          {modelKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) =>
-                                handleDropdownChange(ENUM.MODEL, e)
-                              }
-                              isClearable={true}
-                              value={coverageData.modelSelect}
-                              isLoading={modelKeyValue.length > 0 ? false : true}
-                              options={modelKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="email"
-                              className="form-control border-radius-10"
-                              name="modal"
-                              placeholder=""
-                              value={coverageData.modal}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PREFIX(S)
-                          </label>
-                          {prefixKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) =>
-                                handleDropdownChange(ENUM.PREFIX, e)
-                              }
-                              isClearable={true}
-                              value={coverageData.prefixSelect}
-                              isLoading={prefixKeyValue.length > 0 ? false : true}
-                              options={prefixKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="email"
-                              className="form-control border-radius-10"
-                              name="prefix"
-                              placeholder=""
-                              value={coverageData.prefix}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            MACHINE/COMPOMENT
-                          </label>
-                          <Select
-                            onChange={(e) =>
-                              handleDropdownChange(ENUM.MACHINE_COMPONENT, e)
-                            }
-                            isClearable={true}
-                            value={coverageData.machineComponent}
-                            isLoading={typeKeyValue.length > 0 ? false : true}
-                            options={typeKeyValue}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            MACHINE TYPE
-                          </label>
-                          <Select
-                            onChange={(e) =>
-                              handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                            }
-                            isClearable={true}
-                            value={coverageData.machineType}
-                            isLoading={
-                              machineTypeKeyValue.length > 0 ? false : true
-                            }
-                            options={machineTypeKeyValue}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            COVERAGE DATA
-                          </label>
-                          <h6>
-                            Coverage123
-                            <span
-                              className="ml-3 cursor"
-                              onClick={() => setShowAvailableCoverage(true)}
-                            >
-                              <i className="fa fa-external-link"></i>
-                            </span>
-                          </h6>
-                        </div>
-                      </div>
-                    </div> */}
-
-                    {/* {isView ? (
-                      <div className="row">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MAKE
-                            </p>
-                            <h6 className="font-weight-600">Caterpillar</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MODEL(S)
-                            </p>
-                            <h6 className="font-weight-600">D8T,D6T</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PREFIX(S)
-                            </p>
-                            <h6 className="font-weight-600">MBB</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MACHINE/COMPOMENT
-                            </p>
-                            <h6 className="font-weight-600">Machine</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MACHINE TYPE
-                            </p>
-                            <h6 className="font-weight-600">New</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MACHINE DATE
-                            </p>
-                            <h6 className="font-weight-600">Coverrage123</h6>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <></>
-                    )} */}
-
-                    {/* <div className="row" style={{ justifyContent: "right" }}>
-                      {selectedCoverageData.length > 0 ? (
-                        <button
-                          type="button"
-                          onClick={handleNextClick}
-                          className="btn btn-light"
-                          id="coverage"
-                        >
-                          Save
-                        </button>
-                      ) : (
-                        <></>
-                      )}
-                    </div> */}
                   </TabPanel>
                 </TabContext>
               )}
@@ -2834,15 +2571,18 @@ function Kits(props) {
                     <h5 className="mr-2 mb-0 text-black">
                       <span>Parts Table</span>
                     </h5>
-                    <span
+                    <Typography
+                      className="text-black"
                       style={{
                         backgroundColor: "#DCCB4C",
                         borderRadius: 10,
-                        paddingInline: 10,
+                        paddingInline: 15,
+                        paddingBlock: 3,
+                        fontSize: 12,
                       }}
                     >
-                      {generalData.version}
-                    </span>
+                      {version?.label}
+                    </Typography>
                   </div>
                   <SearchComponent
                     querySearchSelector={querySearchSelector}
@@ -3512,7 +3252,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         Make
                       </label>
@@ -3531,7 +3270,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         Family
                       </label>
@@ -3550,7 +3288,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         Model No
                       </label>
@@ -3570,7 +3307,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         Serial No Prefix
                       </label>
@@ -3594,7 +3330,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         Start Serial No
                       </label>
@@ -3617,7 +3352,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         End Serial No
                       </label>
@@ -3641,7 +3375,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         Fleet
                       </label>
@@ -3664,7 +3397,6 @@ function Kits(props) {
                     <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
                       >
                         Fleet Size
                       </label>

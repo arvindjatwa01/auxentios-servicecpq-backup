@@ -30,6 +30,7 @@ import LoadingProgress from "./components/Loader";
 import SearchBox from "./components/SearchBox";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { ReadOnlyField } from "./components/ReadOnlyField";
 function ServiceOnlyTemplateSegment(props) {
   const { activeElement, setActiveElement, fetchAllDetails } =
     props.templateDetails;
@@ -476,50 +477,30 @@ function ServiceOnlyTemplateSegment(props) {
             ) : (
               <React.Fragment>
                 <div className="row mt-4">
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        SEGMENT #
-                      </p>
-                      <h6 className="font-weight-500">
-                        {segmentData.segmentNumber}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        JOB CODE
-                      </p>
-                      <h6 className="font-weight-500">{segmentData.jobCode}</h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group">
-                      <p className="font-size-12 font-weight-500 mb-2">TITLE</p>
-                      <h6 className="font-weight-500">{segmentData.title} </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        COMPONENT CODE
-                      </p>
-                      <h6 className="font-weight-500">
-                        {segmentData.componentCode}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        COMPONENT CODE DESCRIPTION{" "}
-                      </p>
-                      <h6 className="font-weight-500">
-                        {segmentData.description}
-                      </h6>
-                    </div>
-                  </div>
+                  <ReadOnlyField
+                    label="SEGMENT #"
+                    value={String(segmentData.segmentNumber).padStart(2, "0")}
+                    className="col-md-6 col-sm-6"
+                  />
+                  <ReadOnlyField
+                    label="TITLE"
+                    value={segmentData.title}
+                    className="col-md-6 col-sm-6"
+                  />
+                  <ReadOnlyField
+                    label="JOB CODE"
+                    value={segmentData.jobCode}
+                    className="col-md-6 col-sm-6"
+                  />
+                  <ReadOnlyField
+                    label="COMPONENT CODE"
+                    value={
+                      segmentData.componentCode +
+                      " - " +
+                      segmentData.description
+                    }
+                    className="col-md-6 col-sm-6"
+                  />
                 </div>
                 <div className="Add-new-segment-div p-3 border-radius-10">
                   <button

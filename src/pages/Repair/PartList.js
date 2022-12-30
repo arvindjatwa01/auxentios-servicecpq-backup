@@ -43,7 +43,7 @@ import uploadIcon from "../../assets/icons/svg/upload.svg";
 // import SearchIcon from "@mui/icons-material/Search";
 import {
   debounce,
-  Rating,
+  // Rating,
   TextareaAutosize,
   TextField,
   Tooltip,
@@ -84,6 +84,10 @@ import LoadingProgress from "./components/Loader";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import ModalShare from "./components/ModalShare";
 import SearchComponent from "./components/SearchComponent";
+// import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import ReplayIcon from "@mui/icons-material/Replay";
+// import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
@@ -194,9 +198,10 @@ function PartList(props) {
   const [headerLoading, setHeaderLoading] = useState(false);
   const [partsLoading, setPartsLoading] = useState(false);
   const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
-  const [rating, setRating] = useState(null);
+  // const [rating, setRating] = useState(null);
   const [pageSize, setPageSize] = useState(5);
   const [page, setPage] = useState(0);
+  const [savedHeaderDetails, setSavedBuilderDetails] = useState([]);
   const [tagClicked, setTagClicked] = useState("");
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
@@ -288,10 +293,10 @@ function PartList(props) {
   const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
   const [partFieldViewonly, setPartFieldViewonly] = useState(false);
   const validityOptions = [
-    { value: "15", label: "15 days" },
-    { value: "30", label: "1 month" },
-    { value: "45", label: "45 days" },
-    { value: "60", label: "2 months" },
+    { value: 15, label: "15 days" },
+    { value: 30, label: "1 month" },
+    { value: 45, label: "45 days" },
+    { value: 60, label: "2 months" },
   ];
 
   // Retrieve price methods
@@ -401,6 +406,7 @@ function PartList(props) {
   }, [sortDetail, filterQuery]);
 
   const populateHeader = (result) => {
+    setSavedBuilderDetails(result);
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
       machineViewOnly: result.serialNo ? true : false,
@@ -413,7 +419,7 @@ function PartList(props) {
           ? true
           : false,
     });
-    setRating(result.rating);
+    // setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
     );
@@ -426,66 +432,92 @@ function PartList(props) {
       label: "Version " + result.versionNumber,
       value: result.versionNumber,
     });
+    populateCustomerData(result);
+    populateMachineData(result);
+    populateGeneralData(result);
+    populateEstData(result);
+    populatePricingData(result);
+  };
 
+  const populateCustomerData = (result) => {
     setCustomerData({
-      customerID: result.customerId,
-      contactEmail: result.contactEmail,
-      contactName: result.contactName,
-      contactPhone: result.contactPhone,
-      customerGroup: result.customerGroup,
-      customerName: result.customerName,
+      customerID: result.customerId ? result.customerId : "",
+      contactEmail: result.contactEmail ? result.contactEmail : "",
+      contactName: result.contactName ? result.contactName : "",
+      contactPhone: result.contactPhone ? result.contactPhone : "",
+      customerGroup: result.customerGroup ? result.customerGroup : "",
+      customerName: result.customerName ? result.customerName : "",
       source: result.source ? result.source : "User Generated",
-      customerSegment: result.customerSegment,
-      country: result.country,
-      regionOrState: result.regionOrState,
+      customerSegment: result.customerSegment ? result.customerSegment : "",
+      country: result.country ? result.country : "",
+      regionOrState: result.regionOrState ? result.regionOrState : "",
     });
+    setSearchCustResults([]);
+  };
+  const populateMachineData = (result) => {
     setMachineData({
-      make: result.make,
-      family: result.family,
-      model: result.model,
-      serialNo: result.serialNo,
-      fleetNo: result.fleetNo,
-      smu: result.smu,
-      registrationNo: result.registrationNo,
-      chasisNo: result.chasisNo,
-      productSegment: result.productSegment,
-      productGroup: result.productGroup,
+      make: result.make ? result.make : "",
+      family: result.family ? result.family : "",
+      model: result.model ? result.model : "",
+      serialNo: result.serialNo ? result.serialNo : "",
+      fleetNo: result.fleetNo ? result.fleetNo : "",
+      smu: result.smu ? result.smu : "",
+      registrationNo: result.registrationNo ? result.registrationNo : "",
+      chasisNo: result.chasisNo ? result.chasisNo : "",
+      productSegment: result.productSegment ? result.productSegment : "",
+      productGroup: result.productGroup ? result.productGroup : "",
     });
+    setSearchModelResults([]);
+    setSearchSerialResults([]);
+  };
+  const populateGeneralData = (result) => {
+    console.log(result.validityDays, validityOptions.find(
+      (element) => element.value === result.validityDays
+    ));
     setGeneralData({
-      description: result.description,
+      description: result.description ? result.description : "",
       estimationDate: result.estimationDate
         ? result.estimationDate
         : new Date(),
-      estimationNo: result.estimationNumber,
-      reference: result.reference,
-      validity: validityOptions.find(
-        (element) => element.value == result.validityDays
-      ),
-      version: result.versionNumber,
-    });
-    setEstimationData({
-      approvedBy: result.approver,
-      preparedBy: result.preparedBy,
-      preparedOn: result.preparedOn ? result.preparedOn : new Date(),
-      revisedBy: result.revisedBy,
-      revisedOn: result.revisedOn ? result.revisedOn : new Date(),
-      salesOffice: salesOfficeOptions.find(
-        (element) => element.value === result.salesOffice
-      ),
-    });
-    setPricingData({
-      priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod: priceMethodOptions.find(
-        (element) => element.value === result.priceMethod
-      ),
-      netPrice: result.netPrice ? result.netPrice : 0.0,
-      adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
-      currency: currencyOptions.find(
-        (element) => element.value === result.currency
-      ),
+      estimationNo: result.estimationNumber ? result.estimationNumber : "",
+      reference: result.reference ? result.reference : "",
+      validity: result.validityDays && result.validityDays !== "EMPTY"
+        ? validityOptions.find(
+            (element) => element.value === result.validityDays
+          )
+        : { label: "", value: "" },
+      version: result.versionNumber ? result.versionNumber : "",
     });
   };
-
+  const populateEstData = (result) => {
+    setEstimationData({
+      approvedBy: result.approver ? result.approver : "",
+      preparedBy: result.preparedBy ? result.preparedBy : "",
+      preparedOn: result.preparedOn ? result.preparedOn : new Date(),
+      revisedBy: result.revisedBy ? result.revisedBy : "",
+      revisedOn: result.revisedOn ? result.revisedOn : new Date(),
+      salesOffice: result.salesOffice
+        ? salesOfficeOptions.find(
+            (element) => element.value === result.salesOffice
+          )
+        : { label: "", value: "" },
+    });
+  };
+  const populatePricingData = (result) => {
+    setPricingData({
+      priceDate: result.priceDate ? result.priceDate : new Date(),
+      priceMethod: result.priceMethod && result.priceMethod !== "EMPTY"
+        ? priceMethodOptions.find(
+            (element) => element.value === result.priceMethod
+          )
+        : { label: "", value: "" },
+      netPrice: result.netPrice ? result.netPrice : 0.0,
+      adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
+      currency: result.currency
+        ? currencyOptions.find((element) => element.value === result.currency)
+        : { label: "", value: "" },
+    });
+  };
   const createVersion = async (versionDesc) => {
     await createBuilderVersion(bId, versionDesc)
       .then((result) => {
@@ -708,9 +740,13 @@ function PartList(props) {
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
+          setSavedBuilderDetails(result);
           setValue("machine");
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
-          handleSnack("success", "Customer details updated!");
+          handleSnack(
+            "success",
+            "Partlist header customer details updated successfully!"
+          );
         })
         .catch((err) => {
           handleSnack(
@@ -745,6 +781,7 @@ function PartList(props) {
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
+        setSavedBuilderDetails(result);
         setValue("estimation");
         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
         handleSnack("success", "Machine details updated!");
@@ -765,6 +802,7 @@ function PartList(props) {
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
+        setSavedBuilderDetails(result);
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
         handleSnack("success", "General details updated!");
@@ -789,6 +827,7 @@ function PartList(props) {
     };
     updateBuilderEstimation(bId, data)
       .then((result) => {
+        setSavedBuilderDetails(result);
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
         handleSnack("success", "Estimation details updated!");
@@ -814,7 +853,7 @@ function PartList(props) {
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
-        // setValue("price");
+        setSavedBuilderDetails(result);
         fetchAllDetails(builderId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
 
@@ -1212,6 +1251,18 @@ function PartList(props) {
     setSelectedMasterData([]);
   };
 
+  const handleResetData = (action) => {
+    if (action === "RESET") {
+      value === "customer" && populateCustomerData(savedHeaderDetails);
+      value === "machine" && populateMachineData(savedHeaderDetails);
+      value === "general" && populateGeneralData(savedHeaderDetails);
+      value === "estimation" && populateEstData(savedHeaderDetails);
+      value === "price" && populatePricingData(savedHeaderDetails);
+    } else if (action === "CANCEL") {
+      populateHeader(savedHeaderDetails);
+    }
+    // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+  };
   // Logic to make the header tabs editable
   const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
@@ -1280,7 +1331,7 @@ function PartList(props) {
         .then((result) => {
           handleSnack(
             "success",
-            `👏 New parts have been added with default quantity as 1!`
+            `New parts have been added with default quantity as 1 successfully!`
           );
           if (result) {
             fetchAllDetails(builderId, generalData.version);
@@ -1462,7 +1513,7 @@ function PartList(props) {
                     value={selBuilderStatus}
                   />
                 </div>
-                <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} />
+                {/* <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} /> */}
               </div>
             </div>
             <div className="d-flex">
@@ -1597,38 +1648,38 @@ function PartList(props) {
                 >
                   Part List Header
                 </span>
-                <a
-                  href={undefined}
-                  className="btn-sm text-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  <i
-                    className="fa fa-pencil"
-                    aria-hidden="true"
-                    onClick={() =>
-                      selBuilderStatus?.value === "DRAFT" ||
-                      selBuilderStatus?.value === "REVISED"
-                        ? makeHeaderEditable()
-                        : handleSnack("info", "Builder is active!")
-                    }
-                  ></i>
-                </a>{" "}
-                <a
-                  href={undefined}
-                  className="btn-sm text-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  <i className="fa fa-bookmark-o" aria-hidden="true"></i>
-                </a>{" "}
-                <a
-                  href="#"
-                  className="btn-sm text-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  <i className="fa fa-folder-o" aria-hidden="true"></i>
-                </a>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <EditIcon
+                      onClick={() =>
+                        selBuilderStatus?.value === "DRAFT" ||
+                        selBuilderStatus?.value === "REVISED"
+                          ? makeHeaderEditable()
+                          : handleSnack(
+                              "info",
+                              "Active BUILDER cannot be changed, change status to REVISE"
+                            )
+                      }
+                    />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Reset">
+                    <ReplayIcon onClick={() => handleResetData("RESET")} />
+                  </Tooltip>
+                </div>
+                {/* <div className="btn-sm cursor text-white">
+                  <Tooltip title="Share">
+                    <ShareOutlinedIcon />
+                  </Tooltip>
+                </div>
+
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Share">
+                    <ReviewAddIcon />
+                  </Tooltip>
+                </div> */}
               </div>
-              {/* <div className="hr"></div> */}
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
               {headerLoading ? (
@@ -1653,7 +1704,7 @@ function PartList(props) {
                         <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 SOURCE
                               </label>
                               <input
@@ -1661,7 +1712,6 @@ function PartList(props) {
                                 disabled
                                 className="form-control border-radius-10 text-primary"
                                 id="customer-src"
-                                placeholder="Placeholder (Required)"
                                 value={customerData.source}
                               />
                             </div>
@@ -1695,13 +1745,12 @@ function PartList(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="customerNameid"
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group w-100">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 CONTACT NAME
                               </label>
                               <input
@@ -1711,13 +1760,12 @@ function PartList(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="contactNameid"
-                                placeholder="Placeholder (Required)"
                               />
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 CONTACT EMAIL
                               </label>
                               <input
@@ -1727,7 +1775,6 @@ function PartList(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="contatEmail"
-                                placeholder="Placeholder (Required)"
                               />
                             </div>
                           </div>
@@ -1742,13 +1789,12 @@ function PartList(props) {
                                 onChange={handleCustomerDataChange}
                                 value={customerData.contactPhone}
                                 name="contactPhone"
-                                placeholder="Phone (Optional)"
                               />
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 CUSTOMER GROUP
                               </label>
                               <input
@@ -1758,7 +1804,6 @@ function PartList(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="custGroup"
-                                placeholder="Placeholder (Required)"
                               />
                             </div>
                           </div>
@@ -1767,6 +1812,13 @@ function PartList(props) {
                           className="row"
                           style={{ justifyContent: "right" }}
                         >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
@@ -1864,7 +1916,7 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 MODEL
                               </label>
                               <SearchBox
@@ -1881,7 +1933,7 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 SERIAL #
                               </label>
                               <SearchBox
@@ -1911,7 +1963,6 @@ function PartList(props) {
                                 name="smu"
                                 value={machineData.smu}
                                 onChange={handleMachineDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -1927,7 +1978,6 @@ function PartList(props) {
                                 value={machineData.fleetNo}
                                 name="fleetNo"
                                 id="fleet-id"
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -1943,7 +1993,6 @@ function PartList(props) {
                                 value={machineData.registrationNo}
                                 name="registrationNo"
                                 id="registration-id"
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -1959,7 +2008,6 @@ function PartList(props) {
                                 onChange={handleMachineDataChange}
                                 value={machineData.chasisNo}
                                 name="chasisNo"
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -1968,6 +2016,13 @@ function PartList(props) {
                           className="row"
                           style={{ justifyContent: "right" }}
                         >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
@@ -2033,13 +2088,12 @@ function PartList(props) {
                         <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 PREPARED BY
                               </label>
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Required"
                                 value={estimationData.preparedBy}
                                 name="preparedBy"
                                 onChange={handleEstimationDataChange}
@@ -2057,13 +2111,12 @@ function PartList(props) {
                                 value={estimationData.approvedBy}
                                 name="approvedBy"
                                 onChange={handleEstimationDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="align-items-center date-box">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 PREPARED ON
                               </label>
 
@@ -2073,10 +2126,6 @@ function PartList(props) {
                                 <MobileDatePicker
                                   inputFormat="dd/MM/yyyy"
                                   className="form-controldate border-radius-10"
-                                  // sx={{
-                                  //   "&& .MuiPickersDay-dayWithMargin": {color: '#fff !important'},
-                                  //   }}
-                                  // InputProps={{style: {...FONT_STYLE, color: '#fff'}}}
                                   minDate={estimationData.preparedOn}
                                   maxDate={new Date()}
                                   closeOnSelect
@@ -2112,7 +2161,6 @@ function PartList(props) {
                                 value={estimationData.revisedBy}
                                 name="revisedBy"
                                 onChange={handleEstimationDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -2153,7 +2201,7 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 SALES OFFICE / BRANCH
                               </label>
                               <Select
@@ -2164,7 +2212,6 @@ function PartList(props) {
                                   })
                                 }
                                 options={salesOfficeOptions}
-                                placeholder="Required"
                                 value={estimationData.salesOffice}
                                 styles={FONT_STYLE_SELECT}
                               />
@@ -2178,11 +2225,18 @@ function PartList(props) {
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
                             onClick={updateEstData}
                             disabled={
-                              !estimationData.preparedBy ||
-                              !estimationData.preparedOn ||
-                              !estimationData.salesOffice
+                              !(estimationData.preparedBy &&
+                              estimationData.preparedOn &&
+                              estimationData.salesOffice?.value)
                             }
                           >
                             Save & Next
@@ -2253,14 +2307,13 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 DESCRIPTION
                               </label>
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
                                 id="desc-id"
-                                placeholder="Required"
                                 maxLength={140}
                                 value={generalData.description}
                                 onChange={(e) =>
@@ -2309,14 +2362,13 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 REFERENCE
                               </label>
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
                                 id="desc-id"
-                                placeholder="Required"
                                 maxLength={140}
                                 value={generalData.reference}
                                 onChange={(e) =>
@@ -2330,7 +2382,7 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 VALIDITY
                               </label>
                               <Select
@@ -2342,7 +2394,6 @@ function PartList(props) {
                                   })
                                 }
                                 options={validityOptions}
-                                placeholder="Required"
                                 value={generalData.validity}
                                 styles={FONT_STYLE_SELECT}
                               />
@@ -2356,7 +2407,6 @@ function PartList(props) {
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Placeholder (Optional)"
                                 disabled
                                 value={parseFloat(
                                   selectedVersion.value
@@ -2372,13 +2422,20 @@ function PartList(props) {
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
                             onClick={updateGeneralData}
                             disabled={
-                              !generalData.estimationDate ||
-                              !generalData.description ||
-                              !generalData.estimationNo ||
-                              !generalData.reference ||
-                              !generalData.validity
+                              !(generalData.estimationDate &&
+                              generalData.description &&
+                              generalData.estimationNo &&
+                              generalData.reference &&
+                              generalData.validity?.value )
                             }
                           >
                             Save & Next
@@ -2437,14 +2494,13 @@ function PartList(props) {
                                 type="text"
                                 disabled
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
                                 value={pricingData.netPrice}
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
                             <div className="align-items-center date-box">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 PRICE DATE
                               </label>
                               <LocalizationProvider
@@ -2493,7 +2549,7 @@ function PartList(props) {
                       </div> */}
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 PRICE METHOD
                               </label>
                               <Select
@@ -2504,7 +2560,6 @@ function PartList(props) {
                                   })
                                 }
                                 options={priceMethodOptions}
-                                placeholder="Required"
                                 value={pricingData.priceMethod}
                                 styles={FONT_STYLE_SELECT}
                               />
@@ -2524,7 +2579,6 @@ function PartList(props) {
                                   )
                                 }
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
                                 value={
                                   pricingData.priceMethod?.value === "FLAT_RATE"
                                     ? pricingData.adjustedPrice
@@ -2542,7 +2596,7 @@ function PartList(props) {
 
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
+                              <label className="text-light-dark font-size-12 font-weight-500 required">
                                 CURRENCY
                               </label>
                               <Select
@@ -2553,7 +2607,6 @@ function PartList(props) {
                                   })
                                 }
                                 options={currencyOptions}
-                                placeholder="Required"
                                 value={pricingData.currency}
                                 styles={FONT_STYLE_SELECT}
                               />
@@ -2567,14 +2620,24 @@ function PartList(props) {
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
                             onClick={updatePriceData}
                             disabled={
-                              !(pricingData.priceDate &&
-                              pricingData.priceMethod &&
-                              pricingData.currency &&
-                              pricingData.priceMethod?.value === "FLAT_RATE"
-                                ? pricingData.adjustedPrice > 0
-                                : true)
+                              !(
+                                pricingData.priceDate &&
+                                pricingData.priceMethod !== "EMPTY" &&
+                                pricingData.priceMethod?.value !== "" &&
+                                (pricingData.priceMethod?.value === "FLAT_RATE"
+                                  ? pricingData.adjustedPrice > 0
+                                  : true) &&
+                                pricingData.currency?.value !== ""
+                              )
                             }
                           >
                             Save
