@@ -1243,14 +1243,15 @@ const AddPortfolioItem = (props) => {
     var searchStr = e.target.value;
     getSearchKitId(searchStr)
       .then((res) => {
-        // console.log("search Query Result --------- :", res);
+        console.log("search Query Result --------- :", res);
         // setMasterData(res);
         $(`.scrollbar-model`).css("display", "block");
-        setQuerySearchRelatedKitResult(res)
+
         var preArr = [];
         for (var n = 0; n < res.length; n++) {
           preArr.push({ label: res[n].prefix, value: res[n].prefix })
         }
+        setQuerySearchRelatedKitResult(res)
         // setQuerySearchModelPrefixOption(preArr);
       })
       .catch((err) => {
@@ -1913,12 +1914,59 @@ const AddPortfolioItem = (props) => {
 
 
   };
+
+  const makeKitEditable = (selectedTemplate) => {
+    let templateDetails = {
+      templateId: "",
+      templateDBId: "",
+      partListNo: "",
+      partListId: "",
+      type: "fetch",
+    };
+
+    // templateDetails.templateId = selectedTemplate.templateId;
+    // templateDetails.templateDBId = selectedTemplate.id;
+    // history.push({
+    //   pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
+    //   state: templateDetails,
+    // });
+  }
+
+  const makeHeaderDataEditable = () => {
+    try {
+      if (props.passItemEditRowData) {
+        if (props.passItemEditRowData.itemHeaderModel.status == "ACTIVE") {
+          toast(`😐 Active ${(props.compoFlag == "itemEdit" &&
+            props.compoFlagTest == "itemEditPort") ? "Portfolio Item" :
+            (props.compoFlag == "itemEdit" &&
+              props.compoFlagTest == "itemEditBundle") ? "Bundle" : ""} cannot be changed, change status to revise to modify`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          setEditable(false)
+        }
+      } else {
+        // setBundleAndServiceEditAble(false);
+        // setIsActiveStatus(false);
+        setEditable(false)
+      }
+    } catch (error) {
+
+    }
+  }
+
   return (
     <>
       <div className="ligt-greey-bg p-3 d-none">
         <div>
           {props.compoFlag === "itemEdit" && (
-            <span className="mr-3 cursor" onClick={() => setEditable(false)}>
+            <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
             </span>
@@ -2306,7 +2354,7 @@ const AddPortfolioItem = (props) => {
               /> */}
               {
                 <ul
-                  className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                  className={`list - group custommodelselectsearch customselectsearch - list scrollbar scrollbar - model style`}
                   id="style"
                 >
                   {querySearchStandardJobResult.map((currentItem, j) => (
@@ -2468,7 +2516,7 @@ const AddPortfolioItem = (props) => {
         </div> */}
         <div>
           {props.compoFlag === "itemEdit" && (
-            <span className="mr-3 cursor" onClick={() => setEditable(false)}>
+            <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
             </span>
@@ -2505,10 +2553,19 @@ const AddPortfolioItem = (props) => {
               <Tab label="Item Summary(s)" value="itemSummary" />
               <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
 
-              <Tab label="Related template(s)" value="relatedTemplate" disabled={addPortFolioItem.repairOption != "" && editable != true} />
+              <Tab
+                label="Related template(s)"
+                value="relatedTemplate"
+                // disabled={addPortFolioItem.repairOption != "" && editable != true}
+                disabled={addPortFolioItem.repairOption != ""}
+              />
               <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
 
-              <Tab label="Related Kit" value="relatedKit" disabled={addPortFolioItem.templateId != "" && editable != true} />
+              <Tab
+                label="Related Kit"
+                value="relatedKit"
+                // disabled={addPortFolioItem.templateId != "" && editable != true} />
+                disabled={addPortFolioItem.templateId != ""} />
             </TabList>
           </Box>
           <TabPanel value="itemSummary">
@@ -3326,11 +3383,35 @@ const AddPortfolioItem = (props) => {
                       >
                         TEMPLATE ID
                       </label>
-                      <a
-                        href={undefined}
-                        className="input-search cursor text-primary"
-                        onClick={() => setModelShowForTemplate(true)}
-                      ><SearchIcon style={{ fontSize: "34px" }} /></a>
+                      {props.compoFlag === "itemEdit" ?
+                        <>
+                          <a
+                            href={undefined}
+                            className="input-search cursor text-primary"
+                            onClick={() => makeKitEditable(addPortFolioItem.templateId)}
+                          >
+                            <svg style={{ width: "20px", fill: "#872ff7", paddingBottom: "5px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                              <g>
+                                <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                                <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                              </g>
+                            </svg>
+                            {/* <SearchIcon style={{ fontSize: "34px" }} /> */}
+                          </a>
+                        </> : <>
+                          <a
+                            href={undefined}
+                            className="input-search cursor text-primary"
+                            onClick={() => setModelShowForTemplate(true)}
+                          ><SearchIcon style={{ fontSize: "34px" }} /></a>
+                        </>}
                       <input
                         type="text"
                         className="form-control text-primary border-radius-10 position-relative"
@@ -3343,7 +3424,7 @@ const AddPortfolioItem = (props) => {
                       {
                         <ul
                           className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
-                          id="style"
+                          id="style" style={{ display: "block" }}
                         >
                           {querySearchStandardJobResult.map((currentItem, j) => (
                             <li
@@ -3522,7 +3603,7 @@ const AddPortfolioItem = (props) => {
 
                                     {
                                       <ul
-                                        className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                        className={`list - group customselectsearch - list scrollbar scrollbar - ${ i } style`}
                                         id="style"
                                       >
                                         {obj.selectOptions.map((currentItem, j) => (
@@ -3604,50 +3685,50 @@ const AddPortfolioItem = (props) => {
                               options={columnSearchKeyValue}
                               placeholder="Add by"
                             />
-                              {typeOfSearch != null ? (
-                            <div className="customselect d-flex align-items-center border-radius-10 d-flex ml-3">
-                              <span>
-                                <a href="#" className="btn-sm">
-                                  +
-                                </a>
-                              </span>
-                              <Select
-                                onChange={handleTypeOfSearchColumnChange}
-                                isClearable={true}
-                                value={typeOfSearchColumn}
-                                options={typeOfSearchColumnKeyValue}
-                                placeholder="Select"
-                              />
-                              {typeOfSearchColumn != null ? (
-                                // <></>
-                                <input
-                                  type="email"
-                                  className="mr-2"
-                                  id="exampleInputEmail1"
-                                  aria-describedby="emailHelp"
-                                  placeholder="Enter text"
-                                  style={{
-                                    border: "none",
-                                    background: "transparent",
-                                    width: "95px",
-                                    fontWeight: "600",
-                                    paddingLeft: "10px",
-                                  }}
-                                  value={columnSearchText}
-                                  onChange={(e) => setColumnSearchText(e.target.value)}
-                                ></input>
-                              ) : (
-                                <></>
-                              )}
-                              <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
-                                    <SearchIcon /><span className="ml-1">Search</span>
-                                  </Link>
-                            </div>
-                          ) : (
-                            <></>
-                          )}
+                            {typeOfSearch != null ? (
+                              <div className="customselect d-flex align-items-center border-radius-10 d-flex ml-3">
+                                <span>
+                                  <a href="#" className="btn-sm">
+                                    +
+                                  </a>
+                                </span>
+                                <Select
+                                  onChange={handleTypeOfSearchColumnChange}
+                                  isClearable={true}
+                                  value={typeOfSearchColumn}
+                                  options={typeOfSearchColumnKeyValue}
+                                  placeholder="Select"
+                                />
+                                {typeOfSearchColumn != null ? (
+                                  // <></>
+                                  <input
+                                    type="email"
+                                    className="mr-2"
+                                    id="exampleInputEmail1"
+                                    aria-describedby="emailHelp"
+                                    placeholder="Enter text"
+                                    style={{
+                                      border: "none",
+                                      background: "transparent",
+                                      width: "95px",
+                                      fontWeight: "600",
+                                      paddingLeft: "10px",
+                                    }}
+                                    value={columnSearchText}
+                                    onChange={(e) => setColumnSearchText(e.target.value)}
+                                  ></input>
+                                ) : (
+                                  <></>
+                                )}
+                                <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                                  <SearchIcon /><span className="ml-1">Search</span>
+                                </Link>
+                              </div>
+                            ) : (
+                              <></>
+                            )}
                           </div>
-                        
+
                         </div>
                         <div>
                         </div>
@@ -3758,11 +3839,13 @@ const AddPortfolioItem = (props) => {
                         value={addPortFolioItem.repairOption}
                         onChange={(e) => handleRelatedKitInputSearch(e)}
                       />
+
                       {
                         <ul
                           className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
-                          id="style"
+                          id="style" style={{ display: "block" }}
                         >
+
                           {querySearchRelatedKitResult.map((currentItem, j) => (
                             <li
                               className="list-group-item"
@@ -3896,7 +3979,7 @@ const AddPortfolioItem = (props) => {
               to="#"
               className="btn bg-primary text-white border mr-4"
               // onClick={() => {
-              //   tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
+              //   tabs < 3 && setTabs((prev) => `${ parseInt(prev) + 1 } `);
               // }}
               onClick={TabsEnableDisabledFun}
             >

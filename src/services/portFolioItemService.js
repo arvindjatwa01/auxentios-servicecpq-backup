@@ -35,6 +35,28 @@ export const itemCreation = (payLoad) => {
     }
   });
 };
+
+export const getItemDataById = (id) => {
+  console.log("portfolioItemService > getItemDataById called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(`${CREATE_PORTFOLIO_ITEM()}/${id}`, { headers: headersdata })
+        .then((res) => {
+          console.log("getItemDataById > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getItemDataById > axios err=", err);
+          reject("Error in getItemDataById axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > getItemDataById, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 export const getAllItems = () => {
   console.log("portfolioItemService > getAllItems called...");
   return new Promise((resolve, reject) => {
@@ -76,8 +98,6 @@ export const itemSearchSuggestion = (family, familyValue) => {
     }
   });
 };
-
-
 
 export const itemSearch = (searchStr) => {
   console.log("portfolioItemService > itemSearch called...");

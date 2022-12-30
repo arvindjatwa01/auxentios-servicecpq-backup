@@ -129,6 +129,7 @@ import {
   getPortfolioPriceById,
   getItemPriceData,
   createItemPriceData,
+  getItemDataById,
 
 } from "../../services/index";
 import {
@@ -161,6 +162,7 @@ import { PortfolioContext } from "./ProtfolioContext";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import Solution from "./Solution";
 import LoadingProgress from "../Repair/components/Loader";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
 
@@ -266,7 +268,7 @@ export function CreatePortfolio(props) {
   const [isView, setIsView] = useState(false); //Use for show data into label format
   const [showExitPrompt, setShowExitPrompt] = useState(true);
   const [createNewBundle, setCreateNewBundle] = useState(false);
-  const [openSearchSolution, setOpenSearchSolution] = useState(true);
+  const [openSearchSolution, setOpenSearchSolution] = useState(false);
   const [typeOfSearch, setTypeOfSearch] = useState(null);
   const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null);
   const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([
@@ -538,7 +540,7 @@ export function CreatePortfolio(props) {
     frequency: "",
     cycle: "",
     suppresion: "",
-    netPrice: "",
+    netPrice: 1200,
     totalPrice: 1200,
   });
 
@@ -587,6 +589,10 @@ export function CreatePortfolio(props) {
   const [bundleServiceItemPriceData, setBundleServiceItemPriceData] = useState([]);
   const [bundleServiceQuerySearchModelResult, setBundleServiceQuerySearchModelResult] = useState([])
   const [bundleServiceQuerySearchModelPrefixOption, setBundleServiceQuerySearchModelPrefixOption] = useState([])
+  const [bundleServiceNeed, setBundleServiceNeed] = useState(false);
+  const [createdBundleItems, setCreatedBundleItems] = useState("");
+  const [updatedServiceBundleItemData, setUpdatedServiceBundleItemData] = useState("");
+  const [associatedServiceOrBundleIndex, setAssociatedServiceOrBundleIndex] = useState(0);
 
 
   const [tabs, setTabs] = useState("1");
@@ -719,10 +725,18 @@ export function CreatePortfolio(props) {
 
   const selectPrefixOption = (e) => {
     console.log(e);
-    setSelectedPrefixOption(e)
+    // setSelectedPrefixOption(e)
     setEditSerialNo({
       ...editSerialNo,
       serialNoPrefix: e.value,
+    })
+  }
+
+  const selectBundleServicePrefixOption = (e) => {
+    setSelectedPrefixOption(e)
+    setCreateServiceOrBundle({
+      ...createServiceOrBundle,
+      prefix: e,
     })
   }
 
@@ -1296,6 +1310,81 @@ export function CreatePortfolio(props) {
 
   const saveAddNewServiceOrBundle = async () => {
     try {
+      // if (editBundleService) {
+
+      //   // let reqObj = {
+      //   //   itemId: parseInt(addPortFolioItem.id),
+      //   //   itemName: addPortFolioItem.name,
+      //   //   itemHeaderModel: {
+      //   //     itemHeaderId: 0,
+      //   //     itemHeaderDescription: addPortFolioItem.description,
+      //   //     bundleFlag: compoFlagData,
+      //   //     portfolioItemId: bundleServicePortfolioItemId,
+      //   //     reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
+      //   //     itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
+      //   //     itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
+      //   //     model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
+      //   //     prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
+      //   //     type: "MACHINE",
+      //   //     additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
+      //   //     currency: "",
+      //   //     netPrice: 0,
+      //   //     itemProductHierarchy: "END_PRODUCT",
+      //   //     itemHeaderGeographic: "ONSITE",
+      //   //     responseTime: "PROACTIVE",
+      //   //     usage: "",
+      //   //     validFrom: validityData?.fromDate ? validityData?.fromDate : "",
+      //   //     validTo: validityData?.toDate ? validityData?.toDate : "",
+      //   //     estimatedTime: "",
+      //   //     servicePrice: 0,
+      //   //     status: "DRAFT",
+      //   //     componentCode: "",
+      //   //     componentDescription: "",
+      //   //     serialNumber: "",
+      //   //     itemHeaderStrategy: "PREVENTIVE_MAINTENANCE",
+      //   //     variant: "",
+      //   //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
+      //   //       ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+      //   //     jobCode: "",
+      //   //     preparedBy: administrative?.preparedBy ? administrative?.preparedBy : "",
+      //   //     approvedBy: administrative?.approvedBy ? administrative?.approvedBy : "",
+      //   //     preparedOn: administrative?.preparedOn ? administrative?.preparedOn : "",
+      //   //     revisedBy: administrative?.revisedBy ? administrative?.revisedBy : "",
+      //   //     revisedOn: administrative?.revisedOn ? administrative?.revisedOn : "",
+      //   //     salesOffice: administrative.salesOffice?.value ? administrative.salesOffice?.value : "",
+      //   //     offerValidity: administrative.offerValidity?.value ? administrative.offerValidity?.value : "",
+      //   //   },
+      //   //   itemBodyModel: {
+      //   //     itemBodyId: 0,
+      //   //     itemBodyDescription: addPortFolioItem.description,
+      //   //     spareParts: ["WITH_SPARE_PARTS"],
+      //   //     labours: ["WITH_LABOUR"],
+      //   //     miscellaneous: ["LUBRICANTS"],
+      //   //     taskType: addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["PM1"],
+      //   //     solutionCode: "",
+      //   //     usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "REPAIR_OR_REPLACE",
+      //   //     usage: "",
+      //   //     year: addPortFolioItem.year?.value ? addPortFolioItem.year?.value : "",
+      //   //     avgUsage: 0,
+      //   //     unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
+      //   //     frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
+      //   //     recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+      //   //     itemPrices: (editAbleItemPriceData?.itemPriceDataId == "" ||
+      //   //       editAbleItemPriceData.itemPriceDataId == undefined) ? [] : [
+      //   //       {
+      //   //         itemPriceDataId: editAbleItemPriceData.itemPriceDataId
+      //   //       }
+      //   //     ],
+      //   //   },
+      //   // }
+
+      //   // console.log("reqObj 1370 is : ", reqObj);
+      //   // const itemUpdateRes = await updateItemData(
+      //   //   addPortFolioItem.id,
+      //   //   reqObj
+      //   // );
+      // } else {
+
       let reqObj = {
         itemId: 0,
         itemName: "",
@@ -1523,6 +1612,7 @@ export function CreatePortfolio(props) {
       } else {
         throw `${res.status}: ${serviceOrBundlePrefix} not created`;
       }
+      // }
     } catch (error) {
       console.log("itemCreation err:", error);
       toast("😐" + error, {
@@ -1537,6 +1627,44 @@ export function CreatePortfolio(props) {
       return;
     }
   };
+
+  const saveEditServiceOrBundleAdministrativeData = () => {
+    // toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
+    //   position: "top-right",
+    //   autoClose: 3000,
+    //   hideProgressBar: false,
+    //   closeOnClick: true,
+    //   pauseOnHover: true,
+    //   draggable: true,
+    //   progress: undefined,
+    // });
+    setBundleServiceShow(false);
+    setBundleTabs("bundleServiceHeader");
+    setAddportFolioItem({})
+  }
+
+  const showPriceDataOfBundleOrService = async (bundleServiceData) => {
+    // setBundleServicePriceCalculator
+    // serviceOrBundlePrefix={serviceOrBundlePrefix}
+    if (bundleServiceData.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+      setServiceOrBundlePrefix("BUNDLE");
+    } else if (bundleServiceData.itemHeaderModel.bundleFlag === "SERVICE") {
+      setServiceOrBundlePrefix("SERVICE");
+    }
+
+    console.log("bundleServiceData.itemBodyModel : ", bundleServiceData.itemBodyModel)
+
+    if (bundleServiceData.itemBodyModel.itemPrices.length > 0) {
+      const rObjId = bundleServiceData.itemBodyModel.itemPrices[0].itemPriceDataId;
+
+      const res = await getItemPriceData(rObjId)
+      console.log("ressss : ", res)
+      var newVal = res.data;
+      setPriceCalculator(res.data)
+    }
+
+    setBundleServicePriceCalculator(true);
+  }
 
   const handleSavePrices = async () => {
     try {
@@ -1630,14 +1758,7 @@ export function CreatePortfolio(props) {
   };
 
   const handleItemEditSave = async (addPortFolioItem, editAbleItemPriceData, compoFlagData) => {
-    console.log("addPortFolioItem 1122334 : ", addPortFolioItem)
-    console.log("editAbleItemPriceData 1122334 : ", editAbleItemPriceData)
-    console.log("compoFlagData 1122334 : ", compoFlagData)
-    console.log("createServiceOrBundle 1122334 : ", createServiceOrBundle)
-    console.log("itemPriceData 1122334 : ", itemPriceData)
 
-    console.log("editAbleItemPriceData?.itemPriceDataId == string ", editAbleItemPriceData?.itemPriceDataId == "")
-    console.log("editAbleItemPriceData?.itemPriceDataId == undefined ", editAbleItemPriceData?.itemPriceDataId == undefined)
     try {
 
       if (compoFlagData == "BUNDLE_ITEM" || compoFlagData == "SERVICE") {
@@ -1776,7 +1897,9 @@ export function CreatePortfolio(props) {
             draggable: true,
             progress: undefined,
           });
+          setUpdatedServiceBundleItemData(itemUpdateRes.data);
           setBundleTabs("bundleServicePriceCalculator")
+          // setAssociatedServiceOrBundleIndex
         }
 
       } else {
@@ -1844,7 +1967,7 @@ export function CreatePortfolio(props) {
             itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
             itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
             model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
-            prefix: createServiceOrBundle?.prefix ? createServiceOrBundle?.prefix : "",
+            prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
             type: "MACHINE",
             additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
             currency: "",
@@ -1937,7 +2060,8 @@ export function CreatePortfolio(props) {
                   _bundleItems[i].associatedServiceOrBundle,
               };
               _bundleItems[i] = obj;
-              setTempBundleItems([...tempBundleItems, _bundleItems[i]]);
+              // setTempBundleItems([...tempBundleItems, _bundleItems[i]]);
+              setTempBundleItems([_bundleItems[i]]);
               break;
             }
           }
@@ -7037,23 +7161,32 @@ export function CreatePortfolio(props) {
             progress: undefined,
           });
           setCreatedServiceData(res.data);
+          setUpdatedServiceBundleItemData(res.data);
           setBundleTabs("bundleServicePriceCalculator")
         }
 
       }
 
     } catch (error) {
-
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
 
-    if (serviceOrBundlePrefix === "BUNDLE") {
-      setBundleTabs("bundleServiceItems");
-    }
-    if (serviceOrBundlePrefix === "SERVICE") {
-      setBundleTabs("bundleServicePriceCalculator");
-      saveAddNewServiceOrBundle();
-    }
-    setTabs("bundleServiceAdministrative") //moving to component Data tab in create Item model
+    // if (serviceOrBundlePrefix === "BUNDLE") {
+    //   setBundleTabs("bundleServiceItems");
+    // }
+    // if (serviceOrBundlePrefix === "SERVICE") {
+    //   setBundleTabs("bundleServicePriceCalculator");
+    //   saveAddNewServiceOrBundle();
+    // }
+    // setTabs("bundleServiceAdministrative") //moving to component Data tab in create Item model
 
   };
   const columns2 = [
@@ -7403,7 +7536,7 @@ export function CreatePortfolio(props) {
     setEditItemShow(true);
   };
 
-  const getAddportfolioItemDataFun = async (data) => {
+  const getAddPortfolioItemDataFun = async (data) => {
     setAddportFolioItem(data);
     // console.log("data------ : ", data)
 
@@ -7459,6 +7592,10 @@ export function CreatePortfolio(props) {
     // console.log("addPortfolioItem : ", addPortFolioItem);
   };
   const getPriceCalculatorDataFun = (data) => {
+    if (bundleServicePriceCalculator) {
+      setBundleServicePriceCalculator(false)
+    }
+
     if (serviceOrBundlePrefix === "SERVICE") {
       setBundleTabs("bundleServiceAdministrative")
     } else if (serviceOrBundlePrefix === "BUNDLE") {
@@ -7988,7 +8125,6 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div className="d-flex " data-tag="allowRowEvents">SJ1034
-              {bundleAndService.itemHeaderModel.itemHeaderStrategy}
             </div>
             <div
               className="description cursor mr-1"
@@ -8239,7 +8375,7 @@ export function CreatePortfolio(props) {
             <div>4</div>
             <div
               className="funds-grey cursor"
-              onClick={() => setBundleServicePriceCalculator(true)}
+              onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
             >
               <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                 <g>
@@ -8382,61 +8518,47 @@ export function CreatePortfolio(props) {
     </div>
   );
 
-  const handleExpendedBundleServiceUpdate = (i, data) => {
+  const handleExpendedBundleServiceUpdate = async (i, data) => {
+
+    // alert(i)
+    setAssociatedServiceOrBundleIndex(i)
+
     setBundleTabs("bundleServiceHeader");
-    if (data.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+
+    const newData = await getItemDataById(data.itemId)
+
+    console.log("my newData : ", newData)
+
+    if (newData.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
       setServiceOrBundlePrefix("BUNDLE");
-    } else if (data.itemHeaderModel.bundleFlag === "SERVICE") {
+    } else if (newData.itemHeaderModel.bundleFlag === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
     }
 
+
+
     setCreateServiceOrBundle({
-      id: data.itemId,
-      name: data.itemName,
-      description: data.itemHeaderModel.itemHeaderDescription,
-      bundleFlag: data.itemHeaderModel.bundleFlag,
-      reference: data.itemHeaderModel.itemHeaderDescription,
+      id: newData.itemId,
+      name: newData.itemName,
+      description: newData.itemHeaderModel.itemHeaderDescription,
+      bundleFlag: newData.itemHeaderModel.bundleFlag,
+      reference: newData.itemHeaderModel.itemHeaderDescription,
       customerSegment: "",
-      make: data.itemHeaderModel.itemHeaderMake,
-      model: data.itemHeaderModel.model,
-      family: data.itemHeaderModel.itemHeaderFamily,
-      prefix: { label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix },
-      machine: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+      make: newData.itemHeaderModel.itemHeaderMake,
+      model: newData.itemHeaderModel.model,
+      family: newData.itemHeaderModel.itemHeaderFamily,
+      prefix: { label: newData.itemHeaderModel.prefix, value: newData.itemHeaderModel.prefix },
+      machine: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
       additional: "",
-      machineComponent: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+      machineComponent: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
     });
 
-    setSelectedPrefixOption({ label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix });
+    setSelectedPrefixOption({ label: newData.itemHeaderModel.prefix, value: newData.itemHeaderModel.prefix });
 
-    setPassItemEditRowData(data);
-    setBundleServicePortfolioItemId(data.itemHeaderModel.portfolioItemId);
+    setPassItemEditRowData(newData);
+    setBundleServicePortfolioItemId(newData.itemHeaderModel.portfolioItemId);
 
-    setBundleServiceItemPriceData(data.itemBodyModel.itemPrices)
-
-
-    // setCreateServiceOrBundle({
-    //   ...createServiceOrBundle,
-    //   id: data.itemId,
-    //   name: data.itemName,
-    //   description: data.itemHeaderModel.itemHeaderDescription,
-    //   bundleFlag: data.itemHeaderModel.bundleFlag,
-    //   reference: data.itemHeaderModel.reference,
-    //   customerSegment: {
-    //     value: data.itemHeaderModel.itemHeaderCustomerSegment,
-    //     label: data.itemHeaderModel.itemHeaderCustomerSegment,
-    //   },
-    //   make: data.itemHeaderModel.itemHeaderMake,
-    //   models: data.itemHeaderModel.model,
-    //   prefix: {
-    //     value: data.itemHeaderModel.prefix,
-    //     label: data.itemHeaderModel.prefix,
-    //   },
-    //   machine: {
-    //     value: data.itemHeaderModel.type,
-    //     label: data.itemHeaderModel.type,
-    //   },
-    //   additional: data.itemHeaderModel.additional,
-    // })
+    setBundleServiceItemPriceData(newData.itemBodyModel.itemPrices)
 
     setBundleServiceShow(true);
   }
@@ -15801,7 +15923,7 @@ export function CreatePortfolio(props) {
                                 PREFIX(S)
                               </label>
                               <Select
-                                onChange={(e) => selectPrefixOption(e)}
+                                onChange={(e) => selectBundleServicePrefixOption(e)}
                                 className="text-primary"
                                 value={selectedPrefixOption}
                                 options={bundleServiceQuerySearchModelPrefixOption}
@@ -15826,11 +15948,6 @@ export function CreatePortfolio(props) {
                 </div>
               </TabPanel>
               <TabPanel value="bundleServiceItems">
-                {/* <AddPortfolioItem
-                  setBundleTabs={setBundleTabs}
-                  compoFlag="BUNDLE"
-                  saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
-                /> */}
                 <AddPortfolioItem
                   passItemEditRowData={passItemEditRowData}
                   handleItemEditSave={handleItemEditSave}
@@ -16062,8 +16179,7 @@ export function CreatePortfolio(props) {
                 <div className="row" style={{ justifyContent: "right" }}>
                   <button
                     type="button"
-                    // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
-                    // className="btn btn-light"
+                    onClick={saveEditServiceOrBundleAdministrativeData}
                     className="btn text-white bg-primary"
                   >
                     Save
