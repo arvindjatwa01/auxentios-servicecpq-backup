@@ -2040,6 +2040,10 @@ nav.main-menu li.active>a,
   background: #52B596;
 }
 
+.bg-gray-light {
+  background: #6f7674;
+}
+
 .bg-yellow {
   background: #D8BD5F;
 }
@@ -3646,4 +3650,9 @@ input[type="checkbox"]:checked:after {
   border: none;
 }
 .green-custom-btn .css-1s2u09g-control {border: none;}
+.m-w-51{max-width: 51px !important;}
+.expand-last-child .sc-iBkjds:last-child {
+  min-width: 157px !important;
+}
+.m-w-92{min-width: 92px !important;}
 

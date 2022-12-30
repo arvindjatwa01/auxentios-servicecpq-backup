@@ -128,7 +128,7 @@ export const PortfolioSummary = () => {
     { label: "Prefix", value: "prefix" },
   ]);
   const [value3, setValue3] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
-  const [value4, setValue4] = useState({ value: "FREE", label: "Free" });
+  const [value4, setValue4] = useState({ value: "chargeable", label: "Chargeable" });
   const handleOption2 = (e) => {
 
     console.log(e);
@@ -188,6 +188,7 @@ export const PortfolioSummary = () => {
   const [portfolioResponse, setPortfolioResponse] = useState({});
 
   const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
+  const [showColumnDataOnService, setShowColumnDataOnService] = useState(false);
 
   const [age, setAge] = React.useState("5");
   const [age1, setAge1] = React.useState("5");
@@ -617,6 +618,7 @@ export const PortfolioSummary = () => {
     obj.selectOperator = e;
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
+
   };
 
   const handleInputSearch = (e, id) => {
@@ -973,6 +975,7 @@ export const PortfolioSummary = () => {
           { label: "Name", value: "name", id: i },
           { label: "Description", value: "description", id: i },
         ])
+        setShowColumnDataOnService(false);
       } else if (e.value === "BUNDLE_ITEM") {
         setFamilySelectOption([{ label: "Make", value: "itemHeaderMake", id: i },
         { label: "Family", value: "itemHeaderFamily", id: i },
@@ -980,6 +983,7 @@ export const PortfolioSummary = () => {
         { label: "Prefix", value: "prefix", id: i },
         { label: "Name", value: "itemName", id: i },
         { label: "Description", value: "itemHeaderDescription", id: i },])
+        setShowColumnDataOnService(false);
       } else if (e.value === "SERVICE") {
         setFamilySelectOption([{ label: "Make", value: "itemHeaderMake", id: i },
         { label: "Family", value: "itemHeaderFamily", id: i },
@@ -987,6 +991,7 @@ export const PortfolioSummary = () => {
         { label: "Prefix", value: "prefix", id: i },
         { label: "Name", value: "itemName", id: i },
         { label: "Description", value: "itemHeaderDescription", id: i },])
+        setShowColumnDataOnService(true);
       }
     },
     [],
@@ -2773,7 +2778,7 @@ export const PortfolioSummary = () => {
 
 
 
-  const PortfolioItemColumn = [
+  const PortfolioItemColumn = (showColumnDataOnService ? [
     {
       name: (
         <>
@@ -2801,6 +2806,153 @@ export const PortfolioSummary = () => {
       sortable: true,
       format: (row) => row.itemHeaderModel.itemHeaderDescription,
     },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Strategy</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+    // }, {
+    //   name: (
+    //     <>
+    //       <div>Task Type</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.taskType,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.taskType,
+    // },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Additional</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.additional,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.additional,
+    },
+    {
+      name: (
+        <>
+          <div>Net Parts Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.partsprice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.partsprice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Service Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel?.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel?.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.comments,
+    },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) => (
+        <div>
+          <a href={undefined} onClick={() =>
+            makeBundleServiceEditable(row)
+          } style={{ cursor: "pointer" }} >
+            <img className="mr-2" src={penIcon} />
+          </a>
+        </div>
+      ),
+    }
+  ] : [
+    {
+      name: (
+        <>
+          {/* <div>Solution Id</div> */}
+          <div>Name</div>
+        </>
+      ),
+      // selector: (row) => row.itemId,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemId,
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+    },
+    // {`${row.itemHeaderModel.bundleFlag == "BUNDLE_ITEM"}`}
     {
       name: (
         <>
@@ -2918,8 +3070,8 @@ export const PortfolioSummary = () => {
           </a>
         </div>
       ),
-    },
-  ]
+    }
+  ]);
 
   const getFormattedDateTimeByTimeStampForAdministrative = (timeStamp) => {
 
@@ -4039,14 +4191,15 @@ export const PortfolioSummary = () => {
                       ADD {serviceOrBundlePrefix}
                     </h5> */}
                     {/* {serviceOrBundlePrefix === "SERVICE" && ( */}
+                    {/* <div className="ml-3 green-custom-btn "> */}
                     <div className="ml-3 green-custom-btn ">
                       {serviceOrBundlePrefix === "SERVICE" && (
                         <Select
-                          className="customselectbtn1 p-2 border-radius-10 bg-green-light "
+                          className={`customselectbtn1 p-2 border-radius-10 ${value4.value == "chargeable" ? "bg-gray-light" : "bg-green-light"}`}
                           onChange={(e) => handleOption4(e)}
                           options={[
                             { value: "free", label: "Free" },
-                            { value: "costly", label: "Costly" },
+                            { value: "chargeable", label: "Chargeable" },
                           ]}
                           value={value4}
                         />
