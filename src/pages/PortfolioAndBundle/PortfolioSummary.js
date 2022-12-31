@@ -110,7 +110,6 @@ export const PortfolioSummary = () => {
   const [typeOfSearch, setTypeOfSearch] = useState(null);
   const [bundleServicePortfolioItemId, setBundleServicePortfolioItemId] = useState(0);
 
-
   const [portfolioItemData, setPortfolioItemData] = useState([]);
   const [bundleServiceItemData, setBundleServiceItemData] = useState([]);
   const [recentPortfolio, setRecentPortfolio] = useState([])
@@ -225,6 +224,8 @@ export const PortfolioSummary = () => {
     machine: "",
     additional: "",
   });
+  const [portfolioServiceBundleId, setPortfolioServiceBundleId] = useState(0);
+
 
   const [createdBundleItems, setCreatedBundleItems] = useState("");
 
@@ -754,7 +755,12 @@ export const PortfolioSummary = () => {
         querySearchSelector[0]?.selectFamily?.value === undefined) {
         throw "Please fill data properly"
       }
-      var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
+      var searchStr;
+      if (selectedItemType === "PORTFOLIO") {
+        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+      } else {
+        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+      }
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         if (
@@ -765,13 +771,23 @@ export const PortfolioSummary = () => {
         ) {
           throw "Please fill data properly"
         }
-        searchStr =
-          searchStr +
-          " " +
-          querySearchSelector[i].selectOperator.value + " " +
-          querySearchSelector[i].selectFamily.value +
-          ":" +
-          querySearchSelector[i].inputSearch;
+        if (selectedItemType === "PORTFOLIO") {
+          searchStr =
+            searchStr +
+            " " +
+            querySearchSelector[i].selectOperator.value + " " +
+            querySearchSelector[i].selectFamily.value +
+            ":\"" +
+            querySearchSelector[i].inputSearch + "\"";
+        } else {
+          searchStr =
+            searchStr +
+            " " +
+            querySearchSelector[i].selectOperator.value + " " +
+            querySearchSelector[i].selectFamily.value +
+            ":\"" +
+            querySearchSelector[i].inputSearch + "\"";
+        }
       }
 
       console.log("portfolio search searchStr : ", searchStr);
@@ -1092,6 +1108,8 @@ export const PortfolioSummary = () => {
   const makeBundleServiceEditable = async (data) => {
 
     const editAbleBundleService = await getItemDataById(data.itemId);
+
+    setPortfolioServiceBundleId(editAbleBundleService.itemHeaderModel.portfolioItemId)
 
     setBundleServicePortfolioItemId(editAbleBundleService.itemHeaderModel.portfolioItemId)
 
@@ -4451,6 +4469,7 @@ export const PortfolioSummary = () => {
                                 placeholder="Name (Required*)"
                                 onChange={handleAddServiceBundleChange}
                                 value={createServiceOrBundle.name}
+                                disabled={editBundleService}
                               />
                               <div className="css-w8dmq8">*Mandatory</div>
                             </div>
