@@ -6370,6 +6370,8 @@ export function CreatePortfolio(props) {
       wrap: true,
       sortable: true,
       maxWidth: "300px",
+      maxWidth: "51px",
+      minWidth: "51px",
       cell: (row) => (
         <>
           {valueOfUseCase == 3 ? (
@@ -7699,7 +7701,7 @@ export function CreatePortfolio(props) {
             id="cell-1-undefined"
             data-column-id="1"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            className="m-w-51 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div></div>
@@ -7751,7 +7753,7 @@ export function CreatePortfolio(props) {
             id="cell-5-undefined"
             data-column-id="5"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+            className="m-w-92 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -7882,7 +7884,7 @@ export function CreatePortfolio(props) {
   // }
 
   const ExpandedComponent = ({ data }) => (
-    <div className="scrollbar" id="style">
+    <div>
       <div
         id="row-0"
         role="row"
@@ -8015,6 +8017,7 @@ export function CreatePortfolio(props) {
           <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
         </div>
       </div>
+    <div className="scrollbar" id="style">
       {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
         <div
           key={i}
@@ -8204,7 +8207,7 @@ export function CreatePortfolio(props) {
           >
             <div>4</div>
             <div className="funds-grey">
-              <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+              {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                 <g>
                   <g>
                     <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
@@ -8253,7 +8256,7 @@ export function CreatePortfolio(props) {
                       c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
                   </g>
                 </g>
-              </svg>
+              </svg> */}
             </div>
           </div>
           <div
@@ -8265,7 +8268,7 @@ export function CreatePortfolio(props) {
           >
             <div>4</div>
             <div className="funds-grey">
-              <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+              {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                 <g>
                   <g>
                     <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
@@ -8314,7 +8317,7 @@ export function CreatePortfolio(props) {
                       c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
                   </g>
                 </g>
-              </svg>
+              </svg> */}
             </div>
           </div>
           <div
@@ -8328,7 +8331,7 @@ export function CreatePortfolio(props) {
             <div
               className="funds-grey "
             >
-              <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+              {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                 <g>
                   <g>
                     <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
@@ -8377,7 +8380,7 @@ export function CreatePortfolio(props) {
                       c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
                   </g>
                 </g>
-              </svg>
+              </svg> */}
             </div>
           </div>
           <div
@@ -8451,6 +8454,13 @@ export function CreatePortfolio(props) {
             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
+             <div>
+            <Tooltip title="View">
+              <Link to="#" className="px-1" onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}>
+                <VisibilityOutlinedIcon />
+              </Link>
+            </Tooltip>
+          </div>
             {/* <div
               className="cursor"
               onClick={(e) =>
@@ -8530,6 +8540,7 @@ export function CreatePortfolio(props) {
 
         </div>
       ))}
+    </div>
     </div>
   );
 
@@ -15593,7 +15604,7 @@ export function CreatePortfolio(props) {
                   </div>
                 ) : (
                   <div
-                    className="custom-table  card"
+                    className="custom-table  card expand-last-child"
                     style={{ height: 400, width: "100%" }}
                   >
                     <DataTable
