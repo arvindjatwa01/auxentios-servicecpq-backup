@@ -87,6 +87,8 @@ const QuerySearchComp = (props) => {
         itemSearch(bundleServiceSearch)
           .then((res) => {
             if (res.data.length > 0) {
+              // console.log("bundleServiceSearch  response: ", res.data)
+              // console.log("tempArray[id].selectFamily.value ", tempArray[id].selectFamily.value)
               if (tempArray[id].selectFamily.value == "itemName") {
                 for (let i = 0; i < res.data.length; i++) {
                   SearchResArr.push(res.data[i].itemName)
@@ -95,7 +97,7 @@ const QuerySearchComp = (props) => {
                 for (let i = 0; i < res.data.length; i++) {
                   SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
                 }
-              } else if (tempArray[id].selectFamily.value == "make") {
+              } else if (tempArray[id].selectFamily.value == "itemHeaderMake") {
                 for (let i = 0; i < res.data.length; i++) {
                   SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
                 }
@@ -103,7 +105,7 @@ const QuerySearchComp = (props) => {
                 for (let i = 0; i < res.data.length; i++) {
                   SearchResArr.push(res.data[i].itemHeaderModel.model)
                 }
-              } else if (tempArray[id].selectFamily.value == "family") {
+              } else if (tempArray[id].selectFamily.value == "itemHeaderFamily") {
                 for (let i = 0; i < res.data.length; i++) {
                   SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
                 }
@@ -117,6 +119,8 @@ const QuerySearchComp = (props) => {
               // setQuerySearchSelector([...tempArray]);
               // $(`.scrollbar-${id}`).css("display", "block");
             }
+
+            // console.log("SearchResArr DAta is : ", SearchResArr)
 
             obj.selectOptions = SearchResArr;
             tempArray[id] = obj;
@@ -175,6 +179,7 @@ const QuerySearchComp = (props) => {
         inputSearch: "",
         selectOptions: [],
         selectedOption: "",
+        // itemType: querySearchSelector[0].itemType,
       },
     ]);
     setCount(count + 1);
@@ -342,12 +347,14 @@ const QuerySearchComp = (props) => {
       ) {
         throw "Please fill data properly"
       }
-      var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`
+      var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`
 
+      console.log("querySearchSelector : ", querySearchSelector)
       for (let i = 1; i < querySearchSelector.length; i++) {
+        console.log("querySearchSelector[i].selectOperator.value ", i, querySearchSelector[i])
         if (
-          querySearchSelector[i]?.itemType.value == "" ||
-          querySearchSelector[i]?.itemTypeOperator.value == "" ||
+          // querySearchSelector[i]?.itemType.value == "" ||
+          // querySearchSelector[i]?.itemTypeOperator.value == "" ||
           querySearchSelector[i]?.selectFamily?.value == "" ||
           querySearchSelector[i]?.inputSearch == "" ||
           querySearchSelector[i]?.selectOperator?.value == ""
@@ -355,13 +362,28 @@ const QuerySearchComp = (props) => {
         ) {
           throw "Please fill data properly"
         }
+        // searchStr =
+        //   searchStr +
+        //   " " +
+        //   querySearchSelector[i].selectOperator.value + ` bundleFlag:${querySearchSelector[i]?.itemType.value} ` + `${querySearchSelector[i]?.itemTypeOperator.value} ` +
+        //   querySearchSelector[i].selectFamily.value +
+        //   ":\"" +
+        //   querySearchSelector[i].inputSearch + "\"";
+
         searchStr =
           searchStr +
-          " " +
-          querySearchSelector[i].selectOperator.value + ` bundleFlag:${querySearchSelector[i]?.itemType.value} ` + `${querySearchSelector[i]?.itemTypeOperator.value} ` +
-          querySearchSelector[i].selectFamily.value +
-          "~" +
-          querySearchSelector[i].inputSearch;
+          " " + querySearchSelector[i].selectOperator.value + 
+          " " + querySearchSelector[i].selectFamily.value +
+          ":\"" +
+          querySearchSelector[i].inputSearch + "\"";
+        console.log("final searchStr : ", searchStr)
+        // searchStr =
+        //   searchStr +
+        //   " " +
+        //   querySearchSelector[i].selectOperator.value + ` bundleFlag:${querySearchSelector[i]?.itemType.value} ` + `${querySearchSelector[i]?.itemTypeOperator.value} ` +
+        //   querySearchSelector[i].selectFamily.value +
+        //   ":\"" +
+        //   querySearchSelector[i].inputSearch + "\"";
       }
       const res = await itemSearch(searchStr)
       if (!res.data.length > 0) {
