@@ -545,7 +545,6 @@ function Kits(props) {
     setMasterData([]);
   };
 
-  
   // Select model from the search result
   const handleCoverageModelSelect = (type, currentItem) => {
     if (type === "model") {
@@ -1504,13 +1503,13 @@ function Kits(props) {
                 <div className="btn-sm cursor text-white">
                   <Tooltip title="Edit">
                     <EditIcon
-                    onClick={() =>
-                      selKITStatus?.value === "DRAFT" ||
-                      selKITStatus?.value === "REVISED"
-                        ? makeHeaderEditable()
-                        : handleSnack("info", "Builder is active!")
-                    }
-                  />
+                      onClick={() =>
+                        selKITStatus?.value === "DRAFT" ||
+                        selKITStatus?.value === "REVISED"
+                          ? makeHeaderEditable()
+                          : handleSnack("info", "Builder is active!")
+                      }
+                    />
                   </Tooltip>
                 </div>
                 <div className="btn-sm cursor text-white">
@@ -1554,9 +1553,9 @@ function Kits(props) {
                                 disabled
                                 className="form-control border-radius-10 text-primary"
                                 id="customer-src"
-                                placeholder="Placeholder (Required)"
                                 value={customerData.source}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1588,7 +1587,6 @@ function Kits(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="customerNameid"
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -1604,8 +1602,8 @@ function Kits(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="contactNameid"
-                                placeholder="Placeholder (Required)"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1620,8 +1618,8 @@ function Kits(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="contatEmail"
-                                placeholder="Placeholder (Required)"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1635,7 +1633,6 @@ function Kits(props) {
                                 onChange={handleCustomerDataChange}
                                 value={customerData.contactPhone}
                                 name="contactPhone"
-                                placeholder="Phone (Optional)"
                               />
                             </div>
                           </div>
@@ -1651,8 +1648,8 @@ function Kits(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="custGroup"
-                                placeholder="Placeholder (Required)"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                         </div>
@@ -1729,11 +1726,11 @@ function Kits(props) {
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Required"
                                 value={estimationData.preparedBy}
                                 name="preparedBy"
                                 onChange={handleEstimationDataChange}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1747,59 +1744,44 @@ function Kits(props) {
                                 value={estimationData.approvedBy}
                                 name="approvedBy"
                                 onChange={handleEstimationDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
+                            <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 PREPARED ON
                               </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={estimationData.preparedOn}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={estimationData.preparedOn}
-                                  onChange={(e) =>
-                                    setEstimationData({
-                                      ...estimationData,
-                                      preparedOn: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
-                              {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  inputProps={{ style: FONT_STYLE }}
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  label=""
-                                  value={estimationData.preparedOn}
-                                  onChange={(e) =>
-                                    setEstimationData({
-                                      ...estimationData,
-                                      preparedOn: e,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider> */}
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={estimationData.preparedOn}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={estimationData.preparedOn}
+                                    onChange={(e) =>
+                                      setEstimationData({
+                                        ...estimationData,
+                                        preparedOn: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1813,43 +1795,44 @@ function Kits(props) {
                                 value={estimationData.revisedBy}
                                 name="revisedBy"
                                 onChange={handleEstimationDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
+                            <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 REVISED ON
                               </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={estimationData.revisedOn}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={estimationData.revisedOn}
-                                  onChange={(e) =>
-                                    setEstimationData({
-                                      ...estimationData,
-                                      revisedOn: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={estimationData.revisedOn}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={estimationData.revisedOn}
+                                    onChange={(e) =>
+                                      setEstimationData({
+                                        ...estimationData,
+                                        revisedOn: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1865,10 +1848,10 @@ function Kits(props) {
                                   })
                                 }
                                 options={salesOfficeOptions}
-                                placeholder="Required"
                                 value={estimationData.salesOffice}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                         </div>
@@ -1961,7 +1944,6 @@ function Kits(props) {
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
                                 id="desc-id"
-                                placeholder="Required"
                                 maxLength={140}
                                 value={generalData.description}
                                 onChange={(e) =>
@@ -1971,41 +1953,44 @@ function Kits(props) {
                                   })
                                 }
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
+                            <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 <span className=" mr-2">ESTIMATION DATE</span>
                               </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={generalData.estimationDate}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={generalData.estimationDate}
-                                  onChange={(e) =>
-                                    setGeneralData({
-                                      ...generalData,
-                                      estimationDate: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={generalData.estimationDate}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={generalData.estimationDate}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        estimationDate: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2017,7 +2002,6 @@ function Kits(props) {
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
                                 id="desc-id"
-                                placeholder="Required"
                                 maxLength={140}
                                 value={generalData.reference}
                                 onChange={(e) =>
@@ -2027,6 +2011,7 @@ function Kits(props) {
                                   })
                                 }
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2109,7 +2094,6 @@ function Kits(props) {
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Placeholder (Optional)"
                                 disabled
                                 value={generalData.version}
                               />
@@ -2129,10 +2113,10 @@ function Kits(props) {
                                   })
                                 }
                                 options={APPLICATION_OPTIONS}
-                                placeholder="Required"
                                 value={generalData.application}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2171,6 +2155,7 @@ function Kits(props) {
                                   />
                                 </LocalizationProvider>
                               </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2189,7 +2174,6 @@ function Kits(props) {
                                   })
                                 }
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
                               />
                             </div>
                           </div>
@@ -2299,44 +2283,45 @@ function Kits(props) {
                                 type="text"
                                 disabled
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
                                 value={pricingData.netPrice}
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <div className="align-items-center date-box">
+                            <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 PRICE DATE
                               </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={pricingData.priceDate}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={pricingData.priceDate}
-                                  onChange={(e) =>
-                                    setPricingData({
-                                      ...pricingData,
-                                      priceDate: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={pricingData.priceDate}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={pricingData.priceDate}
+                                    onChange={(e) =>
+                                      setPricingData({
+                                        ...pricingData,
+                                        priceDate: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
@@ -2352,10 +2337,10 @@ function Kits(props) {
                                   })
                                 }
                                 options={priceMethodOptions}
-                                placeholder="Required"
                                 value={pricingData.priceMethod}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
@@ -2372,7 +2357,6 @@ function Kits(props) {
                                   )
                                 }
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
                                 value={
                                   pricingData.priceMethod?.value === "FLAT_RATE"
                                     ? pricingData.adjustedPrice
@@ -2400,10 +2384,10 @@ function Kits(props) {
                                   })
                                 }
                                 options={currencyOptions}
-                                placeholder="Required"
                                 value={pricingData.currency}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                         </div>
@@ -3246,9 +3230,7 @@ function Kits(props) {
                 <div className="row input-fields">
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         Make
                       </label>
                       <input
@@ -3264,9 +3246,7 @@ function Kits(props) {
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         Family
                       </label>
                       <input
@@ -3282,9 +3262,7 @@ function Kits(props) {
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         Model No
                       </label>
                       <SearchBox
@@ -3301,9 +3279,7 @@ function Kits(props) {
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         Serial No Prefix
                       </label>
                       <Select
@@ -3324,15 +3300,12 @@ function Kits(props) {
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         Start Serial No
                       </label>
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
                         value={coverageRowData.startSerialNumber}
                         defaultValue={coverageRowData.startSerialNumber}
                         onChange={(e) =>
@@ -3346,15 +3319,12 @@ function Kits(props) {
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         End Serial No
                       </label>
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
                         value={coverageRowData.endSerialNumber}
                         defaultValue={coverageRowData.endSerialNumber}
                         onChange={(e) =>
@@ -3369,15 +3339,12 @@ function Kits(props) {
 
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         Fleet
                       </label>
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
                         value={coverageRowData.fleet}
                         defaultValue={coverageRowData.fleet}
                         onChange={(e) =>
@@ -3391,15 +3358,12 @@ function Kits(props) {
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                      >
+                      <label className="text-light-dark font-size-14 font-weight-500">
                         Fleet Size
                       </label>
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
                         value={coverageRowData.fleetSize}
                         defaultValue={coverageRowData.fleetSize}
                         onChange={(e) =>

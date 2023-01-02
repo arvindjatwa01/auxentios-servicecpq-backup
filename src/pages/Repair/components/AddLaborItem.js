@@ -11,24 +11,23 @@ const AddLaborItemModal = (props) => {
     control: (styles, { isDisabled }) => {
       return {
         ...styles,
-        background: isDisabled ? '#e9ecef' : 'white',
+        background: isDisabled ? "#e9ecef" : "white",
         borderRadius: 10,
-        fontSize: 12
-      }
+        fontSize: 12,
+      };
     },
-      singleValue: (styles, { isDisabled }) => {
-        return {
-          ...styles,
-          color: "#616161",
-          borderRadius: 10,
-          fontSize: 12,
-          fontWeight: 500
-        }
-      }
-    
-  }
+    singleValue: (styles, { isDisabled }) => {
+      return {
+        ...styles,
+        color: "#616161",
+        borderRadius: 10,
+        fontSize: 12,
+        fontWeight: 500,
+      };
+    },
+  };
   const data = props.serviceEstimateData;
-  const title = data.componentCode +  "-" +  data.componentCodeDescription ;
+  const title = data.componentCode + "-" + data.componentCodeDescription;
 
   return (
     <Modal
@@ -71,11 +70,11 @@ const AddLaborItemModal = (props) => {
             <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     CHARGE CODE
                   </label>
                   <Select
-                  isDisabled={props.labourItemData.isEditing}
+                    isDisabled={props.labourItemData.isEditing}
                     onChange={(e) =>
                       props.setLabourItemData({
                         ...props.labourItemData,
@@ -86,11 +85,12 @@ const AddLaborItemModal = (props) => {
                     options={props.chargeCodeList}
                     value={props.labourItemData.chargeCode}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     LABOR TYPE
                   </label>
                   <Select
@@ -105,11 +105,12 @@ const AddLaborItemModal = (props) => {
                     options={props.laborTypeList}
                     value={props.labourItemData.laborType}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     SERVICE TYPE
                   </label>
                   <Select
@@ -121,15 +122,15 @@ const AddLaborItemModal = (props) => {
                     }
                     isDisabled={props.labourItemData.isEditing}
                     styles={customStyle}
-
                     options={props.serviceTypeList}
                     value={props.labourItemData.serviceType}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     UNIT OF MEASURES
                   </label>
                   <Select
@@ -144,11 +145,12 @@ const AddLaborItemModal = (props) => {
                     options={props.unitOfMeasureOptions}
                     value={props.labourItemData.unitOfMeasure}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100 date-box">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     ESTIMATED HOURS
                   </label>
                   <div
@@ -163,8 +165,20 @@ const AddLaborItemModal = (props) => {
                         props.setLabourItemData({
                           ...props.labourItemData,
                           estimatedHours: e.target.value,
-                          extendedPrice: e.target.value > 0 ? parseFloat(props.labourItemData.unitPrice * e.target.value).toFixed(2) : 0,
-                          totalPrice: e.target.value > 0 ? parseFloat(props.labourItemData.unitPrice * e.target.value).toFixed(2) : 0
+                          extendedPrice:
+                            e.target.value > 0
+                              ? parseFloat(
+                                  props.labourItemData.unitPrice *
+                                    e.target.value
+                                ).toFixed(2)
+                              : 0,
+                          totalPrice:
+                            e.target.value > 0
+                              ? parseFloat(
+                                  props.labourItemData.unitPrice *
+                                    e.target.value
+                                ).toFixed(2)
+                              : 0,
                         })
                       }
                       value={props.labourItemData.estimatedHours}
@@ -178,6 +192,7 @@ const AddLaborItemModal = (props) => {
                         : "Unit Of Measure"}
                     </span>
                   </div>
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
                 {/* <div class="form-group w-100">
                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -200,7 +215,7 @@ const AddLaborItemModal = (props) => {
 
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     UNIT PRICE
                   </label>
                   <input
@@ -209,11 +224,12 @@ const AddLaborItemModal = (props) => {
                     class="form-control border-radius-10 text-primary"
                     value={props.labourItemData.unitPrice}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     EXTENDED PRICE
                   </label>
                   <input
@@ -222,11 +238,12 @@ const AddLaborItemModal = (props) => {
                     class="form-control border-radius-10 text-primary"
                     value={props.labourItemData.extendedPrice}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     TOTAL PRICE
                   </label>
                   <input
@@ -235,11 +252,12 @@ const AddLaborItemModal = (props) => {
                     class="form-control border-radius-10 text-primary"
                     value={props.labourItemData.totalPrice}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     CURRENCY
                   </label>
                   <input
@@ -248,6 +266,7 @@ const AddLaborItemModal = (props) => {
                     class="form-control border-radius-10 text-primary"
                     value={data.currency}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">

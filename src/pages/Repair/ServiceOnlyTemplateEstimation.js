@@ -1488,9 +1488,9 @@ function ServiceOnlyTemplateEstimation(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        placeholder="Required"
                         value={serviceEstimateData.reference}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1501,7 +1501,6 @@ function ServiceOnlyTemplateEstimation(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10 text-primary"
-                        placeholder="Required"
                         value={serviceEstimateData.description}
                         onChange={(e) =>
                           setServiceEstimateData({
@@ -1510,6 +1509,7 @@ function ServiceOnlyTemplateEstimation(props) {
                           })
                         }
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1521,9 +1521,9 @@ function ServiceOnlyTemplateEstimation(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        placeholder="Required"
                         value={serviceEstimateData.segmentTitle}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1535,9 +1535,9 @@ function ServiceOnlyTemplateEstimation(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        placeholder="Required"
                         value={serviceEstimateData.jobOperation}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1556,41 +1556,43 @@ function ServiceOnlyTemplateEstimation(props) {
                         }
                         styles={FONT_STYLE_SELECT}
                         options={priceMethodOptions}
-                        placeholder="Required"
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
-                    <div className="form-group mt-3 align-items-center date-box">
+                    <div className="form-group">
                       <label className="text-light-dark font-size-12 font-weight-500">
                         PRICE DATE
                       </label>
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <MobileDatePicker
-                          inputFormat="dd/MM/yyyy"
-                          className="form-controldate border-radius-10"
-                          minDate={serviceEstimateData.priceDate}
-                          maxDate={new Date()}
-                          closeOnSelect
-                          value={serviceEstimateData.priceDate}
-                          onChange={(e) =>
-                            setServiceEstimateData({
-                              ...serviceEstimateData,
-                              priceDate: e,
-                            })
-                          }
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              variant="standard"
-                              inputProps={{
-                                ...params.inputProps,
-                                style: FONT_STYLE,
-                              }}
-                            />
-                          )}
-                        />
-                      </LocalizationProvider>
+                      <div className="align-items-center date-box">
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                          <MobileDatePicker
+                            inputFormat="dd/MM/yyyy"
+                            className="form-controldate border-radius-10"
+                            minDate={serviceEstimateData.priceDate}
+                            maxDate={new Date()}
+                            closeOnSelect
+                            value={serviceEstimateData.priceDate}
+                            onChange={(e) =>
+                              setServiceEstimateData({
+                                ...serviceEstimateData,
+                                priceDate: e,
+                              })
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                variant="standard"
+                                inputProps={{
+                                  ...params.inputProps,
+                                  style: FONT_STYLE,
+                                }}
+                              />
+                            )}
+                          />
+                        </LocalizationProvider>
+                      </div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1602,9 +1604,9 @@ function ServiceOnlyTemplateEstimation(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        placeholder="Required"
                         value={serviceEstimateData.currency}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1616,7 +1618,6 @@ function ServiceOnlyTemplateEstimation(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        // placeholder="Required"
                         value={serviceEstimateData.netPrice}
                         // onChange={(e) =>
                         //   setServiceEstimateData({
@@ -1641,7 +1642,6 @@ function ServiceOnlyTemplateEstimation(props) {
                           )
                         }
                         class="form-control border-radius-10 text-primary"
-                        // placeholder="Required"
                         value={
                           serviceEstimateData.priceMethod?.value === "FLAT_RATE"
                             ? serviceEstimateData.adjustedPrice
@@ -1664,7 +1664,6 @@ function ServiceOnlyTemplateEstimation(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10 text-primary"
-                        placeholder="Optional"
                         value={serviceEstimateData.jobCode}
                         onChange={(e) =>
                           setServiceEstimateData({
@@ -1886,9 +1885,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={labourData.jobCode}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -1900,9 +1899,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={labourData.jobCodeDescription}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -1913,7 +1912,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <input
                                   type="text"
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={labourData.payer}
                                   onChange={(e) =>
                                     setLabourData({
@@ -1937,10 +1935,10 @@ function ServiceOnlyTemplateEstimation(props) {
                                     })
                                   }
                                   options={laborCodeList}
-                                  placeholder="Required"
                                   value={labourData.laborCode}
                                   styles={FONT_STYLE_SELECT}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -1956,10 +1954,10 @@ function ServiceOnlyTemplateEstimation(props) {
                                     })
                                   }
                                   options={LABOR_PRICE_OPTIONS}
-                                  placeholder="Required"
                                   value={labourData.pricingMethod}
                                   styles={FONT_STYLE_SELECT}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -1971,9 +1969,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={labourData.ratePerHourOrDay}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -2017,7 +2015,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled={!labourData.flatRateIndicator}
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={labourData.adjustedPrice}
                                   onChange={(e) =>
                                     setLabourData({
@@ -2037,9 +2034,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={labourData.totalPrice}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -2050,7 +2047,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <input
                                   type="text"
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={labourData.totalHours}
                                   onChange={(e) =>
                                     setLabourData({
@@ -2255,9 +2251,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={consumableData.jobCode}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -2269,9 +2265,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={consumableData.jobCodeDescription}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -2282,7 +2278,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <input
                                   type="text"
                                   className="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={consumableData.payer}
                                   onChange={(e) =>
                                     setConsumableData({
@@ -2318,9 +2313,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                           ? CONS_EXT_PRICE_OPTIONS
                                           : CONSEXT_PRICE_OPTIONS_NOLABOR
                                       }
-                                      placeholder="Required"
                                       styles={FONT_STYLE_SELECT}
                                     />
+                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
                                 </div>
                                 {consumableData.pricingMethod?.value?.includes(
@@ -2340,7 +2335,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                             type="text"
                                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                                             // style={{width: '64%'}}
-                                            placeholder="Required"
+
                                             value={
                                               consumableData.percentageOfBase
                                             }
@@ -2367,6 +2362,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                               : "%"}
                                           </span>
                                         </div>
+                                        <div className="css-w8dmq8">
+                                          *Mandatory
+                                        </div>
                                       </div>
                                     </div>
                                     <div className="col-md-4 col-sm-4">
@@ -2378,7 +2376,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                           type="text"
                                           disabled
                                           class="form-control border-radius-10 text-primary"
-                                          placeholder="Optional"
                                           value={consumableData.basePrice}
                                         />
                                       </div>
@@ -2434,7 +2431,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled={!consumableData.flatRateIndicator}
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={consumableData.adjustedPrice}
                                   onChange={(e) =>
                                     setConsumableData({
@@ -2454,9 +2450,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={consumableData.totalPrice}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-12">
@@ -2699,9 +2695,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={extWorkData.jobCode}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -2713,9 +2709,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={extWorkData.jobCodeDescription}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -2726,7 +2722,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <input
                                   type="text"
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={extWorkData.payer}
                                   onChange={(e) =>
                                     setExtWorkData({
@@ -2762,9 +2757,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                           ? CONS_EXT_PRICE_OPTIONS
                                           : CONSEXT_PRICE_OPTIONS_NOLABOR
                                       }
-                                      placeholder="Required"
                                       styles={FONT_STYLE_SELECT}
                                     />
+                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
                                 </div>
                                 {extWorkData.pricingMethod?.value?.includes(
@@ -2784,7 +2779,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                             type="text"
                                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                                             // style={{width: '64%'}}
-                                            placeholder="Required"
+
                                             value={extWorkData.percentageOfBase}
                                             onChange={(e) =>
                                               setExtWorkData({
@@ -2809,6 +2804,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                               : "%"}
                                           </span>
                                         </div>
+                                        <div className="css-w8dmq8">
+                                          *Mandatory
+                                        </div>
                                       </div>
                                     </div>
                                     <div className="col-md-4 col-sm-4">
@@ -2820,7 +2818,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                           type="text"
                                           disabled
                                           class="form-control border-radius-10 text-primary"
-                                          placeholder="Optional"
                                           value={extWorkData.basePrice}
                                         />
                                       </div>
@@ -2874,7 +2871,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled={!extWorkData.flatRateIndicator}
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={extWorkData.adjustedPrice}
                                   onChange={(e) =>
                                     setExtWorkData({
@@ -2894,9 +2890,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={extWorkData.totalPrice}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-12">
@@ -3125,9 +3121,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={miscData.jobCode}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -3139,9 +3135,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={miscData.jobCodeDescription}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
 
@@ -3158,9 +3154,10 @@ function ServiceOnlyTemplateEstimation(props) {
                                   options={miscTypeList}
                                   value={miscData.type}
                                   // isMulti
-                                  placeholder="Required"
+
                                   styles={FONT_STYLE_SELECT}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             {/* <div className="col-md-8 col-sm-4"></div> */}
@@ -3188,10 +3185,10 @@ function ServiceOnlyTemplateEstimation(props) {
                                           ? MISC_PRICE_OPTIONS
                                           : MISC_PRICE_OPTIONS_NOLABOR
                                       }
-                                      placeholder="Required"
                                       value={miscData.pricingMethod}
                                       styles={FONT_STYLE_SELECT}
                                     />
+                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
                                 </div>
                                 <div className="col-md-4 col-sm-4">
@@ -3206,7 +3203,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                       <input
                                         type="text"
                                         className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                        placeholder="Required"
                                         value={miscData.percentageOfBase}
                                         onChange={(e) =>
                                           setMiscData({
@@ -3227,6 +3223,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                           : "%"}
                                       </span>
                                     </div>
+                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
                                 </div>
                                 <div className="col-md-4 col-sm-4">
@@ -3238,7 +3235,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                       type="text"
                                       disabled
                                       class="form-control border-radius-10 text-primary"
-                                      placeholder="Optional"
                                       value={miscData.basePrice}
                                     />
                                   </div>
@@ -3288,7 +3284,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled={!miscData.flatRateIndicator}
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={miscData.adjustedPrice}
                                   onChange={(e) =>
                                     setMiscData({
@@ -3308,9 +3303,9 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
                                   value={miscData.totalPrice}
                                 />
+                                <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
@@ -3321,7 +3316,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <input
                                   type="text"
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
                                   value={miscData.payer}
                                   onChange={(e) =>
                                     setMiscData({
