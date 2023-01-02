@@ -273,6 +273,7 @@ export function CreatePortfolio(props) {
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [versionPopup, setVersionPopup] = useState(false)
+  const [convertToPopup, setConvertToPopup] = useState(false);
   const [openCoverage, setOpenCoveragetable] = useState(false);
 
   const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
@@ -2294,6 +2295,76 @@ export function CreatePortfolio(props) {
 
   const handleCreateQuote = async () => {
     // alert("hello");
+
+    try {
+
+      if (portfolioId == "" || portfolioId == undefined) {
+        setConvertToPopup(false);
+        throw "Please Create Portfolio First";
+      } else {
+        let quoteObj = {
+          quoteType: "SOLUTION",
+          customerId: 0,
+          equipmentId: 0,
+          netValue: 0,
+          currency: "string",
+          grossValue: 0,
+          discount: 0,
+          margin: 0,
+          tax: 0,
+          status: "string",
+          validFrom: "2022-11-14",
+          validTo: "2022-11-14",
+          quantity: 0,
+          // customPortfolioModels: portfolioId ? [
+          //   { customPortfolioId: portfolioId }
+          // ] : [],
+          customPortfolioModels: [],
+          quoteBodyModel: {
+            quoteBodyId: 0,
+            quoteBodyDescription: "string",
+            payerId: 0,
+            shortText: "string",
+            longText: "string",
+            terms: "string",
+            conditions: "string",
+            contact: "string",
+            serialNumber: "string",
+            statusNumber: "string",
+            billingType: "PAY_SUPPORT",
+            promisedDeliveryDate: "2022-11-14",
+            salesOpportunity: "string",
+            componentSerialNumber: "string",
+            versionNumber: "string",
+            serviceRecipientModel: {
+              serviceRecipientId: 0,
+              serviceRecipientName: "string",
+              serviceRecipientemail: "string",
+              serviceRecipientaddress: "string"
+            }
+          }
+        }
+
+        const quoteRes = await quoteCreation(quoteObj);
+        console.log("quoteRes : ", quoteRes);
+
+        setQuoteData({ ...quoteData, contact: quoteRes.data.quoteMasterId })
+        setQuoteDataShow(true);
+      }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      // setConvertToPopup(false);
+      return;
+    }
+
     let quoteObj = {
       quoteType: "SOLUTION",
       customerId: 0,
@@ -4509,34 +4580,59 @@ export function CreatePortfolio(props) {
     let createdCoverages = [];
 
     // Set Data By Item Relation Data Data
-    for (let b = 0; b < result.itemRelations.length; b++) {
-      let expendedArrObj = [];
-      let obj = result.items.find(obj => obj.itemId == result.itemRelations[b].portfolioItemId);
-      for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+    if (result.itemRelations.length > 0) {
+      for (let b = 0; b < result.itemRelations.length; b++) {
+        let expendedArrObj = [];
+        let obj = result.items.find(obj => obj.itemId == result.itemRelations[b].portfolioItemId);
+        for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
 
-        let bundleObj = result.items.find((objBundle, i) => {
-          if (objBundle.itemId == result.itemRelations[b].bundles[c]) {
+          let bundleObj = result.items.find((objBundle, i) => {
+            if (objBundle.itemId == result.itemRelations[b].bundles[c]) {
 
-            return objBundle; // stop searching
-          }
-        });
-        expendedArrObj.push(bundleObj);
+              return objBundle; // stop searching
+            }
+          });
+          expendedArrObj.push(bundleObj);
+        }
+
+        for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+
+          let serviceObj = result.items.find((objService, i) => {
+            if (objService.itemId == result.itemRelations[b].services[d]) {
+
+              return objService; // stop searching
+            }
+          });
+          expendedArrObj.push(serviceObj);
+        }
+        obj.associatedServiceOrBundle = expendedArrObj;
+        itemsArrData.push(obj);
       }
+      setBundleItems(itemsArrData);
+    } else {
+      var newPortfolioItemRelation = [];
+      var newExpendedItemsData = [];
+      // for (let i = 0; i < result.items.length; i++) {
+      let obj1 = result.items.find((objBundleService, i) => {
+        if (objBundleService.itemHeaderModel.bundleFlag === "PORTFOLIO") {
+          return objBundleService;
+        }
+      });
+      // let bundleServiceObjData = result.items.find((objBundleService, i) => {
+      //   if (objBundleService.itemHeaderModel.bundleFlag !== "PORTFOLIO") {
+      //     return objBundleService;
+      //   }
+      // });
+      // newExpendedItemsData.push(bundleServiceObjData);
+      // obj1.associatedServiceOrBundle = newExpendedItemsData;
 
-      for (let d = 0; d < result.itemRelations[b].services.length; d++) {
 
-        let serviceObj = result.items.find((objService, i) => {
-          if (objService.itemId == result.itemRelations[b].services[d]) {
-
-            return objService; // stop searching
-          }
-        });
-        expendedArrObj.push(serviceObj);
-      }
-      obj.associatedServiceOrBundle = expendedArrObj;
-      itemsArrData.push(obj);
+      newPortfolioItemRelation.push(obj1);
+      // }
+      console.log("newPortfolioItemRelation data is: ", newPortfolioItemRelation);
+      setBundleItems(newPortfolioItemRelation);
     }
-    setBundleItems(itemsArrData);
+
 
     // for Update Item in Portfolio Item Data BY Id 
     for (let i = 0; i < result.items.length; i++) {
@@ -7702,195 +7798,198 @@ export function CreatePortfolio(props) {
 
   const ExpendedModelComponent = ({ data }) => (
     <div className="scrollbar" id="style">
-      {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
-        <div
-          key={i}
-          id="row-0"
-          role="row"
-          className="sc-evZas cMMpBL rdt_TableRow"
-          style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
-        >
-          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
-          {/* <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div> */}
-          <div
-            id="cell-1-undefined"
-            data-column-id="1"
-            role="gridcell"
-            className="m-w-51 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div></div>
-            {/* <div>{bundleAndService.itemId}</div> */}
-          </div>
-          <div
-            id="cell-1-undefined"
-            data-column-id="1"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div>{bundleAndService.itemId}</div>
-          </div>
-          <div
-            id="cell-2-undefined"
-            data-column-id="2"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.itemHeaderDescription}
-            </div>
-          </div>
-          <div
-            id="cell-3-undefined"
-            data-column-id="3"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.itemHeaderStrategy}
-            </div>
-          </div>
-          <div
-            id="cell-4-undefined"
-            data-column-id="4"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.taskType}
-            </div>
-          </div>
-          <div
-            id="cell-5-undefined"
-            data-column-id="5"
-            role="gridcell"
-            className="m-w-92 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel?.quantity}
-            </div>
-          </div>
-          <div
-            id="cell-6-undefined"
-            data-column-id="6"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.netPrice}
-            </div>
-          </div>
-          <div
-            id="cell-7-undefined"
-            data-column-id="7"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.additional}
-            </div>
-          </div>
-          <div
-            id="cell-8-undefined"
-            data-column-id="8"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel?.sparePartsPrice}
-            </div>
-          </div>
-          <div
-            id="cell-9-undefined"
-            data-column-id="9"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel?.totalPrice}
-            </div>
-          </div>
-          <div
-            id="cell-10-undefined"
-            data-column-id="10"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel?.comments}
-            </div>
-          </div>
-          {bundleItems.length > 0 && (<div
-            id="cell-11-undefined"
-            data-column-id="11"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
+      {data.associatedServiceOrBundle?.length > 0 ?
+        <>
+          {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
             <div
-              className="cursor"
-              onClick={(e) =>
-                handleExpandedRowEdit(
-                  e,
-                  data.itemId,
-                  data.associatedServiceOrBundle[i]
-                )
-              }
+              key={i}
+              id="row-0"
+              role="row"
+              className="sc-evZas cMMpBL rdt_TableRow"
+              style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
             >
-              <Tooltip title="Edit">
-                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
-              </Tooltip>
-            </div>
-            <div
-              className="cursor"
-              onClick={(e) =>
-                handleExpandedRowDelete(
-                  e,
-                  data.itemId,
-                  data.associatedServiceOrBundle[i].itemId
-                )
-              }
-            >
-              <Tooltip title="Delete">
-                <Link to="#" className="mx-1">
-                  <svg
-                    data-name="Layer 41"
-                    id="Layer_41"
-                    width="14px"
-                    viewBox="0 0 50 50"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <title />
-                    <path
-                      className="cls-1"
-                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                    />
-                    <path
-                      className="cls-1"
-                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                    />
-                    <path
-                      className="cls-1"
-                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                    />
-                  </svg>
-                </Link>
-              </Tooltip>
-            </div>
-          </div>)}
+              <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+              {/* <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div> */}
+              <div
+                id="cell-1-undefined"
+                data-column-id="1"
+                role="gridcell"
+                className="m-w-51 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div></div>
+                {/* <div>{bundleAndService.itemId}</div> */}
+              </div>
+              <div
+                id="cell-1-undefined"
+                data-column-id="1"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div>{bundleAndService.itemId}</div>
+              </div>
+              <div
+                id="cell-2-undefined"
+                data-column-id="2"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemHeaderModel.itemHeaderDescription}
+                </div>
+              </div>
+              <div
+                id="cell-3-undefined"
+                data-column-id="3"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemHeaderModel.itemHeaderStrategy}
+                </div>
+              </div>
+              <div
+                id="cell-4-undefined"
+                data-column-id="4"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemBodyModel.taskType}
+                </div>
+              </div>
+              <div
+                id="cell-5-undefined"
+                data-column-id="5"
+                role="gridcell"
+                className="m-w-92 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemBodyModel?.quantity}
+                </div>
+              </div>
+              <div
+                id="cell-6-undefined"
+                data-column-id="6"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemHeaderModel.netPrice}
+                </div>
+              </div>
+              <div
+                id="cell-7-undefined"
+                data-column-id="7"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemHeaderModel.additional}
+                </div>
+              </div>
+              <div
+                id="cell-8-undefined"
+                data-column-id="8"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemBodyModel?.sparePartsPrice}
+                </div>
+              </div>
+              <div
+                id="cell-9-undefined"
+                data-column-id="9"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemBodyModel?.totalPrice}
+                </div>
+              </div>
+              <div
+                id="cell-10-undefined"
+                data-column-id="10"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div data-tag="allowRowEvents">
+                  {bundleAndService.itemBodyModel?.comments}
+                </div>
+              </div>
+              {bundleItems.length > 0 && (<div
+                id="cell-11-undefined"
+                data-column-id="11"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div
+                  className="cursor"
+                  onClick={(e) =>
+                    handleExpandedRowEdit(
+                      e,
+                      data.itemId,
+                      data.associatedServiceOrBundle[i]
+                    )
+                  }
+                >
+                  <Tooltip title="Edit">
+                    <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                  </Tooltip>
+                </div>
+                <div
+                  className="cursor"
+                  onClick={(e) =>
+                    handleExpandedRowDelete(
+                      e,
+                      data.itemId,
+                      data.associatedServiceOrBundle[i].itemId
+                    )
+                  }
+                >
+                  <Tooltip title="Delete">
+                    <Link to="#" className="mx-1">
+                      <svg
+                        data-name="Layer 41"
+                        id="Layer_41"
+                        width="14px"
+                        viewBox="0 0 50 50"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <title />
+                        <path
+                          className="cls-1"
+                          d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                        />
+                        <path
+                          className="cls-1"
+                          d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                        />
+                        <path
+                          className="cls-1"
+                          d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                        />
+                      </svg>
+                    </Link>
+                  </Tooltip>
+                </div>
+              </div>)}
 
-        </div>
-      ))}
+            </div>
+          ))}
+        </> : <></>}
     </div>
   );
 
@@ -7899,7 +7998,10 @@ export function CreatePortfolio(props) {
   // }
 
   const ExpandedComponent = ({ data }) => (
+    // {data?.}
     <div>
+      {/* {data.associatedServiceOrBundle?.length > 0 ?
+        <> */}
       <div
         id="row-0"
         role="row"
@@ -8032,39 +8134,39 @@ export function CreatePortfolio(props) {
           <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
         </div>
       </div>
-    <div className="scrollbar" id="style">
-      {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
-        <div
-          key={i}
-          id="row-0"
-          role="row"
-          className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
-          style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
-        >
-          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
-            {/* <div class="checkbox">
+      <div className="scrollbar" id="style">
+        {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+          <div
+            key={i}
+            id="row-0"
+            role="row"
+            className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+            style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+          >
+            <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+              {/* <div class="checkbox">
                 <input type="checkbox" value=""></input>
             </div> */}
-          </div>
-          <div
-            id="cell-1-undefined"
-            data-column-id="1"
-            role="gridcell"
-            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div>{(i + 1) * 10}</div>
-          </div>
-          <div
-            id="cell-2-undefined"
-            data-column-id="2"
-            role="gridcell"
-            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
-              <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
-                <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+            </div>
+            <div
+              id="cell-1-undefined"
+              data-column-id="1"
+              role="gridcell"
+              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div>{(i + 1) * 10}</div>
+            </div>
+            <div
+              id="cell-2-undefined"
+              data-column-id="2"
+              role="gridcell"
+              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
+                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                  <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
                   c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
                   c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
                   c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
@@ -8080,27 +8182,88 @@ export function CreatePortfolio(props) {
                   c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
                   c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
                   c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
-              </svg></span>
+                </svg></span>
+              </div>
+              <div className="align-items-center d-flex justify-content-center">
+                {/* {bundleAndService.itemId} */}
+                {bundleAndService.itemName}
+              </div>
             </div>
-            <div className="align-items-center d-flex justify-content-center">
-              {/* {bundleAndService.itemId} */}
-              {bundleAndService.itemName}
+            <div
+              id="cell-3-undefined"
+              data-column-id="3"
+              role="gridcell"
+              className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div className="d-flex align-items-center" data-tag="allowRowEvents">
+                {bundleAndService.itemHeaderModel.itemHeaderDescription}
+              </div>
+              <div className="d-flex align-items-center">
+                <div
+                  className="description cursor mr-1"
+                  onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                >
+                  <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                    <g>
+                      <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                      <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                    </g>
+                  </svg>
+                </div>
+                <div className=""><KeyboardArrowDownIcon /></div>
+              </div>
             </div>
-          </div>
-          <div
-            id="cell-3-undefined"
-            data-column-id="3"
-            role="gridcell"
-            className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div className="d-flex align-items-center" data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.itemHeaderDescription}
+            <div
+              id="cell-4-undefined"
+              data-column-id="4"
+              role="gridcell"
+              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
+                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                  <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+                </svg></span>
+              </div>
+              <div className="align-items-center d-flex" data-tag="allowRowEvents">
+                {bundleAndService.itemHeaderModel.itemHeaderStrategy}
+              </div>
             </div>
-            <div className="d-flex align-items-center">
+            <div
+              id="cell-5-undefined"
+              data-column-id="5"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div className="d-flex " data-tag="allowRowEvents">SJ1034
+              </div>
               <div
                 className="description cursor mr-1"
-                onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                onClick={() => setBundleServiceShow(true)}
               >
                 <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                   <g>
@@ -8116,113 +8279,52 @@ export function CreatePortfolio(props) {
                   </g>
                 </svg>
               </div>
-              <div className=""><KeyboardArrowDownIcon /></div>
-            </div>
-          </div>
-          <div
-            id="cell-4-undefined"
-            data-column-id="4"
-            role="gridcell"
-            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
-              <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
-                <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
-                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
-                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
-                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
-                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
-                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
-                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
-                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
-                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
-                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
-                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
-                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
-                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
-                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
-                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
-                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
-              </svg></span>
-            </div>
-            <div className="align-items-center d-flex" data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.itemHeaderStrategy}
-            </div>
-          </div>
-          <div
-            id="cell-5-undefined"
-            data-column-id="5"
-            role="gridcell"
-            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div className="d-flex " data-tag="allowRowEvents">SJ1034
             </div>
             <div
-              className="description cursor mr-1"
-              onClick={() => setBundleServiceShow(true)}
+              id="cell-6-undefined"
+              data-column-id="6"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
             >
-              <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                <g>
-                  <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+              <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
+              <div
+                className="description mr-1"
+              >
+                <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                  <g>
+                    <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
                       c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
                       c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
                       c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
                       c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                  <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                    <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
                       c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
                       c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
                       c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                </g>
-              </svg>
+                  </g>
+                </svg>
+              </div>
             </div>
-          </div>
-          <div
-            id="cell-6-undefined"
-            data-column-id="6"
-            role="gridcell"
-            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
             <div
-              className="description mr-1"
+              id="cell-7-undefined"
+              data-column-id="7"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
             >
-              <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                <g>
-                  <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
-                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
-                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
-                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
-                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                  <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
-                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
-                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
-                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                </g>
-              </svg>
+              <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
             </div>
-          </div>
-          <div
-            id="cell-7-undefined"
-            data-column-id="7"
-            role="gridcell"
-            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
-          </div>
-          <div
-            id="cell-8-undefined"
-            data-column-id="8"
-            role="gridcell"
-            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div>4</div>
-            <div className="funds-grey">
-              {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+            <div
+              id="cell-8-undefined"
+              data-column-id="8"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div>4</div>
+              <div className="funds-grey">
+                {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                 <g>
                   <g>
                     <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
@@ -8272,18 +8374,18 @@ export function CreatePortfolio(props) {
                   </g>
                 </g>
               </svg> */}
+              </div>
             </div>
-          </div>
-          <div
-            id="cell-9-undefined"
-            data-column-id="9"
-            role="gridcell"
-            className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div>4</div>
-            <div className="funds-grey">
-              {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+            <div
+              id="cell-9-undefined"
+              data-column-id="9"
+              role="gridcell"
+              className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div>4</div>
+              <div className="funds-grey">
+                {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                 <g>
                   <g>
                     <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
@@ -8333,20 +8435,20 @@ export function CreatePortfolio(props) {
                   </g>
                 </g>
               </svg> */}
+              </div>
             </div>
-          </div>
-          <div
-            id="cell-10-undefined"
-            data-column-id="10"
-            role="gridcell"
-            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div>4</div>
             <div
-              className="funds-grey "
+              id="cell-10-undefined"
+              data-column-id="10"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
             >
-              {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+              <div>4</div>
+              <div
+                className="funds-grey "
+              >
+                {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                 <g>
                   <g>
                     <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
@@ -8396,87 +8498,87 @@ export function CreatePortfolio(props) {
                   </g>
                 </g>
               </svg> */}
+              </div>
             </div>
-          </div>
-          <div
-            id="cell-10-undefined"
-            data-column-id="10"
-            role="gridcell"
-            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div>4</div>
             <div
-              className="funds-grey cursor"
-              onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
+              id="cell-10-undefined"
+              data-column-id="10"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
             >
-              <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                <g>
+              <div>4</div>
+              <div
+                className="funds-grey cursor"
+                onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
+              >
+                <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                   <g>
-                    <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                    <g>
+                      <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
                       C74.2,101.4,70.7,105,66.3,105.1z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                    </g>
+                    <g>
+                      <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
                       C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                    </g>
+                    <g>
+                      <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
                       C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                    </g>
+                    <g>
+                      <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                    </g>
+                    <g>
+                      <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                    </g>
+                    <g>
+                      <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                    </g>
+                    <g>
+                      <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                       C90.7,157.7,94.3,154.1,98.6,154z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                    </g>
+                    <g>
+                      <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                    </g>
+                    <g>
+                      <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                       C123.2,157.7,126.8,154.1,131.1,154z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                    </g>
+                    <g>
+                      <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
                       c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
                       c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                  </g>
-                  <g>
-                    <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                    </g>
+                    <g>
+                      <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
                       S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
                       c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
+                    </g>
                   </g>
-                </g>
-              </svg>
+                </svg>
+              </div>
             </div>
-          </div>
-          <div
-            id="cell-10-undefined"
-            data-column-id="11"
-            role="gridcell"
-            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-             <div>
-            <Tooltip title="View">
-              <Link to="#" className="px-1" onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}>
-                <VisibilityOutlinedIcon />
-              </Link>
-            </Tooltip>
-          </div>
-            {/* <div
+            <div
+              id="cell-10-undefined"
+              data-column-id="11"
+              role="gridcell"
+              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div>
+                <Tooltip title="View">
+                  <Link to="#" className="px-1" onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}>
+                    <VisibilityOutlinedIcon />
+                  </Link>
+                </Tooltip>
+              </div>
+              {/* <div
               className="cursor"
               onClick={(e) =>
                 handleExpandedRowEdit(
@@ -8491,9 +8593,9 @@ export function CreatePortfolio(props) {
               </Tooltip>
             </div>
              */}
-          </div>
+            </div>
 
-          {/* {bundleItems.length > 0 && (
+            {/* {bundleItems.length > 0 && (
           <div
             id="cell-11-undefined"
             data-column-id="11"
@@ -8553,9 +8655,11 @@ export function CreatePortfolio(props) {
             </div>
           </div>)} */}
 
-        </div>
-      ))}
-    </div>
+          </div>
+        ))}
+      </div>
+      {/* </> : <></>} */}
+
     </div>
   );
 
@@ -9643,10 +9747,15 @@ export function CreatePortfolio(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem className="custommenu">Templates</MenuItem>
+                    {/* <MenuItem className="custommenu">Templates</MenuItem>
                     <MenuItem className="custommenu">Standard Job</MenuItem>
-                    <MenuItem className="custommenu">Kit</MenuItem>
-                    <MenuItem className="custommenu" data-toggle="modal" data-target="#quotecreat">
+                    <MenuItem className="custommenu">Kit</MenuItem> */}
+                    <MenuItem
+                      className="custommenu"
+                      onClick={() => setConvertToPopup(true)}
+                    // data-toggle="modal"
+                    // data-target="#quotecreat"
+                    >
                       Quote
                     </MenuItem>
                     <Divider />
@@ -14942,7 +15051,11 @@ export function CreatePortfolio(props) {
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
-                  <Tab label="Service/Bundle" value="2" />
+                  <Tab
+                    label="Service/Bundle"
+                    value="2"
+                    disabled={bundleServiceNeed}
+                  />
                   {/* <Tab label="Solution" value="3" /> */}
                   {/*use it in useCase-4 */}
                   {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />}
@@ -14992,7 +15105,7 @@ export function CreatePortfolio(props) {
                 />
                 {loadingItem === "01" ? ("loading") :
                   <>
-                    {tempBundleService1.length > 0 && (<>
+                    {tempBundleService1?.length > 0 && (<>
                       <DataTable
                         title=""
                         columns={tempBundleItemColumns1}
@@ -15043,7 +15156,7 @@ export function CreatePortfolio(props) {
                   </>
 
                 }
-                {tempBundleService3.length > 0 && <>
+                {tempBundleService3?.length > 0 && <>
                   <DataTable
                     title=""
                     columns={tempBundleItemColumns1}
@@ -15582,345 +15695,345 @@ export function CreatePortfolio(props) {
                     </div>
                   </div> */}
                   <div className="row input-fields">
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  PRICE METHOD
-                </label>
-                <Select
-                  options={priceMethodKeyValue}
-                  className="text-primary"
-                  defaultValue={props?.priceCalculator?.priceMethod}
-                  value={priceCalculator.priceMethod}
-                  name="priceMethod"
-                  onChange={(e) =>
-                    setPriceCalculator({ ...priceCalculator, priceMethod: e })
-                  }
-                  placeholder="placeholder (Optional)"
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  CURRENCY
-                </label>
-                <Select
-                  options={priceMethodKeyValue}
-                  className="text-primary"
-                  defaultValue={props?.priceCalculator?.priceMethod}
-                  value={priceCalculator.priceMethod}
-                  name="priceMethod"
-                  onChange={(e) =>
-                    setPriceCalculator({ ...priceCalculator, priceMethod: e })
-                  }
-                  placeholder="placeholder (Optional)"
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                htmlFor="exampleInputEmail1"
-                              >
-                                PRICE DATE
-                              </label>
-                              <div className="d-flex align-items-center date-box w-100">
-                                <div className="form-group w-100">
-                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DatePicker
-                                      variant="inline"
-                                      format="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      label=""
-                                      name="preparedOn"
-                                      value={priceDetails.priceDate}
-                                      onChange={(e) =>
-                                        setPriceDetails({
-                                          ...priceDetails,
-                                          priceDate: e,
-                                        })
-                                      }
-                                    />
-                                  </MuiPickersUtilsProvider>
-                                </div>
-                              </div>
-                            </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE METHOD
+                        </label>
+                        <Select
+                          options={priceMethodKeyValue}
+                          className="text-primary"
+                          defaultValue={props?.priceCalculator?.priceMethod}
+                          value={priceCalculator.priceMethod}
+                          name="priceMethod"
+                          onChange={(e) =>
+                            setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                          }
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          CURRENCY
+                        </label>
+                        <Select
+                          options={priceMethodKeyValue}
+                          className="text-primary"
+                          defaultValue={props?.priceCalculator?.priceMethod}
+                          value={priceCalculator.priceMethod}
+                          name="priceMethod"
+                          onChange={(e) =>
+                            setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                          }
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE DATE
+                        </label>
+                        <div className="d-flex align-items-center date-box w-100">
+                          <div className="form-group w-100">
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                name="preparedOn"
+                                value={priceDetails.priceDate}
+                                onChange={(e) =>
+                                  setPriceDetails({
+                                    ...priceDetails,
+                                    priceDate: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
                           </div>
-                          <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  PRICE TYPE
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10"
-                                  placeholder="Optional"
-                                  name="priceType"
-                                  disabled={disable}
-                                  value={itemPriceCalculator.priceType}
-                                  onChange={handleItemPriceCalculatorChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group date-box">
-                                <label
-                                  className="text-light-dark font-size-12 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  ADDITIONAL
-                                </label>
-                                <div className=" d-flex form-control-date">
-                                  <div className="">
-                                    <Select
-                                      isClearable={true}
-                                      className="text-primary"
-                                      value={priceCalculator.priceAdditionalSelect}
-                                      name="priceAdditionalSelect"
-                                      onChange={(e) =>
-                                        setPriceCalculator({
-                                          ...priceCalculator,
-                                          priceAdditionalSelect: e,
-                                        })
-                                      }
-                                      options={options}
-                                      placeholder="Select"
-                                      isDisabled
-                                    />
-                                  </div>
-                                  <input
-                                    type="text"
-                                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                                    placeholder="10%"
-                                    defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                                    value={priceCalculator.priceAdditionalInput}
-                                    name="priceAdditionalInput"
-                                    onChange={(e) =>
-                                      setPriceCalculator({
-                                        ...priceCalculator,
-                                        priceAdditionalInput: e.target.value,
-                                      })
-                                    }
-                                    disabled
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                                  <div className="form-group date-box">
-                                    <label
-                                      className="text-light-dark font-size-12 font-weight-500"
-                                      for="exampleInputEmail1"
-                                    >
-                                      PRICE ESCALATON
-                                    </label>
-                                    <div className=" d-flex align-items-center form-control-date">
-                                      <Select
-                                        className="select-input"
-                                        id="priceEscalationSelect"
-                                        options={options}
-                                        placeholder="placeholder "
-                                      // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
-                                      // value={expandedPriceCalculator.priceEscalationSelect}
-                                      />
-                                      <input
-                                        type="text"
-                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                        placeholder="20%"
-                                        id="priceEscalationInput"
-                                      // value={escalationPriceValue}
-                                      // onchange={(e) = setEscalationPriceValue(e.target.value)}
-                                      // defaultValue={data.itemBodyModel.priceEscalation}
-                                      // value={expandedPriceCalculator.priceEscalationInput}
-                                      // onChange={handleExpandePriceChange}
-                                      />
-                                    </div>
-                                  </div>
-                             </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div class="form-group mt-1">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={extWorkData.flatRateIndicator}
-                                        onChange={(e) =>
-                                          setExtWorkData({
-                                            ...extWorkData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? extWorkData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-500">
-                                        FLAT RATE INDICATOR 
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-12 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  FLAT PRICE / ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10 text-primary"
-                                  value={priceCalculator.flatPrice}
-                                  name="flatPrice"
-                                  onChange={(e) =>
-                                    setPriceCalculator({
-                                      ...priceCalculator,
-                                      flatPrice: e.target.value,
-                                    })
-                                  }
-                                  placeholder="$100"
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                                <div className="form-group date-box">
-                                  <label
-                                    className="text-light-dark font-size-12 font-weight-500"
-                                    for="exampleInputEmail1"
-                                  >
-                                    DISCOUNT TYPE
-                                  </label>
-                                  <div className=" d-flex form-control-date">
-                                    <div className="">
-                                      <Select
-                                        value={priceCalculator.discountTypeSelect}
-                                        name="discountTypeSelect"
-                                        className="text-primary"
-                                        onChange={(e) =>
-                                          setPriceCalculator({
-                                            ...priceCalculator,
-                                            discountTypeSelect: e,
-                                          })
-                                        }
-                                        isClearable={true}
-                                        options={options}
-                                        placeholder="Select"
-                                      />
-                                    </div>
-                                    <input
-                                      type="text"
-                                      className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                                      value={priceCalculator.discountTypeInput}
-                                      name="discountTypeInput"
-                                      onChange={(e) =>
-                                        setPriceCalculator({
-                                          ...priceCalculator,
-                                          discountTypeInput: e.target.value,
-                                        })
-                                      }
-                                      placeholder="10%"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-md-6 col-sm-6">
-                                <div className="form-group date-box">
-                                  <label
-                                    className="text-light-dark font-size-12 font-weight-500"
-                                    htmlFor="exampleInputEmail1"
-                                  >
-                                    PRICE BREAK DOWN
-                                  </label>
-                                  <div className=" d-flex form-control-date">
-                                    <Select
-                                      className="select-input text-primary"
-                                      defaultValue={selectedOption}
-                                      onChange={setSelectedOption}
-                                      // options={options}
-                                      options={priceHeadTypeKeyValue}
-                                      placeholder="Select "
-                                    />
-                                    <input
-                                      type="text"
-                                      className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                                      id="exampleInputEmail1"
-                                      aria-describedby="emailHelp"
-                                      placeholder="optional"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                         </div>
-          
-                        <div className="border border-radius-10 mt-3 py-2 px-3">
-                          <div className="row input-fields">
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  YEAR
-                                </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE TYPE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="priceType"
+                          disabled={disable}
+                          value={itemPriceCalculator.priceType}
+                          onChange={handleItemPriceCalculatorChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          ADDITIONAL
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <div className="">
+                            <Select
+                              isClearable={true}
+                              className="text-primary"
+                              value={priceCalculator.priceAdditionalSelect}
+                              name="priceAdditionalSelect"
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  priceAdditionalSelect: e,
+                                })
+                              }
+                              options={options}
+                              placeholder="Select"
+                              isDisabled
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="10%"
+                            defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                            value={priceCalculator.priceAdditionalInput}
+                            name="priceAdditionalInput"
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                priceAdditionalInput: e.target.value,
+                              })
+                            }
+                            disabled
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE ESCALATON
+                        </label>
+                        <div className=" d-flex align-items-center form-control-date">
+                          <Select
+                            className="select-input"
+                            id="priceEscalationSelect"
+                            options={options}
+                            placeholder="placeholder "
+                          // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                          // value={expandedPriceCalculator.priceEscalationSelect}
+                          />
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="20%"
+                            id="priceEscalationInput"
+                          // value={escalationPriceValue}
+                          // onchange={(e) = setEscalationPriceValue(e.target.value)}
+                          // defaultValue={data.itemBodyModel.priceEscalation}
+                          // value={expandedPriceCalculator.priceEscalationInput}
+                          // onChange={handleExpandePriceChange}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group mt-1">
+                        <FormGroup>
+                          <FormControlLabel
+                            style={{
+                              alignItems: "start",
+                              marginLeft: 0,
+                            }}
+                            control={
+                              <Switch
+                                checked={extWorkData.flatRateIndicator}
+                                onChange={(e) =>
+                                  setExtWorkData({
+                                    ...extWorkData,
+                                    flatRateIndicator: e.target.checked,
+                                    adjustedPrice: e.target.checked
+                                      ? extWorkData.adjustedPrice
+                                      : 0.0,
+                                  })
+                                }
+                              />
+                            }
+                            labelPlacement="top"
+                            label={
+                              <span className="text-light-dark font-size-12 font-weight-500">
+                                FLAT RATE INDICATOR
+                              </span>
+                            }
+                          />
+                        </FormGroup>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          FLAT PRICE / ADJUSTED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10 text-primary"
+                          value={priceCalculator.flatPrice}
+                          name="flatPrice"
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              flatPrice: e.target.value,
+                            })
+                          }
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          DISCOUNT TYPE
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <div className="">
+                            <Select
+                              value={priceCalculator.discountTypeSelect}
+                              name="discountTypeSelect"
+                              className="text-primary"
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  discountTypeSelect: e,
+                                })
+                              }
+                              isClearable={true}
+                              options={options}
+                              placeholder="Select"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                            value={priceCalculator.discountTypeInput}
+                            name="discountTypeInput"
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                discountTypeInput: e.target.value,
+                              })
+                            }
+                            placeholder="10%"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE BREAK DOWN
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <Select
+                            className="select-input text-primary"
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            // options={options}
+                            options={priceHeadTypeKeyValue}
+                            placeholder="Select "
+                          />
+                          <input
+                            type="text"
+                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="optional"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-radius-10 mt-3 py-2 px-3">
+                    <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            YEAR
+                          </label>
 
 
-                                <Select
-                                  // options={[
-                                  //   { value: "1", label: "1" },
-                                  //   { value: "2", label: "2" },
-                                  //   { value: "3", label: "3" },
-                                  // ]}
-                                  options={yearsOption}
-                                  placeholder="Select..."
-                                  className="text-primary"
-                                  onChange={(e) =>
-                                    setAddportFolioItem({ ...addPortFolioItem, year: e })
-                                  }
-                                  value={addPortFolioItem.year}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  NO. OF YEARS
-                                </label>
-                                <input
-                                  type="number"
-                                  // type="text"
-                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                  placeholder="No. of Years"
-                                  // defaultValue={props?.priceCalculator?.startUsage}
-                                  // value={priceCalculator.startUsage}
-                                  onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
-                                  value={addPortFolioItem.noOfYear}
-                                  name="noOfYear"
-                                />
-                                {/* <Select
+                          <Select
+                            // options={[
+                            //   { value: "1", label: "1" },
+                            //   { value: "2", label: "2" },
+                            //   { value: "3", label: "3" },
+                            // ]}
+                            options={yearsOption}
+                            placeholder="Select..."
+                            className="text-primary"
+                            onChange={(e) =>
+                              setAddportFolioItem({ ...addPortFolioItem, year: e })
+                            }
+                            value={addPortFolioItem.year}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            NO. OF YEARS
+                          </label>
+                          <input
+                            type="number"
+                            // type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                            placeholder="No. of Years"
+                            // defaultValue={props?.priceCalculator?.startUsage}
+                            // value={priceCalculator.startUsage}
+                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
+                            value={addPortFolioItem.noOfYear}
+                            name="noOfYear"
+                          />
+                          {/* <Select
                                   options={[
                                     { value: "1", label: "1" },
                                     { value: "2", label: "2" },
@@ -15933,286 +16046,286 @@ export function CreatePortfolio(props) {
                                   }
                                   value={addPortFolioItem.noOfYear}
                                 /> */}
-                              </div>
-                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                    <div className="row input-fields">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            START USAGE
+                          </label>
+                          <div
+                            className=" d-flex form-control-date"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <input
+                              type="number"
+                              // type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                              placeholder="10,000 hours"
+                              // defaultValue={props?.priceCalculator?.startUsage}
+                              // value={priceCalculator.startUsage}
+                              onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
+                              value={addPortFolioItem.startUsage}
+                              name="startUsage"
+                            />
+                            <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
                           </div>
-                          <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
-                          <div className="row input-fields">
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  START USAGE
-                                </label>
-                                <div
-                                  className=" d-flex form-control-date"
-                                  style={{ overflow: "hidden" }}
-                                >
-                                  <input
-                                    type="number"
-                                    // type="text"
-                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                    placeholder="10,000 hours"
-                                    // defaultValue={props?.priceCalculator?.startUsage}
-                                    // value={priceCalculator.startUsage}
-                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
-                                    value={addPortFolioItem.startUsage}
-                                    name="startUsage"
-                                  />
-                                  <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
-                                </div>
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  END USAGE
-                                </label>
-                                <div
-                                  className=" d-flex form-control-date"
-                                  style={{ overflow: "hidden" }}
-                                >
-                                  <input
-                                    type="number"
-                                    // type="text"
-                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                    placeholder="16,000 hours"
-                                    // defaultValue={props?.priceCalculator?.startUsage}
-                                    // value={priceCalculator.startUsage}
-                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
-                                    value={addPortFolioItem.endUsage}
-                                    name="endUsage"
-                                  />
-                                  <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
-                                </div>
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  USAGE TYPE
-                                </label>
-                                <Select
-                                  options={options}
-                                  placeholder="Planned Usage"
-                                  className="text-primary"
-                                  onChange={(e) =>
-                                    setAddportFolioItem({
-                                      ...addPortFolioItem,
-                                      usageType: e,
-                                    })
-                                  }
-                                  value={addPortFolioItem.usageType}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  FREQUENCY
-                                </label>
-                                <Select
-                                  options={frequencyOptions}
-                                  placeholder="Select....."
-                                  className="text-primary"
-                                  onChange={(e) =>
-                                    setAddportFolioItem({
-                                      ...addPortFolioItem,
-                                      frequency: e,
-                                    })
-                                  }
-                                  value={addPortFolioItem.frequency}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  UNIT
-                                </label>
-                                <Select
-                                  options={[
-                                    { value: "per Hr", label: "per Hr" },
-                                    { value: "per Km", label: "per Km" },
-                                    { value: "per Miles", label: "per Miles" },
-                                    { value: "per year", label: "per year" },
-                                    { value: "per month", label: "per month" },
-                                    { value: "per day", label: "per day" },
-                                    { value: "per quarter", label: "per quarter" },
-                                  ]}
-                                  placeholder="Select..."
-                                  className="text-primary"
-                                  onChange={(e) =>
-                                    setAddportFolioItem({ ...addPortFolioItem, unit: e })
-                                  }
-                                  value={addPortFolioItem.unit}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label
-                                  className="text-light-dark font-size-14 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  RECOMMENDED VALUE
-                                </label>
-                                <div
-                                  className=" d-flex form-control-date"
-                                  style={{ overflow: "hidden" }}
-                                >
-                                  <input
-                                    type="number"
-                                    // type="text"
-                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                    placeholder="Recommended Value"
-                                    // defaultValue={props?.priceCalculator?.startUsage}
-                                    // value={priceCalculator.startUsage}
-                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
-                                    value={addPortFolioItem.recommendedValue}
-                                    name="recommendedValue"
-                                  // name="startUsage"
-                                  // onChange={(e) =>
-                                  //   setPriceCalculator({
-                                  //     ...priceCalculator,
-                                  //     startUsage: e.target.value,
-                                  //   })
-                                  // }
-                                  />
-                                  <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
-                                </div>
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group w-100">
-                                <label
-                                  className="text-light-dark font-size-12 font-weight-500"
-                                  for="exampleInputEmail1"
-                                >
-                                  NO. OF EVENTS
-                                </label>
-                                <input
-                                  type="number"
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="NO. OF EVENTS"
-                                  onChange={(e) =>
-                                    setAddportFolioItem({
-                                      ...addPortFolioItem,
-                                      numberOfEvents: e.target.value,
-                                    })
-                                  }
-                                  value={addPortFolioItem.numberOfEvents}
-                                />
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div class="form-group mt-1">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={extWorkData.flatRateIndicator}
-                                        onChange={(e) =>
-                                          setExtWorkData({
-                                            ...extWorkData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? extWorkData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-500">
-                                        SUPRESSION
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div>
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            END USAGE
+                          </label>
+                          <div
+                            className=" d-flex form-control-date"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <input
+                              type="number"
+                              // type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                              placeholder="16,000 hours"
+                              // defaultValue={props?.priceCalculator?.startUsage}
+                              // value={priceCalculator.startUsage}
+                              onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
+                              value={addPortFolioItem.endUsage}
+                              name="endUsage"
+                            />
+                            <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
                           </div>
-                          <div className="my-1 d-flex align-items-center justify-content-end">
-                            <Link to="#" className="btn border mr-4">Cancel</Link>
-                            <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
-                              <span className="mr-2 funds">
-                                <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                                  <g>
-                                    <g>
-                                      <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            USAGE TYPE
+                          </label>
+                          <Select
+                            options={options}
+                            placeholder="Planned Usage"
+                            className="text-primary"
+                            onChange={(e) =>
+                              setAddportFolioItem({
+                                ...addPortFolioItem,
+                                usageType: e,
+                              })
+                            }
+                            value={addPortFolioItem.usageType}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            FREQUENCY
+                          </label>
+                          <Select
+                            options={frequencyOptions}
+                            placeholder="Select....."
+                            className="text-primary"
+                            onChange={(e) =>
+                              setAddportFolioItem({
+                                ...addPortFolioItem,
+                                frequency: e,
+                              })
+                            }
+                            value={addPortFolioItem.frequency}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            UNIT
+                          </label>
+                          <Select
+                            options={[
+                              { value: "per Hr", label: "per Hr" },
+                              { value: "per Km", label: "per Km" },
+                              { value: "per Miles", label: "per Miles" },
+                              { value: "per year", label: "per year" },
+                              { value: "per month", label: "per month" },
+                              { value: "per day", label: "per day" },
+                              { value: "per quarter", label: "per quarter" },
+                            ]}
+                            placeholder="Select..."
+                            className="text-primary"
+                            onChange={(e) =>
+                              setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                            }
+                            value={addPortFolioItem.unit}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            RECOMMENDED VALUE
+                          </label>
+                          <div
+                            className=" d-flex form-control-date"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <input
+                              type="number"
+                              // type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                              placeholder="Recommended Value"
+                              // defaultValue={props?.priceCalculator?.startUsage}
+                              // value={priceCalculator.startUsage}
+                              onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                              value={addPortFolioItem.recommendedValue}
+                              name="recommendedValue"
+                            // name="startUsage"
+                            // onChange={(e) =>
+                            //   setPriceCalculator({
+                            //     ...priceCalculator,
+                            //     startUsage: e.target.value,
+                            //   })
+                            // }
+                            />
+                            <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                          </div>
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group w-100">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            NO. OF EVENTS
+                          </label>
+                          <input
+                            type="number"
+                            className="form-control border-radius-10 text-primary"
+                            placeholder="NO. OF EVENTS"
+                            onChange={(e) =>
+                              setAddportFolioItem({
+                                ...addPortFolioItem,
+                                numberOfEvents: e.target.value,
+                              })
+                            }
+                            value={addPortFolioItem.numberOfEvents}
+                          />
+                          <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group mt-1">
+                          <FormGroup>
+                            <FormControlLabel
+                              style={{
+                                alignItems: "start",
+                                marginLeft: 0,
+                              }}
+                              control={
+                                <Switch
+                                  checked={extWorkData.flatRateIndicator}
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      flatRateIndicator: e.target.checked,
+                                      adjustedPrice: e.target.checked
+                                        ? extWorkData.adjustedPrice
+                                        : 0.0,
+                                    })
+                                  }
+                                />
+                              }
+                              labelPlacement="top"
+                              label={
+                                <span className="text-light-dark font-size-12 font-weight-500">
+                                  SUPRESSION
+                                </span>
+                              }
+                            />
+                          </FormGroup>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="my-1 d-flex align-items-center justify-content-end">
+                      <Link to="#" className="btn border mr-4">Cancel</Link>
+                      <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                        <span className="mr-2 funds">
+                          <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                            <g>
+                              <g>
+                                <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
                               C74.2,101.4,70.7,105,66.3,105.1z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                              </g>
+                              <g>
+                                <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
                               C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                              </g>
+                              <g>
+                                <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
                               C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              </g>
+                              <g>
+                                <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              </g>
+                              <g>
+                                <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              </g>
+                              <g>
+                                <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                              </g>
+                              <g>
+                                <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C90.7,157.7,94.3,154.1,98.6,154z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              </g>
+                              <g>
+                                <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                              </g>
+                              <g>
+                                <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C123.2,157.7,126.8,154.1,131.1,154z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                              </g>
+                              <g>
+                                <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
                               c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
                               c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                              </g>
+                              <g>
+                                <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
                               S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
                               c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
-                                    </g>
-                                  </g>
-                                </svg>
-                              </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
-                          </div>
-                        </div>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                    </div>
+                  </div>
                   <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
                       <div className="d-block mr-4">
@@ -17390,6 +17503,181 @@ export function CreatePortfolio(props) {
         <Modal.Footer>
           <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
           <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button>
+        </Modal.Footer>
+      </Modal>
+
+
+      {/* Model Box for Convert to Quote */}
+      <Modal
+        show={convertToPopup}
+        onHide={() => setConvertToPopup(false)}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="border-none">
+          <Modal.Title>Quote Create</Modal.Title>
+        </Modal.Header>
+        <p className="d-block px-3">
+          It is a long established fact that a reader will be distracted by
+          the readable content of a page when looking at its layout.
+        </p>
+        <hr className="my-1" />
+        <Modal.Body>
+          {!quoteDataShow ?
+            <>
+              <div className="row">
+                <div className="col-md-12 col-sm-12">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Quote Type
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="Cyclical"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Quote ID
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      class="form-control"
+                      id="exampleFormControlTextarea1"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Reference
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                </div>
+              </div>
+            </> :
+            <>
+              <div className="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                    <h6 class="font-weight-500">
+                      {/* Repair Quote with Spare Parts */}SOLUTION
+                    </h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                    {/* <h6 class="font-weight-500">SB12345</h6> */}
+                    <h6 class="font-weight-500">{quoteData.contact}</h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">
+                      QUOTE DESCRIPTION
+                    </p>
+                    {/* <h6 class="font-weight-500">Holder text</h6> */}
+                    <h6 class="font-weight-500">{quoteData.description}</h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                    {/* <h6 class="font-weight-500">Holder text</h6> */}
+                    <h6 class="font-weight-500">{quoteData.reference}</h6>
+                  </div>
+                </div>
+              </div>
+            </>}
+
+          {quoteDataShow ? <>
+          </> : <></>}
+        </Modal.Body>
+        <Modal.Footer style={{ display: "unset" }}>
+          {quoteDataShow ? <>
+            <div className="mb-2">
+              <a
+                // href="#"
+                href={undefined}
+                onClick={() => handleCreate()}
+                data-dismiss="modal"
+                className="btn cursor bg-primary d-block text-white"
+
+              >
+                Done
+              </a>
+              {/* <a
+                                    href="#"
+                                    data-dismiss="modal"
+                                    onClick={() => setQuoteDataShow(false)}
+                                    className="btn bg-primary d-block text-white"
+                                >
+                                    Done
+                                </a> */}
+            </div>
+          </> :
+            <>
+              {/* <div className="d-flex align-items-center justify-content-between"> */}
+              <div className="d-flex align-items-center justify-content-end">
+                <button
+                  class="btn btn-primary mr-2"
+                  onClick={() => handleCreateQuote()}
+                >
+                  Create
+                </button>
+                <button
+                  type="button"
+                  class="btn pull-right border"
+                  data-dismiss="modal"
+                  onClick={() => setConvertToPopup(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </>}
+
+          {/* <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
+                    <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button> */}
         </Modal.Footer>
       </Modal>
 

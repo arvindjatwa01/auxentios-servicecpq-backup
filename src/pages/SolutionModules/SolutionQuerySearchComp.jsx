@@ -274,13 +274,13 @@ const SolutionQuerySearchComp = (props) => {
             //   querySearchSelector[0]?.inputSearch;
 
             if (props.compoFlag === "solutionTempItemSearch") {
-                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
 
             } else if (props.compoFlag === "portfolioTempItemSearch") {
-                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
             }
             else {
-                var searchStr = `bundleFlag:PORTFOLIO AND ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+                var searchStr = `bundleFlag:PORTFOLIO AND ${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
             }
             console.log("searchStr  try : ", searchStr);
             // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
@@ -299,8 +299,8 @@ const SolutionQuerySearchComp = (props) => {
                     querySearchSelector[i].selectOperator.value +
                     " " +
                     querySearchSelector[i].selectFamily.value +
-                    "~" +
-                    querySearchSelector[i].inputSearch;
+                    ":\"" +
+                    querySearchSelector[i].inputSearch + "\"";
             }
             // searchStr is ready call API 
             if (props.compoFlag === "coverage") {
