@@ -471,9 +471,10 @@ function PartList(props) {
     setSearchSerialResults([]);
   };
   const populateGeneralData = (result) => {
-    console.log(result.validityDays, validityOptions.find(
-      (element) => element.value === result.validityDays
-    ));
+    console.log(
+      result.validityDays,
+      validityOptions.find((element) => element.value === result.validityDays)
+    );
     setGeneralData({
       description: result.description ? result.description : "",
       estimationDate: result.estimationDate
@@ -481,11 +482,12 @@ function PartList(props) {
         : new Date(),
       estimationNo: result.estimationNumber ? result.estimationNumber : "",
       reference: result.reference ? result.reference : "",
-      validity: result.validityDays && result.validityDays !== "EMPTY"
-        ? validityOptions.find(
-            (element) => element.value === result.validityDays
-          )
-        : { label: "", value: "" },
+      validity:
+        result.validityDays && result.validityDays !== "EMPTY"
+          ? validityOptions.find(
+              (element) => element.value === result.validityDays
+            )
+          : { label: "", value: "" },
       version: result.versionNumber ? result.versionNumber : "",
     });
   };
@@ -506,11 +508,12 @@ function PartList(props) {
   const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod: result.priceMethod && result.priceMethod !== "EMPTY"
-        ? priceMethodOptions.find(
-            (element) => element.value === result.priceMethod
-          )
-        : { label: "", value: "" },
+      priceMethod:
+        result.priceMethod && result.priceMethod !== "EMPTY"
+          ? priceMethodOptions.find(
+              (element) => element.value === result.priceMethod
+            )
+          : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: result.currency
@@ -2234,9 +2237,11 @@ function PartList(props) {
                             className="btn btn-light bg-primary text-white"
                             onClick={updateEstData}
                             disabled={
-                              !(estimationData.preparedBy &&
-                              estimationData.preparedOn &&
-                              estimationData.salesOffice?.value)
+                              !(
+                                estimationData.preparedBy &&
+                                estimationData.preparedOn &&
+                                estimationData.salesOffice?.value
+                              )
                             }
                           >
                             Save & Next
@@ -2431,11 +2436,13 @@ function PartList(props) {
                             className="btn btn-light bg-primary text-white"
                             onClick={updateGeneralData}
                             disabled={
-                              !(generalData.estimationDate &&
-                              generalData.description &&
-                              generalData.estimationNo &&
-                              generalData.reference &&
-                              generalData.validity?.value )
+                              !(
+                                generalData.estimationDate &&
+                                generalData.description &&
+                                generalData.estimationNo &&
+                                generalData.reference &&
+                                generalData.validity?.value
+                              )
                             }
                           >
                             Save & Next
@@ -3237,8 +3244,6 @@ function PartList(props) {
                       <input
                         type="email"
                         className="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
                         placeholder="Enter email"
                       />
                     </div>
@@ -3263,8 +3268,6 @@ function PartList(props) {
                       <input
                         type="email"
                         className="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
                         placeholder="Enter email"
                       />
                     </div>

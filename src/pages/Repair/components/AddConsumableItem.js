@@ -58,7 +58,7 @@ const AddConsumableItemModal = (props) => {
             <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     CONSUMABLE TYPE
                   </label>
                   <Select
@@ -79,7 +79,6 @@ const AddConsumableItemModal = (props) => {
                     }}}
                     value={props.consumableItemData.consumableType}
                     options={props.consumableTypeList}
-                    placeholder="Required"
                   />
                 </div>
               </div>
@@ -103,21 +102,20 @@ const AddConsumableItemModal = (props) => {
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     CONSUMABLE DESCRIPTION
                   </label>
                   <input
                     type="text"
                     disabled
                     value={props.consumableItemData.description}
-                    class="form-control border-radius-10"
-                    placeholder="Required"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     QUANTITY
                   </label>
                   <input
@@ -134,14 +132,13 @@ const AddConsumableItemModal = (props) => {
                         ).toFixed(2): parseFloat(e.target.value * props.consumableItemData.unitPrice).toFixed(2) : 0
                       })
                     }
-                    class="form-control border-radius-10"
-                    placeholder="Required"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     UNIT OF MEASURES
                   </label>
                   <input
@@ -154,8 +151,7 @@ const AddConsumableItemModal = (props) => {
                         unitOfMeasure: e.target.value,
                       })
                     }
-                    class="form-control border-radius-10"
-                    placeholder="Required"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>
@@ -183,7 +179,7 @@ const AddConsumableItemModal = (props) => {
                         vendor: e.target.value,
                       })
                     }
-                    class="form-control border-radius-10"
+                    class="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                   /> */}
                 </div>
@@ -198,8 +194,7 @@ const AddConsumableItemModal = (props) => {
                     disabled
                     value={props.consumableItemData.unitPrice}
                     // onChange={e => props.setConsumableItemData({...props.consumableItemData, unitPrice: e.target.value})}
-                    class="form-control border-radius-10"
-                    placeholder="Optional"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>
@@ -212,8 +207,7 @@ const AddConsumableItemModal = (props) => {
                     type="text"
                     disabled
                     value={props.consumableItemData.extendedPrice}
-                    class="form-control border-radius-10"
-                    placeholder="Optional"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>
@@ -226,8 +220,7 @@ const AddConsumableItemModal = (props) => {
                     type="text"
                     disabled
                     value={props.consumableItemData.currency}
-                    class="form-control border-radius-10"
-                    placeholder="Optional"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>
@@ -254,8 +247,7 @@ const AddConsumableItemModal = (props) => {
                         
                       })
                     }
-                    class="form-control border-radius-10"
-                    placeholder="Optional"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>
@@ -269,8 +261,7 @@ const AddConsumableItemModal = (props) => {
                     type="text"
                     disabled
                     value={props.consumableItemData.totalPrice}
-                    class="form-control border-radius-10"
-                    placeholder="Optional"
+                    class="form-control border-radius-10 text-primary"
                   />
                 </div>
               </div>

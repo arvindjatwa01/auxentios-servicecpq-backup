@@ -66,7 +66,7 @@ const AddExtWorkItemModal = (props) => {
             <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     ACTIVITY ID
                   </label>
                   <Select
@@ -82,7 +82,6 @@ const AddExtWorkItemModal = (props) => {
                     getOptionLabel={(option) => `${option.value}`}
                     value={props.extWorkItemData.activityId}
                     options={props.activityIdList}
-                    placeholder="Required"
                   />
                 </div>
               </div>
@@ -95,7 +94,7 @@ const AddExtWorkItemModal = (props) => {
                     type="text"
                     disabled
                     value={props.extWorkItemData.activityName}
-                    class="form-control border-radius-10"
+                    class="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                   />
                 </div>
@@ -114,7 +113,7 @@ const AddExtWorkItemModal = (props) => {
                         description: e.target.value,
                       })
                     }
-                    class="form-control border-radius-10"
+                    class="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                   />
                 </div>
@@ -151,14 +150,14 @@ const AddExtWorkItemModal = (props) => {
                       })
                     }
                     value={props.extWorkItemData.unitPrice}
-                    class="form-control border-radius-10"
+                    class="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     UNIT OF MEASURES
                   </label>
                   <Select
@@ -170,14 +169,13 @@ const AddExtWorkItemModal = (props) => {
                     }
                     styles={customStyle}
                     options={props.unitOfMeasureOptions}
-                    placeholder="Required"
                     value={props.extWorkItemData.unitOfMeasure}
                   />
                 </div>
               </div>
                   <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100 date-box">
-                  <label className="text-light-dark font-size-12 font-weight-600">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     ESTIMATED HOURS / DAYS
                   </label>
                   <div
@@ -188,7 +186,6 @@ const AddExtWorkItemModal = (props) => {
                       type="text"
                       className="form-control rounded-top-left-0 rounded-bottom-left-0"
                       // style={{width: '64%'}}
-                      placeholder="Required"
                       onChange={(e) =>
                         props.setExtWorkItemData({
                           ...props.extWorkItemData,
@@ -226,7 +223,7 @@ const AddExtWorkItemModal = (props) => {
                         extendedPrice: e.target.value,
                       })
                     }
-                    class="form-control border-radius-10"
+                    class="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                   />
                 </div>
@@ -247,7 +244,7 @@ const AddExtWorkItemModal = (props) => {
                         totalPrice: e.target.value,
                       })
                     }
-                    class="form-control border-radius-10"
+                    class="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                   />
                 </div>
@@ -267,7 +264,7 @@ const AddExtWorkItemModal = (props) => {
                         adjustedPrice: e.target.value,
                       })
                     }
-                    class="form-control border-radius-10"
+                    class="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                   />
                 </div>

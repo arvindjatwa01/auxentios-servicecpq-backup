@@ -2372,8 +2372,6 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="email"
                         class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
                         placeholder="Enter email"
                       />
                     </div>
@@ -2404,8 +2402,6 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="email"
                         class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
                         placeholder="Enter email"
                       />
                     </div>

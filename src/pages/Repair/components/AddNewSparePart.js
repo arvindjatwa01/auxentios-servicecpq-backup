@@ -177,12 +177,12 @@ const AddNewSparepartModal = (props) => {
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
+                    <label className="text-light-dark font-size-12 font-weight-500 required">
                       TYPE
                     </label>
                     <input
                       type="text"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       value={props.sparePart.partType}
                       onChange={(e) =>
                         props.setSparePart({
@@ -191,7 +191,6 @@ const AddNewSparepartModal = (props) => {
                         })
                       }
                       disabled
-                      placeholder="Required"
                     />
                   </div>
                 </div>
@@ -214,12 +213,12 @@ const AddNewSparepartModal = (props) => {
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
+                    <label className="text-light-dark font-size-12 font-weight-500 required">
                       QTY
                     </label>
                     <input
                       type="Number"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       onChange={(e) =>
                         props.setSparePart({
                           ...props.sparePart,
@@ -240,19 +239,18 @@ const AddNewSparepartModal = (props) => {
                         })
                       }
                       value={props.sparePart.quantity}
-                      placeholder="Required"
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
+                    <label className="text-light-dark font-size-12 font-weight-500 required">
                       UNIT OF MEASURES
                     </label>
                     <input
                       type="text"
                       disabled
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       value={props.sparePart.unitOfMeasure}
                       onChange={(e) =>
                         props.setSparePart({
@@ -260,25 +258,23 @@ const AddNewSparepartModal = (props) => {
                           unitOfMeasure: e.target.value,
                         })
                       }
-                      placeholder="Required"
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
+                    <label className="text-light-dark font-size-12 font-weight-500 required">
                       UNIT PRICE
                     </label>
                     <input
                       type="Number"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       value={
                         props.sparePart.unitPrice
                           ? parseFloat(props.sparePart.unitPrice).toFixed(2)
                           : 0.0
                       }
                       disabled
-                      placeholder="Required"
                     />
                   </div>
                 </div>
@@ -289,7 +285,7 @@ const AddNewSparepartModal = (props) => {
                     </label>
                     <input
                       type="Number"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       disabled
                       // onChange={(e) => props.setSparePart({...props.sparePart, extendedPrice: e.target.value})}
                       value={
@@ -297,18 +293,17 @@ const AddNewSparepartModal = (props) => {
                           ? parseFloat(props.sparePart.extendedPrice).toFixed(2)
                           : 0.0
                       }
-                      placeholder="Optional"
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
+                    <label className="text-light-dark font-size-12 font-weight-500 required">
                       CURRENCY
                     </label>
                     <input
                       type="text"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       onChange={(e) =>
                         props.setSparePart({
                           ...props.sparePart,
@@ -316,7 +311,6 @@ const AddNewSparepartModal = (props) => {
                         })
                       }
                       value={props.sparePart.currency}
-                      placeholder="Required"
                       disabled
                     />
                   </div>
@@ -328,7 +322,7 @@ const AddNewSparepartModal = (props) => {
                     </label>
                     <input
                       type="Number"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       onChange={(e) =>
                         props.setSparePart({
                           ...props.sparePart,
@@ -344,25 +338,23 @@ const AddNewSparepartModal = (props) => {
                         })
                       }
                       value={props.sparePart.usagePercentage}
-                      placeholder="Optional"
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
+                    <label className="text-light-dark font-size-12 font-weight-500 required">
                       TOTAL PRICE
                     </label>
                     <input
                       type="Number"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       value={
                         props.sparePart.totalPrice
                           ? parseFloat(props.sparePart.totalPrice).toFixed(2)
                           : 0.0
                       }
                       disabled
-                      placeholder="Required"
                     />
                   </div>
                 </div>
@@ -373,7 +365,7 @@ const AddNewSparepartModal = (props) => {
                     </label>
                     <TextareaAutosize
                       type="text"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       value={props.sparePart.comment}
                       onChange={(e) =>
                         props.setSparePart({
@@ -381,7 +373,6 @@ const AddNewSparepartModal = (props) => {
                           comment: e.target.value,
                         })
                       }
-                      placeholder="Optional"
                     />
                   </div>
                 </div>
@@ -393,7 +384,7 @@ const AddNewSparepartModal = (props) => {
                     <input
                       type="text"
                       disabled
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       value={props.sparePart.description}
                       onChange={(e) =>
                         props.setSparePart({
@@ -401,7 +392,6 @@ const AddNewSparepartModal = (props) => {
                           description: e.target.value,
                         })
                       }
-                      placeholder="Optional"
                     />
                   </div>
                 </div>

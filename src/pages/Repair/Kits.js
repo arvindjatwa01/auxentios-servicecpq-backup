@@ -3128,8 +3128,6 @@ function Kits(props) {
                       <input
                         type="email"
                         class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
                         placeholder="Enter email"
                       />
                     </div>
@@ -3154,8 +3152,6 @@ function Kits(props) {
                       <input
                         type="email"
                         class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
                         placeholder="Enter email"
                       />
                     </div>

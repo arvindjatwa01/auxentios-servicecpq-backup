@@ -71,7 +71,7 @@ const AddLaborItemModal = (props) => {
             <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     CHARGE CODE
                   </label>
                   <Select
@@ -84,14 +84,13 @@ const AddLaborItemModal = (props) => {
                     }
                     styles={customStyle}
                     options={props.chargeCodeList}
-                    placeholder="Required"
                     value={props.labourItemData.chargeCode}
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     LABOR TYPE
                   </label>
                   <Select
@@ -105,13 +104,12 @@ const AddLaborItemModal = (props) => {
                     styles={customStyle}
                     options={props.laborTypeList}
                     value={props.labourItemData.laborType}
-                    placeholder="Required"
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     SERVICE TYPE
                   </label>
                   <Select
@@ -126,13 +124,12 @@ const AddLaborItemModal = (props) => {
 
                     options={props.serviceTypeList}
                     value={props.labourItemData.serviceType}
-                    placeholder="Required"
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     UNIT OF MEASURES
                   </label>
                   <Select
@@ -145,14 +142,13 @@ const AddLaborItemModal = (props) => {
                     isDisabled={props.labourItemData.isEditing}
                     styles={customStyle}
                     options={props.unitOfMeasureOptions}
-                    placeholder="Required"
                     value={props.labourItemData.unitOfMeasure}
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100 date-box">
-                  <label className="text-light-dark font-size-12 font-weight-600">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     ESTIMATED HOURS
                   </label>
                   <div
@@ -163,7 +159,6 @@ const AddLaborItemModal = (props) => {
                       type="text"
                       className="form-control rounded-top-left-0 rounded-bottom-left-0"
                       // style={{width: '64%'}}
-                      placeholder="Required"
                       onChange={(e) =>
                         props.setLabourItemData({
                           ...props.labourItemData,
@@ -205,59 +200,52 @@ const AddLaborItemModal = (props) => {
 
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     UNIT PRICE
                   </label>
                   <input
                     type="text"
                     disabled
-                    class="form-control border-radius-10"
-                    placeholder="Required"
+                    class="form-control border-radius-10 text-primary"
                     value={props.labourItemData.unitPrice}
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     EXTENDED PRICE
                   </label>
                   <input
                     type="text"
                     disabled
-                    class="form-control border-radius-10"
-                    id="exampleInputEmail1"
-                    placeholder="Required"
+                    class="form-control border-radius-10 text-primary"
                     value={props.labourItemData.extendedPrice}
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     TOTAL PRICE
                   </label>
                   <input
                     type="text"
                     disabled
-                    class="form-control border-radius-10"
-                    id="exampleInputEmail1"
-                    placeholder="Required"
+                    class="form-control border-radius-10 text-primary"
                     value={props.labourItemData.totalPrice}
                   />
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500">
+                  <label className="text-light-dark font-size-12 font-weight-500 required">
                     CURRENCY
                   </label>
                   <input
                     type="text"
                     disabled
-                    class="form-control border-radius-10"
-                    id="exampleInputEmail1"
-                    placeholder="REQUIRED"
+                    class="form-control border-radius-10 text-primary"
                     value={data.currency}
                   />
                 </div>
@@ -269,8 +257,7 @@ const AddLaborItemModal = (props) => {
                   </label>
                   <input
                     type="text"
-                    class="form-control border-radius-10"
-                    placeholder="Optional"
+                    class="form-control border-radius-10 text-primary"
                     value={props.labourItemData.comment}
                     onChange={(e) =>
                       props.setLabourItemData({
@@ -333,8 +320,7 @@ const AddLaborItemModal = (props) => {
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
+                      class="form-control border-radius-10 text-primary"
                       value={props.labourItemData.travelCharge}
                       onChange={(e) =>
                         props.setLabourItemData({
@@ -355,8 +341,7 @@ const AddLaborItemModal = (props) => {
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
+                      class="form-control border-radius-10 text-primary"
                       value={props.labourItemData.inspectionCharge}
                       onChange={(e) =>
                         props.setLabourItemData({
