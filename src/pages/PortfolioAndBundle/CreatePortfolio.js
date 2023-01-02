@@ -9608,7 +9608,7 @@ export function CreatePortfolio(props) {
                       </span>
                     </IconButton>
                   </Box>
-                  <Menu className=""
+                  <Menu className="convert-top-left"
                     anchorEl={anchorEl}
                     id="account-menu"
                     open={open}
@@ -9643,10 +9643,15 @@ export function CreatePortfolio(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem className="custommenu">Templates</MenuItem>
+                    {/* <MenuItem className="custommenu">Templates</MenuItem>
                     <MenuItem className="custommenu">Standard Job</MenuItem>
-                    <MenuItem className="custommenu">Kit</MenuItem>
-                    <MenuItem className="custommenu" data-toggle="modal" data-target="#quotecreat">
+                    <MenuItem className="custommenu">Kit</MenuItem> */}
+                    <MenuItem
+                      className="custommenu"
+                      // onClick={() => setConvertToPopup(true)}
+                    // data-toggle="modal"
+                    // data-target="#quotecreat"
+                    >
                       Quote
                     </MenuItem>
                     <Divider />
