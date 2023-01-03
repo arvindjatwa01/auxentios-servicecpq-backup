@@ -177,7 +177,7 @@ const AddNewSparepartModal = (props) => {
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500 required">
+                    <label className="text-light-dark font-size-12 font-weight-500">
                       TYPE
                     </label>
                     <input
@@ -192,6 +192,7 @@ const AddNewSparepartModal = (props) => {
                       }
                       disabled
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -213,7 +214,7 @@ const AddNewSparepartModal = (props) => {
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500 required">
+                    <label className="text-light-dark font-size-12 font-weight-500">
                       QTY
                     </label>
                     <input
@@ -240,11 +241,12 @@ const AddNewSparepartModal = (props) => {
                       }
                       value={props.sparePart.quantity}
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500 required">
+                    <label className="text-light-dark font-size-12 font-weight-500">
                       UNIT OF MEASURES
                     </label>
                     <input
@@ -259,11 +261,12 @@ const AddNewSparepartModal = (props) => {
                         })
                       }
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500 required">
+                    <label className="text-light-dark font-size-12 font-weight-500">
                       UNIT PRICE
                     </label>
                     <input
@@ -276,6 +279,7 @@ const AddNewSparepartModal = (props) => {
                       }
                       disabled
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -294,11 +298,12 @@ const AddNewSparepartModal = (props) => {
                           : 0.0
                       }
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500 required">
+                    <label className="text-light-dark font-size-12 font-weight-500">
                       CURRENCY
                     </label>
                     <input
@@ -313,6 +318,7 @@ const AddNewSparepartModal = (props) => {
                       value={props.sparePart.currency}
                       disabled
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -343,7 +349,7 @@ const AddNewSparepartModal = (props) => {
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500 required">
+                    <label className="text-light-dark font-size-12 font-weight-500">
                       TOTAL PRICE
                     </label>
                     <input
@@ -356,6 +362,7 @@ const AddNewSparepartModal = (props) => {
                       }
                       disabled
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">

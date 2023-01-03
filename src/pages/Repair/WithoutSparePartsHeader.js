@@ -943,9 +943,9 @@ function WithoutSparePartsHeader(props) {
                                     disabled
                                     className="form-control border-radius-10 text-primary"
                                     id="customer-src"
-                                    placeholder="Required"
                                     value={customerData.source}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -980,7 +980,6 @@ function WithoutSparePartsHeader(props) {
                                     onChange={handleCustomerDataChange}
                                     className="form-control border-radius-10 text-primary"
                                     id="customerNameid"
-                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -996,8 +995,8 @@ function WithoutSparePartsHeader(props) {
                                     onChange={handleCustomerDataChange}
                                     className="form-control border-radius-10 text-primary"
                                     id="contactNameid"
-                                    placeholder="Required"
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1013,8 +1012,8 @@ function WithoutSparePartsHeader(props) {
                                     className="form-control border-radius-10 text-primary"
                                     id="contatEmail"
                                     aria-describedby="emailHelp"
-                                    placeholder="Required"
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1028,7 +1027,6 @@ function WithoutSparePartsHeader(props) {
                                     onChange={handleCustomerDataChange}
                                     value={customerData.contactPhone}
                                     name="contactPhone"
-                                    placeholder="Phone (Optional)"
                                   />
                                 </div>
                               </div>
@@ -1044,8 +1042,8 @@ function WithoutSparePartsHeader(props) {
                                     onChange={handleCustomerDataChange}
                                     className="form-control border-radius-10 text-primary"
                                     id="custGroup"
-                                    placeholder="Required"
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                             </div>
@@ -1166,6 +1164,7 @@ function WithoutSparePartsHeader(props) {
                                     onSelect={handleModelSelect}
                                     noOptions={noOptionsModel}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1186,6 +1185,7 @@ function WithoutSparePartsHeader(props) {
                                     onSelect={handleModelSelect}
                                     noOptions={noOptionsSerial}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1200,7 +1200,6 @@ function WithoutSparePartsHeader(props) {
                                     name="smu"
                                     value={machineData.smu}
                                     onChange={handleMachineDataChange}
-                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -1216,7 +1215,6 @@ function WithoutSparePartsHeader(props) {
                                     value={machineData.fleetNo}
                                     name="fleetNo"
                                     id="fleet-id"
-                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -1232,7 +1230,6 @@ function WithoutSparePartsHeader(props) {
                                     value={machineData.registrationNo}
                                     name="registrationNo"
                                     id="registration-id"
-                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -1248,7 +1245,6 @@ function WithoutSparePartsHeader(props) {
                                     onChange={handleMachineDataChange}
                                     value={machineData.chasisNo}
                                     name="chasisNo"
-                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -1330,11 +1326,11 @@ function WithoutSparePartsHeader(props) {
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Required"
                                     value={estimationData.preparedBy}
                                     name="preparedBy"
                                     onChange={handleEstimationDataChange}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1348,63 +1344,48 @@ function WithoutSparePartsHeader(props) {
                                     value={estimationData.approvedBy}
                                     name="approvedBy"
                                     onChange={handleEstimationDataChange}
-                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PREPARED ON
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      // sx={{
-                                      //   "&& .MuiPickersDay-dayWithMargin": {color: '#fff !important'},
-                                      //   }}
-                                      // InputProps={{style: {...FONT_STYLE, color: '#fff'}}}
-                                      minDate={estimationData.preparedOn}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={estimationData.preparedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          preparedOn: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
-                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DatePicker
-                                      variant="inline"
-                                      format="dd/MM/yyyy"
-                                      inputProps={{ style: FONT_STYLE }}
-                                      className="form-controldate border-radius-10"
-                                      label=""
-                                      value={estimationData.preparedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          preparedOn: e,
-                                        })
-                                      }
-                                    />
-                                  </MuiPickersUtilsProvider> */}
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        // sx={{
+                                        //   "&& .MuiPickersDay-dayWithMargin": {color: '#fff !important'},
+                                        //   }}
+                                        // InputProps={{style: {...FONT_STYLE, color: '#fff'}}}
+                                        minDate={estimationData.preparedOn}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={estimationData.preparedOn}
+                                        onChange={(e) =>
+                                          setEstimationData({
+                                            ...estimationData,
+                                            preparedOn: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1418,59 +1399,44 @@ function WithoutSparePartsHeader(props) {
                                     value={estimationData.revisedBy}
                                     name="revisedBy"
                                     onChange={handleEstimationDataChange}
-                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     REVISED ON
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={estimationData.revisedOn}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={estimationData.revisedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          revisedOn: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
-                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DatePicker
-                                      variant="inline"
-                                      format="dd/MM/yyyy"
-                                      inputProps={{ style: FONT_STYLE }}
-                                      className="form-controldate border-radius-10"
-                                      label=""
-                                      value={estimationData.revisedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          revisedOn: e,
-                                        })
-                                      }
-                                    />
-                                  </MuiPickersUtilsProvider> */}
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={estimationData.revisedOn}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={estimationData.revisedOn}
+                                        onChange={(e) =>
+                                          setEstimationData({
+                                            ...estimationData,
+                                            revisedOn: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1486,10 +1452,10 @@ function WithoutSparePartsHeader(props) {
                                       })
                                     }
                                     options={salesOfficeOptions}
-                                    placeholder="Required"
                                     value={estimationData.salesOffice}
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                             </div>
@@ -1560,58 +1526,42 @@ function WithoutSparePartsHeader(props) {
                           <>
                             <div className="row input-fields">
                               <div className="col-md-6 col-sm-6">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     <span className=" mr-2">
                                       ESTIMATION DATE
                                     </span>
                                   </label>
-                                  {/* <div className="form-group w-100"> */}
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={generalData.estimationDate}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={generalData.estimationDate}
-                                      onChange={(e) =>
-                                        setGeneralData({
-                                          ...generalData,
-                                          estimationDate: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
-                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DatePicker
-                                      variant="inline"
-                                      format="dd/MM/yyyy"
-                                      inputProps={{ style: FONT_STYLE }}
-                                      className="form-controldate border-radius-10"
-                                      label=""
-                                      value={generalData.estimationDate}
-                                      onChange={(e) =>
-                                        setGeneralData({
-                                          ...generalData,
-                                          estimationDate: e,
-                                        })
-                                      }
-                                    />
-                                  </MuiPickersUtilsProvider> */}
-                                  {/* </div> */}
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={generalData.estimationDate}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={generalData.estimationDate}
+                                        onChange={(e) =>
+                                          setGeneralData({
+                                            ...generalData,
+                                            estimationDate: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1637,7 +1587,6 @@ function WithoutSparePartsHeader(props) {
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
                                     id="desc-id"
-                                    placeholder="Required"
                                     maxLength={140}
                                     value={generalData.description}
                                     onChange={(e) =>
@@ -1647,6 +1596,7 @@ function WithoutSparePartsHeader(props) {
                                       })
                                     }
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1658,7 +1608,6 @@ function WithoutSparePartsHeader(props) {
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
                                     id="desc-id"
-                                    placeholder="Required"
                                     maxLength={140}
                                     value={generalData.reference}
                                     onChange={(e) =>
@@ -1668,6 +1617,7 @@ function WithoutSparePartsHeader(props) {
                                       })
                                     }
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1684,10 +1634,10 @@ function WithoutSparePartsHeader(props) {
                                       })
                                     }
                                     options={validityOptions}
-                                    placeholder="Required"
                                     value={generalData.validity}
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1698,7 +1648,6 @@ function WithoutSparePartsHeader(props) {
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
                                     disabled
                                     value={parseFloat(
                                       selectedVersion.value
@@ -1781,78 +1730,48 @@ function WithoutSparePartsHeader(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
                                     value={pricingData.netPrice}
                                   />
                                 </div>
                               </div>
                               <div className="col-md-4 col-sm-4">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PRICE DATE
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={pricingData.priceDate}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={pricingData.priceDate}
-                                      onChange={(e) =>
-                                        setPricingData({
-                                          ...pricingData,
-                                          priceDate: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
-
-                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <DatePicker
-                                      variant="inline"
-                                      format="dd/MM/yyyy"
-                                      inputProps={{ style: FONT_STYLE }}
-                                      className="form-controldate border-radius-10"
-                                      label=""
-                                      disableFuture
-                                      value={pricingData.priceDate}
-                                      onChange={(e) =>
-                                        setPricingData({
-                                          ...pricingData,
-                                          priceDate: e,
-                                        })
-                                      }
-                                    />
-                                  </MuiPickersUtilsProvider> */}
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={pricingData.priceDate}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={pricingData.priceDate}
+                                        onChange={(e) =>
+                                          setPricingData({
+                                            ...pricingData,
+                                            priceDate: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
-                              {/* <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                COST PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                                value={pricingData.}
-                              />
-                            </div>
-                          </div> */}
+
                               <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1867,9 +1786,9 @@ function WithoutSparePartsHeader(props) {
                                       })
                                     }
                                     options={priceMethodOptions}
-                                    placeholder="Required"
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-4 col-sm-4">
@@ -1886,7 +1805,6 @@ function WithoutSparePartsHeader(props) {
                                       )
                                     }
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
                                     value={
                                       pricingData.priceMethod?.value ===
                                       "FLAT_RATE"
@@ -1915,10 +1833,10 @@ function WithoutSparePartsHeader(props) {
                                       })
                                     }
                                     options={currencyOptions}
-                                    placeholder="Required"
                                     value={pricingData.currency}
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                             </div>
@@ -1999,7 +1917,7 @@ function WithoutSparePartsHeader(props) {
                               name: "segment",
                               bId,
                               sId: element.id,
-                              builderStatus: selBuilderStatus?.value
+                              builderStatus: selBuilderStatus?.value,
                             })
                           }
                         >

@@ -41,7 +41,7 @@ export const RepairPartlist = () => {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
+  const [recentBuildersLoading, setRecentBuildersLoading] = useState(true);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -65,12 +65,15 @@ export const RepairPartlist = () => {
       `builderType:PARTLIST AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     )
       .then((result) => {
-        setRecentPartlists(result);
+        if(result){
+          setRecentPartlists(result);
+          setRecentBuildersLoading(false);
+        }
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while fetching recent partlists");
+        setRecentBuildersLoading(false);
       });
-    setRecentBuildersLoading(false);
   };
 
   const handleSnack = (snackSeverity, snackMessage) => {

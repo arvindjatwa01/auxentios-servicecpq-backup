@@ -400,8 +400,8 @@ function ServiceOnlyTemplateOperation(props) {
                     class="form-control border-radius-10"
                     value={operationData.jobCodeDescription}
                     disabled
-                    placeholder="Required"
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
@@ -429,23 +429,23 @@ function ServiceOnlyTemplateOperation(props) {
                     type="email"
                     class="form-control border-radius-10"
                     value={operationData.componentCodeDescription}
-                    placeholder="Required"
                     disabled
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600">
-                    DESCRIPTION
+                    TITLE
                   </label>
                   <input
                     type="text"
                     class="form-control border-radius-10"
                     value={operationData.description}
                     disabled
-                    placeholder="Required"
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
             </div>
@@ -507,7 +507,7 @@ function ServiceOnlyTemplateOperation(props) {
                 className="col-md-4 col-sm-4"
               />
               <ReadOnlyField
-                label="DESCRIPTION"
+                label="TITLE"
                 value={operationData.description}
                 className="col-md-4 col-sm-4"
               />

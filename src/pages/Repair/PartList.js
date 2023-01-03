@@ -1707,7 +1707,7 @@ function PartList(props) {
                         <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 SOURCE
                               </label>
                               <input
@@ -1734,6 +1734,7 @@ function PartList(props) {
                                 onSelect={handleCustSelect}
                                 noOptions={noOptionsCust}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1749,11 +1750,12 @@ function PartList(props) {
                                 className="form-control border-radius-10 text-primary"
                                 id="customerNameid"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group w-100">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 CONTACT NAME
                               </label>
                               <input
@@ -1764,11 +1766,12 @@ function PartList(props) {
                                 className="form-control border-radius-10 text-primary"
                                 id="contactNameid"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 CONTACT EMAIL
                               </label>
                               <input
@@ -1779,6 +1782,7 @@ function PartList(props) {
                                 className="form-control border-radius-10 text-primary"
                                 id="contatEmail"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -1797,7 +1801,7 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 CUSTOMER GROUP
                               </label>
                               <input
@@ -1808,6 +1812,7 @@ function PartList(props) {
                                 className="form-control border-radius-10 text-primary"
                                 id="custGroup"
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                         </div>
@@ -1919,7 +1924,7 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 MODEL
                               </label>
                               <SearchBox
@@ -1932,11 +1937,12 @@ function PartList(props) {
                                 onSelect={handleModelSelect}
                                 noOptions={noOptionsModel}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 SERIAL #
                               </label>
                               <SearchBox
@@ -1952,6 +1958,7 @@ function PartList(props) {
                                 onSelect={handleModelSelect}
                                 noOptions={noOptionsSerial}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2091,7 +2098,7 @@ function PartList(props) {
                         <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 PREPARED BY
                               </label>
                               <input
@@ -2101,6 +2108,7 @@ function PartList(props) {
                                 name="preparedBy"
                                 onChange={handleEstimationDataChange}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2118,39 +2126,41 @@ function PartList(props) {
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 PREPARED ON
                               </label>
-
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={estimationData.preparedOn}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={estimationData.preparedOn}
-                                  onChange={(e) =>
-                                    setEstimationData({
-                                      ...estimationData,
-                                      preparedOn: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={estimationData.preparedOn}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={estimationData.preparedOn}
+                                    onChange={(e) =>
+                                      setEstimationData({
+                                        ...estimationData,
+                                        preparedOn: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2168,43 +2178,45 @@ function PartList(props) {
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
+                            <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 REVISED ON
                               </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={estimationData.revisedOn}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={estimationData.revisedOn}
-                                  onChange={(e) =>
-                                    setEstimationData({
-                                      ...estimationData,
-                                      revisedOn: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={estimationData.revisedOn}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={estimationData.revisedOn}
+                                    onChange={(e) =>
+                                      setEstimationData({
+                                        ...estimationData,
+                                        revisedOn: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 SALES OFFICE / BRANCH
                               </label>
                               <Select
@@ -2218,6 +2230,7 @@ function PartList(props) {
                                 value={estimationData.salesOffice}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                         </div>
@@ -2312,7 +2325,7 @@ function PartList(props) {
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 DESCRIPTION
                               </label>
                               <input
@@ -2328,46 +2341,49 @@ function PartList(props) {
                                   })
                                 }
                               />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                <span className=" mr-2">ESTIMATION DATE</span>
-                              </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={generalData.estimationDate}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={generalData.estimationDate}
-                                  onChange={(e) =>
-                                    setGeneralData({
-                                      ...generalData,
-                                      estimationDate: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                <span className=" mr-2">ESTIMATION DATE</span>
+                              </label>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={generalData.estimationDate}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={generalData.estimationDate}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        estimationDate: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 REFERENCE
                               </label>
                               <input
@@ -2383,11 +2399,12 @@ function PartList(props) {
                                   })
                                 }
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 VALIDITY
                               </label>
                               <Select
@@ -2402,6 +2419,7 @@ function PartList(props) {
                                 value={generalData.validity}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2506,38 +2524,41 @@ function PartList(props) {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <div className="align-items-center date-box">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 PRICE DATE
                               </label>
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  minDate={pricingData.priceDate}
-                                  maxDate={new Date()}
-                                  closeOnSelect
-                                  value={pricingData.priceDate}
-                                  onChange={(e) =>
-                                    setPricingData({
-                                      ...pricingData,
-                                      priceDate: e,
-                                    })
-                                  }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
-                                />
-                              </LocalizationProvider>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    minDate={pricingData.priceDate}
+                                    maxDate={new Date()}
+                                    closeOnSelect
+                                    value={pricingData.priceDate}
+                                    onChange={(e) =>
+                                      setPricingData({
+                                        ...pricingData,
+                                        priceDate: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           {/* <div className="col-md-4 col-sm-4">
@@ -2556,7 +2577,7 @@ function PartList(props) {
                       </div> */}
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 PRICE METHOD
                               </label>
                               <Select
@@ -2570,6 +2591,7 @@ function PartList(props) {
                                 value={pricingData.priceMethod}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
@@ -2603,7 +2625,7 @@ function PartList(props) {
 
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500 required">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 CURRENCY
                               </label>
                               <Select
@@ -2617,6 +2639,7 @@ function PartList(props) {
                                 value={pricingData.currency}
                                 styles={FONT_STYLE_SELECT}
                               />
+                              <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
                         </div>
