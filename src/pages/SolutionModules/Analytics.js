@@ -2983,9 +2983,9 @@ export const Analytics = () => {
                </div>
                <div className="card p-4 mt-5">
                   <div className="mt-1">
-                     <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
+                     {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
                      <div className="recent-div p-3">
-                        <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
+                        <h6 className="font-weight-600 text-grey mb-0">RECENT SOLUTIONS</h6>
                         {recentPortfolioSolution.length === 0 ? (
                            <LoadingProgress />
                         ) : (
@@ -3256,7 +3256,10 @@ export const Analytics = () => {
                      </div> */}
                   </div>
                </div>
-               <div className="bg-primary px-3 mb-3 border-radius-10 ">
+
+               {/* Search Portfolio Solution commited code below here Start */}
+
+               {/* <div className="bg-primary px-3 mb-3 border-radius-10 ">
                   <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
                      <div className="mx-2">
                         <div className="d-flex align-items-center bg-primary w-100">
@@ -3280,7 +3283,6 @@ export const Analytics = () => {
                                              <div className={`customselect ${i < ((querySearchSelector.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-10`}>
                                                 {i > 0 ? (
                                                    <SelectFilter
-                                                      // isClearable={true}
                                                       defaultValue={{ label: "And", value: "AND" }}
                                                       options={[
                                                          { label: "And", value: "AND", id: i },
@@ -3288,7 +3290,6 @@ export const Analytics = () => {
                                                       ]}
                                                       placeholder="AND/OR"
                                                       onChange={(e) => handleOperator(e, i)}
-                                                      // value={querySearchOperator[i]}
                                                       value={obj.selectOperator}
 
                                                    />) : (
@@ -3297,7 +3298,6 @@ export const Analytics = () => {
 
                                                 <div>
                                                    <SelectFilter
-                                                      // isClearable={true}
                                                       options={[
                                                          { label: "Make", value: "make", id: i },
                                                          { label: "Family", value: "family", id: i },
@@ -3325,7 +3325,6 @@ export const Analytics = () => {
                                                       autoComplete="off"
                                                    />
 
-                                                   {/* {querySearchSelector.length} and {i} */}
                                                    {(querySearchSelector.length - 1) === i ?
                                                       <>
                                                          <div className="bg-primary text-white btn" onClick={handleQuerySearchClick}>
@@ -3365,62 +3364,23 @@ export const Analytics = () => {
                                  <div onClick={handleDeletQuerySearch}>
                                     <Link to="#" className="btn-sm border">
                                        <svg data-name="Layer 41" id="Layer_41" fill="white" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
-                                       {/* <DeleteIcon className="font-size-16" /> */}
                                     </Link>
                                  </div>
 
                               </div>
                            </div>
-                           {/* <div className="pl-3 py-3">
-                              <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-                                 <SearchIcon /><span className="ml-1">Search </span>
-                              </Link>
-                           </div> */}
                         </div>
 
                      </div>
                      <div className="col-auto">
                         <div className="text-center pl-3 py-3">
-                           {/* <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable"  >
-                              <SearchIcon /><span className="ml-1">Search</span>
-                           </Link> */}
-                           {/* <Link to="#" className="p-1 text-white" onClick={handleQuerySearchClick}>
-                              <SearchIcon /><span className="ml-1">Search</span>
-                           </Link> */}
-
                         </div>
-
                      </div>
-                     {/* <div className="col-auto">
-                        <div className="d-flex align-items-center justify-content-center">
-                           <div className="text-center border-left pl-3 py-3">
-                           <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
-                           
-                           </div>
-                        </div>
-                     </div> */}
                   </div>
                </div>
                <div className="card">
 
-                  {/* <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}> */}
                   <div className="" style={{ minHeight: 200, height: "auto", width: '100%', backgroundColor: '#fff' }}>
-                     {/* <DataGrid
-                        sx={{
-                           '& .MuiDataGrid-columnHeaders': {
-                              // backgroundColor: '#7380E4', color: '#fff'
-                              backgroundColor: '#872ff7', color: '#fff'
-                           }
-                        }}
-                        rows={rows}
-                        columns={columns}
-                        pageSize={5}
-                        rowsPerPageOptions={[5]}
-                        checkboxSelection
-                        onCellClick={(e) => handleRowClick(e)}
-
-
-                     /> */}
                      {searchedPortfolioSolution.length > 0 ?
                         <>
                            <DataTable
@@ -3429,17 +3389,14 @@ export const Analytics = () => {
                               columns={SolutionPortfolioColumn}
                               data={searchedPortfolioSolution}
                               customStyles={customTableStyles}
-                              // selectableRows
-                              // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                               pagination
                            />
                         </> : <></>}
 
                   </div>
-               </div>
+               </div> */}
 
-               {/* {isCustomPortfolioCreated ? <><CreatedCustomPortfolioTemplate customPortfolioDetails={createdCustomPortfolio} /></> : <></>} */}
-
+               {/* Search Portfolio Solution commited code below here End */}
 
                <Modal show={open} onHide={handleClose} size="lg"
                   aria-labelledby="contained-modal-title-vcenter"

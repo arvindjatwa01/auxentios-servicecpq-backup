@@ -6010,20 +6010,22 @@ export function SolutionTemplateResult(props) {
                                  <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
                                        <p className="font-size-12 font-weight-500 mb-2">
-                                          TEMPLATE FLAG
+                                          FLAG FOR TEMPLATE
                                        </p>
                                        <h6 className="font-weight-500 text-primary font-size-17">
-                                          {flagTemplate ? "True" : "False"}
+                                          {/* {flagTemplate ? "True" : "False"} */}
+                                          {flagTemplate ? "Yes" : "No"}
                                        </h6>
                                     </div>
                                  </div>
                                  <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
                                        <p className="font-size-12 font-weight-500 mb-2">
-                                          COMMERCE FLAG
+                                          FLAG FOR COMMERCE
                                        </p>
                                        <h6 className="font-weight-500 text-primary font-size-17">
-                                          {flagCommerce ? "True" : "False"}
+                                          {/* {flagCommerce ? "True" : "False"} */}
+                                          {flagCommerce ? "Yes" : "No"}
                                        </h6>
                                     </div>
                                  </div>
