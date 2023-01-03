@@ -47,6 +47,8 @@ function WithoutSpareParts(props) {
       "Segment " +
       String(convertSegment.segmentNumber).padStart(2, "0") +
       " - " +
+      convertSegment.jobCodeDescription +
+      " " +
       convertSegment.description
     );
   }
@@ -144,7 +146,7 @@ function WithoutSpareParts(props) {
       jobCodeDescription: currentItem.description,
       title:
         currentItem.jobCodeDescription && segmentData.description
-          ? currentItem.jobCodeDescription && segmentData.description
+          ? currentItem.jobCodeDescription + " " + segmentData.description
           : "",
     });
     setSearchJobCodeResults([]);
@@ -177,7 +179,7 @@ function WithoutSpareParts(props) {
       description: currentItem.description,
       title:
         segmentData.jobCodeDescription && currentItem.description
-          ? segmentData.jobCodeDescription + " - " + currentItem.description
+          ? segmentData.jobCodeDescription + " " + currentItem.description
           : "",
     });
     setSearchCompCodeResults([]);
@@ -234,6 +236,7 @@ function WithoutSpareParts(props) {
     let data = {
       ...(segmentData.id && { id: segmentData.id }),
       jobCode: segmentData.jobCode,
+      jobCodeDescription: segmentData.jobCodeDescription,
       title: segmentData.title,
       componentCode: segmentData.componentCode,
       description: segmentData.description,
@@ -245,7 +248,6 @@ function WithoutSpareParts(props) {
           segmentNumber: result.segmentNumber,
           id: result.id,
           header: formatSegmentHeader(result),
-          // "Segment " + result.segmentNumber + " - " + result.description,
         });
         // fetchSegmentsOfBuilder();
         segments[segments.length - 1] = result;
@@ -494,7 +496,9 @@ function WithoutSpareParts(props) {
               />
               <ReadOnlyField
                 label="JOB CODE"
-                value={segmentData.jobCode}
+                value={
+                  segmentData.jobCode + " - " + segmentData.jobCodeDescription
+                }
                 className="col-md-6 col-sm-6"
               />
               <ReadOnlyField

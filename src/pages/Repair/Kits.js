@@ -43,6 +43,8 @@ import { getSearchQueryCoverage } from "../../services/index";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import {
+  addMultiPartsToKITPartList,
+  addPartToKITPartList,
   fetchKITDetails,
   updateKITCoverage,
   updateKITCustomer,
@@ -50,6 +52,7 @@ import {
   updateKITGeneralDet,
   updateKITPrice,
   updateKITStatus,
+  RemoveKITSparepart
 } from "services/kitService";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import {
@@ -61,7 +64,6 @@ import LoadingProgress from "./components/Loader";
 import SearchBox from "./components/SearchBox";
 import {
   customerSearch,
-  machineSearch,
   sparePartSearch,
 } from "services/searchServices";
 import Validator from "utils/validator";
@@ -70,6 +72,8 @@ import {
   FONT_STYLE,
   FONT_STYLE_SELECT,
   GRID_STYLE,
+  INITIAL_PAGE_NO,
+  INITIAL_PAGE_SIZE,
   SPAREPART_SEARCH_Q_OPTIONS,
 } from "./CONSTANTS";
 import {
@@ -86,6 +90,7 @@ import { ReadOnlyField } from "./components/ReadOnlyField";
 import AddNewSparepartModal from "./components/AddNewSparePart";
 import SearchComponent from "./components/SearchComponent";
 import { Typography } from "@material-ui/core";
+import { fetchPartsFromPartlist } from "services/repairBuilderServices";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -119,7 +124,6 @@ function Kits(props) {
   const { state } = props.location;
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState("customer");
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -132,7 +136,6 @@ function Kits(props) {
   const [file, setFile] = useState(null);
   const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const [searchCustResults, setSearchCustResults] = useState([]);
-  const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchCoverageModelResults, setSearchCoverageModelResults] = useState(
     []
   );
@@ -140,7 +143,28 @@ function Kits(props) {
   const [filterQuery, setFilterQuery] = useState("");
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
-
+  const [spareparts, setSpareparts] = useState([]);
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [noOptionsModelCoverage, setNoOptionsModelCoverage] = useState(false);
+  const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
+  const [partFieldViewonly, setPartFieldViewonly] = useState(false);
+  const [rowsToUpdate, setRowsToUpdate] = useState([]);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+  // To display the notifications
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
   // Select parts to add
   const onRowsSelectionHandler = (ids) => {
     setSelectedMasterData([]);
@@ -165,29 +189,6 @@ function Kits(props) {
     description: "",
   };
   const [sparePart, setSparePart] = useState(initialSparePart);
-  const [spareparts, setSpareparts] = useState([]);
-  const [searchSerialResults, setSearchSerialResults] = useState([]);
-  const [noOptionsCust, setNoOptionsCust] = useState(false);
-  const [noOptionsModelCoverage, setNoOptionsModelCoverage] = useState(false);
-  const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
-  const [partFieldViewonly, setPartFieldViewonly] = useState(false);
-  const [rowsToUpdate, setRowsToUpdate] = useState([]);
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [severity, setSeverity] = useState("");
-  const [openSnack, setOpenSnack] = useState(false);
-  const [snackMessage, setSnackMessage] = useState("");
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnack(false);
-  };
-  // To display the notifications
-  const handleSnack = (snackSeverity, snackMessage) => {
-    setSnackMessage(snackMessage);
-    setSeverity(snackSeverity);
-    setOpenSnack(true);
-  };
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
   const handleVersionKit = (e) => {
@@ -201,7 +202,7 @@ function Kits(props) {
     { value: "GOLD", label: "Gold" },
     { value: "SILVER", label: "Silver" },
     { value: "BRONZE", label: "Bronze" },
-    { value: "STANDARD", label: "Bronze" },
+    { value: "STANDARD", label: "Standard" },
   ];
   const [selKITStatus, setSelKITStatus] = useState({
     value: "DRAFT",
@@ -259,6 +260,7 @@ function Kits(props) {
   };
   const [rating, setRating] = useState(null);
   const [headerLoading, setHeaderLoading] = useState(false);
+  const [partListId, setPartListId] = useState("");
   const [kitId, setKITId] = useState("");
   useEffect(() => {
     if (state) {
@@ -268,7 +270,6 @@ function Kits(props) {
       fetchAllDetails(state.kitDBId);
       // setPartListNo(state.partListNo);
       // setPartListId(state.partListId);
-      // fetchAllDetails(state.builderId, state.versionNumber);
     }
     var versionHistoryData = {
       builderId: "",
@@ -282,28 +283,9 @@ function Kits(props) {
     setSearchResultOpen(false);
     setSelectedMasterData([]);
   };
-  const fetchAllDetails = (id) => {
-    console.log(id);
-    if (id) {
-      setHeaderLoading(true);
-      fetchKITDetails(id)
-        .then((result) => {
-          populateHeader(result);
-          setHeaderLoading(false);
-          // fetchPartlist(result.id);
-        })
-        .catch((err) => {
-          setHeaderLoading(false);
-          handleSnack(
-            "error",
-            "Error occurred while fetching the version details"
-          );
-        });
-    }
-  };
+
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
-    machineViewOnly: false,
     generalViewOnly: false,
     estViewOnly: false,
     priceViewOnly: false,
@@ -344,18 +326,6 @@ function Kits(props) {
     regionOrState: "",
     country: "",
   });
-  const [machineData, setMachineData] = useState({
-    make: "",
-    family: "",
-    model: "",
-    serialNo: "",
-    smu: "",
-    fleetNo: "",
-    registrationNo: "",
-    chasisNo: "",
-    productSegment: "",
-    productGroup: "",
-  });
   const [generalData, setGeneralData] = useState({
     estimationDate: new Date(),
     estimationNo: "",
@@ -366,7 +336,7 @@ function Kits(props) {
     application: "",
     validFrom: new Date(),
     validTo: new Date(),
-    nextRevisionDate: new Date(),
+    revisionDate: new Date(),
   });
   const [estimationData, setEstimationData] = useState({
     preparedBy: "user1",
@@ -383,6 +353,31 @@ function Kits(props) {
     adjustedPrice: 0.0,
     currency: "USD",
   });
+  const fetchAllDetails = (id) => {
+    console.log(id);
+    if (id) {
+      setHeaderLoading(true);
+      fetchKITDetails(id)
+        .then((result) => {
+          populateHeader(result);
+          setHeaderLoading(false);
+          setPartListId(result.partlistId)
+          fetchPartsOfPartlist(
+            result.partlistId,
+            INITIAL_PAGE_NO,
+            INITIAL_PAGE_SIZE
+          );
+        })
+        .catch((err) => {
+          setHeaderLoading(false);
+          handleSnack(
+            "error",
+            "Error occurred while fetching the version details"
+          );
+        });
+    }
+  };
+
 
   // Search Customer with customer ID
   const handleCustSearch = async (searchText) => {
@@ -556,7 +551,7 @@ function Kits(props) {
     }
   };
 
-  const fetchPartsOfPartlist = async (partlistId, pageNo, rowsPerPage) => {
+  const fetchPartsOfPartlist = async (partlistDBId, pageNo, rowsPerPage) => {
     setPartsLoading(true);
     setPage(pageNo);
     setPageSize(rowsPerPage);
@@ -565,20 +560,20 @@ function Kits(props) {
       : "";
     let filter = filterQuery ? `&search=${filterQuery}` : "";
     const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
-    // await fetchPartsFromPartlist(partlistId, query)
-    //   .then((partsResult) => {
-    //     setTotalPartsCount(partsResult.totalRows);
-    //     // partsResult.result.map((element, i) => {
-    //     //   // setSlPart((pageNo*rowsPerPage - rowsPerPage) + i)
-    //     //   console.log(pageNo,rowsPerPage, i)
-    //     //   element.rowNum = (((pageNo+1)*rowsPerPage - rowsPerPage) + (i+1)) * 10
+    await fetchPartsFromPartlist(partlistDBId, query)
+      .then((partsResult) => {
+        setTotalPartsCount(partsResult.totalRows);
+        // partsResult.result.map((element, i) => {
+        //   // setSlPart((pageNo*rowsPerPage - rowsPerPage) + i)
+        //   console.log(pageNo,rowsPerPage, i)
+        //   element.rowNum = (((pageNo+1)*rowsPerPage - rowsPerPage) + (i+1)) * 10
 
-    //     // })
-    //     setSpareparts(partsResult.result);
-    //   })
-    //   .catch((err) => {
-    //     handleSnack("error", "Error occured while fetching parts");
-    //   });
+        // })
+        setSpareparts(partsResult.result);
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occured while fetching parts");
+      });
     setPartsLoading(false);
   };
   const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
@@ -604,7 +599,7 @@ function Kits(props) {
       application: generalData.application?.value,
       validFrom: generalData.validFrom,
       validTo: generalData.validTo,
-      nextRevisionDate: generalData.nextRevisionDate,
+      revisionDate: generalData.revisionDate,
     };
     updateKITGeneralDet(kitDBId, data)
       .then((result) => {
@@ -657,7 +652,6 @@ function Kits(props) {
     };
     updateKITPrice(kitDBId, data)
       .then((result) => {
-        // setValue("price");
         // fetchAllDetails(kitDBId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
 
@@ -681,11 +675,6 @@ function Kits(props) {
   const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
       setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
-    else if (value === "machine" && viewOnlyTab.machineViewOnly)
-      setViewOnlyTab({
-        ...viewOnlyTab,
-        machineViewOnly: false,
-      });
     else if (value === "estimation" && viewOnlyTab.estViewOnly)
       setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
     else if (value === "general" && viewOnlyTab.generalViewOnly)
@@ -703,7 +692,6 @@ function Kits(props) {
   const populateHeader = (result) => {
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
-      machineViewOnly: result.serialNo ? true : false,
       generalViewOnly: result.estimationDate ? true : false,
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
@@ -720,15 +708,6 @@ function Kits(props) {
     setVersion(
       versionOptions.find((element) => element.value === result.version)
     );
-    // let versions = result.versionList?.map((versionNo) => ({
-    //   value: versionNo,
-    //   label: "Version " + versionNo,
-    // }));
-    // setBuilderVersionOptions(versions);
-    // setSelectedVersion({
-    //   label: "Version " + result.versionNumber,
-    //   value: result.versionNumber,
-    // });
 
     setCustomerData({
       customerID: result.customerId,
@@ -742,18 +721,7 @@ function Kits(props) {
       country: result.country,
       regionOrState: result.regionOrState,
     });
-    setMachineData({
-      make: result.make,
-      family: result.family,
-      model: result.model,
-      serialNo: result.serialNo,
-      fleetNo: result.fleetNo,
-      smu: result.smu,
-      registrationNo: result.registrationNo,
-      chasisNo: result.chasisNo,
-      productSegment: result.productSegment,
-      productGroup: result.productGroup,
-    });
+
     setGeneralData({
       description: result.description,
       estimationDate: result.estimationDate
@@ -768,8 +736,8 @@ function Kits(props) {
       owner: result.owner,
       validFrom: result.validFrom ? result.validFrom : new Date(),
       validTo: result.validTo ? result.validTo : new Date(),
-      nextRevisionDate: result.nextRevisionDate
-        ? result.nextRevisionDate
+      revisionDate: result.revisionDate
+        ? result.revisionDate
         : new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // Change it to created date + 1 year once API is ready
     });
     setEstimationData({
@@ -927,16 +895,16 @@ function Kits(props) {
     setAddPartOpen(true);
   };
   const handleDeleteSparePart = (sparePartId) => {
-    // RemoveSparepart(partListNo, sparePartId)
-    //   .then((res) => {
-    //     handleSnack("success", res);
-    //     fetchAllDetails(builderId, generalData.version);
-    //     // fetchPartsOfPartlist(partListNo, page, pageSize);
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //     handleSnack("error", "Error occurred while removing the spare part");
-    //   });
+    RemoveKITSparepart(partListId, sparePartId)
+      .then((res) => {
+        handleSnack("success", res);
+        fetchAllDetails(kitDBId);
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack("error", "Error occurred while removing the spare part");
+      });
   };
   function sortPartsTable(sortEvent) {
     // console.log("sorting called");
@@ -1236,7 +1204,7 @@ function Kits(props) {
       const parts = [];
       selectedMasterData.map((item) => {
         let data = {
-          partlistId: partListNo,
+          partlistId: partListId,
           groupNumber: item.groupNumber,
           partNumber: item.partNumber,
           partType: item.partType,
@@ -1252,25 +1220,25 @@ function Kits(props) {
         parts.push(data);
       });
 
-      // await addMultiPartsToPartList(partListNo, parts)
-      //   .then((result) => {
-      //     handleSnack(
-      //       "success",
-      //       `👏 New parts have been added with default quantity as 1!`
-      //     );
-      //     if (result) {
-      //       fetchAllDetails(builderId, generalData.version);
-      //     }
-      //     // fetchPartsOfPartlist(partListNo, page, pageSize);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //     if (err && err.message === "Price not found") {
-      //       handleSnack("error", `😐 ${err.message}!`);
-      //     } else {
-      //       handleSnack("error", `😐 Error occurred while adding the parts!`);
-      //     }
-      //   });
+      await addMultiPartsToKITPartList(partListId, parts)
+        .then((result) => {
+          handleSnack(
+            "success",
+            `👏 New parts have been added with default quantity as 1!`
+          );
+          if (result) {
+            fetchAllDetails(kitDBId, generalData.version);
+          }
+          // fetchPartsOfPartlist(partListNo, page, pageSize);
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err && err.message === "Price not found") {
+            handleSnack("error", `😐 ${err.message}!`);
+          } else {
+            handleSnack("error", `😐 Error occurred while adding the parts!`);
+          }
+        });
     } else {
       handleSnack("info", "Please save all the header details!");
     }
@@ -1292,21 +1260,21 @@ function Kits(props) {
       description: sparePart.description,
       unitOfMeasure: sparePart.unitOfMeasure,
     };
-    // addPartToPartList(partListNo, data)
-    //   .then((result) => {
+    addPartToKITPartList(partListId, data)
+      .then((result) => {
     handleAddPartClose();
-    //     if (addPartModalTitle === "Add Part")
-    //       handleSnack("success", `👏 New Spare Part has been added!`);
-    //     else
-    //       handleSnack("success", `👏 Selected part detail has been updated!`);
-    //     if (result) {
-    //       fetchAllDetails(builderId, generalData.version);
-    //     }
-    //     // fetchPartsOfPartlist(partListNo, page, pageSize);
-    //   })
-    //   .catch((err) => {
-    //     handleSnack("error", `😐 Error occurred while adding spare part`);
-    //   });
+        if (addPartModalTitle === "Add Part")
+          handleSnack("success", `👏 New Spare Part has been added!`);
+        else
+          handleSnack("success", `👏 Selected part detail has been updated!`);
+        if (result) {
+          fetchAllDetails(kitDBId);
+        }
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
+      })
+      .catch((err) => {
+        handleSnack("error", `😐 Error occurred while adding spare part`);
+      });
   };
 
   const [querySearchSelector, setQuerySearchSelector] = useState([
@@ -1339,13 +1307,8 @@ function Kits(props) {
     setShow(true);
   };
   const handleUpdateCoverage = () => {
-    const newCoverageArr = selectedCoverageData.map((obj) => {
-      if (obj.id === coverageRowData.id) {
-        return { ...obj, ...coverageRowData };
-      }
-      return obj;
-    });
-    updateKITCoverage(kitDBId, newCoverageArr)
+    // coverageRowData.fleetSize = undefined;
+    updateKITCoverage(kitDBId, [coverageRowData])
       .then((res) => {
         setSelectedCoverageData(res.coverages);
       })
@@ -2135,11 +2098,11 @@ function Kits(props) {
                                     className="form-controldate border-radius-10"
                                     minDate={new Date()}
                                     closeOnSelect
-                                    value={generalData.nextRevisionDate}
+                                    value={generalData.revisionDate}
                                     onChange={(e) =>
                                       setGeneralData({
                                         ...generalData,
-                                        nextRevisionDate: e,
+                                        revisionDate: e,
                                       })
                                     }
                                     renderInput={(params) => (
@@ -2192,7 +2155,7 @@ function Kits(props) {
                               !generalData.estimationNo ||
                               !generalData.reference ||
                               !generalData.application?.value ||
-                              !generalData.nextRevisionDate
+                              !generalData.revisionDate
                             }
                           >
                             Save & Next
@@ -2262,7 +2225,7 @@ function Kits(props) {
                           label="NEXT REVISION DATE"
                           value={
                             <Moment format="DD/MM/YYYY">
-                              {generalData.nextRevisionDate}
+                              {generalData.revisionDate}
                             </Moment>
                           }
                           className="col-md-4 col-sm-4"
@@ -2615,12 +2578,12 @@ function Kits(props) {
               editMode="row"
               page={page}
               pageSize={pageSize}
-              // onPageChange={(newPage) =>
-              //   fetchPartsOfPartlist(partListNo, newPage, pageSize)
-              // }
-              // onPageSizeChange={(newPageSize) =>
-              //   fetchPartsOfPartlist(partListNo, page, newPageSize)
-              // }
+              onPageChange={(newPage) =>
+                fetchPartsOfPartlist(partListId, newPage, pageSize)
+              }
+              onPageSizeChange={(newPageSize) =>
+                fetchPartsOfPartlist(partListId, page, newPageSize)
+              }
               onRowEditStart={(e) => setBulkUpdateProgress(true)}
               sortingMode="server"
               onSortModelChange={(e) => sortPartsTable(e)}

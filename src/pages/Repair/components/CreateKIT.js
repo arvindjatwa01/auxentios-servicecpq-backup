@@ -6,20 +6,17 @@ const CreateKIT = (props) => {
     { value: "GOLD", label: "Gold" },
     { value: "SILVER", label: "Silver" },
     { value: "BRONZE", label: "Bronze" },
+    { value: "STANDARD", label: "Standard" },
   ];
 
-
   return (
-    <Modal
-        open={props.kitVersionOpen}
-        onClose={props.handleCloseVersion}
-    >
+    <Modal open={props.kitOpen} onClose={props.handleCloseKIT}>
       <div class="modal-dialog" role="document">
         <div class="modal-content bg-white border-none">
           <div class="modal-header border-none">
             <h5 class="modal-title" id="exampleModalLabel">
               KIT Create
-            </h5>            
+            </h5>
           </div>
           <p className="d-block px-3">
             It is a long established fact that a reader will be distracted by
@@ -38,7 +35,7 @@ const CreateKIT = (props) => {
                   </label>
                   <Select
                     defaultValue={props.version}
-                    onChange={e => props.setVersion(e)}
+                    onChange={(e) => props.setVersion(e)}
                     options={versionOptions}
                     placeholder="Versions"
                   />
@@ -46,9 +43,7 @@ const CreateKIT = (props) => {
               </div>
               <div className="col-md-12 col-sm-12">
                 <div class="form-group">
-                  <label
-                    className="text-light-dark font-size-12 font-weight-500"
-                  >
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     Reference
                   </label>
                   <input
@@ -75,16 +70,11 @@ const CreateKIT = (props) => {
                   ></textarea>
                 </div>
               </div>
-             
             </div>
-           
           </div>
           <div class="modal-footer" style={{ display: "unset" }}>
             <div>
-              <button
-                class="btn  btn-primary"
-                onClick={props.handleCreateKIT}
-              >
+              <button class="btn  btn-primary" onClick={props.handleCreateKIT}>
                 Create
               </button>
               <button

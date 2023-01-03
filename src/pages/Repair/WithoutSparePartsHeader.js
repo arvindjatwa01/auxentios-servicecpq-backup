@@ -20,6 +20,7 @@ import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import {
   createBuilderVersion,
+  createKIT,
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
@@ -55,6 +56,7 @@ import { MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import WithoutSparePartsOperation from "./WithoutSparePartsOperation";
 import { ReadOnlyField } from "./components/ReadOnlyField";
+import CreateKIT from "./components/CreateKIT";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -70,6 +72,13 @@ function WithoutSparePartsHeader(props) {
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const currencyOptions = [{ value: "USD", label: "USD" }];
+  const [kitOpen, setKitOpen] = useState(false);
+  const [kitVersion, setKitVersion] = useState({
+    value: "GOLD",
+    label: "Gold",
+  });
+  const [kitReference, setKitReference] = useState("");
+  const [kitDescription, setKitDescription] = useState("");
   const [activeElement, setActiveElement] = useState({
     name: "header",
     bId: "",
@@ -681,6 +690,42 @@ function WithoutSparePartsHeader(props) {
       });
   };
 
+  const handleCreateKIT = () => {
+    if (selBuilderStatus?.value === "ACTIVE") {
+      const data = {
+        description: kitDescription,
+        reference: kitReference,
+        version: kitVersion?.value,
+      };
+      createKIT(bId, data)
+        .then((res) => {
+          handleSnack(
+            "success",
+            `KIT ${res.kitId} has been successfully created!`
+          );
+          let templateDetails = {
+            templateId: "",
+            templateDBId: "",
+            type: "fetch",
+          };
+          templateDetails.kitId = res.kitId;
+          templateDetails.kitDBId = res.id;
+          // kitDetails.partListNo = kitDetails.;
+          // kitDetails.partListId = selectedKIT.estimationNumber;
+          // kitDetails.versionNumber = selectedKIT.versionNumber;
+          history.push({
+            pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
+            state: templateDetails,
+          });
+        })
+        .catch((e) => {
+          handleSnack("error", "Conversion to KIt has been failed!");
+        });
+    } else {
+      handleSnack("warning", "Partlist is not active yet!");
+    }
+  };
+
   const createVersion = async (versionDesc) => {
     // await createBuilderVersion(bId, versionDesc)
     //   .then((result) => {
@@ -814,7 +859,8 @@ function WithoutSparePartsHeader(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem className="custommenu ml-2 mr-4">
+                    <MenuItem className="custommenu ml-2 mr-4"
+                    onClick={() => setKitOpen(true)}>
                       Standard Job
                     </MenuItem>
                     <Divider />
@@ -2116,6 +2162,17 @@ function WithoutSparePartsHeader(props) {
           </div>
         </div>
       </div>
+      <CreateKIT
+        kitOpen={kitOpen}
+        handleCloseKIT={() => setKitOpen(false)}
+        handleCreateKIT={handleCreateKIT}
+        version={kitVersion}
+        setVersion={setKitVersion}
+        description={kitDescription}
+        setDescription={setKitDescription}
+        reference={kitReference}
+        setReference={setKitReference}
+      />
       <div style={{ height: "200px" }}></div>
     </React.Fragment>
   );

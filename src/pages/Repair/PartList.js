@@ -212,9 +212,9 @@ function PartList(props) {
   const activityOptions = ["New Versions", "Show Errors", "Review"];
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
-  const [kitVersionOpen, setKitVersionOpen] = useState(false);
+  const [kitOpen, setKitOpen] = useState(false);
   const [kitVersion, setKitVersion] = useState({
-    value: "Gold",
+    value: "GOLD",
     label: "Gold",
   });
   const [kitReference, setKitReference] = useState("");
@@ -1157,7 +1157,7 @@ function PartList(props) {
       const data = {
         description: kitDescription,
         reference: kitReference,
-        versionType: kitVersion?.value,
+        version: kitVersion?.value,
       };
       createKIT(bId, data)
         .then((res) => {
@@ -1474,8 +1474,8 @@ function PartList(props) {
         setDescription={setVersionDescription}
       />
       <CreateKIT
-        kitVersionOpen={kitVersionOpen}
-        handleCloseVersion={() => setKitVersionOpen(false)}
+        kitOpen={kitOpen}
+        handleCloseKIT={() => setKitOpen(false)}
         handleCreateKIT={handleCreateKIT}
         version={kitVersion}
         setVersion={setKitVersion}
@@ -1584,7 +1584,7 @@ function PartList(props) {
                   >
                     <MenuItem
                       className="custommenu ml-2 mr-5"
-                      onClick={() => setKitVersionOpen(true)}
+                      onClick={() => setKitOpen(true)}
                     >
                       Kit
                     </MenuItem>

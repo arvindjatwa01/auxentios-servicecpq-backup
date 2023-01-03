@@ -21,7 +21,11 @@ import IconButton from "@mui/material/IconButton";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link, useHistory } from "react-router-dom";
 import { NEW_SEGMENT } from "./CONSTANTS";
-import { createSegment, fetchSegments } from "services/repairBuilderServices";
+import {
+  createSegment,
+  fetchOperations,
+  fetchSegments,
+} from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,
   jobCodeSearch,
@@ -36,6 +40,7 @@ function ServiceOnlyTemplateSegment(props) {
     props.templateDetails;
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
+
   const [snackMessage, setSnackMessage] = useState("");
   const [searchJobCodeResults, setSearchJobCodeResults] = useState([]);
   const [searchCompCodeResults, setSearchCompCodeResults] = useState([]);
@@ -57,6 +62,8 @@ function ServiceOnlyTemplateSegment(props) {
       "Segment " +
       String(convertSegment.segmentNumber).padStart(2, "0") +
       " - " +
+      convertSegment.jobCodeDescription +
+      " " +
       convertSegment.description
     );
   }
@@ -69,6 +76,7 @@ function ServiceOnlyTemplateSegment(props) {
     description: "",
     id: "",
     requiredIndicator: true,
+    jobCodeDescription: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
   useEffect(() => {
@@ -76,49 +84,55 @@ function ServiceOnlyTemplateSegment(props) {
   }, []);
 
   const fetchSegmentsOfBuilder = () => {
-    // setSegmentLoading(true);
-    // if (activeElement.templateDBId) {
-    //   fetchSegments(activeElement.templateDBId)
-    //        .then((result) => {
-    // if (result?.length > 0) {
-    //   setSegments(result);
-    //   setSegmentViewOnly(true);
-    //   let segmentToLoad = activeElement.sId
-    //     ? result.filter((x) => x.id === activeElement.sId)[0]
-    //     : result[result.length - 1];
-    //   setSegmentData({
-    //     ...segmentToLoad,
-    //     header: formatSegmentHeader(segmentToLoad),
-    //   });
-    //   if (activeElement.sId) {
-    //     fetchOperations(activeElement.sId)
-    //       .then((result) => {
-    //         if (result?.length > 0) {
-    //           setOperations(result);
-    //         }
-    //       })
-    //       .catch((e) => {
-    //         handleSnack(
-    //           "error",
-    //           "Error occurred while fetching the operations"
-    //         );
-    //       });
-    //   }
-    // } else {
-    loadNewSegmentUI();
-    //       }
-    //       setSegmentLoadig(false);
-    //     })
-    //     .catch((err) => {
-    //       loadNewSegmentUI();
-    //       handleSnack("error", "Error occurred while fetching segments!");
-    //       setSegmentLoadig(false);
-    //     });
-    // } else {
-    //   handleSnack("error", "Not a valid builder!");
-    // }
+    setSegmentLoading(true);
+    if (activeElement.templateDBId) {
+      fetchSegments(activeElement.templateDBId)
+        .then((result) => {
+          if (result?.length > 0) {
+            setSegments(result);
+            setSegmentViewOnly(true);
+            let segmentToLoad = activeElement.sId
+              ? result.filter((x) => x.id === activeElement.sId)[0]
+              : result[result.length - 1];
+            setSegmentData({
+              ...segmentToLoad,
+              header: formatSegmentHeader(segmentToLoad),
+            });
+            if (activeElement.sId) populateOperations(activeElement.sId);
+          } else {
+            loadNewSegmentUI();
+          }
+          setSegmentLoading(false);
+        })
+        .catch((err) => {
+          loadNewSegmentUI();
+          console.log(err);
+          handleSnack("error", "Error occurred while fetching segments!");
+          setSegmentLoading(false);
+        });
+    } else {
+      handleSnack("error", "Not a valid builder!");
+    }
   };
 
+  const populateOperations = (segmentId) => {
+    if (segmentId) {
+      fetchOperations(segmentId)
+        .then((result) => {
+          if (result?.length > 0) {
+            setOperations(result);
+          } else {
+            setOperations([]);
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while fetching the operations");
+        });
+    }
+  };
+  const makeHeaderEditable = () => {
+    if (segmentViewOnly) setSegmentViewOnly(false);
+  };
   // To indicate whether segment price will be included in total price
   const handleChangeSwitch = (event) => {
     setSegmentData({
@@ -159,6 +173,11 @@ function ServiceOnlyTemplateSegment(props) {
     setSegmentData({
       ...segmentData,
       jobCode: currentItem.jobCode,
+      jobCodeDescription: currentItem.description,
+      title:
+        currentItem.jobCodeDescription && segmentData.description
+          ? currentItem.jobCodeDescription + " " + segmentData.description
+          : "",
     });
     setSearchJobCodeResults([]);
   };
@@ -188,7 +207,10 @@ function ServiceOnlyTemplateSegment(props) {
       ...segmentData,
       componentCode: currentItem.componentCode,
       description: currentItem.description,
-      title: currentItem.componentCode + " - " + currentItem.description,
+      title:
+        segmentData.jobCodeDescription && currentItem.description
+          ? segmentData.jobCodeDescription + " - " + currentItem.description
+          : "",
     });
     setSearchCompCodeResults([]);
   };
@@ -212,15 +234,12 @@ function ServiceOnlyTemplateSegment(props) {
         segmentToLoad = segments.filter(
           (x) => x.segmentNumber === segmentData.segmentNumber - 1
         );
+        populateOperations(segmentToLoad[0].id);
       }
 
       setSegmentData({
         ...segmentToLoad[0],
         header: formatSegmentHeader(segmentToLoad[0]),
-        // "Segment " +
-        // segmentToLoad[0].segmentNumber +
-        // " - " +
-        // segmentToLoad[0].description,
       });
     } else if (direction === "forward") {
       let segmentToLoad = [];
@@ -237,11 +256,8 @@ function ServiceOnlyTemplateSegment(props) {
         setSegmentData({
           ...segmentToLoad[0],
           header: formatSegmentHeader(segmentToLoad[0]),
-          // "Segment " +
-          // segmentToLoad[0].segmentNumber +
-          // " - " +
-          // segmentToLoad[0].description,
         });
+        populateOperations(segmentToLoad[0].id);
       }
     }
   };
@@ -249,32 +265,33 @@ function ServiceOnlyTemplateSegment(props) {
   const handleCreateSegment = () => {
     let templateDBId = activeElement?.templateDBId;
     let data = {
+      ...(segmentData.id && { id: segmentData.id }),
       jobCode: segmentData.jobCode,
       title: segmentData.title,
+      jobCodeDescription: segmentData.jobCodeDescription,
       componentCode: segmentData.componentCode,
       description: segmentData.description,
     };
-    // createSegment(templateDBId, data)
-    //   .then((result) => {
-    //     setSegmentData({
-    //       ...segmentData,
-    //       segmentNumber: result.segmentNumber,
-    //       id: result.id,
-    //       header: formatSegmentHeader(result),
-    //       // "Segment " + result.segmentNumber + " - " + result.description,
-    //     });
-    //     // fetchSegmentsOfBuilder();
-    //     segments[segments.length - 1] = result;
-    //     setShowAddNewButton(true);
-    setSegmentViewOnly(true);
-    //     handleSnack(
-    //       "success",
-    //       `Successfully added Segment ${result.segmentNumber} details!`
-    //     );
-    //   })
-    //   .catch((e) => {
-    //     handleSnack("error", "Error occurred while saving the segment data!");
-    //   });
+    createSegment(templateDBId, data)
+      .then((result) => {
+        setSegmentData({
+          ...segmentData,
+          segmentNumber: result.segmentNumber,
+          id: result.id,
+          header: formatSegmentHeader(result),
+        });
+        // fetchSegmentsOfBuilder();
+        segments[segments.length - 1] = result;
+        setShowAddNewButton(true);
+        setSegmentViewOnly(true);
+        handleSnack(
+          "success",
+          `Successfully added Segment ${result.segmentNumber} details!`
+        );
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occurred while saving the segment data!");
+      });
   };
   const loadNewSegmentUI = () => {
     setSegmentViewOnly(false);
@@ -292,10 +309,6 @@ function ServiceOnlyTemplateSegment(props) {
       setSegmentData({
         ...segments[segments.length - 1],
         header: formatSegmentHeader(segments[segments.length - 1]),
-        // "Segment " +
-        // segments[segments.length - 1].segmentNumber +
-        // " - " +
-        // segments[segments.length - 1].description,
       });
       setShowAddNewButton(true);
       setSegmentViewOnly(true);
@@ -339,7 +352,7 @@ function ServiceOnlyTemplateSegment(props) {
               <KeyboardArrowRightIcon />
             </button>
             {showAddNewButton &&
-              ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+              ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
                 -1 && (
                 <button
                   className="btn-no-border ml-2"
@@ -356,6 +369,21 @@ function ServiceOnlyTemplateSegment(props) {
         <h5 className="d-flex align-items-center mb-0">
           <div className="" style={{ display: "contents" }}>
             <span className="mr-3 white-space">{segmentData.header}</span>
+            {/* <a
+              href={undefined}
+              className="btn-sm"
+              style={{ cursor: "pointer" }}
+            >
+              <i
+                className="fa fa-pencil"
+                aria-hidden="true"
+                onClick={() =>
+                  ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1
+                    ? makeHeaderEditable()
+                    : handleSnack("info", "Builder is active!")
+                }
+              ></i>
+            </a>{" "} */}
           </div>
           <div className="hr"></div>
         </h5>
@@ -387,6 +415,27 @@ function ServiceOnlyTemplateSegment(props) {
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group mt-3">
                       <label className="text-light-dark font-size-12 font-weight-500">
+                        TITLE
+                      </label>
+                      <input
+                        type="text"
+                        class="form-control border-radius-10"
+                        placeholder="Auto Filled"
+                        value={segmentData.title}
+                        onChange={(e) =>
+                          setSegmentData({
+                            ...segmentData,
+                            title: e.target.value,
+                          })
+                        }
+                      />
+                      <div className="css-w8dmq8">*Mandatory</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6"></div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         JOB CODE
                       </label>
                       <SearchBox
@@ -397,21 +446,25 @@ function ServiceOnlyTemplateSegment(props) {
                         onSelect={handleJobCodeSelect}
                         noOptions={noOptionsJobCode}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
+
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group mt-3">
                       <label className="text-light-dark font-size-12 font-weight-500">
-                        TITLE
+                        JOB CODE DESCRIPTION
                       </label>
                       <input
                         type="text"
+                        disabled
                         class="form-control border-radius-10"
-                        value={segmentData.title}
+                        placeholder="Auto Filled"
+                        value={segmentData.jobCodeDescription}
                         onChange={(e) =>
                           setSegmentData({
                             ...segmentData,
-                            title: e.target.value,
+                            jobCodeDescription: e.target.value,
                           })
                         }
                       />
@@ -433,6 +486,7 @@ function ServiceOnlyTemplateSegment(props) {
                         onSelect={handleCompCodeSelect}
                         noOptions={noOptionsCompCode}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
@@ -443,6 +497,7 @@ function ServiceOnlyTemplateSegment(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10"
+                        placeholder="Auto Filled"
                         value={segmentData.description}
                         disabled
                       />
@@ -465,6 +520,7 @@ function ServiceOnlyTemplateSegment(props) {
                     disabled={
                       !(
                         segmentData.componentCode &&
+                        segmentData.jobCode &&
                         segmentData.description &&
                         segmentData.title
                       ) || noOptionsCompCode
@@ -489,7 +545,11 @@ function ServiceOnlyTemplateSegment(props) {
                   />
                   <ReadOnlyField
                     label="JOB CODE"
-                    value={segmentData.jobCode}
+                    value={
+                      segmentData.jobCode +
+                      " - " +
+                      segmentData.jobCodeDescription
+                    }
                     className="col-md-6 col-sm-6"
                   />
                   <ReadOnlyField

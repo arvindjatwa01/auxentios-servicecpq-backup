@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_KIT, FETCH_REPAIR_BUILDER_KIT, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_STATUS } from "./CONSTANTS";
+import { FETCH_KIT, KIT_MULTI_PARTS_TO_PARTLIST, KIT_PART_OF_PARTLIST, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_STATUS } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -70,7 +70,7 @@ export const updateKITCustomer = (kitId, data) => {
   
   //Update kit with General Details data
   export const updateKITGeneralDet = (kitId, data) => {
-    console.log("service Repair > updateKITGeneralDet called...");
+    console.log("service KIT > updateKITGeneralDet called...");
     return new Promise((resolve, reject) => {
       try {
         axios
@@ -97,7 +97,7 @@ export const updateKITCustomer = (kitId, data) => {
   
   //Update kit with Price Details data
   export const updateKITPrice = (kitId, data) => {
-    console.log("service Repair > updateKITPrice called...");
+    console.log("service KIT > updateKITPrice called...");
     return new Promise((resolve, reject) => {
       try {
         axios
@@ -124,7 +124,7 @@ export const updateKITCustomer = (kitId, data) => {
   
   //Update kit with Coverage Details data
   export const updateKITCoverage = (kitId, data) => {
-    console.log("service Repair > updateKITCoverage called...");
+    console.log("service KIT > updateKITCoverage called...");
     return new Promise((resolve, reject) => {
       try {
         axios
@@ -151,7 +151,7 @@ export const updateKITCustomer = (kitId, data) => {
   
 //Search Kits
 export const kitSearch =  (searchStr) => {
-    console.log("RepairBuilder > kitSearch called...");
+    console.log("KIT Service > kitSearch called...");
     return new Promise((resolve, reject) => {
       try {
         axios
@@ -168,7 +168,7 @@ export const kitSearch =  (searchStr) => {
             reject("Error in kitSearch axios!");
           });
       } catch (error) {
-        console.error("in RepairBuilder > kitSearch, Err===", error);
+        console.error("in KIT Service > kitSearch, Err===", error);
         reject(SYSTEM_ERROR);
       }
     });
@@ -225,3 +225,83 @@ export const updateKITStatus =  (kitId, status) => {
     });
   };
   
+//Add single sparepart to the KIT partlist
+export const addPartToKITPartList = (partListId, data) => {
+  console.log("service KIT > addPartToPartList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(KIT_PART_OF_PARTLIST(partListId), data, config)
+        .then((res) => {
+          console.log("KIT Service -> addPartToPartList response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Error Status:", res.status);
+            reject("Error in addPartToPartList axios!");
+          }          
+        })
+        .catch((err) => {
+          console.log("addPartToPartList > axios err=", err);
+          reject("Error in addPartToPartList axios!");
+        });
+    } catch (error) {
+      console.error("addPartToPartList general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add multiple spareparts to the KIT partlist
+export const addMultiPartsToKITPartList = (partListId, data) => {
+  console.log("KIT Service > addPartToPartList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(KIT_MULTI_PARTS_TO_PARTLIST(partListId), data, config)
+        .then((res) => {
+          console.log("KIT Service -> addMultiPartsToPartList response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Error Status:", res.status);
+            reject(res.data);
+          }          
+        })
+        .catch((err) => {
+          console.log("addPartToPartList > axios err=", err);
+          reject("Error in addMultiPartsToPartList axios!");
+        });
+    } catch (error) {
+      console.error("addMultiPartsToPartList general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Remove spare part from KIT partlist
+export const RemoveKITSparepart = (partlistId, sparePartId) => {
+  console.log("service repairbuilder > RemoveSparepart called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(KIT_PART_OF_PARTLIST(partlistId)+`/${sparePartId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveSparepart response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveSparepart > axios err=", err);
+          reject("Error in RemoveSparepart axios!");
+        });
+    } catch (error) {
+      console.error("RemoveSparepart general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

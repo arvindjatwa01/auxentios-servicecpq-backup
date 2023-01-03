@@ -1561,7 +1561,7 @@ function ServiceOnlyTemplateEstimation(props) {
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
+                    <div className="form-group mt-3">
                       <label className="text-light-dark font-size-12 font-weight-500">
                         PRICE DATE
                       </label>

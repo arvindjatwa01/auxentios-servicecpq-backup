@@ -192,10 +192,12 @@ export const SEARCH_KIT = (query) => REPAIR_BUILDER_URI + `kit/search?search=${q
 export const FETCH_KIT = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}`;
 export const UPDATE_KIT_CUSTOMER = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/customer`
 export const UPDATE_KIT_ESTIMATION = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimation-team`
-export const UPDATE_KIT_GENERAL_DETAIL = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimation`
+export const UPDATE_KIT_GENERAL_DETAIL = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimate`
 export const UPDATE_KIT_PRICE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/pricing`
 export const UPDATE_KIT_COVERAGE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/coverage`
 export const UPDATE_KIT_STATUS = (kitId, status) => REPAIR_BUILDER_URI + `kit/${kitId}/status/${status}`;
+export const KIT_PART_OF_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `kit-partlist/${partListId}/sparepart`;
+export const KIT_MULTI_PARTS_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `kit-partlist/${partListId}/spareparts`;
 
 //Standard Jobs or Service Only Template
 export const SEARCH_TEMPLATE = (query) => REPAIR_BUILDER_URI + `standard-job/search?search=${query}`;

@@ -51,6 +51,7 @@ import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import { customerSearch } from "services/searchServices";
 import ServiceOnlyTemplateEstimation from "./ServiceOnlyTemplateEstimation";
+import { fetchSegments } from "services/repairBuilderServices";
 
 function ServiceOnlyTemplates(props) {
   const history = useHistory();
@@ -153,7 +154,7 @@ function ServiceOnlyTemplates(props) {
     component: "",
     validFrom: new Date(),
     validTo: new Date(),
-    nextRevisionDate: new Date(
+    revisionDate: new Date(
       new Date().setFullYear(new Date().getFullYear() + 1)
     ),
   });
@@ -251,17 +252,17 @@ function ServiceOnlyTemplates(props) {
       setTemplateId(state.templateId);
       setTemplateDBId(state.templateDBId);
       fetchAllDetails(state.templateDBId);
-      // if (state.templateDBId) {
-      //   fetchSegments(state.templateDBId)
-      //     .then((result) => {
-      //       if (result?.length > 0) {
-      //         setSegments(result);
-      //       }
-      //     })
-      //     .catch((e) => {
-      //       handleSnack("error", "Error occurred while fetching the segments");
-      //     });
-      // }
+      if (state.templateDBId) {
+        fetchSegments(state.templateDBId)
+          .then((result) => {
+            if (result?.length > 0) {
+              setSegments(result);
+            }
+          })
+          .catch((e) => {
+            handleSnack("error", "Error occurred while fetching the segments");
+          });
+      }
     }
     var versionHistoryData = {
       builderId: "",
@@ -366,8 +367,8 @@ function ServiceOnlyTemplates(props) {
       ),
       validFrom: result.validFrom ? result.validFrom : new Date(),
       validTo: result.validTo ? result.validTo : new Date(),
-      nextRevisionDate: result.nextRevisionDate
-        ? result.nextRevisionDate
+      revisionDate: result.revisionDate
+        ? result.revisionDate
         : new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // Change it to created date + 1 year once API is ready
     });
   };
@@ -808,7 +809,7 @@ function ServiceOnlyTemplates(props) {
       templateDBId,
       application: usageData.application?.value,
       lifeStage: usageData.lifeStage?.value,
-      nextRevisionDate: usageData.nextRevisionDate,
+      revisionDate: usageData.revisionDate,
 
       articleNumber: usageData.articleNumber,
       startUsage: usageData.startUsage,
@@ -2101,11 +2102,11 @@ function ServiceOnlyTemplates(props) {
                                         className="form-controldate border-radius-10"
                                         minDate={new Date()}
                                         closeOnSelect
-                                        value={usageData.nextRevisionDate}
+                                        value={usageData.revisionDate}
                                         onChange={(e) =>
                                           setUsageData({
                                             ...usageData,
-                                            nextRevisionDate: e,
+                                            revisionDate: e,
                                           })
                                         }
                                         renderInput={(params) => (
@@ -2156,7 +2157,7 @@ function ServiceOnlyTemplates(props) {
                                 disabled={
                                   !(
                                     usageData.application?.value &&
-                                    usageData.nextRevisionDate
+                                    usageData.revisionDate
                                   )
                                 }
                               >
@@ -2236,7 +2237,7 @@ function ServiceOnlyTemplates(props) {
                               label="NEXT RIVISION DATE"
                               value={
                                 <Moment format="DD/MM/YYYY">
-                                  {usageData.nextRevisionDate}
+                                  {usageData.revisionDate}
                                 </Moment>
                               }
                               className="col-md-4 col-sm-4"
@@ -2271,6 +2272,7 @@ function ServiceOnlyTemplates(props) {
                               name: "segment",
                               templateDBId,
                               sId: element.id,
+                              templateStatus: selTemplateStatus?.value
                             })
                           }
                         >
