@@ -9712,7 +9712,7 @@ export function CreatePortfolio(props) {
                       </span>
                     </IconButton>
                   </Box>
-                  <Menu className=""
+                  <Menu className="convert-top-left"
                     anchorEl={anchorEl}
                     id="account-menu"
                     open={open}
