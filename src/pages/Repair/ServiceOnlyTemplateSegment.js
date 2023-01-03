@@ -407,7 +407,6 @@ function ServiceOnlyTemplateSegment(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10"
-                        placeholder="Required"
                         value={segmentData.title}
                         onChange={(e) =>
                           setSegmentData({
@@ -416,6 +415,7 @@ function ServiceOnlyTemplateSegment(props) {
                           })
                         }
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
@@ -443,10 +443,10 @@ function ServiceOnlyTemplateSegment(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10"
-                        placeholder="Required"
                         value={segmentData.description}
                         disabled
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                 </div>

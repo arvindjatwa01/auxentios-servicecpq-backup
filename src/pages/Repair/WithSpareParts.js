@@ -1000,11 +1000,11 @@ function WithSpareParts(props) {
                             <input
                               type="text"
                               className="form-control border-radius-10"
-                              placeholder="Required"
                               value={estimationData.preparedBy}
                               name="preparedBy"
                               onChange={handleEstimationDataChange}
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
@@ -1095,9 +1095,9 @@ function WithSpareParts(props) {
                                 })
                               }
                               options={salesOfficeOptions}
-                              placeholder="Required"
                               value={estimationData.salesOffice}
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
                       </div>
@@ -1237,7 +1237,6 @@ function WithSpareParts(props) {
                               type="text"
                               className="form-control border-radius-10"
                               id="desc-id"
-                              placeholder="Required"
                               maxLength={140}
                               value={generalData.description}
                               onChange={(e) =>
@@ -1247,6 +1246,7 @@ function WithSpareParts(props) {
                                 })
                               }
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
@@ -1258,7 +1258,6 @@ function WithSpareParts(props) {
                               type="text"
                               className="form-control border-radius-10"
                               id="desc-id"
-                              placeholder="Required"
                               maxLength={140}
                               value={generalData.reference}
                               onChange={(e) =>
@@ -1268,6 +1267,7 @@ function WithSpareParts(props) {
                                 })
                               }
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
@@ -1281,9 +1281,9 @@ function WithSpareParts(props) {
                                 setGeneralData({ ...generalData, validity: e })
                               }
                               options={validityOptions}
-                              placeholder="Required"
                               value={generalData.validity}
                             />
+                            <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">

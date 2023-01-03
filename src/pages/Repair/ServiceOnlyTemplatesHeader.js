@@ -1081,11 +1081,12 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Required"
+                                    
                                     value={estimationData.preparedBy}
                                     name="preparedBy"
                                     onChange={handleEstimationDataChange}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1099,43 +1100,45 @@ function ServiceOnlyTemplates(props) {
                                     value={estimationData.approvedBy}
                                     name="approvedBy"
                                     onChange={handleEstimationDataChange}
-                                    placeholder="Optional"
+                                    
                                   />
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PREPARED ON
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={estimationData.preparedOn}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={estimationData.preparedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          preparedOn: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={estimationData.preparedOn}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={estimationData.preparedOn}
+                                        onChange={(e) =>
+                                          setEstimationData({
+                                            ...estimationData,
+                                            preparedOn: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1149,43 +1152,45 @@ function ServiceOnlyTemplates(props) {
                                     value={estimationData.revisedBy}
                                     name="revisedBy"
                                     onChange={handleEstimationDataChange}
-                                    placeholder="Optional"
+                                    
                                   />
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     REVISED ON
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={estimationData.revisedOn}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={estimationData.revisedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          revisedOn: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={estimationData.revisedOn}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={estimationData.revisedOn}
+                                        onChange={(e) =>
+                                          setEstimationData({
+                                            ...estimationData,
+                                            revisedOn: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1201,10 +1206,11 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={salesOfficeOptions}
-                                    placeholder="Required"
+                                    
                                     value={estimationData.salesOffice}
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                             </div>
@@ -1296,7 +1302,7 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
                                     id="desc-id"
-                                    placeholder="Required"
+                                    
                                     maxLength={140}
                                     value={generalData.description}
                                     onChange={(e) =>
@@ -1306,43 +1312,46 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     <span className=" mr-2">
                                       ESTIMATION DATE
                                     </span>
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={generalData.estimationDate}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={generalData.estimationDate}
-                                      onChange={(e) =>
-                                        setGeneralData({
-                                          ...generalData,
-                                          estimationDate: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={generalData.estimationDate}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={generalData.estimationDate}
+                                        onChange={(e) =>
+                                          setGeneralData({
+                                            ...generalData,
+                                            estimationDate: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1354,7 +1363,7 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
                                     id="desc-id"
-                                    placeholder="Required"
+                                    
                                     maxLength={140}
                                     value={generalData.reference}
                                     onChange={(e) =>
@@ -1364,6 +1373,7 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1374,7 +1384,7 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     disabled
                                     value={generalData.version}
                                   />
@@ -1413,11 +1423,11 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                   />
                                 </div>
                               </div>
-                              <div className="col-md-4 col-sm-4">
+                              <div className="col-md-6 col-sm-6">
                                 <div class="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     OWNER
@@ -1425,7 +1435,7 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={generalData.owner}
                                     onChange={(e) =>
                                       setGeneralData({
@@ -1510,38 +1520,40 @@ function ServiceOnlyTemplates(props) {
                           <React.Fragment>
                             <div className="row input-fields">
                               <div className="col-md-4 col-sm-4">
-                                <div className="align-items-center date-box">
+                                <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PRICE DATE
                                   </label>
-                                  <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={pricingData.priceDate}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={pricingData.priceDate}
-                                      onChange={(e) =>
-                                        setPricingData({
-                                          ...pricingData,
-                                          priceDate: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
-                                    />
-                                  </LocalizationProvider>
+                                  <div className="align-items-center date-box">
+                                    <LocalizationProvider
+                                      dateAdapter={AdapterDateFns}
+                                    >
+                                      <MobileDatePicker
+                                        inputFormat="dd/MM/yyyy"
+                                        className="form-controldate border-radius-10"
+                                        minDate={pricingData.priceDate}
+                                        maxDate={new Date()}
+                                        closeOnSelect
+                                        value={pricingData.priceDate}
+                                        onChange={(e) =>
+                                          setPricingData({
+                                            ...pricingData,
+                                            priceDate: e,
+                                          })
+                                        }
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            variant="standard"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              style: FONT_STYLE,
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                    </LocalizationProvider>
+                                  </div>
                                 </div>
                               </div>
 
@@ -1558,10 +1570,11 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={priceMethodOptions}
-                                    placeholder="Required"
+                                    
                                     value={pricingData.priceMethod}
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-4 col-sm-4">
@@ -1578,7 +1591,7 @@ function ServiceOnlyTemplates(props) {
                                       )
                                     }
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={
                                       pricingData.priceMethod?.value ===
                                       "FLAT_RATE"
@@ -1608,10 +1621,11 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={currencyOptions}
-                                    placeholder="Required"
+                                    
                                     value={pricingData.currency}
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               {/* <div className="col-md-4 col-sm-4">
@@ -1623,7 +1637,7 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={pricingData.netPriceParts}
                                   />
                                 </div>
@@ -1637,7 +1651,7 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={pricingData.netPriceLabor}
                                   />
                                 </div>
@@ -1651,7 +1665,7 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={pricingData.netPriceMisc}
                                   />
                                 </div>
@@ -1665,7 +1679,7 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={pricingData.netPrice}
                                   />
                                 </div>
@@ -1727,12 +1741,12 @@ function ServiceOnlyTemplates(props) {
                               label="NET PRICE"
                               value={pricingData.netPrice}
                               className="col-md-4 col-sm-4"
-                            />                            
+                            />
                             <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={pricingData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />                            
+                            />
                           </div>
                         )}
                       </TabPanel>
@@ -1857,10 +1871,11 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={APPLICATION_OPTIONS}
-                                    placeholder="Required"
+                                    
                                     value={usageData.application}
                                     styles={FONT_STYLE_SELECT}
                                   />
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
                               <div className="col-md-4 col-sm-4">
@@ -1877,7 +1892,6 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={LIFE_STAGE_OPTIONS}
-                                    placeholder="Optional"
                                     value={usageData.lifeStage}
                                     styles={FONT_STYLE_SELECT}
                                   />
@@ -1891,7 +1905,7 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={usageData.articleNumber}
                                     onChange={(e) =>
                                       setUsageData({
@@ -1914,7 +1928,7 @@ function ServiceOnlyTemplates(props) {
                                       type="text"
                                       id="startUsage"
                                       value={usageData.startUsage}
-                                      placeholder="Optional"
+                                      
                                       onChange={(e) =>
                                         setUsageData({
                                           ...usageData,
@@ -1952,7 +1966,7 @@ function ServiceOnlyTemplates(props) {
                                       type="text"
                                       id="endUsage"
                                       value={usageData.endUsage}
-                                      placeholder="Optional"
+                                      
                                       onChange={(e) => {
                                         setUsageData({
                                           ...usageData,
@@ -1981,7 +1995,7 @@ function ServiceOnlyTemplates(props) {
                                     <input
                                       type="text"
                                       class="form-control border-radius-10 text-primary"
-                                      placeholder="Optional"
+                                      
                                       value={usageData.usageInterval}
                                       onChange={(e) =>
                                         setUsageData({
@@ -2107,6 +2121,7 @@ function ServiceOnlyTemplates(props) {
                                       />
                                     </LocalizationProvider>
                                   </div>
+                                  <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                               </div>
 
@@ -2118,7 +2133,7 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    placeholder="Optional"
+                                    
                                     value={usageData.component}
                                     onChange={(e) =>
                                       setUsageData({
@@ -2587,7 +2602,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="Optional"
+                        
                         value={coverageRowData.startSerialNumber}
                         defaultValue={coverageRowData.startSerialNumber}
                         onChange={(e) =>
@@ -2610,7 +2625,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="Optional"
+                        
                         value={coverageRowData.endSerialNumber}
                         defaultValue={coverageRowData.endSerialNumber}
                         onChange={(e) =>
@@ -2634,7 +2649,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="Optional"
+                        
                         value={coverageRowData.fleet}
                         defaultValue={coverageRowData.fleet}
                         onChange={(e) =>
@@ -2657,7 +2672,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="Optional"
+                        
                         value={coverageRowData.fleetSize}
                         defaultValue={coverageRowData.fleetSize}
                         onChange={(e) =>

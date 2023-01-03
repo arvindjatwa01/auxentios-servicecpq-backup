@@ -58,7 +58,7 @@ const AddConsumableItemModal = (props) => {
             <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     CONSUMABLE TYPE
                   </label>
                   <Select
@@ -80,6 +80,7 @@ const AddConsumableItemModal = (props) => {
                     value={props.consumableItemData.consumableType}
                     options={props.consumableTypeList}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -102,7 +103,7 @@ const AddConsumableItemModal = (props) => {
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     CONSUMABLE DESCRIPTION
                   </label>
                   <input
@@ -111,11 +112,12 @@ const AddConsumableItemModal = (props) => {
                     value={props.consumableItemData.description}
                     class="form-control border-radius-10 text-primary"
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     QUANTITY
                   </label>
                   <input
@@ -134,11 +136,12 @@ const AddConsumableItemModal = (props) => {
                     }
                     class="form-control border-radius-10 text-primary"
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     UNIT OF MEASURES
                   </label>
                   <input
@@ -153,6 +156,7 @@ const AddConsumableItemModal = (props) => {
                     }
                     class="form-control border-radius-10 text-primary"
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">

@@ -58,7 +58,7 @@ function WithoutSpareParts(props) {
     componentCode: "",
     description: "",
     id: "",
-    jobCodeDescription: ""
+    jobCodeDescription: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
   useEffect(() => {
@@ -80,7 +80,7 @@ function WithoutSpareParts(props) {
               ...segmentToLoad,
               header: formatSegmentHeader(segmentToLoad),
             });
-            if(activeElement.sId) populateOperations(activeElement.sId);
+            if (activeElement.sId) populateOperations(activeElement.sId);
           } else {
             loadNewSegmentUI();
           }
@@ -88,7 +88,7 @@ function WithoutSpareParts(props) {
         })
         .catch((err) => {
           loadNewSegmentUI();
-          console.log(err)
+          console.log(err);
           handleSnack("error", "Error occurred while fetching segments!");
           setSegmentLoadig(false);
         });
@@ -105,20 +105,16 @@ function WithoutSpareParts(props) {
             setOperations(result);
           } else {
             setOperations([]);
-          }          
+          }
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            "Error occurred while fetching the operations"
-          );
+          handleSnack("error", "Error occurred while fetching the operations");
         });
     }
-  }
+  };
 
   const makeHeaderEditable = () => {
-    if (segmentViewOnly)
-      setSegmentViewOnly(false);
+    if (segmentViewOnly) setSegmentViewOnly(false);
   };
 
   // Search Job Code
@@ -146,7 +142,10 @@ function WithoutSpareParts(props) {
       ...segmentData,
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
-      title: currentItem.jobCodeDescription && segmentData.description ? currentItem.jobCodeDescription && segmentData.description : ""
+      title:
+        currentItem.jobCodeDescription && segmentData.description
+          ? currentItem.jobCodeDescription && segmentData.description
+          : "",
     });
     setSearchJobCodeResults([]);
   };
@@ -176,7 +175,10 @@ function WithoutSpareParts(props) {
       ...segmentData,
       componentCode: currentItem.componentCode,
       description: currentItem.description,
-      title: segmentData.jobCodeDescription && currentItem.description ? segmentData.jobCodeDescription + " - " + currentItem.description: "",
+      title:
+        segmentData.jobCodeDescription && currentItem.description
+          ? segmentData.jobCodeDescription + " - " + currentItem.description
+          : "",
     });
     setSearchCompCodeResults([]);
   };
@@ -320,14 +322,19 @@ function WithoutSpareParts(props) {
             >
               <KeyboardArrowRightIcon />
             </button>
-            {showAddNewButton && ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1 && (
-              <button className="btn-no-border ml-2" onClick={loadNewSegmentUI}>
-                <span className="ml-2">
-                  <AddIcon />
-                </span>
-                Add New Segment
-              </button>
-            )}
+            {showAddNewButton &&
+              ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                -1 && (
+                <button
+                  className="btn-no-border ml-2"
+                  onClick={loadNewSegmentUI}
+                >
+                  <span className="ml-2">
+                    <AddIcon />
+                  </span>
+                  Add New Segment
+                </button>
+              )}
           </div>
         </div>
         <h5 className="d-flex align-items-center mb-0">
@@ -356,9 +363,9 @@ function WithoutSpareParts(props) {
         ) : !segmentViewOnly ? (
           <>
             <div className="row mt-4 input-fields">
-            <div className="col-md-6 col-sm-6">
+              <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     TITLE
                   </label>
                   <input
@@ -373,12 +380,13 @@ function WithoutSpareParts(props) {
                       })
                     }
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6"></div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     JOB CODE
                   </label>
                   <SearchBox
@@ -389,11 +397,12 @@ function WithoutSpareParts(props) {
                     onSelect={handleJobCodeSelect}
                     noOptions={noOptionsJobCode}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     JOB CODE DESCRIPTION
                   </label>
                   <input
@@ -409,12 +418,13 @@ function WithoutSpareParts(props) {
                       })
                     }
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
-              
+
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     COMPONENT CODE
                   </label>
                   <SearchBox
@@ -425,11 +435,12 @@ function WithoutSpareParts(props) {
                     onSelect={handleCompCodeSelect}
                     noOptions={noOptionsCompCode}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500 required">
+                  <label className="text-light-dark font-size-12 font-weight-500">
                     COMPONENT CODE DESCRIPTION
                   </label>
                   <input
@@ -439,6 +450,7 @@ function WithoutSpareParts(props) {
                     value={segmentData.description}
                     disabled
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
             </div>
@@ -487,7 +499,9 @@ function WithoutSpareParts(props) {
               />
               <ReadOnlyField
                 label="COMPONENT CODE"
-                value={segmentData.componentCode+ " - "+ segmentData.description}
+                value={
+                  segmentData.componentCode + " - " + segmentData.description
+                }
                 className="col-md-6 col-sm-6"
               />
             </div>
@@ -524,9 +538,12 @@ function WithoutSpareParts(props) {
                         {"Operation " +
                           String(element.operationNumber).padStart(3, "0") +
                           " - " +
-                          element.jobCode+" "+element.jobCodeDescription+" "+element.componentCodeDescription}
-                      </li>                                             
-                        
+                          element.jobCode +
+                          " " +
+                          element.jobCodeDescription +
+                          " " +
+                          element.componentCodeDescription}
+                      </li>
                     ))}
                   </div>
                 </div>

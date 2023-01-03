@@ -343,7 +343,7 @@ function WithoutSparePartsOperation(props) {
             <div className="row mt-4 input-fields">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600 required">
+                  <label className="text-light-dark font-size-12 font-weight-600">
                     TITLE
                   </label>
                   <input
@@ -358,12 +358,13 @@ function WithoutSparePartsOperation(props) {
                     }
                     placeholder="Auto Filled"
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6"></div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600 required">
+                  <label className="text-light-dark font-size-12 font-weight-600">
                     JOB CODE
                   </label>
                   <SearchBox
@@ -378,7 +379,7 @@ function WithoutSparePartsOperation(props) {
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600 required">
+                  <label className="text-light-dark font-size-12 font-weight-600">
                     JOB CODE DESCRIPTION
                   </label>
                   <input
@@ -388,11 +389,12 @@ function WithoutSparePartsOperation(props) {
                     disabled
                     placeholder="Auto Filled"
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600 required">
+                  <label className="text-light-dark font-size-12 font-weight-600">
                     COMPONENT CODE
                   </label>
                   <SearchBox
@@ -403,12 +405,13 @@ function WithoutSparePartsOperation(props) {
                     onSelect={handleCompCodeSelect}
                     noOptions={noOptionsCompCode}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
 
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600 required">
+                  <label className="text-light-dark font-size-12 font-weight-600">
                     COMPONENT CODE DESCRIPTION
                   </label>
                   <input
@@ -418,6 +421,7 @@ function WithoutSparePartsOperation(props) {
                     placeholder="Auto Filled"
                     disabled
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
             </div>
