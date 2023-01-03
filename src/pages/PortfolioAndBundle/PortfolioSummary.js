@@ -179,6 +179,7 @@ export const PortfolioSummary = () => {
 
   }
 
+  const [recentTabsValue, setRecentTabsValue] = useState("portfolio");
 
   const [versionOption, setVersionOption] = useState([]);
   const [statusOption, setStatusOption] = useState([]);
@@ -577,6 +578,10 @@ export const PortfolioSummary = () => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+  const handleTabChange = (event, newValue) => {
+    console.log(newValue);
+    setRecentTabsValue(newValue);
   };
   const fileTypes = ["JPG", "PNG", "GIF"];
 
@@ -3190,7 +3195,7 @@ export const PortfolioSummary = () => {
         <div class="container-fluid">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
-            <Select className="customselect1"
+            <Select className="customselect1" id="custom"
               placeholder=" + Create"
               styles={customStyles}
               options={[
@@ -3214,6 +3219,344 @@ export const PortfolioSummary = () => {
           </div>
 
           <div className="card p-4 mt-5">
+            <TabContext value={recentTabsValue}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+
+                <TabList className="custom-tabs-div"
+                  onChange={handleTabChange}
+                  aria-label="lab API tabs example"
+                >
+                  <Tab label="Portfolio" value={"portfolio"} />
+                  <Tab label="Service " value={"service"} />
+                  <Tab label="Bundle" value={"bundle"} />
+                </TabList>
+              </Box>
+              <TabPanel value={"portfolio"}>
+                <div className="mt-1">
+                  <div className="recent-div p-3">
+                    <h6 className="font-weight-600 text-grey mb-0 text-uppercase">RECENT {recentTabsValue}</h6>
+                    <div className="row">
+                      {recentPortfolio.map((data, index) =>
+                        index < 10 ?
+                          <div className="col-md-4">
+                            <div className="recent-items mt-3">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space">
+                                  <FontAwesomeIcon
+                                    className=" font-size-14"
+                                    icon={faFileAlt}
+                                  />
+                                  <span className="font-weight-500 ml-2">
+                                    {data.name}
+                                  </span>
+                                </p>
+                                <div className="d-flex align-items-center">
+                                  <a
+                                    href={undefined}
+                                    className="btn-sm"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <i
+                                      className="fa fa-pencil"
+                                      aria-hidden="true"
+                                      onClick={() =>
+                                        makePortfolioEditableEditable(data)
+                                      }
+                                    ></i>
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faShareAlt} />
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faFolderPlus} />
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faUpload} />
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                              <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                              <p className="font-size-12 mb-0">Portfolio</p>
+                            </div>
+                          </div> : <></>
+                      )}
+                    </div>
+                  </div>
+                  <div className="recent-div p-3 d-none">
+                    <h6 className="font-weight-600 text-grey mb-0">
+                      SERVICE BUNDLES
+                    </h6>
+                    <div className="row">
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 overflow-hidden white-space">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                Service Bundles
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              <div className="white-space custom-checkbox">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    control={<Checkbox defaultChecked />}
+                                    label=""
+                                  />
+                                </FormGroup>
+                              </div>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                              <a href="#" className="ml-2">
+                                <MuiMenuComponent options={activityOptions} />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                          <p className="font-size-12 mb-0">Service Bundles</p>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 overflow-hidden white-space">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                Service Bundles
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              <div className="white-space custom-checkbox">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    control={<Checkbox />}
+                                    label=""
+                                  />
+                                </FormGroup>
+                              </div>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                              <a href="#" className="ml-2">
+                                <MuiMenuComponent options={activityOptions} />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                          <p className="font-size-12 mb-0">Service Bundles</p>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 overflow-hidden white-space">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                Strategy Task
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              <div className="white-space custom-checkbox">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    control={<Checkbox />}
+                                    label=""
+                                  />
+                                </FormGroup>
+                              </div>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                              <a href="#" className="ml-2">
+                                <MuiMenuComponent options={activityOptions} />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                          <p className="font-size-12 mb-0">Strategy Task</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel value={"service"}>
+                <div className="mt-1">
+                  <div className="recent-div p-3">
+                    <h6 className="font-weight-600 text-grey mb-0 text-uppercase">RECENT {recentTabsValue}</h6>
+                    <div className="row">
+                      {recentBundleService.map((data, sIndex) => {
+                        return (data.itemHeaderModel.bundleFlag == "PORTFOLIO") ? <></> :
+
+                          <div className="col-md-4">
+                            <div className="recent-items mt-3">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space">
+                                  <FontAwesomeIcon
+                                    className=" font-size-14"
+                                    icon={faFileAlt}
+                                  />
+                                  <span className="font-weight-500 ml-2">
+                                    {/* Portfolio{" "} {data.name} */} {data.itemName}
+                                  </span>
+                                </p>
+                                <div className="d-flex align-items-center">
+                                  {/* <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel
+                                  control={<Checkbox />}
+                                  label=""
+                                />
+                              </FormGroup>
+                            </div> */}
+                                  <a
+                                    href={undefined}
+                                    className="btn-sm"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <i
+                                      className="fa fa-pencil"
+                                      aria-hidden="true"
+                                      onClick={() =>
+                                        makeBundleServiceEditable(data)
+                                      }
+                                    ></i>
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faShareAlt} />
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faFolderPlus} />
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faUpload} />
+                                  </a>
+                                  {/* <a href="#" className="ml-2">
+                              <MuiMenuComponent options={activityOptions} />
+                            </a> */}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                              {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                              <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                              <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
+                            </div>
+                          </div>
+
+                      }
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel value={"bundle"}>
+                <div className="mt-1">
+                  <div className="recent-div p-3">
+                    <h6 className="font-weight-600 text-grey mb-0 text-uppercase">RECENT {recentTabsValue}</h6>
+                    <div className="row">
+                      {recentBundleService.map((data, sIndex) => {
+                        return (data.itemHeaderModel.bundleFlag == "PORTFOLIO") ? <></> :
+
+                          <div className="col-md-4">
+                            <div className="recent-items mt-3">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space">
+                                  <FontAwesomeIcon
+                                    className=" font-size-14"
+                                    icon={faFileAlt}
+                                  />
+                                  <span className="font-weight-500 ml-2">
+                                    {/* Portfolio{" "} {data.name} */} {data.itemName}
+                                  </span>
+                                </p>
+                                <div className="d-flex align-items-center">
+                                  {/* <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel
+                                  control={<Checkbox />}
+                                  label=""
+                                />
+                              </FormGroup>
+                            </div> */}
+                                  <a
+                                    href={undefined}
+                                    className="btn-sm"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <i
+                                      className="fa fa-pencil"
+                                      aria-hidden="true"
+                                      onClick={() =>
+                                        makeBundleServiceEditable(data)
+                                      }
+                                    ></i>
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faShareAlt} />
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faFolderPlus} />
+                                  </a>
+                                  <a href="#" className="ml-3 font-size-14">
+                                    <FontAwesomeIcon icon={faUpload} />
+                                  </a>
+                                  {/* <a href="#" className="ml-2">
+                              <MuiMenuComponent options={activityOptions} />
+                            </a> */}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="d-flex justify-content-between align-items-center mt-2">
+                              {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                              <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                              <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
+                            </div>
+                          </div>
+
+                      }
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+            </TabContext>
             <div className="mt-1">
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
@@ -3839,10 +4182,10 @@ export const PortfolioSummary = () => {
                       <span>Search</span>
                     </h5>
                     <p className="ml-4 mb-0">
-                      <a href="#" className="ml-3 text-white">
+                      <a href={undefined} className="ml-3 cursor text-white">
                         <EditOutlinedIcon />
                       </a>
-                      <a href="#" className="ml-3 text-white">
+                      <a href={undefined} className="ml-3 cursor text-white">
                         <ShareOutlinedIcon />
                       </a>
                     </p>

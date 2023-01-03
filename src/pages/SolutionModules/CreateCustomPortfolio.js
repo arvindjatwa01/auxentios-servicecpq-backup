@@ -433,6 +433,8 @@ export function CreateCustomPortfolio(props) {
         reference: "",
     });
 
+    const [searchCustomerResults, setSearchCustomerResults] = useState([]);
+
     const [headerLoading, setHeaderLoading] = useState(false);
 
     const [viewOnlyTab, setViewOnlyTab] = useState({
@@ -465,6 +467,16 @@ export function CreateCustomPortfolio(props) {
         items: [],
         coverages: [],
         customItems: [],
+    });
+
+    const [customerData, setCustomerData] = useState({
+        source: "User Generated",
+        customerID: "",
+        customerName: "",
+        contactEmail: "",
+        contactName: "",
+        contactPhone: "",
+        customerGroup: "",
     });
 
     const [newBundle, setNewBundle] = useState({
@@ -762,6 +774,39 @@ export function CreateCustomPortfolio(props) {
                 console.log("error in getSearchQueryCoverage", err);
             });
     }
+
+    // Search Customer with customer ID
+    const handleCustSearch = async (searchCustfieldName, searchText) => {
+        // console.log("clear data", searchText);
+        setSearchCustomerResults([]);
+        customerData.customerID = searchText;
+        if (searchText) {
+            await customerSearch(searchCustfieldName + "~" + searchText)
+                .then((result) => {
+                    setSearchCustomerResults(result);
+                })
+                .catch((e) => {
+                    handleSnack(
+                        "error",
+                        true,
+                        "Error occurred while searching the customer!"
+                    );
+                });
+        }
+    };
+
+    // Select the customer from search result
+    const handleCustSelect = (type, currentItem) => {
+        setCustomerData({
+            ...customerData,
+            customerID: currentItem.customerId,
+            contactEmail: currentItem.email,
+            contactName: currentItem.contactName,
+            customerGroup: currentItem.priceGroup,
+            customerName: currentItem.fullName,
+        });
+        setSearchCustomerResults([]);
+    };
 
     const handleSearchModelListClick = (e, currentItem) => {
         console.log(currentItem)
@@ -9153,41 +9198,10 @@ export function CreateCustomPortfolio(props) {
                                     <TabPanel value={"general"}>
                                         {!viewOnlyTab.generalViewOnly ? <>
                                             <div className="row mt-4 input-fields">
-                                                {/* <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    SELECT TYPE
-                                                </label>
-                                                <Select
-                                                    placeholder="Select"
-                                                    options={headerTypeKeyValue}
-                                                    value={headerType}
-                                                    onChange={handleHeaderTypeChange}
-                                                    isLoading={
-                                                        headerTypeKeyValue.length > 0 ? false : true
-                                                    }
-                                                />
-                                            </div>
-                                        </div> */}
-                                                {/* <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    SOLUTION ID
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    placeholder="(Auto-generated)"
-                                                    disabled={true}
-                                                />
-                                            </div>
-                                        </div> */}
-                                                <div className="col-md-3 col-sm-3">
+                                                <div className="col-md-4 col-sm-4">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            {/* {prefilgabelGeneral} NAME */}
                                                             SOLUTION{/*  NAME */} CODE
-                                                            {/* SOLUTION NAME */}
                                                         </label>
                                                         <input
                                                             type="text"
@@ -9200,10 +9214,9 @@ export function CreateCustomPortfolio(props) {
                                                         <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
-                                                <div className="col-md-3 col-sm-3">
+                                                <div className="col-md-6 col-sm-6">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
                                                             SOLUTION DESCRIPTION
                                                         </label>
                                                         <input
@@ -9217,7 +9230,51 @@ export function CreateCustomPortfolio(props) {
                                                         <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
-                                                <div className="col-md-3 col-sm-3">
+                                            </div>
+                                            <div className="row input-fields">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
+                                                    <div class="form-group w-100 customerIdSearch" style={{ position: "relative" }}>
+                                                        <SearchBox
+                                                            value={customerData.customerID}
+                                                            onChange={(e) =>
+                                                                handleCustSearch("customerId", e.target.value)
+                                                            }
+                                                            type="customerId"
+                                                            result={searchCustomerResults}
+                                                            onSelect={handleCustSelect}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            value={customerData.customerName}
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            disabled={true}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500 " for="exampleInputEmail1">CONTACT EMAIL</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            value={customerData.contactEmail}
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            disabled={true}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="row input-fields">
+                                                <div className="col-md-4 col-sm-4">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
                                                             REFERENCE
@@ -9233,7 +9290,20 @@ export function CreateCustomPortfolio(props) {
                                                         <div className="css-w8dmq8">*Mandatory</div>
                                                     </div>
                                                 </div>
-                                                <div className="col-md-3 col-sm-3">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            value={customerData.customerGroup}
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            disabled={true}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4 col-sm-4">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
                                                             CUSTOMER SEGMENT
@@ -9247,18 +9317,9 @@ export function CreateCustomPortfolio(props) {
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
-                                                    {/* <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    FLAG FOR TEMPLATE
-                                                </label>
-                                                <Select
-                                                    onChange={handleCustomerSegmentChange}
-                                                    value={generalComponentData.customerSegment}
-                                                    options={customerSegmentKeyValue}
-                                                // options={strategyList}
-                                                />
-                                            </div> */}
+                                            </div>
+                                            <div className="row input-fields">
+                                                <div className="col-md-4 col-sm-4 d-flex justify-content-between align-items-center">
                                                     <div className=" d-flex justify-content-between align-items-center">
                                                         <div>
                                                             <FormGroup>
@@ -9272,19 +9333,7 @@ export function CreateCustomPortfolio(props) {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
-                                                    {/* <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    FLAG FOR COMMERCE
-                                                </label>
-                                                <Select
-                                                    onChange={handleCustomerSegmentChange}
-                                                    value={generalComponentData.customerSegment}
-                                                    options={customerSegmentKeyValue}
-                                                // options={strategyList}
-                                                />
-                                                
-                                            </div> */}
+                                                <div className="col-md-4 col-sm-4 d-flex justify-content-between align-items-center">
                                                     <div className=" d-flex justify-content-between align-items-center">
                                                         <div>
                                                             <FormGroup>
@@ -9298,6 +9347,9 @@ export function CreateCustomPortfolio(props) {
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+                                            <div className="row input-fields">
+
                                             </div>
                                             <div className="row" style={{ justifyContent: "right" }}>
                                                 <button
@@ -9376,17 +9428,19 @@ export function CreateCustomPortfolio(props) {
                                                             FLAG FOR TEMPLATE
                                                         </p>
                                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                                            {flagTemplate ? "True" : "False"}
+                                                            {/* {flagTemplate ? "True" : "False"} */}
+                                                            {flagTemplate ? "Yes" : "No"}
                                                         </h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-3">
                                                     <div className="form-group">
                                                         <p className="font-size-12 font-weight-500 mb-2">
-                                                            CUSTOMER SEGMENT
+                                                            FLAG FOR COMMERCE
                                                         </p>
                                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                                            {flagCommerce ? "True" : "False"}
+                                                            {/* {flagCommerce ? "True" : "False"} */}
+                                                            {flagCommerce ? "Yes" : "No"}
                                                         </h6>
                                                     </div>
                                                 </div>
