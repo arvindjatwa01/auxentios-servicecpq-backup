@@ -94,6 +94,7 @@ import {
   portfolioItemPriceSjid,
   getSolutionPriceCommonConfig,
   getItemDataById,
+  portfolioSearchList,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
@@ -635,6 +636,12 @@ export const PortfolioSummary = () => {
     if (selectedItemType === "PORTFOLIO") {
       var newArr = [];
       var SearchResArr = [];
+      // if (tempArray[id].selectFamily.value == "name") {
+      //   portfolioSearchList(`names`)
+      //     .then((res) => {
+      //       console.log("response of name search : ", res);
+      //     })
+      // }
       portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
         .then((res) => {
           if (tempArray[id].selectFamily.value === "make") {
@@ -3557,7 +3564,7 @@ export const PortfolioSummary = () => {
                 </div>
               </TabPanel>
             </TabContext>
-            <div className="mt-1">
+            <div className="mt-1 d-none">
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
@@ -4275,7 +4282,7 @@ export const PortfolioSummary = () => {
 
                               </div>
                               {(querySearchSelector.length - 1) === i ? <>
-                                <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                                <Link to="#" className="btn bg-primary text-white border-radius-10" onClick={handleLandingPageQuerySearchClick}>
                                   <SearchIcon />
                                   <span className="ml-1">Search</span>
                                 </Link>

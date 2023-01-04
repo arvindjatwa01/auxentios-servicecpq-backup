@@ -72,6 +72,7 @@ export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio";
 export const RECENT_PORTFOLIO_URL = SOLUTION_BUILDER_URI + "portfolio";
 export const PORTFOLIO_PRICE_CREATE = () => SOLUTION_BUILDER_URI + "portfolio/price";
 export const PORTFOLIO_SEARCH_URL = SOLUTION_BUILDER_URI + "portfolio/search?search=";
+export const PORTFOLIO_SEARCH_DROPDOWN_LIST_URL = SOLUTION_BUILDER_URI + "portfolio/";
 
 export const Common_SOLUTION_BUILDER_URL = () =>
   SOLUTION_BUILDER_URI + "common-config";

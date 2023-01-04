@@ -67,6 +67,7 @@ const QuerySearchComp = (props) => {
     if (props.compoFlag === "coverage") {
       getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
         .then((res) => {
+          console.log("response coverage ", res);
           obj.selectOptions = res;
           tempArray[id] = obj;
           setQuerySearchSelector([...tempArray]);
@@ -372,7 +373,7 @@ const QuerySearchComp = (props) => {
 
         searchStr =
           searchStr +
-          " " + querySearchSelector[i].selectOperator.value + 
+          " " + querySearchSelector[i].selectOperator.value +
           " " + querySearchSelector[i].selectFamily.value +
           ":\"" +
           querySearchSelector[i].inputSearch + "\"";

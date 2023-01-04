@@ -313,6 +313,16 @@ export function CreatePortfolio(props) {
   const [priceListKeyValue, setPriceListKeyValue] = useState([]);
   const [priceTypeKeyValue, setPriceTypeKeyValue] = useState([]);
   const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
+  const [additionalPriceHeadTypeKeyValue, setAdditionalPriceHeadTypeKeyValue] = useState([
+    // { label: "Surcharge Percentage", value: "PERCENTAGE" },
+    // { label: "Surcharge Dollar", value: "ABSOLUTE", },
+    { label: "Surcharge %", value: "PERCENTAGE" },
+    { label: "Surcharge $", value: "ABSOLUTE", },
+  ])
+
+
+  const [priceCurrencyKeyValue, setPriceCurrencyKeyvalue] = useState([]);
+
 
   const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
   const [strategyOptionals, setStrategyOptionals] = useState([]);
@@ -551,6 +561,7 @@ export function CreatePortfolio(props) {
   const [priceCalculator, setPriceCalculator] = useState({
     priceMethod: "",
     listPrice: "",
+    currency: "",
     priceAdditionalSelect: "",
     priceAdditionalInput: "",
     priceEscalationSelect: "",
@@ -566,6 +577,7 @@ export function CreatePortfolio(props) {
     frequency: "",
     cycle: "",
     suppresion: "",
+    priceType: "",
     netPrice: 1200,
     totalPrice: 1200,
   });
@@ -684,6 +696,20 @@ export function CreatePortfolio(props) {
       customerSegment: e,
     });
   };
+
+  const handleFlatPriceIndicator = (e) => {
+    setExtWorkData({
+      ...extWorkData,
+      flatRateIndicator: e.target.checked,
+      adjustedPrice: e.target.checked
+        ? extWorkData.adjustedPrice
+        : 0.0,
+    })
+    setPriceCalculator({
+      ...priceCalculator,
+      flatPrice: 0,
+    })
+  }
 
 
   const handleModelInputSearch = (e) => {
@@ -5034,10 +5060,19 @@ export function CreatePortfolio(props) {
 
     getSolutionPriceCommonConfig("price-method")
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setPriceMethodKeyValue(options);
       })
       .catch((err) => {
@@ -5046,11 +5081,19 @@ export function CreatePortfolio(props) {
 
     getSolutionPriceCommonConfig("price-type")
       .then((res) => {
-        console.log("res ------", res)
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setPriceTypeKeyValue(options);
       })
       .catch((err) => {
@@ -5059,10 +5102,19 @@ export function CreatePortfolio(props) {
 
     getSolutionPriceCommonConfig("price-list")
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setPriceListKeyValue(options);
       })
       .catch((err) => {
@@ -5070,13 +5122,35 @@ export function CreatePortfolio(props) {
       });
 
 
+    getSolutionPriceCommonConfig("currency")
+      .then((res) => {
+        console.log("Price currency Response is : ", res)
+        const options = res.map((d) => ({
+          value: d,
+          label: d,
+        }));
+        setPriceCurrencyKeyvalue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      })
+
 
     getSolutionPriceCommonConfig("price-head-type")
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setPriceHeadTypeKeyValue(options);
       })
       .catch((err) => {
@@ -5085,13 +5159,20 @@ export function CreatePortfolio(props) {
 
     getSolutionPriceCommonConfig("support-level")
       .then((res) => {
-
-        // console.log("res --- 12333 : ", res);
-        res.pop();
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // res.pop();
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setVersionOption(options);
       })
       .catch((err) => {
@@ -5099,12 +5180,20 @@ export function CreatePortfolio(props) {
       });
     getSolutionPriceCommonConfig("status")
       .then((res) => {
-        console.log("status option is 12345566", res)
-        res.pop();
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // res.pop();
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setStatusOption(options);
       })
       .catch((err) => {
@@ -10793,7 +10882,8 @@ export function CreatePortfolio(props) {
                                     className="text-primary"
                                     isClearable={true}
                                     // value={options}
-                                    options={priceHeadTypeKeyValue}
+                                    // options={priceHeadTypeKeyValue}
+                                    options={additionalPriceHeadTypeKeyValue}
                                     placeholder="Select"
                                     value={priceAdditionalHeadKeyValue1}
                                   />
@@ -15725,13 +15815,13 @@ export function CreatePortfolio(props) {
                           CURRENCY
                         </label>
                         <Select
-                          options={priceMethodKeyValue}
+                          options={priceCurrencyKeyValue}
                           className="text-primary"
-                          defaultValue={props?.priceCalculator?.priceMethod}
-                          value={priceCalculator.priceMethod}
+                          // defaultValue={props?.priceCalculator?.priceMethod}
+                          value={priceCalculator.currency}
                           name="priceMethod"
                           onChange={(e) =>
-                            setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                            setPriceCalculator({ ...priceCalculator, currency: e })
                           }
                           placeholder="placeholder (Optional)"
                         />
@@ -15775,7 +15865,18 @@ export function CreatePortfolio(props) {
                         >
                           PRICE TYPE
                         </label>
-                        <input
+                        <Select
+                          // defaultValue={priceTypeKeyValue}
+                          className="text-primary"
+                          onChange={(e) =>
+                            // setPriceTypeKeyValue1(e)
+                            setPriceCalculator({ ...priceCalculator, priceType: e })
+                          }
+                          options={priceTypeKeyValue}
+                          placeholder="placeholder (Optional)"
+                          value={priceCalculator.priceType}
+                        />
+                        {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -15783,7 +15884,7 @@ export function CreatePortfolio(props) {
                           disabled={disable}
                           value={itemPriceCalculator.priceType}
                           onChange={handleItemPriceCalculatorChange}
-                        />
+                        /> */}
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
@@ -15807,9 +15908,9 @@ export function CreatePortfolio(props) {
                                   priceAdditionalSelect: e,
                                 })
                               }
-                              options={options}
+                              options={additionalPriceHeadTypeKeyValue}
                               placeholder="Select"
-                              isDisabled
+                            // isDisabled
                             />
                           </div>
                           <input
@@ -15825,7 +15926,7 @@ export function CreatePortfolio(props) {
                                 priceAdditionalInput: e.target.value,
                               })
                             }
-                            disabled
+                          // disabled
                           />
                         </div>
                       </div>
@@ -15840,9 +15941,9 @@ export function CreatePortfolio(props) {
                         </label>
                         <div className=" d-flex align-items-center form-control-date">
                           <Select
-                            className="select-input"
+                            className="select-input text-primary"
                             id="priceEscalationSelect"
-                            options={options}
+                            options={priceHeadTypeKeyValue}
                             placeholder="placeholder "
                           // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
                           // value={expandedPriceCalculator.priceEscalationSelect}
@@ -15873,13 +15974,7 @@ export function CreatePortfolio(props) {
                               <Switch
                                 checked={extWorkData.flatRateIndicator}
                                 onChange={(e) =>
-                                  setExtWorkData({
-                                    ...extWorkData,
-                                    flatRateIndicator: e.target.checked,
-                                    adjustedPrice: e.target.checked
-                                      ? extWorkData.adjustedPrice
-                                      : 0.0,
-                                  })
+                                  handleFlatPriceIndicator(e)
                                 }
                               />
                             }
@@ -15912,7 +16007,8 @@ export function CreatePortfolio(props) {
                               flatPrice: e.target.value,
                             })
                           }
-                          placeholder="$100"
+                          disabled={!extWorkData.flatRateIndicator}
+                          placeholder="0"
                         />
                       </div>
                     </div>

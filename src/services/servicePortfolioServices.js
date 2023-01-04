@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL,PRICING_COMMON_CONFIG,PORTFOLIO_SEARCH_URL } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, PRICING_COMMON_CONFIG, PORTFOLIO_SEARCH_URL, PORTFOLIO_SEARCH_DROPDOWN_LIST_URL } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -70,7 +70,7 @@ export const portfolioSearch = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_SEARCH_URL+searchStr, { headers: headersdata })
+        .get(PORTFOLIO_SEARCH_URL + searchStr, { headers: headersdata })
         .then((res) => {
           console.log("portfolioSearch > axios res=", res);
           // resolve(res.data);
@@ -186,3 +186,26 @@ export const getUserDetails1 = (id) => {
   });
 };
 
+
+// Portfolio Search Dropdown List 
+export const portfolioSearchList = (searchStr) => {
+  console.log("portfolioService > portfolioSearchList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PORTFOLIO_SEARCH_DROPDOWN_LIST_URL + searchStr, { headers: headersdata })
+        .then((res) => {
+          console.log("portfolioSearchList > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("portfolioSearchList > axios err=", err);
+          reject("Error in portfolioSearchList axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioService > portfolioSearchList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
