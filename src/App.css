@@ -414,7 +414,7 @@ h5 {
 
 .btn {
   padding: 8px 25px;
-  border-radius: 10px !important;
+  border-radius: 6px !important;
 }
 
 a.text-light:hover,
@@ -3838,3 +3838,8 @@ input[type="checkbox"]:checked:after {
 #custom .css-tj5bde-Svg{
   color: #ff5e5e !important;
 } */
+.radio-button .MuiButtonBase-root {
+  justify-content: flex-start !important;
+}
+.modal-md{max-width: 970px !important;}
+.width-400{width: 400px !important;}

@@ -5,6 +5,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { ToastContainer, toast } from 'react-toastify';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import DesignServicesOutlinedIcon from '@mui/icons-material/DesignServicesOutlined';
 import Select from '@mui/material/Select';
 import Select2 from 'react-select';
 import { FileUploader } from "react-drag-drop-files";
@@ -152,6 +154,27 @@ export const Analytics = () => {
    const [createNewBundle, setCreateNewBundle] = useState(false)
    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
 
+   // const [selectedValue, setSelectedValue] = useState('a');
+
+
+   const handleChangeRadio = (e) => {
+
+      try {
+         console.log("event is  : ", e.target.value)
+         if (e.target.value === "a") {
+            setSolutionValue(0);
+         }
+
+         if (e.target.value === "b") {
+            setSolutionValue(1);
+         }
+      } catch (error) {
+
+      }
+      // event: ChangeEvent<HTMLInputElement>) => {
+      // setSelectedValue(event.target.value);
+   };
+
    const [openSearchSolution, setOpenSearchSolution] = useState(false)
    const [openTemplateSerachModelBox, setOpenTemplatesSearchModelBox] = useState(false)
    const [typeOfSearch, setTypeOfSearch] = useState(null)
@@ -180,6 +203,8 @@ export const Analytics = () => {
    const [show, setShow] = React.useState(false);
 
    const [showPopup, setShowPopup] = useState(false)
+   const [creationSolutionPopup, setCreationSolutionPopup] = useState(false);
+   const [searchPortfolioTemplate, setSearchPortfolioTemplate] = useState(false);
    const [solutionsPopup, setSolutionsPopup] = useState(false)
 
    const [querySearchSelectItem, setQuerySearchSelectItem] = useState([])
@@ -1631,6 +1656,15 @@ export const Analytics = () => {
       setPortfolioTempMasterData([])
    }
 
+   const handleCreationSolutionPopUp = () => {
+      setCreationSolutionPopup(true);
+      setShowPopup(false);
+   }
+   const handleSearchPortfolioTemplate = () => {
+      setSearchPortfolioTemplate(true);
+      setCreationSolutionPopup(false);
+      setShowPopup(false);
+   }
 
    const PopupModelBoxShow = () => {
       setShowPopup(true)
@@ -2976,7 +3010,7 @@ export const Analytics = () => {
                      {/* <a href="#" onClick={handleShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                         <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
                      </a> */}
-                     <a href="#" onClick={PopupModelBoxShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                     <a href={undefined} onClick={PopupModelBoxShow} style={{ cursor: 'pointer' }} className="btn cursor bg-primary text-white">
                         <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
                      </a>
                   </div>
@@ -3759,7 +3793,7 @@ export const Analytics = () => {
 
          {/* New Flow Work On Create New Button */}
 
-         <Modal show={showPopup} onHide={() => setShowPopup(false)} size="xl"
+         <Modal size="xl"
             aria-labelledby="contained-modal-title-vcenter"
             centered>
             {/* <Modal.Header closeButton>
@@ -3815,7 +3849,176 @@ export const Analytics = () => {
           </Button>
         </Modal.Footer> */}
          </Modal>
-
+         <Modal show={showPopup} onHide={() => setShowPopup(false)} size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
+               <Modal.Title><b>Select the solution you want to build</b></Modal.Title>
+               <button className="btn text-white bg-primary">Request for help!</button>
+            </Modal.Header>
+            <Modal.Body>
+               <div className=' p-4'>
+                  <div className='row'>
+                     <div className='col-md-6 my-3'>
+                        <div className="px-4">
+                           <div className='mr-2'><img src={Portfoliosicon}></img></div>
+                           <h5 className='text-light mt-3'>Maintenance Solutions</h5>
+                           <p className="mt-2">Develop solutions for maintenance including long term contracts</p>
+                           <Button
+                              className='btn bg-primary text-white py-2'
+                              style={{ textTransform: 'none' }}
+                              onClick={handleCreationSolutionPopUp}
+                           >
+                              Continue <ArrowForwardIosIcon className="ml-2" />
+                           </Button>
+                        </div>
+                     </div>
+                     <div className='col-md-6 my-3 '>
+                        <div className="px-4">
+                           <div className='mr-2'><img src={contract}></img></div>
+                           <h5 className='text-light mt-3'>Repair Solutions</h5>
+                           <p className="mt-2">Develop solutions for repair, overhaul and rebuild</p>
+                           <Button
+                              className='btn bg-primary text-white py-2'
+                              style={{ textTransform: 'none' }}
+                              onClick={handleCreationSolutionPopUp}
+                           >
+                              Continue <ArrowForwardIosIcon className="ml-2" />
+                           </Button>
+                        </div>
+                     </div>
+                     <div className='col-md-6 my-3 '>
+                        <div className="px-4">
+                           <div className='mr-2'><DesignServicesOutlinedIcon style={{ fontSize: "66px" }} /></div>
+                           <h5 className='text-light mt-3'> Routine Maintenance Tasks</h5>
+                           <p className="mt-2">Develop solutions for routine maintenance task such as preventive maintenace</p>
+                           <Button
+                              className='btn bg-primary text-white py-2'
+                              style={{ textTransform: 'none' }}
+                              onClick={handleCreationSolutionPopUp}
+                           >
+                              Continue <ArrowForwardIosIcon className="ml-2" />
+                           </Button>
+                        </div>
+                     </div>
+                     <div className='col-md-6 my-3 '>
+                        <div className="px-4">
+                           <div className='mr-2'><DesignServicesOutlinedIcon style={{ fontSize: "66px" }} /></div>
+                           <h5 className='text-light mt-3'>Equipment Solutions</h5>
+                           <p className="mt-2">Develop solutions for new equipments such as customisation or instalation etc.</p>
+                           <Button
+                              className='btn bg-primary text-white py-2'
+                              style={{ textTransform: 'none' }}
+                              onClick={handleCreationSolutionPopUp}
+                           >
+                              Continue <ArrowForwardIosIcon className="ml-2" />
+                           </Button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </Modal.Body>
+            {/* <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer> */}
+         </Modal>
+         <Modal
+            show={creationSolutionPopup}
+            onHide={() => setCreationSolutionPopup(false)}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
+               <Modal.Title><b>Choose the option to create solutions</b></Modal.Title>
+               <button className="btn text-white bg-primary">Explore avilable solution</button>
+            </Modal.Header>
+            <Modal.Body>
+               <div className=' p-4'>
+                  <div className='row'>
+                     <div className='col-md-6 my-3'>
+                        <div className="px-4">
+                           <div className='mr-2'><img src={Portfoliosicon}></img></div>
+                           <h5 className='text-light mt-3'>Pre-configured solution</h5>
+                           <p className="mt-2"><b>Get started with pre-configured solution, customise to your need and convert to a quote.</b></p>
+                           <p className="mt-2">Your product experts have built pre-configured solution for your miantenance and repair needs.</p>
+                           <Button
+                              className='btn bg-primary text-white py-2'
+                              style={{ textTransform: 'none' }}
+                              onClick={handleSearchPortfolioTemplate}
+                           >
+                              Continue <ArrowForwardIosIcon className="ml-2" />
+                           </Button>
+                        </div>
+                     </div>
+                     <div className='col-md-6 my-3 '>
+                        <div className="px-4">
+                           <div className='mr-2'><img src={contract}></img></div>
+                           <h5 className='text-light mt-3'>Develop new solutions</h5>
+                           <p className="mt-2"><b>Develop a new solution with the help of the builder platform</b></p>
+                           <p className="mt-2">Collaborate with product and solution experts to built new solutions.</p>
+                           <Button
+                              className='btn bg-primary text-white py-2'
+                              style={{ textTransform: 'none' }}
+                              onClick={handleSearchPortfolioTemplate}
+                           >
+                              Continue <ArrowForwardIosIcon className="ml-2" />
+                           </Button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </Modal.Body>
+         </Modal>
+         <Modal
+            show={searchPortfolioTemplate}
+            onHide={() => setSearchPortfolioTemplate(false)}
+            size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
+               <Modal.Title><b>Search Portfolio Template</b></Modal.Title>
+               <button className="btn text-white bg-primary">Guided Solution</button>
+            </Modal.Header>
+            <Modal.Body>
+               <div className="row p-3 radio-button">
+                  <div className="col-md-6 col-sm-6">
+                     <div className="card bg-light p-4">
+                        <Radio
+                           checked={solutionValue == 0}
+                           onChange={handleChangeRadio}
+                           value="a"
+                           name="radio-buttons"
+                           inputProps={{ 'aria-label': 'A' }}
+                        />
+                        <h5 className="mb-0 mt-3">Portfolio Template</h5>
+                     </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                     <div className="card bg-light p-4">
+                        <Radio
+                           checked={solutionValue == 1}
+                           onChange={handleChangeRadio}
+                           value="b"
+                           name="radio-buttons"
+                           inputProps={{ 'aria-label': 'B' }}
+                        />
+                        <h5 className="mb-0 mt-3">Solution Template</h5>
+                     </div>
+                  </div>
+               </div>
+               {solutionValue !== 3 ? <>
+                  <hr />
+                  <div>
+                     <h5>Search here...</h5>
+                  </div>
+               </> : <></>}
+            </Modal.Body>
+         </Modal>
          <Modal show={solutionsPopup} onHide={() => setSolutionsPopup(false)} size="xl"
             aria-labelledby="contained-modal-title-vcenter"
             centered>
