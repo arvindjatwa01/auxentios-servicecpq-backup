@@ -2534,6 +2534,9 @@ export function CreatePortfolio(props) {
   const handleNextClick = async (e) => {
     try {
       if (e.target.id == "general") {
+        console.log("state general : ", state)
+        console.log("state.type general : ", state.type)
+
 
         if (prefilgabelGeneral === "") {
           throw "Select Type is a required field, you can’t leave it blank";
@@ -2852,7 +2855,13 @@ export function CreatePortfolio(props) {
           }
         }
       } else if (e.target.id == "validity") {
+        console.log("state validity : ", state)
+        console.log("state.type validity : ", state.type)
         let reqData;
+        var diff = validityData.toDate.getTime() - validityData.fromDate.getTime();
+
+        // var daydiff = diff / (1000 * 60 * 60 * 24);
+        // console.log("difference between dates : ", daydiff);
         if (!viewOnlyTab.validityViewOnly) {
           if (
             validityData.fromInput &&
@@ -2883,7 +2892,19 @@ export function CreatePortfolio(props) {
         });
         setNameIsNotEditAble(true);
         setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: true });
+        toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       } else if (e.target.id == "strategy") {
+        console.log("state strategy : ", state)
+        console.log("state.type strategy : ", state.type)
+
         if ((categoryUsageKeyValue1.value == "") ||
           (categoryUsageKeyValue1.value == undefined)) {
           throw "Category usage is a required field, you can’t leave it blank";
@@ -3183,7 +3204,8 @@ export function CreatePortfolio(props) {
         }
 
       } else if (e.target.id == "price") {
-
+        console.log("state price : ", state)
+        console.log("state.type price : ", state.type)
         if ((priceMethodKeyValue1.value == "") ||
           (priceMethodKeyValue1.value == undefined)) {
           throw "Price method is a required field, you can’t leave it blank";
@@ -3197,198 +3219,342 @@ export function CreatePortfolio(props) {
         // }
 
         if (state && state.type === "new") {
+          console.log("new ---")
           if (portfolioId == "") {
             throw "Please Create portfolio first";
           } else {
-            let priceEscalation = {
-              priceMethod: priceMethodKeyValue1.value,
-              priceHeadType: priceEscalationHeadKeyValue1.value,
-              escalationPercentage: parseInt(escalationPriceValue),
-              validFrom: validityData.fromDate,
-              validTo: validityData.toDate,
-              userId: "string"
-            }
 
-            let priceAdditional = {
-              priceMethod: priceMethodKeyValue1.value,
-              priceHeadType: priceAdditionalHeadKeyValue1.value,
-              additionalPercentage: parseInt(additionalPriceValue),
-              validFrom: validityData.fromDate,
-              validTo: validityData.toDate,
-              userId: "string"
-            }
 
-            let portfolioPriceCreate = {
-              priceMethod: priceMethodKeyValue1.value,
-              priceType: priceTypeKeyValue1.value,
-              priceList: priceListKeyValue1.value,
-              priceDate: priceDetails.priceDate,
-            }
 
-            const escalationPrice = await escalationPriceCreation(priceEscalation);
-            const additionalPrice = await additionalPriceCreation(priceAdditional);
-            const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+            if (
+              (portfolioPriceDataIdForExiting !== "")
+            ) {
 
-            setPortfolioEscalationPriceDataId({
-              escalationPriceId: escalationPrice.data.escalationPriceId,
-            })
-            setPortfolioAdditionalPriceDataId({
-              additionalPriceId: additionalPrice.data.additionalPriceId,
-            })
-            setPortfolioPriceDataId({
-              portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
-            })
+              // // update Exiting Escalation Price
+              // let exitingEscalationPriceObj = {
+              //   escalationPriceId: escalationPriceDataId,
+              //   priceMethod: priceMethodKeyValue1.value,
+              //   priceHeadType: priceEscalationHeadKeyValue1.value,
+              //   escalationPercentage: parseInt(escalationPriceValue),
+              //   validFrom: validityData.fromDate,
+              //   validTo: validityData.toDate,
+              //   userId: "string"
+              // };
+              // const updateEscalationPriceData = await updateEscalationPriceById(
+              //   exitingEscalationPriceObj,
+              //   escalationPriceDataId
+              // );
 
-            setPortfolioPriceDataIdForExiting(portfolioPriceAPIData.data.portfolioPriceId);
-            setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
-            setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
+              // update Additional Price
+              // let exitingAdditionalPriceObj = {
+              //   additionalPriceId: additionalPriceDataId,
+              //   priceMethod: priceMethodKeyValue1.value,
+              //   priceHeadType: priceAdditionalHeadKeyValue1.value,
+              //   additionalPercentage: parseInt(additionalPriceValue),
+              //   validFrom: validityData.fromDate,
+              //   validTo: validityData.toDate,
+              //   userId: "string"
+              // }
+              // const updateAdditionalPriceData = await updateAdditionalPriceById(
+              //   exitingAdditionalPriceObj,
+              //   additionalPriceDataId
+              // )
 
-            const { portfolioId, ...res } = generalComponentData;
+              // update Portfolio Price 
+              let exitingPortfolioPriceObj = {
+                portfolioPriceId: portfolioPriceDataIdForExiting,
+                priceMethod: priceMethodKeyValue1.value,
+                priceType: priceTypeKeyValue1.value,
+                priceList: priceListKeyValue1.value,
+                priceDate: priceDetails.priceDate,
+              }
+              const updatePortfolioPriceData = await updatePortfolioPrice(
+                exitingPortfolioPriceObj,
+                portfolioPriceDataIdForExiting
+              )
 
-            let priceObjData = {
-              ...res,
-              visibleInCommerce: true,
-              customerId: 0,
-              lubricant: true,
-              customerSegment: generalComponentData.customerSegment.value
-                ? generalComponentData.customerSegment.value
-                : "EMPTY",
-              status: generalComponentData.status
-                ? generalComponentData.status
-                : "DRAFT",
-              strategyTask: generalComponentData.strategyTask
-                ? generalComponentData.strategyTask
-                : "EMPTY",
-              taskType: generalComponentData.taskType
-                ? generalComponentData.taskType
-                : "EMPTY",
-              usageCategory: generalComponentData.usageCategory
-                ? generalComponentData.usageCategory
-                : "EMPTY",
-              productHierarchy: generalComponentData.productHierarchy
-                ? generalComponentData.productHierarchy
-                : "EMPTY",
-              geographic: generalComponentData.geographic
-                ? generalComponentData.geographic
-                : "EMPTY",
-              availability: generalComponentData.availability
-                ? generalComponentData.availability
-                : "EMPTY",
-              responseTime: generalComponentData.responseTime
-                ? generalComponentData.responseTime
-                : "EMPTY",
-              type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-              application: generalComponentData.application
-                ? generalComponentData.application
-                : "EMPTY",
-              contractOrSupport: generalComponentData.contractOrSupport
-                ? generalComponentData.contractOrSupport
-                : "EMPTY",
-              supportLevel: generalComponentData.supportLevel
-                ? generalComponentData.supportLevel
-                : "PREMIUM",
-              customerGroup: generalComponentData.customerGroup
-                ? generalComponentData.customerGroup
-                : "EMPTY",
-              searchTerm: "EMPTY",
+              let reqObj = {
+                portfolioId: portfolioId,
+                name: generalComponentData.name,
+                description: generalComponentData.description,
+                externalReference: generalComponentData.externalReference,
+                customerSegment: generalComponentData.customerSegment?.value,
 
-              // supportLevel: "PREMIUM",
-              supportLevel: value3.value,
-              status: value2.value,
+                validFrom: validityData.fromDate,
+                validTo: validityData.toDate,
 
-              portfolioPrice: {
-                portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
-              },
-              additionalPrice: {
-                additionalPriceId: additionalPrice.data.additionalPriceId,
-              },
-              escalationPrice: {
-                escalationPriceId: escalationPrice.data.escalationPriceId,
-              },
+                usageCategory: categoryUsageKeyValue1.value
+                  ? categoryUsageKeyValue1.value : "EMPTY",
+                strategyTask: stratgyTaskUsageKeyValue.value ?
+                  stratgyTaskUsageKeyValue.value : "EMPTY",
+                taskType: stratgyTaskTypeKeyValue.value ?
+                  stratgyTaskTypeKeyValue.value : "EMPTY",
+                responseTime: stratgyResponseTimeKeyValue.value ?
+                  stratgyResponseTimeKeyValue.value : "EMPTY",
+                productHierarchy: stratgyHierarchyKeyValue.value ?
+                  stratgyHierarchyKeyValue.value : "EMPTY",
+                geographic: stratgyGeographicKeyValue.value ?
+                  stratgyGeographicKeyValue.value : "EMPTY",
 
-              usageCategory: categoryUsageKeyValue1.value,
-              taskType: stratgyTaskTypeKeyValue.value,
-              strategyTask: stratgyTaskUsageKeyValue.value,
-              responseTime: stratgyResponseTimeKeyValue.value,
-              productHierarchy: stratgyHierarchyKeyValue.value,
-              geographic: stratgyGeographicKeyValue.value,
-              numberOfEvents: 0,
-              rating: "",
-              startUsage: "",
-              endUsage: "",
-              unit: "HOURS",
-              additionals: "",
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                offerValidity: administrative.offerValidity?.value,
+                salesOffice: administrative.salesOffice?.value,
 
-              preparedBy: administrative.preparedBy,
-              approvedBy: administrative.approvedBy,
-              preparedOn: administrative.preparedOn,
-              revisedBy: administrative.revisedBy,
-              revisedOn: administrative.revisedOn,
-              salesOffice: administrative.salesOffice?.value,
-              offerValidity: administrative.offerValidity?.value,
+                portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                  ? portfolioPriceDataId : null,
+                additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                  ? portfolioAdditionalPriceDataId : null,
+                escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                  ? portfolioEscalationPriceDataId : null,
 
-              items: portfolioItems,
-              coverages: portfolioCoverage,
-            };
+                supportLevel: value3.value,
+                status: value2.value,
 
-            const priceObjRes = await updatePortfolio(
-              generalComponentData.portfolioId,
-              priceObjData
-            );
-            if (priceObjRes.status === 200) {
-              toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-              });
-              setValue("coverage")
-              setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+                items: portfolioItems,
+                coverages: portfolioCoverage,
+
+                machineType: "NEW",
+                searchTerm: "",
+                lubricant: true,
+                customerId: 0,
+                customerGroup: "",
+                availability: "AVAILABILITY_GREATER_95",
+                type: "MACHINE",
+                application: "HILL",
+                contractOrSupport: "LEVEL_I",
+                lifeStageOfMachine: "NEW_BREAKIN",
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: 0,
+                endUsage: 0,
+                unit: "HOURS",
+                additionals: "",
+                template: true,
+                visibleInCommerce: true
+              }
+
+              const exitsPortfolioUpdate = await updatePortfolio(
+                portfolioId,
+                reqObj
+              );
+              if (exitsPortfolioUpdate.status === 200) {
+                toast(`👏 Portfolio ${generalComponentData.name} Updated Successfully`, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                });
+                // priceAgreementOption
+                //   ? setValue("priceAgreement")
+                //   : setValue("coverage");
+                setValue("coverage");
+                setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+              } else {
+                throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
+              };
+
             } else {
-              throw `${priceObjRes.status}:error in update portfolio`;
-            };
+
+              // let priceEscalation = {
+              //   priceMethod: priceMethodKeyValue1.value,
+              //   priceHeadType: priceEscalationHeadKeyValue1.value,
+              //   escalationPercentage: parseInt(escalationPriceValue),
+              //   validFrom: validityData.fromDate,
+              //   validTo: validityData.toDate,
+              //   userId: "string"
+              // }
+
+              // let priceAdditional = {
+              //   priceMethod: priceMethodKeyValue1.value,
+              //   priceHeadType: priceAdditionalHeadKeyValue1.value,
+              //   additionalPercentage: parseInt(additionalPriceValue),
+              //   validFrom: validityData.fromDate,
+              //   validTo: validityData.toDate,
+              //   userId: "string"
+              // }
+
+              let portfolioPriceCreate = {
+                priceMethod: priceMethodKeyValue1.value,
+                priceType: priceTypeKeyValue1.value,
+                priceList: priceListKeyValue1.value,
+                priceDate: priceDetails.priceDate,
+              }
+
+              // const escalationPrice = await escalationPriceCreation(priceEscalation);
+              // const additionalPrice = await additionalPriceCreation(priceAdditional);
+
+              const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+
+              // setPortfolioEscalationPriceDataId({
+              //   escalationPriceId: escalationPrice.data.escalationPriceId,
+              // })
+              // setPortfolioAdditionalPriceDataId({
+              //   additionalPriceId: additionalPrice.data.additionalPriceId,
+              // })
+              setPortfolioPriceDataId({
+                portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+              })
+
+              setPortfolioPriceDataIdForExiting(portfolioPriceAPIData.data.portfolioPriceId);
+              // setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
+              // setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
+
+              const { portfolioId, ...res } = generalComponentData;
+
+              let priceObjData = {
+                ...res,
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment.value
+                  ? generalComponentData.customerSegment.value
+                  : "EMPTY",
+                status: generalComponentData.status
+                  ? generalComponentData.status
+                  : "DRAFT",
+                strategyTask: generalComponentData.strategyTask
+                  ? generalComponentData.strategyTask
+                  : "EMPTY",
+                taskType: generalComponentData.taskType
+                  ? generalComponentData.taskType
+                  : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                  ? generalComponentData.usageCategory
+                  : "EMPTY",
+                productHierarchy: generalComponentData.productHierarchy
+                  ? generalComponentData.productHierarchy
+                  : "EMPTY",
+                geographic: generalComponentData.geographic
+                  ? generalComponentData.geographic
+                  : "EMPTY",
+                availability: generalComponentData.availability
+                  ? generalComponentData.availability
+                  : "EMPTY",
+                responseTime: generalComponentData.responseTime
+                  ? generalComponentData.responseTime
+                  : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                  ? generalComponentData.application
+                  : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                  ? generalComponentData.contractOrSupport
+                  : "EMPTY",
+                supportLevel: generalComponentData.supportLevel
+                  ? generalComponentData.supportLevel
+                  : "PREMIUM",
+                customerGroup: generalComponentData.customerGroup
+                  ? generalComponentData.customerGroup
+                  : "EMPTY",
+                searchTerm: "EMPTY",
+
+                // supportLevel: "PREMIUM",
+                supportLevel: value3.value,
+                status: value2.value,
+
+                portfolioPrice: {
+                  portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                },
+                additionalPrice: null,
+                escalationPrice: null,
+                // additionalPrice: {
+                //   additionalPriceId: additionalPrice.data.additionalPriceId,
+                // },
+                // escalationPrice: {
+                //   escalationPriceId: escalationPrice.data.escalationPriceId,
+                // },
+
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: "",
+                endUsage: "",
+                unit: "HOURS",
+                additionals: "",
+
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice?.value,
+                offerValidity: administrative.offerValidity?.value,
+
+                items: portfolioItems,
+                coverages: portfolioCoverage,
+              };
+
+              const priceObjRes = await updatePortfolio(
+                generalComponentData.portfolioId,
+                priceObjData
+              );
+              if (priceObjRes.status === 200) {
+                toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                });
+                setValue("coverage")
+                setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+              } else {
+                throw `${priceObjRes.status}:error in update portfolio`;
+              };
+            }
+
           }
         } else {
 
-          if (
-            (portfolioPriceDataIdForExiting !== "") ||
-            (additionalPriceDataId !== "") ||
-            (escalationPriceDataId !== "")
-          ) {
-
+          // if((portfolioPriceDataIdForExiting !== "") ||
+          // (additionalPriceDataId !== "") ||
+          // (escalationPriceDataId !== ""))
+          if (portfolioPriceDataIdForExiting !== "") {
+            console.log("fetch if ---")
             console.log("price create on if 1 : ", state.type + " , portfolioId : " + portfolioId)
             // update Exiting Escalation Price
-            let exitingEscalationPriceObj = {
-              escalationPriceId: escalationPriceDataId,
-              priceMethod: priceMethodKeyValue1.value,
-              priceHeadType: priceEscalationHeadKeyValue1.value,
-              escalationPercentage: parseInt(escalationPriceValue),
-              validFrom: validityData.fromDate,
-              validTo: validityData.toDate,
-              userId: "string"
-            };
-            const updateEscalationPriceData = await updateEscalationPriceById(
-              exitingEscalationPriceObj,
-              escalationPriceDataId
-            );
+            // let exitingEscalationPriceObj = {
+            //   escalationPriceId: escalationPriceDataId,
+            //   priceMethod: priceMethodKeyValue1.value,
+            //   priceHeadType: priceEscalationHeadKeyValue1.value,
+            //   escalationPercentage: parseInt(escalationPriceValue),
+            //   validFrom: validityData.fromDate,
+            //   validTo: validityData.toDate,
+            //   userId: "string"
+            // };
+            // const updateEscalationPriceData = await updateEscalationPriceById(
+            //   exitingEscalationPriceObj,
+            //   escalationPriceDataId
+            // );
 
             // update Additional Price
-            let exitingAdditionalPriceObj = {
-              additionalPriceId: additionalPriceDataId,
-              priceMethod: priceMethodKeyValue1.value,
-              priceHeadType: priceAdditionalHeadKeyValue1.value,
-              additionalPercentage: parseInt(additionalPriceValue),
-              validFrom: validityData.fromDate,
-              validTo: validityData.toDate,
-              userId: "string"
-            }
-            const updateAdditionalPriceData = await updateAdditionalPriceById(
-              exitingAdditionalPriceObj,
-              additionalPriceDataId
-            )
+            // let exitingAdditionalPriceObj = {
+            //   additionalPriceId: additionalPriceDataId,
+            //   priceMethod: priceMethodKeyValue1.value,
+            //   priceHeadType: priceAdditionalHeadKeyValue1.value,
+            //   additionalPercentage: parseInt(additionalPriceValue),
+            //   validFrom: validityData.fromDate,
+            //   validTo: validityData.toDate,
+            //   userId: "string"
+            // }
+            // const updateAdditionalPriceData = await updateAdditionalPriceById(
+            //   exitingAdditionalPriceObj,
+            //   additionalPriceDataId
+            // )
 
             // update Portfolio Price 
             let exitingPortfolioPriceObj = {
@@ -3494,23 +3660,23 @@ export function CreatePortfolio(props) {
             // const { portfolioId, ...res } = generalComponentData;
             console.log("price create on else 1 : ", state.type + " , portfolioId : " + portfolioId)
 
-            let priceEscalation = {
-              priceMethod: priceMethodKeyValue1.value,
-              priceHeadType: priceEscalationHeadKeyValue1.value,
-              escalationPercentage: parseInt(escalationPriceValue),
-              validFrom: validityData.fromDate,
-              validTo: validityData.toDate,
-              userId: "string"
-            }
+            // let priceEscalation = {
+            //   priceMethod: priceMethodKeyValue1.value,
+            //   priceHeadType: priceEscalationHeadKeyValue1.value,
+            //   escalationPercentage: parseInt(escalationPriceValue),
+            //   validFrom: validityData.fromDate,
+            //   validTo: validityData.toDate,
+            //   userId: "string"
+            // }
 
-            let priceAdditional = {
-              priceMethod: priceMethodKeyValue1.value,
-              priceHeadType: priceAdditionalHeadKeyValue1.value,
-              additionalPercentage: parseInt(additionalPriceValue),
-              validFrom: validityData.fromDate,
-              validTo: validityData.toDate,
-              userId: "string"
-            }
+            // let priceAdditional = {
+            //   priceMethod: priceMethodKeyValue1.value,
+            //   priceHeadType: priceAdditionalHeadKeyValue1.value,
+            //   additionalPercentage: parseInt(additionalPriceValue),
+            //   validFrom: validityData.fromDate,
+            //   validTo: validityData.toDate,
+            //   userId: "string"
+            // }
 
             let portfolioPriceCreate = {
               priceMethod: priceMethodKeyValue1.value,
@@ -3519,23 +3685,23 @@ export function CreatePortfolio(props) {
               priceDate: priceDetails.priceDate,
             }
 
-            const escalationPrice = await escalationPriceCreation(priceEscalation);
-            const additionalPrice = await additionalPriceCreation(priceAdditional);
+            // const escalationPrice = await escalationPriceCreation(priceEscalation);
+            // const additionalPrice = await additionalPriceCreation(priceAdditional);
             const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
 
-            setPortfolioEscalationPriceDataId({
-              escalationPriceId: escalationPrice.data.escalationPriceId,
-            })
-            setPortfolioAdditionalPriceDataId({
-              additionalPriceId: additionalPrice.data.additionalPriceId,
-            })
+            // setPortfolioEscalationPriceDataId({
+            //   escalationPriceId: escalationPrice.data.escalationPriceId,
+            // })
+            // setPortfolioAdditionalPriceDataId({
+            //   additionalPriceId: additionalPrice.data.additionalPriceId,
+            // })
             setPortfolioPriceDataId({
               portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
             })
 
             setPortfolioPriceDataIdForExiting(portfolioPriceAPIData.data.portfolioPriceId);
-            setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
-            setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
+            // setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
+            // setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
 
             let reqObj = {
               portfolioId: portfolioId,
@@ -3571,12 +3737,15 @@ export function CreatePortfolio(props) {
               portfolioPrice: {
                 portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
               },
-              additionalPrice: {
-                additionalPriceId: additionalPrice.data.additionalPriceId,
-              },
-              escalationPrice: {
-                escalationPriceId: escalationPrice.data.escalationPriceId,
-              },
+              // additionalPrice: {
+              //   additionalPriceId: additionalPrice.data.additionalPriceId,
+              // },
+              // escalationPrice: {
+              //   escalationPriceId: escalationPrice.data.escalationPriceId,
+              // },
+
+              additionalPrice: null,
+              escalationPrice: null,
 
               supportLevel: value3.value,
               status: value2.value,
@@ -7751,31 +7920,31 @@ export function CreatePortfolio(props) {
   };
 
   const getAddPortfolioItemDataFun = async (data) => {
+
+    console.log("my data is: ", data)
     setAddportFolioItem(data);
     // console.log("data------ : ", data)
 
-    const rObj = {
+
+    const newPriceObj = {
       itemPriceDataId: 0,
-      quantity: addPortFolioItem.quantity,
-      startUsage: addPortFolioItem.startUsage,
-      endUsage: addPortFolioItem.endUsage,
-      standardJobId: addPortFolioItem.templateId,
-      repairKitId: addPortFolioItem.repairOption,
-      templateDescription: addPortFolioItem.templateDescription?.value,
+      quantity: 0,
+      standardJobId: data.templateId,
+      repairKitId: data.repairOption,
+      templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
       repairOption: "",
       additional: "",
       partListId: "",
       serviceEstimateId: "",
-      numberOfEvents: addPortFolioItem?.numberOfEvents,
-      priceMethod: "LIST_PRICE",
-      priceType: "FIXED",
+      numberOfEvents: 0,
+      priceMethod: "EMPTY",
+      priceType: "EMPTY",
       listPrice: 0,
       priceEscalation: "",
       calculatedPrice: 0,
       flatPrice: 0,
-      discountType: "",
-      year: addPortFolioItem.year?.value,
-      noOfYear: addPortFolioItem.noOfYear,
+      year: data.year?.value,
+      noOfYear: parseInt(data.noOfYear),
       sparePartsPrice: 0,
       sparePartsPriceBreakDownPercentage: 0,
       servicePrice: 0,
@@ -7785,25 +7954,79 @@ export function CreatePortfolio(props) {
       miscPriceBreakDownPercentage: 0,
       totalPrice: 0,
       netService: 0,
+      additionalPriceType: "ABSOLUTE",
+      additionalPriceValue: 0,
+      discountType: "EMPTY",
+      discountValue: 0,
+      recommendedValue: 0,
+      startUsage: parseInt(data.startUsage),
+      endUsage: parseInt(data.endUsage),
+      sparePartsEscalation: 0,
+      labourEscalation: 0,
+      miscEscalation: 0,
+      serviceEscalation: 0,
+      withBundleService: data.withBundleService,
       portfolio: {
         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
       },
       tenantId: 0,
-      createdAt: "2022-12-09T13:52:27.880Z",
       partsRequired: true,
-      serviceRequired: false,
       labourRequired: true,
-      miscRequired: true
+      serviceRequired: false,
+      miscRequired: true,
+      inclusionExclusion: true
     }
 
-    const itemPriceDataRes = await createItemPriceData(rObj)
+    // const rObj = {
+    //   itemPriceDataId: 0,
+    //   quantity: addPortFolioItem.quantity,
+    //   startUsage: addPortFolioItem.startUsage,
+    //   endUsage: addPortFolioItem.endUsage,
+    //   standardJobId: addPortFolioItem.templateId,
+    //   repairKitId: addPortFolioItem.repairOption,
+    //   templateDescription: addPortFolioItem.templateDescription?.value,
+    //   repairOption: "",
+    //   additional: "",
+    //   partListId: "",
+    //   serviceEstimateId: "",
+    //   numberOfEvents: addPortFolioItem?.numberOfEvents,
+    //   priceMethod: "LIST_PRICE",
+    //   priceType: "FIXED",
+    //   listPrice: 0,
+    //   priceEscalation: "",
+    //   calculatedPrice: 0,
+    //   flatPrice: 0,
+    //   discountType: "",
+    //   year: addPortFolioItem.year?.value,
+    //   noOfYear: addPortFolioItem.noOfYear,
+    //   sparePartsPrice: 0,
+    //   sparePartsPriceBreakDownPercentage: 0,
+    //   servicePrice: 0,
+    //   labourPrice: 0,
+    //   labourPriceBreakDownPercentage: 0,
+    //   miscPrice: 0,
+    //   miscPriceBreakDownPercentage: 0,
+    //   totalPrice: 0,
+    //   netService: 0,
+    //   portfolio: {
+    //     portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+    //   },
+    //   tenantId: 0,
+    //   createdAt: "2022-12-09T13:52:27.880Z",
+    //   partsRequired: true,
+    //   serviceRequired: false,
+    //   labourRequired: true,
+    //   miscRequired: true
+    // }
+
+    const itemPriceDataRes = await createItemPriceData(newPriceObj)
 
     setItemPriceData(itemPriceDataRes.data)
-    handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
+    // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
     setTempBundleService1([]);
     setTempBundleService2([]);
     setTempBundleService3([]);
-    // console.log("addPortfolioItem : ", addPortFolioItem);
+    console.log("addPortfolioItem : ", addPortFolioItem);
   };
   const getPriceCalculatorDataFun = (data) => {
     if (bundleServicePriceCalculator) {
@@ -15164,6 +15387,7 @@ export function CreatePortfolio(props) {
                       compoFlag="ITEM"
                       setBundleServiceNeed={setBundleServiceNeed}
                       createdBundleItems={createdBundleItems}
+                      portfolioDataId={portfolioId}
                     />
                   </> :
                   <>

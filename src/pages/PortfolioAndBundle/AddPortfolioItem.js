@@ -75,6 +75,8 @@ import {
 
 
 const AddPortfolioItem = (props) => {
+
+  console.log("AddPortfolioItem props data is : ", props)
   const [tabs, setTabs] = useState("itemSummary");
   const [subTabs, setSubTabs] = useState("A");
   const [editable, setEditable] = useState(
@@ -932,8 +934,9 @@ const AddPortfolioItem = (props) => {
     numberOfEvents: "",
     templateId: "",
     templateDescription: "",
-    repairOption: "",
+    relatedKit: "",
     kitDescription: "",
+    repairOption: "",
     strategyTask: "",
     year: "",
     noOfYear: "1",
@@ -948,6 +951,7 @@ const AddPortfolioItem = (props) => {
     startUsage: "",
     endUsage: "",
     usageType: "",
+    withBundleService: false,
   });
 
   const [bundleFlagType, setBundleFlagType] = useState("");
@@ -1277,6 +1281,10 @@ const AddPortfolioItem = (props) => {
     if (props.setBundleServiceNeed !== undefined) {
       props.setBundleServiceNeed(e.target.checked)
       setNoNeedBundleService(e.target.checked);
+      setAddportFolioItem({
+        ...addPortFolioItem,
+        withBundleService: e.target.checked,
+      })
     }
   }
 
@@ -1293,7 +1301,7 @@ const AddPortfolioItem = (props) => {
   }
   // console.log("categoryList --- ", categoryList)
 
-  const TabsEnableDisabledFun = async () => {
+  const handleSummaryAndTemplateTabs = async () => {
 
     try {
       if (tabs == "itemSummary") {
@@ -1301,6 +1309,11 @@ const AddPortfolioItem = (props) => {
         console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId)
         console.log("addPortFolioItem.repairOption : ", addPortFolioItem.repairOption)
         if ((props.compoFlag === "ITEM")) {
+
+          if ((props.portfolioDataId == "") ||
+            (props.portfolioDataId == undefined)) {
+            throw "Please Create Portfolio First, then you will Add Item";
+          }
 
           if ((addPortFolioItem.name == "") ||
             (addPortFolioItem.name == undefined)) {
@@ -1348,11 +1361,10 @@ const AddPortfolioItem = (props) => {
           // }
 
 
-          if ((addPortFolioItem.numberOfEvents == "") ||
-            (addPortFolioItem.numberOfEvents == undefined)) {
-            throw "No of Events is a required field, you can’t leave it blank";
-          }
-
+          // if ((addPortFolioItem.numberOfEvents == "") ||
+          //   (addPortFolioItem.numberOfEvents == undefined)) {
+          //   throw "No of Events is a required field, you can’t leave it blank";
+          // }
 
         }
 
@@ -1426,6 +1438,11 @@ const AddPortfolioItem = (props) => {
         }
         if ((addPortFolioItem.templateId !== "")) {
           if ((props.compoFlag === "ITEM")) {
+
+            if ((props.portfolioDataId == "") ||
+              (props.portfolioDataId == undefined)) {
+              throw "Please Create Portfolio First, then you will Add Item";
+            }
             if (noNeedBundleService) {
               props.setTabs("5");
               props.getAddPortfolioItemDataFun(addPortFolioItem);
@@ -1761,11 +1778,23 @@ const AddPortfolioItem = (props) => {
   const handleAddPortfolioSave = async () => {
 
     try {
+
+      if ((props.compoFlag === "ITEM")) {
+        if ((props.portfolioDataId == "") ||
+          (props.portfolioDataId == undefined)) {
+          throw "Please Create Portfolio First, then you will Add Item";
+        }
+      }
+
       if (addPortFolioItem.repairOption == "") {
         throw "you can’t leave blank related Kit field";
       }
 
       if ((props.compoFlag === "ITEM")) {
+        if ((props.portfolioDataId == "") ||
+          (props.portfolioDataId == undefined)) {
+          throw "Please Create Portfolio First, then you will Add Item";
+        }
         if (noNeedBundleService) {
           props.setTabs("5");
           props.getAddPortfolioItemDataFun(addPortFolioItem);
@@ -3847,7 +3876,7 @@ const AddPortfolioItem = (props) => {
                         for="exampleInputEmail1"
                       >
                         {/* REPAIR OPTION */}
-                        RELATED KI
+                        RELATED KIT
                       </label>
                       {props.compoFlag === "itemEdit" ?
                         <>
@@ -4129,7 +4158,7 @@ const AddPortfolioItem = (props) => {
             <Link
               to={undefined}
               className="btn cursor bg-primary text-white border mr-4"
-              onClick={TabsEnableDisabledFun}
+              onClick={handleSummaryAndTemplateTabs}
             >
               Save & Next
             </Link>
@@ -4143,7 +4172,7 @@ const AddPortfolioItem = (props) => {
               // onClick={() => {
               //   tabs < 3 && setTabs((prev) => `${ parseInt(prev) + 1 } `);
               // }}
-              onClick={TabsEnableDisabledFun}
+              onClick={handleSummaryAndTemplateTabs}
             >
               Save & Next
             </Link>
