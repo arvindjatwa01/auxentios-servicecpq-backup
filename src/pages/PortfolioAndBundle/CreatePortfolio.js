@@ -317,7 +317,7 @@ export function CreatePortfolio(props) {
     // { label: "Surcharge Percentage", value: "PERCENTAGE" },
     // { label: "Surcharge Dollar", value: "ABSOLUTE", },
     { label: "Surcharge %", value: "PERCENTAGE" },
-    { label: "Surcharge $", value: "ABSOLUTE", },
+    { label: "Surcharge $", value: "ABSOLoptionalsUTE", },
   ])
 
 
@@ -387,6 +387,11 @@ export function CreatePortfolio(props) {
     machineType: null,
     marchineDate: new Date(),
   });
+
+  const [optionalPopup, setOptionalPopup] = useState(false)
+  const PopupOptionalShow = () => {
+    setOptionalPopup(true)
+ }
 
   const [strategyData, setStrategyData] = useState({
     strategyTask: null,
@@ -10483,10 +10488,25 @@ export function CreatePortfolio(props) {
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
+                        <a href={undefined} className="form-group cursor" onClick={PopupOptionalShow}>
+                          {/* <a className="input-search"><SearchIcon style={{ fontSize: "34px" }} /></a> */}
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                OPTIONALS
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Optionals"
+                                value={stratgyOptionalsKeyValue}
+                              />
+                            </a>
+                          {/* <div className="form-group">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              htmlFor="exampleInputEmail1"
                             >
                               OPTIONALS
                             </label>
@@ -10495,10 +10515,11 @@ export function CreatePortfolio(props) {
                               options={strategyOptionals}
                               className="text-primary"
                               value={stratgyOptionalsKeyValue}
+                              onClick={PopupOptionalShow}
                               onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                            // options={rTimeList}
+                          
                             />
-                          </div>
+                          </div> */}
                         </div>
                         <div className="col-md-4 col-sm-4">
                           <div className="form-group">
@@ -17776,6 +17797,35 @@ export function CreatePortfolio(props) {
                     <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button> */}
         </Modal.Footer>
       </Modal>
+      <Modal show={optionalPopup} onHide={() => setOptionalPopup(false)} size="s"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            <Modal.Header className="border-none align-items-center">
+               <Modal.Title><b>Select Optional Services</b></Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+               <div className=' p-2'>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className=" d-flex align-items-center card p-2">
+                        <div class="checkbox mr-3">
+                          <input type="checkbox" value=""></input>
+                        </div>
+                        <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p>
+                      </div>
+                    </div>
+                  </div>
+               </div>
+            </Modal.Body>
+            {/* <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer> */}
+         </Modal>
 
       <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
         <div class="modal-dialog" role="document">

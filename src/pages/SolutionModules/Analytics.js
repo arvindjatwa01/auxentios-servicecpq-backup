@@ -62,7 +62,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import penIcon from "../../assets/images/pen.png";
 
-import $ from "jquery"
+import $, { data } from "jquery"
 import { useHistory } from 'react-router-dom';
 import {
    createPortfolio,
@@ -3793,7 +3793,7 @@ export const Analytics = () => {
 
          {/* New Flow Work On Create New Button */}
 
-         <Modal size="xl"
+         <Modal
             aria-labelledby="contained-modal-title-vcenter"
             centered>
             {/* <Modal.Header closeButton>
@@ -3964,7 +3964,7 @@ export const Analytics = () => {
                            <Button
                               className='btn bg-primary text-white py-2'
                               style={{ textTransform: 'none' }}
-                              onClick={handleSearchPortfolioTemplate}
+                           // onClick={handleSearchPortfolioTemplate}
                            >
                               Continue <ArrowForwardIosIcon className="ml-2" />
                            </Button>
@@ -3975,9 +3975,9 @@ export const Analytics = () => {
             </Modal.Body>
          </Modal>
          <Modal
-            show={searchPortfolioTemplate}
-            onHide={() => setSearchPortfolioTemplate(false)}
-            size="md"
+            // show={searchPortfolioTemplate}
+            // onHide={() => setSearchPortfolioTemplate(false)}
+            // size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered>
             <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
@@ -4069,25 +4069,25 @@ export const Analytics = () => {
             </Modal.Body>
          </Modal>
 
-         <Modal show={openTemplateSerachModelBox} onHide={() => setOpenTemplatesSearchModelBox(false)} size="xl"
-            aria-labelledby="contained-modal-title-vcenter">
+         <Modal
+            show={searchPortfolioTemplate}
+            onHide={() => setSearchPortfolioTemplate(false)}
+            size="md"
+            // show={openTemplateSerachModelBox} onHide={() => setOpenTemplatesSearchModelBox(false)} 
+            // size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+         >
+            <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
+               <Modal.Title><b>Search Portfolio Template</b></Modal.Title>
+               <button className="btn text-white bg-primary">Guided Solution</button>
+            </Modal.Header>
 
             <Modal.Body className="">
-               <div className="col-md-12">
-                  <div className="row">
-                     <div className="col-md-9">Pre-Configure Solution</div>
-                     {/* <div className="col-md-3">
-                        <div className="mx-0 text-right">
-                           <Button className="btn text-white bg-primary px-3 text-capitalize" onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</Button>
-                        </div>
-                     </div> */}
-                  </div>
-               </div>
-               <div className="bg-light-dark w-100 border-radius-10 p-3 mt-3">
+               <div className=" w-100 border-radius-10 mt-3">
                   <div className="d-flex">
                      <div className="w-100">
                         <div className="maintableheader bg-white border-radius-10 p-2 h-100">
-                           <RadioGroup className='my-2'
+                           <RadioGroup className='my-2 row'
                               row
                               aria-labelledby="demo-form-control-label-placement"
                               name="position"
@@ -4095,8 +4095,8 @@ export const Analytics = () => {
                               value={selectTypeOfSolution}
                               onChange={handleTypeOfSolution}
                            >
-                              <div className="w-50 customFormControlLabel ">
-                                 <div className=" m-0 mb-3  p-2 card py-4 align-itemsstart">
+                              <div className="w-50 customFormControlLabel col-md-6 ">
+                                 <div className=" m-0 mb-3 bg-light-dark p-2 card py-4 align-itemsstart" style={{ height: "160px" }}>
                                     <FormControlLabel
                                        className=" "
                                        value="0"
@@ -4110,8 +4110,8 @@ export const Analytics = () => {
                                     />
                                  </div>
                               </div>
-                              <div className="w-50 customFormControlLabel">
-                                 <div className=" m-0 mb-3  p-2 card py-4 align-itemsstart ">
+                              <div className="w-50 customFormControlLabel col-md-6">
+                                 <div className=" m-0 mb-3 bg-light-dark p-2 card py-4 align-itemsstart " style={{ height: "160px" }}>
                                     <FormControlLabel
                                        className=""
                                        value="1"
@@ -4128,10 +4128,10 @@ export const Analytics = () => {
                            </RadioGroup>
                         </div>
                      </div>
-                     <div className="align-items-center d-flex px-2">
+                     {/* <div className="align-items-center d-flex px-2">
                         <p>OR</p>
-                     </div>
-                     <div className="w-50">
+                     </div> */}
+                     {/* <div className="w-50">
                         <div className="maintableheader bg-white border-radius-10 p-2 h-100">
                            <RadioGroup className='my-2'
                               row
@@ -4158,7 +4158,7 @@ export const Analytics = () => {
                               </div>
                            </RadioGroup>
                         </div>
-                     </div>
+                     </div> */}
                   </div>
                </div>
 
@@ -4336,18 +4336,115 @@ export const Analytics = () => {
                   }
 
                   {/* Portfolio Templates Search Result Master & Selected Data Starting */}
-
+                  {console.log("222222222222222222221: ", portfolioTempMasterData)}
                   {solutionValue == 0 ? <>
 
                      {loadingStatus === "01" ? ("loading") :
+
                         <>
                            {portfolioTempMasterData.length > 0 ?
                               <>
                                  <div className="tableheader">
-                                    <ul class="submenu templateResultheading accordion mt-2" style={{ display: 'block' }}>
-                                       <li><a className="cursor result" >PORTFOLIO TEMPLATE RESULT</a></li>
+                                    <ul class="submenu border-custom templateResultheading accordion mt-0" style={{ display: 'block', borderTop: "none !important" }}>
+                                       <li className="border-bottom">
+                                          <div className="result py-4 px-3 font-size-14"><b>RESULTS</b></div>
+                                       </li>
+                                       {portfolioTempMasterData.map((row, i) => 
+                                          <li key={i} className="border-bottom">
+                                             <div className="d-flex align-items-center justify-content-between p-3">
+                                                <div className="d-flex align-items-center">
+                                                   <div class="checkbox mr-3">
+                                                      <input type="checkbox" value=""></input>
+                                                   </div>
+                                                   <div className="d-block">
+                                                      <p className="mb-0 font-size-14 text-black"><b>{row.name}</b></p>
+                                                      <p className="mb-0 font-size-12">{row.description}</p>
+                                                   </div>
+                                                </div>
+                                                
+                                                <div className="d-flex align-items-center">
+                                                   <div className={`px-3 py-2 mr-3 text-white 
+                                                      ${row.supportLevel == "STANDARD" ? "bg-green" :
+                                                      row.supportLevel == "PREMIUM" ? "bg-yellow" :
+                                                      row.supportLevel == "SUPERIOR" ? "bg-gray" : ""} font-size-12 border-radius-5`}>{row.supportLevel}
+                                                   </div>
+                                                   <div className="d-flex mr-3">
+                                                      <p className="mb-0 font-size-14">PRICE</p>
+                                                   </div>
+                                                   <div className="d-flex">
+                                                      <p className="mb-0 font-size-14 text-black">$2,000</p>
+                                                   </div>
+                                                </div>
+                                                
+                                             </div>
+                                          </li>
+
+                                       )}
+                                       {/* <li className="border-bottom">
+                                          <div className="d-flex align-items-center p-3">
+                                             <div className="d-flex mt-1 mr-3">
+                                                <div class="checkbox">
+                                                   <input type="checkbox" value=""></input>
+                                                </div>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <p className="mb-0 font-size-14 text-black"><b>PS123-CVA_STD_PLN</b></p>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <div className="px-3 py-2 text-white bg-green font-size-12 border-radius-5">Standard</div>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <p className="mb-0 font-size-14">PRICE</p>
+                                             </div>
+                                             <div className="d-flex">
+                                                <p className="mb-0 font-size-14 text-black">$2,000</p>
+                                             </div>
+                                          </div>
+                                       </li>
+                                       <li className="border-bottom">
+                                          <div className="d-flex align-items-center p-3">
+                                             <div className="d-flex mt-1 mr-3">
+                                                <div class="checkbox">
+                                                   <input type="checkbox" value=""></input>
+                                                </div>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <p className="mb-0 font-size-14 text-black"><b>PS123-CVA_PREM_PLN</b></p>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <div className="px-3 py-2 text-white bg-yellow font-size-12 border-radius-5">Standard</div>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <p className="mb-0 font-size-14">PRICE</p>
+                                             </div>
+                                             <div className="d-flex">
+                                                <p className="mb-0 font-size-14 text-black">$3,000</p>
+                                             </div>
+                                          </div>
+                                       </li>
+                                       <li className="bg-primary">
+                                          <div className="d-flex align-items-center p-3">
+                                             <div className="d-flex mt-1 mr-3">
+                                                <div class="checkbox">
+                                                   <input type="checkbox" value=""></input>
+                                                </div>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <p className="mb-0 font-size-14 text-white"><b>PS123-CVA_SUPER_PLAN</b></p>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <div className="px-3 py-2 text-white bg-gray font-size-12 border-radius-5">Standard</div>
+                                             </div>
+                                             <div className="d-flex mr-5">
+                                                <p className="mb-0 font-size-14 text-white">PRICE</p>
+                                             </div>
+                                             <div className="d-flex">
+                                                <p className="mb-0 font-size-14 text-white">$2,600</p>
+                                             </div>
+                                          </div>
+                                       </li> */}
                                     </ul>
-                                    <DataTable
+                                    {/* <DataTable
                                        className=""
                                        title=""
                                        columns={portfolioTemplatesMasterColumn}
@@ -4356,7 +4453,7 @@ export const Analytics = () => {
                                        selectableRows
                                        onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                                        pagination
-                                    />
+                                    /> */}
                                     {/* {portfolioTempFlagIs === true ?
                                     <>
                                        <div className="m-2 text-right">

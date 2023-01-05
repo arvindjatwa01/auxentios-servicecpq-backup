@@ -3070,7 +3070,7 @@ nav.main-menu li.active>a,
 .tableheader .templateResultheading {
   width: 100%;
   margin: 30px auto 20px;
-  border-radius: 10px 10px 10px 10px !important;
+  border-radius: 0 0 20px 20px !important;
   overflow: hidden;
 }
 
@@ -3843,3 +3843,7 @@ input[type="checkbox"]:checked:after {
 }
 .modal-md{max-width: 970px !important;}
 .width-400{width: 400px !important;}
+.tableheader .border-custom{border-bottom: 1px solid #cfcece !important;
+border-right: 1px solid #cfcece !important;
+border-left: 1px solid #cfcece !important;
+border-top: none !important;}
