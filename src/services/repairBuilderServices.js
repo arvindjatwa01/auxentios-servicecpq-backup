@@ -7,7 +7,6 @@ import {
   REPAIR_PART_OF_PARTLIST,
   SEGMENT_OPERATION,
   BUILDER_SEGMENT,
-  CREATE_BUILDER_VERSION,
   CREATE_REPAIR_BUILDER,
   FETCH_BUILDER_DETAILS,
   FETCH_BUILDER_VERSION_DETAILS,
@@ -33,6 +32,9 @@ import {
   CONSUMABLE_ITEM,
   CREATE_KIT,
   FETCH_BASE_PRICE,
+  CREATE_PARTLIST_BUILDER_VERSION,
+  CREATE_BUILDER_VERSION,
+  CREATE_STANDARD_JOB,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 
@@ -71,7 +73,6 @@ export const createBuilder = (data) => {
   });
 };
 
-
 //Create Kit
 export const createKIT = (builderId, data) => {
   console.log("service repairbuilder > createKIT called...");
@@ -98,6 +99,31 @@ export const createKIT = (builderId, data) => {
   });
 };
 
+//Create Standard Job
+export const createStandardJob = (builderId, data) => {
+  console.log("service repairbuilder > createStandardJob called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CREATE_STANDARD_JOB(builderId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> createStandardJob response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("createStandardJob > axios err=", err);
+          reject("Error in createStandardJob axios!");
+        });
+    } catch (error) {
+      console.error("createStandardJob general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 //Create repair Segment for a builder
 export const createSegment = (builderId, data) => {
@@ -203,7 +229,6 @@ export const FetchServiceHeader = (operationId) => {
   });
 };
 
-
 //fetch base Price for consumable, ext header and misc
 export const FetchBasePrice = (serviceId) => {
   console.log("service repairbuilder > FetchBasePrice called...");
@@ -256,7 +281,6 @@ export const FetchLaborforService = (serviceId) => {
   });
 };
 
-
 //fetch labor items
 export const FetchLaborItems = (laborId) => {
   console.log("service repairbuilder > FetchLaborItems called...");
@@ -283,14 +307,13 @@ export const FetchLaborItems = (laborId) => {
   });
 };
 
-
 //Remove labor item
 export const RemoveLaborItem = (laborId, laborItemId) => {
   console.log("service repairbuilder > removeLaborItem called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .delete(LABOR_ITEM(laborId)+`/${laborItemId}`, config)
+        .delete(LABOR_ITEM(laborId) + `/${laborItemId}`, config)
         .then((res) => {
           console.log("repairbuilder -> removeLaborItem response: ", res);
           if (res.status === 200) {
@@ -310,14 +333,13 @@ export const RemoveLaborItem = (laborId, laborItemId) => {
   });
 };
 
-
 //Remove consumable item
 export const RemoveConsumableItem = (consumableId, consumableItemId) => {
   console.log("service repairbuilder > RemoveConsumableItem called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .delete(CONSUMABLE_ITEM(consumableId)+`/${consumableItemId}`, config)
+        .delete(CONSUMABLE_ITEM(consumableId) + `/${consumableItemId}`, config)
         .then((res) => {
           console.log("repairbuilder -> RemoveConsumableItem response: ", res);
           if (res.status === 200) {
@@ -343,7 +365,7 @@ export const RemoveExtWorkItem = (extWorkId, extWorkItemId) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .delete(EXTWORK_ITEM(extWorkId)+`/${extWorkItemId}`, config)
+        .delete(EXTWORK_ITEM(extWorkId) + `/${extWorkItemId}`, config)
         .then((res) => {
           console.log("repairbuilder -> RemoveExtWorkItem response: ", res);
           if (res.status === 200) {
@@ -371,7 +393,10 @@ export const FetchConsumableforService = (serviceId) => {
       axios
         .get(CONSUMABLE_SERVICE(serviceId), config)
         .then((res) => {
-          console.log("repairbuilder -> FetchConsumableforService response: ", res);
+          console.log(
+            "repairbuilder -> FetchConsumableforService response: ",
+            res
+          );
           if (res.status === 200) {
             resolve(res.data);
           } else {
@@ -423,7 +448,10 @@ export const FetchExtWorkforService = (serviceId) => {
       axios
         .get(EXTWORK_SERVICE(serviceId), config)
         .then((res) => {
-          console.log("repairbuilder -> FetchExtWorkforService response: ", res);
+          console.log(
+            "repairbuilder -> FetchExtWorkforService response: ",
+            res
+          );
           if (res.status === 200) {
             resolve(res.data);
           } else {
@@ -440,7 +468,6 @@ export const FetchExtWorkforService = (serviceId) => {
     }
   });
 };
-
 
 //fetch ext work items
 export const FetchExtWorkItems = (extWorkId) => {
@@ -579,7 +606,10 @@ export const AddConsumableToService = (serviceId, data) => {
       axios
         .post(CONSUMABLE_SERVICE(serviceId), data, config)
         .then((res) => {
-          console.log("repairbuilder -> AddConsumableToService response: ", res);
+          console.log(
+            "repairbuilder -> AddConsumableToService response: ",
+            res
+          );
           if (res.status === 200) {
             resolve(res.data);
           } else {
@@ -753,7 +783,6 @@ export const addPartlist = (builderId, data) => {
   });
 };
 
-
 //Update builder with customer data
 export const updateBuilderCustomer = (builderId, data) => {
   console.log("service Repair > updateBuilderCustomer called...");
@@ -843,7 +872,7 @@ export const updateBuilderGeneralDet = (builderId, data) => {
       axios
         .put(UPDATE_REPAIR_GENERAL_DETAILS(builderId), data, config)
         .then((res) => {
-          console.log("updateBuilderGeneralDet > axios res=", res); 
+          console.log("updateBuilderGeneralDet > axios res=", res);
           if (res.status === 200) {
             resolve(res.data);
           } else {
@@ -903,7 +932,7 @@ export const addPartToPartList = (partListId, data) => {
           } else {
             console.log("Error Status:", res.status);
             reject("Error in addPartToPartList axios!");
-          }          
+          }
         })
         .catch((err) => {
           console.log("addPartToPartList > axios err=", err);
@@ -922,7 +951,7 @@ export const RemoveSparepart = (partlistId, sparePartId) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .delete(REPAIR_PART_OF_PARTLIST(partlistId)+`/${sparePartId}`, config)
+        .delete(REPAIR_PART_OF_PARTLIST(partlistId) + `/${sparePartId}`, config)
         .then((res) => {
           console.log("repairbuilder -> RemoveSparepart response: ", res);
           if (res.status === 200) {
@@ -950,13 +979,16 @@ export const addMultiPartsToPartList = (partListId, data) => {
       axios
         .post(ADD_REPAIR_MULTI_PARTS_TO_PARTLIST(partListId), data, config)
         .then((res) => {
-          console.log("repairbuilder -> addMultiPartsToPartList response: ", res);
+          console.log(
+            "repairbuilder -> addMultiPartsToPartList response: ",
+            res
+          );
           if (res.status === 200) {
             resolve(res.data);
           } else {
             console.log("Error Status:", res.status);
             reject(res.data);
-          }          
+          }
         })
         .catch((err) => {
           console.log("addPartToPartList > axios err=", err);
@@ -983,7 +1015,7 @@ export const uploadPartsToPartlist = (partListId, file) => {
           } else {
             console.log("Error Status:", res.status);
             reject("Error in uploadParts axios!");
-          }          
+          }
         })
         .catch((err) => {
           console.log("addPartToPartList > axios err=", err);
@@ -997,7 +1029,7 @@ export const uploadPartsToPartlist = (partListId, file) => {
 };
 
 //update status of the builder (Active, Draft, Revised, Archived)
-export const updateBuilderStatus =  (builderId, status) => {
+export const updateBuilderStatus = (builderId, status) => {
   console.log("RepairBuilder > updateBuilderStatus called...");
   return new Promise((resolve, reject) => {
     try {
@@ -1005,10 +1037,8 @@ export const updateBuilderStatus =  (builderId, status) => {
         .put(UPDATE_REPAIR_STATUS(builderId, status), {}, config)
         .then((res) => {
           console.log("updateBuilderStatus > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject('Error occurred while calling updateBuilderStatus');
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling updateBuilderStatus");
         })
         .catch((err) => {
           console.log("updateBuilderStatus > axios err=", err);
@@ -1021,9 +1051,31 @@ export const updateBuilderStatus =  (builderId, status) => {
   });
 };
 
+//Create a new partlist builder version
+export const createPartlistBuilderVersion = (builderId, description) => {
+  console.log("RepairBuilder > createVersion called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CREATE_PARTLIST_BUILDER_VERSION(builderId), description, config)
+        .then((res) => {
+          console.log("createVersion > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("createVersion > axios err=", err);
+          reject("Error in createVersion axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > createVersion, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 //Create a new builder version
-export const createBuilderVersion =  (builderId, description) => {
+export const createBuilderVersion = (builderId, description) => {
   console.log("RepairBuilder > createVersion called...");
   return new Promise((resolve, reject) => {
     try {
@@ -1031,10 +1083,8 @@ export const createBuilderVersion =  (builderId, description) => {
         .post(CREATE_BUILDER_VERSION(builderId), description, config)
         .then((res) => {
           console.log("createVersion > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject(res.data);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
         })
         .catch((err) => {
           console.log("createVersion > axios err=", err);
@@ -1048,7 +1098,7 @@ export const createBuilderVersion =  (builderId, description) => {
 };
 
 //Fetch Builder Details
-export const fetchBuilderDetails =  (builderId) => {
+export const fetchBuilderDetails = (builderId) => {
   console.log("RepairBuilder > fetchBuilderDetails called...");
   return new Promise((resolve, reject) => {
     try {
@@ -1056,10 +1106,8 @@ export const fetchBuilderDetails =  (builderId) => {
         .get(FETCH_BUILDER_DETAILS(builderId), config)
         .then((res) => {
           console.log("fetchBuilderDetails > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject('Error occurred while calling fetchBuilderDetails');
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchBuilderDetails");
         })
         .catch((err) => {
           console.log("fetchBuilderDetails > axios err=", err);
@@ -1073,7 +1121,7 @@ export const fetchBuilderDetails =  (builderId) => {
 };
 
 //Fetch parts from partlist
-export const fetchPartsFromPartlist =  (partlistId, query) => {
+export const fetchPartsFromPartlist = (partlistId, query) => {
   console.log("RepairBuilder > fetchPartsFromPartlist called...");
   return new Promise((resolve, reject) => {
     try {
@@ -1081,10 +1129,8 @@ export const fetchPartsFromPartlist =  (partlistId, query) => {
         .get(FETCH_PARTS_OF_PARTLIST(partlistId, query), config)
         .then((res) => {
           console.log("fetchPartsFromPartlist > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject('Error occurred while calling fetchPartsFromPartlist');
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchPartsFromPartlist");
         })
         .catch((err) => {
           console.log("fetchPartsFromPartlist > axios err=", err);
@@ -1098,7 +1144,7 @@ export const fetchPartsFromPartlist =  (partlistId, query) => {
 };
 
 //Fetch partlist from builder
-export const fetchPartlistFromBuilder =  (builderId) => {
+export const fetchPartlistFromBuilder = (builderId) => {
   console.log("RepairBuilder > fetchPartlistFromBuilder called...");
   return new Promise((resolve, reject) => {
     try {
@@ -1106,25 +1152,25 @@ export const fetchPartlistFromBuilder =  (builderId) => {
         .get(FETCH_REPAIR_BUILDER_PARTLIST(builderId), config)
         .then((res) => {
           console.log("fetchPartlistFromBuilder > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject('Error occurred while calling fetchPartlistFromBuilder');
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchPartlistFromBuilder");
         })
         .catch((err) => {
           console.log("fetchPartlistFromBuilder > axios err=", err);
           reject("Error in fetchPartlistFromBuilder axios!");
         });
     } catch (error) {
-      console.error("in RepairBuilder > fetchPartlistFromBuilder, Err===", error);
+      console.error(
+        "in RepairBuilder > fetchPartlistFromBuilder, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
 };
 
-
 //Fetch builder details from its versions
-export const fetchBuilderVersionDet =  (builderNo, versionNo) => {
+export const fetchBuilderVersionDet = (builderNo, versionNo) => {
   console.log("RepairBuilder > fetchBuilderVersionDet called...");
   return new Promise((resolve, reject) => {
     try {
@@ -1132,10 +1178,8 @@ export const fetchBuilderVersionDet =  (builderNo, versionNo) => {
         .get(FETCH_BUILDER_VERSION_DETAILS(builderNo, versionNo), config)
         .then((res) => {
           console.log("fetchBuilderVersionDet > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject('Error occurred while calling fetchBuilderVersionDet');
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchBuilderVersionDet");
         })
         .catch((err) => {
           console.log("fetchBuilderVersionDet > axios err=", err);
@@ -1148,34 +1192,35 @@ export const fetchBuilderVersionDet =  (builderNo, versionNo) => {
   });
 };
 
-
 //Fetch pricing Methods
-export const fetchBuilderPricingMethods =  (category) => {
+export const fetchBuilderPricingMethods = (category) => {
   console.log("RepairBuilder > fetchBuilderPricingMethods called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PRICING_COMMON_CONFIG+category, config)
+        .get(PRICING_COMMON_CONFIG + category, config)
         .then((res) => {
           console.log("fetchBuilderPricingMethods > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
+          if (res.status === 200) resolve(res.data);
           else
-            reject('Error occurred while calling fetchBuilderPricingMethods');
+            reject("Error occurred while calling fetchBuilderPricingMethods");
         })
         .catch((err) => {
           console.log("fetchBuilderPricingMethods > axios err=", err);
           reject("Error in fetchBuilderPricingMethods axios!");
         });
     } catch (error) {
-      console.error("in RepairBuilder > fetchBuilderPricingMethods, Err===", error);
+      console.error(
+        "in RepairBuilder > fetchBuilderPricingMethods, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
 };
 
 //Search builders
-export const builderSearch =  (searchStr) => {
+export const builderSearch = (searchStr) => {
   console.log("RepairBuilder > builderSearch called...");
   return new Promise((resolve, reject) => {
     try {
@@ -1183,10 +1228,8 @@ export const builderSearch =  (searchStr) => {
         .get(SEARCH_Builder(searchStr), config)
         .then((res) => {
           console.log("builderSearch > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject('Error occurred while fetching builders');
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while fetching builders");
         })
         .catch((err) => {
           console.log("builderSearch > axios err=", err);

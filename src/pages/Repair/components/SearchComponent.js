@@ -116,15 +116,15 @@ const SearchComponent = (props) => {
   };
 
   return (
-    <div className="d-flex justify-content-between align-items-center w-100 ">
+    <div className="d-flex justify-content-between align-items-center w-100 mr-4">
       <div className="row align-items-center m-0">
         {props.querySearchSelector.map((obj, i) => {
           return (
             <div
               className={
                 props.background === "white"
-                  ? "customselectPortfolio d-flex align-items-center mr-3 my-2 border-radius-6"
-                  : "customselect border-white d-flex align-items-center mr-3 my-2 border-radius-6"
+                  ? `customselectPortfolio ${(i < (props.querySearchSelector.length - 1)) ? "px-2" : ""} d-flex align-items-center mr-3 my-2 border-radius-6`
+                  : `customselect ${(i < (props.querySearchSelector.length - 1)) ? "px-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-6`
               }
               style={{ position: "relative", zIndex: 20 - i }}
               key={"query" + i}
@@ -159,7 +159,7 @@ const SearchComponent = (props) => {
                   <SearchIcon className="text-primary" />
                 </span>
                 <input
-                  className="custom-input-sleact"
+                  className="custom-input-sleact pr-1"
                   style={{ position: "relative" }}
                   type="text"
                   placeholder="Search string"
@@ -170,7 +170,7 @@ const SearchComponent = (props) => {
                 />
                 {props.querySearchSelector.length - 1 === i ? (
                   <div
-                    className="bg-primary text-white btn"
+                    className="btn bg-primary text-white"
                     onClick={() => props.searchClick(props.type)}
                   >
                     <span className="mr-2">

@@ -21,22 +21,28 @@ import $ from "jquery";
 import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
 import {
+  APPLICATION_OPTIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
   FONT_STYLE_UNIT_SELECT,
+  LIFE_STAGE_OPTIONS,
   OPTIONS_USAGE,
+  TEMPLATE_VERSION_OPTIONS,
 } from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { IconButton, Menu, MenuItem, Rating, TextField } from "@mui/material";
 import Moment from "react-moment";
 import {
-  updateKITCoverage,
-  updateKITEstimation,
-  updateKITGeneralDet,
-  updateKITPrice,
-  updateKITStatus,
-} from "services/kitService";
+  updateTemplateCoverage,
+  updateTemplateEstimation,
+  updateTemplateGeneralDet,
+  updateTemplatePrice,
+  updateTemplateStatus,
+  fetchTemplateDetails,
+  updateTemplateUsage,
+  updateTemplateRating,
+} from "services/templateService";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { useAppSelector } from "app/hooks";
 import {
@@ -46,12 +52,12 @@ import {
 import QuerySearchComp from "./components/QuerySearchComp";
 import ServiceOnlyTemplateSegment from "./ServiceOnlyTemplateSegment";
 import ServiceOnlyTemplateOperation from "./ServiceOnlyTemplateOperation";
-import { fetchTemplateDetails } from "services/templateService";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import { customerSearch } from "services/searchServices";
 import ServiceOnlyTemplateEstimation from "./ServiceOnlyTemplateEstimation";
 import { fetchSegments } from "services/repairBuilderServices";
+import UpdateCoverageModal from "./components/UpdateCoverageModal";
 
 function ServiceOnlyTemplates(props) {
   const history = useHistory();
@@ -67,28 +73,12 @@ function ServiceOnlyTemplates(props) {
   const [value, setValue] = React.useState("estimation");
   const [templateDBId, setTemplateDBId] = useState("");
   const [version, setVersion] = useState({ value: "Gold", label: "Gold" });
-  const versionOptions = [
-    { value: "GOLD", label: "Gold" },
-    { value: "SILVER", label: "Silver" },
-    { value: "BRONZE", label: "Bronze" },
-  ];
-  const APPLICATION_OPTIONS = [
-    { value: "PREVENTIVE_MAINTENANCE", label: "Preventive Maintenance" },
-    { value: "MSCHEDULED_MAINTENANCE", label: "Scheduled Maintenance" },
-    { value: "COMPONENT_REPLACEMENT", label: "Component Replacement" },
-    { value: "OVERHAUL", label: "Overhaul" },
-    { value: "WARRANTY", label: "Warranty/Service Programs" },
-  ];
-  const LIFE_STAGE_OPTIONS = [
-    { value: "NEW", label: "New" },
-    { value: "POST_WARRANTY", label: "Post Warranty" },
-    { value: "MIDLIFE", label: "Midlife" },
-    { value: "END_OF_LIFE", label: "End of Life" },
-  ];
+
   const [selTemplateStatus, setSelTemplateStatus] = useState({
     value: "DRAFT",
     label: "Draft",
   });
+  const [updateCoverageModalOpen, setUpdateCoverageModalOpen] = useState(false);
   const [noOptionsModelCoverage, setNoOptionsModelCoverage] = useState(false);
   const [headerLoading, setHeaderLoading] = useState(false);
   const [templateId, setTemplateId] = useState("");
@@ -103,7 +93,7 @@ function ServiceOnlyTemplates(props) {
   };
   // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
-    await updateKITStatus(templateDBId, e.value)
+    await updateTemplateStatus(templateDBId, e.value)
       .then((result) => {
         setSelTemplateStatus(e);
         handleSnack("success", "Status has been updated!");
@@ -271,6 +261,15 @@ function ServiceOnlyTemplates(props) {
     };
     localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
   }, []);
+  const handleUpdateRating = (ratingValue) => {
+    console.log(ratingValue);
+    setRating(ratingValue);
+    // updateTemplateRating(templateDBId, ratingValue).then(result => {
+    //   handleSnack("success", "Status has been updated!");
+    // }).catch(err => {
+
+    // })
+  };
   const fetchAllDetails = (id) => {
     console.log(id);
     if (id) {
@@ -304,7 +303,9 @@ function ServiceOnlyTemplates(props) {
       builderStatusOptions.filter((x) => x.value === result.status)[0]
     );
     setVersion(
-      versionOptions.find((element) => element.value === result.version)
+      TEMPLATE_VERSION_OPTIONS.find(
+        (element) => element.value === result.version
+      )
     );
     // let versions = result.versionList?.map((versionNo) => ({
     //   value: versionNo,
@@ -325,7 +326,7 @@ function ServiceOnlyTemplates(props) {
       reference: result.reference,
       version: result.version,
       owner: result.owner,
-      customerID: result.customerID,
+      customerID: result.customerId,
       customerName: result.customerName,
     });
     setEstimationData({
@@ -348,6 +349,8 @@ function ServiceOnlyTemplates(props) {
       currency: currencyOptions.find(
         (element) => element.value === result.currency
       ),
+      netPriceLabor: result.totalLabourPrice,
+      netPriceMisc: result.totalMiscPrice,
     });
     setSelectedCoverageData(result.coverages ? result.coverages : []);
     setUsageData({
@@ -359,8 +362,10 @@ function ServiceOnlyTemplates(props) {
       lifeStage: LIFE_STAGE_OPTIONS.find(
         (element) => element.value === result.lifeStage
       ),
-      unit: result.unit
-        ? OPTIONS_USAGE.find((element) => element.value === result.unit)
+      unit: result.unitOfMeasure
+        ? OPTIONS_USAGE.find(
+            (element) => element.value === result.unitOfMeasure
+          )
         : OPTIONS_USAGE[0],
       application: APPLICATION_OPTIONS.find(
         (element) => element.value === result.application
@@ -614,8 +619,6 @@ function ServiceOnlyTemplates(props) {
             to="#"
             onClick={(e) => handleEditCoverageRow(e, row)}
             className="btn-svg text-white cursor mr-2"
-            data-toggle="modal"
-            data-target="#AddCoverage"
           >
             <svg
               version="1.1"
@@ -668,11 +671,14 @@ function ServiceOnlyTemplates(props) {
   };
 
   // Search Customer with customer ID
-  const handleCustSearch = async (searchCustfieldName, searchText) => {
+  const handleCustSearch = async (searchText) => {
     setSearchCustResults([]);
+    console.log(searchText);
     generalData.customerID = searchText;
     if (searchText) {
-      await customerSearch(searchCustfieldName + "~" + searchText)
+      await customerSearch(
+        "customerId~" + searchText + " OR fullName~" + searchText
+      )
         .then((result) => {
           if (result && result.length > 0) {
             setSearchCustResults(result);
@@ -682,6 +688,7 @@ function ServiceOnlyTemplates(props) {
           }
         })
         .catch((e) => {
+          console.log("ABCD");
           handleSnack("error", "Error occurred while searching the customer!");
         });
     }
@@ -726,6 +733,7 @@ function ServiceOnlyTemplates(props) {
       fleetSize: row.fleetSize,
     };
     setCoverageRowData(obj);
+    setUpdateCoverageModalOpen(true);
   };
 
   const updateEstData = () => {
@@ -738,7 +746,7 @@ function ServiceOnlyTemplates(props) {
       approver: estimationData.approvedBy,
       salesOffice: estimationData.salesOffice?.value,
     };
-    updateKITEstimation(templateDBId, data)
+    updateTemplateEstimation(templateDBId, data)
       .then((result) => {
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
@@ -759,11 +767,11 @@ function ServiceOnlyTemplates(props) {
       description: generalData.description,
       reference: generalData.reference,
       estimationNumber: generalData.estimationNo,
-      customerID: generalData.customerID,
+      customerId: generalData.customerID,
       customerName: generalData.customerName,
       owner: generalData.owner,
     };
-    updateKITGeneralDet(templateDBId, data)
+    updateTemplateGeneralDet(templateDBId, data)
       .then((result) => {
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
@@ -788,7 +796,7 @@ function ServiceOnlyTemplates(props) {
           ? pricingData.adjustedPrice
           : 0,
     };
-    updateKITPrice(templateDBId, data)
+    updateTemplatePrice(templateDBId, data)
       .then((result) => {
         // setValue("price");
         // fetchAllDetails(kitDBId, generalData.version);
@@ -806,44 +814,42 @@ function ServiceOnlyTemplates(props) {
 
   const updateUsageData = () => {
     let data = {
-      templateDBId,
+      id: templateDBId,
       application: usageData.application?.value,
       lifeStage: usageData.lifeStage?.value,
       revisionDate: usageData.revisionDate,
-
       articleNumber: usageData.articleNumber,
       startUsage: usageData.startUsage,
       endUsage: usageData.endUsage,
       usageInterval: usageData.usageInterval,
+      unitOfMeasure: usageData.unit?.value,
       validFrom: usageData.validFrom,
       validTo: usageData.validTo,
       component: usageData.component,
     };
-    // updateUsageDeatils(templateDBId, data)
-    //   .then((result) => {
-    setViewOnlyTab({ ...viewOnlyTab, usageViewOnly: true });
-    //     handleSnack("success", "Pricing details updated!");
-    //   })
-    //   .catch((err) => {
-    //     handleSnack(
-    //       "error",
-    //       "Error occurred while updating the usage details!"
-    //     );
-    //   });
+    updateTemplateUsage(templateDBId, data)
+      .then((result) => {
+        setViewOnlyTab({ ...viewOnlyTab, usageViewOnly: true });
+        handleSnack("success", "Usage details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the usage details!"
+        );
+      });
   };
   const handleUpdateCoverage = () => {
-    const newCoverageArr = selectedCoverageData.map((obj) => {
-      if (obj.id === coverageRowData.id) {
-        return { ...obj, ...coverageRowData };
-      }
-      return obj;
-    });
-    updateKITCoverage(templateDBId, newCoverageArr)
+    // coverageRowData.fleetSize = undefined;
+    updateTemplateCoverage(templateDBId, [coverageRowData])
       .then((res) => {
         setSelectedCoverageData(res.coverages);
+        handleSnack("success", "Coverages updated successfully");
+        setUpdateCoverageModalOpen(false);
       })
       .catch((e) => {
-        handleSnack("err", "Error occurred while updating the data");
+        handleSnack("error", "Error occurred while updating coverage details");
+        setUpdateCoverageModalOpen(false);
       });
   };
 
@@ -868,7 +874,7 @@ function ServiceOnlyTemplates(props) {
         prefix: coverage.prefix,
       })
     );
-    updateKITCoverage(templateDBId, data)
+    updateTemplateCoverage(templateDBId, data)
       .then((result) => {
         console.log("Successfully saved the coverage!", result);
         setSelectedCoverageData(result.coverages);
@@ -902,7 +908,7 @@ function ServiceOnlyTemplates(props) {
                   <Select
                     className="customselectbtn1"
                     onChange={(e) => handleVersionTemplate(e)}
-                    options={versionOptions}
+                    options={TEMPLATE_VERSION_OPTIONS}
                     value={version}
                   />
                 </div>
@@ -915,7 +921,14 @@ function ServiceOnlyTemplates(props) {
                     value={selTemplateStatus}
                   />
                 </div>
-                <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} />
+                <Rating
+                  value={rating}
+                  size="small"
+                  sx={{ ml: 2 }}
+                  onChange={(event, newValue) => {
+                    handleUpdateRating(newValue);
+                  }}
+                />
               </div>
             </div>
             <div className="d-flex">
@@ -1082,7 +1095,6 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    
                                     value={estimationData.preparedBy}
                                     name="preparedBy"
                                     onChange={handleEstimationDataChange}
@@ -1101,7 +1113,6 @@ function ServiceOnlyTemplates(props) {
                                     value={estimationData.approvedBy}
                                     name="approvedBy"
                                     onChange={handleEstimationDataChange}
-                                    
                                   />
                                 </div>
                               </div>
@@ -1153,7 +1164,6 @@ function ServiceOnlyTemplates(props) {
                                     value={estimationData.revisedBy}
                                     name="revisedBy"
                                     onChange={handleEstimationDataChange}
-                                    
                                   />
                                 </div>
                               </div>
@@ -1207,7 +1217,6 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={salesOfficeOptions}
-                                    
                                     value={estimationData.salesOffice}
                                     styles={FONT_STYLE_SELECT}
                                   />
@@ -1303,7 +1312,6 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
                                     id="desc-id"
-                                    
                                     maxLength={140}
                                     value={generalData.description}
                                     onChange={(e) =>
@@ -1364,7 +1372,6 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
                                     id="desc-id"
-                                    
                                     maxLength={140}
                                     value={generalData.reference}
                                     onChange={(e) =>
@@ -1385,7 +1392,6 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    
                                     disabled
                                     value={generalData.version}
                                   />
@@ -1424,7 +1430,6 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     className="form-control border-radius-10 text-primary"
-                                    
                                   />
                                 </div>
                               </div>
@@ -1436,7 +1441,6 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    
                                     value={generalData.owner}
                                     onChange={(e) =>
                                       setGeneralData({
@@ -1571,7 +1575,6 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={priceMethodOptions}
-                                    
                                     value={pricingData.priceMethod}
                                     styles={FONT_STYLE_SELECT}
                                   />
@@ -1592,7 +1595,6 @@ function ServiceOnlyTemplates(props) {
                                       )
                                     }
                                     className="form-control border-radius-10 text-primary"
-                                    
                                     value={
                                       pricingData.priceMethod?.value ===
                                       "FLAT_RATE"
@@ -1622,7 +1624,6 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={currencyOptions}
-                                    
                                     value={pricingData.currency}
                                     styles={FONT_STYLE_SELECT}
                                   />
@@ -1652,7 +1653,6 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    
                                     value={pricingData.netPriceLabor}
                                   />
                                 </div>
@@ -1666,7 +1666,6 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    
                                     value={pricingData.netPriceMisc}
                                   />
                                 </div>
@@ -1680,7 +1679,6 @@ function ServiceOnlyTemplates(props) {
                                     type="text"
                                     disabled
                                     className="form-control border-radius-10 text-primary"
-                                    
                                     value={pricingData.netPrice}
                                   />
                                 </div>
@@ -1872,7 +1870,6 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={APPLICATION_OPTIONS}
-                                    
                                     value={usageData.application}
                                     styles={FONT_STYLE_SELECT}
                                   />
@@ -1906,7 +1903,6 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    
                                     value={usageData.articleNumber}
                                     onChange={(e) =>
                                       setUsageData({
@@ -1929,7 +1925,6 @@ function ServiceOnlyTemplates(props) {
                                       type="text"
                                       id="startUsage"
                                       value={usageData.startUsage}
-                                      
                                       onChange={(e) =>
                                         setUsageData({
                                           ...usageData,
@@ -1967,7 +1962,6 @@ function ServiceOnlyTemplates(props) {
                                       type="text"
                                       id="endUsage"
                                       value={usageData.endUsage}
-                                      
                                       onChange={(e) => {
                                         setUsageData({
                                           ...usageData,
@@ -1996,12 +1990,11 @@ function ServiceOnlyTemplates(props) {
                                     <input
                                       type="text"
                                       class="form-control border-radius-10 text-primary"
-                                      
                                       value={usageData.usageInterval}
                                       onChange={(e) =>
                                         setUsageData({
                                           ...usageData,
-                                          usageInterval: e.target.interval,
+                                          usageInterval: e.target.value,
                                         })
                                       }
                                     />
@@ -2134,7 +2127,6 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    
                                     value={usageData.component}
                                     onChange={(e) =>
                                       setUsageData({
@@ -2272,7 +2264,7 @@ function ServiceOnlyTemplates(props) {
                               name: "segment",
                               templateDBId,
                               sId: element.id,
-                              templateStatus: selTemplateStatus?.value
+                              templateStatus: selTemplateStatus?.value,
                             })
                           }
                         >
@@ -2483,230 +2475,19 @@ function ServiceOnlyTemplates(props) {
             </div>
           </div>
         </div>
-        <div
-          className="modal fade"
-          id="AddCoverage"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div
-            className="modal-dialog modal-dialog-centered modal-lg"
-            role="document"
-          >
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Edit Coverage
-                </h5>
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="row input-fields">
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Make
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        name="make"
-                        placeholder="Auto Fill Search Model...."
-                        value={coverageRowData.make}
-                        defaultValue={coverageRowData.make}
-                        disabled
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Family
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        name="family"
-                        placeholder="Auto Fill Search Model...."
-                        value={coverageRowData.family}
-                        defaultValue={coverageRowData.family}
-                        disabled
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Model No
-                      </label>
-                      <SearchBox
-                        value={coverageRowData.model}
-                        onChange={(e) =>
-                          handleCoverageModelSearch("model", e.target.value)
-                        }
-                        type="model"
-                        result={searchCoverageModelResults}
-                        onSelect={handleCoverageModelSelect}
-                        noOptions={noOptionsModelCoverage}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Serial No Prefix
-                      </label>
-                      <Select
-                        // options={categoryList}
-                        options={querySearchModelPrefixOption}
-                        placeholder={coverageRowData.prefix}
-                        value={coverageRowData.prefix}
-                        defaultValue={coverageRowData.prefix}
-                        className="text-primary"
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            prefix: e.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Start Serial No
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        
-                        value={coverageRowData.startSerialNumber}
-                        defaultValue={coverageRowData.startSerialNumber}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            startSerialNumber: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        End Serial No
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        
-                        value={coverageRowData.endSerialNumber}
-                        defaultValue={coverageRowData.endSerialNumber}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            endSerialNumber: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Fleet
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        
-                        value={coverageRowData.fleet}
-                        defaultValue={coverageRowData.fleet}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            fleet: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Fleet Size
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        
-                        value={coverageRowData.fleetSize}
-                        defaultValue={coverageRowData.fleetSize}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            fleetSize: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn border w-100 bg-white"
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary w-100"
-                  onClick={handleUpdateCoverage}
-                >
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Coverage Update Modal  */}
+        <UpdateCoverageModal
+          modalOpen={updateCoverageModalOpen}
+          setModalOpen={setUpdateCoverageModalOpen}
+          coverageRowData={coverageRowData}
+          setCoverageRowData={setCoverageRowData}
+          querySearchModelPrefixOption={querySearchModelPrefixOption}
+          handleCoverageModelSearch={handleCoverageModelSearch}
+          searchCoverageModelResults={searchCoverageModelResults}
+          handleCoverageModelSelect={handleCoverageModelSelect}
+          noOptionsModelCoverage={noOptionsModelCoverage}
+          handleUpdateCoverage={handleUpdateCoverage}
+        />
       </div>
     </>
   );

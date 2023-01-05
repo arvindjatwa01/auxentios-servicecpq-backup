@@ -19,7 +19,7 @@ import copyIcon from "../../assets/icons/svg/Copy.svg";
 import DataTable from "react-data-table-component";
 import SearchIcon from "@mui/icons-material/Search";
 import $ from "jquery";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import FormGroup from "@mui/material/FormGroup";
 import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
@@ -52,7 +52,7 @@ import {
   updateKITGeneralDet,
   updateKITPrice,
   updateKITStatus,
-  RemoveKITSparepart
+  RemoveKITSparepart,
 } from "services/kitService";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import {
@@ -62,13 +62,11 @@ import {
 import { useAppSelector } from "app/hooks";
 import LoadingProgress from "./components/Loader";
 import SearchBox from "./components/SearchBox";
-import {
-  customerSearch,
-  sparePartSearch,
-} from "services/searchServices";
+import { customerSearch, sparePartSearch } from "services/searchServices";
 import Validator from "utils/validator";
 import Moment from "react-moment";
 import {
+  APPLICATION_OPTIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
   GRID_STYLE,
@@ -91,6 +89,7 @@ import AddNewSparepartModal from "./components/AddNewSparePart";
 import SearchComponent from "./components/SearchComponent";
 import { Typography } from "@material-ui/core";
 import { fetchPartsFromPartlist } from "services/repairBuilderServices";
+import UpdateCoverageModal from "./components/UpdateCoverageModal";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -139,6 +138,7 @@ function Kits(props) {
   const [searchCoverageModelResults, setSearchCoverageModelResults] = useState(
     []
   );
+  const [updateCoverageModalOpen, setUpdateCoverageModalOpen] = useState(false);
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
   const [selectedMasterData, setSelectedMasterData] = useState([]);
@@ -291,14 +291,6 @@ function Kits(props) {
     priceViewOnly: false,
   });
 
-  const APPLICATION_OPTIONS = [
-    { value: "ROUTINE_MAINTENANCE", label: "Routine Maintenance" },
-    { value: "GENERAL_REPAIR", label: "General Repair" },
-    { value: "MAINTENANCE_CONTRACTS", label: "Maintenance Contracts" },
-    { value: "SALES", label: "Sales" },
-    { value: "OTHERS", label: "Others" },
-  ];
-
   // Retrieve price methods
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
@@ -361,7 +353,7 @@ function Kits(props) {
         .then((result) => {
           populateHeader(result);
           setHeaderLoading(false);
-          setPartListId(result.partlistId)
+          setPartListId(result.partlistId);
           fetchPartsOfPartlist(
             result.partlistId,
             INITIAL_PAGE_NO,
@@ -377,7 +369,6 @@ function Kits(props) {
         });
     }
   };
-
 
   // Search Customer with customer ID
   const handleCustSearch = async (searchText) => {
@@ -1111,8 +1102,6 @@ function Kits(props) {
             to="#"
             onClick={(e) => handleEditCoverageRow(e, row)}
             className="btn-svg text-white cursor mr-2"
-            data-toggle="modal"
-            data-target="#AddCoverage"
           >
             <svg
               version="1.1"
@@ -1194,6 +1183,7 @@ function Kits(props) {
     };
     console.log(obj);
     setCoverageRowData(obj);
+    setUpdateCoverageModalOpen(true);
   };
 
   // Add the selected parts from search result to partlist
@@ -1262,7 +1252,7 @@ function Kits(props) {
     };
     addPartToKITPartList(partListId, data)
       .then((result) => {
-    handleAddPartClose();
+        handleAddPartClose();
         if (addPartModalTitle === "Add Part")
           handleSnack("success", `👏 New Spare Part has been added!`);
         else
@@ -1311,9 +1301,12 @@ function Kits(props) {
     updateKITCoverage(kitDBId, [coverageRowData])
       .then((res) => {
         setSelectedCoverageData(res.coverages);
+        handleSnack("success", "Coverages updated successfully");
+        setUpdateCoverageModalOpen(false);
       })
       .catch((e) => {
-        handleSnack("error", "Error occurred while updating the data");
+        handleSnack("error", "Error occurred while updating coverage details");
+        setUpdateCoverageModalOpen(false);
       });
   };
   const [show, setShow] = React.useState(false);
@@ -2545,7 +2538,7 @@ function Kits(props) {
                   />
                 </div>
               </div>
-              {(selKITStatus?.value === "DRAFT" ||
+              {/* {(selKITStatus?.value === "DRAFT" ||
                 selKITStatus?.value === "REVISED") && (
                 <div className="col-4">
                   <div className="text-right pl-3 py-3">
@@ -2556,15 +2549,9 @@ function Kits(props) {
                     >
                       Upload
                     </button>
-                    {/* <button
-                    onClick={() => setAddPartOpen(true)}
-                    className="btn bg-primary text-white "
-                  >
-                    + Add Part
-                  </button> */}
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
 
             <DataGrid
@@ -3163,202 +3150,19 @@ function Kits(props) {
             </div>
           </div>
         </div>
-        <div
-          className="modal fade"
-          id="AddCoverage"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div
-            className="modal-dialog modal-dialog-centered modal-lg"
-            role="document"
-          >
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Edit Coverage
-                </h5>
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="row input-fields">
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Make
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        name="make"
-                        placeholder="Auto Fill Search Model...."
-                        value={coverageRowData.make}
-                        defaultValue={coverageRowData.make}
-                        disabled
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Family
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        name="family"
-                        placeholder="Auto Fill Search Model...."
-                        value={coverageRowData.family}
-                        defaultValue={coverageRowData.family}
-                        disabled
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Model No
-                      </label>
-                      <SearchBox
-                        value={coverageRowData.model}
-                        onChange={(e) =>
-                          handleCoverageModelSearch("model", e.target.value)
-                        }
-                        type="model"
-                        result={searchCoverageModelResults}
-                        onSelect={handleCoverageModelSelect}
-                        noOptions={noOptionsModelCoverage}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Serial No Prefix
-                      </label>
-                      <Select
-                        // options={categoryList}
-                        options={querySearchModelPrefixOption}
-                        placeholder={coverageRowData.prefix}
-                        value={coverageRowData.prefix}
-                        defaultValue={coverageRowData.prefix}
-                        className="text-primary"
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            prefix: e.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Start Serial No
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        value={coverageRowData.startSerialNumber}
-                        defaultValue={coverageRowData.startSerialNumber}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            startSerialNumber: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        End Serial No
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        value={coverageRowData.endSerialNumber}
-                        defaultValue={coverageRowData.endSerialNumber}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            endSerialNumber: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Fleet
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        value={coverageRowData.fleet}
-                        defaultValue={coverageRowData.fleet}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            fleet: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500">
-                        Fleet Size
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        value={coverageRowData.fleetSize}
-                        defaultValue={coverageRowData.fleetSize}
-                        onChange={(e) =>
-                          setCoverageRowData({
-                            ...coverageRowData,
-                            fleetSize: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn border w-100 bg-white"
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary w-100"
-                  onClick={handleUpdateCoverage}
-                >
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Coverage Update Modal  */}
+        <UpdateCoverageModal
+          modalOpen={updateCoverageModalOpen}
+          setModalOpen={setUpdateCoverageModalOpen}
+          coverageRowData={coverageRowData}
+          setCoverageRowData={setCoverageRowData}
+          querySearchModelPrefixOption={querySearchModelPrefixOption}
+          handleCoverageModelSearch={handleCoverageModelSearch}
+          searchCoverageModelResults={searchCoverageModelResults}
+          handleCoverageModelSelect={handleCoverageModelSelect}
+          noOptionsModelCoverage={noOptionsModelCoverage}
+          handleUpdateCoverage={handleUpdateCoverage}
+        />
         <Modal
           show={searchResultOpen}
           onHide={handleSearchResClose}

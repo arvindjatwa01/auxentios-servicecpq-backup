@@ -1,13 +1,9 @@
 import { default as Select } from "react-select";
 import { Modal } from "@mui/material";
+import { TEMPLATE_VERSION_OPTIONS } from "../CONSTANTS";
 
 const CreateKIT = (props) => {
-  const versionOptions = [
-    { value: "GOLD", label: "Gold" },
-    { value: "SILVER", label: "Silver" },
-    { value: "BRONZE", label: "Bronze" },
-    { value: "STANDARD", label: "Standard" },
-  ];
+
 
   return (
     <Modal open={props.kitOpen} onClose={props.handleCloseKIT}>
@@ -15,7 +11,7 @@ const CreateKIT = (props) => {
         <div class="modal-content bg-white border-none">
           <div class="modal-header border-none">
             <h5 class="modal-title" id="exampleModalLabel">
-              KIT Create
+              Template Create
             </h5>
           </div>
           <p className="d-block px-3">
@@ -36,7 +32,7 @@ const CreateKIT = (props) => {
                   <Select
                     defaultValue={props.version}
                     onChange={(e) => props.setVersion(e)}
-                    options={versionOptions}
+                    options={TEMPLATE_VERSION_OPTIONS}
                     placeholder="Versions"
                   />
                 </div>
@@ -81,7 +77,7 @@ const CreateKIT = (props) => {
                 type="button"
                 class="btn pull-right border"
                 data-dismiss="modal"
-                onClick={props.handleCloseVersion}
+                onClick={props.handleCloseKIT}
               >
                 Cancel
               </button>

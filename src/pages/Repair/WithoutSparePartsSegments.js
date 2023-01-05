@@ -19,6 +19,8 @@ import SearchBox from "./components/SearchBox";
 import { NEW_SEGMENT } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
+import { Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/EditOutlined";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
@@ -145,8 +147,8 @@ function WithoutSpareParts(props) {
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
       title:
-        currentItem.jobCodeDescription && segmentData.description
-          ? currentItem.jobCodeDescription + " " + segmentData.description
+        currentItem.description && segmentData.description
+          ? currentItem.description + " " + segmentData.description
           : "",
     });
     setSearchJobCodeResults([]);
@@ -250,7 +252,7 @@ function WithoutSpareParts(props) {
           header: formatSegmentHeader(result),
         });
         // fetchSegmentsOfBuilder();
-        segments[segments.length - 1] = result;
+        segments[result.segmentNumber - 1] = result;
         setShowAddNewButton(true);
         setSegmentViewOnly(true);
         handleSnack(
@@ -262,6 +264,7 @@ function WithoutSpareParts(props) {
         handleSnack("error", "Error occurred while saving the segment data!");
       });
   };
+
   const loadNewSegmentUI = () => {
     setSegmentViewOnly(false);
     setSegmentData(newSegment);
@@ -271,18 +274,16 @@ function WithoutSpareParts(props) {
 
   const handleCancelSegment = () => {
     if (segments.length > 1) {
-      segments.splice(
-        segments.findIndex((a) => a.header === NEW_SEGMENT),
-        1
-      );
-      setSegmentData({
-        ...segments[segments.length - 1],
-        header: formatSegmentHeader(segments[segments.length - 1]),
-        // "Segment " +
-        // segments[segments.length - 1].segmentNumber +
-        // " - " +
-        // segments[segments.length - 1].description,
-      });
+      if (segmentData.header === NEW_SEGMENT) {
+        segments.splice(
+          segments.findIndex((a) => a.header === NEW_SEGMENT),
+          1
+        );
+        setSegmentData({
+          ...segments[segments.length - 1],
+          header: formatSegmentHeader(segments[segments.length - 1]),
+        });
+      }
       setShowAddNewButton(true);
       setSegmentViewOnly(true);
     } else {
@@ -342,21 +343,21 @@ function WithoutSpareParts(props) {
         <h5 className="d-flex align-items-center mb-0">
           <div className="" style={{ display: "contents" }}>
             <span className="mr-3 white-space">{segmentData.header}</span>
-            {/* <a
-              href={undefined}
-              className="btn-sm"
-              style={{ cursor: "pointer" }}
-            >
-              <i
-                className="fa fa-pencil"
-                aria-hidden="true"
-                onClick={() =>
-                  ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1
-                    ? makeHeaderEditable()
-                    : handleSnack("info", "Builder is active!")
-                }
-              ></i>
-            </a>{" "} */}
+            <div className="btn-sm cursor">
+              <Tooltip title="Edit">
+                <EditIcon
+                  onClick={() =>
+                    ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                    -1
+                      ? makeHeaderEditable()
+                      : handleSnack(
+                          "info",
+                          "Active BUILDER cannot be changed, change status to REVISE"
+                        )
+                  }
+                />
+              </Tooltip>
+            </div>
           </div>
           <div className="hr"></div>
         </h5>

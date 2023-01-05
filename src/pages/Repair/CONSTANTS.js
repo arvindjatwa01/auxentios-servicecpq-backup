@@ -94,12 +94,13 @@ export const KIT_SEARCH_Q_OPTIONS = [
   {
     label: "Status",
     value: "status",
+    type: "status"
   },
   {
     label: "Expiry Date",
     value: "expiryDate",
   },
-  { label: "Next Rivision Date", value: "nextRevisionDate" },
+  { label: "Next Rivision Date", value: "revisionDate", type: "date" },
   {
     label: "Application",
     value: "application",
@@ -304,3 +305,29 @@ export const MISC_PRICE_OPTIONS_NOLABOR = [
   { value: "PER_ON_TOTAL", label: "Percentage on Total" },
 ];
 
+export const STATUS_OPTIONS = [
+  { value: "DRAFT", label: "Draft" },
+  { value: "ACTIVE", label: "Active" },
+  { value: "REVISED", label: "Revised" },
+  { value: "ARCHIVED", label: "Archived" },
+];
+export const TEMPLATE_VERSION_OPTIONS = [
+  { value: "GOLD", label: "Gold" },
+  { value: "SILVER", label: "Silver" },
+  { value: "BRONZE", label: "Bronze" },
+  { value: "STANDARD", label: "Standard" },
+];
+
+export const APPLICATION_OPTIONS = [
+  { value: "PREVENTIVE_MAINTENANCE", label: "Preventive Maintenance" },
+  { value: "MSCHEDULED_MAINTENANCE", label: "Scheduled Maintenance" },
+  { value: "COMPONENT_REPLACEMENT", label: "Component Replacement" },
+  { value: "OVERHAUL", label: "Overhaul" },
+  { value: "WARRANTY", label: "Warranty/Service Programs" },
+];
+export const LIFE_STAGE_OPTIONS = [
+  { value: "NEW", label: "New" },
+  { value: "POST_WARRANTY", label: "Post Warranty" },
+  { value: "MIDLIFE", label: "Midlife" },
+  { value: "END_OF_LIFE", label: "End of Life" },
+];

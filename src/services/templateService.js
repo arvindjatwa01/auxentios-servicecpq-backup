@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_STATUS } from "./CONSTANTS";
+import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_SJ_COVERAGE, UPDATE_SJ_GENERAL_DETAIL, UPDATE_SJ_PRICE, UPDATE_SJ_STATUS, UPDATE_SJ_ESTIMATION, UPDATE_SJ_USAGE, UPDATE_SJ_RATING } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -13,140 +13,141 @@ const config = {
   // xsrfHeaderName: "X-XSRF-TOKEN",
 };
 
-//Update KIT with customer data
-export const updateKITCustomer = (kitId, data) => {
-    console.log("service KIT > updateKITCustomer called...");
+  
+  //Update Template with estimation data
+  export const updateTemplateEstimation = (templateId, data) => {
+    console.log("service Template > updateTemplateEstimation called...");
     return new Promise((resolve, reject) => {
       try {
         axios
-          .put(UPDATE_KIT_CUSTOMER(kitId), data, config)
+          .put(UPDATE_SJ_ESTIMATION(templateId), data, config)
           .then((res) => {
-            console.log("updateKITCustomer > axios res=", res);
+            console.log("updateTemplateEstimation > axios res=", res);
             if (res.status === 200) {
               resolve(res.data);
             } else {
-              console.log("Status:", res.status);
-              reject("Error in updateKITCustomer axios!");
+              console.log("Error Status:", res.status);
+              reject("Error in updateTemplateEstimation axios!");
             }
           })
           .catch((err) => {
-            console.log("updateKITCustomer axios err :", err);
-            reject("Error in updateKITCustomer axios!");
+            console.log("updateTemplateEstimation axios err :", err);
+            reject("Error in updateTemplateEstimation axios!");
           });
       } catch (error) {
-        console.error("Genreal Exception updateKITCustomer : ", error);
+        console.error("Genreal Exception updateTemplateEstimation : ", error);
         reject(SYSTEM_ERROR);
       }
     });
   };
   
-  //Update KIT with estimation data
-  export const updateKITEstimation = (kitId, data) => {
-    console.log("service KIT > updateKITEstimation called...");
+  //Update template with General Details data
+  export const updateTemplateGeneralDet = (templateId, data) => {
+    console.log("service Repair > updateTemplateGeneralDet called...");
     return new Promise((resolve, reject) => {
       try {
         axios
-          .put(UPDATE_KIT_ESTIMATION(kitId), data, config)
+          .put(UPDATE_SJ_GENERAL_DETAIL(templateId), data, config)
           .then((res) => {
-            console.log("updateKITEstimation > axios res=", res);
+            console.log("updateTemplateGeneralDet > axios res=", res); 
             if (res.status === 200) {
               resolve(res.data);
             } else {
               console.log("Error Status:", res.status);
-              reject("Error in updateKITEstimation axios!");
+              reject("Error in updateTemplateGeneralDetails axios!");
             }
           })
           .catch((err) => {
-            console.log("updateKITEstimation axios err :", err);
-            reject("Error in updateKITEstimation axios!");
+            console.log("updateTemplateGeneralDet axios err :", err);
+            reject("Error in updateTemplateGeneralDet axios!");
           });
       } catch (error) {
-        console.error("Genreal Exception updateKITEstimation : ", error);
+        console.error("Genreal Exception updateTemplateGeneralDet : ", error);
         reject(SYSTEM_ERROR);
       }
     });
   };
   
-  //Update kit with General Details data
-  export const updateKITGeneralDet = (kitId, data) => {
-    console.log("service Repair > updateKITGeneralDet called...");
+  //Update template with Price Details data
+  export const updateTemplatePrice = (templateId, data) => {
+    console.log("service Repair > updateTemplatePrice called...");
     return new Promise((resolve, reject) => {
       try {
         axios
-          .put(UPDATE_KIT_GENERAL_DETAIL(kitId), data, config)
+          .put(UPDATE_SJ_PRICE(templateId), data, config)
           .then((res) => {
-            console.log("updateKITGeneralDet > axios res=", res); 
+            console.log("updateTemplatePrice > axios res=", res);
             if (res.status === 200) {
               resolve(res.data);
             } else {
               console.log("Error Status:", res.status);
-              reject("Error in updateKITGeneralDetails axios!");
+              reject("Error in updateTemplatePrice axios!");
             }
           })
           .catch((err) => {
-            console.log("updateKITGeneralDet axios err :", err);
-            reject("Error in updateKITGeneralDet axios!");
+            console.log("updateTemplatePrice axios err :", err);
+            reject("Error in updateTemplatePrice axios!");
           });
       } catch (error) {
-        console.error("Genreal Exception updateKITGeneralDet : ", error);
+        console.error("Genreal Exception updateTemplatePrice : ", error);
         reject(SYSTEM_ERROR);
       }
     });
   };
   
-  //Update kit with Price Details data
-  export const updateKITPrice = (kitId, data) => {
-    console.log("service Repair > updateKITPrice called...");
+  //Update template with Coverage Details data
+  export const updateTemplateCoverage = (templateId, data) => {
+    console.log("service Repair > updateTemplateCoverage called...");
     return new Promise((resolve, reject) => {
       try {
         axios
-          .put(UPDATE_KIT_PRICE(kitId), data, config)
+          .put(UPDATE_SJ_COVERAGE(templateId), data, config)
           .then((res) => {
-            console.log("updateKITPrice > axios res=", res);
+            console.log("updateTemplateCoverage > axios res=", res);
             if (res.status === 200) {
               resolve(res.data);
             } else {
               console.log("Error Status:", res.status);
-              reject("Error in updateKITPrice axios!");
+              reject("Error in updateTemplateCoverage axios!");
             }
           })
           .catch((err) => {
-            console.log("updateKITPrice axios err :", err);
-            reject("Error in updateKITPrice axios!");
+            console.log("updateTemplateCoverage axios err :", err);
+            reject("Error in updateTemplateCoverage axios!");
           });
       } catch (error) {
-        console.error("Genreal Exception updateKITPrice : ", error);
+        console.error("Genreal Exception updateTemplateCoverage : ", error);
         reject(SYSTEM_ERROR);
       }
     });
   };
-  
-  //Update kit with Coverage Details data
-  export const updateKITCoverage = (kitId, data) => {
-    console.log("service Repair > updateKITCoverage called...");
-    return new Promise((resolve, reject) => {
-      try {
-        axios
-          .put(UPDATE_KIT_COVERAGE(kitId), data, config)
-          .then((res) => {
-            console.log("updateKITCoverage > axios res=", res);
-            if (res.status === 200) {
-              resolve(res.data);
-            } else {
-              console.log("Error Status:", res.status);
-              reject("Error in updateKITCoverage axios!");
-            }
-          })
-          .catch((err) => {
-            console.log("updateKITCoverage axios err :", err);
-            reject("Error in updateKITCoverage axios!");
-          });
-      } catch (error) {
-        console.error("Genreal Exception updateKITCoverage : ", error);
-        reject(SYSTEM_ERROR);
-      }
-    });
-  };
+
+    //Update Template with Usage Details data
+    export const updateTemplateUsage = (templateId, data) => {
+      console.log("service Repair > updateTemplateUsage called...");
+      return new Promise((resolve, reject) => {
+        try {
+          axios
+            .put(UPDATE_SJ_USAGE(templateId), data, config)
+            .then((res) => {
+              console.log("updateTemplateUsage > axios res=", res);
+              if (res.status === 200) {
+                resolve(res.data);
+              } else {
+                console.log("Error Status:", res.status);
+                reject("Error in updateTemplateUsage axios!");
+              }
+            })
+            .catch((err) => {
+              console.log("updateTemplateUsage axios err :", err);
+              reject("Error in updateTemplateUsage axios!");
+            });
+        } catch (error) {
+          console.error("Genreal Exception updateTemplateUsage : ", error);
+          reject(SYSTEM_ERROR);
+        }
+      });
+    };
   
 //Search Templates
 export const templateSearch =  (searchStr) => {
@@ -160,7 +161,7 @@ export const templateSearch =  (searchStr) => {
             if(res.status === 200)
               resolve(res.data);
             else
-              reject('Error occurred while fetching kits');
+              reject('Error occurred while fetching templates');
           })
           .catch((err) => {
             console.log("templateSearch > axios err=", err);
@@ -199,28 +200,52 @@ export const fetchTemplateDetails =  (templateId) => {
   };
 
   
-//update status of the KIT (Active, Draft, Revised, Archived)
-export const updateKITStatus =  (kitId, status) => {
-    console.log("KIT > updateKITStatus called...");
+//update status of the Template (Active, Draft, Revised, Archived)
+export const updateTemplateStatus =  (templateId, status) => {
+    console.log("Template > updateTemplateStatus called...");
     return new Promise((resolve, reject) => {
       try {
         axios
-          .put(UPDATE_KIT_STATUS(kitId, status), {}, config)
+          .put(UPDATE_SJ_STATUS(templateId, status), {}, config)
           .then((res) => {
-            console.log("updateKITStatus > axios res=", res);
+            console.log("updateTemplateStatus > axios res=", res);
             if(res.status === 200)
               resolve(res.data);
             else
-              reject('Error occurred while calling updateKITStatus');
+              reject('Error occurred while calling updateTemplateStatus');
           })
           .catch((err) => {
-            console.log("updateKITStatus > axios err=", err);
-            reject("Error in updateKITStatus axios!");
+            console.log("updateTemplateStatus > axios err=", err);
+            reject("Error in updateTemplateStatus axios!");
           });
       } catch (error) {
-        console.error("in KIT > updateKITStatus, Err===", error);
+        console.error("in Template > updateTemplateStatus, Err===", error);
         reject(SYSTEM_ERROR);
       }
     });
   };
   
+  //update Template rating
+export const updateTemplateRating =  (templateId, rating) => {
+  console.log("Template > updateTemplateRating called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_SJ_RATING(templateId, rating), {}, config)
+        .then((res) => {
+          console.log("updateTemplateRating > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling updateTemplateRating');
+        })
+        .catch((err) => {
+          console.log("updateTemplateRating > axios err=", err);
+          reject("Error in updateTemplateRating axios!");
+        });
+    } catch (error) {
+      console.error("in Template > updateTemplateRating, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

@@ -15,6 +15,8 @@ import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
+import { Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/EditOutlined";
 
 function WithoutSparePartsOperation(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
@@ -46,6 +48,7 @@ function WithoutSparePartsOperation(props) {
     componentCodeDescription: "",
     jobCodeDescription: "",
     modifier: "",
+    id: "",
     description: "",
   };
   const [operationData, setOperationData] = useState(newOperation);
@@ -60,12 +63,17 @@ function WithoutSparePartsOperation(props) {
       fetchOperations(activeElement.sId)
         .then((result) => {
           if (result?.length > 0) {
+            // result.sort((a, b) => a.operationNumber > b.operationNumber);
+
             setOperations(result);
             setOperationViewOnly(true);
             // Default last operation or selected operation for back traverse from service estimate
-            let opToLoad = activeElement.oId
-              ? result.filter((x) => x.id === activeElement.oId)[0]
-              : result[result.length - 1];
+            let opToLoad = operationData?.id ? 
+            
+              result.filter((x) => x.id === operationData.id)[0] :
+              (activeElement.oId
+                ? result.filter((x) => x.id === activeElement.oId)[0]
+                : result[result.length - 1]);
 
             setOperationData({
               ...opToLoad,
@@ -188,9 +196,9 @@ function WithoutSparePartsOperation(props) {
         ...operationToLoad[0],
         header:
           "Operation " +
-          formatOperationNum(operationToLoad[0].operationNumber) +
+          formatOperationNum(operationToLoad[0]?.operationNumber) +
           " - " +
-          operationToLoad[0].description, //Rename once changed in API
+          operationToLoad[0]?.description, //Rename once changed in API
       });
     } else if (direction === "forward") {
       let operationToLoad = [];
@@ -219,6 +227,7 @@ function WithoutSparePartsOperation(props) {
   const handleCreateOperation = () => {
     let sid = activeElement?.sId;
     let data = {
+      ...(operationData.id && { id: operationData.id }),
       jobCode: operationData.jobCode,
       jobCodeDescription: operationData.jobCodeDescription,
       componentCode: operationData.componentCode,
@@ -228,18 +237,20 @@ function WithoutSparePartsOperation(props) {
     };
     AddOperation(sid, data)
       .then((result) => {
-        setOperationData({
-          ...operationData,
-          operationNumber: result.operationNumber,
-          description: result.description,
-          id: result.id,
-          header:
-            "Operation " +
-            formatOperationNum(result.operationNumber) +
-            " - " +
-            result.description, //Rename to description once API is changed
-        });
-        operations[operations.length - 1] = result;
+        fetchOperationsOfSegment(); 
+        
+        // setOperationData({
+        //   ...operationData,
+        //   operationNumber: result.operationNumber,
+        //   // description: result.description,
+        //   id: result.id,
+        //   header:
+        //     "Operation " +
+        //     formatOperationNum(result.operationNumber) +
+        //     " - " +
+        //     result.description, //Rename to description once API is changed
+        // });
+        // console.log(operationData)
         setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(
@@ -257,23 +268,29 @@ function WithoutSparePartsOperation(props) {
     operations.push(newOperation);
     setShowAddNewButton(false);
   };
+  const makeHeaderEditable = () => {
+    if (operationViewOnly) setOperationViewOnly(false);
+  };
 
   const handleCancelOperation = () => {
     if (operations.length > 1) {
-      operations.splice(
-        operations.findIndex((a) => a.header === NEW_OPERATION),
-        1
-      );
-      setOperationData({
-        ...operations[operations.length - 1],
-        header:
-          "Operation " +
-          formatOperationNum(
-            operations[operations.length - 1].operationNumber
-          ) +
-          " - " +
-          operations[operations.length - 1].description,
-      });
+      if(operationData.header === NEW_OPERATION){
+        operations.splice(
+          operations.findIndex((a) => a.header === NEW_OPERATION),
+          1
+        );
+        setOperationData({
+          ...operations[operations.length - 1],
+          header:
+            "Operation " +
+            formatOperationNum(
+              operations[operations.length - 1].operationNumber
+            ) +
+            " - " +
+            operations[operations.length - 1].description,
+        });
+        
+      } 
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
@@ -333,6 +350,21 @@ function WithoutSparePartsOperation(props) {
         <h5 className="d-flex align-items-center mb-0">
           <div className="" style={{ display: "contents" }}>
             <span className="mr-3 white-space">{operationData.header}</span>
+            <div className="btn-sm cursor">
+              <Tooltip title="Edit">
+                <EditIcon
+                  onClick={() =>
+                    ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                    -1
+                      ? makeHeaderEditable()
+                      : handleSnack(
+                          "info",
+                          "Active BUILDER cannot be changed, change status to REVISE"
+                        )
+                  }
+                />
+              </Tooltip>
+            </div>
           </div>
           <div className="hr"></div>
         </h5>
@@ -415,7 +447,7 @@ function WithoutSparePartsOperation(props) {
                     COMPONENT CODE DESCRIPTION
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     class="form-control border-radius-10"
                     value={operationData.componentCodeDescription}
                     placeholder="Auto Filled"

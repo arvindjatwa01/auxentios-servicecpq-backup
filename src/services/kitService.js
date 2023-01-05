@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_KIT, KIT_MULTI_PARTS_TO_PARTLIST, KIT_PART_OF_PARTLIST, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_STATUS } from "./CONSTANTS";
+import { FETCH_KIT, KIT_MULTI_PARTS_TO_PARTLIST, KIT_PART_OF_PARTLIST, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_RATING, UPDATE_KIT_STATUS } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -224,7 +224,32 @@ export const updateKITStatus =  (kitId, status) => {
       }
     });
   };
-  
+
+//update KIT rating
+export const updateKITRating =  (kitId, rating) => {
+  console.log("KIT > updateKITRating called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_KIT_RATING(kitId, rating), {}, config)
+        .then((res) => {
+          console.log("updateKITRating > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling updateKITRating');
+        })
+        .catch((err) => {
+          console.log("updateKITRating > axios err=", err);
+          reject("Error in updateKITRating axios!");
+        });
+    } catch (error) {
+      console.error("in KIT > updateKITRating, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //Add single sparepart to the KIT partlist
 export const addPartToKITPartList = (partListId, data) => {
   console.log("service KIT > addPartToPartList called...");

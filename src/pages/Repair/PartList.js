@@ -54,8 +54,8 @@ import Moment from "react-moment";
 import {
   addMultiPartsToPartList,
   addPartToPartList,
-  createBuilderVersion,
   createKIT,
+  createPartlistBuilderVersion,
   fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
   fetchPartsFromPartlist,
@@ -522,7 +522,7 @@ function PartList(props) {
     });
   };
   const createVersion = async (versionDesc) => {
-    await createBuilderVersion(bId, versionDesc)
+    await createPartlistBuilderVersion(bId, versionDesc)
       .then((result) => {
         setVersionOpen(false);
         setBId(result.id);

@@ -20,7 +20,7 @@ import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import {
   createBuilderVersion,
-  createKIT,
+  createStandardJob,
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
@@ -72,13 +72,13 @@ function WithoutSparePartsHeader(props) {
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const currencyOptions = [{ value: "USD", label: "USD" }];
-  const [kitOpen, setKitOpen] = useState(false);
-  const [kitVersion, setKitVersion] = useState({
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [templateVersion, setTemplateVersion] = useState({
     value: "GOLD",
     label: "Gold",
   });
-  const [kitReference, setKitReference] = useState("");
-  const [kitDescription, setKitDescription] = useState("");
+  const [templateReference, setTemplateReference] = useState("");
+  const [templateDescription, setTemplateDescription] = useState("");
   const [activeElement, setActiveElement] = useState({
     name: "header",
     bId: "",
@@ -690,68 +690,65 @@ function WithoutSparePartsHeader(props) {
       });
   };
 
-  const handleCreateKIT = () => {
+  const handleCreateTemplate = () => {
     if (selBuilderStatus?.value === "ACTIVE") {
       const data = {
-        description: kitDescription,
-        reference: kitReference,
-        version: kitVersion?.value,
+        description: templateDescription,
+        reference: templateReference,
+        version: templateVersion?.value,
       };
-      createKIT(bId, data)
+      createStandardJob(bId, data)
         .then((res) => {
           handleSnack(
             "success",
-            `KIT ${res.kitId} has been successfully created!`
+            `Template ${res.standardJobId} has been successfully created!`
           );
           let templateDetails = {
             templateId: "",
             templateDBId: "",
             type: "fetch",
           };
-          templateDetails.kitId = res.kitId;
-          templateDetails.kitDBId = res.id;
-          // kitDetails.partListNo = kitDetails.;
-          // kitDetails.partListId = selectedKIT.estimationNumber;
-          // kitDetails.versionNumber = selectedKIT.versionNumber;
+          templateDetails.templateId = res.templateId;
+          templateDetails.templateDBId = res.id;
           history.push({
             pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
             state: templateDetails,
           });
         })
         .catch((e) => {
-          handleSnack("error", "Conversion to KIt has been failed!");
+          handleSnack("error", "Conversion to Standard Job has been failed!");
+          setTemplateOpen(false);
         });
     } else {
-      handleSnack("warning", "Partlist is not active yet!");
+      handleSnack("warning", "Builder is not active yet!");
     }
   };
 
   const createVersion = async (versionDesc) => {
-    // await createBuilderVersion(bId, versionDesc)
-    //   .then((result) => {
-    //     setVersionOpen(false);
-    //     setBId(result.id);
-    //     setSelectedVersion({
-    //       label: "Version " + result.versionNumber,
-    //       value: result.versionNumber,
-    //     });
-    //     populateHeader(result);
-    //     setVersionDescription('')
-    //     handleSnack("success", `Version ${result.versionNumber} has been created`);
-    //   })
-    //   .catch((err) => {
-    //     setVersionOpen(false);
+    await createBuilderVersion(bId, versionDesc)
+      .then((result) => {
+        setVersionOpen(false);
+        setBId(result.id);
+        setSelectedVersion({
+          label: "Version " + result.versionNumber,
+          value: result.versionNumber,
+        });
+        populateHeader(result);
+        setVersionDescription("");
+        handleSnack(
+          "success",
+          `Version ${result.versionNumber} has been created`
+        );
+      })
+      .catch((err) => {
+        setVersionOpen(false);
 
-    //     if(err.message === "Not Allowed")
-    //       handleSnack("warning", ERROR_MAX_VERSIONS )
-    //     else
-    //       handleSnack("error", "Error occurred while creating builder version");
-    //     setVersionDescription('');
-    //   });
-    handleSnack(
-      "info",
-      "Create Version API needs to be created for Without Spare Parts"
-    );
+        if (err.message === "Not Allowed")
+          handleSnack("warning", ERROR_MAX_VERSIONS);
+        else
+          handleSnack("error", "Error occurred while creating builder version");
+        setVersionDescription("");
+      });
   };
 
   return (
@@ -859,8 +856,10 @@ function WithoutSparePartsHeader(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem className="custommenu ml-2 mr-4"
-                    onClick={() => setKitOpen(true)}>
+                    <MenuItem
+                      className="custommenu ml-2 mr-4"
+                      onClick={() => setTemplateOpen(true)}
+                    >
                       Standard Job
                     </MenuItem>
                     <Divider />
@@ -2163,15 +2162,15 @@ function WithoutSparePartsHeader(props) {
         </div>
       </div>
       <CreateKIT
-        kitOpen={kitOpen}
-        handleCloseKIT={() => setKitOpen(false)}
-        handleCreateKIT={handleCreateKIT}
-        version={kitVersion}
-        setVersion={setKitVersion}
-        description={kitDescription}
-        setDescription={setKitDescription}
-        reference={kitReference}
-        setReference={setKitReference}
+        kitOpen={templateOpen}
+        handleCloseKIT={() => setTemplateOpen(false)}
+        handleCreateKIT={handleCreateTemplate}
+        version={templateVersion}
+        setVersion={setTemplateVersion}
+        description={templateDescription}
+        setDescription={setTemplateDescription}
+        reference={templateReference}
+        setReference={setTemplateReference}
       />
       <div style={{ height: "200px" }}></div>
     </React.Fragment>
