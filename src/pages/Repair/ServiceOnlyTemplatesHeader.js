@@ -17,7 +17,6 @@ import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DataTable from "react-data-table-component";
 import { Link, useHistory } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import $ from "jquery";
 import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
 import {
@@ -297,6 +296,7 @@ function ServiceOnlyTemplates(props) {
         result.priceMethod !== ""
           ? true
           : false,
+      usageViewOnly: result.application ? true : false
     });
     setRating(result.rating);
     setSelTemplateStatus(
@@ -2304,6 +2304,7 @@ function ServiceOnlyTemplates(props) {
               templateDetails={{
                 activeElement,
                 setActiveElement,
+                fetchAllDetails
               }}
             />
           )}

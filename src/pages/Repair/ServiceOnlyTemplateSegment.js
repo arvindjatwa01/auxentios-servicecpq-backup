@@ -1,24 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import Select from "react-select";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Checkbox from "@mui/material/Checkbox";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
-import { MuiMenuComponent } from "pages/Operational";
-import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faPlus } from "@fortawesome/free-solid-svg-icons";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import AddIcon from "@mui/icons-material/Add";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link, useHistory } from "react-router-dom";
 import { NEW_SEGMENT } from "./CONSTANTS";
 import {

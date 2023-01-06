@@ -40,7 +40,7 @@ import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
 import WithoutSparePartsSegments from "./WithoutSparePartsSegments";
-import { TextField } from "@mui/material";
+import { TextField, Tooltip } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
@@ -57,6 +57,11 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import WithoutSparePartsOperation from "./WithoutSparePartsOperation";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import CreateKIT from "./components/CreateKIT";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import ReplayIcon from "@mui/icons-material/Replay";
+import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
+
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -72,6 +77,7 @@ function WithoutSparePartsHeader(props) {
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const currencyOptions = [{ value: "USD", label: "USD" }];
+  const [savedHeaderDetails, setSavedBuilderDetails] = useState([]);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [templateVersion, setTemplateVersion] = useState({
     value: "GOLD",
@@ -256,6 +262,7 @@ function WithoutSparePartsHeader(props) {
     });
   };
   const populateHeader = (result) => {
+    setSavedBuilderDetails(result);
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
       machineViewOnly: result.serialNo ? true : false,
@@ -282,62 +289,89 @@ function WithoutSparePartsHeader(props) {
       value: result.versionNumber,
     });
 
+    populateCustomerData(result);
+    populateMachineData(result);
+    populateGeneralData(result);
+    populateEstData(result);
+    populatePricingData(result);
+  };
+
+  const populateCustomerData = (result) => {
     setCustomerData({
-      customerID: result.customerId,
-      contactEmail: result.contactEmail,
-      contactName: result.contactName,
-      contactPhone: result.contactPhone,
-      customerGroup: result.customerGroup,
-      customerName: result.customerName,
+      customerID: result.customerId ? result.customerId : "",
+      contactEmail: result.contactEmail ? result.contactEmail : "",
+      contactName: result.contactName ? result.contactName : "",
+      contactPhone: result.contactPhone ? result.contactPhone : "",
+      customerGroup: result.customerGroup ? result.customerGroup : "",
+      customerName: result.customerName ? result.customerName : "",
       source: result.source ? result.source : "User Generated",
-      customerSegment: result.customerSegment,
-      country: result.country,
-      regionOrState: result.regionOrState,
+      customerSegment: result.customerSegment ? result.customerSegment : "",
+      country: result.country ? result.country : "",
+      regionOrState: result.regionOrState ? result.regionOrState : "",
     });
+    setSearchCustResults([]);
+  };
+  const populateMachineData = (result) => {
     setMachineData({
-      make: result.make,
-      family: result.family,
-      model: result.model,
-      serialNo: result.serialNo,
-      fleetNo: result.fleetNo,
-      smu: result.smu,
-      registrationNo: result.registrationNo,
-      chasisNo: result.chasisNo,
-      productGroup: result.productGroup,
-      productSegment: result.productSegment,
+      make: result.make ? result.make : "",
+      family: result.family ? result.family : "",
+      model: result.model ? result.model : "",
+      serialNo: result.serialNo ? result.serialNo : "",
+      fleetNo: result.fleetNo ? result.fleetNo : "",
+      smu: result.smu ? result.smu : "",
+      registrationNo: result.registrationNo ? result.registrationNo : "",
+      chasisNo: result.chasisNo ? result.chasisNo : "",
+      productSegment: result.productSegment ? result.productSegment : "",
+      productGroup: result.productGroup ? result.productGroup : "",
     });
+    setSearchModelResults([]);
+    setSearchSerialResults([]);
+  };
+  const populateGeneralData = (result) => {
     setGeneralData({
-      description: result.description,
+      description: result.description ? result.description : "",
       estimationDate: result.estimationDate
         ? result.estimationDate
         : new Date(),
       estimationNo: result.builderId ? result.builderId : state.builderId,
-      reference: result.reference,
-      validity: validityOptions.find(
-        (element) => element.value == result.validityDays
-      ),
-      version: result.versionNumber,
+      reference: result.reference ? result.reference : "",
+      validity:
+        result.validityDays && result.validityDays !== "EMPTY"
+          ? validityOptions.find(
+              (element) => element.value === result.validityDays
+            )
+          : { label: "", value: "" },
+      version: result.versionNumber ? result.versionNumber : "",
     });
+  };
+  const populateEstData = (result) => {
     setEstimationData({
-      approvedBy: result.approver,
-      preparedBy: result.preparedBy,
+      approvedBy: result.approver ? result.approver : "",
+      preparedBy: result.preparedBy ? result.preparedBy : "",
       preparedOn: result.preparedOn ? result.preparedOn : new Date(),
-      revisedBy: result.revisedBy,
+      revisedBy: result.revisedBy ? result.revisedBy : "",
       revisedOn: result.revisedOn ? result.revisedOn : new Date(),
-      salesOffice: salesOfficeOptions.find(
-        (element) => element.value === result.salesOffice
-      ),
+      salesOffice: result.salesOffice
+        ? salesOfficeOptions.find(
+            (element) => element.value === result.salesOffice
+          )
+        : { label: "", value: "" },
     });
+  };
+  const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod: priceMethodOptions.find(
-        (element) => element.value === result.priceMethod
-      ),
+      priceMethod:
+        result.priceMethod && result.priceMethod !== "EMPTY"
+          ? priceMethodOptions.find(
+              (element) => element.value === result.priceMethod
+            )
+          : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
-      currency: currencyOptions.find(
-        (element) => element.value === result.currency
-      ),
+      currency: result.currency
+        ? currencyOptions.find((element) => element.value === result.currency)
+        : { label: "", value: "" },
     });
   };
 
@@ -513,6 +547,7 @@ function WithoutSparePartsHeader(props) {
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
+          setSavedBuilderDetails(result);
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
           handleSnack("success", "Customer details updated!");
@@ -545,6 +580,7 @@ function WithoutSparePartsHeader(props) {
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
+        setSavedBuilderDetails(result);
         setValue("estimation");
         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
         handleSnack("success", "Machine details updated!");
@@ -565,6 +601,7 @@ function WithoutSparePartsHeader(props) {
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
+        setSavedBuilderDetails(result);
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
         handleSnack("success", "General details updated!");
@@ -589,6 +626,7 @@ function WithoutSparePartsHeader(props) {
     };
     updateBuilderEstimation(bId, data)
       .then((result) => {
+        setSavedBuilderDetails(result);
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
         handleSnack("success", "Estimation details updated!");
@@ -614,7 +652,7 @@ function WithoutSparePartsHeader(props) {
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
-        // setValue("price");
+        setSavedBuilderDetails(result);
         if (result) {
           setPricingData({
             ...pricingData,
@@ -667,6 +705,19 @@ function WithoutSparePartsHeader(props) {
     { value: "Active", label: "Active" },
     { value: "Revised", label: "Revised" },
   ];
+
+  const handleResetData = (action) => {
+    if (action === "RESET") {
+      value === "customer" && populateCustomerData(savedHeaderDetails);
+      value === "machine" && populateMachineData(savedHeaderDetails);
+      value === "general" && populateGeneralData(savedHeaderDetails);
+      value === "estimation" && populateEstData(savedHeaderDetails);
+      value === "price" && populatePricingData(savedHeaderDetails);
+    } else if (action === "CANCEL") {
+      populateHeader(savedHeaderDetails);
+    }
+    // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+  };
 
   const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
@@ -921,36 +972,41 @@ function WithoutSparePartsHeader(props) {
                     >
                       Without Spare Parts Header
                     </span>
-                    <a
-                      href={undefined}
-                      className="btn-sm text-white"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <i
-                        className="fa fa-pencil"
-                        aria-hidden="true"
-                        onClick={() =>
-                          selBuilderStatus?.value === "DRAFT" ||
-                          selBuilderStatus?.value === "REVISED"
-                            ? makeHeaderEditable()
-                            : handleSnack("info", "Builder is active!")
-                        }
-                      ></i>
-                    </a>{" "}
-                    <a
-                      href="#"
-                      className="btn-sm text-white"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <i className="fa fa-bookmark-o" aria-hidden="true"></i>
-                    </a>{" "}
-                    <a
-                      href="#"
-                      className="btn-sm text-white"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <i className="fa fa-folder-o" aria-hidden="true"></i>
-                    </a>
+                    <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <EditIcon
+                      onClick={() =>
+                        ["DRAFT", "REVISED"].indexOf(
+                          selBuilderStatus?.value
+                        ) > -1
+                          ? makeHeaderEditable()
+                          : handleSnack(
+                              "info",
+                              "Active BUILDER cannot be changed, change status to REVISE"
+                            )
+                      }
+                    />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Reset">
+                    <ReplayIcon
+                    onClick={() => handleResetData("RESET")}
+                    />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Share">
+                    <ShareOutlinedIcon />
+                  </Tooltip>
+                </div>
+
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Add to Review">
+                    <ReviewAddIcon />
+                  </Tooltip>
+                </div>
+
                   </div>
                   {/* <div className="hr"></div> */}
                 </h5>
@@ -1096,6 +1152,13 @@ function WithoutSparePartsHeader(props) {
                               className="row"
                               style={{ justifyContent: "right" }}
                             >
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white mr-1"
+                                onClick={() => handleResetData("CANCEL")}
+                              >
+                                Cancel
+                              </button>
                               <button
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
@@ -1298,6 +1361,13 @@ function WithoutSparePartsHeader(props) {
                               className="row"
                               style={{ justifyContent: "right" }}
                             >
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white mr-1"
+                                onClick={() => handleResetData("CANCEL")}
+                              >
+                                Cancel
+                              </button>
                               <button
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
@@ -1510,6 +1580,13 @@ function WithoutSparePartsHeader(props) {
                             >
                               <button
                                 type="button"
+                                className="btn btn-light bg-primary text-white mr-1"
+                                onClick={() => handleResetData("CANCEL")}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
                                 className="btn btn-light bg-primary text-white"
                                 onClick={updateEstData}
                                 disabled={
@@ -1707,6 +1784,13 @@ function WithoutSparePartsHeader(props) {
                             >
                               <button
                                 type="button"
+                                className="btn btn-light bg-primary text-white mr-1"
+                                onClick={() => handleResetData("CANCEL")}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
                                 className="btn btn-light bg-primary text-white"
                                 onClick={updateGeneralData}
                                 disabled={
@@ -1889,6 +1973,13 @@ function WithoutSparePartsHeader(props) {
                               className="row"
                               style={{ justifyContent: "right" }}
                             >
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white mr-1"
+                                onClick={() => handleResetData("CANCEL")}
+                              >
+                                Cancel
+                              </button>
                               <button
                                 type="button"
                                 className="btn btn-light bg-primary text-white"

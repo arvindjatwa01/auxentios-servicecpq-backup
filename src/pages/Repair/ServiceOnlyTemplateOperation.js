@@ -20,7 +20,6 @@ import { ReadOnlyField } from "./components/ReadOnlyField";
 function ServiceOnlyTemplateOperation(props) {
   const { activeElement, setActiveElement } = props.templateDetails;
 
-  const history = useHistory();
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
