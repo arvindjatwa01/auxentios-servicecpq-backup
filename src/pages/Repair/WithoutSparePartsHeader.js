@@ -45,7 +45,7 @@ import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "./CONSTANTS";
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT, STATUS_OPTIONS } from "./CONSTANTS";
 import { useAppSelector } from "app/hooks";
 import {
   selectDropdownOption,
@@ -178,12 +178,6 @@ function WithoutSparePartsHeader(props) {
         handleSnack("error", `Failed to update the status!`);
       });
   };
-  const builderStatusOptions = [
-    { value: "DRAFT", label: "Draft" },
-    { value: "ACTIVE", label: "Active" },
-    { value: "REVISED", label: "Revised" },
-    { value: "ARCHIVED", label: "Archived" },
-  ];
 
   const [selectedOption, setSelectedOption] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -277,7 +271,7 @@ function WithoutSparePartsHeader(props) {
     });
     setBId(result.id);
     setSelBuilderStatus(
-      builderStatusOptions.filter((x) => x.value === result.status)[0]
+      STATUS_OPTIONS.filter((x) => x.value === result.status)[0]
     );
     let versions = result.versionList?.map((versionNo) => ({
       value: versionNo,
@@ -839,7 +833,7 @@ function WithoutSparePartsHeader(props) {
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
                     isOptionDisabled={(e) => disableStatusOptions(e)}
-                    options={builderStatusOptions}
+                    options={STATUS_OPTIONS}
                     value={selBuilderStatus}
                   />
                 </div>
