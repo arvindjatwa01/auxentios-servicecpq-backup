@@ -3841,9 +3841,12 @@ input[type="checkbox"]:checked:after {
 .radio-button .MuiButtonBase-root {
   justify-content: flex-start !important;
 }
-.modal-md{max-width: 970px !important;}
+.modal-md{max-width: 764px !important;}
 .width-400{width: 400px !important;}
 .tableheader .border-custom{border-bottom: 1px solid #cfcece !important;
 border-right: 1px solid #cfcece !important;
 border-left: 1px solid #cfcece !important;
 border-top: none !important;}
+.selected-li{}
+.selected-li li:hover{ background: #872ff7 !important;
+color: #fff !important;}

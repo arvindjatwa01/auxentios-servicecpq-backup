@@ -273,6 +273,8 @@ const SolutionQuerySearchComp = (props) => {
             //   "~" +
             //   querySearchSelector[0]?.inputSearch;
 
+            console.log("props.compoFlag 276: ", props.compoFlag)
+
             if (props.compoFlag === "solutionTempItemSearch") {
                 var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
 
@@ -349,6 +351,17 @@ const SolutionQuerySearchComp = (props) => {
                 // temArray[0].associatedServiceOrBundle = res2
                 // props.setLoadingStatus("")
             } else if (props.compoFlag === "solutionTempItemSearch") {
+                console.log("searchStr  try 352 : ", searchStr)
+                // getSearchCustomPortfolio(searchStr)
+                //     .then((res) => {
+                //         obj.selectOptions = res;
+                //         tempArray[id] = obj;
+                //         setQuerySearchSelector([...tempArray]);
+                //         $(`.scrollbar-${id}`).css("display", "block");
+                //     })
+                //     .catch((err) => {
+                //         console.log("err in api call", err);
+                //     });
                 const res4 = await getSearchCustomPortfolio(searchStr)
                 if (!res4.length > 0) {
                     props.setSolutionLoadingStatus("")

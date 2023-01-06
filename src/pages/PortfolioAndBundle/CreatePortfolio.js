@@ -10711,7 +10711,7 @@ export function CreatePortfolio(props) {
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
-                        <a href={undefined} className="form-group cursor" onClick={PopupOptionalShow}>
+                        <div className="form-group">
                           {/* <a className="input-search"><SearchIcon style={{ fontSize: "34px" }} /></a> */}
                               <label
                                 className="text-light-dark font-size-12 font-weight-500"
@@ -10720,13 +10720,14 @@ export function CreatePortfolio(props) {
                                 OPTIONALS
                               </label>
                               <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Optionals"
-                                value={stratgyOptionalsKeyValue}
+                                // type="text"
+                                className="cursor form-control border-radius-10 text-primary"
+                                // id="exampleInputEmail1"
+                                onClick={PopupOptionalShow}
+                                placeholder="Click here"
+                                // value={stratgyOptionalsKeyValue}
                               />
-                            </a>
+                            </div>
                           {/* <div className="form-group">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
@@ -18021,7 +18022,7 @@ export function CreatePortfolio(props) {
                     <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button> */}
         </Modal.Footer>
       </Modal>
-      <Modal show={optionalPopup} onHide={() => setOptionalPopup(false)} size="s"
+      <Modal show={optionalPopup} onHide={() => setOptionalPopup(false)} size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered>
             <Modal.Header className="border-none align-items-center">
@@ -18031,11 +18032,42 @@ export function CreatePortfolio(props) {
                <div className=' p-2'>
                   <div className="row">
                     <div className="col-md-6 col-sm-6">
-                      <div className=" d-flex align-items-center card p-2">
+                      <div className="card p-4">
+                        <div className="d-flex align-items-center ">
                         <div class="checkbox mr-3">
                           <input type="checkbox" value=""></input>
                         </div>
-                        <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p>
+                        <p className="mb-0 font-size-16 text-black"><b>AIR FILTER REPLACEMENT</b></p>
+                        </div>
+                      </div>
+                      <div className="px-2">
+                        <p className="mb-0 font-size-14">The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service.</p>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="card p-4">
+                        <div className="d-flex align-items-center ">
+                        <div class="checkbox mr-3">
+                          <input type="checkbox" value=""></input>
+                        </div>
+                        <p className="mb-0 font-size-16 text-black"><b>ROTATE TIRES</b></p>
+                        </div>
+                      </div>
+                      <div className="px-2">
+                        <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="card mt-4 p-4">
+                        <div className="d-flex align-items-center ">
+                        <div class="checkbox mr-3">
+                          <input type="checkbox" value=""></input>
+                        </div>
+                        <p className="mb-0 font-size-16 text-black"><b>CABIN AIR FILTER REPLACEMENT</b></p>
+                        </div>
+                      </div>
+                      <div className="px-2">
+                        <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
                       </div>
                     </div>
                   </div>
