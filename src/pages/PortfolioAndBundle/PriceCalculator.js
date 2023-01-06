@@ -8,6 +8,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { FormControlLabel, Switch } from "@material-ui/core";
+import {
+  Switch as Switch1,
+} from "@mui/material";
 import FormGroup from "@mui/material/FormGroup";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Link } from "react-router-dom";
@@ -522,7 +525,7 @@ const PriceCalculator = (props) => {
                       marginLeft: 0,
                     }}
                     control={
-                      <Switch
+                      <Switch1
                         checked={extWorkData.flatRateIndicator}
                         onChange={(e) =>
                           handleFlatPriceIndicator(e)
@@ -893,7 +896,7 @@ const PriceCalculator = (props) => {
                         marginLeft: 0,
                       }}
                       control={
-                        <Switch
+                        <Switch1
                           checked={extWorkData.flatRateIndicator}
                           onChange={(e) =>
                             setExtWorkData({
