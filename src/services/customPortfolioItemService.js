@@ -43,7 +43,7 @@ export const getCustomItemData = (id) => {
         .get(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`, { headers: headersdata })
         .then((res) => {
           console.log("getcustomItemData > axios res=", res);
-          resolve(res);
+          resolve(res.data);
         })
         .catch((err) => {
           console.log("getcustomItemData > axios err=", err);

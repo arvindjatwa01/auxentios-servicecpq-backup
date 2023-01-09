@@ -7107,13 +7107,13 @@ export function CreatePortfolio(props) {
           </div> */}
           <div>
             <DropdownButton
-              className="customDropdown ml-2"
+              className="customDropdown ml-2 width-p"
               id="dropdown-item-button"
             >
               <Dropdown.Item className=" cursor" data-toggle="modal" data-target="#myModal12">
                 <Tooltip title="Inclusion">
                   <Link to="#" className="px-1" onClick={(e) => Inclusion_Exclusion(e, row)} >
-                    <img src={cpqIcon}></img><span className="ml-2">Inclusion /<br></br> Exclusion</span>
+                    <img src={cpqIcon}></img><span className="ml-2">Inclusion / Exclusion</span>
                   </Link>
                 </Tooltip>
               </Dropdown.Item>
