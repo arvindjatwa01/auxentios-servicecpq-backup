@@ -4,6 +4,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
+import shearchIcon from "../../assets/icons/svg/search.svg";
 import { ToastContainer, toast } from 'react-toastify';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import DesignServicesOutlinedIcon from '@mui/icons-material/DesignServicesOutlined';
@@ -203,6 +204,7 @@ export const Analytics = () => {
    const [show, setShow] = React.useState(false);
 
    const [showPopup, setShowPopup] = useState(false)
+   const [exploreSolutionPopup, setExploreSolutionPopup] = useState(false)
    const [creationSolutionPopup, setCreationSolutionPopup] = useState(false);
    const [searchPortfolioTemplate, setSearchPortfolioTemplate] = useState(false);
    const [solutionsPopup, setSolutionsPopup] = useState(false)
@@ -589,6 +591,38 @@ export const Analytics = () => {
       setShowExplore(true)
    }
 
+
+   // Click on Portfolio Result Row
+   const handleOnPortfolioResultRow = async (id) => {
+
+      const portfolioToCustomPortfolioCopy = await copyPortfolioICustomPortfolio(`portfolioIds=${id}`);
+
+      setPortfolioToSolutionProgress(true)
+      let solutionPortfolioDetails = {
+         portfolioId: portfolioToCustomPortfolioCopy.data.customPortfolioId,
+         type: "fetch",
+      };
+      history.push({
+         pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+         state: solutionPortfolioDetails,
+      });
+
+
+   }
+
+   // Click on Solution Portfolio Result Row
+   const handleOnSolutionPortfolioResultRow = (id) => {
+      let solutionPortfolioDetails = {
+         portfolioId: id,
+         type: "fetch",
+      };
+      history.push({
+         // pathname: SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT,
+         pathname: "/solutionBuilder/create",
+         state: solutionPortfolioDetails,
+      });
+   }
+
    const handleTemplateItemSaveAndContinue = async () => {
 
       // To do New API Call
@@ -652,7 +686,7 @@ export const Analytics = () => {
 
       //    let reqData = {
       //       type: "MACHINE",
-      //       name: `${Date.now()}`,
+      //       name: `${ Date.now() } `,
       //       description: "",
       //       externalReference: "",
       //       customerSegment: "",
@@ -920,7 +954,7 @@ export const Analytics = () => {
       //    // console.log("createdCustomItems is :", createdCustomItems);
       //    // let reqData = {
       //    //    type: "MACHINE",
-      //    //    name: `${Date.now()}`,
+      //    //    name: `${ Date.now() } `,
       //    //    description: "",
       //    //    externalReference: "",
       //    //    customerSegment: "",
@@ -1203,7 +1237,7 @@ export const Analytics = () => {
       let tempArray = [...querySearchSelector]
       let obj = tempArray[id];
       var SearchResArr = [];
-      solutionPortfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+      solutionPortfolioSearch(`${tempArray[id].selectFamily.value} ~${e.target.value} `)
          .then((res) => {
             if (tempArray[id].selectFamily.value === "make") {
                for (let i = 0; i < res.data.length; i++) {
@@ -1242,7 +1276,7 @@ export const Analytics = () => {
             obj.selectOptions = SearchResArr;
             tempArray[id] = obj;
             setQuerySearchSelector([...tempArray]);
-            $(`.scrollbar-${id}`).css("display", "block");
+            $(`.scrollbar - ${id} `).css("display", "block");
             console.log("search Query Result :", res)
 
          }).catch((err) => {
@@ -1253,7 +1287,7 @@ export const Analytics = () => {
       //    obj.selectOptions = res
       //    tempArray[id] = obj
       //    setQuerySearchSelector([...tempArray]);
-      //    $(`.scrollbar-${id}`).css("display", "block")
+      //    $(`.scrollbar - ${ id } `).css("display", "block")
       // }).catch((err) => {
       //    console.log("err in api call", err)
       // })
@@ -1365,7 +1399,7 @@ export const Analytics = () => {
       obj.selectedOption = currentItem
       tempArray[id] = obj
       setQuerySearchSelector([...tempArray])
-      $(`.scrollbar-${id}`).css("display", "none")
+      $(`.scrollbar - ${id} `).css("display", "none")
    }
    const handleMasterCheck = (e, row) => {
       if (e.target.checked) {
@@ -1669,7 +1703,12 @@ export const Analytics = () => {
    const PopupModelBoxShow = () => {
       setShowPopup(true)
    }
-
+   const PopupExoploreSolutionShow = () => {
+      setExploreSolutionPopup(true);
+      setSearchPortfolioTemplate(false);
+      setCreationSolutionPopup(false);
+      setShowPopup(false);
+   }
    const continueClickNextStep = () => {
       // alert("Hello")
       // setSolutionsPopup(true)
@@ -1751,7 +1790,7 @@ export const Analytics = () => {
          //    querySearchSelector[0]?.selectFamily?.value === undefined) {
          //    throw "Please fill data properly"
          // }
-         // var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+         // var searchStr = `${ querySearchSelector[0]?.selectFamily?.value } ~${ querySearchSelector[0]?.inputSearch } `;
          // console.log("searchStr : ", searchStr);
          // if (selectedItemType === "PORTFOLIO") {
          //    var newArr = [];
@@ -1855,7 +1894,7 @@ export const Analytics = () => {
       // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
       // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
       // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-      //   `${params.getValue(params.id, 'firstName') || ''} ${
+      //   `${ params.getValue(params.id, 'firstName') || '' } ${
       //       params.getValue(params.id, 'DocumentType') || ''
       //     }`,
 
@@ -3927,6 +3966,71 @@ export const Analytics = () => {
           </Button>
         </Modal.Footer> */}
          </Modal>
+         <Modal show={exploreSolutionPopup} onHide={() => setExploreSolutionPopup(false)} size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            {/* <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
+               <Modal.Title><b>Select the solution you want to build</b></Modal.Title>
+               <button className="btn text-white bg-primary">Request for help!</button>
+            </Modal.Header> */}
+            <Modal.Body style={{ background: "#F0F0F0" }}>
+               <div className=' p-4'>
+               {/* <div className="input-group icons border-radius-10 border-primary">
+                <div className="input-group-prepend ">
+                  <span
+                    className="input-group-text text-primary bg-white border-0 pr-0 "
+                    id="basic-addon1"
+                  >
+                    <SearchIcon style={{fontSize: "32px"}} />
+                  </span>
+                </div>
+                <input
+                  type="search"
+                  className="form-control search-form-control"
+                  aria-label="Search Dashboard"
+                  placeholder="Search quotes"
+                />
+
+              </div> */}
+               <div class="input-group icons border-radius-10 border overflow-hidden">
+            <div class="input-group-prepend bg-white ">
+              <span class="input-group-text border-0 pr-0 " id="basic-addon1">
+              <SearchIcon/></span>
+              </div>
+              <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
+              <div class="input-group-prepend align-items-center bg-white">
+              <div className="w-100 mx-2">
+              <div className="machine-drop d-flex align-items-center bg-white border-primary">
+             {/* <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div> */}
+            <FormControl className="" sx={{ m: 1,}}>
+              <Select 
+                id="demo-simple-select-autowidth"
+                value={age}
+                onChange={handleChangedrop}
+                autoWidth
+              >
+                <MenuItem value="5">
+                  <em>Portfolio</em>
+                </MenuItem>
+                <MenuItem value={10}>Solution</MenuItem>
+                {/* <MenuItem value={21}>Solution</MenuItem> */}
+              </Select>
+            </FormControl>
+          </div>
+              </div>
+              </div>
+            </div>
+               </div>
+            </Modal.Body>
+            {/* <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer> */}
+         </Modal>
          <Modal
             show={creationSolutionPopup}
             onHide={() => setCreationSolutionPopup(false)}
@@ -3935,7 +4039,7 @@ export const Analytics = () => {
             centered>
             <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
                <Modal.Title><b>Choose the option to create solutions</b></Modal.Title>
-               <button className="btn text-white bg-primary">Explore avilable solution</button>
+               <button onClick={PopupExoploreSolutionShow} className="btn text-white bg-primary" >Explore avilable solution</button>
             </Modal.Header>
             <Modal.Body>
                <div className=' p-4'>
@@ -4345,37 +4449,32 @@ export const Analytics = () => {
                            {portfolioTempMasterData.length > 0 ?
                               <>
                                  <div className="tableheader">
-                                    <ul class="submenu border-custom templateResultheading accordion mt-0" style={{ display: 'block', borderTop: "none !important" }}>
+                                    <ul class="submenu selected-li border-custom templateResultheading accordion mt-0" style={{ display: 'block', borderTop: "none !important" }}>
                                        <li className="border-bottom">
                                           <div className="result py-4 px-3 font-size-14"><b>RESULTS</b></div>
                                        </li>
-                                       {portfolioTempMasterData.map((row, i) => 
-                                          <li key={i} className="border-bottom">
-                                             <div className="d-flex align-items-center justify-content-between p-3">
-                                                <div className="d-flex align-items-center">
-                                                   <div class="checkbox mr-3">
+                                       {portfolioTempMasterData.map((row, i) =>
+                                          <li key={i} className="border-bottom cursor " onClick={() => handleOnPortfolioResultRow(row.portfolioId)}>
+                                             <div className="d-flex align-items-center p-3">
+                                                <div className="d-flex mr-4">
+                                                   {/* <div class="checkbox mr-3">
                                                       <input type="checkbox" value=""></input>
-                                                   </div>
-                                                   <div className="d-block">
-                                                      <p className="mb-0 font-size-14 text-black"><b>{row.name}</b></p>
-                                                      <p className="mb-0 font-size-12">{row.description}</p>
-                                                   </div>
+                                                   </div> */}
+                                                   <p className="mb-0 font-size-14"><b>{row.name}</b></p>
+                                                   {/* <p className="mb-0 font-size-12">{row.description}</p> */}
                                                 </div>
-                                                
-                                                <div className="d-flex align-items-center">
-                                                   <div className={`px-3 py-2 mr-3 text-white 
+                                                <div className={`px-3 py-1 mr-4 text-white 
                                                       ${row.supportLevel == "STANDARD" ? "bg-green" :
                                                       row.supportLevel == "PREMIUM" ? "bg-yellow" :
-                                                      row.supportLevel == "SUPERIOR" ? "bg-gray" : ""} font-size-12 border-radius-5`}>{row.supportLevel}
-                                                   </div>
-                                                   <div className="d-flex mr-3">
-                                                      <p className="mb-0 font-size-14">PRICE</p>
-                                                   </div>
-                                                   <div className="d-flex">
-                                                      <p className="mb-0 font-size-14 text-black">$2,000</p>
-                                                   </div>
+                                                         row.supportLevel == "SUPERIOR" ? "bg-gray" : ""} font-size-12 border-radius-5`}>{row.supportLevel}
                                                 </div>
-                                                
+                                                <div className="d-flex mr-4">
+                                                   <p className="mb-0 font-size-14">PRICE</p>
+                                                </div>
+                                                <div className="d-flex">
+                                                   <p className="mb-0 font-size-14 ">$2,000</p>
+                                                </div>
+
                                              </div>
                                           </li>
 
@@ -4537,7 +4636,7 @@ export const Analytics = () => {
                            <>
                               {solutionTempMasterData.length > 0 ?
                                  <>
-                                    <div className="tableheader">
+                                    {/* <div className="tableheader">
                                        <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
                                           <li><a className="cursor result" >SOLUTION TEMPLATE RESULT</a></li>
                                        </ul>
@@ -4559,6 +4658,42 @@ export const Analytics = () => {
                                              className="btn text-white bg-primary"
                                              value="+ Add Selected"
                                              disabled={!solutionTempFlagIs}
+                                          />
+                                       </div>
+                                    </div> */}
+                                    <div className="tableheader">
+                                       <ul class="submenu selected-li border-custom templateResultheading accordion mt-0" style={{ display: 'block', borderTop: "none !important" }}>
+                                          <li className="border-bottom">
+                                             <div className="result py-4 px-3 font-size-14"><b>RESULTS</b></div>
+                                          </li>
+                                          {solutionTempMasterData.map((row, i) =>
+                                             <li key={i} className="border-bottom cursor " onClick={() => handleOnSolutionPortfolioResultRow(row.customPortfolioId)}>
+                                                <div className="d-flex align-items-center p-3">
+                                                   <div className="d-flex mr-4">
+                                                      <p className="mb-0 font-size-14"><b>{row.name}</b></p>
+                                                   </div>
+                                                   <div className={`px-3 py-1 mr-4 text-white 
+                                                      ${row.supportLevel == "STANDARD" ? "bg-green" :
+                                                         row.supportLevel == "PREMIUM" ? "bg-yellow" :
+                                                            row.supportLevel == "SUPERIOR" ? "bg-gray" : ""} font-size-12 border-radius-5`}>{row.supportLevel}
+                                                   </div>
+                                                   <div className="d-flex mr-4">
+                                                      <p className="mb-0 font-size-14">PRICE</p>
+                                                   </div>
+                                                   <div className="d-flex">
+                                                      <p className="mb-0 font-size-14 ">$2,000</p>
+                                                   </div>
+                                                </div>
+                                             </li>
+                                          )}
+                                       </ul>
+
+                                       <div className="m-2 text-right">
+                                          <input
+                                             onClick={handlePortfolioListCheckBoxData}
+                                             className="btn text-white bg-primary"
+                                             value="+ Add Selected"
+                                             disabled={solutionTempMasterData.length == 0}
                                           />
                                        </div>
                                     </div>
