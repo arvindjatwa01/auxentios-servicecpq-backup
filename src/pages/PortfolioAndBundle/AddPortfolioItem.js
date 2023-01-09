@@ -76,7 +76,7 @@ import {
 
 const AddPortfolioItem = (props) => {
 
-  console.log("AddPortfolioItem props data is : ", props)
+  // console.log("AddPortfolioItem props data is : ", props)
   const [tabs, setTabs] = useState("itemSummary");
   const [subTabs, setSubTabs] = useState("A");
   const [editable, setEditable] = useState(

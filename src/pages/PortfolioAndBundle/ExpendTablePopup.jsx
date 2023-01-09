@@ -22,8 +22,11 @@ import {
     itemPriceDataId,
     updateItemPriceData,
     getSearchStandardJobId,
-    getSearchKitId
+    getSearchKitId,
+    getItemPriceData,
+    getSolutionPriceCommonConfig,
 } from "../../services/index";
+import AddPortfolioItem from './AddPortfolioItem';
 
 const ExpendTablePopup = ({ data, ...props }) => {
 
@@ -32,7 +35,65 @@ const ExpendTablePopup = ({ data, ...props }) => {
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
     const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
     const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
+    const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
 
+
+    const [addPortFolioItem, setAddPortFolioItem] = useState({
+        id: 0,
+        name: "",
+        description: "",
+        frequency: "",
+        recommendedValue: "",
+        startUsage: "",
+        endUsage: "",
+        usageIn: "",
+        noOfEvents: "",
+        taskType: "",
+        unit: "",
+        quantity: 1,
+        numberOfEvents: "",
+        templateId: "",
+        templateDescription: "",
+        repairOption: "",
+        strategyTask: "",
+    });
+
+    const [priceCalculator, setPriceCalculator] = useState({
+        priceMethod: "",
+        currency: "",
+        priceDate: new Date(),
+        priceType: "",
+        priceAdditionalSelect: "",
+        priceAdditionalInput: "",
+        priceEscalationSelect: "",
+        discountTypeSelect: "",
+        priceEscalationInput: "",
+        flatRateIndicator: false,
+        flatPrice: "",
+        discountTypeInput: "",
+        priceBrackDownType: "",
+        priceBrackDownPercantage: "",
+        year: "",
+        noOfYear: 1,
+        startUsage: "",
+        endUsage: "",
+        usageType: "",
+        frequency: "",
+        unit: "",
+        recommendedValue: "",
+        numberOfEvents: "",
+        netPrice: 1200,
+        totalPrice: 1200,
+        listPrice: "",
+        calculatedPrice: "",
+        priceYear: "",
+        usageType: "",
+        frequency: "",
+        cycle: "",
+        suppresion: "",
+        id: "",
+        portfolioDataId: 0,
+    });
 
     const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
         itemId: "",
@@ -53,17 +114,178 @@ const ExpendTablePopup = ({ data, ...props }) => {
         discountTypeInput: "",
     });
 
+    const frequencyOptions = [
+        { label: "Cyclic", value: "Cyclic" },
+        { label: "once", value: "once" },
+        { label: "alternate", value: "alternate" },
+        { label: "Custom", value: "Custom" },
+    ];
+
+    const [additionalPriceHeadTypeKeyValue, setAdditionalPriceHeadTypeKeyValue] = useState([
+        // { label: "Surcharge Percentage", value: "PERCENTAGE" },
+        // { label: "Surcharge Dollar", value: "ABSOLUTE", },
+        { label: "Surcharge %", value: "PERCENTAGE" },
+        { label: "Surcharge $", value: "ABSOLUTE", },
+    ])
+
+    const discountTypeOptions = [
+        { value: "PROGRAM_DISCOUNT", label: "Program" },
+        { value: "CUSTOMER_DISCOUNT", label: "Customer" },
+        { value: "PORTFOLIO_DISCOUNT", label: "Portfolio" },
+    ]
+
     useEffect(() => {
-        getPortfolioCommonConfig("price-method")
+        // getPortfolioCommonConfig("price-method")
+        //     .then((res) => {
+        //         console.log("hello");
+        //         const options = res.map((d) => ({
+        //             value: d.key,
+        //             label: d.value,
+        //         }));
+        //         setPriceMethodKeyValue(options);
+        //     })
+
+        getSolutionPriceCommonConfig("price-method")
             .then((res) => {
-                console.log("hello");
-                const options = res.map((d) => ({
-                    value: d.key,
-                    label: d.value,
-                }));
+                // const options = res.map((d) => ({
+                //   value: d.key,
+                //   label: d.value,
+                // }));
+                const options = []
+                res.map((d) => {
+                    if (d.key != "EMPTY") {
+                        options.push({
+                            value: d.key,
+                            label: d.value,
+                        })
+                    }
+                });
                 setPriceMethodKeyValue(options);
             })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("price-head-type")
+            .then((res) => {
+                // const options = res.map((d) => ({
+                //   value: d.key,
+                //   label: d.value,
+                // }));
+                const options = []
+                res.map((d) => {
+                    if (d.key != "EMPTY") {
+                        options.push({
+                            value: d.key,
+                            label: d.value,
+                        })
+                    }
+                });
+                setPriceHeadTypeKeyValue(options);
+            })
     }, [])
+
+    useEffect(() => {
+
+        console.log("data.frequency ", data.itemBodyModel.frequency)
+        setAddPortFolioItem({
+            ...addPortFolioItem,
+            id: data.itemId,
+            name: data.itemName,
+            description: data.itemHeaderModel.itemHeaderDescription,
+            // frequency: { label: data.itemBodyModel.frequency, value: data.itemBodyModel.frequency },
+            frequency: (data.itemBodyModel.frequency != "" ||
+                data.itemBodyModel.frequency != "EMPTY" ||
+                data.itemBodyModel.frequency != null) ? {
+                label: data.itemBodyModel.frequency,
+                value: data.itemBodyModel.frequency,
+            } : { label: "once", value: "once" },
+        });
+
+        if (data.itemBodyModel?.itemPrices.length > 0) {
+            ItemPriceDataFetchById();
+        }
+    }, [])
+
+
+
+    const ItemPriceDataFetchById = async () => {
+
+        const priceId = data.itemBodyModel.itemPrices[0].itemPriceDataId;
+
+        const priceDataId = data.itemBodyModel.itemPrices[0].itemPriceDataId;
+
+        const resPrice = await getItemPriceData(priceDataId)
+
+        console.log("resPrice.data.additionalPriceType ", resPrice.data.additionalPriceType)
+
+
+
+        setPriceCalculator({
+            ...priceCalculator,
+            priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+                resPrice.data.priceMethod != "" ||
+                resPrice.data.priceMethod != null) ? {
+                label: resPrice.data.priceMethod,
+                value: resPrice.data.priceMethod
+            } : "",
+            priceType: (resPrice.data.priceType != "EMPTY" ||
+                resPrice.data.priceType != "" ||
+                resPrice.data.priceType != null) ? {
+                label: resPrice.data.priceType,
+                value: resPrice.data.priceType
+            } : "",
+            priceAdditionalSelect: (resPrice.data.additionalPriceType == "" ||
+                resPrice.data.additionalPriceType == "EMPTY" ||
+                resPrice.data.additionalPriceType == null) ?
+                { label: "Surcharge $", value: "ABSOLUTE", }
+                : {
+                    label: resPrice.data.additionalPriceType,
+                    value: resPrice.data.additionalPriceType
+                },
+            priceAdditionalInput: resPrice.data.additionalPriceValue,
+            discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+                resPrice.data.discountType != "" ||
+                resPrice.data.discountType != null) ? {
+                label: resPrice.data.discountType,
+                value: resPrice.data.discountType
+            } : "",
+            discountTypeInput: resPrice.data.discountValue,
+            year: {
+                label: resPrice.data.year, value: resPrice.data.year
+            },
+            noOfYear: resPrice.data.noOfYear,
+            startUsage: resPrice.data.startUsage,
+            endUsage: resPrice.data.endUsage,
+            recommendedValue: resPrice.data.recommendedValue,
+            netPrice: resPrice.data.netService,
+            totalPrice: resPrice.data.totalPrice,
+            numberOfEvents: resPrice.data.numberOfEvents,
+            calculatedPrice: resPrice.data.calculatedPrice,
+            id: resPrice.data.itemPriceDataId,
+            portfolioDataId: resPrice.data.portfolio.portfolioId,
+        })
+
+        console.log("data.itemBodyModel.frequency ", data.itemBodyModel.frequency)
+        setAddPortFolioItem({
+            ...addPortFolioItem,
+            id: data.itemId,
+            name: data.itemName,
+            description: data.itemHeaderModel.itemHeaderDescription,
+            // frequency: { label: data.itemBodyModel.frequency, value: data.itemBodyModel.frequency },
+            frequency: (data.itemBodyModel.frequency != "" ||
+                data.itemBodyModel.frequency != "EMPTY" ||
+                data.itemBodyModel.frequency != null) ? {
+                label: data.itemBodyModel.frequency,
+                value: data.itemBodyModel.frequency,
+            } : { label: "once", value: "once" },
+            templateId: (resPrice.data.standardJobId != "string") ?
+                resPrice.data.standardJobId : "",
+            templateDescription: resPrice.data.templateDescription,
+            repairOption: (resPrice.data.repairKitId != "string") ?
+                resPrice.data.repairKitId : "",
+        })
+    }
 
     const [tabs, setTabs] = useState("0");
     const handleExpandePriceChange = event => {
@@ -80,23 +302,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
         })
         // console.log("expandedPriceCalculator 2 : ", expandedPriceCalculator)
     }
-    const [addPortFolioItem, setAddportFolioItem] = useState({
-        id: 0,
-        description: "",
-        // usageIn:{label:categoryUsageKeyValue1.label,value:categoryUsageKeyValue1.value},
-        // taskType: {label:stratgyTaskTypeKeyValue.label,value:stratgyTaskTypeKeyValue.value},
-        usageIn: "",
-        taskType: "",
-        frequency: "",
-        unit: "",
-        recommendedValue: "",
-        quantity: 1,
-        numberOfEvents: "",
-        templateId: "",
-        templateDescription: "",
-        repairOption: "",
-        strategyTask: "",
-    });
+
     const handleAddPortfolioSave = () => {
         if (props.compoFlag === "itemEdit") {
             props.handleItemEditSave(addPortFolioItem);
@@ -111,30 +317,194 @@ const ExpendTablePopup = ({ data, ...props }) => {
     };
     const handleExpandedPriceSave = async (e, rowData) => {
         try {
-            const { itemId, itemName, itemHeaderModel, itemBodyModel } = rowData
-            let reqObj1 = {
-                itemId,
-                itemName,
-                itemHeaderModel,
-                itemBodyModel: {
-                    ...itemBodyModel,
-                    itemBodyDescription: $("#description").val(),
-                    startUsage: $("#startUsage").val(),
-                    endUsage: $("#endUsage").val(),
-                    frequency: $("#frequency").val(),
-                    recommendedValue: parseInt($("#recommendedValue").val()),
-                    numberOfEvents: parseInt($("#numberOfEvents").val()),
-                    priceMethod: expandedPriceCalculator.priceMethod.value,
-                    additional: $("#priceAdditionalInput").val(),
-                    priceEscalation: $("#priceEscalationInput").val(),
-                    calculatedPrice: parseInt($("#calculatedPrice").val()),
-                    flatPrice: parseInt($("#flatPrice").val()),
-                    discountType: $("#discountTypeInput").val(),
-                }
+
+            if ((addPortFolioItem.description == "") ||
+                (addPortFolioItem.description == undefined) ||
+                (addPortFolioItem.description == null)) {
+                throw "Description is a required field, you can’t leave it blank";
             }
-            const res = await updateItemData(itemId, reqObj1)
+
+            if ((priceCalculator.recommendedValue == "") ||
+                (priceCalculator.recommendedValue == undefined) ||
+                (priceCalculator.recommendedValue == 0)) {
+                throw "Recommended Value is a required field, you can’t leave it blank or Zero(0)";
+            }
+
+            if ((priceCalculator.startUsage == "") ||
+                (priceCalculator.startUsage == undefined) ||
+                (priceCalculator.startUsage == 0)) {
+                throw "Start usage is a required field, you can’t leave it blank or Zero(0)";
+            }
+
+            if ((priceCalculator.endUsage == "") ||
+                (priceCalculator.endUsage == undefined) ||
+                (priceCalculator.endUsage == 0)) {
+                throw "End usage is a required field, you can’t leave it blank or Zero(0)";
+            }
+
+            if ((priceCalculator.priceMethod == "") ||
+                (priceCalculator.priceMethod == undefined)) {
+                throw "Price Method is a required field, you can’t leave it blank";
+            }
+
+
+
+            // const { itemId, itemName, itemHeaderModel, itemBodyModel } = rowData
+            // let reqObj1 = {
+            //     itemId,
+            //     itemName,
+            //     itemHeaderModel,
+            //     itemBodyModel: {
+            //         ...itemBodyModel,
+            //         itemBodyDescription: $("#description").val(),
+            //         startUsage: $("#startUsage").val(),
+            //         endUsage: $("#endUsage").val(),
+            //         frequency: $("#frequency").val(),
+            //         recommendedValue: parseInt($("#recommendedValue").val()),
+            //         numberOfEvents: parseInt($("#numberOfEvents").val()),
+            //         priceMethod: expandedPriceCalculator.priceMethod.value,
+            //         additional: $("#priceAdditionalInput").val(),
+            //         priceEscalation: $("#priceEscalationInput").val(),
+            //         calculatedPrice: parseInt($("#calculatedPrice").val()),
+            //         flatPrice: parseInt($("#flatPrice").val()),
+            //         discountType: $("#discountTypeInput").val(),
+            //     }
+            // }
+
+            if (rowData.itemBodyModel.itemPrices.length > 0) {
+
+                const priceUpdateData = {
+                    itemPriceDataId: priceCalculator.id,
+                    quantity: 0,
+                    standardJobId: addPortFolioItem.templateId,
+                    repairKitId: addPortFolioItem.repairOption,
+                    templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+                    repairOption: "",
+                    additional: "",
+                    partListId: "",
+                    serviceEstimateId: "",
+                    numberOfEvents: 0,
+                    priceMethod: (priceCalculator.priceMethod != "EMPTY"
+                        || priceCalculator.priceMethod != "" ||
+                        priceCalculator.priceMethod != null) ?
+                        priceCalculator.priceMethod?.value : "EMPTY",
+                    priceType: (priceCalculator.priceType != "EMPTY" ||
+                        priceCalculator.priceType != "" ||
+                        priceCalculator.priceType != null) ? priceCalculator.priceType?.value : "EMPTY",
+                    listPrice: 0,
+                    priceEscalation: "",
+                    calculatedPrice: 0,
+                    flatPrice: 0,
+                    year: priceCalculator?.year?.value,
+                    noOfYear: parseInt(priceCalculator?.noOfYear),
+                    // year: addPortFolioItem?.year?.value,
+                    // noOfYear: parseInt(addPortFolioItem?.noOfYear),
+                    sparePartsPrice: 0,
+                    sparePartsPriceBreakDownPercentage: 0,
+                    servicePrice: 0,
+                    labourPrice: 0,
+                    labourPriceBreakDownPercentage: 0,
+                    miscPrice: 0,
+                    miscPriceBreakDownPercentage: 0,
+                    totalPrice: 0,
+                    netService: 0,
+                    additionalPriceType: (priceCalculator?.additionalPriceType != "EMPTY" ||
+                        priceCalculator?.additionalPriceType != "" ||
+                        priceCalculator?.additionalPriceType != null) ?
+                        priceCalculator?.additionalPriceType : "ABSOLUTE",
+                    additionalPriceValue: priceCalculator?.additionalPriceValue,
+                    discountType: (priceCalculator?.discountType != "EMPTY" ||
+                        priceCalculator?.discountType != "" ||
+                        priceCalculator?.discountType != null) ? priceCalculator?.discountType : "EMPTY",
+                    discountValue: priceCalculator?.discountValue,
+                    recommendedValue: parseInt(priceCalculator?.recommendedValue),
+                    startUsage: parseInt(priceCalculator?.startUsage),
+                    endUsage: parseInt(priceCalculator?.endUsage),
+                    sparePartsEscalation: 0,
+                    labourEscalation: 0,
+                    miscEscalation: 0,
+                    serviceEscalation: 0,
+                    withBundleService: false,
+                    portfolio: (priceCalculator.portfolioDataId != 0) ? {
+                        portfolioId: priceCalculator.portfolioDataId
+                    } : {},
+                    tenantId: 0,
+                    partsRequired: true,
+                    labourRequired: true,
+                    serviceRequired: false,
+                    miscRequired: true,
+                    inclusionExclusion: false
+                }
+                // console.log("priceUpdateData Now : ", priceUpdateData)
+                const updatePriceId = await updateItemPriceData(
+                    priceCalculator.id,
+                    priceUpdateData
+                );
+
+            }
+            let reqObjUpdate = {
+                itemId: parseInt(rowData.id),
+                itemName: rowData.name,
+                itemHeaderModel: {
+                    itemHeaderId: 0,
+                    itemHeaderDescription: addPortFolioItem.description,
+                    bundleFlag: rowData.itemHeaderModel.bundleFlag,
+                    portfolioItemId: rowData.itemHeaderModel.portfolioItemId,
+                    reference: rowData?.reference ? rowData?.reference : "",
+                    itemHeaderMake: rowData?.make ? rowData?.make : "",
+                    itemHeaderFamily: rowData?.family ? rowData?.family : "",
+                    model: rowData?.model ? rowData?.model : "",
+                    prefix: rowData?.prefix?.value ? rowData?.prefix?.value : "",
+                    type: "MACHINE",
+                    additional: rowData?.additional ? rowData?.additional : "",
+                    currency: "",
+                    netPrice: 0,
+                    itemProductHierarchy: "END_PRODUCT",
+                    itemHeaderGeographic: "ONSITE",
+                    responseTime: "PROACTIVE",
+                    usage: "",
+                    validFrom: rowData?.validFrom ? rowData?.validFrom : "",
+                    validTo: rowData?.validTo ? rowData?.validTo : "",
+                    estimatedTime: "",
+                    servicePrice: 0,
+                    status: "DRAFT",
+                    componentCode: "",
+                    componentDescription: "",
+                    serialNumber: "",
+                    itemHeaderStrategy: "PREVENTIVE_MAINTENANCE",
+                    variant: "",
+                    itemHeaderCustomerSegment: rowData.customerSegment,
+                    jobCode: "",
+                    preparedBy: rowData?.preparedBy ? rowData?.preparedBy : "",
+                    approvedBy: rowData?.approvedBy ? rowData?.approvedBy : "",
+                    preparedOn: rowData?.preparedOn ? rowData?.preparedOn : "",
+                    revisedBy: rowData?.revisedBy ? rowData?.revisedBy : "",
+                    revisedOn: rowData?.revisedOn ? rowData?.revisedOn : "",
+                    salesOffice: rowData.salesOffice ? rowData.salesOffice : "",
+                    offerValidity: rowData.offerValidity ? rowData.offerValidity : "",
+                },
+                itemBodyModel: {
+                    itemBodyId: 0,
+                    itemBodyDescription: rowData?.itemBodyModel?.itemBodyDescription,
+                    spareParts: ["WITH_SPARE_PARTS"],
+                    labours: ["WITH_LABOUR"],
+                    miscellaneous: ["LUBRICANTS"],
+                    taskType: rowData.taskType != "" ? rowData.taskType : ["PM1"],
+                    solutionCode: "",
+                    usageIn: rowData.usageIn != "" ? rowData.usageIn : "REPAIR_OR_REPLACE",
+                    usage: "",
+                    year: rowData.year ? rowData.year : "",
+                    avgUsage: 0,
+                    unit: rowData.unit != "" ? rowData.unit : "",
+                    frequency: rowData.frequency != "" ? rowData.frequency : "once",
+                    recommendedValue: parseInt(rowData?.recommendedValue),
+                    itemPrices: rowData?.itemPrices,
+                },
+            }
+
+            const res = await updateItemData(rowData.itemId, reqObjUpdate)
             if (res.status == 200) {
-                toast(`😎 ${itemId}: price updated`, {
+                toast(`😎 ${rowData.itemName} Item updated successfully`, {
                     position: "top-right",
                     autoClose: 3000,
                     hideProgressBar: false,
@@ -160,7 +530,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
     const handleStandardJobInputSearch = (e) => {
 
-        setAddportFolioItem({
+        setAddPortFolioItem({
             ...addPortFolioItem,
             templateId: e.target.value,
         })
@@ -183,7 +553,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
     }
 
     const handleRelatedKitInputSearch = (e) => {
-        setAddportFolioItem({
+        setAddPortFolioItem({
             ...addPortFolioItem,
             repairOption: e.target.value,
         })
@@ -209,7 +579,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
         console.log("currentItem : ", currentItem);
         // templateDescription
-        setAddportFolioItem({
+        setAddPortFolioItem({
             ...addPortFolioItem,
             templateId: currentItem.standardJobId,
             templateDescription: { label: currentItem.description, value: currentItem.description },
@@ -222,7 +592,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
         console.log("currentItem : ", currentItem);
         // templateDescription
-        setAddportFolioItem({
+        setAddPortFolioItem({
             ...addPortFolioItem,
             repairOption: currentItem.kitId,
             // templateDescription: { label: currentItem.description, value: currentItem.description },
@@ -245,6 +615,9 @@ const ExpendTablePopup = ({ data, ...props }) => {
         { value: "vanilla", label: "Construction-Medium" },
         { value: "Construction", label: "Construction" },
     ];
+
+
+    console.log(" ...addPortFolioItem, ", addPortFolioItem,)
 
     return (
         <>
@@ -330,7 +703,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     className="text-primary"
                     placeholder="TEMPLATE ID"
                     onChange={(e) =>
-                      setAddportFolioItem({
+                      setAddPortFolioItem({
                         ...addPortFolioItem,
                         templateId: e,
                       })
@@ -352,7 +725,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                             className="text-primary"
                                             placeholder="TEMPLATE DESCRIPTION"
                                             onChange={(e) =>
-                                                setAddportFolioItem({
+                                                setAddPortFolioItem({
                                                     ...addPortFolioItem,
                                                     templateDescription: e,
                                                 })
@@ -425,7 +798,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                             placeholder="REPAIR OPTION"
                                             className="text-primary"
                                             onChange={(e) =>
-                                                setAddportFolioItem({
+                                                setAddPortFolioItem({
                                                     ...addPortFolioItem,
                                                     repairOption: e,
                                                 })
@@ -490,8 +863,8 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         <input
                             className="form-control border-radius-10 text-primary"
                             type="text"
-                            defaultValue={data.itemName}
-                            // value={expandedPriceCalculator.itemId}
+                            // defaultValue={data.itemName}
+                            value={addPortFolioItem.name}
                             placeholder="Service/Bundle ID"
                             disabled
                         />
@@ -511,10 +884,13 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             placeholder="Description"
                             name="description"
                             id="description"
-                            defaultValue={data.itemBodyModel.itemBodyDescription}
-                            // value={expandedPriceCalculator.description}
-                            onChange={handleExpandePriceChange}
-                            // onChange={handlePriceMethodSelect}
+                            defaultValue={addPortFolioItem.description}
+                            value={addPortFolioItem.description}
+                            // onChange={handleExpandePriceChange}
+                            onChange={(e) => setAddPortFolioItem({
+                                ...addPortFolioItem,
+                                description: e.target.value,
+                            })}
                             autoComplete="off"
                         />
                         <div className="css-w8dmq8">*Mandatory</div>
@@ -527,15 +903,30 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         >
                             Frequency
                         </label>
-                        <input
+                        <Select
+                            options={frequencyOptions}
+                            placeholder="Select....."
+                            className="text-primary"
+                            onChange={(e) =>
+                                setAddPortFolioItem({
+                                    ...addPortFolioItem,
+                                    frequency: e,
+                                })
+                            }
+                            value={addPortFolioItem.frequency}
+                        />
+                        {/* <input
                             className="form-control border-radius-10 text-primary"
                             type="text"
                             id="frequency"
-                            defaultValue={data.itemBodyModel.frequency}
-                            // value={expandedPriceCalculator.frequency}
-                            // onChange={handleExpandePriceChange}
+                            // defaultValue={data.itemBodyModel.frequency}
+                            value={addPortFolioItem.frequency}
+                            onChange={(e) => setAddPortFolioItem({
+                                ...addPortFolioItem,
+                                frequency: e,
+                            })}
                             autoComplete="off"
-                        />
+                        /> */}
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -549,8 +940,13 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             type="number"
                             className="form-control border-radius-10 text-primary"
                             id="recommendedValue"
-                            defaultValue={data.itemBodyModel.recommendedValue}
-                            // value={expandedPriceCalculator.recommendedValue}
+                            // defaultValue={priceCalculator.recommendedValue}
+                            value={priceCalculator.recommendedValue}
+                            onChange={(e) =>
+                                setPriceCalculator({
+                                    ...priceCalculator,
+                                    recommendedValue: e.target.value,
+                                })}
                             // onChange={handleExpandePriceChange}
                             autoComplete="off"
                         />
@@ -568,8 +964,14 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
                             <input
                                 className="form-control border-none text-primary"
-                                type="text"
+                                type="number"
                                 id="startUsage"
+                                value={priceCalculator.startUsage}
+                                onChange={(e) =>
+                                    setPriceCalculator({
+                                        ...priceCalculator,
+                                        startUsage: e.target.value,
+                                    })}
                             // value={expandedPriceCalculator.startUsage}
                             // onChange={handleExpandePriceChange}
                             />
@@ -583,7 +985,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             // value={expandedPriceCalculator.priceAdditionalSelect}
                             // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
                             />
-                        
+
                         </div>
                         <div className="css-w8dmq8">*Mandatory</div>
                     </div>
@@ -604,6 +1006,12 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 className="form-control border-radius-10 text-primary"
                                 type="text"
                                 id="endUsage"
+                                value={priceCalculator.endUsage}
+                                onChange={(e) =>
+                                    setPriceCalculator({
+                                        ...priceCalculator,
+                                        endUsage: e.target.value,
+                                    })}
                             // value={expandedPriceCalculator.endUsage}
                             // onChange={handleExpandePriceChange}
                             />
@@ -626,6 +1034,13 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             type="text"
                             // placeholder="Description"
                             id="numberOfEvents"
+                            value={priceCalculator.numberOfEvents}
+                            disabled
+                        // onChange={(e) =>
+                        //     setPriceCalculator({
+                        //         ...priceCalculator,
+                        //         recommendedValue: e.target.value,
+                        //     })}
                         // value={expandedPriceCalculator.numberOfEvents}
                         // onChange={handleExpandePriceChange}
                         />
@@ -645,10 +1060,16 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             options={priceMethodKeyValue}
                             className="text-primary"
                             id="priceMethod"
-                            value={expandedPriceCalculator.priceMethod}
-                            name="priceMethod"
-                            // onChange={handlePriceMethodSelect}
-                            onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
+                            value={priceCalculator.priceMethod}
+                            onChange={(e) =>
+                                setPriceCalculator({
+                                    ...priceCalculator,
+                                    priceMethod: e,
+                                })}
+                        // value={expandedPriceCalculator.priceMethod}
+                        // name="priceMethod"
+                        // // onChange={handlePriceMethodSelect}
+                        // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
                         />
                         <div className="css-w8dmq8">*Mandatory</div>
                     </div>
@@ -663,23 +1084,50 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         </label>
                         <div className=" d-flex form-control-date">
                             <div className="">
-                                <Select
+                                {/* <Select
                                     isClearable={true}
                                     className="text-primary"
                                     id="priceAdditionalSelect"
                                     options={options}
                                     placeholder="Select"
+                                    value={priceCalculator.recommendedValue}
+                                    onChange={(e) =>
+                                        setPriceCalculator({
+                                            ...priceCalculator,
+                                            recommendedValue: e.target.value,
+                                        })}
                                 // value={expandedPriceCalculator.priceAdditionalSelect}
                                 // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
+                                /> */}
+                                <Select
+                                    isClearable={true}
+                                    className="text-primary"
+                                    value={priceCalculator.priceAdditionalSelect}
+                                    name="priceAdditionalSelect"
+                                    onChange={(e) =>
+                                        setPriceCalculator({
+                                            ...priceCalculator,
+                                            priceAdditionalSelect: e,
+                                        })
+                                    }
+                                    options={additionalPriceHeadTypeKeyValue}
+                                    placeholder="Select"
+                                // isDisabled
                                 />
                             </div>
                             <input
                                 type="text"
                                 className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                 placeholder="10%"
-                                value={expandedPriceCalculator.priceAdditionalInput}
+                                value={priceCalculator.priceAdditionalInput}
                                 id="priceAdditionalInput"
-                                onChange={handleExpandePriceChange}
+                                // onChange={handleExpandePriceChange}
+                                onChange={(e) =>
+                                    setPriceCalculator({
+                                        ...priceCalculator,
+                                        priceAdditionalInput: e.target.value,
+                                    })
+                                }
                             />
                         </div>
                     </div>
@@ -725,11 +1173,13 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             type="text"
                             className="form-control border-radius-10 text-primary"
                             id="calculatedPrice"
-                            placeholder="$100"
+                            placeholder="0"
+                            disabled
+                            value={priceCalculator.calculatedPrice}
                         // value={expandedPriceCalculator.calculatedPrice}
                         // onChange={handleExpandePriceChange}
                         />
-                        <div className="css-w8dmq8">*Mandatory</div>
+                        {/* <div className="css-w8dmq8">*Mandatory</div> */}
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -760,7 +1210,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         </label>
                         <div className=" d-flex form-control-date">
                             <div className="">
-                                <Select
+                                {/* <Select
                                     id="discountTypeSelect"
                                     className='text-primary'
                                     isClearable={true}
@@ -769,6 +1219,20 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 // defaultValue={data.itemBodyModel.startUsage}
                                 // value={expandedPriceCalculator.discountTypeSelect}
                                 // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, discountTypeSelect: e })}
+                                /> */}
+                                <Select
+                                    value={priceCalculator.discountTypeSelect}
+                                    name="discountTypeSelect"
+                                    className="text-primary"
+                                    onChange={(e) =>
+                                        setPriceCalculator({
+                                            ...priceCalculator,
+                                            discountTypeSelect: e,
+                                        })
+                                    }
+                                    isClearable={true}
+                                    options={discountTypeOptions}
+                                    placeholder="Select"
                                 />
                             </div>
                             <input
