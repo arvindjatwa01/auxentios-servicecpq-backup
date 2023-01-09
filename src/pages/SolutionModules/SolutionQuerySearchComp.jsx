@@ -276,8 +276,8 @@ const SolutionQuerySearchComp = (props) => {
             console.log("props.compoFlag 276: ", props.compoFlag)
 
             if (props.compoFlag === "solutionTempItemSearch") {
-                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
-
+                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+                console.log("solutionTempItemSearch search Str ", searchStr)
             } else if (props.compoFlag === "portfolioTempItemSearch") {
                 var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
             }
@@ -301,9 +301,10 @@ const SolutionQuerySearchComp = (props) => {
                     querySearchSelector[i].selectOperator.value +
                     " " +
                     querySearchSelector[i].selectFamily.value +
-                    ":\"" +
-                    querySearchSelector[i].inputSearch + "\"";
+                    ":" +
+                    querySearchSelector[i].inputSearch + "";
             }
+            console.log("searchStr 307 try : ", searchStr);
             // searchStr is ready call API 
             if (props.compoFlag === "coverage") {
                 props?.setFlagIs(false);
@@ -326,7 +327,6 @@ const SolutionQuerySearchComp = (props) => {
                 props.setLoadingItem(false)
             } else if (props.compoFlag === "portfolioTempItemSearch") {
 
-                console.log("searchStr 327 : ", searchStr)
                 const res3 = await portfolioSearch(searchStr)
                 console.log("res3 is  : ", res3)
                 if (!res3.data.length > 0) {
@@ -363,8 +363,11 @@ const SolutionQuerySearchComp = (props) => {
                 //     .catch((err) => {
                 //         console.log("err in api call", err);
                 //     });
+
                 const res4 = await getSearchCustomPortfolio(searchStr)
+                console.log("getSearchCustomPortfolio res is : ", res4)
                 if (!res4.length > 0) {
+
                     props.setSolutionLoadingStatus("")
                     props.setSolutionTempMasterData([])
                     // throw "No record found"

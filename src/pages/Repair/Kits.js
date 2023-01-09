@@ -155,6 +155,7 @@ function Kits(props) {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  const [coverageMasterData, setCoverageMasterData] = useState([])
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -491,19 +492,8 @@ function Kits(props) {
   };
 
   const handleCoverageCheckBoxData = () => {
-    let cloneArr = [];
     let data = [];
-    filterMasterData.map((data, i) => {
-      console.log("data: ", data);
-      const exist = selectedCoverageData.some((item) => item.id === data.id);
-      console.log("exist: ", exist);
-      if (!exist) {
-        cloneArr.push(data);
-        // setSelectedCoverageData([...selectedCoverageData, data])
-      }
-    });
-    const coverageArray = [...selectedCoverageData, ...cloneArr];
-    coverageArray.map((coverage) =>
+    filterMasterData.map((coverage) =>
       data.push({
         model: coverage.model,
         make: coverage.make,
@@ -520,7 +510,7 @@ function Kits(props) {
       .catch((e) => {
         handleSnack("error", "Error occurred while adding the coverage!");
       });
-    setMasterData([]);
+      setCoverageMasterData([]);
   };
 
   // Select model from the search result
@@ -2412,7 +2402,7 @@ function Kits(props) {
                         style={{ flexFlow: "unset" }}
                       >
                         <QuerySearchComp
-                          setMasterData={setMasterData}
+                          setMasterData={setCoverageMasterData}
                           setFilterMasterData={setFilterMasterData}
                           setSelectedMasterData={setSelectedCoverageData}
                           compoFlag="coverage"
@@ -2425,14 +2415,14 @@ function Kits(props) {
                           handleSnack={handleSnack}
                         />
                       </div>
-                      {masterData?.length > 0 ? (
+                      {coverageMasterData?.length > 0 ? (
                         <>
                           <hr />
                           <DataTable
                             className=""
                             title=""
                             columns={masterColumns}
-                            data={masterData}
+                            data={coverageMasterData}
                             customStyles={customStyles}
                             selectableRows
                             onSelectedRowsChange={(state) =>
