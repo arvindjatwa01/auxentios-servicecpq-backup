@@ -73,6 +73,8 @@ import {
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
   SPAREPART_SEARCH_Q_OPTIONS,
+  STATUS_OPTIONS,
+  TEMPLATE_VERSION_OPTIONS,
 } from "./CONSTANTS";
 import {
   debounce,
@@ -198,12 +200,7 @@ function Kits(props) {
   };
   const [kitDBId, setKITDBId] = useState("");
   const [version, setVersion] = useState({ value: "GOLD", label: "Gold" });
-  const versionOptions = [
-    { value: "GOLD", label: "Gold" },
-    { value: "SILVER", label: "Silver" },
-    { value: "BRONZE", label: "Bronze" },
-    { value: "STANDARD", label: "Standard" },
-  ];
+
   const [selKITStatus, setSelKITStatus] = useState({
     value: "DRAFT",
     label: "Draft",
@@ -226,17 +223,12 @@ function Kits(props) {
       setFile(file);
     }
   };
-  const templateStatusOptions = [
-    { value: "DRAFT", label: "Draft" },
-    { value: "ACTIVE", label: "Active" },
-    { value: "REVISED", label: "Revised" },
-    { value: "ARCHIVED", label: "Archived" },
-  ];
-  const handleUploadClick = () => {
-    if (Object.values(viewOnlyTab).every((item) => item === true))
-      setFileUploadOpen(true);
-    else handleSnack("info", "Please save all the header details!");
-  };
+
+  // const handleUploadClick = () => {
+  //   if (Object.values(viewOnlyTab).every((item) => item === true))
+  //     setFileUploadOpen(true);
+  //   else handleSnack("info", "Please save all the header details!");
+  // };
   //Uplaod spare parts through excel sheet
   const handleUploadFile = async () => {
     // console.log("Upload");
@@ -693,11 +685,11 @@ function Kits(props) {
           : false,
     });
     setRating(result.rating);
-    setSelKITStatus(
-      templateStatusOptions.filter((x) => x.value === result.status)[0]
-    );
+    setSelKITStatus(STATUS_OPTIONS.filter((x) => x.value === result.status)[0]);
     setVersion(
-      versionOptions.find((element) => element.value === result.version)
+      TEMPLATE_VERSION_OPTIONS.find(
+        (element) => element.value === result.version
+      )
     );
 
     setCustomerData({
@@ -1329,7 +1321,7 @@ function Kits(props) {
                   <Select
                     className="customselectbtn1"
                     onChange={(e) => handleVersionKit(e)}
-                    options={versionOptions}
+                    options={TEMPLATE_VERSION_OPTIONS}
                     value={version}
                   />
                 </div>
@@ -1338,7 +1330,7 @@ function Kits(props) {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
-                    options={templateStatusOptions}
+                    options={STATUS_OPTIONS}
                     value={selKITStatus}
                   />
                 </div>

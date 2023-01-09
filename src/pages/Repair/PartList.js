@@ -96,6 +96,7 @@ import {
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
   SPAREPART_SEARCH_Q_OPTIONS,
+  STATUS_OPTIONS,
 } from "./CONSTANTS";
 import {
   selectDropdownOption,
@@ -421,7 +422,7 @@ function PartList(props) {
     });
     // setRating(result.rating);
     setSelBuilderStatus(
-      builderStatusOptions.filter((x) => x.value === result.status)[0]
+      STATUS_OPTIONS.filter((x) => x.value === result.status)[0]
     );
     let versions = result.versionList?.map((versionNo) => ({
       value: versionNo,
@@ -1127,12 +1128,6 @@ function PartList(props) {
         handleSnack("error", `Failed to update the status!`);
       });
   };
-  const builderStatusOptions = [
-    { value: "DRAFT", label: "Draft" },
-    { value: "ACTIVE", label: "Active" },
-    { value: "REVISED", label: "Revised" },
-    { value: "ARCHIVED", label: "Archived" },
-  ];
 
   const [selectedVersion, setSelectedVersion] = useState({
     label: "Version 1",
@@ -1512,7 +1507,7 @@ function PartList(props) {
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
                     isOptionDisabled={(e) => disableStatusOptions(e)}
-                    options={builderStatusOptions}
+                    options={STATUS_OPTIONS}
                     value={selBuilderStatus}
                   />
                 </div>

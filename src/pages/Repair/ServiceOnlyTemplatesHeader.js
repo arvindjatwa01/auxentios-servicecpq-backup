@@ -17,7 +17,6 @@ import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DataTable from "react-data-table-component";
 import { Link, useHistory } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import $ from "jquery";
 import { getSearchQueryCoverage } from "../../services/index";
 import SearchBox from "./components/SearchBox";
 import {
@@ -27,6 +26,7 @@ import {
   FONT_STYLE_UNIT_SELECT,
   LIFE_STAGE_OPTIONS,
   OPTIONS_USAGE,
+  STATUS_OPTIONS,
   TEMPLATE_VERSION_OPTIONS,
 } from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
@@ -82,12 +82,7 @@ function ServiceOnlyTemplates(props) {
   const [noOptionsModelCoverage, setNoOptionsModelCoverage] = useState(false);
   const [headerLoading, setHeaderLoading] = useState(false);
   const [templateId, setTemplateId] = useState("");
-  const builderStatusOptions = [
-    { value: "DRAFT", label: "Draft" },
-    { value: "ACTIVE", label: "Active" },
-    { value: "REVISED", label: "Revised" },
-    { value: "ARCHIVED", label: "Archived" },
-  ];
+
   const handleVersionTemplate = (e) => {
     setVersion(e);
   };
@@ -297,10 +292,11 @@ function ServiceOnlyTemplates(props) {
         result.priceMethod !== ""
           ? true
           : false,
+      usageViewOnly: result.application ? true : false
     });
     setRating(result.rating);
     setSelTemplateStatus(
-      builderStatusOptions.filter((x) => x.value === result.status)[0]
+      STATUS_OPTIONS.filter((x) => x.value === result.status)[0]
     );
     setVersion(
       TEMPLATE_VERSION_OPTIONS.find(
@@ -917,7 +913,7 @@ function ServiceOnlyTemplates(props) {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
-                    options={builderStatusOptions}
+                    options={STATUS_OPTIONS}
                     value={selTemplateStatus}
                   />
                 </div>
@@ -2304,6 +2300,7 @@ function ServiceOnlyTemplates(props) {
               templateDetails={{
                 activeElement,
                 setActiveElement,
+                fetchAllDetails
               }}
             />
           )}

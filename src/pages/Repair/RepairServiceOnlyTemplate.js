@@ -67,26 +67,43 @@ export const RepairServiceOnlyTemplate = () => {
   };
 
   const searchKitColumns = [
-    { field: "estimationNumber", headerName: "ID#", flex: 1, width: 70 },
+    { field: "standardJobId", headerName: "ID#", flex: 1, width: 70 },
     { field: "description", headerName: "Description", flex: 1, width: 130 },
-    { field: "customerId", headerName: "Customer#", flex: 1, width: 130 },
-    { field: "make", headerName: "Make", flex: 1, width: 130 },
-    { field: "model", headerName: "Model", flex: 1, width: 130 },
-    { field: "family", headerName: "Family", flex: 1, width: 130 },
-    { field: "serialNo", headerName: "Serial#", flex: 1, width: 130 },
-    { field: "createdBy", headerName: "Created by", flex: 1, width: 130 },
+    { field: "model", headerName: "Model", flex: 1, width: 130, 
+    renderCell: (params) => (
+      <div>
+      {params.value?.map(model => 
+      <Typography style={{ fontSize: 12 }}>
+        {model}
+      </Typography>
+      )}</div>
+    ),},
+    { field: "family", headerName: "Family", flex: 1, width: 130,
+    renderCell: (params) => (
+
+      <div>
+      {params.value?.map(family => 
+      <Typography style={{ fontSize: 12 }}>
+        {family}
+      </Typography>)}
+      </div>
+      
+    ) 
+  },
+    { field: "version", headerName: "Version", flex: 1, width: 130 },
     {
-      field: "createdAt",
-      headerName: "Created On",
+      field: "totalLabourPrice",
+      headerName: "Labor $",
       flex: 1,
-      width: 130,
-      renderCell: (params) => (
-        <Moment format="DD MMM YY HH:MM a" style={{ fontSize: 12 }}>
-          {params.value}
-        </Moment>
-      ),
+      width: 130,      
     },
-    { field: "totalPrice", headerName: "Total $", flex: 1, width: 130 },
+    {
+      field: "totalMiscPrice",
+      headerName: "Misc $",
+      flex: 1,
+      width: 130,      
+    },
+    { field: "netPrice", headerName: "Total $", flex: 1, width: 130 },
     { field: "status", headerName: "Status", flex: 1, width: 130 },
     {
       field: "actions",
@@ -143,6 +160,16 @@ export const RepairServiceOnlyTemplate = () => {
     try {
       if (searchStr) {
         const res = await templateSearch(`standardJobId~SJ AND ${searchStr}`);
+        res.map(template => {
+          let family = [], model = [];
+          template.coverages.map(coverage => {          
+          family.push(coverage.family);
+          model.push(coverage.model);          
+        });
+        // return {...kit, family : family, model: model};
+        template.family = family;
+        template.model =  model;
+      })
         setMasterData(res);
       } else {
         handleSnack("info", "Please fill the search criteria!");
