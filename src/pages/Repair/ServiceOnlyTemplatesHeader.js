@@ -850,19 +850,8 @@ function ServiceOnlyTemplates(props) {
   };
 
   const handleCoverageCheckBoxData = () => {
-    let cloneArr = [];
-    let data = [];
-    filterMasterData.map((data, i) => {
-      console.log("data: ", data);
-      const exist = selectedCoverageData.some((item) => item.id === data.id);
-      console.log("exist: ", exist);
-      if (!exist) {
-        cloneArr.push(data);
-        // setSelectedCoverageData([...selectedCoverageData, data])
-      }
-    });
-    const coverageArray = [...selectedCoverageData, ...cloneArr];
-    coverageArray.map((coverage) =>
+    let data = []; 
+    filterMasterData.map((coverage) =>
       data.push({
         model: coverage.model,
         make: coverage.make,
