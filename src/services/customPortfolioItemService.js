@@ -57,14 +57,16 @@ export const getCustomItemData = (id) => {
 };
 
 export const getSearchCustomPortfolio = (searchStr) => {
-  console.log("Query customPortfolio > getSearchCustomPortfolio called...");
-  console.log("new search str is :", searchStr);
-  console.log("padth : ", CUSTOM_PORTFOLIO_SEARCH_QUERY);
+  // console.log("Query customPortfolio > getSearchCustomPortfolio called...");
+  // console.log("new search str is :", searchStr);
+  // console.log("padth : ", CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr);
 
   return new Promise((resolve, reject) => {
     try {
+      console.log("path is : ", CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr);
+      console.log("path 2 is : ", `${CUSTOM_PORTFOLIO_SEARCH_QUERY}${searchStr}`);
       axios
-        .get(CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr, { headers: headersdata })
+        .get(`${CUSTOM_PORTFOLIO_SEARCH_QUERY}${searchStr}`, { headers: headersdata })
         .then((res) => {
           console.log("getSearchCustomPortfolio > axios res=", res);
           resolve(res.data);

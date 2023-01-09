@@ -18846,9 +18846,6 @@ export function CreatePortfolio(props) {
                   </div>
                   <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p>
                 </div>
-              </div>
-            </div>
-          </div>
         </Modal.Body>
         {/* <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
