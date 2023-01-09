@@ -1312,7 +1312,8 @@ const AddPortfolioItem = (props) => {
 
           if ((props.portfolioDataId == "") ||
             (props.portfolioDataId == undefined)) {
-            throw "Please Create Portfolio First, then you will Add Item";
+            props.itemModelShow(false)
+            throw "Please Create Portfolio First, then you can Add Item";
           }
 
           if ((addPortFolioItem.name == "") ||
@@ -1441,7 +1442,8 @@ const AddPortfolioItem = (props) => {
 
             if ((props.portfolioDataId == "") ||
               (props.portfolioDataId == undefined)) {
-              throw "Please Create Portfolio First, then you will Add Item";
+              props.itemModelShow(false)
+              throw "Please Create Portfolio First, then you can Add Item";
             }
             if (noNeedBundleService) {
               props.setTabs("5");
@@ -1782,7 +1784,8 @@ const AddPortfolioItem = (props) => {
       if ((props.compoFlag === "ITEM")) {
         if ((props.portfolioDataId == "") ||
           (props.portfolioDataId == undefined)) {
-          throw "Please Create Portfolio First, then you will Add Item";
+          props.itemModelShow(false)
+          throw "Please Create Portfolio First, then you can Add Item";
         }
       }
 
@@ -1793,7 +1796,8 @@ const AddPortfolioItem = (props) => {
       if ((props.compoFlag === "ITEM")) {
         if ((props.portfolioDataId == "") ||
           (props.portfolioDataId == undefined)) {
-          throw "Please Create Portfolio First, then you will Add Item";
+          props.itemModelShow(false)
+          throw "Please Create Portfolio First, then you can Add Item";
         }
         if (noNeedBundleService) {
           props.setTabs("5");

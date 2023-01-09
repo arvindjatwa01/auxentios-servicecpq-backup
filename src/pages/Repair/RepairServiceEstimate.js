@@ -1,10 +1,8 @@
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import ReplayIcon from "@mui/icons-material/Replay";
+import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -1456,30 +1454,51 @@ function RepairServiceEstimate(props) {
       ) : (
         <div>
           <div className="card p-4 mt-5">
-            <div className="bg-primary px-3 mb-3 border-radius-6">
-              <div className="row align-items-center">
-                <div className="col-11 mx-2 py-3">
-                  <div className="d-flex align-items-center bg-primary w-100">
-                    <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                      <h5 className="mr-2 mb-0 text-white">
-                        <span>Service Estimation Header</span>
-                        <a
-                          href={undefined}
-                          className="ml-3 text-white"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <EditOutlinedIcon
-                            onClick={() =>
-                              makeHeaderEditable("serviceEstHeader")
-                            }
-                          />
-                        </a>
-                      </h5>
-                    </div>
-                  </div>
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+              <div className="" style={{ display: "contents" }}>
+                <span
+                  className="mr-3 ml-2 text-white"
+                  style={{ fontSize: "20px" }}
+                >
+                  Service Estimation Header
+                </span>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <EditIcon
+                      onClick={() =>
+                        ["DRAFT", "REVISED"].indexOf(
+                          activeElement?.builderStatus
+                        ) > -1
+                          ? makeHeaderEditable("serviceEstHeader")
+                          : handleSnack(
+                              "info",
+                              "Active BUILDER cannot be changed, change status to REVISE"
+                            )
+                      }
+                    />
+                  </Tooltip>
                 </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Reset">
+                    <ReplayIcon
+                    // onClick={() => handleResetData("RESET")}
+                    />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Share">
+                    <ShareOutlinedIcon />
+                  </Tooltip>
+                </div>
+
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Add to Review">
+                    <ReviewAddIcon />
+                  </Tooltip>
+                </div>
+               
               </div>
-            </div>
+            </h5>
 
             {!serviceHeaderViewOnly ? (
               <>
