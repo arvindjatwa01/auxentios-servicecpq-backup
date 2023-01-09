@@ -8,6 +8,9 @@ import {
 } from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
 import FormGroup from "@mui/material/FormGroup";
+import {
+    Switch as Switch1,
+} from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DropdownButton from "react-bootstrap/DropdownButton";
@@ -21,6 +24,7 @@ import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -269,7 +273,44 @@ export function CreateCustomPortfolio(props) {
     const [solutionLevelListKeyValue, setSolutionLevelListKeyValue] = useState([]);
     // const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
     const [age, setAge] = useState("5");
+    const [extWorkData, setExtWorkData] = useState({
+        jobCode: "",
+        jobCodeDescription: "",
+        pricingMethod: "",
+        totalPrice: 0.0,
+        payer: "",
+        flatRateIndicator: false,
+        adjustedPrice: 0.0,
+        basePrice: 0.0,
+        percentageOfBase: 0,
+    });
+    const [yearsOption, seYearsOption] = useState([
+        {
+            value: "1", label: "1"
+        }
+    ])
+    const handleFlatPriceIndicator = (e) => {
+        // console.log("event ", e.target.checked)
 
+        setExtWorkData({
+            ...extWorkData,
+            flatRateIndicator: e.target.checked,
+            adjustedPrice: e.target.checked
+                ? extWorkData.adjustedPrice
+                : 0.0,
+        })
+        setPriceCalculator({
+            ...priceCalculator,
+            flatPrice: 0,
+        })
+    }
+    const [priceCurrencyKeyValue, setPriceCurrencyKeyvalue] = useState([]);
+    const [additionalPriceHeadTypeKeyValue, setAdditionalPriceHeadTypeKeyValue] = useState([
+        // { label: "Surcharge Percentage", value: "PERCENTAGE" },
+        // { label: "Surcharge Dollar", value: "ABSOLUTE", },
+        { label: "Surcharge %", value: "PERCENTAGE" },
+        { label: "Surcharge $", value: "ABSOLUTE", },
+    ])
     const [machineTypeKeyValueList, setMachineTypeKeyValueList] = useState([])
     const [lifeStageOfMachineKeyValueList, setLifeStageOfMachineKeyValueList] = useState([])
 
@@ -390,6 +431,26 @@ export function CreateCustomPortfolio(props) {
     const [miscRequired, setMiscRequired] = useState(true);
 
     const [needOnlyParts, setNeedOnlyParts] = useState(false);
+    const [bundleServiceQuerySearchModelPrefixOption, setBundleServiceQuerySearchModelPrefixOption] = useState([])
+    const [bundleAndServiceEditAble, setBundleAndServiceEditAble] = useState(false);
+    const [editBundleService, setEditBundleService] = useState(false);
+
+    const [bundleServicePriceCalculator, setBundleServicePriceCalculator] = useState(false);
+    const [associatedServiceOrBundleIndex, setAssociatedServiceOrBundleIndex] = useState(0);
+    const [bundleServiceQuerySearchModelResult, setBundleServiceQuerySearchModelResult] = useState([])
+    const [selectedCustomerSegmentOption, setSelectedCustomerSegmentOption] = useState("")
+    const [bundleServicePortfolioItemId, setBundleServicePortfolioItemId] = useState(0);
+    const [bundleServiceItemPriceData, setBundleServiceItemPriceData] = useState([]);
+    const [bundleOrServiceAdministrative, setBundleOrServiceAdministrative] = useState({
+        preparedBy: null,
+        approvedBy: null,
+        preparedOn: new Date(),
+        revisedBy: null,
+        revisedOn: new Date(),
+        salesOffice: null,
+        offerValidity: null,
+    });
+
 
     const [coverageData, setCoverageData] = useState({
         make: "",
@@ -676,6 +737,92 @@ export function CreateCustomPortfolio(props) {
             setOpenAddBundleItemHeader("Add New Portfolio Item");
         }
     };
+
+    const handleSelectCustomerSegment = (e) => {
+        // console.log("e is : ", e)
+
+        setSelectedCustomerSegmentOption(e)
+        setCreateServiceOrBundle({
+            ...createServiceOrBundle,
+            customerSegment: e,
+        });
+    }
+
+    const handleBundleServiceInputSearch = (e) => {
+        setCreateServiceOrBundle({ ...createServiceOrBundle, [e.target.name]: e.target.value, });
+        var searchStr = "model~" + e.target.value;
+        getSearchQueryCoverage(searchStr)
+            .then((res) => {
+                $(`.scrollbar-model`).css("display", "block");
+                setBundleServiceQuerySearchModelResult(res)
+
+                var preArr = [];
+                for (var n = 0; n < res.length; n++) {
+                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                }
+                setBundleServiceQuerySearchModelPrefixOption(preArr);
+
+            })
+            .catch((err) => {
+                console.log("error in getSearchQueryCoverage", err);
+            });
+    }
+
+    const handleBundleServiceModelListClick = (e, currentItem) => {
+        setCreateServiceOrBundle({
+            ...createServiceOrBundle,
+            model: currentItem.model,
+            make: currentItem.make,
+            family: currentItem.family
+        })
+        $(`.scrollbar-model`).css("display", "none");
+    }
+
+    const selectBundleServicePrefixOption = (e) => {
+        setSelectedPrefixOption(e)
+        setCreateServiceOrBundle({
+            ...createServiceOrBundle,
+            prefix: e,
+        })
+    }
+
+    const saveEditServiceOrBundleAdministrativeData = () => {
+        // toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
+        //   position: "top-right",
+        //   autoClose: 3000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        // });
+        setBundleServiceShow(false);
+        setBundleTabs("bundleServiceHeader");
+        setAddportFolioItem({})
+    }
+
+    const showPriceDataOfBundleOrService = async (bundleServiceData) => {
+        // setBundleServicePriceCalculator
+        // serviceOrBundlePrefix={serviceOrBundlePrefix}
+        if (bundleServiceData.customItemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+            setServiceOrBundlePrefix("BUNDLE");
+        } else if (bundleServiceData.customItemHeaderModel.bundleFlag === "SERVICE") {
+            setServiceOrBundlePrefix("SERVICE");
+        }
+
+        console.log("bundleServiceData.itemBodyModel : ", bundleServiceData.customItemHeaderModel)
+
+        if (bundleServiceData.customItemBodyModel.customItemPrices.length > 0) {
+            const rObjId = bundleServiceData.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+
+            //   const res = await getItemPriceData(rObjId)
+            //   console.log("ressss : ", res)
+            //   var newVal = res.data;
+            //   setPriceCalculator(res.data)
+        }
+
+        setBundleServicePriceCalculator(true);
+    }
 
     const handleAddSolutionPress = () => {
         setOpenSearchSolution(true);
@@ -1904,6 +2051,7 @@ export function CreateCustomPortfolio(props) {
         setOpenAddBundleItemHeader("Add New Portfolio Item");
     };
 
+    // View custom Portfolio Item
     const handleEditPortfolioItem = (e, row) => {
 
         console.log("row 1942 : ", row);
@@ -1918,6 +2066,86 @@ export function CreateCustomPortfolio(props) {
         // setCreateNewBundle(false);
         // setOpenAddBundleItemHeader("Add New Portfolio Item");
     }
+
+
+    // View Custom Portfolio Bundle/Service
+
+    const handleExpendedBundleServiceUpdate = async (i, data) => {
+
+        // alert(i)
+        // serviceOrBundlePrefix
+        setAssociatedServiceOrBundleIndex(i)
+        setEditBundleService(true);
+        setBundleAndServiceEditAble(true)
+        setBundleTabs("bundleServiceHeader");
+
+        const newData = await getCustomItemData(data.customItemId)
+
+        console.log("my newData : ", newData)
+
+        if (newData.customItemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+            setServiceOrBundlePrefix("BUNDLE");
+        } else if (newData.customItemHeaderModel.bundleFlag === "SERVICE") {
+            setServiceOrBundlePrefix("SERVICE");
+        }
+
+
+        setCreateServiceOrBundle({
+            id: newData.customItemId,
+            name: newData.itemName,
+            description: newData.customItemHeaderModel.itemHeaderDescription,
+            bundleFlag: newData.customItemHeaderModel.bundleFlag,
+            reference: newData.customItemHeaderModel.itemHeaderDescription,
+            customerSegment: "",
+            make: newData.customItemHeaderModel.itemHeaderMake,
+            model: newData.customItemHeaderModel.model,
+            family: newData.customItemHeaderModel.itemHeaderFamily,
+            prefix: { label: newData.customItemHeaderModel.prefix, value: newData.customItemHeaderModel.prefix },
+            machine: { label: newData.customItemHeaderModel.type, value: newData.customItemHeaderModel.type },
+            additional: "",
+            machineComponent: { label: newData.customItemHeaderModel.type, value: newData.customItemHeaderModel.type },
+        });
+
+        setSelectedPrefixOption({ label: newData.customItemHeaderModel.prefix, value: newData.customItemHeaderModel.prefix });
+
+        setPassItemEditRowData(newData);
+        setBundleServicePortfolioItemId(newData.customItemHeaderModel.portfolioItemId);
+
+        setBundleServiceItemPriceData(newData.customItemBodyModel.itemPrices)
+
+
+        var offerValidityLabel;
+        if (newData.customItemHeaderModel.offerValidity == "15") {
+            offerValidityLabel = "15 days";
+        } else if (newData.customItemHeaderModel.offerValidity == "30") {
+            offerValidityLabel = "1 month";
+        } else if (newData.customItemHeaderModel.offerValidity == "45") {
+            offerValidityLabel = "45 days";
+        } else if (newData.customItemHeaderModel.offerValidity == "60") {
+            offerValidityLabel = "2 month";
+        } else {
+            offerValidityLabel = newData.customItemHeaderModel.offerValidity;
+        }
+
+        setBundleOrServiceAdministrative({
+            preparedBy: newData.customItemHeaderModel.preparedBy,
+            approvedBy: newData.customItemHeaderModel.approvedBy,
+            preparedOn: newData.customItemHeaderModel.preparedOn,
+            revisedBy: newData.customItemHeaderModel.revisedBy,
+            revisedOn: newData.customItemHeaderModel.revisedOn,
+            salesOffice: {
+                value: newData.customItemHeaderModel.salesOffice,
+                label: newData.customItemHeaderModel.salesOffice,
+            },
+            offerValidity: {
+                value: newData.customItemHeaderModel.offerValidity,
+                label: offerValidityLabel,
+            },
+        })
+
+        setBundleServiceShow(true);
+    }
+
 
 
     const handleServiceItemEdit = async (e, row) => {
@@ -6727,17 +6955,48 @@ export function CreateCustomPortfolio(props) {
                             </Link>
                         </Tooltip>
                     </div>
-                    <div
-                        className=" cursor"
-                        onClick={(e) => handleServiceItemEdit(e, row)}
-                    >
-                        <Tooltip title="Edit">
-                            <Link to="#" className="px-1">
-                                <img className="m-1" src={penIcon} />
-                            </Link>
-                        </Tooltip>
+                    <div>
+                        <DropdownButton
+                            className="customDropdown ml-2 width-p"
+                            id="dropdown-item-button"
+                        >
+                            <Dropdown.Item className=" cursor" data-toggle="modal" data-target="#myModal12">
+                                <Tooltip title="Inclusion">
+                                    <Link to="#" className="px-1" onClick={(e) => Inclusion_Exclusion(e, row)} >
+                                        <img src={cpqIcon}></img><span className="ml-2">Inclusion/Exclusion</span>
+                                    </Link>
+                                </Tooltip>
+                            </Dropdown.Item>
+                            <Dropdown.Item className="" onClick={(e) => handleServiceItemDelete(e, row)}>
+                                <Tooltip title="Delete">
+                                    <Link to="#" className="px-1">
+                                        <svg
+                                            data-name="Layer 41"
+                                            id="Layer_41"
+                                            viewBox="0 0 50 50"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <title />
+                                            <path
+                                                className="cls-1"
+                                                d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                            />
+                                            <path
+                                                className="cls-1"
+                                                d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                            />
+                                            <path
+                                                className="cls-1"
+                                                d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                            />
+                                        </svg><span className="ml-2">Delete</span>
+                                    </Link>
+                                </Tooltip>
+                            </Dropdown.Item>
+                        </DropdownButton>
                     </div>
-                    <div className=" cursor" data-toggle="modal" data-target="#myModal12">
+
+                    {/* <div className=" cursor" data-toggle="modal" data-target="#myModal12">
                         <Tooltip title="Inclusion">
                             <Link to="#" className="px-1">
                                 <img src={cpqIcon}></img>
@@ -6769,7 +7028,17 @@ export function CreateCustomPortfolio(props) {
                                 </svg>
                             </Link>
                         </Tooltip>
-                    </div>
+                    </div> */}
+                    {/* <div
+                        className=" cursor"
+                        onClick={(e) => handleServiceItemEdit(e, row)}
+                    >
+                        <Tooltip title="Edit">
+                            <Link to="#" className="px-1">
+                                <img className="m-1" src={penIcon} />
+                            </Link>
+                        </Tooltip>
+                    </div> */}
                 </div>
             ),
         },
@@ -8131,191 +8400,636 @@ export function CreateCustomPortfolio(props) {
     );
 
     const ExpandedComponent = ({ data }) => (
-        <>
-            {/* {data?.associatedServiceOrBundle ? <> */}
+        // {data?.}
+        <div>
+            {/* {data.associatedServiceOrBundle?.length > 0 ?
+        <> */}
+            <div
+                id="row-0"
+                role="row"
+                className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+                style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+            >
+                <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+                    {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
+                </div>
+                <div
+                    id="cell-1-undefined"
+                    data-column-id="1"
+                    role="gridcell"
+                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <span className="portfolio-icon mr-1">
+                        <svg style={{ width: "11px" }}
+                            id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 119.30736 133.59966"
+                        >
+                            <path
+                                className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                                d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+                            />
+                        </svg>
+                    </span>
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
+                </div>
+                <div
+                    id="cell-2-undefined"
+                    data-column-id="2"
+                    role="gridcell"
+                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
+                </div>
+                <div
+                    id="cell-3-undefined"
+                    data-column-id="3"
+                    role="gridcell"
+                    className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
+                </div>
+                <div
+                    id="cell-4-undefined"
+                    data-column-id="4"
+                    role="gridcell"
+                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
+                </div>
+                <div
+                    id="cell-5-undefined"
+                    data-column-id="5"
+                    role="gridcell"
+                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Ids</p>
+                </div>
+                <div
+                    id="cell-6-undefined"
+                    data-column-id="6"
+                    role="gridcell"
+                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
+                </div>
+                <div
+                    id="cell-7-undefined"
+                    data-column-id="7"
+                    role="gridcell"
+                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
+                </div>
+                <div
+                    id="cell-8-undefined"
+                    data-column-id="8"
+                    role="gridcell"
+                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Quantity</p>
+                </div>
+                <div
+                    id="cell-9-undefined"
+                    data-column-id="9"
+                    role="gridcell"
+                    className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
+                </div>
+                <div
+                    id="cell-10-undefined"
+                    data-column-id="10"
+                    role="gridcell"
+                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
+                </div>
+                <div
+                    id="cell-10-undefined"
+                    data-column-id="10"
+                    role="gridcell"
+                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
+                </div>
+                <div
+                    id="cell-10-undefined"
+                    data-column-id="11"
+                    role="gridcell"
+                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                    data-tag="allowRowEvents"
+                >
+                    <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
+                </div>
+            </div>
             <div className="scrollbar" id="style">
-                {data?.associatedServiceOrBundle?.map((bundleAndService, i) => (
+                {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
                     <div
                         key={i}
                         id="row-0"
                         role="row"
-                        className="sc-evZas cMMpBL rdt_TableRow"
+                        className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
                         style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
                     >
-                        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+                        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+                            {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
+                        </div>
                         <div
                             id="cell-1-undefined"
                             data-column-id="1"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div>{bundleAndService.customItemId}</div>
+                            <div>{(i + 1) * 10}</div>
                         </div>
                         <div
                             id="cell-2-undefined"
                             data-column-id="2"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.itemBodyDescription}
+                            <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
+                                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                                    <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+                                </svg></span>
+                            </div>
+                            <div className="align-items-center d-flex justify-content-center">
+                                {bundleAndService.itemName}
                             </div>
                         </div>
                         <div
                             id="cell-3-undefined"
                             data-column-id="3"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemHeaderModel?.strategy}
+                            <div className="d-flex align-items-center" data-tag="allowRowEvents">
+                                {bundleAndService.customItemHeaderModel.itemHeaderDescription}
+                            </div>
+                            <div className="d-flex align-items-center">
+                                <div
+                                    className="description cursor mr-1"
+                                    onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                                >
+                                    <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                        <g>
+                                            <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                                            <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div className=""><KeyboardArrowDownIcon /></div>
                             </div>
                         </div>
                         <div
                             id="cell-4-undefined"
                             data-column-id="4"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.standardJobId}
+                            <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
+                                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                                    <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+                                </svg></span>
+                            </div>
+                            <div className="align-items-center d-flex" data-tag="allowRowEvents">
+                                {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
                             </div>
                         </div>
                         <div
                             id="cell-5-undefined"
                             data-column-id="5"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.repairOption}
+                            <div className="d-flex " data-tag="allowRowEvents">SJ1034
+                            </div>
+                            <div
+                                className="description cursor mr-1"
+                                onClick={() => setBundleServiceShow(true)}
+                            >
+                                <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                    <g>
+                                        <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                                        <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                                    </g>
+                                </svg>
                             </div>
                         </div>
                         <div
                             id="cell-6-undefined"
                             data-column-id="6"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.frequency}
+                            <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
+                            <div
+                                className="description mr-1"
+                            >
+                                <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                    <g>
+                                        <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                                        <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                                    </g>
+                                </svg>
                             </div>
                         </div>
                         <div
                             id="cell-7-undefined"
                             data-column-id="7"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.quantity}
-                            </div>
+                            <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
                         </div>
                         <div
                             id="cell-8-undefined"
                             data-column-id="8"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.sparePartsPrice}
+                            <div>4</div>
+                            <div className="funds-grey">
+
                             </div>
                         </div>
                         <div
                             id="cell-9-undefined"
                             data-column-id="9"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.servicePrice}
+                            <div>4</div>
+                            <div className="funds-grey">
+
                             </div>
                         </div>
                         <div
                             id="cell-10-undefined"
                             data-column-id="10"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div data-tag="allowRowEvents">
-                                {bundleAndService.customItemBodyModel?.totalPrice}
+                            <div>4</div>
+                            <div
+                                className="funds-grey "
+                            >
                             </div>
                         </div>
-                        {bundleItems.length > 0 && (<div
-                            id="cell-11-undefined"
-                            data-column-id="11"
+                        <div
+                            id="cell-10-undefined"
+                            data-column-id="10"
                             role="gridcell"
-                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
+                            <div>4</div>
                             <div
-                                className="cursor"
-                                onClick={(e) =>
-                                    handleExpandedRowEdit(
-                                        e,
-                                        data.customItemId,
-                                        data.associatedServiceOrBundle[i]
-                                    )
-                                }
+                                className="funds-grey cursor"
+                                onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
                             >
-                                <Tooltip title="Edit">
-                                    <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
-                                </Tooltip>
+                                <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                    <g>
+                                        <g>
+                                            <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                      C74.2,101.4,70.7,105,66.3,105.1z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                      C103.4,89.1,106.9,92.9,106.8,97.2z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                      C135.6,88.9,139.3,92.5,139.4,96.8z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                      C70.7,121.6,74.3,125.2,74.3,129.6z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                      C103.2,121.5,106.8,125.2,106.8,129.5z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                      C70.7,154.1,74.3,157.7,74.3,162.1z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                      C90.7,157.7,94.3,154.1,98.6,154z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                      C135.8,121.5,139.4,125.2,139.4,129.5z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                      C123.2,157.7,126.8,154.1,131.1,154z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                      c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
+                      c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
+                                        </g>
+                                        <g>
+                                            <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                      S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
+                      c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
+                                        </g>
+                                    </g>
+                                </svg>
                             </div>
-                            <div
-                                className="cursor"
-                                onClick={(e) =>
-                                    handleExpandedRowDelete(
-                                        e,
-                                        data.customItemId,
-                                        data.associatedServiceOrBundle[i].customItemId
-                                    )
-                                }
-                            >
-                                <Tooltip title="Delete">
-                                    <Link to="#" className="mx-1">
-                                        <svg
-                                            data-name="Layer 41"
-                                            id="Layer_41"
-                                            width="14px"
-                                            viewBox="0 0 50 50"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <title />
-                                            <path
-                                                className="cls-1"
-                                                d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                            />
-                                            <path
-                                                className="cls-1"
-                                                d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                            />
-                                            <path
-                                                className="cls-1"
-                                                d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                            />
-                                        </svg>
+                        </div>
+                        <div
+                            id="cell-10-undefined"
+                            data-column-id="11"
+                            role="gridcell"
+                            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div>
+                                <Tooltip title="View">
+                                    <Link
+                                        to="#"
+                                        className="px-1"
+                                        onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                                    >
+                                        <VisibilityOutlinedIcon />
                                     </Link>
                                 </Tooltip>
                             </div>
-                        </div>)}
-
+                        </div>
                     </div>
                 ))}
             </div>
             {/* </> : <></>} */}
-        </>
+
+        </div>
     );
+
+    // const ExpandedComponent = ({ data }) => (
+    //     <>
+
+    //         <div className="scrollbar" id="style">
+    //             {data?.associatedServiceOrBundle?.map((bundleAndService, i) => (
+    //                 <div
+    //                     key={i}
+    //                     id="row-0"
+    //                     role="row"
+    //                     className="sc-evZas cMMpBL rdt_TableRow"
+    //                     style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+    //                 >
+    //                     <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+    //                     <div
+    //                         id="cell-1-undefined"
+    //                         data-column-id="1"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div>{bundleAndService.customItemId}</div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-2-undefined"
+    //                         data-column-id="2"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.itemBodyDescription}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-3-undefined"
+    //                         data-column-id="3"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemHeaderModel?.strategy}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-4-undefined"
+    //                         data-column-id="4"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.standardJobId}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-5-undefined"
+    //                         data-column-id="5"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.repairOption}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-6-undefined"
+    //                         data-column-id="6"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.frequency}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-7-undefined"
+    //                         data-column-id="7"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.quantity}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-8-undefined"
+    //                         data-column-id="8"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.sparePartsPrice}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-9-undefined"
+    //                         data-column-id="9"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.servicePrice}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-10-undefined"
+    //                         data-column-id="10"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemBodyModel?.totalPrice}
+    //                         </div>
+    //                     </div>
+    //                     {bundleItems.length > 0 && (<div
+    //                         id="cell-11-undefined"
+    //                         data-column-id="11"
+    //                         role="gridcell"
+    //                         className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div
+    //                             className="cursor"
+    //                             onClick={(e) =>
+    //                                 handleExpandedRowEdit(
+    //                                     e,
+    //                                     data.customItemId,
+    //                                     data.associatedServiceOrBundle[i]
+    //                                 )
+    //                             }
+    //                         >
+    //                             <Tooltip title="Edit">
+    //                                 <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+    //                             </Tooltip>
+    //                         </div>
+    //                         <div
+    //                             className="cursor"
+    //                             onClick={(e) =>
+    //                                 handleExpandedRowDelete(
+    //                                     e,
+    //                                     data.customItemId,
+    //                                     data.associatedServiceOrBundle[i].customItemId
+    //                                 )
+    //                             }
+    //                         >
+    //                             <Tooltip title="Delete">
+    //                                 <Link to="#" className="mx-1">
+    //                                     <svg
+    //                                         data-name="Layer 41"
+    //                                         id="Layer_41"
+    //                                         width="14px"
+    //                                         viewBox="0 0 50 50"
+    //                                         xmlns="http://www.w3.org/2000/svg"
+    //                                     >
+    //                                         <title />
+    //                                         <path
+    //                                             className="cls-1"
+    //                                             d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+    //                                         />
+    //                                         <path
+    //                                             className="cls-1"
+    //                                             d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+    //                                         />
+    //                                         <path
+    //                                             className="cls-1"
+    //                                             d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+    //                                         />
+    //                                     </svg>
+    //                                 </Link>
+    //                             </Tooltip>
+    //                         </div>
+    //                     </div>)}
+
+    //                 </div>
+    //             ))}
+    //         </div>
+
+    //     </>
+    // );
     const ExpandedPriceCalculator = ({ data }) => (<>
         <div className="ligt-greey-bg p-2">
             <div>
@@ -14636,23 +15350,77 @@ onChange={handleAdministrativreChange}
                                 </div>
 
                                 <div className="mt-3">
-                                    <div className="row">
+                                    <div className="row input-fields">
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    PRICE METHOD
+                                                </label>
+                                                <Select
+                                                    options={priceMethodKeyValue}
+                                                    className="text-primary"
+                                                    defaultValue={props?.priceCalculator?.priceMethod}
+                                                    value={priceCalculator.priceMethod}
+                                                    name="priceMethod"
+                                                    onChange={(e) =>
+                                                        setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                                                    }
+                                                    placeholder="placeholder (Optional)"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    CURRENCY
+                                                </label>
+                                                <Select
+                                                    options={priceCurrencyKeyValue}
+                                                    className="text-primary"
+                                                    // defaultValue={props?.priceCalculator?.priceMethod}
+                                                    value={priceCalculator.currency}
+                                                    name="priceMethod"
+                                                    onChange={(e) =>
+                                                        setPriceCalculator({ ...priceCalculator, currency: e })
+                                                    }
+                                                    placeholder="placeholder (Optional)"
+                                                />
+                                            </div>
+                                        </div>
                                         <div className="col-md-6 col-sm-6">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-14 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
-                                                    Net Parts $
+                                                    PRICE DATE
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="netParts"
-                                                    disabled={disable}
-                                                    value={itemPriceCalculator.netParts}
-                                                    onChange={handleItemPriceCalculatorChange}
-                                                />
+                                                <div className="d-flex align-items-center date-box w-100">
+                                                    <div className="form-group w-100">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="preparedOn"
+                                                                value={priceDetails.priceDate}
+                                                                onChange={(e) =>
+                                                                    setPriceDetails({
+                                                                        ...priceDetails,
+                                                                        priceDate: e,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-md-6 col-sm-6">
@@ -14661,74 +15429,565 @@ onChange={handleAdministrativreChange}
                                                     className="text-light-dark font-size-14 font-weight-500"
                                                     for="exampleInputEmail1"
                                                 >
-                                                    Net Service $
+                                                    PRICE TYPE
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="netService"
-                                                    disabled={disable}
-                                                    value={itemPriceCalculator.netService}
-                                                    onChange={handleItemPriceCalculatorChange}
+                                                <Select
+                                                    // defaultValue={priceTypeKeyValue}
+                                                    className="text-primary"
+                                                    onChange={(e) =>
+                                                        // setPriceTypeKeyValue1(e)
+                                                        setPriceCalculator({ ...priceCalculator, priceType: e })
+                                                    }
+                                                    options={priceTypeKeyValue}
+                                                    placeholder="placeholder (Optional)"
+                                                    value={priceCalculator.priceType}
                                                 />
+                                                {/* <input
+                  type="text"
+                  className="form-control border-radius-10"
+                  placeholder="Optional"
+                  name="priceType"
+                  disabled={disable}
+                  value={itemPriceCalculator.priceType}
+                  onChange={handleItemPriceCalculatorChange}
+                /> */}
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group date-box">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    ADDITIONAL
+                                                </label>
+                                                <div className=" d-flex form-control-date">
+                                                    <div className="">
+                                                        <Select
+                                                            // isClearable={true}
+                                                            className="text-primary"
+                                                            value={priceCalculator.priceAdditionalSelect}
+                                                            name="priceAdditionalSelect"
+                                                            onChange={(e) =>
+                                                                setPriceCalculator({
+                                                                    ...priceCalculator,
+                                                                    priceAdditionalSelect: e,
+                                                                })
+                                                            }
+                                                            // options={options}
+                                                            options={additionalPriceHeadTypeKeyValue}
+                                                            placeholder="Select"
+                                                        // isDisabled
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                        placeholder="10%"
+                                                        defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                                                        value={priceCalculator.priceAdditionalInput}
+                                                        name="priceAdditionalInput"
+                                                        onChange={(e) =>
+                                                            setPriceCalculator({
+                                                                ...priceCalculator,
+                                                                priceAdditionalInput: e.target.value,
+                                                            })
+                                                        }
+                                                    // disabled
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group date-box">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    PRICE ESCALATON
+                                                </label>
+                                                <div className=" d-flex align-items-center form-control-date">
+                                                    <Select
+                                                        className="select-input"
+                                                        id="priceEscalationSelect"
+                                                        options={priceHeadTypeKeyValue}
+                                                        placeholder="placeholder "
+                                                    // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                                                    // value={expandedPriceCalculator.priceEscalationSelect}
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        placeholder="20%"
+                                                        id="priceEscalationInput"
+                                                    // value={escalationPriceValue}
+                                                    // onchange={(e) = setEscalationPriceValue(e.target.value)}
+                                                    // defaultValue={data.itemBodyModel.priceEscalation}
+                                                    // value={expandedPriceCalculator.priceEscalationInput}
+                                                    // onChange={handleExpandePriceChange}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div class="form-group mt-1">
+                                                <FormGroup>
+                                                    <FormControlLabel
+                                                        style={{
+                                                            alignItems: "start",
+                                                            marginLeft: 0,
+                                                        }}
+                                                        control={
+                                                            <Switch1
+                                                                checked={extWorkData.flatRateIndicator}
+                                                                onChange={(e) =>
+                                                                    handleFlatPriceIndicator(e)
+                                                                }
+                                                            />
+                                                        }
+                                                        labelPlacement="top"
+                                                        label={
+                                                            <span className="text-light-dark font-size-12 font-weight-500">
+                                                                FLAT RATE INDICATOR
+                                                            </span>
+                                                        }
+                                                    />
+                                                </FormGroup>
                                             </div>
                                         </div>
                                         <div className="col-md-6 col-sm-6">
                                             <div className="form-group">
                                                 <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    className="text-light-dark font-size-12 font-weight-500"
                                                     for="exampleInputEmail1"
                                                 >
-                                                    Price type
+                                                    FLAT PRICE / ADJUSTED PRICE
                                                 </label>
                                                 <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="priceType"
-                                                    disabled={disable}
-                                                    value={itemPriceCalculator.priceType}
-                                                    onChange={handleItemPriceCalculatorChange}
+                                                    // type="text"
+                                                    type="number"
+                                                    className="form-control border-radius-10 text-primary"
+                                                    value={priceCalculator.flatPrice}
+                                                    name="flatPrice"
+                                                    onChange={(e) =>
+                                                        setPriceCalculator({
+                                                            ...priceCalculator,
+                                                            flatPrice: e.target.value,
+                                                        })
+                                                    }
+                                                    disabled={!extWorkData.flatRateIndicator}
+                                                    placeholder="0"
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-md-6 col-sm-6">
-                                            <div className="form-group">
+                                            <div className="form-group date-box">
                                                 <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    className="text-light-dark font-size-12 font-weight-500"
                                                     for="exampleInputEmail1"
                                                 >
-                                                    Net Price
+                                                    DISCOUNT TYPE
                                                 </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="netPrice"
-                                                    disabled={disable}
-                                                    value={itemPriceCalculator.netPrice}
-                                                    onChange={handleItemPriceCalculatorChange}
-                                                />
+                                                <div className=" d-flex form-control-date">
+                                                    <div className="">
+                                                        <Select
+                                                            value={priceCalculator.discountTypeSelect}
+                                                            name="discountTypeSelect"
+                                                            className="text-primary"
+                                                            onChange={(e) =>
+                                                                setPriceCalculator({
+                                                                    ...priceCalculator,
+                                                                    discountTypeSelect: e,
+                                                                })
+                                                            }
+                                                            isClearable={true}
+                                                            options={options}
+                                                            placeholder="Select"
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                        value={priceCalculator.discountTypeInput}
+                                                        name="discountTypeInput"
+                                                        onChange={(e) =>
+                                                            setPriceCalculator({
+                                                                ...priceCalculator,
+                                                                discountTypeInput: e.target.value,
+                                                            })
+                                                        }
+                                                        placeholder="10%"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group date-box">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    PRICE BREAK DOWN
+                                                </label>
+                                                <div className=" d-flex form-control-date">
+                                                    <Select
+                                                        className="select-input text-primary"
+                                                        defaultValue={selectedOption}
+                                                        onChange={setSelectedOption}
+                                                        // options={options}
+                                                        options={priceHeadTypeKeyValue}
+                                                        placeholder="Select "
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                        id="exampleInputEmail1"
+                                                        aria-describedby="emailHelp"
+                                                        placeholder="optional"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row">
-                                        <div className="col-md-6 col-sm-6">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    for="exampleInputEmail1"
-                                                >
-                                                    Net Additionals $
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="netAdditionals"
-                                                    disabled={disable}
-                                                    value={itemPriceCalculator.netAdditionals}
-                                                    onChange={handleItemPriceCalculatorChange}
-                                                />
+
+                                    <div className="border border-radius-10 mt-3 py-2 px-3">
+                                        <div className="row input-fields">
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        YEAR
+                                                    </label>
+
+
+                                                    <Select
+                                                        // options={[
+                                                        //   { value: "1", label: "1" },
+                                                        //   { value: "2", label: "2" },
+                                                        //   { value: "3", label: "3" },
+                                                        // ]}
+                                                        options={yearsOption}
+                                                        placeholder="Select..."
+                                                        className="text-primary"
+                                                        onChange={(e) =>
+                                                            setAddportFolioItem({ ...addPortFolioItem, year: e })
+                                                        }
+                                                        value={addPortFolioItem.year}
+                                                    />
+                                                </div>
                                             </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        NO. OF YEARS
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        // type="text"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                        placeholder="No. of Years"
+                                                        // defaultValue={props?.priceCalculator?.startUsage}
+                                                        // value={priceCalculator.startUsage}
+                                                        onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
+                                                        value={addPortFolioItem.noOfYear}
+                                                        name="noOfYear"
+                                                    />
+                                                    {/* <Select
+                                  options={[
+                                    { value: "1", label: "1" },
+                                    { value: "2", label: "2" },
+                                    { value: "3", label: "3" },
+                                  ]}
+                                  placeholder="Select..."
+                                  className="text-primary"
+                                  onChange={(e) =>
+                                    setAddportFolioItem({ ...addPortFolioItem, noOfYear: e })
+                                  }
+                                  value={addPortFolioItem.noOfYear}
+                                /> */}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                                        <div className="row input-fields">
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        START USAGE
+                                                    </label>
+                                                    <div
+                                                        className=" d-flex form-control-date"
+                                                        style={{ overflow: "hidden" }}
+                                                    >
+                                                        <input
+                                                            type="number"
+                                                            // type="text"
+                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                            placeholder="10,000 hours"
+                                                            // defaultValue={props?.priceCalculator?.startUsage}
+                                                            // value={priceCalculator.startUsage}
+                                                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
+                                                            value={addPortFolioItem.startUsage}
+                                                            name="startUsage"
+                                                        />
+                                                        <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                    </div>
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        END USAGE
+                                                    </label>
+                                                    <div
+                                                        className=" d-flex form-control-date"
+                                                        style={{ overflow: "hidden" }}
+                                                    >
+                                                        <input
+                                                            type="number"
+                                                            // type="text"
+                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                            placeholder="16,000 hours"
+                                                            // defaultValue={props?.priceCalculator?.startUsage}
+                                                            // value={priceCalculator.startUsage}
+                                                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
+                                                            value={addPortFolioItem.endUsage}
+                                                            name="endUsage"
+                                                        />
+                                                        <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                    </div>
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        USAGE TYPE
+                                                    </label>
+                                                    <Select
+                                                        options={options}
+                                                        placeholder="Planned Usage"
+                                                        className="text-primary"
+                                                        onChange={(e) =>
+                                                            setAddportFolioItem({
+                                                                ...addPortFolioItem,
+                                                                usageType: e,
+                                                            })
+                                                        }
+                                                        value={addPortFolioItem.usageType}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        FREQUENCY
+                                                    </label>
+                                                    <Select
+                                                        options={frequencyOptions}
+                                                        placeholder="Select....."
+                                                        className="text-primary"
+                                                        onChange={(e) =>
+                                                            setAddportFolioItem({
+                                                                ...addPortFolioItem,
+                                                                frequency: e,
+                                                            })
+                                                        }
+                                                        value={addPortFolioItem.frequency}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        UNIT
+                                                    </label>
+                                                    <Select
+                                                        options={[
+                                                            { value: "per Hr", label: "per Hr" },
+                                                            { value: "per Km", label: "per Km" },
+                                                            { value: "per Miles", label: "per Miles" },
+                                                            { value: "per year", label: "per year" },
+                                                            { value: "per month", label: "per month" },
+                                                            { value: "per day", label: "per day" },
+                                                            { value: "per quarter", label: "per quarter" },
+                                                        ]}
+                                                        placeholder="Select..."
+                                                        className="text-primary"
+                                                        onChange={(e) =>
+                                                            setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                                                        }
+                                                        value={addPortFolioItem.unit}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        RECOMMENDED VALUE
+                                                    </label>
+                                                    <div
+                                                        className=" d-flex form-control-date"
+                                                        style={{ overflow: "hidden" }}
+                                                    >
+                                                        <input
+                                                            type="number"
+                                                            // type="text"
+                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                            placeholder="Recommended Value"
+                                                            // defaultValue={props?.priceCalculator?.startUsage}
+                                                            // value={priceCalculator.startUsage}
+                                                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                                                            value={addPortFolioItem.recommendedValue}
+                                                            name="recommendedValue"
+                                                        // name="startUsage"
+                                                        // onChange={(e) =>
+                                                        //   setPriceCalculator({
+                                                        //     ...priceCalculator,
+                                                        //     startUsage: e.target.value,
+                                                        //   })
+                                                        // }
+                                                        />
+                                                        <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                    </div>
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div className="form-group w-100">
+                                                    <label
+                                                        className="text-light-dark font-size-12 font-weight-500"
+                                                        for="exampleInputEmail1"
+                                                    >
+                                                        NO. OF EVENTS
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        placeholder="NO. OF EVENTS"
+                                                        onChange={(e) =>
+                                                            setAddportFolioItem({
+                                                                ...addPortFolioItem,
+                                                                numberOfEvents: e.target.value,
+                                                            })
+                                                        }
+                                                        value={addPortFolioItem.numberOfEvents}
+                                                    />
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6 col-sm-6">
+                                                <div class="form-group mt-1">
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            style={{
+                                                                alignItems: "start",
+                                                                marginLeft: 0,
+                                                            }}
+                                                            control={
+                                                                <Switch1
+                                                                    checked={extWorkData.flatRateIndicator}
+                                                                    onChange={(e) =>
+                                                                        setExtWorkData({
+                                                                            ...extWorkData,
+                                                                            flatRateIndicator: e.target.checked,
+                                                                            adjustedPrice: e.target.checked
+                                                                                ? extWorkData.adjustedPrice
+                                                                                : 0.0,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            }
+                                                            labelPlacement="top"
+                                                            label={
+                                                                <span className="text-light-dark font-size-12 font-weight-500">
+                                                                    SUPRESSION
+                                                                </span>
+                                                            }
+                                                        />
+                                                    </FormGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="my-1 d-flex align-items-center justify-content-end">
+                                            <Link to="#" className="btn border mr-4">Cancel</Link>
+                                            <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                                                <span className="mr-2 funds">
+                                                    <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                                        <g>
+                                                            <g>
+                                                                <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                              C74.2,101.4,70.7,105,66.3,105.1z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                              C103.4,89.1,106.9,92.9,106.8,97.2z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                              C135.6,88.9,139.3,92.5,139.4,96.8z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C70.7,121.6,74.3,125.2,74.3,129.6z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C103.2,121.5,106.8,125.2,106.8,129.5z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C70.7,154.1,74.3,157.7,74.3,162.1z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                              C90.7,157.7,94.3,154.1,98.6,154z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C135.8,121.5,139.4,125.2,139.4,129.5z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                              C123.2,157.7,126.8,154.1,131.1,154z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                              c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
+                              c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
+                                                            </g>
+                                                            <g>
+                                                                <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                              S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
+                              c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
+                                                            </g>
+                                                        </g>
+                                                    </svg>
+                                                </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
                                         </div>
                                     </div>
                                     <div className="m-3 text-right">
@@ -14785,7 +16044,7 @@ onChange={handleAdministrativreChange}
                 </Modal.Footer>
             </Modal>
 
-            <Modal
+            {/* <Modal
                 size="xl"
                 show={bundleServiceShow}
                 onHide={() => setBundleServiceShow(false)}
@@ -14809,7 +16068,6 @@ onChange={handleAdministrativreChange}
                                 <div className="container-fluid ">
                                     <div className="d-flex align-items-center justify-content-between mt-2">
                                         <h5 className="font-weight-600 mb-0">
-                                            {/* ADD {serviceOrBundlePrefix} */}
                                         </h5>
                                         <div className="d-flex justify-content-center align-items-center">
                                             <a href="#" className="ml-3 font-size-14">
@@ -15086,8 +16344,809 @@ onChange={handleAdministrativreChange}
                         </TabContext>
                     </Box>
                 </Modal.Body>
-            </Modal>
+            </Modal> */}
 
+            <Modal
+                size="xl"
+                show={bundleServiceShow}
+                onHide={() => setBundleServiceShow(false)}
+            >
+                <Modal.Body>
+                    <Box sx={{ typography: "body1" }}>
+                        <TabContext value={bundleTabs}>
+                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                <TabList className="custom-tabs-div"
+                                    onChange={(e, newValue) => setBundleTabs(newValue)}
+                                    aria-label="lab API tabs example"
+                                >
+                                    <Tab label={`${serviceOrBundlePrefix} HEADER`} value="bundleServiceHeader" />
+                                    <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+
+                                    {serviceOrBundlePrefix === "BUNDLE" && (
+                                        <Tab label={`${serviceOrBundlePrefix} ITEMS`} value="bundleServiceItems" />
+                                    )}
+                                    {serviceOrBundlePrefix === "BUNDLE" && (
+                                        <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+                                    )}
+
+                                    {/* {serviceOrBundlePrefix === "BUNDLE" && (
+                    <Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />
+                  )} */}
+                                    <Tab label="PRICE CALCULATOR" value="bundleServicePriceCalculator" />
+                                    <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
+
+                                    <Tab label="ADMINISTRATIVE" value="bundleServiceAdministrative" />
+                                </TabList>
+                            </Box>
+                            <TabPanel value="bundleServiceHeader">
+                                <div className="container-fluid ">
+                                    <div className="d-flex align-items-center justify-content-between mt-2">
+                                        <h5 className="font-weight-600 mb-0">
+                                            {/* ADD {serviceOrBundlePrefix} */}
+                                        </h5>
+                                        <div className="d-flex justify-content-center align-items-center">
+                                            <a href="#" className="ml-3 font-size-14">
+                                                <img src={shareIcon}></img>
+                                            </a>
+                                            <a href="#" className="ml-3 font-size-14">
+                                                <img src={folderaddIcon}></img>
+                                            </a>
+                                            <a href="#" className="ml-3 font-size-14">
+                                                <img src={uploadIcon}></img>
+                                            </a>
+                                            <a href="#" className="ml-3 font-size-14">
+                                                <img src={cpqIcon}></img>
+                                            </a>
+                                            <a href="#" className="ml-3 font-size-14">
+                                                <img src={deleteIcon}></img>
+                                            </a>
+                                            <a href="#" className="ml-3 font-size-14">
+                                                <img src={copyIcon}></img>
+                                            </a>
+                                            <a href="#" className="ml-2">
+                                                <MuiMenuComponent
+                                                    onClick={() => alert()}
+                                                    options={activityOptions}
+                                                />
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div className="card p-4 mt-5">
+                                        <h5 className="d-flex align-items-center mb-0">
+                                            <div className="" style={{ display: "contents" }}>
+                                                <span className="mr-3">Header</span>
+                                                <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}
+                                                // onClick={() => setBundleAndServiceEditAble(false)}
+                                                >
+                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
+                                                </a>
+                                                <a href="#" className="btn-sm">
+                                                    <i
+                                                        className="fa fa-bookmark-o"
+                                                        aria-hidden="true"
+                                                    ></i>
+                                                </a>
+                                                <a href="#" className="btn-sm">
+                                                    <img
+                                                        style={{ width: "14px" }}
+                                                        src={folderaddIcon}
+                                                    ></img>
+                                                </a>
+                                            </div>
+                                            <div className="input-group icons border-radius-10 border">
+                                                <div className="input-group-prepend">
+                                                    <span
+                                                        className="input-group-text bg-transparent border-0 pr-0 "
+                                                        id="basic-addon1"
+                                                    >
+                                                        <img src={shearchIcon} />
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="search"
+                                                    className="form-control search-form-control"
+                                                    aria-label="Search Dashboard"
+                                                />
+                                            </div>
+                                        </h5>
+                                        {bundleAndServiceEditAble ?
+                                            <>
+                                                <div className="row mt-4 ">
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} NAME</p>
+
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {(createServiceOrBundle.name == "" ||
+                                                                    createServiceOrBundle.name == null ||
+                                                                    createServiceOrBundle.name == undefined ||
+                                                                    createServiceOrBundle.name == "string") ? "NA" : createServiceOrBundle.name}
+                                                            </h6>
+
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} DESCRIPTION</p>
+
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {(createServiceOrBundle.description == "" ||
+                                                                    createServiceOrBundle.description == null ||
+                                                                    createServiceOrBundle.description == undefined ||
+                                                                    createServiceOrBundle.description == "string") ? "NA" : createServiceOrBundle.description}
+                                                            </h6>
+
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">BUNDLE/SERVICE</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {serviceOrBundlePrefix === "SERVICE"
+                                                                    ? "SERVICE"
+                                                                    : "BUNDLE_ITEM"}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+
+                                                                {(createServiceOrBundle.reference == "" ||
+                                                                    createServiceOrBundle.reference == null ||
+                                                                    createServiceOrBundle.reference == undefined ||
+                                                                    createServiceOrBundle.reference == "string") ? "NA" : createServiceOrBundle.reference}
+
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+
+                                                                {(selectedCustomerSegmentOption.length == 0 ||
+                                                                    selectedCustomerSegmentOption?.value == "" ||
+                                                                    selectedCustomerSegmentOption?.value == null ||
+                                                                    selectedCustomerSegmentOption?.value == undefined ||
+                                                                    selectedCustomerSegmentOption?.value == "string") ? "NA"
+                                                                    : selectedCustomerSegmentOption?.value}
+
+                                                                {/* {createServiceOrBundle.customerSegment?.value} */}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">MACHINE/COMPONENT</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+
+                                                                {(createServiceOrBundle.machineComponent?.value == "" ||
+                                                                    createServiceOrBundle.machineComponent?.value == null ||
+                                                                    createServiceOrBundle.machineComponent?.value == undefined ||
+                                                                    createServiceOrBundle.machineComponent?.value == "EMPTY")
+                                                                    ? "NA" : createServiceOrBundle.machineComponent?.value}
+
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">MAKE</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+
+                                                                {(createServiceOrBundle.make == "" ||
+                                                                    createServiceOrBundle.make == null ||
+                                                                    createServiceOrBundle.make == undefined ||
+                                                                    createServiceOrBundle.make == "string") ?
+                                                                    "NA" : createServiceOrBundle.make}
+
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">FAMILY</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+
+                                                                {(createServiceOrBundle.family == "" ||
+                                                                    createServiceOrBundle.family == null ||
+                                                                    createServiceOrBundle.family == undefined ||
+                                                                    createServiceOrBundle.family == "string") ?
+                                                                    "NA" : createServiceOrBundle.family}
+
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group customselectmodelSerch">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">MODEL(S)</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+
+                                                                {(createServiceOrBundle.model == "" ||
+                                                                    createServiceOrBundle.model == null ||
+                                                                    createServiceOrBundle.model == undefined ||
+                                                                    createServiceOrBundle.model == "string") ?
+                                                                    "NA" : createServiceOrBundle.model}
+
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREFIX(S)</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+
+                                                                {(selectedPrefixOption.length == 0 ||
+                                                                    selectedPrefixOption?.value == "" ||
+                                                                    selectedPrefixOption?.value == null ||
+                                                                    selectedPrefixOption?.value == undefined ||
+                                                                    selectedPrefixOption?.value == "string") ?
+                                                                    "NA" : selectedPrefixOption?.value}
+
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </> :
+                                            <>
+                                                <div className="row mt-4 input-fields">
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                {serviceOrBundlePrefix} NAME
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary border-radius-10"
+                                                                name="name"
+                                                                placeholder="Name (Required*)"
+                                                                onChange={handleAddServiceBundleChange}
+                                                                value={createServiceOrBundle.name}
+                                                            />
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                {serviceOrBundlePrefix} DESCRIPTION
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary border-radius-10"
+                                                                name="description"
+                                                                placeholder="Description (Required*)"
+                                                                value={createServiceOrBundle.description}
+                                                                onChange={handleAddServiceBundleChange}
+                                                            />
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                BUNDLE/SERVICE
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary border-radius-10"
+                                                                name="bundleFlag"
+                                                                placeholder="Bundle Flag"
+                                                                value={
+                                                                    serviceOrBundlePrefix === "SERVICE"
+                                                                        ? "SERVICE"
+                                                                        : "BUNDLE_ITEM"
+                                                                }
+                                                                onChange={handleAddServiceBundleChange}
+                                                                disabled
+                                                            />
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                REFERENCE
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary border-radius-10"
+                                                                name="reference"
+                                                                placeholder="Reference"
+                                                                value={createServiceOrBundle.reference}
+                                                                onChange={handleAddServiceBundleChange}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                CUSTOMER SEGMENT
+                                                            </label>
+                                                            <Select
+                                                                onChange={(e) => handleSelectCustomerSegment(e)}
+                                                                className="text-primary"
+                                                                value={selectedCustomerSegmentOption}
+                                                                options={customerSegmentKeyValue}
+                                                                placeholder="Customer Segment"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                MACHINE/COMPONENT
+                                                            </label>
+                                                            <Select
+                                                                isClearable={true}
+                                                                className="text-primary"
+                                                                value={createServiceOrBundle.machineComponent}
+                                                                onChange={(e) =>
+                                                                    setCreateServiceOrBundle({
+                                                                        ...createServiceOrBundle,
+                                                                        machineComponent: e,
+                                                                    })
+                                                                }
+                                                                isLoading={typeKeyValue.length > 0 ? false : true}
+                                                                options={typeKeyValue}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group customselectmodelSerch">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                MODEL(S)
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary border-radius-10"
+                                                                name="model"
+                                                                placeholder="Model(Required*)"
+                                                                value={createServiceOrBundle.model}
+                                                                onChange={(e) => handleBundleServiceInputSearch(e)}
+                                                            />
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                            {
+                                                                <ul
+                                                                    className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                                                                    id="style"
+                                                                >
+                                                                    {bundleServiceQuerySearchModelResult.map((currentItem, j) => (
+                                                                        <li
+                                                                            className="list-group-item text-primary"
+                                                                            key={j}
+                                                                            onClick={(e) => handleBundleServiceModelListClick(
+                                                                                e,
+                                                                                currentItem
+                                                                            )}
+                                                                        >
+                                                                            {currentItem.model}
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                FAMILY
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary border-radius-10"
+                                                                name="make"
+                                                                placeholder="Auto Fill Search Model...."
+                                                                value={createServiceOrBundle.family}
+                                                                disabled
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                MAKE
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary border-radius-10"
+                                                                name="make"
+                                                                placeholder="Auto Fill Search Model...."
+                                                                value={createServiceOrBundle.make}
+                                                                onChange={handleAddServiceBundleChange}
+                                                                disabled
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-3">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">
+                                                                PREFIX(S)
+                                                            </label>
+                                                            <Select
+                                                                onChange={(e) => selectBundleServicePrefixOption(e)}
+                                                                className="text-primary"
+                                                                value={selectedPrefixOption}
+                                                                options={bundleServiceQuerySearchModelPrefixOption}
+                                                                placeholder="select....."
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>}
+
+                                        <div className="row" style={{ justifyContent: "right" }}>
+                                            <button
+                                                type="button"
+                                                onClick={handleAddNewServiceOrBundle}
+                                                // className="btn btn-light"
+                                                className="btn text-white bg-primary"
+                                            >
+                                                Save & Next
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabPanel>
+                            <TabPanel value="bundleServiceItems">
+                                <AddCustomPortfolioItem
+                                    passItemEditRowData={passItemEditRowData}
+                                    handleItemEditSave={handleItemEditSave}
+                                    compoFlag="itemEdit"
+                                />
+                                {/* <AddPortfolioItem
+                                    passItemEditRowData={passItemEditRowData}
+                                    handleItemEditSave={handleItemEditSave}
+                                    compoFlag="itemEdit"
+                                    compoFlagTest="itemEditBundle"
+                                    setBundleTabs={setBundleTabs}
+                                /> */}
+                            </TabPanel>
+                            <TabPanel value="bundleServicePriceCalculator">
+                                <PriceCalculator
+                                    serviceOrBundlePrefix={serviceOrBundlePrefix}
+                                    setBundleTabs={setBundleTabs}
+                                    setBundleServiceShow={setBundleServiceShow}
+                                    getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                                    priceCalculator={itemPriceData}
+                                    priceCompFlag="editAble"
+                                />
+                                {/* <PriceCalculator
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  setBundleTabs={setBundleTabs}
+                  setBundleServiceShow={setBundleServiceShow}
+                  priceCalculator={priceCalculator}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                // handleSavePrices={handleSavePrices}
+                /> */}
+                            </TabPanel>
+                            <TabPanel value="bundleServiceAdministrative">
+                                {bundleAndServiceEditAble ?
+                                    <>
+                                        <div className="row mt-4">
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                        {(
+                                                            bundleOrServiceAdministrative.preparedBy == "" ||
+                                                                bundleOrServiceAdministrative.preparedBy == "string" ||
+                                                                bundleOrServiceAdministrative.preparedBy == undefined ||
+                                                                bundleOrServiceAdministrative.preparedBy == null
+                                                                ? "NA" : bundleOrServiceAdministrative.preparedBy
+                                                        )}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                        {(
+                                                            bundleOrServiceAdministrative.approvedBy == "" ||
+                                                                bundleOrServiceAdministrative.approvedBy == "string" ||
+                                                                bundleOrServiceAdministrative.approvedBy == undefined ||
+                                                                bundleOrServiceAdministrative.approvedBy == null
+                                                                ? "NA" : bundleOrServiceAdministrative.approvedBy
+                                                        )}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                        {(
+                                                            bundleOrServiceAdministrative.preparedOn == "" ||
+                                                                bundleOrServiceAdministrative.preparedOn == "string" ||
+                                                                bundleOrServiceAdministrative.preparedOn == undefined ||
+                                                                bundleOrServiceAdministrative.preparedOn == null
+                                                                ? "NA" :
+                                                                getFormattedDateTimeByTimeStamp(bundleOrServiceAdministrative.preparedOn)
+                                                        )}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                        {(
+                                                            bundleOrServiceAdministrative.revisedBy == "" ||
+                                                                bundleOrServiceAdministrative.revisedBy == "string" ||
+                                                                bundleOrServiceAdministrative.revisedBy == undefined ||
+                                                                bundleOrServiceAdministrative.revisedBy == null ?
+                                                                "NA" : bundleOrServiceAdministrative.revisedBy)}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                        {(
+                                                            bundleOrServiceAdministrative.revisedOn == "" ||
+                                                                bundleOrServiceAdministrative.revisedOn == "string" ||
+                                                                bundleOrServiceAdministrative.revisedOn == undefined ||
+                                                                bundleOrServiceAdministrative.revisedOn == null
+                                                                ? "NA" :
+                                                                getFormattedDateTimeByTimeStamp(bundleOrServiceAdministrative.revisedOn)
+                                                        )}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                        {(
+                                                            bundleOrServiceAdministrative.salesOffice == "" ||
+                                                                bundleOrServiceAdministrative.salesOffice == undefined ||
+                                                                bundleOrServiceAdministrative.salesOffice?.value == "string" ||
+                                                                bundleOrServiceAdministrative.salesOffice == null
+                                                                ? "NA" : bundleOrServiceAdministrative.salesOffice?.value)}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                        {(
+                                                            bundleOrServiceAdministrative.offerValidity == "" ||
+                                                                bundleOrServiceAdministrative.offerValidity == undefined ||
+                                                                bundleOrServiceAdministrative.offerValidity?.value == "string" ||
+                                                                bundleOrServiceAdministrative.offerValidity == null
+                                                                ? "NA" : bundleOrServiceAdministrative.offerValidity?.label)}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </> : <>
+                                        <div className="row mt-4 input-fields">
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        PREPARED BY
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control text-primary border-radius-10"
+                                                        name="preparedBy"
+                                                        value={administrative.preparedBy}
+                                                        onChange={handleAdministrativreChange}
+                                                        placeholder="Required (ex-abc@gmail.com)"
+                                                    />
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        APPROVED BY
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control text-primary border-radius-10"
+                                                        placeholder="Optional  (ex-abc@gmail.com)"
+                                                        name="approvedBy"
+                                                        value={administrative.approvedBy}
+                                                        onChange={handleAdministrativreChange}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                {/* <div className="form-group"> */}
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    PREPARED ON
+                                                </label>
+                                                {/* <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="preparedOn"
+                          value={administrative.preparedOn}
+                          onChange={handleAdministrativreChange}
+                        /> */}
+                                                <div className="d-flex align-items-center date-box w-100">
+                                                    <div className="form-group w-100">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="preparedOn"
+                                                                value={administrative.preparedOn}
+                                                                onChange={(e) =>
+                                                                    setAdministrative({
+                                                                        ...administrative,
+                                                                        preparedOn: e,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                        <div className="css-w8dmq8">*Mandatory</div>
+                                                    </div>
+                                                </div>
+                                                {/* </div> */}
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        REVISED BY
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        placeholder="Optional  (ex-abc@gmail.com)"
+                                                        name="revisedBy"
+                                                        value={administrative.revisedBy}
+                                                        onChange={handleAdministrativreChange}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        REVISED ON
+                                                    </label>
+                                                    {/* <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="revisedOn"
+                          value={administrative.revisedOn}
+                          onChange={handleAdministrativreChange}
+                        /> */}
+                                                    <div className="d-flex align-items-center date-box w-100">
+                                                        <div className="form-group w-100 m-0">
+                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker
+                                                                    variant="inline"
+                                                                    format="dd/MM/yyyy"
+                                                                    className="form-controldate border-radius-10"
+                                                                    label=""
+                                                                    name="revisedOn"
+                                                                    value={administrative.revisedOn}
+                                                                    onChange={(e) =>
+                                                                        setAdministrative({
+                                                                            ...administrative,
+                                                                            revisedOn: e,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </MuiPickersUtilsProvider>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        SALES OFFICE / BRANCH
+                                                    </label>
+                                                    <Select
+                                                        onChange={(e) =>
+                                                            setAdministrative({
+                                                                ...administrative,
+                                                                salesOffice: e,
+                                                            })
+                                                        }
+                                                        className="text-primary"
+                                                        options={salesOfficeOptions}
+                                                        placeholder="Required"
+                                                        value={administrative.salesOffice}
+                                                        styles={FONT_STYLE_SELECT}
+                                                    />
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                    {/* <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            name="salesOffice"
+                            value={administrative.salesOffice}
+                            onChange={handleAdministrativreChange}
+                            placeholder="Required"
+                          /> */}
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <label
+                                                        className="text-light-dark font-size-14 font-weight-500"
+                                                        htmlFor="exampleInputEmail1"
+                                                    >
+                                                        OFFER VALIDITY
+                                                    </label>
+                                                    <Select
+                                                        // defaultValue={selectedOption}
+                                                        onChange={(e) =>
+                                                            setAdministrative({
+                                                                ...administrative,
+                                                                offerValidity: e,
+                                                            })
+                                                        }
+                                                        className="text-primary"
+                                                        options={validityOptions}
+                                                        placeholder="Optional"
+                                                        value={administrative.offerValidity}
+                                                        styles={FONT_STYLE_SELECT}
+                                                    />
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                    {/* <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            placeholder="Optional"
+                            name="offerValidity"
+                            value={administrative.offerValidity}
+                            onChange={handleAdministrativreChange}
+                          /> */}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                }
+
+                                <div className="row" style={{ justifyContent: "right" }}>
+                                    <button
+                                        type="button"
+                                        onClick={saveEditServiceOrBundleAdministrativeData}
+                                        className="btn text-white bg-primary"
+                                    >
+                                        Save
+                                    </button>
+                                </div>
+                            </TabPanel>
+                        </TabContext>
+                    </Box>
+                </Modal.Body>
+            </Modal>
             <Modal
                 size="lg"
                 show={editItemShow}
@@ -15970,6 +18029,23 @@ onChange={handleAdministrativreChange}
                     {/* <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
                     <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button> */}
                 </Modal.Footer>
+            </Modal>
+
+            <Modal
+                size="xl"
+                show={bundleServicePriceCalculator}
+                onHide={() => setBundleServicePriceCalculator(false)}
+            >
+                <Modal.Body>
+                    <PriceCalculator
+                        serviceOrBundlePrefix={serviceOrBundlePrefix}
+                        setBundleTabs={setBundleTabs}
+                        setBundleServiceShow={setBundleServiceShow}
+                        priceCalculator={priceCalculator}
+                        getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                    // handleSavePrices={handleSavePrices}
+                    />
+                </Modal.Body>
             </Modal>
 
             <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

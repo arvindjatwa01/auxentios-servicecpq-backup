@@ -3850,3 +3850,9 @@ border-top: none !important;}
 .selected-li{}
 .selected-li li:hover{ background: #872ff7 !important;
 color: #fff !important;}
+.width-p .dropdown-item {
+  padding: 0.25rem 0.5rem !important; 
+}
+.width-p .customDropdown .dropdown-menu.show {
+  min-width: 167px !important;
+}
