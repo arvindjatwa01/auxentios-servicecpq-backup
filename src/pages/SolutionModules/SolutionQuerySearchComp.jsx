@@ -324,6 +324,7 @@ const SolutionQuerySearchComp = (props) => {
                 props.setLoadingItem(false)
             } else if (props.compoFlag === "portfolioTempItemSearch") {
 
+                console.log("searchStr 327 : ", searchStr)
                 const res3 = await portfolioSearch(searchStr)
                 console.log("res3 is  : ", res3)
                 if (!res3.data.length > 0) {
