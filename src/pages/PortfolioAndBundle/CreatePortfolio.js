@@ -1115,9 +1115,29 @@ export function CreatePortfolio(props) {
       const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
+        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          resPrice.data.priceMethod != "" ||
+          resPrice.data.priceMethod != null) ? {
+          label: resPrice.data.priceMethod,
+          value: resPrice.data.priceMethod
+        } : "",
+        priceType: (resPrice.data.priceType != "EMPTY" ||
+          resPrice.data.priceType != "" ||
+          resPrice.data.priceType != null) ? {
+          label: resPrice.data.priceType,
+          value: resPrice.data.priceType
+        } : "",
         priceAdditionalSelect: {
           label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
         },
+        priceAdditionalInput: resPrice.data.additionalPriceValue,
+        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          resPrice.data.discountType != "" ||
+          resPrice.data.discountType != null) ? {
+          label: resPrice.data.discountType,
+          value: resPrice.data.discountType
+        } : "",
+        discountTypeInput: resPrice.data.discountValue,
         year: {
           label: resPrice.data.year, value: resPrice.data.year
         },
@@ -1473,9 +1493,29 @@ export function CreatePortfolio(props) {
       const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
+        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          resPrice.data.priceMethod != "" ||
+          resPrice.data.priceMethod != null) ? {
+          label: resPrice.data.priceMethod,
+          value: resPrice.data.priceMethod
+        } : "",
+        priceType: (resPrice.data.priceType != "EMPTY" ||
+          resPrice.data.priceType != "" ||
+          resPrice.data.priceType != null) ? {
+          label: resPrice.data.priceType,
+          value: resPrice.data.priceType
+        } : "",
         priceAdditionalSelect: {
           label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
         },
+        priceAdditionalInput: resPrice.data.additionalPriceValue,
+        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          resPrice.data.discountType != "" ||
+          resPrice.data.discountType != null) ? {
+          label: resPrice.data.discountType,
+          value: resPrice.data.discountType
+        } : "",
+        discountTypeInput: resPrice.data.discountValue,
         year: {
           label: resPrice.data.year, value: resPrice.data.year
         },
@@ -2311,47 +2351,112 @@ export function CreatePortfolio(props) {
 
         if ((editAbleItemPriceData?.itemPriceDataId != "") ||
           (editAbleItemPriceData?.itemPriceDataId != undefined)) {
-          let priceUpdateData = {
-            itemPriceDataId: editAbleItemPriceData.itemPriceDataId,
-            quantity: parseInt(addPortFolioItem.quantity),
-            startUsage: addPortFolioItem.startUsage,
-            endUsage: addPortFolioItem.endUsage,
+          // let priceUpdateData = {
+          //   itemPriceDataId: editAbleItemPriceData.itemPriceDataId,
+          //   quantity: parseInt(addPortFolioItem.quantity),
+          //   startUsage: addPortFolioItem.startUsage,
+          //   endUsage: addPortFolioItem.endUsage,
+          //   standardJobId: addPortFolioItem.templateId,
+          //   repairKitId: addPortFolioItem.repairOption,
+          //   templateDescription: addPortFolioItem.templateDescription?.value,
+          //   repairOption: editAbleItemPriceData.repairOption,
+          //   additional: editAbleItemPriceData.additional,
+          //   partListId: editAbleItemPriceData.partListId,
+          //   serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
+          //   numberOfEvents: addPortFolioItem.numberOfEvents,
+          //   priceMethod: editAbleItemPriceData.priceMethod,
+          //   priceType: editAbleItemPriceData.priceType,
+          //   listPrice: editAbleItemPriceData.listPrice,
+          //   priceEscalation: editAbleItemPriceData.priceEscalation,
+          //   calculatedPrice: editAbleItemPriceData.calculatedPrice,
+          //   flatPrice: editAbleItemPriceData.flatPrice,
+          //   discountType: editAbleItemPriceData.discountType,
+          //   year: addPortFolioItem.year?.value,
+          //   noOfYear: addPortFolioItem.noOfYear,
+          //   sparePartsPrice: editAbleItemPriceData.sparePartsPrice,
+          //   sparePartsPriceBreakDownPercentage: editAbleItemPriceData.sparePartsPriceBreakDownPercentage,
+          //   servicePrice: editAbleItemPriceData.servicePrice,
+          //   labourPrice: editAbleItemPriceData.labourPrice,
+          //   labourPriceBreakDownPercentage: editAbleItemPriceData.labourPriceBreakDownPercentage,
+          //   miscPrice: editAbleItemPriceData.miscPrice,
+          //   miscPriceBreakDownPercentage: editAbleItemPriceData.miscPriceBreakDownPercentage,
+          //   totalPrice: editAbleItemPriceData.totalPrice,
+          //   netService: editAbleItemPriceData.netService,
+          //   portfolio: {
+          //     portfolioId: portfolioId
+          //   },
+          //   tenantId: editAbleItemPriceData.tenantId,
+          //   partsRequired: true,
+          //   serviceRequired: false,
+          //   labourRequired: true,
+          //   miscRequired: true
+          // }
+
+
+
+          const priceUpdateData = {
+            itemPriceDataId: editAbleItemPriceData.id,
+            quantity: 0,
             standardJobId: addPortFolioItem.templateId,
             repairKitId: addPortFolioItem.repairOption,
-            templateDescription: addPortFolioItem.templateDescription?.value,
-            repairOption: editAbleItemPriceData.repairOption,
-            additional: editAbleItemPriceData.additional,
-            partListId: editAbleItemPriceData.partListId,
-            serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
-            numberOfEvents: addPortFolioItem.numberOfEvents,
-            priceMethod: editAbleItemPriceData.priceMethod,
-            priceType: editAbleItemPriceData.priceType,
-            listPrice: editAbleItemPriceData.listPrice,
-            priceEscalation: editAbleItemPriceData.priceEscalation,
-            calculatedPrice: editAbleItemPriceData.calculatedPrice,
-            flatPrice: editAbleItemPriceData.flatPrice,
-            discountType: editAbleItemPriceData.discountType,
-            year: addPortFolioItem.year?.value,
-            noOfYear: addPortFolioItem.noOfYear,
-            sparePartsPrice: editAbleItemPriceData.sparePartsPrice,
-            sparePartsPriceBreakDownPercentage: editAbleItemPriceData.sparePartsPriceBreakDownPercentage,
-            servicePrice: editAbleItemPriceData.servicePrice,
-            labourPrice: editAbleItemPriceData.labourPrice,
-            labourPriceBreakDownPercentage: editAbleItemPriceData.labourPriceBreakDownPercentage,
-            miscPrice: editAbleItemPriceData.miscPrice,
-            miscPriceBreakDownPercentage: editAbleItemPriceData.miscPriceBreakDownPercentage,
-            totalPrice: editAbleItemPriceData.totalPrice,
-            netService: editAbleItemPriceData.netService,
+            templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+            repairOption: "",
+            additional: "",
+            partListId: "",
+            serviceEstimateId: "",
+            numberOfEvents: 0,
+            priceMethod: (editAbleItemPriceData.priceMethod != "EMPTY"
+              || editAbleItemPriceData.priceMethod != "" ||
+              editAbleItemPriceData.priceMethod != null) ?
+              editAbleItemPriceData.priceMethod : "EMPTY",
+            priceType: (editAbleItemPriceData.priceType != "EMPTY" ||
+              editAbleItemPriceData.priceType != "" ||
+              editAbleItemPriceData.priceType != null) ? editAbleItemPriceData.priceType : "EMPTY",
+            listPrice: 0,
+            priceEscalation: "",
+            calculatedPrice: 0,
+            flatPrice: 0,
+            year: addPortFolioItem?.year?.value,
+            noOfYear: parseInt(addPortFolioItem?.noOfYear),
+            sparePartsPrice: 0,
+            sparePartsPriceBreakDownPercentage: 0,
+            servicePrice: 0,
+            labourPrice: 0,
+            labourPriceBreakDownPercentage: 0,
+            miscPrice: 0,
+            miscPriceBreakDownPercentage: 0,
+            totalPrice: 0,
+            netService: 0,
+            additionalPriceType: (editAbleItemPriceData?.additionalPriceType != "EMPTY" ||
+              editAbleItemPriceData?.additionalPriceType != "" ||
+              editAbleItemPriceData?.additionalPriceType != null) ?
+              editAbleItemPriceData?.additionalPriceType : "ABSOLUTE",
+            additionalPriceValue: editAbleItemPriceData?.additionalPriceValue,
+            discountType: (editAbleItemPriceData?.discountType != "EMPTY" ||
+              editAbleItemPriceData?.discountType != "" ||
+              editAbleItemPriceData?.discountType != null) ? editAbleItemPriceData?.discountType : "EMPTY",
+            discountValue: editAbleItemPriceData?.discountValue,
+            recommendedValue: parseInt(addPortFolioItem?.recommendedValue),
+            startUsage: parseInt(addPortFolioItem?.startUsage),
+            endUsage: parseInt(addPortFolioItem?.endUsage),
+            sparePartsEscalation: 0,
+            labourEscalation: 0,
+            miscEscalation: 0,
+            serviceEscalation: 0,
+            withBundleService: (bundleServiceNeed ? false : true),
             portfolio: {
               portfolioId: portfolioId
             },
-            tenantId: editAbleItemPriceData.tenantId,
+            tenantId: 0,
             partsRequired: true,
-            serviceRequired: false,
             labourRequired: true,
-            miscRequired: true
+            serviceRequired: false,
+            miscRequired: true,
+            inclusionExclusion: true
           }
-          // console.log("priceUpdateData Now : ", priceUpdateData)
+
+          console.log("priceUpdateData Now 2354 : ", priceUpdateData);
+          console.log("addPortFolioItem Now 2355 : ", addPortFolioItem);
           const updatePriceId = await updateItemPriceData(
             editAbleItemPriceData.itemPriceDataId,
             priceUpdateData
@@ -6895,10 +7000,10 @@ export function CreatePortfolio(props) {
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.itemHeaderStrategy,
+      selector: (row) => row.itemHeaderModel?.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.itemHeaderStrategy,
+      format: (row) => row.itemHeaderModel?.itemHeaderStrategy,
     },
     {
       name: (
@@ -10104,9 +10209,29 @@ export function CreatePortfolio(props) {
         const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
         setPriceCalculator({
           ...priceCalculator,
+          priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+            resPrice.data.priceMethod != "" ||
+            resPrice.data.priceMethod != null) ? {
+            label: resPrice.data.priceMethod,
+            value: resPrice.data.priceMethod
+          } : "",
+          priceType: (resPrice.data.priceType != "EMPTY" ||
+            resPrice.data.priceType != "" ||
+            resPrice.data.priceType != null) ? {
+            label: resPrice.data.priceType,
+            value: resPrice.data.priceType
+          } : "",
           priceAdditionalSelect: {
             label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
           },
+          priceAdditionalInput: resPrice.data.additionalPriceValue,
+          discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+            resPrice.data.discountType != "" ||
+            resPrice.data.discountType != null) ? {
+            label: resPrice.data.discountType,
+            value: resPrice.data.discountType
+          } : "",
+          discountTypeInput: resPrice.data.discountValue,
           year: {
             label: resPrice.data.year, value: resPrice.data.year
           },
@@ -10321,9 +10446,29 @@ export function CreatePortfolio(props) {
       const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
+        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          resPrice.data.priceMethod != "" ||
+          resPrice.data.priceMethod != null) ? {
+          label: resPrice.data.priceMethod,
+          value: resPrice.data.priceMethod
+        } : "",
+        priceType: (resPrice.data.priceType != "EMPTY" ||
+          resPrice.data.priceType != "" ||
+          resPrice.data.priceType != null) ? {
+          label: resPrice.data.priceType,
+          value: resPrice.data.priceType
+        } : "",
         priceAdditionalSelect: {
           label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
         },
+        priceAdditionalInput: resPrice.data.additionalPriceValue,
+        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          resPrice.data.discountType != "" ||
+          resPrice.data.discountType != null) ? {
+          label: resPrice.data.discountType,
+          value: resPrice.data.discountType
+        } : "",
+        discountTypeInput: resPrice.data.discountValue,
         year: {
           label: resPrice.data.year, value: resPrice.data.year
         },
@@ -10337,6 +10482,8 @@ export function CreatePortfolio(props) {
       })
 
       var UpdatedBundleService3Data = [];
+      var _itemArrData = [...portfolioItems];
+
       for (let a = 0; a < tempBundleService3.length; a++) {
         var reqObjUpdatebundleService = {
           itemId: tempBundleService3[a].itemId,
@@ -10401,30 +10548,136 @@ export function CreatePortfolio(props) {
         updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
           .then((res) => {
             UpdatedBundleService3Data.push(res.data)
+            _itemArrData.push({ itemId: res.data.itemId })
           })
           .catch((err) => {
             console.log("err in api call", err);
           });
       }
 
+
+
+      setPortfolioItems(_itemArrData);
       setTempBundleService3(UpdatedBundleService3Data);
       setTempBundleService2(UpdatedBundleService3Data);
+
+
+      let obj = {
+        portfolioId: portfolioId,
+        name: generalComponentData.name,
+        description: generalComponentData.description,
+        externalReference: generalComponentData.externalReference,
+        customerSegment: generalComponentData.customerSegment?.value,
+
+        validFrom: validityData.fromDate,
+        validTo: validityData.toDate,
+
+        usageCategory: categoryUsageKeyValue1.value
+          ? categoryUsageKeyValue1.value : "EMPTY",
+        strategyTask: stratgyTaskUsageKeyValue.value ?
+          stratgyTaskUsageKeyValue.value : "EMPTY",
+        taskType: stratgyTaskTypeKeyValue.value ?
+          stratgyTaskTypeKeyValue.value : "EMPTY",
+        responseTime: stratgyResponseTimeKeyValue.value ?
+          stratgyResponseTimeKeyValue.value : "EMPTY",
+        productHierarchy: stratgyHierarchyKeyValue.value ?
+          stratgyHierarchyKeyValue.value : "EMPTY",
+        geographic: stratgyGeographicKeyValue.value ?
+          stratgyGeographicKeyValue.value : "EMPTY",
+
+        preparedBy: administrative.preparedBy,
+        approvedBy: administrative.approvedBy,
+        preparedOn: administrative.preparedOn,
+        revisedBy: administrative.revisedBy,
+        revisedOn: administrative.revisedOn,
+        offerValidity: administrative.offerValidity?.value,
+        salesOffice: administrative.salesOffice?.value,
+
+        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+          ? portfolioPriceDataId : null,
+        additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+          ? portfolioAdditionalPriceDataId : null,
+        escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+          ? portfolioEscalationPriceDataId : null,
+
+        supportLevel: value3.value,
+        status: value2.value,
+
+        items: _itemArrData,
+        coverages: portfolioCoverage,
+
+        machineType: "NEW",
+        searchTerm: "",
+        lubricant: true,
+        customerId: 0,
+        customerGroup: "",
+        availability: "AVAILABILITY_GREATER_95",
+        type: "MACHINE",
+        application: "HILL",
+        contractOrSupport: "LEVEL_I",
+        lifeStageOfMachine: "NEW_BREAKIN",
+        numberOfEvents: 0,
+        rating: "",
+        startUsage: 0,
+        endUsage: 0,
+        unit: "HOURS",
+        additionals: "",
+        template: true,
+        visibleInCommerce: true
+      }
+
+      if ((portfolioId !== "" || (portfolioId !== undefined))) {
+        const updatePortfolioRes = await updatePortfolio(
+          portfolioId,
+          obj
+        );
+        if (updatePortfolioRes.status === 200) {
+          toast(`👏 Portfolio ${generalComponentData.name} saved Successfully`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          throw `${updatePortfolioRes.status}:Something went wrong`;
+        }
+      }
+
+      // setPriceCalculator({
+      //   ...priceCalculator,
+      //   priceAdditionalSelect: {
+      //     label: res.data.additionalPriceType, value: res.data.additionalPriceType
+      //   },
+      //   year: {
+      //     label: res.data.year, value: res.data.year
+      //   },
+      //   noOfYear: res.data.noOfYear,
+      //   startUsage: res.data.startUsage,
+      //   endUsage: res.data.endUsage,
+      //   recommendedValue: res.data.recommendedValue,
+      //   netPrice: res.data.netService,
+      //   totalPrice: res.data.totalPrice,
+      //   id: res.data.itemPriceDataId,
+      // })
 
       setPriceCalculator({
         ...priceCalculator,
         priceAdditionalSelect: {
-          label: res.data.additionalPriceType, value: res.data.additionalPriceType
+          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
         },
         year: {
-          label: res.data.year, value: res.data.year
+          label: resPrice.data.year, value: resPrice.data.year
         },
-        noOfYear: res.data.noOfYear,
-        startUsage: res.data.startUsage,
-        endUsage: res.data.endUsage,
-        recommendedValue: res.data.recommendedValue,
-        netPrice: res.data.netService,
-        totalPrice: res.data.totalPrice,
-        id: res.data.itemPriceDataId,
+        noOfYear: resPrice.data.noOfYear,
+        startUsage: resPrice.data.startUsage,
+        endUsage: resPrice.data.endUsage,
+        recommendedValue: resPrice.data.recommendedValue,
+        netPrice: resPrice.data.netService,
+        totalPrice: resPrice.data.totalPrice,
+        id: resPrice.data.itemPriceDataId,
       })
 
       setItemPriceCalculator({
@@ -10497,9 +10750,29 @@ export function CreatePortfolio(props) {
         const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
         setPriceCalculator({
           ...priceCalculator,
+          priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+            resPrice.data.priceMethod != "" ||
+            resPrice.data.priceMethod != null) ? {
+            label: resPrice.data.priceMethod,
+            value: resPrice.data.priceMethod
+          } : "",
+          priceType: (resPrice.data.priceType != "EMPTY" ||
+            resPrice.data.priceType != "" ||
+            resPrice.data.priceType != null) ? {
+            label: resPrice.data.priceType,
+            value: resPrice.data.priceType
+          } : "",
           priceAdditionalSelect: {
             label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
           },
+          priceAdditionalInput: resPrice.data.additionalPriceValue,
+          discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+            resPrice.data.discountType != "" ||
+            resPrice.data.discountType != null) ? {
+            label: resPrice.data.discountType,
+            value: resPrice.data.discountType
+          } : "",
+          discountTypeInput: resPrice.data.discountValue,
           year: {
             label: resPrice.data.year, value: resPrice.data.year
           },
@@ -11418,23 +11691,23 @@ export function CreatePortfolio(props) {
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          {/* <a className="input-search"><SearchIcon style={{ fontSize: "34px" }} /></a> */}
-                              <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                                htmlFor="exampleInputEmail1"
-                              >
-                                OPTIONALS
-                              </label>
-                              <input
-                                // type="text"
-                                className="cursor form-control border-radius-10 text-primary"
-                                // id="exampleInputEmail1"
-                                onClick={PopupOptionalShow}
-                                placeholder="Click here"
-                                // value={stratgyOptionalsKeyValue}
-                              />
-                            </div>
+                          <div className="form-group">
+                            {/* <a className="input-search"><SearchIcon style={{ fontSize: "34px" }} /></a> */}
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              OPTIONALS
+                            </label>
+                            <input
+                              // type="text"
+                              className="cursor form-control border-radius-10 text-primary"
+                              // id="exampleInputEmail1"
+                              onClick={PopupOptionalShow}
+                              placeholder="Click here"
+                            // value={stratgyOptionalsKeyValue}
+                            />
+                          </div>
                           {/* <div className="form-group">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
@@ -16139,7 +16412,7 @@ export function CreatePortfolio(props) {
                     { label: "Model", value: "model" },
                     { label: "Prefix", value: "prefix" },
                     { label: "Item Name", value: "itemName" },
-                    { label: "Description", value: "description" },
+                    { label: "Description", value: "itemHeaderDescription" },
                   ]}
                   setTempBundleService1={setTempBundleService1}
                   setTempBundleService2={setTempBundleService2}
@@ -16917,7 +17190,7 @@ export function CreatePortfolio(props) {
                             placeholder="20%"
                             id="priceEscalationInput"
                             value={priceCalculator.priceEscalationInput}
-                            onchange={(e) =>
+                            onChange={(e) =>
                               setPriceCalculator({
                                 ...priceCalculator,
                                 priceEscalationInput: e.target.value
@@ -18796,57 +19069,60 @@ export function CreatePortfolio(props) {
         </Modal.Footer>
       </Modal>
       <Modal show={optionalPopup} onHide={() => setOptionalPopup(false)} size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered>
-            <Modal.Header className="border-none align-items-center">
-               <Modal.Title><b>Select Optional Services</b></Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-               <div className=' p-2'>
-                  <div className="row">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="card p-4">
-                        <div className="d-flex align-items-center ">
-                        <div class="checkbox mr-3">
-                          <input type="checkbox" value=""></input>
-                        </div>
-                        <p className="mb-0 font-size-16 text-black"><b>AIR FILTER REPLACEMENT</b></p>
-                        </div>
-                      </div>
-                      <div className="px-2">
-                        <p className="mb-0 font-size-14">The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service.</p>
-                      </div>
+        aria-labelledby="contained-modal-title-vcenter"
+        centered>
+        <Modal.Header className="border-none align-items-center">
+          <Modal.Title><b>Select Optional Services</b></Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className=' p-2'>
+            <div className="row">
+              <div className="col-md-6 col-sm-6">
+                <div className="card p-4">
+                  <div className="d-flex align-items-center ">
+                    <div class="checkbox mr-3">
+                      <input type="checkbox" value=""></input>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="card p-4">
-                        <div className="d-flex align-items-center ">
-                        <div class="checkbox mr-3">
-                          <input type="checkbox" value=""></input>
-                        </div>
-                        <p className="mb-0 font-size-16 text-black"><b>ROTATE TIRES</b></p>
-                        </div>
-                      </div>
-                      <div className="px-2">
-                        <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="card mt-4 p-4">
-                        <div className="d-flex align-items-center ">
-                        <div class="checkbox mr-3">
-                          <input type="checkbox" value=""></input>
-                        </div>
-                        <p className="mb-0 font-size-16 text-black"><b>CABIN AIR FILTER REPLACEMENT</b></p>
-                        </div>
-                      </div>
-                      <div className="px-2">
-                        <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
-                      </div>
-                    </div>
+                    <p className="mb-0 font-size-16 text-black"><b>AIR FILTER REPLACEMENT</b></p>
                   </div>
-                  <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p>
                 </div>
-        </Modal.Body>
+                <div className="px-2">
+                  <p className="mb-0 font-size-14">The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service.</p>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="card p-4">
+                  <div className="d-flex align-items-center ">
+                    <div class="checkbox mr-3">
+                      <input type="checkbox" value=""></input>
+                    </div>
+                    <p className="mb-0 font-size-16 text-black"><b>ROTATE TIRES</b></p>
+                  </div>
+                </div>
+                <div className="px-2">
+                  <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="card mt-4 p-4">
+                  <div className="d-flex align-items-center ">
+                    <div class="checkbox mr-3">
+                      <input type="checkbox" value=""></input>
+                    </div>
+                    <p className="mb-0 font-size-16 text-black"><b>CABIN AIR FILTER REPLACEMENT</b></p>
+                  </div>
+                </div>
+                <div className="px-2">
+                  <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
+                </div>
+              </div>
+            </div>
+            <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p>
+          </div>
+          {/* </div>
+      </div>
+    </div> */}
+        </Modal.Body >
         {/* <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
@@ -18855,7 +19131,7 @@ export function CreatePortfolio(props) {
             Save Changes
           </Button>
         </Modal.Footer> */}
-      </Modal>
+      </Modal >
 
       <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
         <div class="modal-dialog" role="document">
@@ -18912,6 +19188,6 @@ export function CreatePortfolio(props) {
           </div>
         </div>
       </div>
-    </PortfolioContext.Provider>
+    </PortfolioContext.Provider >
   );
 }
