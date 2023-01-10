@@ -574,15 +574,22 @@ function RepairServiceEstimate(props) {
     FetchMiscforService(result.id)
       .then((resultMisc) => {
         if (resultMisc && resultMisc.id) {
+          // resultMisc.type?.map(type => {
+          //   let matchingType = miscTypeList.find(
+          //     (element) => element.value === type
+          //   )}
+          //   selectedTypes.push(matchingType);
+          // )
           setMiscData({
             ...resultMisc,
             id: resultMisc.id,
             pricingMethod: MISC_PRICE_OPTIONS.find(
               (element) => element.value === resultMisc.pricingMethod
             ),
-            type: miscTypeList.find(
-              (element) => element.value === resultMisc.type
-            ),
+            // type: miscTypeList.find(
+            //   (element) => element.value === resultMisc.type
+            // ),
+            type: miscTypeList.filter(function(element){ return resultMisc.type?.includes(element.value)}),
             totalPrice: resultMisc.totalPrice ? resultMisc.totalPrice : 0,
           });
           setMiscViewOnly(true);
@@ -607,7 +614,7 @@ function RepairServiceEstimate(props) {
         setExtWorkViewOnly(false);
       else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
     } else {
-      handleSnack("info", "Builder is Active!");
+      handleSnack("info", "Active Builder cannot be changed, change status to REVISE!");
     }
   };
   // Search Vendors
@@ -837,10 +844,9 @@ function RepairServiceEstimate(props) {
   // Add or Update misc data
   const updateMiscHeader = () => {
     // console.log(miscData.type);
-    // let miscTypes = []
-    // miscData.type?.map(element => miscTypes.push(element.value));
+    let miscTypes = [];
+    miscData.type?.map(element => miscTypes.push(element.value));
     let data = {
-      // ...miscData,
       ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
       jobCodeDescription: miscData.jobCodeDescription,
@@ -852,8 +858,8 @@ function RepairServiceEstimate(props) {
       }),
       adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
       payer: miscData.payer,
-      type: miscData.type?.value,
-      // type: miscTypes,
+      // type: miscData.type?.value,
+      type: miscTypes,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -2974,8 +2980,7 @@ function RepairServiceEstimate(props) {
                                   // closeMenuOnSelect={false}
                                   options={miscTypeList}
                                   value={miscData.type}
-                                  // isMulti
-
+                                  isMulti
                                   styles={FONT_STYLE_SELECT}
                                 />
                                 <div className="css-w8dmq8">*Mandatory</div>
@@ -3191,7 +3196,8 @@ function RepairServiceEstimate(props) {
                             />
                             <ReadOnlyField
                               label="TYPE OF MISC."
-                              value={miscData.type?.label}
+                              value={<>{miscData.type?.map(element => <div>{element.label}</div>)}</>}
+                              
                               className="col-md-4 col-sm-4"
                             />
                             {!miscData.flatRateIndicator ? (

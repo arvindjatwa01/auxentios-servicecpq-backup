@@ -42,6 +42,8 @@ import {
   fetchTemplateDetails,
   updateTemplateUsage,
   updateTemplateRating,
+  fetchSegmentsStandardJob,
+  updateTemplateVersion,
 } from "services/templateService";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { useAppSelector } from "app/hooks";
@@ -83,8 +85,16 @@ function ServiceOnlyTemplates(props) {
   const [headerLoading, setHeaderLoading] = useState(false);
   const [templateId, setTemplateId] = useState("");
 
-  const handleVersionTemplate = (e) => {
-    setVersion(e);
+  const handleVersionTemplate = async (e) => {
+    await updateTemplateVersion(templateDBId, e.value)
+      .then((result) => {
+        setVersion(e);
+        setGeneralData({ ...generalData, version: e.value });
+        handleSnack("success", "Version updated successfully!");
+      })
+      .catch((err) => {
+        handleSnack("error", `Failed to update the Version!`);
+      });
   };
   // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
@@ -238,7 +248,7 @@ function ServiceOnlyTemplates(props) {
       setTemplateDBId(state.templateDBId);
       fetchAllDetails(state.templateDBId);
       if (state.templateDBId) {
-        fetchSegments(state.templateDBId)
+        fetchSegmentsStandardJob(state.templateDBId)
           .then((result) => {
             if (result?.length > 0) {
               setSegments(result);
@@ -1034,7 +1044,7 @@ function ServiceOnlyTemplates(props) {
                           selTemplateStatus?.value === "DRAFT" ||
                           selTemplateStatus?.value === "REVISED"
                             ? makeHeaderEditable()
-                            : handleSnack("info", "Builder is active!")
+                            : handleSnack("info", "Set revised status to modify active templates")
                         }
                       ></i>
                     </a>{" "}

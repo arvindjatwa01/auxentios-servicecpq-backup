@@ -89,7 +89,8 @@ export const getSearchForRecentPortfolio = () => {
     // console.log("RECENT_PORTFOLIO_URL", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
     try {
       axios
-        .get(RECENT_PORTFOLIO_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+        // .get(RECENT_PORTFOLIO_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+        .get(RECENT_PORTFOLIO_URL + "/recent", { headers: headersdata })
         .then((res) => {
           console.log("getSearchForRecentPortfolio > axios res=", res);
           resolve(res.data);

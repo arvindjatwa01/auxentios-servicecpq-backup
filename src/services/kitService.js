@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_KIT, KIT_MULTI_PARTS_TO_PARTLIST, KIT_PART_OF_PARTLIST, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_RATING, UPDATE_KIT_STATUS } from "./CONSTANTS";
+import { FETCH_KIT, KIT_MULTI_PARTS_TO_PARTLIST, KIT_PART_OF_PARTLIST, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_RATING, UPDATE_KIT_STATUS, UPDATE_KIT_VERSION } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -245,6 +245,31 @@ export const updateKITRating =  (kitId, rating) => {
         });
     } catch (error) {
       console.error("in KIT > updateKITRating, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//update KIT Version
+export const updateKITVersion =  (kitId, version) => {
+  console.log("KIT > updateKITVersion called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_KIT_VERSION(kitId, version), {}, config)
+        .then((res) => {
+          console.log("updateKITVersion > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling updateKITVersion');
+        })
+        .catch((err) => {
+          console.log("updateKITVersion > axios err=", err);
+          reject("Error in updateKITVersion axios!");
+        });
+    } catch (error) {
+      console.error("in KIT > updateKITVersion, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

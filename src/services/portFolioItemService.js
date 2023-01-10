@@ -78,6 +78,27 @@ export const getAllItems = () => {
   });
 };
 
+export const getServiceItemsList = () => {
+  console.log("portfolioItemService > getServiceItemsList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_PORTFOLIO_ITEM()+ "/services", { headers: headersdata })
+        .then((res) => {
+          console.log("getServiceItemsList > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getServiceItemsList > axios err=", err);
+          reject("Error in getServiceItemsList axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > getServiceItemsList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 export const itemSearchSuggestion = (family, familyValue) => {
   console.log("portfolioItemService > itemSearchSuggestion called...");
   return new Promise((resolve, reject) => {
@@ -120,26 +141,7 @@ export const itemSearch = (searchStr) => {
     }
   });
 };
-export const getItemPrice = (payLoad) => {
-  console.log("portfolioItemService > getItemPrice called...");
-  return new Promise((resolve, reject) => {
-    try {
-      axios
-        .put(PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersdata })
-        .then((res) => {
-          console.log("getItemPrice > axios res=", res);
-          resolve(res.data);
-        })
-        .catch((err) => {
-          console.log("getItemPrice > axios err=", err);
-          reject("Error in getItemPrice axios!");
-        });
-    } catch (error) {
-      console.error("in portfolioItemService > getItemPrice, Err===", error);
-      reject(SYSTEM_ERROR);
-    }
-  });
-};
+
 export const updateItemData = (id, payLoad) => {
   console.log("portfolioItemService > updateItemData called...");
   return new Promise((resolve, reject) => {
@@ -160,6 +162,7 @@ export const updateItemData = (id, payLoad) => {
     }
   });
 };
+
 export const deleteItem = (id) => {
   console.log("portfolioItemService > deleteItem called...");
   return new Promise((resolve, reject) => {
@@ -180,6 +183,29 @@ export const deleteItem = (id) => {
     }
   });
 };
+
+
+export const getItemPrice = (payLoad) => {
+  console.log("portfolioItemService > getItemPrice called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersdata })
+        .then((res) => {
+          console.log("getItemPrice > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getItemPrice > axios err=", err);
+          reject("Error in getItemPrice axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > getItemPrice, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 export const itemPriceDataId = (searchId) => {
   // console.log("portfolioItemPricedataService > itemPricedataSearch called...");
   return new Promise((resolve, reject) => {

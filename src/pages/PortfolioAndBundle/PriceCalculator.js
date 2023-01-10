@@ -46,48 +46,95 @@ const PriceCalculator = (props) => {
     { label: "Surcharge $", value: "ABSOLUTE", },
   ])
 
+  // const [priceCalculator, setPriceCalculator] = useState({
+  //   priceMethod: "",
+  //   listPrice: "",
+  //   currency: "",
+  //   priceAdditionalSelect: "",
+  //   priceAdditionalInput: "",
+  //   priceEscalationSelect: "",
+  //   priceEscalationInput: "",
+  //   calculatedPrice: "",
+  //   // flatPrice: "",
+  //   flatPrice: 0,
+  //   discountTypeSelect: "",
+  //   discountTypeInput: "",
+  //   priceYear: "",
+  //   startUsage: "",
+  //   endUsage: "",
+  //   usageType: "",
+  //   frequency: "",
+  //   cycle: "",
+  //   suppresion: "",
+  //   priceType: "",
+  //   netPrice: 1200,
+  //   totalPrice: 1200,
+  // });
+
+
   const [priceCalculator, setPriceCalculator] = useState({
     priceMethod: "",
-    listPrice: "",
     currency: "",
+    priceDate: new Date(),
+    priceType: "",
     priceAdditionalSelect: "",
     priceAdditionalInput: "",
     priceEscalationSelect: "",
-    priceEscalationInput: "",
-    calculatedPrice: "",
-    // flatPrice: "",
-    flatPrice: 0,
     discountTypeSelect: "",
+    priceEscalationInput: "",
+    flatRateIndicator: false,
+    flatPrice: "",
     discountTypeInput: "",
-    priceYear: "",
+    priceBrackDownType: "",
+    priceBrackDownPercantage: "",
+    year: "",
+    noOfYear: 1,
     startUsage: "",
     endUsage: "",
     usageType: "",
     frequency: "",
-    cycle: "",
-    suppresion: "",
-    priceType: "",
+    unit: "",
+    recommendedValue: "",
+    numberOfEvents: "",
     netPrice: 1200,
     totalPrice: 1200,
+    listPrice: "",
+    calculatedPrice: "",
+    priceYear: "",
+    usageType: "",
+    frequency: "",
+    cycle: "",
+    suppresion: "",
+    id: "",
+    portfolioDataId: 1,
   });
 
   const dispatch = useDispatch();
   useEffect(() => {
+
+    if ((props.createdBundleItems != "")) {
+      setAddportFolioItem(props.createdBundleItems)
+    }
+    // console.log("props.createdBundleItems 114 : ", props.createdBundleItems)
+    // console.log("props.createdBundleItems != 114 : ", props.createdBundleItems != "")
+    // console.log("props.createdBundleItems != null : ", props.createdBundleItems != undefined)
     if (props.serviceOrBundlePrefix !== "SERVICE") {
       if (props.priceCalculator) {
-        console.log("priceCalculator 111111", props.priceCalculator)
-        setPriceCalculator(props.priceCalculator);
+        // console.log("priceCalculator 111111", props.priceCalculator)
+        // setPriceCalculator(props.priceCalculator);
+        portfolioItemPriceSjIdFun()
       }
     }
-  }, [props]);
+  }, []);
 
-  useEffect(() => {
-    if (props.serviceOrBundlePrefix == "BUNDLE") {
-      portfolioItemPriceSjidFun()
-    }
-  }, [])
+  // useEffect(() => {
 
-  const portfolioItemPriceSjidFun = async () => {
+  //   if (props.serviceOrBundlePrefix == "BUNDLE") {
+  //     portfolioItemPriceSjIdFun()
+  //   }
+  // }, [])
+
+  const portfolioItemPriceSjIdFun = async () => {
 
     const rObjId = props.priceCalculator.itemPriceDataId;
 
@@ -103,19 +150,70 @@ const PriceCalculator = (props) => {
     // }
 
 
-
     setPriceCalculator({
       ...priceCalculator,
-      priceMethod: res.data.priceMethod,
-      listPrice: res.data.listPrice,
-      calculatedPrice: res.data.calculatedPrice,
-      flatPrice: res.data.flatPrice,
-      priceYear: res.data.year,
+      priceMethod: (res.data.priceMethod != "EMPTY" ||
+        res.data.priceMethod != "" ||
+        res.data.priceMethod != null) ? {
+        label: res.data.priceMethod,
+        value: res.data.priceMethod
+      } : "",
+      priceType: (res.data.priceType != "EMPTY" ||
+        res.data.priceType != "" ||
+        res.data.priceType != null) ? {
+        label: res.data.priceType,
+        value: res.data.priceType
+      } : "",
+      priceAdditionalSelect: {
+        label: (res.data.additionalPriceType != "" ||
+          res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE",
+        value: (res.data.additionalPriceType != "" ||
+          res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE"
+      },
+      priceAdditionalInput: res.data.additionalPriceValue,
+      discountTypeSelect: (res.data.discountType != "EMPTY" ||
+        res.data.discountType != "" ||
+        res.data.discountType != null) ? {
+        label: res.data.discountType,
+        value: res.data.discountType
+      } : "",
+      discountTypeInput: res.data.discountValue,
+      // year: {
+      //   label: (res.data.year != "" ||
+      //     res.data.year != null) ? res.data.year : "1",
+      //   value: (res.data.year != "" ||
+      //     res.data.year != null) ? res.data.year : "1"
+      // },
+      // noOfYear: (res.data.noOfYear != null ||
+      //   res.data.noOfYear != 0) ? res.data.noOfYear : 1,
+      year: {
+        label: res.data.year,
+        value: res.data.year,
+      },
+      noOfYear: res.data.noOfYear,
       startUsage: res.data.startUsage,
       endUsage: res.data.endUsage,
+      recommendedValue: res.data.recommendedValue,
+      netPrice: res.data.netService,
       totalPrice: res.data.totalPrice,
-      netPrice: res.data.netService
+      id: res.data.itemPriceDataId,
+      numberOfEvents: res.data.numberOfEvents,
+      portfolioDataId: res.data.portfolio.portfolioId,
     })
+
+
+    // setPriceCalculator({
+    //   ...priceCalculator,
+    //   priceMethod: res.data.priceMethod,
+    //   listPrice: res.data.listPrice,
+    //   calculatedPrice: res.data.calculatedPrice,
+    //   flatPrice: res.data.flatPrice,
+    //   priceYear: res.data.year,
+    //   startUsage: res.data.startUsage,
+    //   endUsage: res.data.endUsage,
+    //   totalPrice: res.data.totalPrice,
+    //   netPrice: res.data.netService
+    // })
 
 
     // console.log("response",res)
@@ -259,6 +357,12 @@ const PriceCalculator = (props) => {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
+
+  const discountTypeOptions = [
+    { value: "PROGRAM_DISCOUNT", label: "Program" },
+    { value: "CUSTOMER_DISCOUNT", label: "Customer" },
+    { value: "PORTFOLIO_DISCOUNT", label: "Portfolio" },
+  ]
   const [addPortFolioItem, setAddportFolioItem] = useState({
     id: 0,
     name: "",
@@ -313,6 +417,14 @@ const PriceCalculator = (props) => {
     })
   }
 
+  useEffect(() => {
+    var yearsOptionArr = [];
+    for (let i = 1; i <= priceCalculator.noOfYear; i++) {
+      yearsOptionArr.push({ value: i, label: i })
+    }
+    seYearsOption(yearsOptionArr);
+  }, [priceCalculator.noOfYear])
+
   const handleItemPriceSave = () => {
     // props.setTabs("6")
     props.setTabs("4"); // previous flow
@@ -336,6 +448,32 @@ const PriceCalculator = (props) => {
   return (
     <>
       <div className="">
+        <div className="ligt-greey-bg p-3">
+          <div>
+            <span className="mr-3 cursor"
+              onClick={() => setDisable(!disable)}
+            >
+              <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+              <span className="ml-2">Edit</span>
+            </span>
+            <span className="mr-3">
+              <MonetizationOnOutlinedIcon className=" font-size-16" />
+              <span className="ml-2"> Adjust price</span>
+            </span>
+            {/* <span className="mr-3">
+                      <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related part list(s)</span>
+                    </span>
+                    <span className="mr-3">
+                      <AccessAlarmOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related service estimate(s)</span>
+                    </span> */}
+            <span>
+              <SellOutlinedIcon className=" font-size-16" />
+              <span className="ml-2">Split price</span>
+            </span>
+          </div>
+        </div>
         <div className="p-3">
           <div className="row input-fields">
             <div className="col-md-6 col-sm-6">
@@ -349,11 +487,14 @@ const PriceCalculator = (props) => {
                 <Select
                   options={priceMethodKeyValue}
                   className="text-primary"
-                  defaultValue={props?.priceCalculator?.priceMethod}
+                  // defaultValue={props?.priceCalculator?.priceMethod}
                   value={priceCalculator.priceMethod}
                   name="priceMethod"
                   onChange={(e) =>
-                    setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                    setPriceCalculator({
+                      ...priceCalculator,
+                      priceMethod: e
+                    })
                   }
                   placeholder="placeholder (Optional)"
                 />
@@ -374,7 +515,10 @@ const PriceCalculator = (props) => {
                   value={priceCalculator.currency}
                   name="priceMethod"
                   onChange={(e) =>
-                    setPriceCalculator({ ...priceCalculator, currency: e })
+                    setPriceCalculator({
+                      ...priceCalculator,
+                      currency: e
+                    })
                   }
                   placeholder="placeholder (Optional)"
                 />
@@ -397,13 +541,20 @@ const PriceCalculator = (props) => {
                         className="form-controldate border-radius-10"
                         label=""
                         name="preparedOn"
-                        value={priceDetails.priceDate}
+                        value={priceCalculator.priceDate}
                         onChange={(e) =>
-                          setPriceDetails({
-                            ...priceDetails,
-                            priceDate: e,
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            currency: e
                           })
                         }
+                      // value={priceDetails.priceDate}
+                      // onChange={(e) =>
+                      //   setPriceDetails({
+                      //     ...priceDetails,
+                      //     priceDate: e,
+                      //   })
+                      // }
                       />
                     </MuiPickersUtilsProvider>
                   </div>
@@ -423,7 +574,10 @@ const PriceCalculator = (props) => {
                   className="text-primary"
                   onChange={(e) =>
                     // setPriceTypeKeyValue1(e)
-                    setPriceCalculator({ ...priceCalculator, priceType: e })
+                    setPriceCalculator({
+                      ...priceCalculator,
+                      priceType: e
+                    })
                   }
                   options={priceTypeKeyValue}
                   placeholder="placeholder (Optional)"
@@ -471,7 +625,7 @@ const PriceCalculator = (props) => {
                     type="text"
                     className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="10%"
-                    defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                    // defaultValue={props?.priceCalculator?.priceAdditionalInput}
                     value={priceCalculator.priceAdditionalInput}
                     name="priceAdditionalInput"
                     onChange={(e) =>
@@ -499,6 +653,13 @@ const PriceCalculator = (props) => {
                     id="priceEscalationSelect"
                     options={priceHeadTypeKeyValue}
                     placeholder="placeholder "
+                    onChange={(e) =>
+                      setPriceCalculator({
+                        ...priceCalculator,
+                        priceEscalationSelect: e,
+                      })
+                    }
+                    value={priceCalculator.priceEscalationSelect}
                   // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
                   // value={expandedPriceCalculator.priceEscalationSelect}
                   />
@@ -507,6 +668,13 @@ const PriceCalculator = (props) => {
                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="20%"
                     id="priceEscalationInput"
+                    value={priceCalculator.priceEscalationInput}
+                    onChange={(e) =>
+                      setPriceCalculator({
+                        ...priceCalculator,
+                        priceEscalationInput: e.target.value
+                      })
+                    }
                   // value={escalationPriceValue}
                   // onchange={(e) = setEscalationPriceValue(e.target.value)}
                   // defaultValue={data.itemBodyModel.priceEscalation}
@@ -588,7 +756,7 @@ const PriceCalculator = (props) => {
                         })
                       }
                       isClearable={true}
-                      options={options}
+                      options={discountTypeOptions}
                       placeholder="Select"
                     />
                   </div>
@@ -619,8 +787,14 @@ const PriceCalculator = (props) => {
                 <div className=" d-flex form-control-date">
                   <Select
                     className="select-input text-primary"
-                    defaultValue={selectedOption}
-                    onChange={setSelectedOption}
+                    // defaultValue={selectedOption}
+                    value={priceCalculator.priceBrackDownType}
+                    // onChange={setSelectedOption}
+                    onChange={(e) =>
+                      setPriceCalculator({
+                        ...priceCalculator,
+                        priceBrackDownType: e,
+                      })}
                     // options={options}
                     options={priceHeadTypeKeyValue}
                     placeholder="Select "
@@ -631,6 +805,12 @@ const PriceCalculator = (props) => {
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp"
                     placeholder="optional"
+                    onChange={(e) =>
+                      setPriceCalculator({
+                        ...priceCalculator,
+                        priceBrackDownPercantage: e.target.value,
+                      })}
+                    value={priceCalculator.priceBrackDownPercantage}
                   />
                 </div>
               </div>
@@ -659,9 +839,12 @@ const PriceCalculator = (props) => {
                     placeholder="Select..."
                     className="text-primary"
                     onChange={(e) =>
-                      setAddportFolioItem({ ...addPortFolioItem, year: e })
+                      setPriceCalculator({
+                        ...priceCalculator,
+                        year: e
+                      })
                     }
-                    value={addPortFolioItem.year}
+                    value={priceCalculator.year}
                   />
                 </div>
               </div>
@@ -680,8 +863,12 @@ const PriceCalculator = (props) => {
                     placeholder="No. of Years"
                     // defaultValue={props?.priceCalculator?.startUsage}
                     // value={priceCalculator.startUsage}
-                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
-                    value={addPortFolioItem.noOfYear}
+                    onChange={(e) =>
+                      setPriceCalculator({
+                        ...priceCalculator,
+                        noOfYear: e.target.value,
+                      })}
+                    value={priceCalculator.noOfYear}
                     name="noOfYear"
                   />
                   {/* <Select
@@ -721,8 +908,13 @@ const PriceCalculator = (props) => {
                       placeholder="10,000 hours"
                       // defaultValue={props?.priceCalculator?.startUsage}
                       // value={priceCalculator.startUsage}
-                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
-                      value={addPortFolioItem.startUsage}
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          startUsage: e.target.value,
+                        })
+                      }
+                      value={priceCalculator.startUsage}
                       name="startUsage"
                     />
                     <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
@@ -749,8 +941,13 @@ const PriceCalculator = (props) => {
                       placeholder="16,000 hours"
                       // defaultValue={props?.priceCalculator?.startUsage}
                       // value={priceCalculator.startUsage}
-                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
-                      value={addPortFolioItem.endUsage}
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          endUsage: e.target.value,
+                        })
+                      }
+                      value={priceCalculator.endUsage}
                       name="endUsage"
                     />
                     <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
@@ -792,6 +989,13 @@ const PriceCalculator = (props) => {
                     options={frequencyOptions}
                     placeholder="Select....."
                     className="text-primary"
+                    // onChange={(e) =>
+                    //   setPriceCalculator({
+                    //     ...priceCalculator,
+                    //     frequency: e,
+                    //   })
+                    // }
+                    // value={priceCalculator.frequency}
                     onChange={(e) =>
                       setAddportFolioItem({
                         ...addPortFolioItem,
@@ -848,8 +1052,13 @@ const PriceCalculator = (props) => {
                       placeholder="Recommended Value"
                       // defaultValue={props?.priceCalculator?.startUsage}
                       // value={priceCalculator.startUsage}
-                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
-                      value={addPortFolioItem.recommendedValue}
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          recommendedValue: e.target.value,
+                        })
+                      }
+                      value={priceCalculator.recommendedValue}
                       name="recommendedValue"
                     // name="startUsage"
                     // onChange={(e) =>
@@ -877,12 +1086,12 @@ const PriceCalculator = (props) => {
                     className="form-control border-radius-10 text-primary"
                     placeholder="NO. OF EVENTS"
                     onChange={(e) =>
-                      setAddportFolioItem({
-                        ...addPortFolioItem,
+                      setPriceCalculator({
+                        ...priceCalculator,
                         numberOfEvents: e.target.value,
                       })
                     }
-                    value={addPortFolioItem.numberOfEvents}
+                    value={priceCalculator.numberOfEvents}
                   />
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
