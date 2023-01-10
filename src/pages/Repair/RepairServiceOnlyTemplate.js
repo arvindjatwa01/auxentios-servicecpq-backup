@@ -10,7 +10,6 @@ import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
 import penIcon from "../../assets/images/pen.png";
 import $ from "jquery";
 import { useDispatch } from "react-redux";
@@ -239,7 +238,7 @@ export const RepairServiceOnlyTemplate = () => {
             <h5 className="font-weight-600 mb-0">Service Only Templates</h5>
             <div>
               <Link
-                to="/RepairServiceOnlyTemplate/ServiceOnlyTemplates"
+                to="/RepairWithoutSpareParts"
                 style={{ cursor: "pointer" }}
                 className="btn bg-primary text-white"
               >

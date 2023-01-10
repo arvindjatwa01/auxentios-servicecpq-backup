@@ -235,9 +235,9 @@ export const RepairKits = () => {
         <div class="container-fluid">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Kits</h5>
-            {/* <div>
+            <div>
               <Link
-                to="/RepairKits/Kits"
+                to="/RepairPartList"
                 style={{ cursor: "pointer" }}
                 className="btn bg-primary text-white"
               >
@@ -246,7 +246,7 @@ export const RepairKits = () => {
                 </span>
                 Create New<span className="ml-2"></span>
               </Link>
-            </div> */}
+            </div>
           </div>
 
           <div className="card p-4 mt-5">

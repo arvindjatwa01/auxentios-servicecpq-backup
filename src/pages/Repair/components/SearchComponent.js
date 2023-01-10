@@ -123,8 +123,8 @@ const SearchComponent = (props) => {
             <div
               className={
                 props.background === "white"
-                  ? `customselectPortfolio ${(i < (props.querySearchSelector.length - 1)) ? "px-2" : ""} d-flex align-items-center mr-3 my-2 border-radius-6`
-                  : `customselect ${(i < (props.querySearchSelector.length - 1)) ? "px-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-6`
+                  ? `customselectPortfolio ${(i < (props.querySearchSelector.length - 1)) ? "p-2" : ""} d-flex align-items-center mr-3 my-2 border-radius-6`
+                  : `customselect ${(i < (props.querySearchSelector.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-6`
               }
               style={{ position: "relative", zIndex: 20 - i }}
               key={"query" + i}
@@ -155,9 +155,9 @@ const SearchComponent = (props) => {
                 />
               </div>
               <div className="customselectsearch customize">
-                <span className="search-icon-postn">
+                {/* <span className="search-icon-postn">
                   <SearchIcon className="text-primary" />
-                </span>
+                </span> */}
                 <input
                   className="custom-input-sleact pr-1"
                   style={{ position: "relative" }}
@@ -183,7 +183,7 @@ const SearchComponent = (props) => {
                     {props.buttonText ? props.buttonText : "Add Item"}
                   </div>
                 ) : (
-                  <div className="btn" style={{ height: 40, width: 70 }}></div>
+                  <></>
                 )}
                 {obj.selectOptions && obj.selectOptions.length > 0 && (
                   <ul

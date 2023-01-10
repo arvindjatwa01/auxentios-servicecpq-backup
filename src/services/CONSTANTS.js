@@ -199,6 +199,7 @@ export const UPDATE_KIT_PRICE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/pr
 export const UPDATE_KIT_COVERAGE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/coverage`
 export const UPDATE_KIT_STATUS = (kitId, status) => REPAIR_BUILDER_URI + `kit/${kitId}/status/${status}`;
 export const UPDATE_KIT_RATING = (kitId, rating) => REPAIR_BUILDER_URI + `kit/${kitId}/rating/${rating}`;
+export const UPDATE_KIT_VERSION = (kitId, version) => REPAIR_BUILDER_URI + `kit/${kitId}/version/${version}`;
 export const KIT_PART_OF_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `kit-partlist/${partListId}/sparepart`;
 export const KIT_MULTI_PARTS_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `kit-partlist/${partListId}/spareparts`;
 
@@ -213,6 +214,8 @@ export const UPDATE_SJ_COVERAGE = (templateId) => REPAIR_BUILDER_URI + `standard
 export const UPDATE_SJ_STATUS = (templateId, status) => REPAIR_BUILDER_URI + `standard-job/${templateId}/status/${status}`;
 export const UPDATE_SJ_USAGE = (templateId) => REPAIR_BUILDER_URI + `standard-job/${templateId}/usage`
 export const UPDATE_SJ_RATING = (templateId, rating) => REPAIR_BUILDER_URI + `standard-job/${templateId}/rating/${rating}`;
+export const SJ_SEGMENT = (templateId) => REPAIR_BUILDER_URI + `standard-job/${templateId}/segment`;
+export const UPDATE_SJ_VERSION = (templateId, version) => REPAIR_BUILDER_URI + `standard-job/${templateId}/version/${version}`;
 
 /* ===================== Quote Service ============================= */
 

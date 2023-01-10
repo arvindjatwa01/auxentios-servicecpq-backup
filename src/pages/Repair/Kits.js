@@ -53,6 +53,7 @@ import {
   updateKITPrice,
   updateKITStatus,
   RemoveKITSparepart,
+  updateKITVersion,
 } from "services/kitService";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import {
@@ -194,10 +195,18 @@ function Kits(props) {
   const [sparePart, setSparePart] = useState(initialSparePart);
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
-  const handleVersionKit = (e) => {
+  const handleVersionKit = async (e) => {
     handleSnack("info", "Version Update API needs to be created for KIT!");
-    setGeneralData({ ...generalData, version: e.value });
-    setVersion(e);
+    
+    await updateKITVersion(kitDBId, e.value)
+      .then((result) => {
+        setVersion(e);
+        setGeneralData({ ...generalData, version: e.value });
+        handleSnack("success", "Version updated successfully!");
+      })
+      .catch((err) => {
+        handleSnack("error", `Failed to update the Version!`);
+      });
   };
   const [kitDBId, setKITDBId] = useState("");
   const [version, setVersion] = useState({ value: "GOLD", label: "Gold" });
@@ -846,7 +855,7 @@ function Kits(props) {
           <GridActionsCellItem
             icon={
               <div className=" cursor">
-                <Tooltip title="Edit">
+                <Tooltip title="Reset">
                   <img className="m-1" src={deleteIcon} alt="Delete" />
                 </Tooltip>
               </div>

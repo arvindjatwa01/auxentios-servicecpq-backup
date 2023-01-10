@@ -9,7 +9,6 @@ import { NEW_SEGMENT } from "./CONSTANTS";
 import {
   createSegment,
   fetchOperations,
-  fetchSegments,
 } from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,
@@ -20,6 +19,7 @@ import SearchBox from "./components/SearchBox";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { ReadOnlyField } from "./components/ReadOnlyField";
+import { createSegmentStandardJob, fetchSegmentsStandardJob } from "services/templateService";
 function ServiceOnlyTemplateSegment(props) {
   const { activeElement, setActiveElement, fetchAllDetails } =
     props.templateDetails;
@@ -65,13 +65,13 @@ function ServiceOnlyTemplateSegment(props) {
   };
   const [segmentData, setSegmentData] = useState(newSegment);
   useEffect(() => {
-    fetchSegmentsOfBuilder();
+    fetchSegments();
   }, []);
 
-  const fetchSegmentsOfBuilder = () => {
+  const fetchSegments = () => {
     setSegmentLoading(true);
     if (activeElement.templateDBId) {
-      fetchSegments(activeElement.templateDBId)
+      fetchSegmentsStandardJob(activeElement.templateDBId)
         .then((result) => {
           if (result?.length > 0) {
             setSegments(result);
@@ -257,7 +257,7 @@ function ServiceOnlyTemplateSegment(props) {
       componentCode: segmentData.componentCode,
       description: segmentData.description,
     };
-    createSegment(templateDBId, data)
+    createSegmentStandardJob(templateDBId, data)
       .then((result) => {
         setSegmentData({
           ...segmentData,

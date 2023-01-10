@@ -1,10 +1,8 @@
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import ReplayIcon from "@mui/icons-material/Replay";
+import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -87,6 +85,7 @@ import AddConsumableItemModal from "./components/AddConsumableItem";
 import LoadingProgress from "./components/Loader";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { ReadOnlyField } from "./components/ReadOnlyField";
 
 function ServiceOnlyTemplateEstimation(props) {
   const { activeElement, setActiveElement } = props.templateDetails;
@@ -161,6 +160,7 @@ function ServiceOnlyTemplateEstimation(props) {
     netPrice: 0.0,
     jobCode: "",
     adjustedPrice: 0,
+    flatRateIndicator: false,
   });
   const initialLaborItemData = {
     isEditing: false,
@@ -421,22 +421,22 @@ function ServiceOnlyTemplateEstimation(props) {
             setLabourData({
               ...labourData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
             setConsumableData({
               ...consumableData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
             setExtWorkData({
               ...extWorkData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
             setMiscData({
               ...miscData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
+              jobCodeDescription: result.jobCodeDescription,
             });
           }
           setServiceEstHeaderLoading(false);
@@ -473,7 +473,7 @@ function ServiceOnlyTemplateEstimation(props) {
         setLabourData({
           ...labourData,
           jobCode: result.jobCode,
-          jobCodeDescription: result.jobOperation,
+          jobCodeDescription: result.jobCodeDescription,
         });
       });
   }
@@ -512,7 +512,7 @@ function ServiceOnlyTemplateEstimation(props) {
         setConsumableData({
           ...consumableData,
           jobCode: result.jobCode,
-          jobCodeDescription: result.jobOperation,
+          jobCodeDescription: result.jobCodeDescription,
         });
       });
   }
@@ -550,7 +550,7 @@ function ServiceOnlyTemplateEstimation(props) {
         setExtWorkData({
           ...extWorkData,
           jobCode: result.jobCode,
-          jobCodeDescription: result.jobOperation,
+          jobCodeDescription: result.jobCodeDescription,
         });
       });
   }
@@ -580,9 +580,10 @@ function ServiceOnlyTemplateEstimation(props) {
             pricingMethod: MISC_PRICE_OPTIONS.find(
               (element) => element.value === resultMisc.pricingMethod
             ),
-            type: miscTypeList.find(
-              (element) => element.value === resultMisc.type
-            ),
+            // type: miscTypeList.find(
+            //   (element) => element.value === resultMisc.type
+            // ),
+            type: miscTypeList.filter(function(element){ return resultMisc.type?.includes(element.value)}),
             totalPrice: resultMisc.totalPrice ? resultMisc.totalPrice : 0,
           });
           setMiscViewOnly(true);
@@ -592,18 +593,23 @@ function ServiceOnlyTemplateEstimation(props) {
         setMiscData({
           ...miscData,
           jobCode: result.jobCode,
-          jobCodeDescription: result.jobOperation,
+          jobCodeDescription: result.jobCodeDescription,
         });
       });
   }
   const makeHeaderEditable = (type) => {
-    if (type === "serviceEstHeader" && serviceHeaderViewOnly)
-      setServiceHeaderViewOnly(false);
-    if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
-    else if (value === "consumables" && consumableViewOnly)
-      setConsumableViewOnly(false);
-    else if (value === "extwork" && extWorkViewOnly) setExtWorkViewOnly(false);
-    else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
+    if (["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) > -1) {
+      if (type === "serviceEstHeader" && serviceHeaderViewOnly)
+        setServiceHeaderViewOnly(false);
+      else if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
+      else if (value === "consumables" && consumableViewOnly)
+        setConsumableViewOnly(false);
+      else if (value === "extwork" && extWorkViewOnly)
+        setExtWorkViewOnly(false);
+      else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
+    } else {
+      handleSnack("info", "Active Template cannot be changed, change status to REVISE!");
+    }
   };
   // Search Vendors
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
@@ -689,20 +695,21 @@ function ServiceOnlyTemplateEstimation(props) {
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
-      priceMethod: serviceEstimateData.priceMethod?.value,
-      adjustedPrice:
-        serviceEstimateData.priceMethod?.value === "FLAT_RATE"
-          ? serviceEstimateData.adjustedPrice
-          : 0.0,
+      // flatRateIndicator: serviceEstimateData.flatRateIndicator, //TODO - uncomment once API changes are done
+      flatRateIndicator: undefined, //TODO - Remove once API changes are done
+      adjustedPrice: serviceEstimateData.flatRateIndicator
+        ? serviceEstimateData.adjustedPrice
+        : 0.0,
+      // priceMethod: null,
     };
     AddServiceHeader(activeElement.oId, data)
       .then((result) => {
         setServiceEstimateData({
           ...result,
           id: result.id,
-          priceMethod: priceMethodOptions.find(
-            (element) => element.value === result.priceMethod
-          ),
+          // priceMethod: priceMethodOptions.find(
+          //  (element) => element.value === result.priceMethod
+          // ),
         });
         handleSnack("success", "Service estimate details updated!");
         setServiceHeaderViewOnly(true);
@@ -834,10 +841,9 @@ function ServiceOnlyTemplateEstimation(props) {
   // Add or Update misc data
   const updateMiscHeader = () => {
     // console.log(miscData.type);
-    // let miscTypes = []
-    // miscData.type?.map(element => miscTypes.push(element.value));
+    let miscTypes = [];
+    miscData.type?.map(element => miscTypes.push(element.value));
     let data = {
-      // ...miscData,
       ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
       jobCodeDescription: miscData.jobCodeDescription,
@@ -849,8 +855,8 @@ function ServiceOnlyTemplateEstimation(props) {
       }),
       adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
       payer: miscData.payer,
-      type: miscData.type?.value,
-      // type: miscTypes,
+      // type: miscData.type?.value,
+      type: miscTypes,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -1451,30 +1457,51 @@ function ServiceOnlyTemplateEstimation(props) {
       ) : (
         <div>
           <div className="card p-4 mt-5">
-            <div className="bg-primary px-3 mb-3 border-radius-6">
-              <div className="row align-items-center">
-                <div className="col-11 mx-2 py-3">
-                  <div className="d-flex align-items-center bg-primary w-100">
-                    <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                      <h5 className="mr-2 mb-0 text-white">
-                        <span>Service Estimation Header</span>
-                        <a
-                          href={undefined}
-                          className="ml-3 text-white"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <EditOutlinedIcon
-                            onClick={() =>
-                              makeHeaderEditable("serviceEstHeader")
-                            }
-                          />
-                        </a>
-                      </h5>
-                    </div>
-                  </div>
+	    <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+              <div className="" style={{ display: "contents" }}>
+                <span
+                  className="mr-3 ml-2 text-white"
+                  style={{ fontSize: "20px" }}
+                >
+                  Service Estimation Header
+                </span>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <EditIcon
+                      onClick={() =>
+                        ["DRAFT", "REVISED"].indexOf(
+                          activeElement?.templateStatus
+                        ) > -1
+                          ? makeHeaderEditable("serviceEstHeader")
+                          : handleSnack(
+                              "info",
+                              "Active Template cannot be changed, change status to REVISE"
+                            )
+                      }
+                    />
+                  </Tooltip>
                 </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Reset">
+                    <ReplayIcon
+                    // onClick={() => handleResetData("RESET")}
+                    />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Share">
+                    <ShareOutlinedIcon />
+                  </Tooltip>
+                </div>
+
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Add to Review">
+                    <ReviewAddIcon />
+                  </Tooltip>
+                </div>
+               
               </div>
-            </div>
+            </h5>
 
             {!serviceHeaderViewOnly ? (
               <>
@@ -1512,6 +1539,7 @@ function ServiceOnlyTemplateEstimation(props) {
                       <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
+                  <div className="col-md-4 col-sm-4"></div>
                   <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
                       <label className="text-light-dark font-size-12 font-weight-600">
@@ -1543,21 +1571,20 @@ function ServiceOnlyTemplateEstimation(props) {
                   <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
                       <label className="text-light-dark font-size-12 font-weight-600">
-                        PRICE METHOD
+                        JOB CODE
                       </label>
-                      <Select
-                        value={serviceEstimateData.priceMethod}
+                      <input
+                        type="text"
+                        disabled
                         class="form-control border-radius-10 text-primary"
+                        value={serviceEstimateData.jobCode}
                         onChange={(e) =>
                           setServiceEstimateData({
                             ...serviceEstimateData,
-                            priceMethod: e,
+                            jobCode: e.target.value,
                           })
                         }
-                        styles={FONT_STYLE_SELECT}
-                        options={priceMethodOptions}
                       />
-                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1571,7 +1598,6 @@ function ServiceOnlyTemplateEstimation(props) {
                             inputFormat="dd/MM/yyyy"
                             className="form-controldate border-radius-10"
                             minDate={serviceEstimateData.priceDate}
-                            maxDate={new Date()}
                             closeOnSelect
                             value={serviceEstimateData.priceDate}
                             onChange={(e) =>
@@ -1619,13 +1645,39 @@ function ServiceOnlyTemplateEstimation(props) {
                         disabled
                         class="form-control border-radius-10 text-primary"
                         value={serviceEstimateData.netPrice}
-                        // onChange={(e) =>
-                        //   setServiceEstimateData({
-                        //     ...serviceEstimateData,
-                        //     netPrice: e.target.value,
-                        //   })
-                        // }
                       />
+                    </div>
+                  </div>
+		  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <FormGroup>
+                        <FormControlLabel
+                          style={{
+                            alignItems: "start",
+                            marginLeft: 0,
+                          }}
+                          control={
+                            <Switch
+                              checked={serviceEstimateData.flatRateIndicator}
+                              onChange={(e) =>
+                                setServiceEstimateData({
+                                  ...serviceEstimateData,
+                                  flatRateIndicator: e.target.checked,
+                                  adjustedPrice: e.target.checked
+                                    ? serviceEstimateData.adjustedPrice
+                                    : 0.0,
+                                })
+                              }
+                            />
+                          }
+                          labelPlacement="top"
+                          label={
+                            <span className="text-light-dark font-size-12 font-weight-600">
+                              FLAT RATE INDICATOR
+                            </span>
+                          }
+                        />
+                      </FormGroup>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1635,40 +1687,13 @@ function ServiceOnlyTemplateEstimation(props) {
                       </label>
                       <input
                         type="text"
-                        disabled={
-                          !(
-                            serviceEstimateData.priceMethod?.value ===
-                            "FLAT_RATE"
-                          )
-                        }
+                        disabled={!serviceEstimateData.flatRateIndicator}
                         class="form-control border-radius-10 text-primary"
-                        value={
-                          serviceEstimateData.priceMethod?.value === "FLAT_RATE"
-                            ? serviceEstimateData.adjustedPrice
-                            : 0.0
-                        }
+                        value={serviceEstimateData.adjustedPrice}
                         onChange={(e) =>
                           setServiceEstimateData({
                             ...serviceEstimateData,
                             adjustedPrice: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        JOB CODE
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control border-radius-10 text-primary"
-                        value={serviceEstimateData.jobCode}
-                        onChange={(e) =>
-                          setServiceEstimateData({
-                            ...serviceEstimateData,
-                            jobCode: e.target.value,
                           })
                         }
                       />
@@ -1691,12 +1716,10 @@ function ServiceOnlyTemplateEstimation(props) {
                       !(serviceEstimateData.jobOperation &&
                       serviceEstimateData.description &&
                       serviceEstimateData.currency &&
-                      // serviceEstimateData.netPrice &&
                       serviceEstimateData.priceDate &&
-                      serviceEstimateData.priceMethod?.value &&
                       serviceEstimateData.reference &&
                       serviceEstimateData.segmentTitle &&
-                      serviceEstimateData.priceMethod?.value === "FLAT_RATE"
+                      serviceEstimateData.flatRateIndicator
                         ? serviceEstimateData.adjustedPrice > 0
                         : true)
                     }
@@ -1709,108 +1732,56 @@ function ServiceOnlyTemplateEstimation(props) {
             ) : (
               <>
                 <div className="row mt-4">
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        REFERENCE
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.reference}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        DESCRIPTION{" "}
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.description}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        SEGMENT TITLE
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.segmentTitle}{" "}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        JOB OPERATION
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.jobOperation}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        PRICE METHOD
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.priceMethod?.label}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        PRICE DATE
-                      </p>
-                      <h6 className="font-weight-600">
-                        <Moment format="DD/MM/YYYY">
-                          {serviceEstimateData.priceDate}
-                        </Moment>
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        CURRENCY
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.currency}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        NET PRICE
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.netPrice}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        ADJUSTED PRICE
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.adjustedPrice}
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <p className="font-size-12 font-weight-600 mb-2">
-                        JOB CODE{" "}
-                      </p>
-                      <h6 className="font-weight-600">
-                        {serviceEstimateData.jobCode}
-                      </h6>
-                    </div>
-                  </div>
+                  <ReadOnlyField
+                    label="REFERENCE"
+                    value={serviceEstimateData.reference}
+                    className="col-md-4 col-sm-4"
+                  />
+                  <ReadOnlyField
+                    label="DESCRIPTION"
+                    value={serviceEstimateData.description}
+                    className="col-md-4 col-sm-4"
+                  />
+                  <div className="col-md-4 col-sm-4"></div>
+                  <ReadOnlyField
+                    label="SEGMENT TITLE"
+                    value={serviceEstimateData.segmentTitle}
+                    className="col-md-4 col-sm-4"
+                  />
+                  <ReadOnlyField
+                    label="JOB OPERATION"
+                    value={serviceEstimateData.jobOperation}
+                    className="col-md-4 col-sm-4"
+                  />
+                  <ReadOnlyField
+                    label="JOB CODE"
+                    value={serviceEstimateData.jobCode}
+                    className="col-md-4 col-sm-4"
+                  />
+                  <ReadOnlyField
+                    label="PRICE DATE"
+                    value={
+                      <Moment format="DD/MM/YYYY">
+                        {serviceEstimateData.priceDate}
+                      </Moment>
+                    }
+                    className="col-md-4 col-sm-4"
+                  />
+                  <ReadOnlyField
+                    label="CURRENCY"
+                    value={serviceEstimateData.currency}
+                    className="col-md-4 col-sm-4"
+                  />
+                  <ReadOnlyField
+                    label="NET PRICE"
+                    value={serviceEstimateData.netPrice}
+                    className="col-md-4 col-sm-4"
+                  />
+                  <ReadOnlyField
+                    label="ADJUSTED PRICE"
+                    value={serviceEstimateData.adjustedPrice}
+                    className="col-md-4 col-sm-4"
+                  />
                 </div>
                 <div className=" text-right">
                   <button
@@ -1904,24 +1875,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PAYER
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  value={labourData.payer}
-                                  onChange={(e) =>
-                                    setLabourData({
-                                      ...labourData,
-                                      payer: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group  mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-500">
@@ -1941,6 +1895,25 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TOTAL HOURS (PLANNED/RECOMMENDED)
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  value={labourData.totalHours}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      totalHours: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group  mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-500">
@@ -1970,6 +1943,20 @@ function ServiceOnlyTemplateEstimation(props) {
                                   disabled
                                   class="form-control border-radius-10 text-primary"
                                   value={labourData.ratePerHourOrDay}
+                                />
+                                <div className="css-w8dmq8">*Mandatory</div>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  value={labourData.totalPrice}
                                 />
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
@@ -2025,38 +2012,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  value={labourData.totalPrice}
-                                />
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL HOURS (PLANNED/RECOMMENDED)
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  value={labourData.totalHours}
-                                  onChange={(e) =>
-                                    setLabourData({
-                                      ...labourData,
-                                      totalHours: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
@@ -2080,96 +2036,48 @@ function ServiceOnlyTemplateEstimation(props) {
                           </div>
                         ) : (
                           <div className="row mt-4">
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.jobCode}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE DESCRIPTION{" "}
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.jobCodeDescription}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.payer}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  LABOR CODE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.laborCode?.label}{" "}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PRICE METHOD
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.pricingMethod?.label}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  RATE PER HOUR / DAY
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.ratePerHourOrDay}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  ADJUSTED PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.adjustedPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  TOTAL HOURS (PLANNED / RECOMMENDED)
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.totalHours}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="JOB CODE"
+                              value={labourData.jobCode}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="JOB CODE DESCRIPTION"
+                              value={labourData.jobCodeDescription}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <div className="col-md-4 col-sm-4"></div>
+                            <ReadOnlyField
+                              label="LABOR CODE"
+                              value={labourData.laborCode?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="TOTAL HOURS (PLANNED / RECOMMENDED)"
+                              value={labourData.totalHours}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <div className="col-md-4 col-sm-4"></div>
+                            <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={labourData.pricingMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="RATE PER HOUR / DAY"
+                              value={labourData.ratePerHourOrDay}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={labourData.totalPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={labourData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                         <hr />
@@ -2485,72 +2393,42 @@ function ServiceOnlyTemplateEstimation(props) {
                           </div>
                         ) : (
                           <div className="row mt-4">
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.jobCode}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE DESCRIPTION{" "}
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.jobCodeDescription}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.payer}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="JOB CODE"
+                              value={consumableData.jobCode}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="JOB CODE DESCRIPTION"
+                              value={consumableData.jobCodeDescription}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="PAYER"
+                              value={consumableData.payer}
+                              className="col-md-4 col-sm-4"
+                            />
                             {!consumableData.flatRateIndicator ? (
                               <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      PRICE METHOD
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {consumableData.pricingMethod?.label}
-                                    </h6>
-                                  </div>
-                                </div>
+                                <ReadOnlyField
+                                  label="PRICE METHOD"
+                                  value={consumableData.pricingMethod?.label}
+                                  className="col-md-4 col-sm-4"
+                                />
                                 {consumableData.pricingMethod?.value?.includes(
                                   "PER"
                                 ) ? (
                                   <>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <p className="font-size-12 font-weight-600 mb-2">
-                                          PERCENTAGE OF BASE
-                                        </p>
-                                        <h6 className="font-weight-600">
-                                          {consumableData.percentageOfBase}
-                                        </h6>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <p className="font-size-12 font-weight-600 mb-2">
-                                          TOTAL BASE
-                                        </p>
-                                        <h6 className="font-weight-600">
-                                          {consumableData.basePrice}
-                                        </h6>
-                                      </div>
-                                    </div>
+                                    <ReadOnlyField
+                                      label="PERCENTAGE OF BASE"
+                                      value={consumableData.percentageOfBase}
+                                      className="col-md-4 col-sm-4"
+                                    />
+                                    <ReadOnlyField
+                                      label="TOTAL BASE"
+                                      value={consumableData.basePrice}
+                                      className="col-md-4 col-sm-4"
+                                    />
                                   </>
                                 ) : (
                                   <></>
@@ -2559,26 +2437,16 @@ function ServiceOnlyTemplateEstimation(props) {
                             ) : (
                               <></>
                             )}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  ADJUSTED PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.adjustedPrice}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={consumableData.totalPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={consumableData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                         <hr />
@@ -2925,72 +2793,38 @@ function ServiceOnlyTemplateEstimation(props) {
                           </div>
                         ) : (
                           <div className="row mt-4">
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.jobCode}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE DESCRIPTION{" "}
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.jobCodeDescription}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.payer}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="JOB CODE"
+                              value={extWorkData.jobCode}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="JOB CODE DESCRIPTION"
+                              value={extWorkData.jobCodeDescription}
+                              className="col-md-4 col-sm-4"
+                            />
                             {!extWorkData.flatRateIndicator ? (
                               <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      PRICE METHOD
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {extWorkData.pricingMethod?.label}
-                                    </h6>
-                                  </div>
-                                </div>
+                                <ReadOnlyField
+                                  label="PRICE METHOD"
+                                  value={extWorkData.pricingMethod?.label}
+                                  className="col-md-4 col-sm-4"
+                                />
+
                                 {extWorkData.pricingMethod?.value?.includes(
                                   "PER"
                                 ) ? (
                                   <>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <p className="font-size-12 font-weight-600 mb-2">
-                                          PERCENTAGE OF BASE
-                                        </p>
-                                        <h6 className="font-weight-600">
-                                          {extWorkData.percentageOfBase}
-                                        </h6>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <p className="font-size-12 font-weight-600 mb-2">
-                                          TOTAL BASE
-                                        </p>
-                                        <h6 className="font-weight-600">
-                                          {extWorkData.basePrice}
-                                        </h6>
-                                      </div>
-                                    </div>
+                                    <ReadOnlyField
+                                      label="PERCENTAGE OF BASE"
+                                      value={extWorkData.percentageOfBase}
+                                      className="col-md-4 col-sm-4"
+                                    />
+                                    <ReadOnlyField
+                                      label="TOTAL BASE"
+                                      value={extWorkData.basePrice}
+                                      className="col-md-4 col-sm-4"
+                                    />
                                   </>
                                 ) : (
                                   <></>
@@ -2999,27 +2833,16 @@ function ServiceOnlyTemplateEstimation(props) {
                             ) : (
                               <></>
                             )}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  ADJUSTED PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.adjustedPrice}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={extWorkData.totalPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={extWorkData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                         <hr />
@@ -3153,8 +2976,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                   // closeMenuOnSelect={false}
                                   options={miscTypeList}
                                   value={miscData.type}
-                                  // isMulti
-
+                                  isMulti
                                   styles={FONT_STYLE_SELECT}
                                 />
                                 <div className="css-w8dmq8">*Mandatory</div>
@@ -3353,102 +3175,58 @@ function ServiceOnlyTemplateEstimation(props) {
                           </div>
                         ) : (
                           <div className="row mt-4">
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.jobCode}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  JOB CODE DESCRIPTION{" "}
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.jobCodeDescription}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.payer}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  TYPE OF MISC.
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.type?.label}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="JOB CODE"
+                              value={miscData.jobCode}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="JOB CODE DESCRIPTION"
+                              value={miscData.jobCodeDescription}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="PAYER"
+                              value={miscData.payer}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="TYPE OF MISC."
+                              value={<>{miscData.type?.map(element => <div>{element.label}</div>)}</>}
+                              
+                              className="col-md-4 col-sm-4"
+                            />
                             {!miscData.flatRateIndicator ? (
                               <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      PRICE METHOD
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {miscData.pricingMethod?.label}
-                                    </h6>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      PERCENTAGE OF BASE
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {miscData.percentageOfBase}
-                                    </h6>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <p className="font-size-12 font-weight-600 mb-2">
-                                      TOTAL BASE
-                                    </p>
-                                    <h6 className="font-weight-600">
-                                      {miscData.basePrice}
-                                    </h6>
-                                  </div>
-                                </div>
+                                <ReadOnlyField
+                                  label="PRICE METHOD"
+                                  value={miscData.pricingMethod?.label}
+                                  className="col-md-4 col-sm-4"
+                                />
+                                <ReadOnlyField
+                                  label="PERCENTAGE OF BASE"
+                                  value={miscData.percentageOfBase}
+                                  className="col-md-4 col-sm-4"
+                                />
+                                <ReadOnlyField
+                                  label="TOTAL BASE"
+                                  value={miscData.basePrice}
+                                  className="col-md-4 col-sm-4"
+                                />
                               </>
                             ) : (
                               <></>
                             )}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  ADJUSTED PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.adjustedPrice}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={miscData.totalPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={miscData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                       </React.Fragment>

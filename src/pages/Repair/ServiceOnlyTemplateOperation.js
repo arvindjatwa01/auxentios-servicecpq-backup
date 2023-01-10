@@ -5,7 +5,6 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
 import { AddOperation, fetchOperations } from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,

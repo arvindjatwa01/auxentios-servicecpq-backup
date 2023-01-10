@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_SJ_COVERAGE, UPDATE_SJ_GENERAL_DETAIL, UPDATE_SJ_PRICE, UPDATE_SJ_STATUS, UPDATE_SJ_ESTIMATION, UPDATE_SJ_USAGE, UPDATE_SJ_RATING } from "./CONSTANTS";
+import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_SJ_COVERAGE, UPDATE_SJ_GENERAL_DETAIL, UPDATE_SJ_PRICE, UPDATE_SJ_STATUS, UPDATE_SJ_ESTIMATION, UPDATE_SJ_USAGE, UPDATE_SJ_RATING, SJ_SEGMENT, UPDATE_SJ_VERSION } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -245,6 +245,84 @@ export const updateTemplateRating =  (templateId, rating) => {
         });
     } catch (error) {
       console.error("in Template > updateTemplateRating, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+  //update Template version
+  export const updateTemplateVersion =  (templateId, version) => {
+    console.log("Template > updateTemplateVersion called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .put(UPDATE_SJ_VERSION(templateId, version), {}, config)
+          .then((res) => {
+            console.log("updateTemplateVersion > axios res=", res);
+            if(res.status === 200)
+              resolve(res.data);
+            else
+              reject('Error occurred while calling updateTemplateVersion');
+          })
+          .catch((err) => {
+            console.log("updateTemplateVersion > axios err=", err);
+            reject("Error in updateTemplateVersion axios!");
+          });
+      } catch (error) {
+        console.error("in Template > updateTemplateVersion, Err===", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };
+
+
+//Create Segment for a standard job
+export const createSegmentStandardJob = (templateId, data) => {
+  console.log("service template > createSegmentStandardJob called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(SJ_SEGMENT(templateId), data, config)
+        .then((res) => {
+          console.log("template -> createSegmentStandardJob response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("createSegmentStandardJob > axios err=", err);
+          reject("Error in createSegmentStandardJob axios!");
+        });
+    } catch (error) {
+      console.error("createSegmentStandardJob general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//fetch repair Segments for a builder
+export const fetchSegmentsStandardJob = (templateId) => {
+  console.log("service template  > fetchSegmentsStandardJob called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(SJ_SEGMENT(templateId), config)
+        .then((res) => {
+          console.log("template -> fetchSegmentsStandardJob response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("fetchSegmentsStandardJob > axios err=", err);
+          reject("Error in fetchSegmentsStandardJob axios!");
+        });
+    } catch (error) {
+      console.error("fetchSegmentsStandardJob general exception", error);
       reject(SYSTEM_ERROR);
     }
   });
