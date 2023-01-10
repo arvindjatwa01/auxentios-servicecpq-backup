@@ -25,6 +25,7 @@ import {
     getSearchKitId,
     getItemPriceData,
     getSolutionPriceCommonConfig,
+    getItemDataById
 } from "../../services/index";
 import AddPortfolioItem from './AddPortfolioItem';
 
@@ -36,6 +37,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
     const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
     const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
     const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
+    const [bundleSeriveData, setBundleServiceData] = useState([]);
 
 
     const [addPortFolioItem, setAddPortFolioItem] = useState({
@@ -187,25 +189,52 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
     useEffect(() => {
 
-        console.log("data.frequency ", data.itemBodyModel.frequency)
+
+        fetchBundleServiceDataById();
+        // const newItemDataData = await getItemDataById(data.itemId)
+
+        // console.log("data.frequency ", data.itemBodyModel.frequency)
+        // setAddPortFolioItem({
+        //     ...addPortFolioItem,
+        //     id: data.itemId,
+        //     name: data.itemName,
+        //     description: data.itemHeaderModel.itemHeaderDescription,
+        //     // frequency: { label: data.itemBodyModel.frequency, value: data.itemBodyModel.frequency },
+        //     frequency: (data.itemBodyModel.frequency != "" ||
+        //         data.itemBodyModel.frequency != "EMPTY" ||
+        //         data.itemBodyModel.frequency != null) ? {
+        //         label: data.itemBodyModel.frequency,
+        //         value: data.itemBodyModel.frequency,
+        //     } : { label: "once", value: "once" },
+        // });
+
+        // if (data.itemBodyModel?.itemPrices.length > 0) {
+        //     ItemPriceDataFetchById();
+        // }
+    }, [])
+
+
+    const fetchBundleServiceDataById = async () => {
+        const newItemDataData = await getItemDataById(data.itemId)
+
         setAddPortFolioItem({
             ...addPortFolioItem,
-            id: data.itemId,
-            name: data.itemName,
-            description: data.itemHeaderModel.itemHeaderDescription,
-            // frequency: { label: data.itemBodyModel.frequency, value: data.itemBodyModel.frequency },
-            frequency: (data.itemBodyModel.frequency != "" ||
-                data.itemBodyModel.frequency != "EMPTY" ||
-                data.itemBodyModel.frequency != null) ? {
-                label: data.itemBodyModel.frequency,
-                value: data.itemBodyModel.frequency,
+            id: newItemDataData.itemId,
+            name: newItemDataData.itemName,
+            description: newItemDataData.itemHeaderModel.itemHeaderDescription,
+            // frequency: { label: newItemDataData.itemBodyModel.frequency, value: newItemDataData.itemBodyModel.frequency },
+            frequency: (newItemDataData.itemBodyModel.frequency != "" ||
+                newItemDataData.itemBodyModel.frequency != "EMPTY" ||
+                newItemDataData.itemBodyModel.frequency != null) ? {
+                label: newItemDataData.itemBodyModel.frequency,
+                value: newItemDataData.itemBodyModel.frequency,
             } : { label: "once", value: "once" },
         });
 
-        if (data.itemBodyModel?.itemPrices.length > 0) {
+        if (newItemDataData.itemBodyModel?.itemPrices.length > 0) {
             ItemPriceDataFetchById();
         }
-    }, [])
+    }
 
 
 
@@ -281,7 +310,10 @@ const ExpendTablePopup = ({ data, ...props }) => {
             } : { label: "once", value: "once" },
             templateId: (resPrice.data.standardJobId != "string") ?
                 resPrice.data.standardJobId : "",
-            templateDescription: resPrice.data.templateDescription,
+            templateDescription: {
+                label: resPrice.data.templateDescription,
+                value: resPrice.data.templateDescription,
+            },
             repairOption: (resPrice.data.repairKitId != "string") ?
                 resPrice.data.repairKitId : "",
         })
@@ -435,74 +467,143 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     miscRequired: true,
                     inclusionExclusion: false
                 }
+
+                const priceUpdateData1 = {
+                    itemPriceDataId: parseInt(priceCalculator.id),
+                    quantity: 0,
+                    standardJobId: addPortFolioItem.templateId,
+                    repairKitId: addPortFolioItem.repairOption,
+                    templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+                    repairOption: "",
+                    additional: "",
+                    partListId: "",
+                    serviceEstimateId: "",
+                    numberOfEvents: 0,
+                    priceMethod: (priceCalculator.priceMethod != "EMPTY"
+                        || priceCalculator.priceMethod != "" ||
+                        priceCalculator.priceMethod != null) ?
+                        priceCalculator.priceMethod?.value : "EMPTY",
+                    priceType: (priceCalculator.priceType != "EMPTY" ||
+                        priceCalculator.priceType != "" ||
+                        priceCalculator.priceType != null) ? priceCalculator.priceType?.value : "EMPTY",
+                    listPrice: 0,
+                    priceEscalation: "",
+                    calculatedPrice: 0,
+                    flatPrice: 0,
+                    year: priceCalculator?.year?.value,
+                    noOfYear: parseInt(priceCalculator?.noOfYear),
+                    sparePartsPrice: 0,
+                    sparePartsPriceBreakDownPercentage: 0,
+                    servicePrice: 0,
+                    labourPrice: 0,
+                    labourPriceBreakDownPercentage: 0,
+                    miscPrice: 0,
+                    miscPriceBreakDownPercentage: 0,
+                    totalPrice: 0,
+                    netService: 0,
+                    additionalPriceType: (priceCalculator?.additionalPriceType != "EMPTY" ||
+                        priceCalculator?.additionalPriceType != "" ||
+                        priceCalculator?.additionalPriceType != null) ?
+                        priceCalculator?.additionalPriceType : "ABSOLUTE",
+                    additionalPriceValue: priceCalculator?.additionalPriceValue,
+                    discountType: (priceCalculator?.discountType != "EMPTY" ||
+                        priceCalculator?.discountType != "" ||
+                        priceCalculator?.discountType != null) ? priceCalculator?.discountType : "EMPTY",
+                    discountValue: priceCalculator?.discountValue,
+                    recommendedValue: parseInt(priceCalculator?.recommendedValue),
+                    startUsage: parseInt(priceCalculator?.startUsage),
+                    endUsage: parseInt(priceCalculator?.endUsage),
+                    sparePartsEscalation: 0,
+                    labourEscalation: 0,
+                    miscEscalation: 0,
+                    serviceEscalation: 0,
+                    withBundleService: false,
+                    portfolio: (priceCalculator.portfolioDataId != 0) ? {
+                        portfolioId: priceCalculator.portfolioDataId
+                    } : {},
+                    tenantId: 0,
+                    partsRequired: true,
+                    labourRequired: true,
+                    serviceRequired: false,
+                    miscRequired: true,
+                    inclusionExclusion: false
+                }
+
                 // console.log("priceUpdateData Now : ", priceUpdateData)
                 const updatePriceId = await updateItemPriceData(
                     priceCalculator.id,
-                    priceUpdateData
+                    priceUpdateData1
                 );
 
             }
-            let reqObjUpdate = {
-                itemId: parseInt(rowData.id),
-                itemName: rowData.name,
+
+            let reqItemUpdateObj = {
+                itemId: parseInt(addPortFolioItem.id),
+                itemName: addPortFolioItem.name,
                 itemHeaderModel: {
                     itemHeaderId: 0,
                     itemHeaderDescription: addPortFolioItem.description,
                     bundleFlag: rowData.itemHeaderModel.bundleFlag,
                     portfolioItemId: rowData.itemHeaderModel.portfolioItemId,
-                    reference: rowData?.reference ? rowData?.reference : "",
-                    itemHeaderMake: rowData?.make ? rowData?.make : "",
-                    itemHeaderFamily: rowData?.family ? rowData?.family : "",
-                    model: rowData?.model ? rowData?.model : "",
-                    prefix: rowData?.prefix?.value ? rowData?.prefix?.value : "",
-                    type: "MACHINE",
-                    additional: rowData?.additional ? rowData?.additional : "",
-                    currency: "",
-                    netPrice: 0,
-                    itemProductHierarchy: "END_PRODUCT",
-                    itemHeaderGeographic: "ONSITE",
-                    responseTime: "PROACTIVE",
-                    usage: "",
-                    validFrom: rowData?.validFrom ? rowData?.validFrom : "",
-                    validTo: rowData?.validTo ? rowData?.validTo : "",
-                    estimatedTime: "",
-                    servicePrice: 0,
-                    status: "DRAFT",
-                    componentCode: "",
-                    componentDescription: "",
-                    serialNumber: "",
-                    itemHeaderStrategy: "PREVENTIVE_MAINTENANCE",
-                    variant: "",
-                    itemHeaderCustomerSegment: rowData.customerSegment,
-                    jobCode: "",
-                    preparedBy: rowData?.preparedBy ? rowData?.preparedBy : "",
-                    approvedBy: rowData?.approvedBy ? rowData?.approvedBy : "",
-                    preparedOn: rowData?.preparedOn ? rowData?.preparedOn : "",
-                    revisedBy: rowData?.revisedBy ? rowData?.revisedBy : "",
-                    revisedOn: rowData?.revisedOn ? rowData?.revisedOn : "",
-                    salesOffice: rowData.salesOffice ? rowData.salesOffice : "",
-                    offerValidity: rowData.offerValidity ? rowData.offerValidity : "",
+                    reference: rowData.itemHeaderModel?.reference,
+                    itemHeaderMake: rowData.itemHeaderModel?.itemHeaderMake,
+                    itemHeaderFamily: rowData.itemHeaderModel?.itemHeaderFamily,
+                    model: rowData.itemHeaderModel?.model,
+                    prefix: rowData.itemHeaderModel?.prefix,
+                    type: rowData.itemHeaderModel?.type,
+                    additional: rowData.itemHeaderModel?.additional,
+                    currency: rowData.itemHeaderModel?.currency,
+                    netPrice: rowData.itemHeaderModel?.netPrice,
+                    itemProductHierarchy: rowData.itemHeaderModel?.itemProductHierarchy,
+                    itemHeaderGeographic: rowData.itemHeaderModel?.itemHeaderGeographic,
+                    responseTime: rowData.itemHeaderModel?.responseTime,
+                    usage: rowData.itemHeaderModel?.usage,
+                    validFrom: rowData.itemHeaderModel?.validFrom,
+                    validTo: rowData.itemHeaderModel?.validTo,
+                    estimatedTime: rowData.itemHeaderModel?.estimatedTime,
+                    servicePrice: rowData.itemHeaderModel?.servicePrice,
+                    status: rowData.itemHeaderModel?.status,
+                    componentCode: rowData.itemHeaderModel?.componentCode,
+                    componentDescription: rowData.itemHeaderModel?.componentDescription,
+                    serialNumber: rowData.itemHeaderModel?.serialNumber,
+                    itemHeaderStrategy: rowData.itemHeaderModel?.itemHeaderStrategy,
+                    variant: rowData.itemHeaderModel?.variant,
+                    itemHeaderCustomerSegment: rowData.itemHeaderModel?.itemHeaderCustomerSegment,
+                    jobCode: rowData.itemHeaderModel?.jobCode,
+                    preparedBy: rowData.itemHeaderModel?.preparedBy,
+                    approvedBy: rowData.itemHeaderModel?.approvedBy,
+                    preparedOn: rowData.itemHeaderModel?.preparedOn,
+                    revisedBy: rowData.itemHeaderModel?.revisedBy,
+                    revisedOn: rowData.itemHeaderModel?.revisedOn,
+                    salesOffice: rowData.itemHeaderModel?.salesOffice,
+                    offerValidity: rowData.itemHeaderModel?.offerValidity,
                 },
                 itemBodyModel: {
-                    itemBodyId: 0,
-                    itemBodyDescription: rowData?.itemBodyModel?.itemBodyDescription,
-                    spareParts: ["WITH_SPARE_PARTS"],
-                    labours: ["WITH_LABOUR"],
-                    miscellaneous: ["LUBRICANTS"],
-                    taskType: rowData.taskType != "" ? rowData.taskType : ["PM1"],
-                    solutionCode: "",
-                    usageIn: rowData.usageIn != "" ? rowData.usageIn : "REPAIR_OR_REPLACE",
-                    usage: "",
-                    year: rowData.year ? rowData.year : "",
+                    itemBodyId: parseInt(rowData.itemBodyModel?.itemBodyId),
+                    itemBodyDescription: addPortFolioItem.description,
+                    spareParts: rowData.itemBodyModel?.spareParts,
+                    labours: rowData.itemBodyModel?.labours,
+                    miscellaneous: rowData.itemBodyModel?.miscellaneous,
+                    taskType: rowData.itemBodyModel?.taskType,
+                    solutionCode: rowData.itemBodyModel?.solutionCode,
+                    usageIn: rowData.itemBodyModel?.usageIn,
+                    usage: rowData.itemBodyModel?.usage,
+                    year: addPortFolioItem.year?.value ? addPortFolioItem.year?.value : "",
                     avgUsage: 0,
-                    unit: rowData.unit != "" ? rowData.unit : "",
-                    frequency: rowData.frequency != "" ? rowData.frequency : "once",
-                    recommendedValue: parseInt(rowData?.recommendedValue),
-                    itemPrices: rowData?.itemPrices,
+                    unit: rowData.itemBodyModel?.unit,
+                    frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
+                    recommendedValue: parseInt(priceCalculator.recommendedValue),
+                    itemPrices: rowData.itemBodyModel?.itemPrices,
                 },
             }
 
-            const res = await updateItemData(rowData.itemId, reqObjUpdate)
+
+            console.log("reqItemUpdateObj 567 ", reqItemUpdateObj)
+
+
+            const res = await updateItemData(
+                addPortFolioItem.id,
+                reqItemUpdateObj)
             if (res.status == 200) {
                 toast(`😎 ${rowData.itemName} Item updated successfully`, {
                     position: "top-right",
@@ -1144,7 +1245,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             <Select
                                 className="select-input text-primary"
                                 id="priceEscalationSelect"
-                                options={options}
+                                options={priceHeadTypeKeyValue}
                                 placeholder="placeholder "
                             // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
                             // value={expandedPriceCalculator.priceEscalationSelect}
