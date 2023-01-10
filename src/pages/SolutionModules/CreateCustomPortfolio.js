@@ -9754,7 +9754,7 @@ export function CreateCustomPortfolio(props) {
                 <div className="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <div className="d-flex justify-content-center align-items-center">
-                            <h5 className="font-weight-600 mb-0">Solution Configurator</h5>
+                            <h5 className="font-weight-600 mb-0">Solution Configurato</h5>
                             <div className="d-flex justify-content-center align-items-center">
                                 <div className="ml-3">
                                     <Select
@@ -11984,8 +11984,8 @@ onChange={handleAdministrativreChange}
                                         <div className="col-11 mx-1">
                                             <div className="d-flex align-items-center w-100">
                                                 <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                                                    <h5 className="mb-0 text-black">
-                                                        <span>Portfolio Items</span>
+                                                    <h5 className="mb-3 text-black">
+                                                        <span>Portfolio Item</span>
                                                     </h5>
                                                 </div>
                                             </div>

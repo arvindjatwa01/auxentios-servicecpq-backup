@@ -3975,7 +3975,7 @@ export const Analytics = () => {
             </Modal.Header> */}
             <Modal.Body style={{ background: "#F0F0F0" }}>
                <div className=' p-4'>
-               {/* <div className="input-group icons border-radius-10 border-primary">
+                  {/* <div className="input-group icons border-radius-10 border-primary">
                 <div className="input-group-prepend ">
                   <span
                     className="input-group-text text-primary bg-white border-0 pr-0 "
@@ -3992,34 +3992,34 @@ export const Analytics = () => {
                 />
 
               </div> */}
-               <div class="input-group icons border-radius-10 border overflow-hidden">
-            <div class="input-group-prepend bg-white ">
-              <span class="input-group-text border-0 pr-0 " id="basic-addon1">
-              <SearchIcon/></span>
-              </div>
-              <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
-              <div class="input-group-prepend align-items-center bg-white">
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white border-primary">
-             {/* <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div> */}
-            <FormControl className="" sx={{ m: 1,}}>
-              <Select 
-                id="demo-simple-select-autowidth"
-                value={age}
-                onChange={handleChangedrop}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>Portfolio</em>
-                </MenuItem>
-                <MenuItem value={10}>Solution</MenuItem>
-                {/* <MenuItem value={21}>Solution</MenuItem> */}
-              </Select>
-            </FormControl>
-          </div>
-              </div>
-              </div>
-            </div>
+                  <div class="input-group icons border-radius-10 border overflow-hidden">
+                     <div class="input-group-prepend bg-white ">
+                        <span class="input-group-text border-0 pr-0 " id="basic-addon1">
+                           <SearchIcon /></span>
+                     </div>
+                     <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
+                     <div class="input-group-prepend align-items-center bg-white">
+                        <div className="w-100 mx-2">
+                           <div className="machine-drop d-flex align-items-center bg-white border-primary">
+                              {/* <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div> */}
+                              <FormControl className="" sx={{ m: 1, }}>
+                                 <Select
+                                    id="demo-simple-select-autowidth"
+                                    value={age}
+                                    onChange={handleChangedrop}
+                                    autoWidth
+                                 >
+                                    <MenuItem value="5">
+                                       <em>Portfolio</em>
+                                    </MenuItem>
+                                    <MenuItem value={10}>Solution</MenuItem>
+                                    {/* <MenuItem value={21}>Solution</MenuItem> */}
+                                 </Select>
+                              </FormControl>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
                </div>
             </Modal.Body>
             {/* <Modal.Footer>
@@ -4068,6 +4068,7 @@ export const Analytics = () => {
                            <Button
                               className='btn bg-primary text-white py-2'
                               style={{ textTransform: 'none' }}
+                              onClick={handleCreateNewPortfolio}
                            // onClick={handleSearchPortfolioTemplate}
                            >
                               Continue <ArrowForwardIosIcon className="ml-2" />

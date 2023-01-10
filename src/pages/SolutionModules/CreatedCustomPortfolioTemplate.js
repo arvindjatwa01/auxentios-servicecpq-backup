@@ -8,6 +8,16 @@ import {
 } from "react-bootstrap";
 import { DataGrid } from '@mui/x-data-grid';
 import { CommanComponents } from "../../components/index"
+
+import {
+    Switch as Switch1,
+} from "@mui/material";
+import Solution from "pages/PortfolioAndBundle/Solution";
+import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
+import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
+import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
+import SearchBox from "../Repair/components/SearchBox";
+import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import FormGroup from '@mui/material/FormGroup';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ToastContainer, toast } from "react-toastify";
@@ -86,9 +96,45 @@ import penIcon from "../../assets/images/pen.png";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
 import $ from "jquery";
-
+import ExpendCustomItemTablePopup from "./ExpendCustomItemTablePopup";
 
 import {
+
+    createPortfolio,
+    getPortfolio,
+    updatePortfolio,
+    createCoverage,
+    updateCustomCoverage,
+    updateCoverage,
+    getItemPrice,
+    updateItemData,
+    deleteItem,
+    getComponentCodeSuggetions,
+    itemPriceDataId,
+    updateItemPriceData,
+    customitemCreation,
+    createCustomCoverage,
+    updateCustomItemData,
+    deleteCustomItem,
+    customPriceCreation,
+    getcustomItemPrice,
+    getQuoteMasterData,
+    getSearchQuoteData,
+    updateMasterQuoteData,
+    deleteMasterQuote,
+    getSolutionLevelKeyValue,
+    getSolutionTypeKeyValue,
+
+    escalationPriceCreation,
+    additionalPriceCreation,
+    updatePortfolioPrice,
+    updateEscalationPriceById,
+    updateAdditionalPriceById,
+    getPortfolioPriceById,
+    customPortfolioItemPriceSJID,
+    getcustomItemPriceById,
+    updateCustomPriceData,
+
     createCustomPortfolio,
     getCustomPortfolio,
     getPortfolioSchema,
@@ -111,22 +157,11 @@ import {
     getSearchQueryCoverage,
     getSearchCoverageForFamily,
     itemCreation,
-    createCoverage,
-    createCustomCoverage,
-    updateCustomCoverage,
-    getItemPrice,
     getCustomItemData,
     quoteCreation,
     convertPortfolioToQuoteData,
-    getcustomItemPriceById,
-    updateCustomPriceData,
-    escalationPriceCreation,
-    additionalPriceCreation,
     portfolioPriceCreation,
-    deleteCustomItem,
-    updateCustomItemData,
     getSolutionPortfolioById,
-    getPortfolioPriceById,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -253,6 +288,1204 @@ export function CreatedCustomPortfolioTemplate(props) {
     const [isView, setIsView] = useState(false);
     const [createNewBundle, setCreateNewBundle] = useState(false);
     const [openSearchSolution, setOpenSearchSolution] = useState(false);
+
+    const [extWorkData, setExtWorkData] = useState({
+        jobCode: "",
+        jobCodeDescription: "",
+        pricingMethod: "",
+        totalPrice: 0.0,
+        payer: "",
+        flatRateIndicator: false,
+        adjustedPrice: 0.0,
+        basePrice: 0.0,
+        percentageOfBase: 0,
+    });
+    const handleContinueOfServiceOrBundle = async () => {
+        setTabs("4")
+    }
+    const tempBundleItemColumns1New = [
+
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item Id</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.customItemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.customItemId,
+        // },
+        {
+            name: (
+                <>
+                    <div>Item Name</div>
+                </>
+            ),
+            selector: (row) => row.itemName,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemName,
+        },
+        {
+            name: (
+                <>
+                    <div>Item Description</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.itemHeaderDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.itemHeaderDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Strategy</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+        },
+        {
+            name: (
+                <>
+                    <div>Task Type</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.taskType,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.taskType,
+        },
+        {
+            name: (
+                <>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Additional</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.additional,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.additional,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Parts Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.partsprice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.partsprice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.comments,
+        },
+        {
+            name: (
+                <>
+                    <div>Total $</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.totalPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.totalPrice,
+        },
+    ];
+    const handleExpandRowForPriceCalculator = (bool, row) => {
+        setExpandedPriceCalculator({
+            ...expandedPriceCalculator,
+            itemId: row.customItemId,
+            description: row.customItemBodyModel.itemBodyDescription,
+            recommendedValue: row.customItemBodyModel.recommendedValue,
+            frequency: row.customItemBodyModel.frequency
+        })
+
+    }
+    const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
+        itemId: "",
+        description: "",
+        startUsage: "",
+        endUsage: "",
+        frequency: "",
+        recommendedValue: "",
+        numberOfEvents: "",
+        priceMethod: "",
+        priceAdditionalSelect: "",
+        priceAdditionalInput: "",
+        priceEscalationSelect: "",
+        priceEscalationInput: "",
+        calculatedPrice: "",
+        flatPrice: "",
+        discountTypeSelect: "",
+        discountTypeInput: "",
+    });
+
+    const ExpendedModelComponent = ({ data }) => (
+        <div className="scrollbar" id="style">
+            {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+                <div
+                    key={i}
+                    id="row-0"
+                    role="row"
+                    className="sc-evZas cMMpBL rdt_TableRow"
+                    style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+                >
+                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+                    <div
+                        id="cell-1-undefined"
+                        data-column-id="1"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div>{bundleAndService.customItemId}</div>
+                    </div>
+                    <div
+                        id="cell-1-undefined"
+                        data-column-id="1"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div></div>
+                        {/* <div>{bundleAndService.customItemId}</div> */}
+                    </div>
+                    <div
+                        id="cell-2-undefined"
+                        data-column-id="2"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.itemBodyDescription}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-3-undefined"
+                        data-column-id="3"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel?.strategy}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-4-undefined"
+                        data-column-id="4"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.standardJobId}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-5-undefined"
+                        data-column-id="5"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.repairOption}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-6-undefined"
+                        data-column-id="6"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.frequency}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-7-undefined"
+                        data-column-id="7"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.quantity}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-8-undefined"
+                        data-column-id="8"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.sparePartsPrice}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-9-undefined"
+                        data-column-id="9"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.servicePrice}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-10-undefined"
+                        data-column-id="10"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.totalPrice}
+                        </div>
+                    </div>
+                    {bundleItems.length > 0 && (<div
+                        id="cell-11-undefined"
+                        data-column-id="11"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div
+                            className="cursor"
+                            onClick={(e) =>
+                                handleExpandedRowEdit(
+                                    e,
+                                    data.customItemId,
+                                    data.associatedServiceOrBundle[i]
+                                )
+                            }
+                        >
+                            <Tooltip title="Edit">
+                                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                            </Tooltip>
+                        </div>
+                        <div
+                            className="cursor"
+                            onClick={(e) =>
+                                handleExpandedRowDelete(
+                                    e,
+                                    data.customItemId,
+                                    data.associatedServiceOrBundle[i].customItemId
+                                )
+                            }
+                        >
+                            <Tooltip title="Delete">
+                                <Link to="#" className="mx-1">
+                                    <svg
+                                        data-name="Layer 41"
+                                        id="Layer_41"
+                                        width="14px"
+                                        viewBox="0 0 50 50"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <title />
+                                        <path
+                                            className="cls-1"
+                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                        />
+                                    </svg>
+                                </Link>
+                            </Tooltip>
+                        </div>
+                    </div>)}
+
+                </div>
+            ))}
+        </div>
+    );
+    const [additionalPriceHeadTypeKeyValue, setAdditionalPriceHeadTypeKeyValue] = useState([
+        // { label: "Surcharge Percentage", value: "PERCENTAGE" },
+        // { label: "Surcharge Dollar", value: "ABSOLUTE", },
+        { label: "Surcharge %", value: "PERCENTAGE" },
+        { label: "Surcharge $", value: "ABSOLUTE", },
+    ])
+    const tempBundleCustomItemColumns = [
+        {
+            name: (
+                <>
+                    <div>Select</div>
+                </>
+            ),
+            selector: (row) => row.check1,
+            wrap: true,
+            sortable: true,
+            maxWidth: "300px",
+            cell: (row) => (
+                <>
+                    {valueOfUseCase == 3 ? (
+                        <input
+                            type="radio"
+                            name="selectedId"
+                            value={row.itemId}
+                            onChange={(e) => handleTempbundleItemSelection(e, row.id)}
+                            style={{ border: "1px solid #000" }}
+                        />
+                    ) : (
+                        <input
+                            type="checkbox"
+                            name={row.customItemId}
+                            value={tempBundleItemCheckList[row.customItemId]}
+                            checked={tempBundleItemCheckList[row.customItemId]}
+                            onChange={(e) => handleTempbundleItemSelection(e, row)}
+                            style={{ border: "1px solid #000" }}
+                        />
+                    )}
+                </>
+            ),
+        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item ID </div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.customItemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.customItemId,
+        // },
+        {
+            name: (
+                <>
+                    <div>Item Name </div>
+                </>
+            ),
+            selector: (row) => row.itemName,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemName,
+        },
+        {
+            name: (
+                <>
+                    <div>Item Description</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.itemHeaderDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.itemHeaderDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Strategy</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+        },
+        {
+            name: (
+                <>
+                    <div>Task Type</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.taskType,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.taskType,
+        },
+        {
+            name: (
+                <>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Additional</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.additional,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.additional,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Parts Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.partsprice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.partsprice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.comments,
+        },
+    ];
+    const [priceCurrencyKeyValue, setPriceCurrencyKeyvalue] = useState([]);
+    const [tempBundleService1, setTempBundleService1] = useState([]);
+    const [tempBundleService2, setTempBundleService2] = useState([]);
+    const [tempBundleService3, setTempBundleService3] = useState([]);
+    const tempBundleItemColumns1 = [
+
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item Id</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemId,
+        // },
+        {
+            name: (
+                <>
+                    <div>Item Name</div>
+                </>
+            ),
+            selector: (row) => row.itemName,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemName,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemHeaderModel.itemHeaderDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Usage In</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.usageIn,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.usageIn,
+        },
+        {
+            name: (
+                <>
+                    <div>Strategy</div>
+                </>
+            ),
+            selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+        },
+        {
+            name: (
+                <>
+                    <div>Task Type</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.taskType,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.taskType,
+        },
+        {
+            name: (
+                <>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Recommended Value</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.recommendedValue,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.recommendedValue,
+        },
+        {
+            name: (
+                <>
+                    <div>Template/Kit ID</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.repairKitId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.repairKitId,
+        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Standard Job Id</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.standardJobId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.standardJobId,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Repair Options</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.repairOption,
+        //     sortable: true,
+        //     maxWidth: "300px",
+        //     format: (row) => row.itemBodyModel.repairOption,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Frequency</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.frequency,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.frequency,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Quantity</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.quantity,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.quantity,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Parts $</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.sparePartsPrice,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.sparePartsPrice,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Service $</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.servicePrice,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.servicePrice,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Total $</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.totalPrice,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.totalPrice,
+        // },
+    ];
+    const [itemPriceCalculator, setItemPriceCalculator] = useState({
+        netParts: "",
+        netService: "",
+        priceType: "",
+        netPrice: "",
+        netAdditionals: "",
+    })
+    const handleCreateCustomItem_SearchResult = async () => {
+        console.log("tempBundleItems[i].customItemId 12345 : ", tempBundleItems)
+        let reqObj = {};
+        for (let i = 0; i < tempBundleItems.length; i++) {
+            createdItemId = tempBundleItems[i].customItemId;
+            if (tempBundleItems[i].customItemId === currentItemId) {
+                // reqObj = {
+                //     itemId: tempBundleItems[i].customItemId,
+                //     standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
+                //     repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
+                // }
+                reqObj = {
+                    itemId: tempBundleItems[i].customItemId,
+                    standardJobId: itemPriceData.standardJobId,
+                    repairKitId: itemPriceData.repairKitId,
+                    itemPriceDataId: itemPriceData.customItemPriceDataId
+                }
+                break;
+            }
+        }
+        if (portfolioId === undefined || portfolioId == null) {
+            toast("😐 Please Create Portfolio First", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        } else {
+            // if (Object.keys(reqObj).length === 0) {
+            //     toast("😐" + " Please Create an Item first", {
+            //         position: "top-right",
+            //         autoClose: 3000,
+            //         hideProgressBar: false,
+            //         closeOnClick: true,
+            //         pauseOnHover: true,
+            //         draggable: true,
+            //         progress: undefined,
+            //     });
+            // } else {
+            //     console.log("reqObj : ", reqObj)
+            //     const res2 = await customPortfolioItemPriceSJID(reqObj)
+            //     const res = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+            //     setItemPriceCalculator({
+            //         netParts: res.data.sparePartsPrice,
+            //         netService: res.data.netService,
+            //         priceType: res.data.priceType,
+            //         netPrice: res.data.totalPrice,
+            //         netAdditionals: res.data.listPrice,
+            //     })
+            // }
+
+
+            var createdItemId = 0;
+
+            console.log("CreatedItemId : ", createdItemId);
+
+            var createdNewCustomItems = [];
+            console.log("tempBundleService2 is : ", tempBundleService2)
+            for (let i = 0; i < tempBundleService2.length; i++) {
+                console.log("i is :", i);
+                var customItemsIdData = [];
+                var customPriceIdArr = [];
+
+                for (let j = 0; j < tempBundleService2[i].itemBodyModel.itemPrices.length; j++) {
+
+
+
+                    /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+                    var itemsPrice = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+                    console.log("item price is before : ", itemsPrice)
+
+                    let itemPriceObj = {
+
+                        customItemPriceDataId: 0,
+                        quantity: parseInt(itemsPrice.quantity),
+                        startUsage: itemsPrice.startUsage,
+                        endUsage: itemsPrice.endUsage,
+                        standardJobId: itemsPrice.standardJobId,
+                        repairKitId: itemsPrice.repairKitId,
+                        templateDescription: itemsPrice.templateDescription,
+                        repairOption: itemsPrice.repairOption,
+                        frequency: itemsPrice.frequency,
+                        additional: itemsPrice.additional,
+                        recommendedValue: parseInt(itemsPrice.recommendedValue),
+                        partListId: itemsPrice.partListId,
+                        serviceEstimateId: itemsPrice.serviceEstimateId,
+                        numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                        priceMethod: itemsPrice.priceMethod,
+                        priceType: itemsPrice.priceType,
+                        listPrice: itemsPrice.listPrice,
+                        priceEscalation: itemsPrice.priceEscalation,
+                        calculatedPrice: itemsPrice.calculatedPrice,
+                        flatPrice: itemsPrice.flatPrice,
+                        discountType: itemsPrice.discountType,
+                        year: itemsPrice.year,
+                        noOfYear: itemsPrice.noOfYear,
+                        sparePartsPrice: itemsPrice.sparePartsPrice,
+                        sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                        servicePrice: itemsPrice.servicePrice,
+                        labourPrice: itemsPrice.labourPrice,
+                        labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                        miscPrice: itemsPrice.miscPrice,
+                        miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                        totalPrice: itemsPrice.totalPrice,
+                        netService: itemsPrice.netService,
+                        customPortfolio: {
+                            portfolioId: portfolioId
+                        },
+                        tenantId: itemsPrice.tenantId,
+                        partsRequired: itemsPrice.partsRequired,
+                        labourRequired: itemsPrice.labourRequired,
+                        serviceRequired: itemsPrice.serviceRequired,
+                        miscRequired: itemsPrice.miscRequired
+                    }
+
+                    customItemsIdData.push(itemPriceObj)
+
+                }
+
+
+                let customItemObj = {
+                    customItemId: 0,
+                    itemName: tempBundleService2[i].itemName,
+                    customItemHeaderModel: {
+                        customItemHeaderId: 0,
+                        itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
+                        bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
+                        portfolioItemId: currentItemId,
+                        // portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
+                        reference: tempBundleService2[i].itemHeaderModel.reference,
+                        itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
+                        itemHeaderFamily: tempBundleService2[i].itemHeaderModel.itemHeaderFamily,
+                        model: tempBundleService2[i].itemHeaderModel.model,
+                        prefix: tempBundleService2[i].itemHeaderModel.prefix,
+                        type: tempBundleService2[i].itemHeaderModel.type,
+                        additional: tempBundleService2[i].itemHeaderModel.additional,
+                        currency: tempBundleService2[i].itemHeaderModel.currency,
+                        netPrice: tempBundleService2[i].itemHeaderModel.netPrice,
+                        itemProductHierarchy: tempBundleService2[i].itemHeaderModel.itemProductHierarchy,
+                        itemHeaderGeographic: tempBundleService2[i].itemHeaderModel.itemHeaderGeographic,
+                        responseTime: tempBundleService2[i].itemHeaderModel.responseTime,
+                        usage: tempBundleService2[i].itemHeaderModel.usage,
+                        validFrom: tempBundleService2[i].itemHeaderModel.validFrom,
+                        validTo: tempBundleService2[i].itemHeaderModel.validTo,
+                        estimatedTime: tempBundleService2[i].itemHeaderModel.estimatedTime,
+                        servicePrice: tempBundleService2[i].itemHeaderModel.servicePrice,
+                        status: tempBundleService2[i].itemHeaderModel.status,
+                        componentCode: tempBundleService2[i].itemHeaderModel.componentCode,
+                        componentDescription: tempBundleService2[i].itemHeaderModel.componentDescription,
+                        serialNumber: tempBundleService2[i].itemHeaderModel.serialNumber,
+                        itemHeaderStrategy: tempBundleService2[i].itemHeaderModel.itemHeaderStrategy,
+                        variant: tempBundleService2[i].itemHeaderModel.variant,
+                        itemHeaderCustomerSegment: tempBundleService2[i].itemHeaderModel.itemHeaderCustomerSegment,
+                        jobCode: tempBundleService2[i].itemHeaderModel.jobCode,
+                        preparedBy: tempBundleService2[i].itemHeaderModel.preparedBy,
+                        approvedBy: tempBundleService2[i].itemHeaderModel.approvedBy,
+                        preparedOn: tempBundleService2[i].itemHeaderModel.preparedOn,
+                        revisedBy: tempBundleService2[i].itemHeaderModel.revisedBy,
+                        revisedOn: tempBundleService2[i].itemHeaderModel.revisedOn,
+                        salesOffice: tempBundleService2[i].itemHeaderModel.salesOffice,
+                        offerValidity: tempBundleService2[i].itemHeaderModel.offerValidity
+                    },
+                    customItemBodyModel: {
+                        customItemBodyId: 0,
+                        itemBodyDescription: tempBundleService2[i].itemBodyModel.itemBodyDescription,
+                        spareParts: tempBundleService2[i].itemBodyModel.spareParts,
+                        labours: tempBundleService2[i].itemBodyModel.labours,
+                        miscellaneous: tempBundleService2[i].itemBodyModel.miscellaneous,
+                        taskType: tempBundleService2[i].itemBodyModel.taskType,
+                        solutionCode: tempBundleService2[i].itemBodyModel.solutionCode,
+                        usageIn: tempBundleService2[i].itemBodyModel.usageIn,
+                        usage: tempBundleService2[i].itemBodyModel.usage,
+                        year: tempBundleService2[i].itemBodyModel.year,
+                        avgUsage: tempBundleService2[i].itemBodyModel.avgUsage,
+                        unit: tempBundleService2[i].itemBodyModel.unit,
+                        customItemPrices: customPriceIdArr,
+                    }
+                }
+
+                const itemRes = await customitemCreation(customItemObj)
+
+                createdNewCustomItems.push(itemRes.data)
+
+            }
+            console.log("createdNewCustomItems before : ", createdNewCustomItems)
+            setTempBundleService3([...tempBundleService3, ...createdNewCustomItems]);
+            // setTempBundleService3(createdNewCustomItems);
+            // console.log("tempBundleService3 after : ", tempBundleService3);
+            setTempBundleService1([])
+        }
+
+    }
+    const handleItemPriceCalculatorSave = () => {
+        setLoadingItem("02")
+        setTabs("6")
+        const _tempBundleItems = [...tempBundleItems]
+        for (let i = 0; i < _tempBundleItems.length; i++) {
+            if (currentItemId === _tempBundleItems[i].customItemId) {
+                if (_tempBundleItems[i].associatedServiceOrBundle) {
+                    for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+                        console.log("tempBundleService2", tempBundleService2)
+                        for (let k = 0; k < tempBundleService2.length; k++) {
+                            if (_tempBundleItems[i].associatedServiceOrBundle[j].customItemId == tempBundleService3[k].customItemId) {
+                                tempBundleService2.splice(k, 1)//remove object if already exist
+                                break;
+                            }
+                        }
+                    }
+                    _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService3]
+                } else {
+                    _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService3] }
+                }
+            }
+            setTempBundleItems(_tempBundleItems)
+            setLoadingItem("22")
+        }
+    }
+    const frequencyOptions = [
+        { label: "Cyclic", value: "Cyclic" },
+        { label: "once", value: "once" },
+        { label: "alternate", value: "alternate" },
+        { label: "Custom", value: "Custom" },
+    ];
+    const [yearsOption, seYearsOption] = useState([
+        {
+            value: "1", label: "1"
+        }
+    ])
+    const handleComponentDataSave = async () => {
+        try {
+            // call put API for portfolio item to get price calculator data
+            let reqObj = {}
+            for (let i = 0; i < tempBundleItems.length; i++) {
+                if (tempBundleItems[i].customItemId === currentItemId) {
+                    // reqObj = {
+                    //     itemId: tempBundleItems[i].customItemId,
+                    //     standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
+                    //     repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
+                    // }
+                    reqObj = {
+                        itemId: tempBundleItems[i].customItemId,
+                        standardJobId: itemPriceData.standardJobId,
+                        repairKitId: itemPriceData.repairKitId,
+                        itemPriceDataId: itemPriceData.customItemPriceDataId
+                    }
+                    break;
+                }
+            }
+
+            const res2 = await customPortfolioItemPriceSJID(reqObj)
+
+            const res = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+            // const itemPriceRes = await getcustomItemPrice(reqObj)
+            // setItemPriceCalculator({
+            //     netParts: "11",
+            //     netService: "11",
+            //     priceType: "11",
+            //     netPrice: itemPriceRes.customItemHeaderModel.netPrice,
+            //     netAdditionals: "11",
+            // })
+            console.log("res 2 : ", res2)
+            console.log("res 1 : ", res)
+            // setItemPriceCalculator({
+            //     netParts: res.data.sparePartsPrice,
+            //     netService: res.data.netService,
+            //     priceType: res.data.priceType,
+            //     netPrice: res.data.totalPrice,
+            //     netAdditionals: res.data.listPrice,
+            // });
+            setItemPriceCalculator({
+                netParts: res.sparePartsPrice,
+                netService: res.netService,
+                priceType: res.priceType,
+                netPrice: res.totalPrice,
+                netAdditionals: res.listPrice,
+            });
+            setTabs("5")
+
+
+        } catch (error) {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+
+    }
+    const handleFlatPriceIndicator = (e) => {
+        // console.log("event ", e.target.checked)
+
+        setExtWorkData({
+            ...extWorkData,
+            flatRateIndicator: e.target.checked,
+            adjustedPrice: e.target.checked
+                ? extWorkData.adjustedPrice
+                : 0.0,
+        })
+        setPriceCalculator({
+            ...priceCalculator,
+            flatPrice: 0,
+        })
+    }
+    const handleComponentChange = async (e) => {
+
+        try {
+            setComponentData({
+                ...componentData,
+                [e.target.name]: e.target.value
+            })
+            if (e.target.name === 'componentCode') {
+                const res = await getComponentCodeSuggetions(`componentCode~${e.target.value}`)
+                $(`.scrollbar`).css("display", "block");
+                setComponentData({
+                    ...componentData,
+                    [e.target.name]: e.target.value,
+                    codeSuggestions: res
+                })
+            }
+            // if (e.target.name === 'make') {
+            //     const res = await getSearchQueryCoverage(`make~${e.target.value}`)
+            //     $(`#scrollbarMake`).css("display", "block");
+            //     setComponentData({ ...componentData, [e.target.name]: e.target.value, makeSuggestions: res })
+            // }
+            if (e.target.name === 'model') {
+                // if (componentData.make == "") {
+                //     throw "Please select make"
+                // }
+                // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model~${e.target.value}`)
+                const res = await getSearchQueryCoverage(`model~${e.target.value}`)
+                $(`#scrollbarModel`).css("display", "block");
+                setComponentData({ ...componentData, [e.target.name]: e.target.value, modelSuggestions: res })
+            }
+            if (e.target.name === 'serialNo') {
+                // if(componentData.make=="" || componentData.model==""){
+                //   throw "Please select make/model"
+                // }
+                if (componentData.model == "") {
+                    throw "Please select model"
+                }
+                const res = await getSearchQueryCoverage(`family~${e.target.value}`)
+                // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model:\"${componentData.model}\" AND family~${e.target.value}`)
+                $(`#scrolbarSerialNo`).css("display", "block");
+                setComponentData({ ...componentData, [e.target.name]: e.target.value, serialNoSuggestions: res })
+            }
+
+        } catch (error) {
+            console.log("err")
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+
+
+    }
+    const [disable, setDisable] = useState(true);
+    const [componentData, setComponentData] = useState({
+        componentCode: "",
+        codeSuggestions: [],
+        description: "",
+        model: "",
+        modelSuggestions: [],
+        make: "",
+        makeSuggestions: [],
+        serialNo: "",
+        serialNoSuggestions: [],
+        priceMethod: "",
+        priceAdditionalSelect: "",
+        priceEscalationSelect: "",
+        discountTypeSelect: ""
+    });
+    const handleModelSelect = (type, currentItem) => {
+        if (type === "model") {
+            setComponentData({
+                ...componentData,
+                model: currentItem.model,
+                make: currentItem.maker,
+                family: currentItem.family,
+                prefix: currentItem.prefix,
+            });
+            setSearchModelResults([]);
+        } else if (type === "equipmentNumber") {
+            setComponentData({
+                ...componentData,
+                model: currentItem.model,
+                serialNo: currentItem.equipmentNumber,
+                make: currentItem.maker,
+                // family: currentItem.market,
+            });
+            setSearchSerialResults([]);
+        }
+    };
+    const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+    const [searchSerialResults, setSearchSerialResults] = useState([]);
+
+    // Machine search based on model and serial number
+    const handleMachineSearch = async (searchMachinefieldName, searchText) => {
+        let searchQueryMachine = "";
+        setSearchModelResults([]);
+        setSearchSerialResults([]);
+
+        if (searchMachinefieldName === "model") {
+            componentData.model = searchText;
+            searchQueryMachine = searchText
+                ? searchMachinefieldName + "~" + searchText
+                : "";
+        } else if (searchMachinefieldName === "serialNo") {
+            componentData.serialNo = searchText;
+            searchQueryMachine = searchText
+                ? componentData.model
+                    ? `model:${componentData.model} AND equipmentNumber~` + searchText
+                    : "equipmentNumber~" + searchText
+                : "";
+        }
+        if (searchQueryMachine) {
+            await machineSearch(searchQueryMachine)
+                .then((result) => {
+                    if (result) {
+                        if (searchMachinefieldName === "model") {
+                            if (result && result.length > 0) {
+                                setSearchModelResults(result);
+                                setNoOptionsModel(false);
+                            } else {
+                                setNoOptionsModel(true);
+                            }
+                        } else if (searchMachinefieldName === "serialNo") {
+                            if (result && result.length > 0) {
+                                setSearchSerialResults(result);
+                                setNoOptionsSerial(false);
+                            } else {
+                                setNoOptionsSerial(true);
+                            }
+                        }
+                    }
+                })
+                .catch((e) => {
+                    handleSnack("error", "Error occurred while searching the machine!");
+                });
+        } else {
+            searchMachinefieldName === "model"
+                ? setSearchModelResults([])
+                : setSearchSerialResults([]);
+        }
+    };
+    const [searchModelResults, setSearchModelResults] = useState([]);
+
+    //Individual machine field value change
+    const handleMachineDataChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setComponentData({
+            ...componentData,
+            [name]: value,
+        });
+    };
+    const handleComponentCodeSuggetionsClick = (e, j) => {
+        $(`.scrollbar`).css("display", "none");
+        let { description, componentCode } = componentData.codeSuggestions[j]
+        setComponentData({ ...componentData, description, componentCode })
+    }
+    const [noOptionsModel, setNoOptionsModel] = useState(false);
 
 
     const [searchCoverageSerialResults, setSearchCoverageSerialResults] = useState([]);
@@ -1640,7 +2873,7 @@ export function CreatedCustomPortfolioTemplate(props) {
             customerSegment: e,
         });
     }
-    
+
     const handleBundleServiceInputSearch = (e) => {
         setCreateServiceOrBundle({ ...createServiceOrBundle, [e.target.name]: e.target.value, });
         var searchStr = "model~" + e.target.value;
@@ -7158,7 +8391,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             <div className="col-11 mx-1">
                                 <div className="d-flex align-items-center w-100">
                                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                                        <h5 className="mb-0 text-black">
+                                        <h5 className="mb-3 text-black">
                                             <span>Portfolio Items</span>
                                         </h5>
                                     </div>
@@ -7518,6 +8751,1227 @@ export function CreatedCustomPortfolioTemplate(props) {
                         </div>
 
 
+                    </Modal>
+                    <Modal
+                        size="xl"
+                        show={itemModelShow}
+                        onHide={() => setItemModelShow(false)}
+                    >
+                        <Modal.Body>
+                            <Box sx={{ typography: "body1" }}>
+                                <TabContext value={tabs}>
+                                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                        <TabList className="custom-tabs-div"
+                                            onChange={(e, newValue) => setTabs(newValue)}
+                                            aria-label="lab API tabs example"
+                                        >
+                                            <Tab label="Portfolio Item" value="1" />
+                                            <Tab label="Service/Bundle" value="2" />
+                                            {/* <Tab label="Solution" value="3" /> */}
+                                            {/*use it in useCase-4 */}
+                                            {/* {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />} */}
+                                            <Tab label="Component Data" value="4" />
+                                            <Tab label="Price Calculator" value="5" />
+                                            <Tab label="Review" value="6" />
+                                        </TabList>
+                                    </Box>
+                                    <TabPanel value="1">
+
+                                        {!portfolioItemDataEditable ?
+                                            <>
+                                                <AddCustomPortfolioItem
+                                                    stratgyTaskTypeKeyValue={stratgyTaskTypeKeyValue}
+                                                    setTabs={setTabs}
+                                                    getAddportfolioItemDataFun={getAddportfolioItemDataFun}
+                                                    compoFlag="ITEM"
+                                                />
+                                            </> :
+                                            <>
+                                                <AddCustomPortfolioItem
+                                                    passItemEditRowData={passItemEditRowData}
+                                                    handleItemEditSave={handleItemEditSave}
+                                                    compoFlag="itemEdit"
+                                                />
+                                            </>
+                                        }
+
+
+                                        {/*  */}
+                                    </TabPanel>
+                                    <TabPanel value="2">
+                                        <QuerySearchComp
+                                            compoFlag="bundleSearch"
+                                            options={[
+                                                { label: "Make", value: "itemHeaderMake" },
+                                                { label: "Family", value: "itemHeaderFamily" },
+                                                { label: "Model", value: "model" },
+                                                { label: "Prefix", value: "prefix" },
+                                                // { label: "Item Id", value: "itemId" },
+                                                { label: "Item Name", value: "itemName" },
+                                                { label: "Description", value: "description" },
+                                            ]}
+                                            setTempBundleService1={setTempBundleService1}
+                                            setLoadingItem={setLoadingItem}
+                                        />
+                                        {loadingItem === "01" ? ("loading") :
+                                            <>
+                                                {tempBundleService1.length > 0 && (<>
+                                                    <DataTable
+                                                        title=""
+                                                        columns={tempBundleItemColumns1}
+                                                        data={tempBundleService1}
+                                                        customStyles={customStyles}
+                                                        selectableRows
+                                                        onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
+                                                        pagination
+                                                    />{tempBundleService2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-light"
+                                                            // onClick={() => {
+                                                            //     setTempBundleService3(tempBundleService2)
+                                                            //     setTempBundleService1([])
+                                                            // }}
+                                                            onClick={handleCreateCustomItem_SearchResult}
+                                                        >
+                                                            Add Selected
+                                                        </button>
+                                                    </div>)}
+                                                </>)}
+                                            </>
+
+                                        }
+                                        {tempBundleService3.length > 0 && <>
+                                            <DataTable
+                                                title=""
+                                                columns={tempBundleItemColumns1New}
+                                                data={tempBundleService3}
+                                                customStyles={customStyles}
+                                                expandableRows
+                                                // expandableRowsComponent={ExpandedPriceCalculator}
+                                                expandableRowsComponent={ExpendCustomItemTablePopup}
+                                                onRowExpandToggled={handleExpandRowForPriceCalculator}
+                                                pagination
+                                            />
+                                            <div className="row mt-5" style={{ justifyContent: "right" }}>
+                                                <button type="button" className="btn btn-light"
+                                                    onClick={handleContinueOfServiceOrBundle}>Continue</button>
+                                            </div>
+                                        </>}
+
+                                    </TabPanel>
+                                    <TabPanel value="3">
+                                        <Solution setTabs={setTabs} />
+                                    </TabPanel>
+                                    <TabPanel value="4">
+                                        <>
+                                            <div className="ligt-greey-bg p-3 mb-5">
+                                                {/* <div>
+                                            <span className="mr-3">
+                                                <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related part list(s)</span>
+                                            </span>
+                                            <span className="mr-3">
+                                                <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related template(s)</span>
+                                            </span>
+                                            <span>
+                                                <SellOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related repair option</span>
+                                            </span>
+                                        </div> */}
+                                                <div>
+                                                    <span className="mr-3 cursor">
+                                                        <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                                                        <span className="ml-2">Edit</span>
+                                                    </span>
+                                                    <span className="mr-3">
+                                                        <SellOutlinedIcon className=" font-size-16" />
+                                                        <span className="ml-2">Related repair option</span>
+                                                    </span>
+                                                    <span className="mr-3">
+                                                        <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                                                        <span className="ml-2">Related Standard Job</span>
+                                                    </span>
+                                                    <span className="mr-3">
+                                                        <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                                        <span className="ml-2">Related Kit</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="row input-fields">
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-14 font-weight-500">
+                                                            Component Code
+                                                        </label>
+
+                                                        <div className="customselectsearch">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                name="componentCode"
+                                                                value={componentData.componentCode}
+                                                                onChange={handleComponentChange}
+                                                                autoComplete="off"
+                                                                placeholder="Search Component Code Here"
+                                                            />
+
+                                                            {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
+                                                                {componentData.codeSuggestions.map(
+                                                                    (currentItem, j) => (
+                                                                        <li className="list-group-item" key={j} onClick={(e) => handleComponentCodeSuggetionsClick(e, j)}
+                                                                        >
+                                                                            {currentItem.componentCode}
+                                                                        </li>
+                                                                    )
+                                                                )}
+                                                            </ul>}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-14 font-weight-500">
+                                                            Component Description
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            name="description"
+                                                            value={componentData.description}
+                                                            onChange={handleComponentChange}
+                                                            placeholder="Optional"
+                                                            disabled
+                                                        />
+                                                    </div>
+                                                </div>
+                                                {/* <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Make
+                                                </label>
+                                                <div className="customselectsearch">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        name="make"
+                                                        value={componentData.make}
+                                                        onChange={handleComponentChange}
+                                                        autoComplete="off"
+                                                    // disable
+                                                    />
+                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarMake">
+                                                        {componentData.makeSuggestions.map(
+                                                            (currentItem, j) => (
+                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentMakeSuggetionsClick(e, j)}>
+                                                                    {currentItem.make}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Model
+                                                </label>
+                                                <div className="customselectsearch">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        name="model"
+                                                        value={componentData.model}
+                                                        onChange={handleComponentChange}
+                                                        autoComplete="off"
+                                                    />
+                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarModel">
+                                                        {componentData.modelSuggestions.map(
+                                                            (currentItem, j) => (
+                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentModelSuggetionsClick(e, j)}>
+                                                                    {currentItem.model}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Serial No.
+                                                </label>
+                                                <div className="customselectsearch">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        name="serialNo"
+                                                        value={componentData.serialNo}
+                                                        onChange={handleComponentChange}
+                                                        autoComplete="off"
+                                                    />
+
+                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrolbarSerialNo">
+                                                        {componentData.serialNoSuggestions.map(
+                                                            (currentItem, j) => (
+                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentSerialNoSuggetionsClick(e, j)}>
+                                                                    {currentItem.family}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>}
+                                                </div>
+                                            </div>
+                                        </div> */}
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            Make
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10 text-primary"
+                                                            id="make-id"
+                                                            name="make"
+                                                            value={componentData.make}
+                                                            onChange={handleMachineDataChange}
+                                                            placeholder="Auto Filled"
+                                                            disabled
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            MODEL
+                                                        </label>
+                                                        <SearchBox
+                                                            value={componentData.model}
+                                                            onChange={(e) =>
+                                                                handleMachineSearch(
+                                                                    "model",
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            type="model"
+                                                            result={searchModelResults}
+                                                            onSelect={handleModelSelect}
+                                                            noOptions={noOptionsModel}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            SERIAL #
+                                                        </label>
+                                                        <SearchBox
+                                                            value={componentData.serialNo}
+                                                            onChange={(e) =>
+                                                                handleMachineSearch(
+                                                                    "serialNo",
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            type="equipmentNumber"
+                                                            result={searchSerialResults}
+                                                            onSelect={handleModelSelect}
+                                                            noOptions={noOptionsSerial}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <div className="row mt-2 input-fields">
+                                                <div className="col-md-6 col-sm-6 input-fields">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            PRICE METHOD
+                                                        </label>
+                                                        <Select
+                                                            options={priceMethodKeyValue}
+                                                            value={componentData.priceMethod}
+                                                            name="priceMethod"
+                                                            onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
+                                                            placeholder="placeholder (Optional)"
+                                                            className="text-primary"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group date-box">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            ADDITIONAL
+                                                        </label>
+                                                        <div className=" d-flex form-control-date">
+                                                            <div className="">
+                                                                <Select
+                                                                    isClearable={true}
+                                                                    value={componentData.priceAdditionalSelect}
+                                                                    name="priceAdditionalSelect"
+                                                                    onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
+                                                                    options={options}
+                                                                    placeholder="Select"
+                                                                    className="text-primary"
+                                                                />
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                placeholder="10%"
+                                                                // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                                                                value={componentData.priceAdditionalInput}
+                                                                name="priceAdditionalInput"
+                                                                onChange={handleComponentChange}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group date-box">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            PRICE ESCALATON
+                                                        </label>
+                                                        <div className=" d-flex align-items-center form-control-date">
+                                                            <Select
+                                                                className="select-input text-primary"
+                                                                value={componentData.priceEscalationSelect}
+                                                                name="priceEscalationSelect"
+                                                                onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
+                                                                options={options}
+                                                                placeholder="placeholder "
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                placeholder="20%"
+                                                                // defaultValue={props?.priceCalculator?.priceEscalationInput}
+                                                                value={componentData.priceEscalationInput}
+                                                                name="priceEscalationInput"
+                                                                onChange={handleComponentChange}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            CALCULATED PRICE
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10 text-primary"
+                                                            // defaultValue={props?.priceCalculator?.calculatedPrice}
+                                                            value={componentData.calculatedPrice}
+                                                            name="calculatedPrice"
+                                                            onChange={handleComponentChange}
+                                                            placeholder="$100"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            FLAT PRICE / ADJUSTED PRICE
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10 text-primary"
+                                                            value={componentData.flatPrice}
+                                                            name="flatPrice"
+                                                            onChange={handleComponentChange}
+                                                            placeholder="$100"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group date-box">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            DISCOUNT TYPE
+                                                        </label>
+                                                        <div className=" d-flex form-control-date">
+                                                            <div className="">
+                                                                <Select
+                                                                    value={componentData.discountTypeSelect}
+                                                                    name="discountTypeSelect"
+                                                                    onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
+                                                                    isClearable={true}
+                                                                    options={options}
+                                                                    placeholder="Select"
+                                                                    className="text-primary"
+                                                                />
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                value={componentData.discountTypeInput}
+                                                                name="discountTypeInput"
+                                                                onChange={handleComponentChange}
+                                                                placeholder="10%"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="row mt-5" style={{ justifyContent: "right" }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleComponentDataSave}
+                                                    className="btn btn-light"
+                                                >
+                                                    Save and Continue
+                                                </button>
+                                            </div>
+                                        </>
+                                    </TabPanel>
+                                    <TabPanel value="5">
+                                        {/* <PriceCalculator
+                  setTabs={setTabs}
+                  priceCalculator={priceCalculator}
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  // handleSavePrices={handleSavePrices}
+                /> */}
+
+                                        <div className="ligt-greey-bg p-3">
+                                            <div>
+                                                <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
+                                                    <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                                                    <span className="ml-2">Edit</span>
+                                                </span>
+                                                <span className="mr-3">
+                                                    <MonetizationOnOutlinedIcon className=" font-size-16" />
+                                                    <span className="ml-2"> Adjust price</span>
+                                                </span>
+                                                {/* <span className="mr-3">
+                                            <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                                            <span className="ml-2">Related part list(s)</span>
+                                        </span>
+                                        <span className="mr-3">
+                                            <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                            <span className="ml-2">Related service estimate(s)</span>
+                                        </span> */}
+                                                <span>
+                                                    <SellOutlinedIcon className=" font-size-16" />
+                                                    <span className="ml-2">Split price</span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-3">
+                                            <div className="row input-fields">
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            PRICE METHOD
+                                                        </label>
+                                                        <Select
+                                                            options={priceMethodKeyValue}
+                                                            className="text-primary"
+                                                            defaultValue={props?.priceCalculator?.priceMethod}
+                                                            value={priceCalculator.priceMethod}
+                                                            name="priceMethod"
+                                                            onChange={(e) =>
+                                                                setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                                                            }
+                                                            placeholder="placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            CURRENCY
+                                                        </label>
+                                                        <Select
+                                                            options={priceCurrencyKeyValue}
+                                                            className="text-primary"
+                                                            // defaultValue={props?.priceCalculator?.priceMethod}
+                                                            value={priceCalculator.currency}
+                                                            name="priceMethod"
+                                                            onChange={(e) =>
+                                                                setPriceCalculator({ ...priceCalculator, currency: e })
+                                                            }
+                                                            placeholder="placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-14 font-weight-500"
+                                                            htmlFor="exampleInputEmail1"
+                                                        >
+                                                            PRICE DATE
+                                                        </label>
+                                                        <div className="d-flex align-items-center date-box w-100">
+                                                            <div className="form-group w-100">
+                                                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                    <DatePicker
+                                                                        variant="inline"
+                                                                        format="dd/MM/yyyy"
+                                                                        className="form-controldate border-radius-10"
+                                                                        label=""
+                                                                        name="preparedOn"
+                                                                        value={priceDetails.priceDate}
+                                                                        onChange={(e) =>
+                                                                            setPriceDetails({
+                                                                                ...priceDetails,
+                                                                                priceDate: e,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                </MuiPickersUtilsProvider>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-14 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            PRICE TYPE
+                                                        </label>
+                                                        <Select
+                                                            // defaultValue={priceTypeKeyValue}
+                                                            className="text-primary"
+                                                            onChange={(e) =>
+                                                                // setPriceTypeKeyValue1(e)
+                                                                setPriceCalculator({ ...priceCalculator, priceType: e })
+                                                            }
+                                                            options={priceTypeKeyValue}
+                                                            placeholder="placeholder (Optional)"
+                                                            value={priceCalculator.priceType}
+                                                        />
+                                                        {/* <input
+                  type="text"
+                  className="form-control border-radius-10"
+                  placeholder="Optional"
+                  name="priceType"
+                  disabled={disable}
+                  value={itemPriceCalculator.priceType}
+                  onChange={handleItemPriceCalculatorChange}
+                /> */}
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group date-box">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            ADDITIONAL
+                                                        </label>
+                                                        <div className=" d-flex form-control-date">
+                                                            <div className="">
+                                                                <Select
+                                                                    // isClearable={true}
+                                                                    className="text-primary"
+                                                                    value={priceCalculator.priceAdditionalSelect}
+                                                                    name="priceAdditionalSelect"
+                                                                    onChange={(e) =>
+                                                                        setPriceCalculator({
+                                                                            ...priceCalculator,
+                                                                            priceAdditionalSelect: e,
+                                                                        })
+                                                                    }
+                                                                    // options={options}
+                                                                    options={additionalPriceHeadTypeKeyValue}
+                                                                    placeholder="Select"
+                                                                // isDisabled
+                                                                />
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                                placeholder="10%"
+                                                                defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                                                                value={priceCalculator.priceAdditionalInput}
+                                                                name="priceAdditionalInput"
+                                                                onChange={(e) =>
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        priceAdditionalInput: e.target.value,
+                                                                    })
+                                                                }
+                                                            // disabled
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group date-box">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            PRICE ESCALATON
+                                                        </label>
+                                                        <div className=" d-flex align-items-center form-control-date">
+                                                            <Select
+                                                                className="select-input"
+                                                                id="priceEscalationSelect"
+                                                                options={priceHeadTypeKeyValue}
+                                                                placeholder="placeholder "
+                                                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                                                            // value={expandedPriceCalculator.priceEscalationSelect}
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                                placeholder="20%"
+                                                                id="priceEscalationInput"
+                                                            // value={escalationPriceValue}
+                                                            // onchange={(e) = setEscalationPriceValue(e.target.value)}
+                                                            // defaultValue={data.itemBodyModel.priceEscalation}
+                                                            // value={expandedPriceCalculator.priceEscalationInput}
+                                                            // onChange={handleExpandePriceChange}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div class="form-group mt-1">
+                                                        <FormGroup>
+                                                            <FormControlLabel
+                                                                style={{
+                                                                    alignItems: "start",
+                                                                    marginLeft: 0,
+                                                                }}
+                                                                control={
+                                                                    <Switch1
+                                                                        checked={extWorkData.flatRateIndicator}
+                                                                        onChange={(e) =>
+                                                                            handleFlatPriceIndicator(e)
+                                                                        }
+                                                                    />
+                                                                }
+                                                                labelPlacement="top"
+                                                                label={
+                                                                    <span className="text-light-dark font-size-12 font-weight-500">
+                                                                        FLAT RATE INDICATOR
+                                                                    </span>
+                                                                }
+                                                            />
+                                                        </FormGroup>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            FLAT PRICE / ADJUSTED PRICE
+                                                        </label>
+                                                        <input
+                                                            // type="text"
+                                                            type="number"
+                                                            className="form-control border-radius-10 text-primary"
+                                                            value={priceCalculator.flatPrice}
+                                                            name="flatPrice"
+                                                            onChange={(e) =>
+                                                                setPriceCalculator({
+                                                                    ...priceCalculator,
+                                                                    flatPrice: e.target.value,
+                                                                })
+                                                            }
+                                                            disabled={!extWorkData.flatRateIndicator}
+                                                            placeholder="0"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group date-box">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            for="exampleInputEmail1"
+                                                        >
+                                                            DISCOUNT TYPE
+                                                        </label>
+                                                        <div className=" d-flex form-control-date">
+                                                            <div className="">
+                                                                <Select
+                                                                    value={priceCalculator.discountTypeSelect}
+                                                                    name="discountTypeSelect"
+                                                                    className="text-primary"
+                                                                    onChange={(e) =>
+                                                                        setPriceCalculator({
+                                                                            ...priceCalculator,
+                                                                            discountTypeSelect: e,
+                                                                        })
+                                                                    }
+                                                                    isClearable={true}
+                                                                    options={options}
+                                                                    placeholder="Select"
+                                                                />
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                                value={priceCalculator.discountTypeInput}
+                                                                name="discountTypeInput"
+                                                                onChange={(e) =>
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        discountTypeInput: e.target.value,
+                                                                    })
+                                                                }
+                                                                placeholder="10%"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="form-group date-box">
+                                                        <label
+                                                            className="text-light-dark font-size-12 font-weight-500"
+                                                            htmlFor="exampleInputEmail1"
+                                                        >
+                                                            PRICE BREAK DOWN
+                                                        </label>
+                                                        <div className=" d-flex form-control-date">
+                                                            <Select
+                                                                className="select-input text-primary"
+                                                                defaultValue={selectedOption}
+                                                                onChange={setSelectedOption}
+                                                                // options={options}
+                                                                options={priceHeadTypeKeyValue}
+                                                                placeholder="Select "
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                                id="exampleInputEmail1"
+                                                                aria-describedby="emailHelp"
+                                                                placeholder="optional"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="border border-radius-10 mt-3 py-2 px-3">
+                                                <div className="row input-fields">
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                YEAR
+                                                            </label>
+
+
+                                                            <Select
+                                                                // options={[
+                                                                //   { value: "1", label: "1" },
+                                                                //   { value: "2", label: "2" },
+                                                                //   { value: "3", label: "3" },
+                                                                // ]}
+                                                                options={yearsOption}
+                                                                placeholder="Select..."
+                                                                className="text-primary"
+                                                                onChange={(e) =>
+                                                                    setAddportFolioItem({ ...addPortFolioItem, year: e })
+                                                                }
+                                                                value={addPortFolioItem.year}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                NO. OF YEARS
+                                                            </label>
+                                                            <input
+                                                                type="number"
+                                                                // type="text"
+                                                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                placeholder="No. of Years"
+                                                                // defaultValue={props?.priceCalculator?.startUsage}
+                                                                // value={priceCalculator.startUsage}
+                                                                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
+                                                                value={addPortFolioItem.noOfYear}
+                                                                name="noOfYear"
+                                                            />
+                                                            {/* <Select
+                                  options={[
+                                    { value: "1", label: "1" },
+                                    { value: "2", label: "2" },
+                                    { value: "3", label: "3" },
+                                  ]}
+                                  placeholder="Select..."
+                                  className="text-primary"
+                                  onChange={(e) =>
+                                    setAddportFolioItem({ ...addPortFolioItem, noOfYear: e })
+                                  }
+                                  value={addPortFolioItem.noOfYear}
+                                /> */}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                                                <div className="row input-fields">
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                START USAGE
+                                                            </label>
+                                                            <div
+                                                                className=" d-flex form-control-date"
+                                                                style={{ overflow: "hidden" }}
+                                                            >
+                                                                <input
+                                                                    type="number"
+                                                                    // type="text"
+                                                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                    placeholder="10,000 hours"
+                                                                    // defaultValue={props?.priceCalculator?.startUsage}
+                                                                    // value={priceCalculator.startUsage}
+                                                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
+                                                                    value={addPortFolioItem.startUsage}
+                                                                    name="startUsage"
+                                                                />
+                                                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                            </div>
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                END USAGE
+                                                            </label>
+                                                            <div
+                                                                className=" d-flex form-control-date"
+                                                                style={{ overflow: "hidden" }}
+                                                            >
+                                                                <input
+                                                                    type="number"
+                                                                    // type="text"
+                                                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                    placeholder="16,000 hours"
+                                                                    // defaultValue={props?.priceCalculator?.startUsage}
+                                                                    // value={priceCalculator.startUsage}
+                                                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
+                                                                    value={addPortFolioItem.endUsage}
+                                                                    name="endUsage"
+                                                                />
+                                                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                            </div>
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                USAGE TYPE
+                                                            </label>
+                                                            <Select
+                                                                options={options}
+                                                                placeholder="Planned Usage"
+                                                                className="text-primary"
+                                                                onChange={(e) =>
+                                                                    setAddportFolioItem({
+                                                                        ...addPortFolioItem,
+                                                                        usageType: e,
+                                                                    })
+                                                                }
+                                                                value={addPortFolioItem.usageType}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                FREQUENCY
+                                                            </label>
+                                                            <Select
+                                                                options={frequencyOptions}
+                                                                placeholder="Select....."
+                                                                className="text-primary"
+                                                                onChange={(e) =>
+                                                                    setAddportFolioItem({
+                                                                        ...addPortFolioItem,
+                                                                        frequency: e,
+                                                                    })
+                                                                }
+                                                                value={addPortFolioItem.frequency}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                UNIT
+                                                            </label>
+                                                            <Select
+                                                                options={[
+                                                                    { value: "per Hr", label: "per Hr" },
+                                                                    { value: "per Km", label: "per Km" },
+                                                                    { value: "per Miles", label: "per Miles" },
+                                                                    { value: "per year", label: "per year" },
+                                                                    { value: "per month", label: "per month" },
+                                                                    { value: "per day", label: "per day" },
+                                                                    { value: "per quarter", label: "per quarter" },
+                                                                ]}
+                                                                placeholder="Select..."
+                                                                className="text-primary"
+                                                                onChange={(e) =>
+                                                                    setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                                                                }
+                                                                value={addPortFolioItem.unit}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                RECOMMENDED VALUE
+                                                            </label>
+                                                            <div
+                                                                className=" d-flex form-control-date"
+                                                                style={{ overflow: "hidden" }}
+                                                            >
+                                                                <input
+                                                                    type="number"
+                                                                    // type="text"
+                                                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                    placeholder="Recommended Value"
+                                                                    // defaultValue={props?.priceCalculator?.startUsage}
+                                                                    // value={priceCalculator.startUsage}
+                                                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                                                                    value={addPortFolioItem.recommendedValue}
+                                                                    name="recommendedValue"
+                                                                // name="startUsage"
+                                                                // onChange={(e) =>
+                                                                //   setPriceCalculator({
+                                                                //     ...priceCalculator,
+                                                                //     startUsage: e.target.value,
+                                                                //   })
+                                                                // }
+                                                                />
+                                                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                            </div>
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div className="form-group w-100">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                NO. OF EVENTS
+                                                            </label>
+                                                            <input
+                                                                type="number"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                placeholder="NO. OF EVENTS"
+                                                                onChange={(e) =>
+                                                                    setAddportFolioItem({
+                                                                        ...addPortFolioItem,
+                                                                        numberOfEvents: e.target.value,
+                                                                    })
+                                                                }
+                                                                value={addPortFolioItem.numberOfEvents}
+                                                            />
+                                                            <div className="css-w8dmq8">*Mandatory</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-6 col-sm-6">
+                                                        <div class="form-group mt-1">
+                                                            <FormGroup>
+                                                                <FormControlLabel
+                                                                    style={{
+                                                                        alignItems: "start",
+                                                                        marginLeft: 0,
+                                                                    }}
+                                                                    control={
+                                                                        <Switch1
+                                                                            checked={extWorkData.flatRateIndicator}
+                                                                            onChange={(e) =>
+                                                                                setExtWorkData({
+                                                                                    ...extWorkData,
+                                                                                    flatRateIndicator: e.target.checked,
+                                                                                    adjustedPrice: e.target.checked
+                                                                                        ? extWorkData.adjustedPrice
+                                                                                        : 0.0,
+                                                                                })
+                                                                            }
+                                                                        />
+                                                                    }
+                                                                    labelPlacement="top"
+                                                                    label={
+                                                                        <span className="text-light-dark font-size-12 font-weight-500">
+                                                                            SUPRESSION
+                                                                        </span>
+                                                                    }
+                                                                />
+                                                            </FormGroup>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="my-1 d-flex align-items-center justify-content-end">
+                                                    <Link to="#" className="btn border mr-4">Cancel</Link>
+                                                    <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                                                        <span className="mr-2 funds">
+                                                            <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                                                <g>
+                                                                    <g>
+                                                                        <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                              C74.2,101.4,70.7,105,66.3,105.1z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                              C103.4,89.1,106.9,92.9,106.8,97.2z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                              C135.6,88.9,139.3,92.5,139.4,96.8z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C70.7,121.6,74.3,125.2,74.3,129.6z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C103.2,121.5,106.8,125.2,106.8,129.5z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C70.7,154.1,74.3,157.7,74.3,162.1z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                              C90.7,157.7,94.3,154.1,98.6,154z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                              C135.8,121.5,139.4,125.2,139.4,129.5z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                              C123.2,157.7,126.8,154.1,131.1,154z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                              c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
+                              c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                              S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
+                              c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
+                                                                    </g>
+                                                                </g>
+                                                            </svg>
+                                                        </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                                                </div>
+                                            </div>
+                                            <div className="m-3 text-right">
+                                                <a
+                                                    href="#"
+                                                    className="btn text-white bg-primary"
+                                                    onClick={handleItemPriceCalculatorSave}
+                                                >
+                                                    Save
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </TabPanel>
+
+
+                                    <TabPanel value="6">
+                                        {loadingItem === "02" ? (
+                                            <div className="d-flex align-items-center justify-content-center">
+                                                <Loader
+                                                    type="spinner-default"
+                                                    bgColor={"#872ff7"}
+                                                    title={"spinner-default"}
+                                                    color={"#FFFFFF"}
+                                                    size={35}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div
+                                                className="custom-table  card"
+                                                style={{ height: 400, width: "100%" }}
+                                            >
+                                                <DataTable
+                                                    title=""
+                                                    columns={tempBundleCustomItemColumns}
+                                                    data={tempBundleItems}
+                                                    customStyles={customStyles}
+                                                    expandableRows
+                                                    // expandableRowsComponent={ExpandedComponent}
+                                                    expandableRowsComponent={ExpendedModelComponent}
+                                                    pagination
+                                                />
+                                            </div>
+                                        )}
+                                    </TabPanel>
+                                </TabContext>
+                            </Box>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            {tabs === "6" && (
+                                <Button variant="primary" onClick={addTempItemIntobundleItem}>
+                                    Add Selected
+                                </Button>
+                            )}
+                        </Modal.Footer>
                     </Modal>
 
                     <div
