@@ -9,6 +9,14 @@ import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import $ from "jquery";
 
+import {
+  FormControlLabel,
+  FormGroup,
+  Switch,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+
 import { ToastContainer, toast } from 'react-toastify';
 
 import { useDispatch, useSelector } from "react-redux";
@@ -474,6 +482,25 @@ const AddCustomPortfolioItem = (props) => {
     //   props.setBundleTabs("3");
     // }
   };
+
+  const [yearsOption, seYearsOption] = useState([
+    {
+      value: "1", label: "1"
+    }
+  ])
+
+  const [extWorkData, setExtWorkData] = useState({
+    jobCode: "",
+    jobCodeDescription: "",
+    pricingMethod: "",
+    totalPrice: 0.0,
+    payer: "",
+    flatRateIndicator: false,
+    adjustedPrice: 0.0,
+    basePrice: 0.0,
+    percentageOfBase: 0,
+  });
+  
 
   return (
     <>
@@ -1094,6 +1121,7 @@ const AddCustomPortfolioItem = (props) => {
                         }
                         value={addPortFolioItem.name}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
@@ -1116,196 +1144,319 @@ const AddCustomPortfolioItem = (props) => {
                         }
                         value={addPortFolioItem.description}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group w-100">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        USAGE IN
-                      </label>
-                      <Select
-                        options={categoryList}
-                        value={addPortFolioItem.usageIn}
-                        className="text-primary"
-                        onChange={(e) => HandleCatUsage(e)}
-                      />
+                  <div className="col-md-6 col-sm-6 checkbox-input">
+                    <div class="form-group form-check">
+                      <label class="form-check-label" for="exampleCheck1">
+                        <input
+                          type="checkbox"
+                          class="form-check-input"
+                          id="exampleCheck1"
+                        // checked={noNeedBundleService}
+                        // onChange={(e) => BundleServiceItemsNeed(e)}
+                        />I don’t need bundles / services</label>
                     </div>
                   </div>
                 </div>
 
-                <p className="mt-4">STRATEGY</p>
-                <div className="row mt-4 input-fields">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        STRATEGY TASK
-                      </label>
-                      <Select
-                        options={updatedList}
-                        onChange={(e) => HandleStrategyUsage(e)}
-                        value={addPortFolioItem.strategyTask}
-                        className="text-primary"
-                      />
+                <div className="border border-radius-10 mt-3 py-2 px-3">
+                  <p className="mt-3">STRATEGY</p>
+                  <div className="row input-fields">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group w-100">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          USAGE IN
+                        </label>
+                        <Select
+                          options={categoryList}
+                          value={addPortFolioItem.usageIn}
+                          className="text-primary"
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        <div className="css-w8dmq8">*Mandatory</div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        TASK TYPE
-                      </label>
-                      <Select
-                        options={updatedTaskList}
-                        onChange={(e) =>
-                          setAddPortFolioItem({
-                            ...addPortFolioItem,
-                            taskType: e,
-                          })
-                        }
-                        className="text-primary"
-                        value={addPortFolioItem.taskType}
-                      />
-                      {/* <div className="icon-defold">
-                    <div className="form-control">
-                      <Select
-                        options={updatedTaskList}
-                        onChange={(e) =>
-                          setAddPortFolioItem({
-                            ...addPortFolioItem,
-                            taskType: e,
-                          })
-                        }
-                        value={addPortFolioItem.taskType}
-                      />
-                      <span className="search-icon searchIcon">
-                        <SearchOutlinedIcon className="font-size-16" />
-                      </span>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          STRATEGY
+                        </label>
+                        <Select
+                          options={updatedList}
+                          // onChange={(e) =>
+                          //   setAddportFolioItem({
+                          //     ...addPortFolioItem,
+                          //     strategyTask: e,
+                          //   })
+                          // }
+                          placeholder="Select(Required*)"
+                          onChange={(e) => HandleStrategyUsage(e)}
+                          value={addPortFolioItem.strategyTask}
+                          className="text-primary"
+                        />
+                      </div>
                     </div>
-                  </div> */}
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        FREQUENCY
-                      </label>
-                      <Select
-                        options={frequencyOptions}
-                        placeholder="Optional"
-                        onChange={(e) =>
-                          setAddPortFolioItem({
-                            ...addPortFolioItem,
-                            frequency: e,
-                          })
-                        }
-                        className="text-primary"
-                        value={addPortFolioItem.frequency}
-                      />
-                      {/* <div className="icon-defold">
-                    <div className="form-control">
-                      <Select
-                        options={frequencyOptions}
-                        placeholder="Optional"
-                        onChange={(e) =>
-                          setAddPortFolioItem({
-                            ...addPortFolioItem,
-                            frequency: e,
-                          })
-                        }
-                        value={addPortFolioItem.frequency}
-                      />
-                      <span className="search-icon searchIcon">
-                        <SearchOutlinedIcon className="font-size-16" />
-                      </span>
-                    </div>
-                  </div> */}
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        UNIT
-                      </label>
-                      <Select
-                        options={[
-                          { value: "per Hr", label: "per Hr" },
-                          { value: "per Km", label: "per Km" },
-                          { value: "per Miles", label: "per Miles" },
-                          { value: "per year", label: "per year" },
-                          { value: "per month", label: "per month" },
-                          { value: "per day", label: "per day" },
-                          { value: "per quarter", label: "per quarter" },
-                        ]}
-                        placeholder="HOURS"
-                        onChange={(e) =>
-                          setAddPortFolioItem({ ...addPortFolioItem, unit: e })
-                        }
-                        className="text-primary"
-                        value={addPortFolioItem.unit}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        RECOMMENDED VALUE
-                      </label>
-                      <div
-                        className=" d-flex form-control-date"
-                        style={{ overflow: "hidden" }}
-                      >
-                        <input
-                          type="number"
-                          className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                          placeholder="Recommended Value"
-                          // defaultValue={props?.priceCalculator?.startUsage}
-                          // value={priceCalculator.startUsage}
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          TASK TYPE
+                        </label>
+                        <Select
+                          options={updatedTaskList}
                           onChange={(e) =>
                             setAddPortFolioItem({
                               ...addPortFolioItem,
-                              recommendedValue: e.target.value,
+                              taskType: e,
                             })
                           }
-                          value={addPortFolioItem.recommendedValue}
-                          name="recommendedValue"
+                          className="text-primary"
+                          value={addPortFolioItem.taskType}
                         />
-                        <span className="hours-div">
-                          {addPortFolioItem.unit == ""
-                            ? "select unit"
-                            : addPortFolioItem.unit.label}
-                        </span>
+                        <div className="css-w8dmq8">*Mandatory</div>
                       </div>
-                      {/* <Select
-                    onChange={(e) =>
-                      setAddPortFolioItem({
-                        ...addPortFolioItem,
-                        recommendedValue: e,
-                      })
-                    }
-                    value={addPortFolioItem.recommendedValue}
-                    options={options}
-                    placeholder="RECOMMENDED VALUE"
-                  /> */}
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-6">
+                </div>
+                <div className="border border-radius-10 mt-3 py-2 px-3">
+                  <div className="row input-fields">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          YEAR
+                        </label>
+
+
+                        <Select
+                          // options={[
+                          //   { value: "1", label: "1" },
+                          //   { value: "2", label: "2" },
+                          //   { value: "3", label: "3" },
+                          // ]}
+                          options={yearsOption}
+                          placeholder="Select..."
+                          className="text-primary"
+                          // onChange={(e) =>
+                          //   setAddportFolioItem({ ...addPortFolioItem, year: e })
+                          // }
+                          value={addPortFolioItem.year}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          NO. OF YEARS
+                        </label>
+                        <input
+                          type="number"
+                          // type="text"
+                          className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                          placeholder="No. of Years"
+                          // defaultValue={props?.priceCalculator?.startUsage}
+                          // value={priceCalculator.startUsage}
+                          // onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
+                          value={addPortFolioItem.noOfYear}
+                          name="noOfYear"
+                        />
+                        {/* <Select
+                          options={[
+                            { value: "1", label: "1" },
+                            { value: "2", label: "2" },
+                            { value: "3", label: "3" },
+                          ]}
+                          placeholder="Select..."
+                          className="text-primary"
+                          onChange={(e) =>
+                            setAddportFolioItem({ ...addPortFolioItem, noOfYear: e })
+                          }
+                          value={addPortFolioItem.noOfYear}
+                        /> */}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                  <div className="row input-fields">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          START USAGE
+                        </label>
+                        <div
+                          className=" d-flex form-control-date"
+                          style={{ overflow: "hidden" }}
+                        >
+                          <input
+                            type="number"
+                            // type="text"
+                            className="form-control border-none rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                            placeholder="10,000 hours"
+                            // defaultValue={props?.priceCalculator?.startUsage}
+                            // value={priceCalculator.startUsage}
+                            // onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
+                            value={addPortFolioItem.startUsage}
+                            name="startUsage"
+                          />
+                          <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                        </div>
+                        <div className="css-w8dmq8">*Mandatory</div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          END USAGE
+                        </label>
+                        <div
+                          className=" d-flex form-control-date"
+                          style={{ overflow: "hidden" }}
+                        >
+                          <input
+                            type="number"
+                            // type="text"
+                            className="border-none form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                            placeholder="16,000 hours"
+                            // defaultValue={props?.priceCalculator?.startUsage}
+                            // value={priceCalculator.startUsage}
+                            // onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
+                            value={addPortFolioItem.endUsage}
+                            name="endUsage"
+                          />
+                          <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                        </div>
+                        <div className="css-w8dmq8">*Mandatory</div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          USAGE TYPE
+                        </label>
+                        <Select
+                          options={options}
+                          placeholder="Planned Usage"
+                          className="text-primary"
+                          // onChange={(e) =>
+                          //   setAddportFolioItem({
+                          //     ...addPortFolioItem,
+                          //     usageType: e,
+                          //   })
+                          // }
+                          value={addPortFolioItem.usageType}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          FREQUENCY
+                        </label>
+                        <Select
+                          options={frequencyOptions}
+                          placeholder="Optional"
+                          onChange={(e) =>
+                            setAddPortFolioItem({
+                              ...addPortFolioItem,
+                              frequency: e,
+                            })
+                          }
+                          className="text-primary"
+                          value={addPortFolioItem.frequency}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          UNIT
+                        </label>
+                        <Select
+                          options={[
+                            { value: "per Hr", label: "per Hr" },
+                            { value: "per Km", label: "per Km" },
+                            { value: "per Miles", label: "per Miles" },
+                            { value: "per year", label: "per year" },
+                            { value: "per month", label: "per month" },
+                            { value: "per day", label: "per day" },
+                            { value: "per quarter", label: "per quarter" },
+                          ]}
+                          placeholder="HOURS"
+                          onChange={(e) =>
+                            setAddPortFolioItem({ ...addPortFolioItem, unit: e })
+                          }
+                          className="text-primary"
+                          value={addPortFolioItem.unit}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          RECOMMENDED VALUE
+                        </label>
+                        <div
+                          className=" d-flex form-control-date"
+                          style={{ overflow: "hidden" }}
+                        >
+                          <input
+                            type="number"
+                            className="border-none form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                            placeholder="Recommended Value"
+                            // defaultValue={props?.priceCalculator?.startUsage}
+                            // value={priceCalculator.startUsage}
+                            onChange={(e) =>
+                              setAddPortFolioItem({
+                                ...addPortFolioItem,
+                                recommendedValue: e.target.value,
+                              })
+                            }
+                            value={addPortFolioItem.recommendedValue}
+                            name="recommendedValue"
+                          />
+                          <span className="hours-div">
+                            {addPortFolioItem.unit == ""
+                              ? "select unit"
+                              : addPortFolioItem.unit.label}
+                          </span>
+                        </div>
+                        <div className="css-w8dmq8">*Mandatory</div>
+                      </div>
+                    </div>
+                    {/* <div className="col-md-6 col-sm-6">
                     <div className="form-group w-100">
                       <label
                         className="text-light-dark font-size-12 font-weight-500"
@@ -1326,27 +1477,60 @@ const AddCustomPortfolioItem = (props) => {
                         value={addPortFolioItem.quantity}
                       />
                     </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group w-100">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        NO. OF EVENTS
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10 text-primary"
-                        placeholder="NO. OF EVENTS"
-                        onChange={(e) =>
-                          setAddPortFolioItem({
-                            ...addPortFolioItem,
-                            numberOfEvents: e.target.value,
-                          })
-                        }
-                        value={addPortFolioItem.numberOfEvents}
-                      />
+                  </div> */}
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group w-100">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          NO. OF EVENTS
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control border-radius-10 text-primary"
+                          placeholder="NO. OF EVENTS"
+                          onChange={(e) =>
+                            setAddPortFolioItem({
+                              ...addPortFolioItem,
+                              numberOfEvents: e.target.value,
+                            })
+                          }
+                          value={addPortFolioItem.numberOfEvents}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group mt-1">
+                        <FormGroup>
+                          <FormControlLabel
+                            style={{
+                              alignItems: "start",
+                              marginLeft: 0,
+                            }}
+                            control={
+                              <Switch
+                                checked={extWorkData.flatRateIndicator}
+                                onChange={(e) =>
+                                  setExtWorkData({
+                                    ...extWorkData,
+                                    flatRateIndicator: e.target.checked,
+                                    adjustedPrice: e.target.checked
+                                      ? extWorkData.adjustedPrice
+                                      : 0.0,
+                                  })
+                                }
+                              />
+                            }
+                            labelPlacement="top"
+                            label={
+                              <span className="text-light-dark font-size-12 font-weight-500">
+                                SUPRESSION
+                              </span>
+                            }
+                          />
+                        </FormGroup>
+                      </div>
                     </div>
                   </div>
                 </div>

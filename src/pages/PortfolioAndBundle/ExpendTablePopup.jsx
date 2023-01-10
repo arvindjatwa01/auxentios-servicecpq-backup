@@ -959,7 +959,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         <label
                             className="text-light-dark font-size-12 font-weight-500"
                         >
-                            Name
+                            NAME
                         </label>
                         <input
                             className="form-control border-radius-10 text-primary"
@@ -977,7 +977,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         <label
                             className="text-light-dark font-size-12 font-weight-500"
                         >
-                            Description
+                            DESCRIPTION
                         </label>
                         <input
                             className="form-control border-radius-10 text-primary"
@@ -997,195 +997,45 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            Frequency
-                        </label>
-                        <Select
-                            options={frequencyOptions}
-                            placeholder="Select....."
-                            className="text-primary"
-                            onChange={(e) =>
-                                setAddPortFolioItem({
-                                    ...addPortFolioItem,
-                                    frequency: e,
-                                })
-                            }
-                            value={addPortFolioItem.frequency}
-                        />
-                        {/* <input
-                            className="form-control border-radius-10 text-primary"
-                            type="text"
-                            id="frequency"
-                            // defaultValue={data.itemBodyModel.frequency}
-                            value={addPortFolioItem.frequency}
-                            onChange={(e) => setAddPortFolioItem({
-                                ...addPortFolioItem,
-                                frequency: e,
-                            })}
-                            autoComplete="off"
-                        /> */}
-                    </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            Recommonded Value
-                        </label>
-                        <input
-                            type="number"
-                            className="form-control border-radius-10 text-primary"
-                            id="recommendedValue"
-                            // defaultValue={priceCalculator.recommendedValue}
-                            value={priceCalculator.recommendedValue}
-                            onChange={(e) =>
-                                setPriceCalculator({
-                                    ...priceCalculator,
-                                    recommendedValue: e.target.value,
-                                })}
-                            // onChange={handleExpandePriceChange}
-                            autoComplete="off"
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            Start Usage
-                        </label>
-                        <div className=" d-flex form-control-date border left-select-div" style={{ borderRadius: "5px" }}>
-
-                            <input
-                                className="form-control border-none text-primary"
-                                type="number"
-                                id="startUsage"
-                                value={priceCalculator.startUsage}
-                                onChange={(e) =>
-                                    setPriceCalculator({
-                                        ...priceCalculator,
-                                        startUsage: e.target.value,
-                                    })}
-                            // value={expandedPriceCalculator.startUsage}
-                            // onChange={handleExpandePriceChange}
-                            />
-
-                            <Select
-                                isClearable={true}
-                                id=""
-                                options={optionsusage}
-                                placeholder="Select"
-                                className='text-primary'
-                            // value={expandedPriceCalculator.priceAdditionalSelect}
-                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
-                            />
-
-                        </div>
-                        <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            End Usage
-                        </label>
-
-                        <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                        >
-                            <input
-                                className="form-control border-radius-10 text-primary"
-                                type="text"
-                                id="endUsage"
-                                value={priceCalculator.endUsage}
-                                onChange={(e) =>
-                                    setPriceCalculator({
-                                        ...priceCalculator,
-                                        endUsage: e.target.value,
-                                    })}
-                            // value={expandedPriceCalculator.endUsage}
-                            // onChange={handleExpandePriceChange}
-                            />
-
-                            <span className="hours-div">hours</span>
-                        </div>
-                        <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                </div>
-
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            No. of Events
-                        </label>
-                        <input
-                            className="form-control border-radius-10 text-primary"
-                            type="text"
-                            // placeholder="Description"
-                            id="numberOfEvents"
-                            value={priceCalculator.numberOfEvents}
-                            disabled
-                        // onChange={(e) =>
-                        //     setPriceCalculator({
-                        //         ...priceCalculator,
-                        //         recommendedValue: e.target.value,
-                        //     })}
-                        // value={expandedPriceCalculator.numberOfEvents}
-                        // onChange={handleExpandePriceChange}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                </div>
             </div>
-            <div className="row mb-3 input-fields">
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            PRICE METHOD
-                        </label>
-                        <Select
-                            options={priceMethodKeyValue}
-                            className="text-primary"
-                            id="priceMethod"
-                            value={priceCalculator.priceMethod}
-                            onChange={(e) =>
-                                setPriceCalculator({
-                                    ...priceCalculator,
-                                    priceMethod: e,
-                                })}
-                        // value={expandedPriceCalculator.priceMethod}
-                        // name="priceMethod"
-                        // // onChange={handlePriceMethodSelect}
-                        // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
+            <div className='border border-radius-10 mt-3 py-2 px-3'>
+                <div className='row input-fields'>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                            >
+                                PRICE METHOD
+                            </label>
+                            <Select
+                                options={priceMethodKeyValue}
+                                className="text-primary"
+                                id="priceMethod"
+                                value={priceCalculator.priceMethod}
+                                onChange={(e) =>
+                                    setPriceCalculator({
+                                        ...priceCalculator,
+                                        priceMethod: e,
+                                    })}
+                            // value={expandedPriceCalculator.priceMethod}
+                            // name="priceMethod"
+                            // // onChange={handlePriceMethodSelect}
+                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
                     </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                        >
-                            ADDITIONAL
-                        </label>
-                        <div className=" d-flex form-control-date">
-                            <div className="">
-                                {/* <Select
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                for="exampleInputEmail1"
+                            >
+                                ADDITIONAL
+                            </label>
+                            <div className=" d-flex form-control-date">
+                                <div className="">
+                                    {/* <Select
                                     isClearable={true}
                                     className="text-primary"
                                     id="priceAdditionalSelect"
@@ -1200,36 +1050,87 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 // value={expandedPriceCalculator.priceAdditionalSelect}
                                 // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
                                 /> */}
-                                <Select
-                                    isClearable={true}
-                                    className="text-primary"
-                                    value={priceCalculator.priceAdditionalSelect}
-                                    name="priceAdditionalSelect"
+                                    <Select
+                                        isClearable={true}
+                                        className="text-primary"
+                                        value={priceCalculator.priceAdditionalSelect}
+                                        name="priceAdditionalSelect"
+                                        onChange={(e) =>
+                                            setPriceCalculator({
+                                                ...priceCalculator,
+                                                priceAdditionalSelect: e,
+                                            })
+                                        }
+                                        options={additionalPriceHeadTypeKeyValue}
+                                        placeholder="Select"
+                                    // isDisabled
+                                    />
+                                </div>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                    placeholder="10%"
+                                    value={priceCalculator.priceAdditionalInput}
+                                    id="priceAdditionalInput"
+                                    // onChange={handleExpandePriceChange}
                                     onChange={(e) =>
                                         setPriceCalculator({
                                             ...priceCalculator,
-                                            priceAdditionalSelect: e,
+                                            priceAdditionalInput: e.target.value,
                                         })
                                     }
-                                    options={additionalPriceHeadTypeKeyValue}
-                                    placeholder="Select"
-                                // isDisabled
                                 />
                             </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                for="exampleInputEmail1"
+                            >
+                                PRICE ESCALATON
+                            </label>
+                            <div className=" d-flex align-items-center form-control-date">
+                                <Select
+                                    className="select-input text-primary"
+                                    id="priceEscalationSelect"
+                                    options={options}
+                                    placeholder="placeholder "
+                                // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                                // value={expandedPriceCalculator.priceEscalationSelect}
+                                />
+                                <input
+                                    type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                    placeholder="20%"
+                                    id="priceEscalationInput"
+                                // defaultValue={data.itemBodyModel.priceEscalation}
+                                // value={expandedPriceCalculator.priceEscalationInput}
+                                // onChange={handleExpandePriceChange}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                for="exampleInputEmail1"
+                            >
+                                CALCULATED PRICE
+                            </label>
                             <input
                                 type="text"
-                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                placeholder="10%"
-                                value={priceCalculator.priceAdditionalInput}
-                                id="priceAdditionalInput"
-                                // onChange={handleExpandePriceChange}
-                                onChange={(e) =>
-                                    setPriceCalculator({
-                                        ...priceCalculator,
-                                        priceAdditionalInput: e.target.value,
-                                    })
-                                }
+                                className="form-control border-radius-10 text-primary"
+                                id="calculatedPrice"
+                                placeholder="0"
+                                disabled
+                                value={priceCalculator.calculatedPrice}
+                            // value={expandedPriceCalculator.calculatedPrice}
+                            // onChange={handleExpandePriceChange}
                             />
+                            {/* <div className="css-w8dmq8">*Mandatory</div> */}
                         </div>
                     </div>
                 </div>
@@ -1252,66 +1153,25 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             />
                             <input
                                 type="text"
-                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                placeholder="20%"
-                                id="priceEscalationInput"
-                            // defaultValue={data.itemBodyModel.priceEscalation}
-                            // value={expandedPriceCalculator.priceEscalationInput}
+                                className="form-control border-radius-10 text-primary"
+                                id="flatPrice"
+                                placeholder="$100"
+                            // value={expandedPriceCalculator.flatPrice}
                             // onChange={handleExpandePriceChange}
                             />
                         </div>
                     </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                        >
-                            CALCULATED PRICE
-                        </label>
-                        <input
-                            type="text"
-                            className="form-control border-radius-10 text-primary"
-                            id="calculatedPrice"
-                            placeholder="0"
-                            disabled
-                            value={priceCalculator.calculatedPrice}
-                        // value={expandedPriceCalculator.calculatedPrice}
-                        // onChange={handleExpandePriceChange}
-                        />
-                        {/* <div className="css-w8dmq8">*Mandatory</div> */}
-                    </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                        >
-                            FLAT PRICE / ADJUSTED PRICE
-                        </label>
-                        <input
-                            type="text"
-                            className="form-control border-radius-10 text-primary"
-                            id="flatPrice"
-                            placeholder="$100"
-                        // value={expandedPriceCalculator.flatPrice}
-                        // onChange={handleExpandePriceChange}
-                        />
-                    </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                        >
-                            DISCOUNT TYPE
-                        </label>
-                        <div className=" d-flex form-control-date">
-                            <div className="">
-                                {/* <Select
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                for="exampleInputEmail1"
+                            >
+                                DISCOUNT TYPE
+                            </label>
+                            <div className=" d-flex form-control-date">
+                                <div className="">
+                                    {/* <Select
                                     id="discountTypeSelect"
                                     className='text-primary'
                                     isClearable={true}
@@ -1321,36 +1181,196 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 // value={expandedPriceCalculator.discountTypeSelect}
                                 // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, discountTypeSelect: e })}
                                 /> */}
-                                <Select
-                                    value={priceCalculator.discountTypeSelect}
-                                    name="discountTypeSelect"
-                                    className="text-primary"
-                                    onChange={(e) =>
-                                        setPriceCalculator({
-                                            ...priceCalculator,
-                                            discountTypeSelect: e,
-                                        })
-                                    }
-                                    isClearable={true}
-                                    options={discountTypeOptions}
-                                    placeholder="Select"
+                                    <Select
+                                        value={priceCalculator.discountTypeSelect}
+                                        name="discountTypeSelect"
+                                        className="text-primary"
+                                        onChange={(e) =>
+                                            setPriceCalculator({
+                                                ...priceCalculator,
+                                                discountTypeSelect: e,
+                                            })
+                                        }
+                                        isClearable={true}
+                                        options={discountTypeOptions}
+                                        placeholder="Select"
+                                    />
+                                </div>
+                                <input
+                                    type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                    id="discountTypeInput"
+                                    placeholder="10%"
+                                // defaultValue={data.itemBodyModel.discountType}
+                                // value={expandedPriceCalculator.discountTypeInput}
+                                // onChange={handleExpandePriceChange}
                                 />
                             </div>
-                            <input
-                                type="text"
-                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                id="discountTypeInput"
-                                placeholder="10%"
-                            // defaultValue={data.itemBodyModel.discountType}
-                            // value={expandedPriceCalculator.discountTypeInput}
-                            // onChange={handleExpandePriceChange}
-                            />
                         </div>
                     </div>
                 </div>
+                <p className="font-size-14 text-black font-weight-500 my-3">USAGE</p>
+                <div className='row input-fields'>
+                <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                            >
+                                START USAGE
+                            </label>
+                            <div className=" d-flex form-control-date border left-select-div" style={{ borderRadius: "5px" }}>
 
+                                <input
+                                    className="form-control border-none text-primary"
+                                    type="number"
+                                    id="startUsage"
+                                    value={priceCalculator.startUsage}
+                                    onChange={(e) =>
+                                        setPriceCalculator({
+                                            ...priceCalculator,
+                                            startUsage: e.target.value,
+                                        })}
+                                // value={expandedPriceCalculator.startUsage}
+                                // onChange={handleExpandePriceChange}
+                                />
+
+                                <Select
+                                    isClearable={true}
+                                    id=""
+                                    options={optionsusage}
+                                    placeholder="Select"
+                                    className='text-primary'
+                                // value={expandedPriceCalculator.priceAdditionalSelect}
+                                // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
+                                />
+
+                            </div>
+                            <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                            >
+                                END USAGE
+                            </label>
+
+                            <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                            >
+                                <input
+                                    className="border-none form-control border-radius-10 text-primary"
+                                    type="text"
+                                    id="endUsage"
+                                    value={priceCalculator.endUsage}
+                                    onChange={(e) =>
+                                        setPriceCalculator({
+                                            ...priceCalculator,
+                                            endUsage: e.target.value,
+                                        })}
+                                // value={expandedPriceCalculator.endUsage}
+                                // onChange={handleExpandePriceChange}
+                                />
+
+                                <span className="hours-div">hours</span>
+                            </div>
+                            <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                            >
+                                FREQUENCY
+                            </label>
+                            <Select
+                                options={frequencyOptions}
+                                placeholder="Select....."
+                                className="text-primary"
+                                onChange={(e) =>
+                                    setAddPortFolioItem({
+                                        ...addPortFolioItem,
+                                        frequency: e,
+                                    })
+                                }
+                                value={addPortFolioItem.frequency}
+                            />
+                            {/* <input
+                            className="form-control border-radius-10 text-primary"
+                            type="text"
+                            id="frequency"
+                            // defaultValue={data.itemBodyModel.frequency}
+                            value={addPortFolioItem.frequency}
+                            onChange={(e) => setAddPortFolioItem({
+                                ...addPortFolioItem,
+                                frequency: e,
+                            })}
+                            autoComplete="off"
+                        /> */}
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                            >
+                                RECOMMENDED VALUE
+                            </label>
+                            <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                            >
+                                <input
+                                    type="number"
+                                    className="form-control border-none border-radius-10 text-primary"
+                                    id="recommendedValue"
+                                    // defaultValue={priceCalculator.recommendedValue}
+                                    value={priceCalculator.recommendedValue}
+                                    onChange={(e) =>
+                                        setPriceCalculator({
+                                            ...priceCalculator,
+                                            recommendedValue: e.target.value,
+                                        })}
+                                    // onChange={handleExpandePriceChange}
+                                    autoComplete="off"
+                                />
+                                <span className="hours-div text-primary">unit</span>
+                            </div>
+                            <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                            >
+                                NO. OF EVENTS
+                            </label>
+                            <input
+                                className="form-control border-radius-10 text-primary"
+                                type="text"
+                                // placeholder="Description"
+                                id="numberOfEvents"
+                                value={priceCalculator.numberOfEvents}
+                                disabled
+                            // onChange={(e) =>
+                            //     setPriceCalculator({
+                            //         ...priceCalculator,
+                            //         recommendedValue: e.target.value,
+                            //     })}
+                            // value={expandedPriceCalculator.numberOfEvents}
+                            // onChange={handleExpandePriceChange}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="text-right mb-4">
+            <div className="text-right my-3">
                 <button type="button" className="btn btn-light" onClick={(e) => handleExpandedPriceSave(e, data)}>Save</button>
             </div>
             <div className='p-3 d-flex align-items-center justify-content-between table-header-div'>
