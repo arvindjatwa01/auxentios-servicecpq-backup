@@ -94,7 +94,9 @@ import {
   portfolioItemPriceSjid,
   getSolutionPriceCommonConfig,
   getItemDataById,
+  getItemPriceData,
   portfolioSearchList,
+  updateItemPriceData,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
@@ -335,6 +337,7 @@ export const PortfolioSummary = () => {
       });
     getSearchForRecentPortfolio()
       .then((res) => {
+        console.log("getSearchForRecentPortfolio res ", res)
         setRecentPortfolio(res);
       })
 
@@ -1128,6 +1131,49 @@ export const PortfolioSummary = () => {
     console.log("editAbleBundleService is ------ ", editAbleBundleService);
     setEditBundleService(true);
     setBundleAndServiceEditAble(true)
+
+    if (editAbleBundleService.itemBodyModel.itemPrices.length > 0) {
+      const res = await getItemPriceData(editAbleBundleService.itemBodyModel.itemPrices[0].itemPriceDataId)
+      setItemPriceData(res.data);
+    } else {
+      setItemPriceData({
+        priceMethod: "",
+        currency: "",
+        priceDate: new Date(),
+        priceType: "",
+        priceAdditionalSelect: "",
+        priceAdditionalInput: "",
+        priceEscalationSelect: "",
+        discountTypeSelect: "",
+        priceEscalationInput: "",
+        flatRateIndicator: false,
+        flatPrice: "",
+        discountTypeInput: "",
+        priceBrackDownType: "",
+        priceBrackDownPercantage: "",
+        year: "",
+        noOfYear: 1,
+        startUsage: "",
+        endUsage: "",
+        usageType: "",
+        frequency: "",
+        unit: "",
+        recommendedValue: "",
+        numberOfEvents: "",
+        netPrice: 1200,
+        totalPrice: 1200,
+        listPrice: "",
+        calculatedPrice: "",
+        priceYear: "",
+        usageType: "",
+        frequency: "",
+        cycle: "",
+        suppresion: "",
+        id: "",
+        portfolioDataId: 1,
+      })
+    }
+
 
     if (editAbleBundleService.itemHeaderModel.bundleFlag === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
@@ -2560,12 +2606,92 @@ export const PortfolioSummary = () => {
     // setBundleTabs("bundleServiceAdministrative")
     setBundleTabs("bundleServicePriceCalculator")
   }
-  const getPriceCalculatorDataFun = (data) => {
+  const getPriceCalculatorDataFun = async (data) => {
 
     if (serviceOrBundlePrefix === "SERVICE") {
       setBundleTabs("bundleServiceAdministrative")
     } else if (serviceOrBundlePrefix === "BUNDLE") {
+      console.log("createdBundleItems : ", createdBundleItems)
+
+      const priceUpdateData = {
+        itemPriceDataId: data.id,
+        quantity: 0,
+        standardJobId: createdBundleItems.templateId,
+        repairKitId: createdBundleItems.repairOption,
+        templateDescription: createdBundleItems.templateId != "" ? createdBundleItems.templateDescription?.value : "",
+        repairOption: "",
+        additional: "",
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: 0,
+        priceMethod: (data.priceMethod != "EMPTY"
+          || data.priceMethod != "" ||
+          data.priceMethod != null) ?
+          data.priceMethod?.value : "EMPTY",
+        priceType: (data.priceType != "EMPTY" ||
+          data.priceType != "" ||
+          data.priceType != null) ? data.priceType?.value : "EMPTY",
+        listPrice: 0,
+        priceEscalation: "",
+        calculatedPrice: 0,
+        flatPrice: 0,
+        year: data?.year?.value,
+        noOfYear: parseInt(data?.noOfYear),
+        // year: createdBundleItems?.year?.value,
+        // noOfYear: parseInt(createdBundleItems?.noOfYear),
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        labourPrice: 0,
+        labourPriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0,
+        netService: 0,
+        additionalPriceType: (data?.priceAdditionalSelect != "EMPTY" ||
+          data?.priceAdditionalSelect != "" ||
+          data?.priceAdditionalSelect != null) ?
+          data?.priceAdditionalSelect?.value : "ABSOLUTE",
+        additionalPriceValue: data?.priceAdditionalInput,
+        discountType: (data?.discountTypeSelect != "EMPTY" ||
+          data?.discountTypeSelect != "" ||
+          data?.discountTypeSelect != null) ? data?.discountTypeSelect?.value : "EMPTY",
+        discountValue: data?.discountTypeInput,
+        recommendedValue: parseInt(data?.recommendedValue),
+        startUsage: parseInt(data?.startUsage),
+        endUsage: parseInt(data?.endUsage),
+        sparePartsEscalation: 0,
+        labourEscalation: 0,
+        miscEscalation: 0,
+        serviceEscalation: 0,
+        withBundleService: false,
+        portfolio: (data.portfolioDataId != 0) ? {
+          portfolioId: data.portfolioDataId
+        } : {},
+        tenantId: 0,
+        partsRequired: true,
+        labourRequired: true,
+        serviceRequired: false,
+        miscRequired: true,
+        inclusionExclusion: false
+      }
+
+      if ((data.id != "") ||
+        (data.id != null) ||
+        (data.id != undefined)) {
+        const updatePriceId = await updateItemPriceData(
+          data.id,
+          priceUpdateData
+        );
+      }
+
+
       setBundleTabs("bundleServiceAdministrative")
+      // console.log("priceUpdateData 2677: ", priceUpdateData)
+      // console.log("data 2678: ", data)
+
+
+
     } else {
       console.log("data 123456789 : ", data)
       setPriceCalculator(data);
@@ -2625,6 +2751,7 @@ export const PortfolioSummary = () => {
         salesOffice: "",
         offerValidity: "",
       });
+      setItemPriceData({});
 
       setQuerySearchModelPrefixOption([]);
       setSelectedPrefixOption("");
@@ -3284,7 +3411,10 @@ export const PortfolioSummary = () => {
                               </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                              <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                              <p className="font-size-12 mb-0">
+                                {/* {getFormattedDateTimeByTimeStamp(data.createdAt)} */}
+                                {getFormattedDateTimeByTimeStamp(data.updatedAt)}
+                              </p>
                               <p className="font-size-12 mb-0">Portfolio</p>
                             </div>
                           </div> : <></>
@@ -5103,6 +5233,7 @@ export const PortfolioSummary = () => {
                       setBundleServiceShow={setBundleServiceShow}
                       getPriceCalculatorDataFun={getPriceCalculatorDataFun}
                       priceCalculator={itemPriceData}
+                      createdBundleItems={createdBundleItems}
                       priceCompFlag="editAble"
                     />
                   </> :
@@ -5113,6 +5244,7 @@ export const PortfolioSummary = () => {
                         setBundleServiceShow={setBundleServiceShow}
                         getPriceCalculatorDataFun={getPriceCalculatorDataFun}
                         priceCalculator={itemPriceData}
+                        createdBundleItems={createdBundleItems}
                         priceCompFlagIs="noEditAble"
                       />
                     </>

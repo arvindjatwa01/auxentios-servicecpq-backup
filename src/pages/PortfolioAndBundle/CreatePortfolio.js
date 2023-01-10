@@ -130,7 +130,7 @@ import {
   getItemPriceData,
   createItemPriceData,
   getItemDataById,
-
+  getServiceItemsList
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -250,6 +250,7 @@ export function CreatePortfolio(props) {
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
+  const [optionalServiceListData, setOptionalServiceListData] = useState([]);
   const [currentExpendBundleServiceRow, setCurrentExpendBundleServiceRow] = useState(null);
   const [currentExpendModelComponentRow, setCurrentExpendModelComponentRow] = useState(null);
   const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
@@ -392,7 +393,10 @@ export function CreatePortfolio(props) {
   });
 
   const [optionalPopup, setOptionalPopup] = useState(false)
-  const PopupOptionalShow = () => {
+  const PopupOptionalShow = async () => {
+
+    // const optionalServicesList = await getServiceItemsList();
+    // console.log("optionalServicesList ", optionalServicesList)
     setOptionalPopup(true)
   }
 
@@ -676,6 +680,7 @@ export function CreatePortfolio(props) {
   const [tempBundleService1, setTempBundleService1] = useState([]);
   const [tempBundleService2, setTempBundleService2] = useState([]);
   const [tempBundleService3, setTempBundleService3] = useState([]);
+  const [closeExpendPopupTable, setCloseExpendPopupTable] = useState(false)
   const [componentData, setComponentData] = useState({
     componentCode: "",
     codeSuggestions: [],
@@ -5819,6 +5824,24 @@ export function CreatePortfolio(props) {
           }
         });
         setStatusOption(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getServiceItemsList()
+      .then((res) => {
+        const options = []
+        // res.map((d) => {
+        //   if (d.key != "EMPTY") {
+        //     options.push({
+        //       value: d.key,
+        //       label: d.value,
+        //     })
+        //   }
+        // });
+        // setStatusOption(options);
+        setOptionalServiceListData(res)
       })
       .catch((err) => {
         alert(err);
@@ -19077,7 +19100,29 @@ export function CreatePortfolio(props) {
         <Modal.Body>
           <div className=' p-2'>
             <div className="row">
-              <div className="col-md-6 col-sm-6">
+              {/* {optionalServiceListData.length} */}
+              {optionalServiceListData.map((serviceData, i) =>
+                <div className="col-md-6 col-sm-6">
+                  <div className="card p-4">
+                    <div className="d-flex align-items-center ">
+                      <div class="checkbox mr-3">
+                        <input type="checkbox" value=""></input>
+                      </div>
+                      <p className="mb-0 font-size-16 text-black">
+                        {/* <b>AIR FILTER REPLACEMENT</b> */}
+                        <b>{serviceData.itemName}</b>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="px-2">
+                    <p className="mb-0 font-size-14">
+                      {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
+                      {serviceData.itemHeaderDescription}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {/* <div className="col-md-6 col-sm-6">
                 <div className="card p-4">
                   <div className="d-flex align-items-center ">
                     <div class="checkbox mr-3">
@@ -19115,9 +19160,9 @@ export function CreatePortfolio(props) {
                 <div className="px-2">
                   <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
                 </div>
-              </div>
+              </div> */}
             </div>
-            <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p>
+            {/* <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p> */}
           </div>
           {/* </div>
       </div>
