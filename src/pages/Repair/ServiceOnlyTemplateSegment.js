@@ -4,10 +4,9 @@ import { faAngleDown, faPlus } from "@fortawesome/free-solid-svg-icons";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import AddIcon from "@mui/icons-material/Add";
-import { Link, useHistory } from "react-router-dom";
 import { NEW_SEGMENT } from "./CONSTANTS";
+import EditIcon from "@mui/icons-material/EditOutlined";
 import {
-  createSegment,
   fetchOperations,
 } from "services/repairBuilderServices";
 import {
@@ -17,9 +16,10 @@ import {
 import LoadingProgress from "./components/Loader";
 import SearchBox from "./components/SearchBox";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { FormControlLabel, FormGroup, Switch, Tooltip } from "@mui/material";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import { createSegmentStandardJob, fetchSegmentsStandardJob } from "services/templateService";
+
 function ServiceOnlyTemplateSegment(props) {
   const { activeElement, setActiveElement, fetchAllDetails } =
     props.templateDetails;
@@ -160,8 +160,8 @@ function ServiceOnlyTemplateSegment(props) {
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
       title:
-        currentItem.jobCodeDescription && segmentData.description
-          ? currentItem.jobCodeDescription + " " + segmentData.description
+        currentItem.description && segmentData.description
+          ? currentItem.description + " " + segmentData.description
           : "",
     });
     setSearchJobCodeResults([]);
@@ -194,7 +194,7 @@ function ServiceOnlyTemplateSegment(props) {
       description: currentItem.description,
       title:
         segmentData.jobCodeDescription && currentItem.description
-          ? segmentData.jobCodeDescription + " - " + currentItem.description
+          ? segmentData.jobCodeDescription + " " + currentItem.description
           : "",
     });
     setSearchCompCodeResults([]);
@@ -221,7 +221,6 @@ function ServiceOnlyTemplateSegment(props) {
         );
         populateOperations(segmentToLoad[0].id);
       }
-
       setSegmentData({
         ...segmentToLoad[0],
         header: formatSegmentHeader(segmentToLoad[0]),
@@ -266,7 +265,7 @@ function ServiceOnlyTemplateSegment(props) {
           header: formatSegmentHeader(result),
         });
         // fetchSegmentsOfBuilder();
-        segments[segments.length - 1] = result;
+        segments[result.segmentNumber - 1] = result;
         setShowAddNewButton(true);
         setSegmentViewOnly(true);
         handleSnack(
@@ -287,14 +286,16 @@ function ServiceOnlyTemplateSegment(props) {
 
   const handleCancelSegment = () => {
     if (segments.length > 1) {
-      segments.splice(
-        segments.findIndex((a) => a.header === NEW_SEGMENT),
-        1
-      );
-      setSegmentData({
-        ...segments[segments.length - 1],
-        header: formatSegmentHeader(segments[segments.length - 1]),
-      });
+      if (segmentData.header === NEW_SEGMENT) {
+        segments.splice(
+          segments.findIndex((a) => a.header === NEW_SEGMENT),
+          1
+        );
+        setSegmentData({
+          ...segments[segments.length - 1],
+          header: formatSegmentHeader(segments[segments.length - 1]),
+        });
+      }
       setShowAddNewButton(true);
       setSegmentViewOnly(true);
     } else {
@@ -336,7 +337,7 @@ function ServiceOnlyTemplateSegment(props) {
             >
               <KeyboardArrowRightIcon />
             </button>
-            {showAddNewButton &&
+            {/* {showAddNewButton &&
               ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
                 -1 && (
                 <button
@@ -348,27 +349,27 @@ function ServiceOnlyTemplateSegment(props) {
                   </span>
                   Add New Segment
                 </button>
-              )}
+              )} */}
           </div>
         </div>
         <h5 className="d-flex align-items-center mb-0">
           <div className="" style={{ display: "contents" }}>
             <span className="mr-3 white-space">{segmentData.header}</span>
-            {/* <a
-              href={undefined}
-              className="btn-sm"
-              style={{ cursor: "pointer" }}
-            >
-              <i
-                className="fa fa-pencil"
-                aria-hidden="true"
-                onClick={() =>
-                  ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1
-                    ? makeHeaderEditable()
-                    : handleSnack("info", "Builder is active!")
-                }
-              ></i>
-            </a>{" "} */}
+            <div className="btn-sm cursor">
+              <Tooltip title="Edit">
+                <EditIcon
+                  onClick={() =>
+                    ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
+                    -1
+                      ? makeHeaderEditable()
+                      : handleSnack(
+                          "info",
+                          "Active TEMPLATE cannot be changed, change status to REVISE"
+                        )
+                  }
+                />
+              </Tooltip>
+            </div>
           </div>
           <div className="hr"></div>
         </h5>

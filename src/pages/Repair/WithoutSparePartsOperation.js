@@ -5,7 +5,6 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
 import { AddOperation, fetchOperations } from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,
@@ -21,7 +20,6 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 function WithoutSparePartsOperation(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
 
-  const history = useHistory();
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -33,7 +31,6 @@ function WithoutSparePartsOperation(props) {
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
-  const [builderStatus, setBuilderStatus] = useState("");
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -59,7 +56,6 @@ function WithoutSparePartsOperation(props) {
   const fetchOperationsOfSegment = () => {
     setOperationLoading(true);
     if (activeElement.sId) {
-      setBuilderStatus(activeElement.builderStatus);
       fetchOperations(activeElement.sId)
         .then((result) => {
           if (result?.length > 0) {
@@ -68,12 +64,11 @@ function WithoutSparePartsOperation(props) {
             setOperations(result);
             setOperationViewOnly(true);
             // Default last operation or selected operation for back traverse from service estimate
-            let opToLoad = operationData?.id ? 
-            
-              result.filter((x) => x.id === operationData.id)[0] :
-              (activeElement.oId
-                ? result.filter((x) => x.id === activeElement.oId)[0]
-                : result[result.length - 1]);
+            let opToLoad = operationData?.id
+              ? result.filter((x) => x.id === operationData.id)[0]
+              : activeElement.oId
+              ? result.filter((x) => x.id === activeElement.oId)[0]
+              : result[result.length - 1];
 
             setOperationData({
               ...opToLoad,
@@ -99,6 +94,7 @@ function WithoutSparePartsOperation(props) {
           setOperationLoading(false);
         });
     } else {
+      setOperationLoading(false);
       handleSnack("error", "Not a valid segment!");
     }
   };
@@ -237,8 +233,8 @@ function WithoutSparePartsOperation(props) {
     };
     AddOperation(sid, data)
       .then((result) => {
-        fetchOperationsOfSegment(); 
-        
+        fetchOperationsOfSegment();
+
         // setOperationData({
         //   ...operationData,
         //   operationNumber: result.operationNumber,
@@ -274,7 +270,7 @@ function WithoutSparePartsOperation(props) {
 
   const handleCancelOperation = () => {
     if (operations.length > 1) {
-      if(operationData.header === NEW_OPERATION){
+      if (operationData.header === NEW_OPERATION) {
         operations.splice(
           operations.findIndex((a) => a.header === NEW_OPERATION),
           1
@@ -289,8 +285,7 @@ function WithoutSparePartsOperation(props) {
             " - " +
             operations[operations.length - 1].description,
         });
-        
-      } 
+      }
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
@@ -334,7 +329,8 @@ function WithoutSparePartsOperation(props) {
               <KeyboardArrowRightIcon />
             </button>
             {showAddNewButton &&
-              ["DRAFT", "REVISED"].indexOf(builderStatus) > -1 && (
+              ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                -1 && (
                 <button
                   className="btn-no-border ml-2"
                   onClick={loadNewOperationUI}

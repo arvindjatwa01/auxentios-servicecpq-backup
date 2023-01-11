@@ -13,8 +13,9 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
-import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { FormControlLabel, FormGroup, Switch, Tooltip } from "@mui/material";
 import { ReadOnlyField } from "./components/ReadOnlyField";
+import EditIcon from "@mui/icons-material/EditOutlined";
 
 function ServiceOnlyTemplateOperation(props) {
   const { activeElement, setActiveElement } = props.templateDetails;
@@ -62,9 +63,12 @@ function ServiceOnlyTemplateOperation(props) {
             setOperations(result);
             setOperationViewOnly(true);
             // Default last operation or selected operation for back traverse from service estimate
-            let opToLoad = activeElement.oId
-              ? result.filter((x) => x.id === activeElement.oId)[0]
-              : result[result.length - 1];
+            let opToLoad = operationData?.id ? 
+            
+              result.filter((x) => x.id === operationData.id)[0] :
+              (activeElement.oId
+                ? result.filter((x) => x.id === activeElement.oId)[0]
+                : result[result.length - 1]);
 
             setOperationData({
               ...opToLoad,
@@ -72,7 +76,9 @@ function ServiceOnlyTemplateOperation(props) {
                 "Operation " +
                 formatOperationNum(opToLoad.operationNumber) +
                 " - " +
-                opToLoad.description, //Rename after modifications in UI
+                opToLoad.jobCodeDescription +
+                " " +
+                opToLoad.componentCodeDescription, //Rename after modifications in UI
             });
           } else {
             loadNewOperationUI();
@@ -186,9 +192,9 @@ function ServiceOnlyTemplateOperation(props) {
         ...operationToLoad[0],
         header:
           "Operation " +
-          formatOperationNum(operationToLoad[0].operationNumber) +
+          formatOperationNum(operationToLoad[0]?.operationNumber) +
           " - " +
-          operationToLoad[0].description, //Rename once changed in API
+          operationToLoad[0]?.description, //Rename once changed in API
       });
     } else if (direction === "forward") {
       let operationToLoad = [];
@@ -217,6 +223,7 @@ function ServiceOnlyTemplateOperation(props) {
   const handleCreateOperation = () => {
     let sid = activeElement?.sId;
     let data = {
+      ...(operationData.id && { id: operationData.id }),
       jobCode: operationData.jobCode,
       jobCodeDescription: operationData.jobCodeDescription,
       componentCode: operationData.componentCode,
@@ -226,18 +233,20 @@ function ServiceOnlyTemplateOperation(props) {
     };
     AddOperation(sid, data)
       .then((result) => {
-        setOperationData({
-          ...operationData,
-          operationNumber: result.operationNumber,
-          description: result.description,
-          id: result.id,
-          header:
-            "Operation " +
-            formatOperationNum(result.operationNumber) +
-            " - " +
-            result.description, //Rename to description once API is changed
-        });
-        operations[operations.length - 1] = result;
+        fetchOperationsOfSegment(); 
+        
+        // setOperationData({
+        //   ...operationData,
+        //   operationNumber: result.operationNumber,
+        //   // description: result.description,
+        //   id: result.id,
+        //   header:
+        //     "Operation " +
+        //     formatOperationNum(result.operationNumber) +
+        //     " - " +
+        //     result.description, //Rename to description once API is changed
+        // });
+        // console.log(operationData)
         setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(
@@ -255,23 +264,29 @@ function ServiceOnlyTemplateOperation(props) {
     operations.push(newOperation);
     setShowAddNewButton(false);
   };
+  const makeHeaderEditable = () => {
+    if (operationViewOnly) setOperationViewOnly(false);
+  };
 
   const handleCancelOperation = () => {
     if (operations.length > 1) {
-      operations.splice(
-        operations.findIndex((a) => a.header === NEW_OPERATION),
-        1
-      );
-      setOperationData({
-        ...operations[operations.length - 1],
-        header:
-          "Operation " +
-          formatOperationNum(
-            operations[operations.length - 1].operationNumber
-          ) +
-          " - " +
-          operations[operations.length - 1].description,
-      });
+      if(operationData.header === NEW_OPERATION){
+        operations.splice(
+          operations.findIndex((a) => a.header === NEW_OPERATION),
+          1
+        );
+        setOperationData({
+          ...operations[operations.length - 1],
+          header:
+            "Operation " +
+            formatOperationNum(
+              operations[operations.length - 1].operationNumber
+            ) +
+            " - " +
+            operations[operations.length - 1].description,
+        });
+        
+      } 
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
@@ -329,7 +344,7 @@ function ServiceOnlyTemplateOperation(props) {
             >
               <KeyboardArrowRightIcon />
             </button>
-            {showAddNewButton &&
+            {/* {showAddNewButton &&
               ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
                 -1 && (
                 <button
@@ -341,12 +356,27 @@ function ServiceOnlyTemplateOperation(props) {
                   </span>
                   Add New Operation
                 </button>
-              )}
+              )} */}
           </div>
         </div>
         <h5 className="d-flex align-items-center mb-0">
           <div className="" style={{ display: "contents" }}>
             <span className="mr-3 white-space">{operationData.header}</span>
+            <div className="btn-sm cursor">
+              <Tooltip title="Edit">
+                <EditIcon
+                  onClick={() =>
+                    ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
+                    -1
+                      ? makeHeaderEditable()
+                      : handleSnack(
+                          "info",
+                          "Active TEMPLATE cannot be changed, change status to REVISE"
+                        )
+                  }
+                />
+              </Tooltip>
+            </div>
           </div>
           <div className="hr"></div>
         </h5>
@@ -451,7 +481,7 @@ function ServiceOnlyTemplateOperation(props) {
                         COMPONENT CODE DESCRIPTION
                       </label>
                       <input
-                        type="email"
+                        type="text"
                         class="form-control border-radius-10"
                         value={operationData.componentCodeDescription}
                         placeholder="Auto Filled"
