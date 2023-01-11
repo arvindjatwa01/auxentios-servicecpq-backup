@@ -26,6 +26,7 @@ import {
   FONT_STYLE_UNIT_SELECT,
   LIFE_STAGE_OPTIONS,
   OPTIONS_USAGE,
+  QUOTE_OPTIONS,
   STATUS_OPTIONS,
   TEMPLATE_VERSION_OPTIONS,
 } from "./CONSTANTS";
@@ -101,6 +102,7 @@ function ServiceOnlyTemplates(props) {
     await updateTemplateStatus(templateDBId, e.value)
       .then((result) => {
         setSelTemplateStatus(e);
+        setActiveElement({ ...activeElement, templateStatus: e.value });
         handleSnack("success", "Status has been updated!");
       })
       .catch((err) => {
@@ -178,9 +180,10 @@ function ServiceOnlyTemplates(props) {
   const handleClose = () => setOpen(false);
   const [open, setOpen] = React.useState(false);
   const handleClick = (event) => {
-    console.log("event", event);
     setAnchorEl(event.currentTarget);
-    setOpen(true);
+    if (selTemplateStatus?.value !== "ACTIVE")
+      handleSnack("info", "Set active status to do “convert to”");
+    else setOpen(true);
   };
   const [anchorEl, setAnchorEl] = React.useState(null);
   // Retrieve price methods
@@ -302,7 +305,7 @@ function ServiceOnlyTemplates(props) {
         result.priceMethod !== ""
           ? true
           : false,
-      usageViewOnly: result.application ? true : false
+      usageViewOnly: result.application ? true : false,
     });
     setRating(result.rating);
     setSelTemplateStatus(
@@ -390,12 +393,7 @@ function ServiceOnlyTemplates(props) {
     setValue(newValue);
   };
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
-  const options = [
-    { value: "chocolate", label: "Construction-Heavy" },
-    { value: "strawberry", label: "Construction-Low" },
-    { value: "vanilla", label: "Construction-Medium" },
-    { value: "Construction", label: "Construction" },
-  ];
+
   const [masterData, setMasterData] = useState([]);
   // Coverage search based on model and serial number
   const handleCoverageModelSearch = async (searchfieldName, searchText) => {
@@ -860,7 +858,7 @@ function ServiceOnlyTemplates(props) {
   };
 
   const handleCoverageCheckBoxData = () => {
-    let data = []; 
+    let data = [];
     filterMasterData.map((coverage) =>
       data.push({
         model: coverage.model,
@@ -1041,10 +1039,14 @@ function ServiceOnlyTemplates(props) {
                         class="fa fa-pencil"
                         style={{ cursor: "pointer" }}
                         onClick={() =>
-                          selTemplateStatus?.value === "DRAFT" ||
-                          selTemplateStatus?.value === "REVISED"
+                          ["DRAFT", "REVISED"].indexOf(
+                            selTemplateStatus?.value
+                          ) > -1
                             ? makeHeaderEditable()
-                            : handleSnack("info", "Set revised status to modify active templates")
+                            : handleSnack(
+                                "info",
+                                "Set revised status to modify active templates"
+                              )
                         }
                       ></i>
                     </a>{" "}
@@ -2299,7 +2301,7 @@ function ServiceOnlyTemplates(props) {
               templateDetails={{
                 activeElement,
                 setActiveElement,
-                fetchAllDetails
+                fetchAllDetails,
               }}
             />
           )}
@@ -2361,7 +2363,7 @@ function ServiceOnlyTemplates(props) {
                       <Select
                         defaultValue={selectedOption}
                         onChange={setSelectedOption}
-                        options={options}
+                        options={QUOTE_OPTIONS}
                         placeholder="Cyclical"
                       />
                     </div>

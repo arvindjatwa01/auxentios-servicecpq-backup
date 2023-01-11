@@ -282,6 +282,13 @@ export const CONS_EXT_PRICE_OPTIONS = [
   },
 ];
 
+export const QUOTE_OPTIONS = [
+  { value: "QuoteType1", label: "Quote Type 1" },
+  { value: "QuoteType2", label: "Quote Type 2" },
+  { value: "QuoteType3", label: "Quote Type 3" },
+  { value: "QuoteType4", label: "Quote Type 4" },
+];
+
 export const CONSEXT_PRICE_OPTIONS_NOLABOR = [
   {
     value: "LIST",

@@ -95,6 +95,7 @@ import {
   GRID_STYLE,
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
+  QUOTE_OPTIONS,
   SPAREPART_SEARCH_Q_OPTIONS,
   STATUS_OPTIONS,
 } from "./CONSTANTS";
@@ -1097,12 +1098,6 @@ function PartList(props) {
       });
   };
 
-  const options = [
-    { value: "chocolate", label: "Construction-Heavy" },
-    { value: "strawberry", label: "Construction-Low" },
-    { value: "vanilla", label: "Construction-Medium" },
-    { value: "Construction", label: "Construction" },
-  ];
   const currencyOptions = [{ value: "USD", label: "USD" }];
 
   //Logic to handle status changes
@@ -1139,16 +1134,18 @@ function PartList(props) {
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = (event) => {
-    // console.log("event", event);
     setAnchorEl(event.currentTarget);
-    setOpen(true);
+    if(selBuilderStatus?.value !== "ACTIVE")
+      handleSnack('info','Set active status to do “convert to”');
+    else
+      setOpen(true);
   };
   const handleCreate = () => {
     history.push("/quoteTemplate");
   };
 
   const handleCreateKIT = () => {
-    if (selBuilderStatus?.value === "ACTIVE") {
+    // if (selBuilderStatus?.value === "ACTIVE") {
       const data = {
         description: kitDescription,
         reference: kitReference,
@@ -1180,9 +1177,9 @@ function PartList(props) {
         .catch((e) => {
           handleSnack("error", "Conversion to KIt has been failed!");
         });
-    } else {
-      handleSnack("warning", "Partlist is not active yet!");
-    }
+    // } else {
+    //   handleSnack("warning", "Partlist is not active yet!");
+    // }
   };
 
   const handleQuerySearchClick = async () => {
@@ -1655,7 +1652,7 @@ function PartList(props) {
                           ? makeHeaderEditable()
                           : handleSnack(
                               "info",
-                              "Active BUILDER cannot be changed, change status to REVISE"
+                              "Set revised status to modify active partlists"
                             )
                       }
                     />
@@ -2780,7 +2777,6 @@ function PartList(props) {
               onFilterModelChange={onPartsFilterChange}
               onRowEditStop={(e) => setBulkUpdateProgress(false)}
               paginationMode="server"
-              autoHeight
               loading={partsLoading}
               rowsPerPageOptions={[5, 10, 20]}
               pagination
@@ -3249,7 +3245,7 @@ function PartList(props) {
                       <Select
                         defaultValue={selectedOption}
                         onChange={setSelectedOption}
-                        options={options}
+                        options={QUOTE_OPTIONS}
                         placeholder="Cyclical"
                       />
                     </div>

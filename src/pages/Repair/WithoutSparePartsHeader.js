@@ -45,7 +45,7 @@ import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT, STATUS_OPTIONS } from "./CONSTANTS";
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT, QUOTE_OPTIONS, STATUS_OPTIONS } from "./CONSTANTS";
 import { useAppSelector } from "app/hooks";
 import {
   selectDropdownOption,
@@ -183,7 +183,7 @@ function WithoutSparePartsHeader(props) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [value, setValue] = useState("customer");
-  const open = Boolean(anchorEl);
+  const [open, setOpen] = useState(false);
   // Retrieve price methods
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
@@ -685,20 +685,18 @@ function WithoutSparePartsHeader(props) {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    if(selBuilderStatus?.value !== "ACTIVE")
+      handleSnack('info','Set active status to do “convert to”');
+    else
+      setOpen(true);
   };
   const handleClose = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
 
   const handleCreate = () => {
     history.push("/quoteTemplate");
   };
-  const options = [
-    { value: "Archived", label: "Archived" },
-    { value: "Draft", label: "Draft" },
-    { value: "Active", label: "Active" },
-    { value: "Revised", label: "Revised" },
-  ];
 
   const handleResetData = (action) => {
     if (action === "RESET") {
@@ -736,7 +734,7 @@ function WithoutSparePartsHeader(props) {
   };
 
   const handleCreateTemplate = () => {
-    if (selBuilderStatus?.value === "ACTIVE") {
+    // if (selBuilderStatus?.value === "ACTIVE") {
       const data = {
         description: templateDescription,
         reference: templateReference,
@@ -764,9 +762,9 @@ function WithoutSparePartsHeader(props) {
           handleSnack("error", "Conversion to Standard Job has been failed!");
           setTemplateOpen(false);
         });
-    } else {
-      handleSnack("warning", "Builder is not active yet!");
-    }
+    // } else {
+    //   handleSnack("warning", "Builder is not active yet!");
+    // }
   };
 
   const createVersion = async (versionDesc) => {
@@ -976,7 +974,7 @@ function WithoutSparePartsHeader(props) {
                           ? makeHeaderEditable()
                           : handleSnack(
                               "info",
-                              "Active BUILDER cannot be changed, change status to REVISE"
+                              "Set revised status to modify active builders"
                             )
                       }
                     />
@@ -2140,7 +2138,7 @@ function WithoutSparePartsHeader(props) {
                       <Select
                         defaultValue={selectedOption}
                         onChange={setSelectedOption}
-                        options={options}
+                        options={QUOTE_OPTIONS}
                         placeholder="Cyclical"
                       />
                     </div>

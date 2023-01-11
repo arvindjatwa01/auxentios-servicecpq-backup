@@ -583,7 +583,9 @@ function ServiceOnlyTemplateEstimation(props) {
             // type: miscTypeList.find(
             //   (element) => element.value === resultMisc.type
             // ),
-            type: miscTypeList.filter(function(element){ return resultMisc.type?.includes(element.value)}),
+            type: miscTypeList.filter(function (element) {
+              return resultMisc.type?.includes(element.value);
+            }),
             totalPrice: resultMisc.totalPrice ? resultMisc.totalPrice : 0,
           });
           setMiscViewOnly(true);
@@ -608,7 +610,10 @@ function ServiceOnlyTemplateEstimation(props) {
         setExtWorkViewOnly(false);
       else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
     } else {
-      handleSnack("info", "Active Template cannot be changed, change status to REVISE!");
+      handleSnack(
+        "info",
+        "Active Template cannot be changed, change status to REVISE!"
+      );
     }
   };
   // Search Vendors
@@ -842,7 +847,7 @@ function ServiceOnlyTemplateEstimation(props) {
   const updateMiscHeader = () => {
     // console.log(miscData.type);
     let miscTypes = [];
-    miscData.type?.map(element => miscTypes.push(element.value));
+    miscData.type?.map((element) => miscTypes.push(element.value));
     let data = {
       ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
@@ -879,101 +884,137 @@ function ServiceOnlyTemplateEstimation(props) {
 
   // Add or Update Labor Item
   const addLaborItem = () => {
-    let data = {
-      // ...labourItemData,
-      ...(labourItemData.id && { id: labourItemData.id }),
-      chargeCode: labourItemData.chargeCode?.value,
-      laborType: labourItemData.laborType?.value,
-      serviceType: labourItemData.serviceType?.value,
-      unitOfMeasure: labourItemData.unitOfMeasure?.value,
-      estimatedHours: labourItemData.estimatedHours,
-      comment: labourItemData.comment,
-      travelIncluded: labourItemData.travelIncluded,
-      travelCharge: labourItemData.travelCharge,
-      inspectionIncluded: labourItemData.inspectionIncluded,
-      inspectionCharge: labourItemData.inspectionCharge,
-      currency: labourItemData.currency,
-    };
+    if (activeElement?.templateStatus === 'ACTIVE') {
+      handleSnack(
+        "warning",
+        "Labor item cannot be altered for active documents, reset document status to revise to carry out the activity."
+      );
+    } else {
 
-    AddLaborItemToLabor(labourData.id, data)
-      .then((result) => {
-        setLabourItemData(initialLaborItemData);
-        // populateLaborItems(labourData);
-        // populateLaborData(serviceEstimateData);
-        populateServiceEstimation("labor");
-        handleSnack("success", "Added labor item successfully");
-      })
-      .catch((err) => {
-        handleSnack("error", "Error occurred while adding labor item!");
-      });
+      if(labourData.id) {
+      let data = {
+        // ...labourItemData,
+        ...(labourItemData.id && { id: labourItemData.id }),
+        chargeCode: labourItemData.chargeCode?.value,
+        laborType: labourItemData.laborType?.value,
+        serviceType: labourItemData.serviceType?.value,
+        unitOfMeasure: labourItemData.unitOfMeasure?.value,
+        estimatedHours: labourItemData.estimatedHours,
+        comment: labourItemData.comment,
+        travelIncluded: labourItemData.travelIncluded,
+        travelCharge: labourItemData.travelCharge,
+        inspectionIncluded: labourItemData.inspectionIncluded,
+        inspectionCharge: labourItemData.inspectionCharge,
+        currency: labourItemData.currency,
+      };
+
+      AddLaborItemToLabor(labourData.id, data)
+        .then((result) => {
+          setLabourItemData(initialLaborItemData);
+          // populateLaborItems(labourData);
+          // populateLaborData(serviceEstimateData);
+          populateServiceEstimation("labor");
+          handleSnack("success", "Added labor item successfully");
+        })
+        .catch((err) => {
+          handleSnack("error", "Error occurred while adding labor item!");
+        });
+      } else {
+        handleSnack("warning", "Please update the labor header details!");
+      }
+    }
     handleLaborItemClose();
   };
 
   // Add or Update Consumable Item
   const addConsumableItem = () => {
-    if (consumableData.id) {
-      let data = {
-        // ...consumableItemData,
-        ...(consumableItemData.id && { id: consumableItemData.id }),
-        consumableType: consumableItemData.consumableType?.value,
-        supplyingVendorCode: consumableItemData.supplyingVendorCode,
-        supplyingVendorName: consumableItemData.supplyingVendorName,
-        consumableCode: consumableItemData.consumableCode,
-        description: consumableItemData.description,
-        quantity: consumableItemData.quantity,
-        unitOfMeasure: consumableItemData.unitOfMeasure,
-        usagePercentage: consumableItemData.usagePercentage,
-        // vendor: consumableItemData.vendor,
-        currency: consumableItemData.currency,
-      };
-
-      AddConsumableItem(consumableData.id, data)
-        .then((result) => {
-          setConsumableItemData(initialConsumableItemData);
-          // populateConsItems(consumableData);
-          // populateConsumableData(serviceEstimateData);
-          populateServiceEstimation("consumable");
-          handleSnack("success", "Added consumable item successfully");
-        })
-        .catch((err) => {
-          handleSnack("error", "Error occurred while adding consumable item!");
-        });
-      handleConsumableItemClose();
-      setQueryConsSearchSelector(initialConsQuery);
+    if (activeElement?.templateStatus === "ACTIVE") {
+      handleSnack(
+        "warning",
+        "consumable items cannot be altered for active documents, reset document status to revise to carry out the activity."
+      );
     } else {
-      handleSnack("warning", "Please update the consumable header details!");
+      if (consumableData.id) {
+        let data = {
+          // ...consumableItemData,
+          ...(consumableItemData.id && { id: consumableItemData.id }),
+          consumableType: consumableItemData.consumableType?.value,
+          supplyingVendorCode: consumableItemData.supplyingVendorCode,
+          supplyingVendorName: consumableItemData.supplyingVendorName,
+          consumableCode: consumableItemData.consumableCode,
+          description: consumableItemData.description,
+          quantity: consumableItemData.quantity,
+          unitOfMeasure: consumableItemData.unitOfMeasure,
+          usagePercentage: consumableItemData.usagePercentage,
+          // vendor: consumableItemData.vendor,
+          currency: consumableItemData.currency,
+        };
+
+        AddConsumableItem(consumableData.id, data)
+          .then((result) => {
+            setConsumableItemData(initialConsumableItemData);
+            // populateConsItems(consumableData);
+            // populateConsumableData(serviceEstimateData);
+            populateServiceEstimation("consumable");
+            handleSnack("success", "Added consumable item successfully");
+          })
+          .catch((err) => {
+            handleSnack(
+              "error",
+              "Error occurred while adding consumable item!"
+            );
+          });
+      } else {
+        handleSnack("warning", "Please update the consumable header details!");
+      }
     }
+    handleConsumableItemClose();
+    setQueryConsSearchSelector(initialConsQuery);
   };
 
   // Add or Update Consumable Item
   const addExtWorkItem = () => {
-    let data = {
-      // ...extWorkItemData,
-      ...(extWorkItemData.id && { id: extWorkItemData.id }),
-      activityId: extWorkItemData.activityId?.value,
-      activityName: extWorkItemData.activityName,
-      description: extWorkItemData.description,
-      supplyingVendorCode: extWorkItemData.supplyingVendorCode,
-      supplyingVendorName: extWorkItemData.supplyingVendorName,
-      estimatedHours: extWorkItemData.estimatedHours,
-      dimensions: extWorkItemData.dimensions?.value,
-      ...(extWorkItemData.adjustedPrice && {
-        adjustedPrice: extWorkItemData.adjustedPrice,
-      }),
-      unitOfMeasure: extWorkItemData.unitOfMeasure?.value,
-    };
+    if (activeElement?.templateStatus === "ACTIVE") {
+      handleSnack(
+        "warning",
+        "External work items cannot be altered for active documents, reset document status to revise to carry out the activity."
+      );
+    } else {
+      if(extWorkData.id){
+      let data = {
+        // ...extWorkItemData,
+        ...(extWorkItemData.id && { id: extWorkItemData.id }),
+        activityId: extWorkItemData.activityId?.value,
+        activityName: extWorkItemData.activityName,
+        description: extWorkItemData.description,
+        supplyingVendorCode: extWorkItemData.supplyingVendorCode,
+        supplyingVendorName: extWorkItemData.supplyingVendorName,
+        estimatedHours: extWorkItemData.estimatedHours,
+        dimensions: extWorkItemData.dimensions?.value,
+        ...(extWorkItemData.adjustedPrice && {
+          adjustedPrice: extWorkItemData.adjustedPrice,
+        }),
+        unitOfMeasure: extWorkItemData.unitOfMeasure?.value,
+      };
 
-    AddExtWorkItem(extWorkData.id, data)
-      .then((result) => {
-        setExtWorkItemData(initialExtWorkItemData);
-        // populateExtWorkItems(extWorkData);
-        // populateExtWorkData(serviceEstimateData);
-        populateServiceEstimation("extwork");
-        handleSnack("success", "Added ext work item successfully");
-      })
-      .catch((err) => {
-        handleSnack("error", "Error occurred while adding external work item!");
-      });
+      AddExtWorkItem(extWorkData.id, data)
+        .then((result) => {
+          setExtWorkItemData(initialExtWorkItemData);
+          // populateExtWorkItems(extWorkData);
+          // populateExtWorkData(serviceEstimateData);
+          populateServiceEstimation("extwork");
+          handleSnack("success", "Added ext work item successfully");
+        })
+        .catch((err) => {
+          handleSnack(
+            "error",
+            "Error occurred while adding external work item!"
+          );
+        });
+      } else {
+        handleSnack("warning", "Please update the external work header details!");
+      }
+    }
     setQueryExtSearchSelector(initialExtWorkQuery);
     handleExtWorkItemClose();
   };
@@ -1457,7 +1498,7 @@ function ServiceOnlyTemplateEstimation(props) {
       ) : (
         <div>
           <div className="card p-4 mt-5">
-	    <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
               <div className="" style={{ display: "contents" }}>
                 <span
                   className="mr-3 ml-2 text-white"
@@ -1499,7 +1540,6 @@ function ServiceOnlyTemplateEstimation(props) {
                     <ReviewAddIcon />
                   </Tooltip>
                 </div>
-               
               </div>
             </h5>
 
@@ -1648,7 +1688,7 @@ function ServiceOnlyTemplateEstimation(props) {
                       />
                     </div>
                   </div>
-		  <div className="col-md-4 col-sm-4">
+                  <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
                       <FormGroup>
                         <FormControlLabel
@@ -3192,8 +3232,13 @@ function ServiceOnlyTemplateEstimation(props) {
                             />
                             <ReadOnlyField
                               label="TYPE OF MISC."
-                              value={<>{miscData.type?.map(element => <div>{element.label}</div>)}</>}
-                              
+                              value={
+                                <>
+                                  {miscData.type?.map((element) => (
+                                    <div>{element.label}</div>
+                                  ))}
+                                </>
+                              }
                               className="col-md-4 col-sm-4"
                             />
                             {!miscData.flatRateIndicator ? (

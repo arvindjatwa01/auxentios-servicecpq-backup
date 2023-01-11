@@ -73,6 +73,7 @@ import {
   GRID_STYLE,
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
+  QUOTE_OPTIONS,
   SPAREPART_SEARCH_Q_OPTIONS,
   STATUS_OPTIONS,
   TEMPLATE_VERSION_OPTIONS,
@@ -156,7 +157,7 @@ function Kits(props) {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [coverageMasterData, setCoverageMasterData] = useState([])
+  const [coverageMasterData, setCoverageMasterData] = useState([]);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -197,7 +198,7 @@ function Kits(props) {
 
   const handleVersionKit = async (e) => {
     handleSnack("info", "Version Update API needs to be created for KIT!");
-    
+
     await updateKITVersion(kitDBId, e.value)
       .then((result) => {
         setVersion(e);
@@ -519,7 +520,7 @@ function Kits(props) {
       .catch((e) => {
         handleSnack("error", "Error occurred while adding the coverage!");
       });
-      setCoverageMasterData([]);
+    setCoverageMasterData([]);
   };
 
   // Select model from the search result
@@ -745,13 +746,6 @@ function Kits(props) {
     });
     setSelectedCoverageData(result.coverages);
   };
-
-  const options = [
-    { value: "chocolate", label: "Construction-Heavy" },
-    { value: "strawberry", label: "Construction-Low" },
-    { value: "vanilla", label: "Construction-Medium" },
-    { value: "Construction", label: "Construction" },
-  ];
 
   // Search table column for spareparts
   const columnsPartListSearch = [
@@ -1276,7 +1270,9 @@ function Kits(props) {
   const handleClick = (event) => {
     console.log("event", event);
     setAnchorEl(event.currentTarget);
-    setOpen(true);
+    if (selKITStatus?.value !== "ACTIVE")
+      handleSnack("info", "Set active status to do “convert to”");
+    else setOpen(true);
   };
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -1451,10 +1447,12 @@ function Kits(props) {
                   <Tooltip title="Edit">
                     <EditIcon
                       onClick={() =>
-                        selKITStatus?.value === "DRAFT" ||
-                        selKITStatus?.value === "REVISED"
+                        ["DRAFT", "REVISED"].indexOf(selKITStatus?.value) > -1
                           ? makeHeaderEditable()
-                          : handleSnack("info", "Builder is active!")
+                          : handleSnack(
+                              "info",
+                              "Set revised status to modify active kits"
+                            )
                       }
                     />
                   </Tooltip>
@@ -2568,8 +2566,7 @@ function Kits(props) {
               filterMode="server"
               onFilterModelChange={onPartsFilterChange}
               onRowEditStop={(e) => setBulkUpdateProgress(false)}
-              paginationMode="server"
-              autoHeight
+              paginationMode="server"              
               loading={partsLoading}
               rowsPerPageOptions={[5, 10, 20]}
               pagination
@@ -3040,7 +3037,7 @@ function Kits(props) {
                       <Select
                         defaultValue={selectedOption}
                         onChange={setSelectedOption}
-                        options={options}
+                        options={QUOTE_OPTIONS}
                         placeholder="Cyclical"
                       />
                     </div>
