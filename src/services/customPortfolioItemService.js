@@ -90,7 +90,7 @@ export const getcustomItemPriceById = (id) => {
         .get(`${CREATE_CUSTOM_PRICE()}/${id}`, { headers: headersdata })
         .then((res) => {
           console.log("getcustomItemPriceById > axios res=", res);
-          resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getcustomItemPriceById > axios err=", err);

@@ -200,7 +200,8 @@ export const getSearchForRecentSolutionPortfolio = () => {
         // console.log("GET_RECENT_SOLUTION_PORTFOLIO_LIST", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
         try {
             axios
-                .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+                // .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+                .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "/recent", { headers: headersdata })
                 .then((res) => {
                     console.log("getSearchForRecentSolutionPortfolio > axios res=", res);
                     resolve(res.data);

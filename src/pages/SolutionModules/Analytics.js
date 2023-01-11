@@ -3104,7 +3104,10 @@ export const Analytics = () => {
                                     </div>
                                     <div className="d-flex justify-content-between align-items-center mt-2">
                                        {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                                       <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(solutionData.createdAt)} </p>
+                                       <p className="font-size-12 mb-0">
+                                          {/* {getFormattedDateTimeByTimeStamp(solutionData.createdAt)} */}
+                                          {getFormattedDateTimeByTimeStamp(solutionData.updatedAt)}
+                                       </p>
                                        <p className="font-size-12 mb-0">Portfolio Solution</p>
                                     </div>
                                  </div>
