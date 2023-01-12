@@ -136,8 +136,6 @@ function Kits(props) {
   const [searchResultOpen, setSearchResultOpen] = useState(false);
   const [partsLoading, setPartsLoading] = useState(false);
   const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
-  const [file, setFile] = useState(null);
-  const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [searchCoverageModelResults, setSearchCoverageModelResults] = useState(
     []
@@ -157,6 +155,7 @@ function Kits(props) {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  const [savedKITHeaderDetails, setSavedKITHeaderDetails] = useState([]);
   const [coverageMasterData, setCoverageMasterData] = useState([]);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -216,8 +215,8 @@ function Kits(props) {
     value: "DRAFT",
     label: "Draft",
   });
-  // Update the status of the builder : Active, Revised etc.
-  const handleBuilderStatus = async (e) => {
+  // Update the status of the KIT : Active, Revised etc.
+  const handleKITStatus = async (e) => {
     await updateKITStatus(kitDBId, e.value)
       .then((result) => {
         setSelKITStatus(e);
@@ -227,40 +226,8 @@ function Kits(props) {
         handleSnack("error", `Failed to update the status!`);
       });
   };
-  const [partListNo, setPartListNo] = useState("");
-  const handleReadFile = (file) => {
-    // e.preventDefault();
-    if (file) {
-      setFile(file);
-    }
-  };
-
-  // const handleUploadClick = () => {
-  //   if (Object.values(viewOnlyTab).every((item) => item === true))
-  //     setFileUploadOpen(true);
-  //   else handleSnack("info", "Please save all the header details!");
-  // };
-  //Uplaod spare parts through excel sheet
-  const handleUploadFile = async () => {
-    // console.log("Upload");
-    const form = new FormData();
-    form.append("file", file);
-    // await uploadPartsToPartlist(partListNo, form)
-    //   .then((result) => {
-    //     // fetchPartsOfPartlist(partListNo, page, pageSize);
-    //     handleSnack(
-    //       "success",
-    //       `New parts have been uploaded to the partlist: ${partListId}`
-    //     );
-    //     if (result) {
-    //       fetchAllDetails(builderId, generalData.version);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     handleSnack("error", `Failed to upload the parts!`);
-    //   });
-    setFileUploadOpen(false);
-  };
+  // const [partListNo, setPartListNo] = useState("");
+  
   const [rating, setRating] = useState(null);
   const [headerLoading, setHeaderLoading] = useState(false);
   const [partListId, setPartListId] = useState("");
@@ -444,7 +411,7 @@ function Kits(props) {
     } else {
       updateKITCustomer(kitDBId, data)
         .then((result) => {
-          // setValue("machine");
+          setSavedKITHeaderDetails(result);
           setValue("estimation");
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           handleSnack("success", "Customer details updated!");
@@ -534,6 +501,18 @@ function Kits(props) {
     }
   };
 
+  const handleResetData = (action) => {
+    if (action === "RESET") {
+      value === "customer" && populateCustomerData(savedKITHeaderDetails);
+      value === "general" && populateGeneralData(savedKITHeaderDetails);
+      value === "estimation" && populateEstData(savedKITHeaderDetails);
+      value === "price" && populatePricingData(savedKITHeaderDetails);
+    } else if (action === "CANCEL") {
+      populateHeader(savedKITHeaderDetails);
+    }
+    // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+  };
+
   const fetchPartsOfPartlist = async (partlistDBId, pageNo, rowsPerPage) => {
     setPartsLoading(true);
     setPage(pageNo);
@@ -586,6 +565,7 @@ function Kits(props) {
     };
     updateKITGeneralDet(kitDBId, data)
       .then((result) => {
+        setSavedKITHeaderDetails(result);
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
         handleSnack("success", "General details updated!");
@@ -610,6 +590,7 @@ function Kits(props) {
     };
     updateKITEstimation(kitDBId, data)
       .then((result) => {
+        setSavedKITHeaderDetails(result);
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
         handleSnack("success", "Estimation details updated!");
@@ -635,6 +616,7 @@ function Kits(props) {
     };
     updateKITPrice(kitDBId, data)
       .then((result) => {
+        setSavedKITHeaderDetails(result);
         // fetchAllDetails(kitDBId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
 
@@ -671,11 +653,18 @@ function Kits(props) {
         priceViewOnly: false,
       });
   };
+  function addOneYear(date) {
+    // Making a copy with the Date() constructor
+    const dateCopy = date ? new Date(date) : new Date();  
+    dateCopy.setFullYear(dateCopy.getFullYear() + 1);  
+    return dateCopy;    
+  }
 
   const populateHeader = (result) => {
+    setSavedKITHeaderDetails(result);
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
-      generalViewOnly: result.estimationDate ? true : false,
+      generalViewOnly: result.application ? true : false,
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
         result.priceMethod !== "EMPTY" &&
@@ -692,59 +681,77 @@ function Kits(props) {
       )
     );
 
-    setCustomerData({
-      customerID: result.customerId,
-      contactEmail: result.contactEmail,
-      contactName: result.contactName,
-      contactPhone: result.contactPhone,
-      customerGroup: result.customerGroup,
-      customerName: result.customerName,
-      source: result.source ? result.source : "User Generated",
-      customerSegment: result.customerSegment,
-      country: result.country,
-      regionOrState: result.regionOrState,
-    });
+    populateCustomerData(result);
+    populateGeneralData(result);
+    populateEstData(result);
+    populatePricingData(result);
+    setSelectedCoverageData(result.coverages);
+  };
 
+  const populateCustomerData = (result) => {
+    setCustomerData({
+      customerID: result.customerId ? result.customerId : "",
+      contactEmail: result.contactEmail ? result.contactEmail : "",
+      contactName: result.contactName ? result.contactName : "",
+      contactPhone: result.contactPhone ? result.contactPhone : "",
+      customerGroup: result.customerGroup ? result.customerGroup : "",
+      customerName: result.customerName ? result.customerName : "",
+      source: result.source ? result.source : "User Generated",
+      customerSegment: result.customerSegment ? result.customerSegment : "",
+      country: result.country ? result.country : "",
+      regionOrState: result.regionOrState ? result.regionOrState : "",
+    });
+    setSearchCustResults([]);
+  };
+  
+  const populateGeneralData = (result) => {
     setGeneralData({
-      description: result.description,
+      description: result.description ? result.description : "",
       estimationDate: result.estimationDate
         ? result.estimationDate
         : new Date(),
-      estimationNo: result.estimationNumber,
-      reference: result.reference,
-      version: result.version,
-      application: APPLICATION_OPTIONS.find(
+      estimationNo: result.estimationNumber ? result.estimationNumber : "",
+      reference: result.reference ? result.reference : "",     
+      version: result.version ? result.version : "",
+      application: result.application? APPLICATION_OPTIONS.find(
         (element) => element.value === result.application
-      ),
-      owner: result.owner,
+      ): { label: "", value: "" },
+      owner: result.owner ? result.owner : "",
       validFrom: result.validFrom ? result.validFrom : new Date(),
       validTo: result.validTo ? result.validTo : new Date(),
-      revisionDate: result.revisionDate
-        ? result.revisionDate
-        : new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // Change it to created date + 1 year once API is ready
+      revisionDate: result.revisionDate? result.revisionDate : addOneYear(result.validFrom)
     });
+  };
+  const populateEstData = (result) => {
+
     setEstimationData({
-      approvedBy: result.approver,
-      preparedBy: result.preparedBy,
+      approvedBy: result.approver ? result.approver : "",
+      preparedBy: result.preparedBy ? result.preparedBy : "",
       preparedOn: result.preparedOn ? result.preparedOn : new Date(),
-      revisedBy: result.revisedBy,
+      revisedBy: result.revisedBy ? result.revisedBy : "",
       revisedOn: result.revisedOn ? result.revisedOn : new Date(),
-      salesOffice: salesOfficeOptions.find(
-        (element) => element.value === result.salesOffice
-      ),
+      salesOffice: result.salesOffice
+        ? salesOfficeOptions.find(
+            (element) => element.value === result.salesOffice
+          )
+        : { label: "", value: "" },
     });
+  };
+  const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod: priceMethodOptions.find(
-        (element) => element.value === result.priceMethod
-      ),
+      priceMethod:
+        result.priceMethod && result.priceMethod !== "EMPTY"
+          ? priceMethodOptions.find(
+              (element) => element.value === result.priceMethod
+            )
+          : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
-      currency: currencyOptions.find(
-        (element) => element.value === result.currency
-      ),
+      currency: result.currency
+        ? currencyOptions.find((element) => element.value === result.currency)
+        : { label: "", value: "" },
     });
-    setSelectedCoverageData(result.coverages);
   };
 
   // Search table column for spareparts
@@ -849,7 +856,7 @@ function Kits(props) {
           <GridActionsCellItem
             icon={
               <div className=" cursor">
-                <Tooltip title="Reset">
+                <Tooltip title="Delete">
                   <img className="m-1" src={deleteIcon} alt="Delete" />
                 </Tooltip>
               </div>
@@ -1287,6 +1294,7 @@ function Kits(props) {
     // coverageRowData.fleetSize = undefined;
     updateKITCoverage(kitDBId, [coverageRowData])
       .then((res) => {
+        setSavedKITHeaderDetails(res);
         setSelectedCoverageData(res.coverages);
         handleSnack("success", "Coverages updated successfully");
         setUpdateCoverageModalOpen(false);
@@ -1324,7 +1332,7 @@ function Kits(props) {
                 <div className="ml-3">
                   <Select
                     className="customselectbtn"
-                    onChange={(e) => handleBuilderStatus(e)}
+                    onChange={(e) => handleKITStatus(e)}
                     options={STATUS_OPTIONS}
                     value={selKITStatus}
                   />
@@ -1458,8 +1466,8 @@ function Kits(props) {
                   </Tooltip>
                 </div>
                 <div className="btn-sm cursor text-white">
-                  <Tooltip title="Edit">
-                    <ReplayIcon />
+                  <Tooltip title="Reset">
+                    <ReplayIcon onClick={() => handleResetData("RESET")}/>
                   </Tooltip>
                 </div>
               </div>
@@ -1602,6 +1610,13 @@ function Kits(props) {
                           className="row"
                           style={{ justifyContent: "right" }}
                         >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
@@ -1804,6 +1819,13 @@ function Kits(props) {
                           className="row"
                           style={{ justifyContent: "right" }}
                         >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
@@ -2130,6 +2152,13 @@ function Kits(props) {
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
                             onClick={updateGeneralData}
                             disabled={
                               !generalData.estimationDate ||
@@ -2340,6 +2369,13 @@ function Kits(props) {
                           className="row"
                           style={{ justifyContent: "right" }}
                         >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
                           <button
                             type="button"
                             className="btn btn-light bg-primary text-white"
@@ -2605,143 +2641,6 @@ function Kits(props) {
             setPartFieldViewonly={setPartFieldViewonly}
             handleSnack={handleSnack}
           />
-
-          <Modal
-            show={fileUploadOpen}
-            onHide={() => setFileUploadOpen(false)}
-            size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header>
-              <Modal.Title>Import Files</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="p-0">
-              <div className="p-3">
-                <div className="add-new-recod">
-                  <div>
-                    <FontAwesomeIcon
-                      className="cloudupload"
-                      icon={faCloudUploadAlt}
-                    />
-                    <h6 className="font-weight-500 mt-3">
-                      Drag and drop files to upload <br /> or
-                    </h6>
-                    <FileUploader
-                      handleChange={handleReadFile}
-                      name="file"
-                      types={["xls", "xlsx"]}
-                      onClick={(event) => {
-                        event.currentTarget.value = null;
-                      }}
-                    />
-                  </div>
-                </div>
-                <p className="mt-3">
-                  Single upload file should not be more than 10MB. Only the
-                  .xls, .xlsx file types are allowed
-                </p>
-              </div>
-              <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Checkbox defaultChecked />}
-                            label=""
-                          />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      <a href="#" className="ml-2">
-                        <MuiMenuComponent options={activityOptions} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel control={<Checkbox />} label="" />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      <a href="#" className="ml-2">
-                        <MuiMenuComponent options={activityOptions} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-              </div>
-            </Modal.Body>
-            <div className="row m-0 p-3">
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn border w-100 bg-white"
-                  onClick={() => setFileUploadOpen(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={handleUploadFile}
-                  style={{ cursor: "pointer" }}
-                >
-                  <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
-                  Upload
-                </button>
-              </div>
-            </div>
-          </Modal>
 
           {/* comment below code on 12/08 */}
         </div>

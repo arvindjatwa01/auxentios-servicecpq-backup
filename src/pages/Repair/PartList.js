@@ -203,7 +203,7 @@ function PartList(props) {
   // const [rating, setRating] = useState(null);
   const [pageSize, setPageSize] = useState(5);
   const [page, setPage] = useState(0);
-  const [savedHeaderDetails, setSavedBuilderDetails] = useState([]);
+  const [savedBuilderHeaderDetails, setSavedBuilderHeaderDetails] = useState([]);
   const [tagClicked, setTagClicked] = useState("");
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
@@ -408,7 +408,7 @@ function PartList(props) {
   }, [sortDetail, filterQuery]);
 
   const populateHeader = (result) => {
-    setSavedBuilderDetails(result);
+    setSavedBuilderHeaderDetails(result);
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
       machineViewOnly: result.serialNo ? true : false,
@@ -745,7 +745,7 @@ function PartList(props) {
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
-          setSavedBuilderDetails(result);
+          setSavedBuilderHeaderDetails(result);
           setValue("machine");
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           handleSnack(
@@ -786,7 +786,7 @@ function PartList(props) {
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
-        setSavedBuilderDetails(result);
+        setSavedBuilderHeaderDetails(result);
         setValue("estimation");
         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
         handleSnack("success", "Machine details updated!");
@@ -807,7 +807,7 @@ function PartList(props) {
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
-        setSavedBuilderDetails(result);
+        setSavedBuilderHeaderDetails(result);
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
         handleSnack("success", "General details updated!");
@@ -832,7 +832,7 @@ function PartList(props) {
     };
     updateBuilderEstimation(bId, data)
       .then((result) => {
-        setSavedBuilderDetails(result);
+        setSavedBuilderHeaderDetails(result);
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
         handleSnack("success", "Estimation details updated!");
@@ -858,7 +858,7 @@ function PartList(props) {
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
-        setSavedBuilderDetails(result);
+        setSavedBuilderHeaderDetails(result);
         fetchAllDetails(builderId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
 
@@ -1248,13 +1248,13 @@ function PartList(props) {
 
   const handleResetData = (action) => {
     if (action === "RESET") {
-      value === "customer" && populateCustomerData(savedHeaderDetails);
-      value === "machine" && populateMachineData(savedHeaderDetails);
-      value === "general" && populateGeneralData(savedHeaderDetails);
-      value === "estimation" && populateEstData(savedHeaderDetails);
-      value === "price" && populatePricingData(savedHeaderDetails);
+      value === "customer" && populateCustomerData(savedBuilderHeaderDetails);
+      value === "machine" && populateMachineData(savedBuilderHeaderDetails);
+      value === "general" && populateGeneralData(savedBuilderHeaderDetails);
+      value === "estimation" && populateEstData(savedBuilderHeaderDetails);
+      value === "price" && populatePricingData(savedBuilderHeaderDetails);
     } else if (action === "CANCEL") {
-      populateHeader(savedHeaderDetails);
+      populateHeader(savedBuilderHeaderDetails);
     }
     // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
   };

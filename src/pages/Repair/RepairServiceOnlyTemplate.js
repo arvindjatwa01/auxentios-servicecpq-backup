@@ -22,6 +22,7 @@ import Moment from "react-moment";
 import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
 import { COLOR_BRONZE, COLOR_GOLD, COLOR_SILVER, GRID_STYLE, TEMPLATE_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { createBuilder } from "services/repairBuilderServices";
 
 export const RepairServiceOnlyTemplate = () => {
   const [recentTemplates, setRecentTemplates] = useState([]);
@@ -219,6 +220,33 @@ export const RepairServiceOnlyTemplate = () => {
     });
   };
 
+  const createNewBuilder = () => {
+    let builderDetails = {
+      builderId: "",
+      bId: "",
+      type: "new",
+    };
+    createBuilder({
+      builderType: "BUILDER_WITHOUT_SPAREPART",
+      activeVersion: true,
+      versionNumber: 1,
+      status: "DRAFT",
+    })
+      .then((result) => {
+        builderDetails.builderId = result.builderId;
+        builderDetails.bId = result.id;
+
+        history.push({
+          pathname: "/RepairWithoutSpareParts/BuilderDetails",
+          state: builderDetails,
+        });
+      })
+      .catch((err) => {
+        console.log("Error Occurred", err);
+        handleSnack("error", "Error occurred while creating builder!");
+      });
+  };
+
   // Once opetion has been selected clear the search results
   const clearFilteredData = () => {
     setMasterData([]);
@@ -237,16 +265,15 @@ export const RepairServiceOnlyTemplate = () => {
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Service Only Templates</h5>
             <div>
-              <Link
-                to="/RepairWithoutSpareParts"
-                style={{ cursor: "pointer" }}
+              <button
+                onClick={createNewBuilder}
                 className="btn bg-primary text-white"
               >
                 <span className="mr-2">
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
                 Create New<span className="ml-2"></span>
-              </Link>
+              </button>
             </div>
           </div>
 

@@ -28,6 +28,7 @@ import {
   KIT_SEARCH_Q_OPTIONS,
 } from "./CONSTANTS";
 import { repairActions } from "./dropdowns/repairSlice";
+import { addPartlist, createBuilder } from "services/repairBuilderServices";
 
 export const RepairKits = () => {
   const [recentKits, setRecentKits] = useState([]);
@@ -190,7 +191,46 @@ export const RepairKits = () => {
   const [masterData, setMasterData] = useState([]);
 
   const history = useHistory();
+  const createNewBuilder = () => {
+    let builderDetails = {
+      builderId: "",
+      bId: "",
+      partListNo: "",
+      partListId: "",
+      type: "new",
+    };
+    createBuilder({
+      builderType: "PARTLIST",
+      activeVersion: true,
+      versionNumber: 1,
+      status: "DRAFT",
+    })
+      .then((result) => {
+        builderDetails.builderId = result.builderId;
+        builderDetails.bId = result.id;
 
+        addPartlist(result.id, {
+          activeVersion: true,
+          versionNumber: 1,
+        })
+          .then((partlistResult) => {
+            builderDetails.partListNo = partlistResult.id;
+            builderDetails.partListId = partlistResult.partlistId;
+            history.push({
+              pathname: "/RepairPartList/PartList",
+              state: builderDetails,
+            });
+          })
+          .catch((err) => {
+            console.log("Error Occurred", err);
+            handleSnack("error", "Error occurred while creating partlist!");
+          });
+      })
+      .catch((err) => {
+        console.log("Error Occurred", err);
+        handleSnack("error", "Error occurred while creating builder!");
+      });
+  };
   function versionColor(versionType) {
     console.log(versionType);
     if (versionType === "BRONZE") return COLOR_BRONZE;
@@ -236,16 +276,15 @@ export const RepairKits = () => {
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Kits</h5>
             <div>
-              <Link
-                to="/RepairPartList"
-                style={{ cursor: "pointer" }}
+            <button
+                onClick={createNewBuilder}
                 className="btn bg-primary text-white"
               >
                 <span className="mr-2">
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
                 Create New<span className="ml-2"></span>
-              </Link>
+              </button>
             </div>
           </div>
 
