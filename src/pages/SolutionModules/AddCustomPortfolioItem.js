@@ -49,6 +49,7 @@ import {
   updatePortfolio,
   portfolioSearch,
   itemSearch,
+  customPriceCreation
 } from "../../services/index";
 
 const AddCustomPortfolioItem = (props) => {
@@ -149,7 +150,7 @@ const AddCustomPortfolioItem = (props) => {
     startUsage: "",
     endUsage: "",
     usageType: "",
-    withBundleService: false,
+    withBundleService: true,
   });
 
   const [administrative, setAdministrative] = useState({
@@ -256,10 +257,19 @@ const AddCustomPortfolioItem = (props) => {
   const initFetch = () => {
     getTaskTypeKeyValue()
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setBundleItemTaskTypeKeyValue(options);
       })
       .catch((err) => {
@@ -268,10 +278,19 @@ const AddCustomPortfolioItem = (props) => {
 
     getUsageCategoryKeyValue()
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setCategoryUsageKeyValue(options);
       })
       .catch((err) => {
@@ -280,10 +299,19 @@ const AddCustomPortfolioItem = (props) => {
 
     getTypeKeyValue()
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setTypeKeyValue(options);
       })
       .catch((err) => {
@@ -292,10 +320,19 @@ const AddCustomPortfolioItem = (props) => {
 
     getMachineTypeKeyValue()
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
+        const options = []
+        res.map((d) => {
+          if (d.key != "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
         setMachineTypeKeyValue(options);
       })
       .catch((err) => {
@@ -353,10 +390,22 @@ const AddCustomPortfolioItem = (props) => {
         },
         // repairOption: { label: repairOption, value: repairOption },
         repairOption: repairOption,
+        withBundleService: props.passItemEditRowData.customItemHeaderModel.withBundleService,
       });
 
+      if (props.setBundleServiceNeed != undefined) {
+        if (props.passItemEditRowData.customItemHeaderModel.withBundleService) {
+          // props.setBundleServiceNeed(props.passItemEditRowData.customItemHeaderModel.withBundleService)
+          props.setBundleServiceNeed(true)
+        } else {
+          // props.setBundleServiceNeed(!props.passItemEditRowData.customItemHeaderModel.withBundleService)
+          props.setBundleServiceNeed(false)
+        }
+      }
+
+      console.log("2132546576786787 : ", props.passItemEditRowData.customItemHeaderModel.withBundleService)
+
       setBundleFlagType(props.passItemEditRowData.customItemHeaderModel.bundleFlag);
-      console.log("2132546576786787 : ", props.passItemEditRowData.customItemBodyModel.customItemPrices)
       if ((props.passItemEditRowData.customItemBodyModel.customItemPrices != null)) {
         if (props.passItemEditRowData.customItemBodyModel.customItemPrices.length > 0) {
           ItemPriceDataFetchById();
@@ -601,7 +650,7 @@ const AddCustomPortfolioItem = (props) => {
               throw "Please Create Solution First, then you can Add Item";
             }
             if (noNeedBundleService) {
-              props.setTabs("5");
+              props.setTabs("4");
               props.getAddPortfolioItemDataFun(addPortFolioItem);
             } else {
               props.setTabs("2");
@@ -612,8 +661,64 @@ const AddCustomPortfolioItem = (props) => {
 
           if ((props.compoFlag === "BUNDLE")) {
 
+
+            // ================= Old Todo ============== //
+            // const newPriceObj = {
+            //   itemPriceDataId: 0,
+            //   quantity: 0,
+            //   standardJobId: addPortFolioItem.templateId,
+            //   repairKitId: addPortFolioItem.repairOption,
+            //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+            //   repairOption: "",
+            //   additional: "",
+            //   partListId: "",
+            //   serviceEstimateId: "",
+            //   numberOfEvents: 0,
+            //   priceMethod: "EMPTY",
+            //   priceType: "EMPTY",
+            //   listPrice: 0,
+            //   priceEscalation: "",
+            //   calculatedPrice: 0,
+            //   flatPrice: 0,
+            //   year: addPortFolioItem.year?.value,
+            //   noOfYear: parseInt(addPortFolioItem.noOfYear),
+            //   sparePartsPrice: 0,
+            //   sparePartsPriceBreakDownPercentage: 0,
+            //   servicePrice: 0,
+            //   labourPrice: 0,
+            //   labourPriceBreakDownPercentage: 0,
+            //   miscPrice: 0,
+            //   miscPriceBreakDownPercentage: 0,
+            //   totalPrice: 0,
+            //   netService: 0,
+            //   additionalPriceType: "ABSOLUTE",
+            //   additionalPriceValue: 0,
+            //   discountType: "EMPTY",
+            //   discountValue: 0,
+            //   recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+            //   startUsage: parseInt(addPortFolioItem.startUsage),
+            //   endUsage: parseInt(addPortFolioItem.endUsage),
+            //   sparePartsEscalation: 0,
+            //   labourEscalation: 0,
+            //   miscEscalation: 0,
+            //   serviceEscalation: 0,
+            //   withBundleService: false,
+            //   portfolio: {
+            //     portfolioId: 1
+            //   },
+            //   tenantId: 0,
+            //   partsRequired: true,
+            //   labourRequired: true,
+            //   serviceRequired: false,
+            //   miscRequired: true,
+            //   inclusionExclusion: false
+            // }
+            // const itemPriceData = await createItemPriceData(newPriceObj)
+
+            // ================= Old Todo End ============== //
+
             const newPriceObj = {
-              itemPriceDataId: 0,
+              customItemPriceDataId: 0,
               quantity: 0,
               standardJobId: addPortFolioItem.templateId,
               repairKitId: addPortFolioItem.repairOption,
@@ -652,20 +757,17 @@ const AddCustomPortfolioItem = (props) => {
               miscEscalation: 0,
               serviceEscalation: 0,
               withBundleService: false,
-              portfolio: {
+              customPortfolio: {
                 portfolioId: 1
               },
               tenantId: 0,
               partsRequired: true,
               labourRequired: true,
-              serviceRequired: false,
               miscRequired: true,
+              serviceRequired: false,
               inclusionExclusion: false
             }
-
-
-
-            const itemPriceData = await createItemPriceData(newPriceObj)
+            const itemPriceData = await customPriceCreation(newPriceObj)
             props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data);
           }
 
@@ -835,19 +937,173 @@ const AddCustomPortfolioItem = (props) => {
     $(`.scrollbar-model`).css("display", "none");
   };
 
-  const handleAddPortfolioSave = () => {
+  const handleAddPortfolioSave = async () => {
 
-    if (props.compoFlag === "ITEM") {
-      props.setTabs("2");
-      props.getAddportfolioItemDataFun(addPortFolioItem);
-    } else {
-      if (props.compoFlag === "itemEdit") {
+    try {
+      if (props.compoFlag === "ITEM") {
+        if ((props.portfolioDataId == "") ||
+          (props.portfolioDataId == undefined)) {
+          props.itemModelShow(false)
+          throw "Please Create Solution First, then you can Add Item";
+        }
+      }
+
+      if (addPortFolioItem.repairOption == "") {
+        throw "you can’t leave blank related Kit field";
+      }
+
+      if ((props.compoFlag === "ITEM")) {
+
+        if ((props.portfolioDataId == "") ||
+          (props.portfolioDataId == undefined)) {
+          props.itemModelShow(false)
+          throw "Please Create Solution First, then you can Add Item";
+        }
+
+        if (noNeedBundleService) {
+          props.setTabs("4");
+          props.getAddPortfolioItemDataFun(addPortFolioItem);
+        } else {
+          props.setTabs("2");
+          props.getAddPortfolioItemDataFun(addPortFolioItem);
+        }
+
+      } else if ((props.compoFlag === "itemEdit") &&
+        (props.compoFlagTest === "itemEditPort")) {
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+      } else if ((props.compoFlag === "itemEdit") &&
+        (props.compoFlagTest === "itemEditBundle")) {
         props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
       } else {
-        props.getAddportfolioItemData(addPortFolioItem);
-        props.setBundleTabs("3");
+
+
+        // ================= Old Todo ============== //
+
+        // const rObj = {
+        //   itemPriceDataId: 0,
+        //   quantity: addPortFolioItem.quantity,
+        //   startUsage: addPortFolioItem.startUsage,
+        //   endUsage: addPortFolioItem.endUsage,
+        //   standardJobId: addPortFolioItem.templateId,
+        //   repairKitId: addPortFolioItem.repairOption,
+        //   templateDescription: addPortFolioItem.templateDescription,
+        //   repairOption: "",
+        //   additional: "",
+        //   partListId: "",
+        //   serviceEstimateId: "",
+        //   numberOfEvents: addPortFolioItem.numberOfEvents,
+        //   priceMethod: "LIST_PRICE",
+        //   priceType: "FIXED",
+        //   listPrice: 0,
+        //   priceEscalation: "",
+        //   calculatedPrice: 0,
+        //   flatPrice: 0,
+        //   discountType: "",
+        //   year: addPortFolioItem.year?.value,
+        //   noOfYear: addPortFolioItem.noOfYear,
+        //   sparePartsPrice: 0,
+        //   sparePartsPriceBreakDownPercentage: 0,
+        //   servicePrice: 0,
+        //   labourPrice: 0,
+        //   labourPriceBreakDownPercentage: 0,
+        //   miscPrice: 0,
+        //   miscPriceBreakDownPercentage: 0,
+        //   totalPrice: 0,
+        //   netService: 0,
+        //   portfolio: {
+        //     portfolioId: 1
+        //   },
+        //   tenantId: 0,
+        //   partsRequired: true,
+        //   serviceRequired: false,
+        //   labourRequired: true,
+        //   miscRequired: true
+        // }
+        // const itemPriceData = await createItemPriceData(rObj)
+
+        // ================= Old Todo End ============== //
+
+        const rObj = {
+          customItemPriceDataId: 0,
+          quantity: 0,
+          standardJobId: addPortFolioItem.templateId,
+          repairKitId: addPortFolioItem.repairOption,
+          templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          priceMethod: "EMPTY",
+          priceType: "EMPTY",
+          listPrice: 0,
+          priceEscalation: "",
+          calculatedPrice: 0,
+          flatPrice: 0,
+          year: addPortFolioItem.year?.value,
+          noOfYear: parseInt(addPortFolioItem.noOfYear),
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0,
+          netService: 0,
+          additionalPriceType: "ABSOLUTE",
+          additionalPriceValue: 0,
+          discountType: "EMPTY",
+          discountValue: 0,
+          recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+          startUsage: parseInt(addPortFolioItem.startUsage),
+          endUsage: parseInt(addPortFolioItem.endUsage),
+          sparePartsEscalation: 0,
+          labourEscalation: 0,
+          miscEscalation: 0,
+          serviceEscalation: 0,
+          withBundleService: addPortFolioItem.withBundleService,
+          customPortfolio: {
+            portfolioId: 1
+          },
+          tenantId: 0,
+          partsRequired: true,
+          labourRequired: true,
+          miscRequired: true,
+          serviceRequired: false,
+          inclusionExclusion: true
+        }
+
+        const itemPriceData = await customPriceCreation(rObj)
+
+        props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
+        props.setBundleTabs("bundleServicePriceCalculator");
       }
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
+
+    // if (props.compoFlag === "ITEM") {
+    //   props.setTabs("2");
+    //   props.getAddportfolioItemDataFun(addPortFolioItem);
+    // } else {
+    //   if (props.compoFlag === "itemEdit") {
+    //     props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+    //   } else {
+    //     props.getAddportfolioItemData(addPortFolioItem);
+    //     props.setBundleTabs("3");
+    //   }
+    // }
 
     // if (props.compoFlag === "itemEdit") {
     //   props.handleItemEditSave(addPortFolioItem);
