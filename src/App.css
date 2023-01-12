@@ -91,7 +91,7 @@ em {
 
 .header-right .icons>a {
   padding: 0 0.3125rem;
-  color: #424242;
+  color: #ffffff;
   font-style: normal;
   font-weight: 500;
   font-size: 13px;
@@ -192,7 +192,7 @@ h5 {
   height: 100%;
   display: flex;
   align-items: center;
-  border-left: 1px solid #cfcfcf;
+  /* border-left: 1px solid #cfcfcf; */
   padding: 0 15px;
   text-align: center;
   justify-content: center;
@@ -679,7 +679,7 @@ button:focus {
 }
 
 [data-nav-headerbg="color_1"] .nav-header {
-  background-color: #ffffff;
+  background-color: #000000;
 
 }
 
@@ -3563,7 +3563,7 @@ button.bg-primary:hover {
 .logo-servicecpq {}
 
 .logo-servicecpq .cls-1 {
-  fill: #58595b;
+  fill: #ffffff;
 }
 
 .logo-servicecpq .cls-2 {
@@ -3856,3 +3856,4 @@ color: #fff !important;}
 .width-p .customDropdown .dropdown-menu.show {
   min-width: 167px !important;
 }
+.bg-white{background-color: #ffffff !important;}

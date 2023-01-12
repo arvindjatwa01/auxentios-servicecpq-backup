@@ -51,13 +51,13 @@ export function HeaderComponent(props) {
   }, []);
   return (
     <>
-      <div className="header">
-        <div className="header-content clearfix" style={{ display: "none" }}>
-          {/* <div className="nav-control">
+      <div className="header" style={{backgroundColor: "#000000"}}>
+        {/* <div className="header-content clearfix" style={{ display: "none" }}>
+          <div className="nav-control">
                     <div className="hamburger">
                         <span className="toggle-icon"><i className="icon-menu"></i></span>
                     </div>
-                </div> */}
+                </div>
           <div className="header-left">
             <div className="input-group icons">
               <div className="input-group-prepend">
@@ -90,7 +90,6 @@ export function HeaderComponent(props) {
               <li className="icons dropdown">
                 <a className="header-li-text" href="#" data-toggle="dropdown">
                   <img src={notificationIcon}></img>
-                  {/* <span className="badge badge-pill gradient-2">3</span> */}
                   <div className="li-contant">Notifications</div>
                 </a>
                 <div className="drop-down animated fadeIn dropdown-menu dropdown-notfication">
@@ -173,7 +172,6 @@ export function HeaderComponent(props) {
                   data-toggle="dropdown"
                 >
                   <img src={messageIcon}></img>
-                  {/* <span className="badge badge-pill gradient-1">3</span> */}
                   <div className="li-contant">Messages</div>
                 </a>
                 <div className="drop-down animated fadeIn dropdown-menu">
@@ -268,26 +266,11 @@ export function HeaderComponent(props) {
                 </div>
               </li>
 
-              {/* <li className="icons dropdown d-none d-md-flex">
-                            <a href="javascript:void(0)" className="log-user" data-toggle="dropdown">
-                                <span>English</span>  <i className="fa fa-angle-down f-s-14" aria-hidden="true"></i>
-                            </a>
-                            <div className="drop-down dropdown-language animated fadeIn  dropdown-menu">
-                                <div className="dropdown-content-body">
-                                    <ul>
-                                        <li><a href="javascript:void()">English</a></li>
-                                        <li><a href="javascript:void()">Dutch</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </li> */}
-
               <li className="icons dropdown">
                 <div
                   className="header-li-text c-pointer position-relative"
                   data-toggle="dropdown"
                 >
-                  {/* <span className="activity active"></span> */}
                   <img src={profileIcon}></img>
 
                   <div className="li-contant">
@@ -339,23 +322,15 @@ export function HeaderComponent(props) {
               </li>
             </ul>
           </div>
-        </div>
+        </div> */}
         <div className="header-content clearfix">
           <div className="header-right">
             <ul className="clearfix">
-              <li className="icons" style={{ border: "none" }}>
+              <li className="icons" style={{ display: "none" }}>
                 <div
                   className="input-group"
                   style={{ border: "1px solid #cfcfcf", borderRadius: "5px" }}
                 >
-                  {/* <div className="input-group-prepend">
-                    <span
-                      className="input-group-text bg-transparent border-0 pr-0 "
-                      id="basic-addon1"
-                    >
-                      <img src={shearchIcon}></img>
-                    </span>
-                  </div> */}
 
                   {/* <div className="">
                   
@@ -670,8 +645,8 @@ export function HeaderComponent(props) {
                 >
                   {/* <img src={notificationIcon}></img> */}
                   {/* <span className="badge badge-pill gradient-2">3</span> */}
-                  <div><SearchIcon className="text-primary" style={{fontSize:"45px"}}/></div>
-                  <div className="li-contant">Search</div>
+                  <div><SearchIcon className="text-white" style={{fontSize:"45px"}}/></div>
+                  {/* <div className="li-contant">Search</div> */}
                 </a>
                 <div className="drop-down animated fadeIn dropdown-menu dropdown-notfication p-0 border-radius-1" style={{minWidth: "600px !important"}}>
                   {/* <div className="dropdown-content-heading ">
@@ -978,7 +953,7 @@ export function HeaderComponent(props) {
                     id="Layer_1"
                     data-name="Layer 1"
                     xmlns="http://www.w3.org/2000/svg"
-                    fill="#9226ff"
+                    fill="#ffffff"
                     width="24px"
                     viewBox="0 0 137.07438 145.84033"
                   >
@@ -987,7 +962,7 @@ export function HeaderComponent(props) {
                       d="M136.35156,120.63428l-14.707-21.04566c-.04882-.07031-.11132-.12475-.16406-.19116V69.679A53.02648,53.02648,0,0,0,83.24169,18.82983a15.16182,15.16182,0,1,0-29.41162.00049A53.02533,53.02533,0,0,0,15.59374,69.679V101.6333L.85107,120.459a4.00523,4.00523,0,0,0,3.15429,6.47486H45.98193a22.90637,22.90637,0,0,0,45.10888,0h41.978a4.00533,4.00533,0,0,0,3.28272-6.29956ZM61.38574,15.16382a7.15064,7.15064,0,1,1,14.00878,2.03149,51.45851,51.45851,0,0,0-13.706-.00122A7.16574,7.16574,0,0,1,61.38574,15.16382ZM23.605,69.679a44.93213,44.93213,0,0,1,89.86426,0V97.87671H23.605Zm44.93164,68.1499a14.91582,14.91582,0,0,1-14.33837-10.895H82.87451A14.91524,14.91524,0,0,1,68.53661,137.82886Zm-56.30712-18.9065L22.438,105.88818h93.8374l9.10743,13.03418Z"
                     />
                   </svg>
-                  <div className="li-contant">Notifications</div>
+                  {/* <div className="li-contant">Notifications</div> */}
                 </a>
                 <div className="drop-down animated fadeIn dropdown-menu dropdown-notfication">
                   <div className="dropdown-content-heading d-flex justify-content-between">
@@ -1128,7 +1103,7 @@ export function HeaderComponent(props) {
                     id="Layer_1"
                     data-name="Layer 1"
                     xmlns="http://www.w3.org/2000/svg"
-                    fill="#9226ff"
+                    fill="#ffffff"
                     width="24px"
                     viewBox="0 0 114.14697 108.95508"
                   >
@@ -1146,7 +1121,7 @@ export function HeaderComponent(props) {
                     />
                   </svg>
                   {/* <span className="badge badge-pill gradient-1">3</span> */}
-                  <div className="li-contant">Messages</div>
+                  {/* <div className="li-contant">Messages</div> */}
                 </a>
                 <div className="drop-down animated fadeIn dropdown-menu">
                   <div className="dropdown-content-heading d-flex justify-content-between">
@@ -1260,7 +1235,7 @@ export function HeaderComponent(props) {
                     id="Layer_1"
                     data-name="Layer 1"
                     xmlns="http://www.w3.org/2000/svg"
-                    fill="#9226ff"
+                    fill="#ffffff"
                     width="20px"
                     viewBox="0 0 93.21387 95.28394"
                   >
@@ -1296,7 +1271,7 @@ export function HeaderComponent(props) {
                     />
                   </svg>
                   {/* <img src={profileIcon}></img> */}
-                  <div className="li-contant">Worklist</div>
+                  {/* <div className="li-contant">Worklist</div> */}
                 </Link>
               </li>
               <li className="icons dropdown">
@@ -1309,7 +1284,7 @@ export function HeaderComponent(props) {
                     id="Layer_1"
                     data-name="Layer 1"
                     xmlns="http://www.w3.org/2000/svg"
-                    fill="#9226ff"
+                    fill="#ffffff"
                     width="24px"
                     viewBox="0 0 128.98353 128.98509"
                   >
@@ -1324,13 +1299,13 @@ export function HeaderComponent(props) {
                   </svg>
                   {/* <i className="fa"><SettingsOutlinedIcon style={{color:'#bec0d0'}} /></i> */}
 
-                  <div className="li-contant">
+                  {/* <div className="li-contant">
                     <span className="mr-2 ">Settings</span>
                     <i
                       className="fa fa-angle-down f-s-14"
                       aria-hidden="true"
                     ></i>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="drop-down dropdown-profile animated fadeIn dropdown-menu">
                   <div className="dropdown-content-body">
