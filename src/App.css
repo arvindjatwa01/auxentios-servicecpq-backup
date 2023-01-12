@@ -443,31 +443,35 @@ a.text-light:focus {
   border-radius: 5px !important;
   overflow: hidden;
 }
-
+.Accordion-div .css-ahj2mt-MuiTypography-root {
+  font-weight: 600 !important;
+  font-size: 1rem;
+}
 .Accordion-div .Accordion-btn {
-  background: #ECFFFE;
+  background: #ffffff;
   color: #00b5aa;
   height: 50px !important;
   min-height: 50px !important;
-  border: 1px solid;
+  border: 1px solid #cfcece;
+  font-weight: 600 !important;
   border-radius: 5px;
 }
 
 .Accordion-div .Accordion-btn2 {
-  background: #FCEBFF;
-  color: #750c84;
+  background: #ffffff;
+  color: #147CBE;
   height: 50px !important;
   min-height: 50px !important;
-  border: 1px solid;
+  border: 1px solid #cfcece;
   border-radius: 5px;
 }
 
 .Accordion-div .Accordion-btn3 {
-  background: #E3F5FE;
-  color: #00354f;
+  background: #ffffff;
+  color: #750c84;
   height: 50px !important;
   min-height: 50px !important;
-  border: 1px solid;
+  border: 1px solid #cfcece;
   border-radius: 5px;
 }
 
@@ -2135,7 +2139,7 @@ nav.main-menu li.active>a,
 }
 
 .font-size-14 {
-  font-size: 14px;
+  font-size: 14px !important;
 }
 
 .font-size-16 {
@@ -3226,7 +3230,6 @@ button.bg-primary:hover {
 .bg-pink {
   background-color: #FF6493 !important;
 }
-
 /* .tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root {
   text-transform: capitalize !important;
   border: 1px solid #9E9E9E !important;
@@ -3857,3 +3860,10 @@ color: #fff !important;}
   min-width: 167px !important;
 }
 .bg-white{background-color: #ffffff !important;}
+.color{color: #B2EAE8;
+  color: #FFD1DE;
+  color: #D7B7D7;}
+.height-custom .css-1s2u09g-control{min-height: 32px !important;
+height: 32px !important;}
+.height-custom  .css-1pahdxg-control{min-height: 32px !important;
+  height: 32px !important;}
