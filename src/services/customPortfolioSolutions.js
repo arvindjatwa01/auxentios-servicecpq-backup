@@ -10,9 +10,11 @@ var accessToken = localStorage.getItem("access_token");
 const headersdata = {
     'content-type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': accessToken != undefined ? accessToken : ''
+    'Authorization': accessToken != undefined ?  accessToken : ''
     // 'Authorization': url.Auth_Token
 }
+
+console.log("headersdata : ", headersdata)
 
 /* ------------------------------------------------------------ */
 
@@ -204,7 +206,8 @@ export const getSearchForRecentSolutionPortfolio = () => {
                 .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "/recent", { headers: headersdata })
                 .then((res) => {
                     console.log("getSearchForRecentSolutionPortfolio > axios res=", res);
-                    resolve(res.data);
+                    // resolve(res.data);
+                    resolve(res);
                 })
                 .catch((err) => {
                     console.log("getSearchForRecentSolutionPortfolio > axios err=", err);

@@ -1770,7 +1770,11 @@ export const Analytics = () => {
       setHeaderLoading(true)
       getSearchForRecentSolutionPortfolio()
          .then((res) => {
-            setRecentPortfolioSolution(res);
+            if (res.status === 200) {
+               setRecentPortfolioSolution(res.data);
+            } else {
+               setRecentPortfolioSolution(res.data);
+            }
          })
       setHeaderLoading(false)
 
@@ -3065,55 +3069,61 @@ export const Analytics = () => {
 
                            <div className="row">
 
-                              {recentPortfolioSolution.map((solutionData, index) =>
-                                 <div className="col-md-4">
-                                    <div className="recent-items mt-3">
-                                       <div className="d-flex justify-content-between align-items-center ">
-                                          <p className="mb-0 overflow-hidden white-space">
-                                             <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
-                                             <span className="font-weight-500 ml-2">
-                                                {/* Portfolio Solution */}{solutionData.name}
-                                             </span>
-                                          </p>
-                                          <div className="d-flex align-items-center">
-                                             {/* <div className="white-space custom-checkbox">
+                              {recentPortfolioSolution.message === undefined ?
+                                 <>
+                                    {recentPortfolioSolution.map((solutionData, index) =>
+                                       <div className="col-md-4">
+                                          <div className="recent-items mt-3">
+                                             <div className="d-flex justify-content-between align-items-center ">
+                                                <p className="mb-0 overflow-hidden white-space">
+                                                   <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
+                                                   <span className="font-weight-500 ml-2">
+                                                      {/* Portfolio Solution */}{solutionData.name}
+                                                   </span>
+                                                </p>
+                                                <div className="d-flex align-items-center">
+                                                   {/* <div className="white-space custom-checkbox">
                                              <FormGroup>
                                                 <FormControlLabel control={index === 0 ? <Checkbox defaultChecked /> : <Checkbox />} label="" />
                                              </FormGroup>
                                           </div> */}
-                                             <a
-                                                href={undefined}
-                                                className="btn-sm"
-                                                style={{ cursor: "pointer" }}
-                                             >
-                                                <i
-                                                   className="fa fa-pencil"
-                                                   aria-hidden="true"
-                                                   onClick={() =>
-                                                      makePortfolioEditableEditable(solutionData)
-                                                   }
-                                                ></i>
-                                             </a>
-                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                             {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                                   <a
+                                                      href={undefined}
+                                                      className="btn-sm"
+                                                      style={{ cursor: "pointer" }}
+                                                   >
+                                                      <i
+                                                         className="fa fa-pencil"
+                                                         aria-hidden="true"
+                                                         onClick={() =>
+                                                            makePortfolioEditableEditable(solutionData)
+                                                         }
+                                                      ></i>
+                                                   </a>
+                                                   <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                                   <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                                   <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                                   {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                                </div>
+                                             </div>
+
+                                          </div>
+                                          <div className="d-flex justify-content-between align-items-center mt-2">
+                                             {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                                             <p className="font-size-12 mb-0">
+                                                {/* {getFormattedDateTimeByTimeStamp(solutionData.createdAt)} */}
+                                                {getFormattedDateTimeByTimeStamp(solutionData.updatedAt)}
+                                             </p>
+                                             <p className="font-size-12 mb-0">Portfolio Solution</p>
                                           </div>
                                        </div>
 
-                                    </div>
-                                    <div className="d-flex justify-content-between align-items-center mt-2">
-                                       {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                                       <p className="font-size-12 mb-0">
-                                          {/* {getFormattedDateTimeByTimeStamp(solutionData.createdAt)} */}
-                                          {getFormattedDateTimeByTimeStamp(solutionData.updatedAt)}
-                                       </p>
-                                       <p className="font-size-12 mb-0">Portfolio Solution</p>
-                                    </div>
-                                 </div>
 
-
-                              )}
+                                    )}
+                                 </>
+                                 :
+                                 <p className="font-size-12 mb-0">No Recent Solutions</p>
+                              }
                               {/* <div className="col-md-4">
                               <div className="recent-items mt-3">
                                  <div className="d-flex justify-content-between align-items-center ">
@@ -4571,7 +4581,7 @@ export const Analytics = () => {
                                           />
                                        </div>
                                     </> : <></>} */}
-                                    <div className="m-2 text-right">
+                                    <div className="m-2 text-right d-none">
                                        <input
                                           // onClick={() => {
                                           //    setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
@@ -4692,7 +4702,7 @@ export const Analytics = () => {
                                           )}
                                        </ul>
 
-                                       <div className="m-2 text-right">
+                                       <div className="m-2 text-right d-none">
                                           <input
                                              onClick={handlePortfolioListCheckBoxData}
                                              className="btn text-white bg-primary"
