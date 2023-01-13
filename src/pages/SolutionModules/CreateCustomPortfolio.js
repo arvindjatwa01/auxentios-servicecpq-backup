@@ -8,6 +8,9 @@ import {
 } from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
 import FormGroup from "@mui/material/FormGroup";
+import AddIcon from '@mui/icons-material/Add';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import {
   Switch as Switch1,
 } from "@mui/material";
@@ -10717,145 +10720,33 @@ export function CreateCustomPortfolio(props) {
     <div>
       {/* {data.associatedServiceOrBundle?.length > 0 ?
         <> */}
-      <div
-        id="row-0"
-        role="row"
-        className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
-        style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
-      >
-        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
-          {/* <div class="checkbox">
-                <input type="checkbox" value=""></input>
-            </div> */}
-        </div>
-        <div
-          id="cell-1-undefined"
-          data-column-id="1"
-          role="gridcell"
-          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <span className="portfolio-icon mr-1">
-            <svg style={{ width: "11px" }}
-              id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 119.30736 133.59966"
-            >
-              <path
-                className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
-                d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
-              />
-            </svg>
-          </span>
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
-        </div>
-        <div
-          id="cell-2-undefined"
-          data-column-id="2"
-          role="gridcell"
-          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
-        </div>
-        <div
-          id="cell-3-undefined"
-          data-column-id="3"
-          role="gridcell"
-          className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
-        </div>
-        <div
-          id="cell-4-undefined"
-          data-column-id="4"
-          role="gridcell"
-          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
-        </div>
-        <div
-          id="cell-5-undefined"
-          data-column-id="5"
-          role="gridcell"
-          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Ids</p>
-        </div>
-        <div
-          id="cell-6-undefined"
-          data-column-id="6"
-          role="gridcell"
-          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
-        </div>
-        <div
-          id="cell-7-undefined"
-          data-column-id="7"
-          role="gridcell"
-          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
-        </div>
-        <div
-          id="cell-8-undefined"
-          data-column-id="8"
-          role="gridcell"
-          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Quantity</p>
-        </div>
-        <div
-          id="cell-9-undefined"
-          data-column-id="9"
-          role="gridcell"
-          className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
-        </div>
-        <div
-          id="cell-10-undefined"
-          data-column-id="10"
-          role="gridcell"
-          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
-        </div>
-        <div
-          id="cell-10-undefined"
-          data-column-id="10"
-          role="gridcell"
-          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
-        </div>
-        <div
-          id="cell-10-undefined"
-          data-column-id="11"
-          role="gridcell"
-          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-          data-tag="allowRowEvents"
-        >
-          <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
-        </div>
-      </div>
-      <div className="scrollbar" id="style">
-        {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+      <div className="p-5">
+        <div className="border border-radius-10">
+          <div className="d-flex align-items-center justify-content-between p-3">
+            <div className="d-flex align-items-center">
+              <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
+              <div className="d-flex align-items-center">
+                <a href="#" className="mr-2">
+                  <span><ModeEditOutlineOutlinedIcon /></span>
+                </a>
+                <a href="#" className="mr-2">
+                  <span><ShareOutlinedIcon /></span>
+                </a>
+                <a href="#" className="">
+                  <span><SearchIcon /></span>
+                </a>
+              </div>
+            </div>
+            <div className="border-left d-flex align-items-center">
+              <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+            </div>
+          </div>
+
+
           <div
-            key={i}
             id="row-0"
             role="row"
-            className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+            className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
             style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
           >
             <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
@@ -10870,7 +10761,19 @@ export function CreateCustomPortfolio(props) {
               className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
               data-tag="allowRowEvents"
             >
-              <div>{(i + 1) * 10}</div>
+              <span className="portfolio-icon mr-1">
+                <svg style={{ width: "11px" }}
+                  id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 119.30736 133.59966"
+                >
+                  <path
+                    className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                    d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+                  />
+                </svg>
+              </span>
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
             </div>
             <div
               id="cell-2-undefined"
@@ -10879,29 +10782,7 @@ export function CreateCustomPortfolio(props) {
               className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
               data-tag="allowRowEvents"
             >
-              <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
-                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
-                  <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
-                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
-                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
-                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
-                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
-                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
-                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
-                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
-                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
-                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
-                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
-                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
-                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
-                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
-                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
-                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
-                </svg></span>
-              </div>
-              <div className="align-items-center d-flex justify-content-center">
-                {bundleAndService.itemName}
-              </div>
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
             </div>
             <div
               id="cell-3-undefined"
@@ -10910,30 +10791,7 @@ export function CreateCustomPortfolio(props) {
               className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
               data-tag="allowRowEvents"
             >
-              <div className="d-flex align-items-center" data-tag="allowRowEvents">
-                {bundleAndService.customItemHeaderModel.itemHeaderDescription}
-              </div>
-              <div className="d-flex align-items-center">
-                <div
-                  className="description cursor mr-1"
-                  onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
-                >
-                  <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                    <g>
-                      <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
-                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
-                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
-                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
-                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                      <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
-                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
-                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
-                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                    </g>
-                  </svg>
-                </div>
-                <div className=""><KeyboardArrowDownIcon /></div>
-              </div>
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
             </div>
             <div
               id="cell-4-undefined"
@@ -10942,9 +10800,114 @@ export function CreateCustomPortfolio(props) {
               className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
               data-tag="allowRowEvents"
             >
-              <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
-                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
-                  <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
+            </div>
+            <div
+              id="cell-5-undefined"
+              data-column-id="5"
+              role="gridcell"
+              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Ids</p>
+            </div>
+            <div
+              id="cell-6-undefined"
+              data-column-id="6"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
+            </div>
+            <div
+              id="cell-7-undefined"
+              data-column-id="7"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
+            </div>
+            <div
+              id="cell-8-undefined"
+              data-column-id="8"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Quantity</p>
+            </div>
+            <div
+              id="cell-9-undefined"
+              data-column-id="9"
+              role="gridcell"
+              className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
+            </div>
+            <div
+              id="cell-10-undefined"
+              data-column-id="10"
+              role="gridcell"
+              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
+            </div>
+            <div
+              id="cell-10-undefined"
+              data-column-id="10"
+              role="gridcell"
+              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
+            </div>
+            <div
+              id="cell-10-undefined"
+              data-column-id="11"
+              role="gridcell"
+              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
+            </div>
+          </div>
+          <div className="scrollbar" id="style">
+            {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+              <div
+                key={i}
+                id="row-0"
+                role="row"
+                className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+                style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+              >
+                <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+                  {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
+                </div>
+                <div
+                  id="cell-1-undefined"
+                  data-column-id="1"
+                  role="gridcell"
+                  className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div>{(i + 1) * 10}</div>
+                </div>
+                <div
+                  id="cell-2-undefined"
+                  data-column-id="2"
+                  role="gridcell"
+                  className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
+                    <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                      <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
                   c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
                   c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
                   c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
@@ -10960,197 +10923,262 @@ export function CreateCustomPortfolio(props) {
                   c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
                   c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
                   c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
-                </svg></span>
-              </div>
-              <div className="align-items-center d-flex" data-tag="allowRowEvents">
-                {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
-              </div>
-            </div>
-            <div
-              id="cell-5-undefined"
-              data-column-id="5"
-              role="gridcell"
-              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div className="d-flex " data-tag="allowRowEvents">SJ1034
-              </div>
-              <div
-                className="description cursor mr-1"
-                onClick={() => setBundleServiceShow(true)}
-              >
-                <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                  <g>
-                    <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                    </svg></span>
+                  </div>
+                  <div className="align-items-center d-flex justify-content-center">
+                    {bundleAndService.itemName}
+                  </div>
+                </div>
+                <div
+                  id="cell-3-undefined"
+                  data-column-id="3"
+                  role="gridcell"
+                  className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div className="d-flex align-items-center" data-tag="allowRowEvents">
+                    {bundleAndService.customItemHeaderModel.itemHeaderDescription}
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <div
+                      className="description cursor mr-1"
+                      onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                    >
+                      <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                        <g>
+                          <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
                       c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
                       c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
                       c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
                       c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                    <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                          <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
                       c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
                       c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
                       c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                  </g>
-                </svg>
-              </div>
-            </div>
-            <div
-              id="cell-6-undefined"
-              data-column-id="6"
-              role="gridcell"
-              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
-              <div
-                className="description mr-1"
-              >
-                <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                  <g>
-                    <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                        </g>
+                      </svg>
+                    </div>
+                    <div className=""><KeyboardArrowDownIcon /></div>
+                  </div>
+                </div>
+                <div
+                  id="cell-4-undefined"
+                  data-column-id="4"
+                  role="gridcell"
+                  className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
+                    <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                      <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+                    </svg></span>
+                  </div>
+                  <div className="align-items-center d-flex" data-tag="allowRowEvents">
+                    {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
+                  </div>
+                </div>
+                <div
+                  id="cell-5-undefined"
+                  data-column-id="5"
+                  role="gridcell"
+                  className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div className="d-flex " data-tag="allowRowEvents">SJ1034
+                  </div>
+                  <div
+                    className="description cursor mr-1"
+                    onClick={() => setBundleServiceShow(true)}
+                  >
+                    <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                      <g>
+                        <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
                       c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
                       c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
                       c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
                       c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                    <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                        <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
                       c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
                       c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
                       c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                  </g>
-                </svg>
-              </div>
-            </div>
-            <div
-              id="cell-7-undefined"
-              data-column-id="7"
-              role="gridcell"
-              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
-            </div>
-            <div
-              id="cell-8-undefined"
-              data-column-id="8"
-              role="gridcell"
-              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div>4</div>
-              <div className="funds-grey">
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  id="cell-6-undefined"
+                  data-column-id="6"
+                  role="gridcell"
+                  className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
+                  <div
+                    className="description mr-1"
+                  >
+                    <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                      <g>
+                        <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                        <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  id="cell-7-undefined"
+                  data-column-id="7"
+                  role="gridcell"
+                  className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
+                </div>
+                <div
+                  id="cell-8-undefined"
+                  data-column-id="8"
+                  role="gridcell"
+                  className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div>4</div>
+                  <div className="funds-grey">
 
-              </div>
-            </div>
-            <div
-              id="cell-9-undefined"
-              data-column-id="9"
-              role="gridcell"
-              className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div>4</div>
-              <div className="funds-grey">
+                  </div>
+                </div>
+                <div
+                  id="cell-9-undefined"
+                  data-column-id="9"
+                  role="gridcell"
+                  className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div>4</div>
+                  <div className="funds-grey">
 
-              </div>
-            </div>
-            <div
-              id="cell-10-undefined"
-              data-column-id="10"
-              role="gridcell"
-              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div>4</div>
-              <div
-                className="funds-grey "
-              >
-              </div>
-            </div>
-            <div
-              id="cell-10-undefined"
-              data-column-id="10"
-              role="gridcell"
-              className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div>4</div>
-              <div
-                className="funds-grey cursor"
-                onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
-              >
-                <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                  <g>
-                    <g>
-                      <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                  </div>
+                </div>
+                <div
+                  id="cell-10-undefined"
+                  data-column-id="10"
+                  role="gridcell"
+                  className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div>4</div>
+                  <div
+                    className="funds-grey "
+                  >
+                  </div>
+                </div>
+                <div
+                  id="cell-10-undefined"
+                  data-column-id="10"
+                  role="gridcell"
+                  className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div>4</div>
+                  <div
+                    className="funds-grey cursor"
+                    onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
+                  >
+                    <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                      <g>
+                        <g>
+                          <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
                       C74.2,101.4,70.7,105,66.3,105.1z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                        </g>
+                        <g>
+                          <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
                       C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                        </g>
+                        <g>
+                          <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
                       C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                        </g>
+                        <g>
+                          <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                        </g>
+                        <g>
+                          <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                        </g>
+                        <g>
+                          <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                        </g>
+                        <g>
+                          <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                       C90.7,157.7,94.3,154.1,98.6,154z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                        </g>
+                        <g>
+                          <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                       C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                        </g>
+                        <g>
+                          <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                       C123.2,157.7,126.8,154.1,131.1,154z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                        </g>
+                        <g>
+                          <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
                       c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
                       c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                    </g>
-                    <g>
-                      <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                        </g>
+                        <g>
+                          <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
                       S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
                       c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
-                    </g>
-                  </g>
-                </svg>
+                        </g>
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  id="cell-10-undefined"
+                  data-column-id="11"
+                  role="gridcell"
+                  className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div>
+                    <Tooltip title="View">
+                      <Link
+                        to="#"
+                        className="px-1"
+                        onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                      >
+                        <VisibilityOutlinedIcon />
+                      </Link>
+                    </Tooltip>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div
-              id="cell-10-undefined"
-              data-column-id="11"
-              role="gridcell"
-              className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-              data-tag="allowRowEvents"
-            >
-              <div>
-                <Tooltip title="View">
-                  <Link
-                    to="#"
-                    className="px-1"
-                    onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
-                  >
-                    <VisibilityOutlinedIcon />
-                  </Link>
-                </Tooltip>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
       {/* </> : <></>} */}
 
