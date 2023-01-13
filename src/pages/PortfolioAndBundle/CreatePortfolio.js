@@ -17357,6 +17357,7 @@ export function CreatePortfolio(props) {
                                 priceBrackDownType: e,
                               })}
                             // options={options}
+                            value={priceCalculator.priceBrackDownType}
                             options={priceHeadTypeKeyValue}
                             placeholder="Select "
                           />
@@ -17370,7 +17371,9 @@ export function CreatePortfolio(props) {
                               setPriceCalculator({
                                 ...priceCalculator,
                                 priceBrackDownPercantage: e.target.value,
-                              })}
+                              })
+                            }
+                            value={priceCalculator.priceBrackDownPercantage}
                           />
                         </div>
                       </div>
@@ -18262,6 +18265,7 @@ export function CreatePortfolio(props) {
                   compoFlag="itemEdit"
                   compoFlagTest="itemEditBundle"
                   setBundleTabs={setBundleTabs}
+                  setBundleServiceNeed={setBundleServiceNeed}
                 />
               </TabPanel>
               <TabPanel value="bundleServicePriceCalculator">
