@@ -1478,7 +1478,7 @@ function RepairServiceEstimate(props) {
                           ? makeHeaderEditable("serviceEstHeader")
                           : handleSnack(
                               "info",
-                              "Active BUILDER cannot be changed, change status to REVISE"
+                              "Set revised status to modify active builders"
                             )
                       }
                     />

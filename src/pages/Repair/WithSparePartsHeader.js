@@ -39,19 +39,12 @@ import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
-import WithoutSparePartsSegments from "./WithoutSparePartsSegments";
 import { TextField, Tooltip } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import {
-  ERROR_MAX_VERSIONS,
-  FONT_STYLE,
-  FONT_STYLE_SELECT,
-  QUOTE_OPTIONS,
-  STATUS_OPTIONS,
-} from "./CONSTANTS";
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT, QUOTE_OPTIONS, STATUS_OPTIONS } from "./CONSTANTS";
 import { useAppSelector } from "app/hooks";
 import {
   selectDropdownOption,
@@ -67,8 +60,11 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
+import WithSparePartsSegments from "./WithSparePartsSegments";
+import WithSparePartsOperation from "./WithSparePartsOperation";
 
-function WithoutSparePartsHeader(props) {
+
+function WithSparePartsHeader(props) {
   const history = useHistory();
   const { state } = props.location;
   const [searchCustResults, setSearchCustResults] = useState([]);
@@ -690,9 +686,10 @@ function WithoutSparePartsHeader(props) {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    if (selBuilderStatus?.value !== "ACTIVE")
-      handleSnack("info", "Set active status to do “convert to”");
-    else setOpen(true);
+    if(selBuilderStatus?.value !== "ACTIVE")
+      handleSnack('info','Set active status to do â€œconvert toâ€');
+    else
+      setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
@@ -739,33 +736,33 @@ function WithoutSparePartsHeader(props) {
 
   const handleCreateTemplate = () => {
     // if (selBuilderStatus?.value === "ACTIVE") {
-    const data = {
-      description: templateDescription,
-      reference: templateReference,
-      version: templateVersion?.value,
-    };
-    createStandardJob(bId, data)
-      .then((res) => {
-        handleSnack(
-          "success",
-          `Template ${res.standardJobId} has been successfully created!`
-        );
-        let templateDetails = {
-          templateId: "",
-          templateDBId: "",
-          type: "fetch",
-        };
-        templateDetails.templateId = res.templateId;
-        templateDetails.templateDBId = res.id;
-        history.push({
-          pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
-          state: templateDetails,
+      const data = {
+        description: templateDescription,
+        reference: templateReference,
+        version: templateVersion?.value,
+      };
+      createStandardJob(bId, data)
+        .then((res) => {
+          handleSnack(
+            "success",
+            `Template ${res.standardJobId} has been successfully created!`
+          );
+          let templateDetails = {
+            templateId: "",
+            templateDBId: "",
+            type: "fetch",
+          };
+          templateDetails.templateId = res.templateId;
+          templateDetails.templateDBId = res.id;
+          history.push({
+            pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
+            state: templateDetails,
+          });
+        })
+        .catch((e) => {
+          handleSnack("error", "Conversion to Standard Job has been failed!");
+          setTemplateOpen(false);
         });
-      })
-      .catch((e) => {
-        handleSnack("error", "Conversion to Standard Job has been failed!");
-        setTemplateOpen(false);
-      });
     // } else {
     //   handleSnack("warning", "Builder is not active yet!");
     // }
@@ -818,7 +815,7 @@ function WithoutSparePartsHeader(props) {
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
               <h5 className="font-weight-600 mb-0">
-                Repair option (without spare parts)
+                Repair option (with spare parts)
               </h5>
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
@@ -966,40 +963,43 @@ function WithoutSparePartsHeader(props) {
                       className="mr-3 ml-2 text-white"
                       style={{ fontSize: "20px" }}
                     >
-                      Without Spare Parts Header
+                      With Spare Parts Header
                     </span>
                     <div className="btn-sm cursor text-white">
-                      <Tooltip title="Edit">
-                        <EditIcon
-                          onClick={() =>
-                            ["DRAFT", "REVISED"].indexOf(
-                              selBuilderStatus?.value
-                            ) > -1
-                              ? makeHeaderEditable()
-                              : handleSnack(
-                                  "info",
-                                  "Set revised status to modify active builders"
-                                )
-                          }
-                        />
-                      </Tooltip>
-                    </div>
-                    <div className="btn-sm cursor text-white">
-                      <Tooltip title="Reset">
-                        <ReplayIcon onClick={() => handleResetData("RESET")} />
-                      </Tooltip>
-                    </div>
-                    <div className="btn-sm cursor text-white">
-                      <Tooltip title="Share">
-                        <ShareOutlinedIcon />
-                      </Tooltip>
-                    </div>
+                  <Tooltip title="Edit">
+                    <EditIcon
+                      onClick={() =>
+                        ["DRAFT", "REVISED"].indexOf(
+                          selBuilderStatus?.value
+                        ) > -1
+                          ? makeHeaderEditable()
+                          : handleSnack(
+                              "info",
+                              "Set revised status to modify active builders"
+                            )
+                      }
+                    />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Reset">
+                    <ReplayIcon
+                    onClick={() => handleResetData("RESET")}
+                    />
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Share">
+                    <ShareOutlinedIcon />
+                  </Tooltip>
+                </div>
 
-                    <div className="btn-sm cursor text-white">
-                      <Tooltip title="Add to Review">
-                        <ReviewAddIcon />
-                      </Tooltip>
-                    </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Add to Review">
+                    <ReviewAddIcon />
+                  </Tooltip>
+                </div>
+
                   </div>
                   {/* <div className="hr"></div> */}
                 </h5>
@@ -2082,7 +2082,7 @@ function WithoutSparePartsHeader(props) {
             </React.Fragment>
           )}
           {activeElement.name === "segment" && (
-            <WithoutSparePartsSegments
+            <WithSparePartsSegments
               builderDetails={{
                 activeElement,
                 setActiveElement,
@@ -2091,7 +2091,7 @@ function WithoutSparePartsHeader(props) {
             />
           )}
           {activeElement.name === "operation" && (
-            <WithoutSparePartsOperation
+            <WithSparePartsOperation
               builderDetails={{ activeElement, setActiveElement }}
             />
           )}
@@ -2261,4 +2261,4 @@ function WithoutSparePartsHeader(props) {
   );
 }
 
-export default WithoutSparePartsHeader;
+export default WithSparePartsHeader;

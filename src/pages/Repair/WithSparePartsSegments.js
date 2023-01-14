@@ -23,9 +23,11 @@ import { ReadOnlyField } from "./components/ReadOnlyField";
 import { Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import DeleteIcon from "../../assets/icons/svg/delete.svg";
+import NavIcon from "@mui/icons-material/SortOutlined";
 import { RenderConfirmDialog } from "./components/ConfirmationBox";
+import ListComp from "./components/ListComp";
 
-function WithoutSparePartsSegments(props) {
+function WithSparePartsSegments(props) {
   const { activeElement, setActiveElement, fetchAllDetails } =
     props.builderDetails;
   const [severity, setSeverity] = useState("");
@@ -70,6 +72,14 @@ function WithoutSparePartsSegments(props) {
     jobCodeDescription: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   useEffect(() => {
     fetchSegmentsOfBuilder();
     fetchSegOpOfBuilder();
@@ -118,6 +128,25 @@ function WithoutSparePartsSegments(props) {
 
   const [segmentsTreeContent, setSegmentsTreeContent] = useState([]);
 
+  const loadSegmentOnSelect = (segmentId) => {
+    setActiveElement({ ...activeElement, name: "segment", sId: segmentId });
+    let segmentToLoad = segmentId
+      ? segments.filter((x) => x.id === segmentId)[0]
+        ? segments.filter((x) => x.id === segmentId)[0]
+        : segments[segments.length - 1]
+      : segments[segments.length - 1];
+    console.log(segmentToLoad);
+    setSegIndex(
+      segments.findIndex((obj) => {
+        return obj.id === segmentToLoad.id;
+      })
+    );
+    setSegmentData({
+      ...segmentToLoad,
+      header: formatSegmentHeader(segmentToLoad),
+    });
+    if (segmentToLoad) populateOperations(segmentToLoad.id);
+  };
   async function fetchSegOpOfBuilder() {
     if (activeElement.bId) {
       const result = await fetchSegments(activeElement.bId);
@@ -368,7 +397,7 @@ function WithoutSparePartsSegments(props) {
                   }
                 />
               </Tooltip>
-              <Tooltip title="Delete" className="ml-1">
+              <Tooltip title="Delete" className="ml-2">
                 <img
                   src={DeleteIcon}
                   alt="Delete"
@@ -382,6 +411,9 @@ function WithoutSparePartsSegments(props) {
                         )
                   }
                 />
+              </Tooltip>
+              <Tooltip title="Navigate" className="ml-2">
+                <NavIcon onClick={handleClick} />
               </Tooltip>
             </span>
           </div>
@@ -552,30 +584,51 @@ function WithoutSparePartsSegments(props) {
         ) : (
           <React.Fragment>
             <div className="row mt-4">
-              <ReadOnlyField
-                label="SEGMENT #"
-                value={String(segmentData.segmentNumber).padStart(2, "0")}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="TITLE"
-                value={segmentData.title}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="JOB CODE"
-                value={
-                  segmentData.jobCode + " - " + segmentData.jobCodeDescription
-                }
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="COMPONENT CODE"
-                value={
-                  segmentData.componentCode + " - " + segmentData.description
-                }
-                className="col-md-6 col-sm-6"
-              />
+              <div className="col-md-8 col-sm-8">
+                <div className="row mt-4">
+                  <ReadOnlyField
+                    label="SEGMENT #"
+                    value={String(segmentData.segmentNumber).padStart(2, "0")}
+                    className="col-md-6 col-sm-6"
+                  />
+                  <ReadOnlyField
+                    label="TITLE"
+                    value={segmentData.title}
+                    className="col-md-6 col-sm-6"
+                  />
+                  <ReadOnlyField
+                    label="JOB CODE"
+                    value={
+                      segmentData.jobCode +
+                      " - " +
+                      segmentData.jobCodeDescription
+                    }
+                    className="col-md-6 col-sm-6"
+                  />
+                  <ReadOnlyField
+                    label="COMPONENT CODE"
+                    value={
+                      segmentData.componentCode +
+                      " - " +
+                      segmentData.description
+                    }
+                    className="col-md-6 col-sm-6"
+                  />
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                {segmentsTreeContent.length > 0 && (
+                  <ListComp
+                    content={segmentsTreeContent}
+                    setActiveElement={setActiveElement}
+                    activeElement={activeElement}
+                    open={open}
+                    handleClose={handleClose}
+                    anchorEl={anchorEl}
+                    loadSegmentOnSelect={loadSegmentOnSelect}
+                  />
+                )}
+              </div>
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10">
               <button
@@ -644,4 +697,4 @@ function WithoutSparePartsSegments(props) {
   );
 }
 
-export default WithoutSparePartsSegments;
+export default WithSparePartsSegments;

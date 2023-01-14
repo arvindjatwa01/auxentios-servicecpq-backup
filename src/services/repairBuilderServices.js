@@ -35,6 +35,8 @@ import {
   CREATE_PARTLIST_BUILDER_VERSION,
   CREATE_BUILDER_VERSION,
   CREATE_STANDARD_JOB,
+  SEGMENT_REMOVE,
+  OPERATION_REMOVE,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 
@@ -966,6 +968,59 @@ export const RemoveSparepart = (partlistId, sparePartId) => {
         });
     } catch (error) {
       console.error("RemoveSparepart general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Remove Segment
+export const RemoveSegment = (segmentId) => {
+  console.log("service repairbuilder > RemoveSegment called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(SEGMENT_REMOVE(segmentId), config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveSegment response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveSegment > axios err=", err);
+          reject("Error in RemoveSegment axios!");
+        });
+    } catch (error) {
+      console.error("RemoveSegment general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Remove Operation
+export const RemoveOperation = (operationId) => {
+  console.log("service repairbuilder > RemoveOperation called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(OPERATION_REMOVE(operationId), config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveOperation response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveOperation > axios err=", err);
+          reject("Error in RemoveOperation axios!");
+        });
+    } catch (error) {
+      console.error("RemoveOperation general exception", error);
       reject(SYSTEM_ERROR);
     }
   });

@@ -364,7 +364,7 @@ function ServiceOnlyTemplateSegment(props) {
                       ? makeHeaderEditable()
                       : handleSnack(
                           "info",
-                          "Active TEMPLATE cannot be changed, change status to REVISE"
+                          "Set revised status to modify active templates"
                         )
                   }
                 />
