@@ -342,6 +342,7 @@ const AddCustomPortfolioItem = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("props.passItemEditRowData 12345: ", props.passItemEditRowData)
     if (props.passItemEditRowData) {
       // setIt accordingly for fields
       const {
@@ -403,7 +404,9 @@ const AddCustomPortfolioItem = (props) => {
         }
       }
 
-      console.log("2132546576786787 : ", props.passItemEditRowData.customItemHeaderModel.withBundleService)
+      console.log("2132546576786787 : ", props.passItemEditRowData)
+      console.log("props.passItemEditRowData.customItemBodyModel.customItemPrices != null : ", props.passItemEditRowData.customItemBodyModel.customItemPrices != null)
+      console.log("props.passItemEditRowData.customItemBodyModel.customItemPrices.length : ", props.passItemEditRowData.customItemBodyModel.customItemPrices.length)
 
       setBundleFlagType(props.passItemEditRowData.customItemHeaderModel.bundleFlag);
       if ((props.passItemEditRowData.customItemBodyModel.customItemPrices != null)) {
@@ -457,14 +460,14 @@ const AddCustomPortfolioItem = (props) => {
     // console.log("addportFolioItem :  wdfcsdf ", addPortFolioItem)
     setAddPortFolioItem({
       ...addPortFolioItem,
-      id: props.passItemEditRowData.itemId,
+      id: props.passItemEditRowData.customItemId,
       name: props.passItemEditRowData.itemName,
       description: itemBodyDescription,
       usageIn: { label: usageIn, value: usageIn },
-      taskType: { label: taskType, value: taskType },
+      taskType: { label: taskType[0], value: taskType[0] },
       frequency: { label: frequency, value: frequency },
       unit: { label: unit, value: unit },
-      recommendedValue: recommendedValue,
+      recommendedValue: res.data.recommendedValue,
       quantity: res.data.quantity,
       numberOfEvents: res.data.numberOfEvents,
       strategyTask: { label: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy, value: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy },
@@ -478,6 +481,13 @@ const AddCustomPortfolioItem = (props) => {
         label: "rty",
         value: "rty",
       },
+      startUsage: res.data.startUsage,
+      endUsage: res.data.endUsage,
+      year: {
+        label: res.data.year,
+        value: res.data.year,
+      },
+      noOfYear: res.data.noOfYear,
 
     });
 
@@ -2090,7 +2100,7 @@ const AddCustomPortfolioItem = (props) => {
                 label="Related template(s)"
                 value="relatedTemplate"
                 // disabled={addPortFolioItem.repairOption != "" && editable != true}
-                disabled={addPortFolioItem.repairOption != ""}
+                disabled={addPortFolioItem.repairOption != "" && addPortFolioItem.repairOption != null}
               />
               <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
 

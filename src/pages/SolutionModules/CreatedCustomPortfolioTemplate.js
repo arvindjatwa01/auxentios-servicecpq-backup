@@ -9,6 +9,11 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import { CommanComponents } from "../../components/index"
 
+import AddIcon from '@mui/icons-material/Add';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import SearchIcon from "@mui/icons-material/Search";
+
 import {
     Switch as Switch1,
 } from "@mui/material";
@@ -91,7 +96,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 
 import DataTable from "react-data-table-component";
-import PriceCalculator from "../PortfolioAndBundle/PriceCalculator";
+import PriceCalculatorCustomItem from "./PriceCalculatorCustomItem";
 import penIcon from "../../assets/images/pen.png";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
@@ -288,6 +293,38 @@ export function CreatedCustomPortfolioTemplate(props) {
     const [isView, setIsView] = useState(false);
     const [createNewBundle, setCreateNewBundle] = useState(false);
     const [openSearchSolution, setOpenSearchSolution] = useState(false);
+
+    const [bundleAndServiceEditAble, setBundleAndServiceEditAble] = useState(false);
+    const [selectedCustomerSegmentOption, setSelectedCustomerSegmentOption] = useState("");
+    const [createdServiceData, setCreatedServiceData] = useState({});
+    const [bundleServicePortfolioItemId, setBundleServicePortfolioItemId] = useState(0);
+    const [bundleServiceItemPriceData, setBundleServiceItemPriceData] = useState([]);
+    const [bundleServiceQuerySearchModelResult, setBundleServiceQuerySearchModelResult] = useState([])
+    const [bundleServiceQuerySearchModelPrefixOption, setBundleServiceQuerySearchModelPrefixOption] = useState([])
+    const [bundleServiceNeed, setBundleServiceNeed] = useState(false);
+    const [createdBundleItems, setCreatedBundleItems] = useState("");
+    const [updatedServiceBundleItemData, setUpdatedServiceBundleItemData] = useState("");
+    const [associatedServiceOrBundleIndex, setAssociatedServiceOrBundleIndex] = useState(0);
+
+    const [bundleOrServiceAdministrative, setBundleOrServiceAdministrative] = useState({
+        preparedBy: null,
+        approvedBy: null,
+        preparedOn: new Date(),
+        revisedBy: null,
+        revisedOn: new Date(),
+        salesOffice: null,
+        offerValidity: null,
+    });
+
+    const [customerData, setCustomerData] = useState({
+        source: "User Generated",
+        customerID: "",
+        customerName: "",
+        contactEmail: "",
+        contactName: "",
+        contactPhone: "",
+        customerGroup: "",
+    });
 
     const [extWorkData, setExtWorkData] = useState({
         jobCode: "",
@@ -2000,6 +2037,250 @@ export function CreatedCustomPortfolioTemplate(props) {
         setHeaderType(e);
     };
 
+    const handlePortfolioItemSaveAndContinue = async (itemData, itemPriceData) => {
+        try {
+
+            if ((portfolioId == "") ||
+                (portfolioId == undefined) ||
+                (portfolioId == null)) {
+                throw "Please Create Solution First, then you can Add Item";
+            }
+
+            let reqObj = {
+                customItemId: 0,
+                itemName: itemData.name,
+                customItemHeaderModel: {
+                    customItemHeaderId: 0,
+                    itemHeaderDescription: itemData.description,
+                    bundleFlag: "PORTFOLIO",
+                    withBundleService: bundleServiceNeed,
+                    portfolioItemId: 0,
+                    reference: generalComponentData.externalReference,
+                    itemHeaderMake: itemData?.make,
+                    itemHeaderFamily: itemData?.family,
+                    model: itemData.model,
+                    prefix: itemData.prefix,
+                    type: "MACHINE",
+                    additional: "",
+                    currency: "",
+                    netPrice: 0,
+                    itemProductHierarchy: "END_PRODUCT",
+                    itemHeaderGeographic: "ONSITE",
+                    responseTime: "PROACTIVE",
+                    usage: "",
+                    validFrom: generalComponentData.validFrom,
+                    validTo: generalComponentData.validTo,
+                    estimatedTime: "",
+                    servicePrice: 0,
+                    status: "DRAFT",
+                    componentCode: "",
+                    componentDescription: "",
+                    serialNumber: "",
+                    itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
+                    variant: "",
+                    itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+                    jobCode: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice?.value,
+                    offerValidity: administrative.offerValidity?.value,
+                    serviceChargable: true,
+                    serviceOptional: true
+                },
+                customItemBodyModel: {
+                    customItemBodyId: 0,
+                    itemBodyDescription: itemData.description,
+                    spareParts: ["WITH_SPARE_PARTS"],
+                    labours: ["WITH_LABOUR"],
+                    miscellaneous: ["LUBRICANTS"],
+                    taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["PM1"],
+                    solutionCode: "",
+                    usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "REPAIR_OR_REPLACE",
+                    usage: "",
+                    year: itemData.year?.value,
+                    avgUsage: 0,
+                    unit: itemData.unit != "" ? itemData.unit?.value : "",
+                    frequency: itemData.frequency != "" ? itemData.frequency?.value : "once",
+                    customItemPrices: [
+                        {
+                            customItemPriceDataId: itemPriceData.customItemPriceDataId
+                        }
+                    ]
+                }
+            }
+
+
+            const itemRes = await customitemCreation(reqObj);
+
+            if (itemRes.status !== 200) {
+                throw "Something went wrong/Item not created"
+            }
+
+            let reqObjSJId = {
+                itemId: itemRes.data.customItemId,
+                standardJobId: itemPriceData.standardJobId,
+                repairKitId: itemPriceData.repairKitId,
+                itemPriceDataId: itemPriceData.customItemPriceDataId
+            }
+
+            const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+            const resPrice = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+            setPriceCalculator({
+                ...priceCalculator,
+                priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+                    resPrice.data.priceMethod != "" ||
+                    resPrice.data.priceMethod != null) ? {
+                    label: resPrice.data.priceMethod,
+                    value: resPrice.data.priceMethod
+                } : "",
+                priceType: (resPrice.data.priceType != "EMPTY" ||
+                    resPrice.data.priceType != "" ||
+                    resPrice.data.priceType != null) ? {
+                    label: resPrice.data.priceType,
+                    value: resPrice.data.priceType
+                } : "",
+                priceAdditionalSelect: {
+                    label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+                },
+                priceAdditionalInput: resPrice.data.additionalPriceValue,
+                discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+                    resPrice.data.discountType != "" ||
+                    resPrice.data.discountType != null) ? {
+                    label: resPrice.data.discountType,
+                    value: resPrice.data.discountType
+                } : "",
+                discountTypeInput: resPrice.data.discountValue,
+                year: {
+                    label: resPrice.data.year, value: resPrice.data.year
+                },
+                noOfYear: resPrice.data.noOfYear,
+                startUsage: resPrice.data.startUsage,
+                endUsage: resPrice.data.endUsage,
+                recommendedValue: resPrice.data.recommendedValue,
+                netPrice: resPrice.data.netService,
+                totalPrice: resPrice.data.totalPrice,
+                id: resPrice.data.customItemPriceDataId,
+            })
+
+            setCurrentItemId(itemRes.data.customItemId);
+            // setCreatedItemsIdData([...createdItemsIdData, itemRes.data.customItemId]);
+            const _generalComponentData = { ...generalComponentData };
+            _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
+            var _itemArrData = [...selectedSolutionCustomItems];
+            _itemArrData.push({ customItemId: itemRes.data.customItemId })
+            setSelectedSolutionCustomItems(_itemArrData);
+
+
+
+            let obj = {
+                name: generalComponentData.name,
+                description: generalComponentData.description,
+                customerId: parseInt(customerData.customerID),
+                externalReference: generalComponentData.externalReference,
+                customerGroup: customerData.customerGroup,
+                customerSegment: generalComponentData?.customerSegment != "" ?
+                    generalComponentData?.customerSegment?.value : "",
+                template: flagTemplate,
+                visibleInCommerce: flagCommerce,
+
+                validFrom: validityData.fromDate,
+                validTo: validityData.toDate,
+
+                responseTime: stratgyResponseTimeKeyValue?.value ?
+                    stratgyResponseTimeKeyValue?.value : "EMPTY",
+                productHierarchy: stratgyHierarchyKeyValue?.value ?
+                    stratgyHierarchyKeyValue?.value : "EMPTY",
+                geographic: stratgyGeographicKeyValue?.value ?
+                    stratgyGeographicKeyValue?.value : "EMPTY",
+                solutionType: solutionTypeListKeyValue?.value ?
+                    solutionTypeListKeyValue?.value : "EMPTY",
+                solutionLevel: solutionLevelListKeyValue?.value ?
+                    solutionLevelListKeyValue?.value : "EMPTY",
+
+                portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                    ? portfolioPriceDataId : null,
+
+                customCoverages: selectedSolutionCustomCoverages,
+
+                preparedBy: (administrative.preparedBy != null ||
+                    administrative.preparedBy != "" ? administrative.preparedBy : ""),
+                approvedBy: (administrative.approvedBy != null ||
+                    administrative.approvedBy != "" ? administrative.approvedBy : ""),
+                preparedOn: administrative.preparedOn,
+                revisedBy: (administrative.revisedBy != null ||
+                    administrative.revisedBy != "" ? administrative.revisedBy : ""),
+                revisedOn: administrative.revisedOn,
+                salesOffice: (administrative.salesOffice != null ||
+                    administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
+                offerValidity: (administrative.offerValidity != null ||
+                    administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
+
+                status: value2.value,
+                supportLevel: value3.value,
+
+                machineType: "NEW",
+                searchTerm: "",
+                lubricant: true,
+                strategyTask: "PREVENTIVE_MAINTENANCE",
+                taskType: "PM1",
+                usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                availability: "AVAILABILITY_GREATER_95",
+                type: "MACHINE",
+                application: "HILL",
+                contractOrSupport: "LEVEL_I",
+                lifeStageOfMachine: "NEW_BREAKIN",
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: 0,
+                endUsage: 0,
+                unit: "HOURS",
+                additionals: "",
+                customItems: _itemArrData,
+            }
+
+            if ((portfolioId !== "" || (portfolioId !== undefined))) {
+                const updatePortfolioRes = await updateCustomPortfolio(
+                    portfolioId,
+                    obj
+                );
+                if (updatePortfolioRes.status === 200) {
+                    toast(`👏 Solution ${generalComponentData.name} saved Successfully`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                } else {
+                    throw `${updatePortfolioRes.status}:Something went wrong`;
+                }
+            }
+
+            setGeneralComponentData(_generalComponentData);
+            setTempBundleItems([...tempBundleItems, itemRes.data]);
+
+            setOpenAddBundleItem(false);
+            setOpenSearchSolution(false);
+
+        } catch (error) {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+    }
+
     const handleBundleItemSaveAndContinue = async () => {
         setTabs(`${parseInt(tabs) + 1}`);
         setLoadingItem(true);
@@ -2543,200 +2824,390 @@ export function CreatedCustomPortfolioTemplate(props) {
 
     };
 
-    const handleItemEditSave = async (addPortFolioItem, compoFlag) => {
-
-        console.log("custom Portfolio ITem Data : ", addPortFolioItem);
-        console.log("createServiceOrBundle Portfolio ITem Data : ", createServiceOrBundle);
-
-
-        // let newObj = 
-
+    const handleItemEditSave = async (addPortFolioItem, editAbleItemPriceData, compoFlagData) => {
+        console.log("addPortFolioItem ", addPortFolioItem)
+        setAddportFolioItem(addPortFolioItem)
+        console.log("editAbleItemPriceData ------4234343 ", editAbleItemPriceData)
         try {
-            setEditItemShow(false); //hide screen
 
-            // Old Todo CustomItem Update
-            // let reqObj = {
-            //     customItemId: parseInt(addPortFolioItem.id),
-            //     itemName: "",
-            //     customItemHeaderModel: {
-            //         itemHeaderId: 0,
-            //         itemHeaderDescription: createServiceOrBundle.description,
-            //         bundleFlag: "PORTFOLIO",
-            //         reference: createServiceOrBundle.reference,
-            //         itemHeaderMake: createServiceOrBundle.make,
-            //         itemHeaderFamily: "",
-            //         model: createServiceOrBundle.models,
-            //         prefix: createServiceOrBundle.prefix,
-            //         type: "MACHINE",
-            //         additional: createServiceOrBundle.additional.value,
-            //         currency: "",
-            //         netPrice: 0,
-            //         itemProductHierarchy: generalComponentData.productHierarchy,
-            //         itemHeaderGeographic: generalComponentData.geographic,
-            //         responseTime: generalComponentData.responseTime,
-            //         usage: "",
-            //         validFrom: generalComponentData.validFrom,
-            //         validTo: generalComponentData.validTo,
-            //         estimatedTime: "",
-            //         servicePrice: 0,
-            //         status: "DRAFT",
-            //     },
-            //     customItemBodyModel: {
-            //         itemBodyId: parseInt(addPortFolioItem.id),
-            //         itemBodyDescription: addPortFolioItem.description,
-            //         quantity: parseInt(addPortFolioItem.quantity),
-            //         startUsage: priceCalculator.startUsage,
-            //         endUsage: priceCalculator.endUsage,
-            //         standardJobId: "",
-            //         frequency: addPortFolioItem.frequency.value,
-            //         additional: "",
-            //         spareParts: ["WITH_SPARE_PARTS"],
-            //         labours: ["WITH_LABOUR"],
-            //         miscellaneous: ["LUBRICANTS"],
-            //         taskType: [addPortFolioItem.taskType.value],
-            //         solutionCode: "",
-            //         usageIn: addPortFolioItem.usageIn.value,
-            //         recommendedValue: 0,
-            //         usage: "",
-            //         repairKitId: "",
-            //         templateDescription: addPortFolioItem.description.value,
-            //         partListId: "",
-            //         serviceEstimateId: "",
-            //         numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
-            //         repairOption: addPortFolioItem.repairOption?.value,
-            //         priceMethod: "LIST_PRICE",
-            //         listPrice: parseInt(priceCalculator.listPrice),
-            //         priceEscalation: "",
-            //         calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-            //         flatPrice: parseInt(priceCalculator.flatPrice),
-            //         discountType: "",
-            //         year: priceCalculator.priceYear.value,
-            //         avgUsage: 0,
-            //         unit: addPortFolioItem.unit.value,
-            //         sparePartsPrice: 0,
-            //         sparePartsPriceBreakDownPercentage: 0,
-            //         servicePrice: 0,
-            //         servicePriceBreakDownPercentage: 0,
-            //         miscPrice: 0,
-            //         miscPriceBreakDownPercentage: 0,
-            //         totalPrice: 0,
-            //     },
-            // };
+            if (compoFlagData == "BUNDLE_ITEM" || compoFlagData == "SERVICE") {
 
-            // New Todo CustomITem Update
-            let reqObj = {
-                customItemId: parseInt(addPortFolioItem.id),
-                itemName: addPortFolioItem.name,
-                customItemHeaderModel: {
-                    customItemHeaderId: 0,
-                    itemHeaderDescription: addPortFolioItem.description,
-                    bundleFlag: "PORTFOLIO",
-                    portfolioItemId: 0,
-                    reference: createServiceOrBundle.description,
-                    itemHeaderMake: createServiceOrBundle.make,
-                    itemHeaderFamily: createServiceOrBundle.family,
-                    model: createServiceOrBundle.model,
-                    prefix: createServiceOrBundle.prefix,
-                    type: "MACHINE",
-                    additional: "",
-                    currency: "",
-                    netPrice: 0,
-                    itemProductHierarchy: generalComponentData.productHierarchy != "" ?
-                        generalComponentData.productHierarchy : "END_PRODUCT",
-                    itemHeaderGeographic: generalComponentData.geographic != "" ?
-                        generalComponentData.geographic : "ONSITE",
-                    responseTime: generalComponentData.responseTime != ""
-                        ? generalComponentData.responseTime : "PROACTIVE",
-                    usage: "",
-                    validFrom: generalComponentData.validFrom,
-                    validTo: generalComponentData.validTo,
-                    estimatedTime: "",
-                    servicePrice: 0,
-                    status: "DRAFT",
-                    componentCode: "",
-                    componentDescription: "",
-                    serialNumber: "",
-                    itemHeaderStrategy: addPortFolioItem.strategyTask.value,
-                    variant: "",
-                    itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
-                        ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
-                    jobCode: "",
-                    preparedBy: administrative.preparedBy,
-                    approvedBy: administrative.approvedBy,
-                    preparedOn: administrative.preparedOn,
-                    revisedBy: administrative.revisedBy,
-                    revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice?.value,
-                    offerValidity: administrative.offerValidity?.value
-                },
-                customItemBodyModel: {
-                    customItemBodyId: parseInt(addPortFolioItem.id),
-                    itemBodyDescription: addPortFolioItem.description,
-                    spareParts: ["WITH_SPARE_PARTS"],
-                    labours: ["WITH_LABOUR"],
-                    miscellaneous: ["LUBRICANTS"],
-                    taskType: [addPortFolioItem.taskType?.value],
-                    solutionCode: "",
-                    usageIn: addPortFolioItem.usageIn?.value,
-                    usage: "",
-                    year: "",
-                    avgUsage: 0,
-                    unit: addPortFolioItem.unit?.value,
-                    frequency: addPortFolioItem.frequency?.value,
-                    recommendedValue: parseInt(addPortFolioItem.recommendedValue),
-                    customItemPrices: []
-                },
-            }
-            const { data, status } = await updateCustomItemData(
-                addPortFolioItem.id,
-                reqObj
-            );
-            if (status == 200) {
-                toast("😎 Updated Successfully", {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            }
-            const _bundleItems = [...bundleItems];
-            // to check if itemEdit or bundle/service edit
-            if (!(editItemShow && passItemEditRowData._bundleId)) {
-                for (let i = 0; i < _bundleItems.length; i++) {
-                    if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
-                        let obj = {
-                            ...data,
-                            associatedServiceOrBundle:
-                                _bundleItems[i].associatedServiceOrBundle,
-                        };
-                        _bundleItems[i] = obj;
-                        break;
+                if ((editAbleItemPriceData?.customItemPriceDataId != "") ||
+                    (editAbleItemPriceData?.customItemPriceDataId != undefined)) {
+
+                    const priceUpdateData = {
+                        customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId,
+                        quantity: 0,
+                        standardJobId: addPortFolioItem.templateId,
+                        repairKitId: addPortFolioItem.repairOption,
+                        templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+                        repairOption: editAbleItemPriceData.repairOption,
+                        additional: editAbleItemPriceData.additional,
+                        partListId: editAbleItemPriceData.partListId,
+                        serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
+                        numberOfEvents: 0,
+                        priceMethod: editAbleItemPriceData.priceMethod,
+                        priceType: editAbleItemPriceData.priceType,
+                        listPrice: editAbleItemPriceData.listPrice,
+                        priceEscalation: editAbleItemPriceData.priceEscalation,
+                        calculatedPrice: 0,
+                        flatPrice: 0,
+                        year: addPortFolioItem?.year?.value,
+                        noOfYear: addPortFolioItem?.noOfYear,
+                        sparePartsPrice: 0,
+                        sparePartsPriceBreakDownPercentage: 0,
+                        servicePrice: 0,
+                        labourPrice: 0,
+                        labourPriceBreakDownPercentage: 0,
+                        miscPrice: 0,
+                        miscPriceBreakDownPercentage: 0,
+                        totalPrice: 0,
+                        netService: 0,
+                        additionalPriceType: editAbleItemPriceData.additionalPriceType,
+                        additionalPriceValue: editAbleItemPriceData.additionalPriceValue,
+                        discountType: editAbleItemPriceData.discountType,
+                        discountValue: editAbleItemPriceData.discountValue,
+                        recommendedValue: addPortFolioItem?.recommendedValue,
+                        startUsage: addPortFolioItem?.startUsage,
+                        endUsage: addPortFolioItem?.endUsage,
+                        sparePartsEscalation: 0,
+                        labourEscalation: 0,
+                        miscEscalation: 0,
+                        serviceEscalation: 0,
+                        withBundleService: bundleServiceNeed,
+                        customPortfolio: {
+                            portfolioId: portfolioId
+                        },
+                        tenantId: 0,
+                        partsRequired: true,
+                        labourRequired: true,
+                        serviceRequired: false,
+                        miscRequired: true,
+                        inclusionExclusion: true
+                    }
+
+                    const updatePriceId = await updateCustomPriceData(
+                        editAbleItemPriceData.customItemPriceDataId,
+                        priceUpdateData
+                    );
+                    setItemPriceData(updatePriceId.data)
+
+                }
+
+                let reqObj = {
+                    customItemId: parseInt(addPortFolioItem.id),
+                    itemName: addPortFolioItem.name,
+                    customItemHeaderModel: {
+                        customItemHeaderId: 0,
+                        itemHeaderDescription: addPortFolioItem.description,
+                        bundleFlag: compoFlagData,
+                        withBundleService: false,
+                        portfolioItemId: bundleServicePortfolioItemId,
+                        reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
+                        itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
+                        itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
+                        model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
+                        prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
+                        type: "MACHINE",
+                        additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
+                        currency: "",
+                        netPrice: "",
+                        itemProductHierarchy: compoFlagData == "BUNDLE" ? "END_PRODUCT" : "EMPTY",
+                        itemHeaderGeographic: compoFlagData == "BUNDLE" ? "ONSITE" : "EMPTY",
+                        responseTime: compoFlagData == "BUNDLE" ? "PROACTIVE" : "EMPTY",
+                        usage: "",
+                        validFrom: validityData?.fromDate ? validityData?.fromDate : "",
+                        validTo: validityData?.toDate ? validityData?.toDate : "",
+                        estimatedTime: "",
+                        servicePrice: 0,
+                        status: "DRAFT",
+                        componentCode: componentData.componentCode != "" ? componentData.componentCode : "",
+                        componentDescription: componentData.description != "" ? componentData.description : "",
+                        serialNumber: componentData.serialNo != "" ? componentData.serialNo : "",
+                        itemHeaderStrategy: compoFlagData == "BUNDLE" ? "PREVENTIVE_MAINTENANCE" : "EMPTY",
+                        variant: "",
+                        itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
+                            ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+                        jobCode: "",
+                        preparedBy: bundleOrServiceAdministrative.preparedBy,
+                        approvedBy: bundleOrServiceAdministrative.approvedBy,
+                        preparedOn: bundleOrServiceAdministrative.preparedOn,
+                        revisedBy: bundleOrServiceAdministrative.revisedBy,
+                        revisedOn: bundleOrServiceAdministrative.revisedOn,
+                        salesOffice: bundleOrServiceAdministrative.salesOffice,
+                        offerValidity: bundleOrServiceAdministrative.offerValidity,
+                        serviceChargable: false,
+                        serviceOptional: false
+                    },
+                    customItemBodyModel: {
+                        customItemBodyId: 0,
+                        itemBodyDescription: addPortFolioItem.description,
+                        spareParts: ["WITH_SPARE_PARTS"],
+                        labours: ["WITH_LABOUR"],
+                        miscellaneous: ["LUBRICANTS"],
+                        taskType: (compoFlagData == "BUNDLE" && addPortFolioItem.taskType != "") ? [addPortFolioItem.taskType.value] : ["EMPTY"],
+                        solutionCode: "",
+                        usageIn: (compoFlagData == "BUNDLE" && addPortFolioItem.usageIn != "") ? addPortFolioItem.usageIn.value : "",
+                        usage: "",
+                        year: addPortFolioItem.year != "" ? addPortFolioItem.year?.value : "",
+                        avgUsage: 0,
+                        unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
+                        frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
+                        customItemPrices: (editAbleItemPriceData?.customItemPriceDataId == "" ||
+                            editAbleItemPriceData.customItemPriceDataId == undefined) ? [] : [
+                            {
+                                customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
+                            }
+                        ]
                     }
                 }
-                setBundleItems(_bundleItems);
+
+                console.log("reqObj is : ", reqObj);
+                const itemUpdateRes = await updateCustomItemData(
+                    addPortFolioItem.id,
+                    reqObj
+                );
+
+                if (itemUpdateRes.status === 200) {
+                    toast(`😎 ${(compoFlagData == "BUNDLE_ITEM") ?
+                        "Bundle" : (compoFlagData == "SERVICE") ?
+                            "Service" : ""} Item ${addPortFolioItem.name} updated successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setUpdatedServiceBundleItemData(itemUpdateRes.data);
+                    setBundleTabs("bundleServicePriceCalculator")
+                    // setAssociatedServiceOrBundleIndex
+                }
+
             } else {
-                for (let i = 0; i < _bundleItems.length; i++) {
-                    if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
-                        for (
-                            let j = 0;
-                            j < _bundleItems[i].associatedServiceOrBundle.length;
-                            j++
-                        ) {
-                            if (
-                                _bundleItems[i].associatedServiceOrBundle[j].customItemId ==
-                                passItemEditRowData._bundleId
-                            ) {
-                                _bundleItems[i].associatedServiceOrBundle[j] = data;
+                if ((editAbleItemPriceData?.customItemPriceDataId != "") ||
+                    (editAbleItemPriceData?.customItemPriceDataId != undefined)) {
+
+                    const priceUpdateData = {
+                        customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId,
+                        quantity: 0,
+                        standardJobId: addPortFolioItem.templateId,
+                        repairKitId: addPortFolioItem.repairOption,
+                        templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+                        repairOption: editAbleItemPriceData.repairOption,
+                        additional: editAbleItemPriceData.additional,
+                        partListId: editAbleItemPriceData.partListId,
+                        serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
+                        numberOfEvents: 0,
+                        priceMethod: editAbleItemPriceData.priceMethod,
+                        priceType: editAbleItemPriceData.priceType,
+                        listPrice: editAbleItemPriceData.listPrice,
+                        priceEscalation: editAbleItemPriceData.priceEscalation,
+                        calculatedPrice: 0,
+                        flatPrice: 0,
+                        year: addPortFolioItem?.year?.value,
+                        noOfYear: addPortFolioItem?.noOfYear,
+                        sparePartsPrice: 0,
+                        sparePartsPriceBreakDownPercentage: 0,
+                        servicePrice: 0,
+                        labourPrice: 0,
+                        labourPriceBreakDownPercentage: 0,
+                        miscPrice: 0,
+                        miscPriceBreakDownPercentage: 0,
+                        totalPrice: 0,
+                        netService: 0,
+                        additionalPriceType: editAbleItemPriceData.additionalPriceType,
+                        additionalPriceValue: editAbleItemPriceData.additionalPriceValue,
+                        discountType: editAbleItemPriceData.discountType,
+                        discountValue: editAbleItemPriceData.discountValue,
+                        recommendedValue: addPortFolioItem?.recommendedValue,
+                        startUsage: addPortFolioItem?.startUsage,
+                        endUsage: addPortFolioItem?.endUsage,
+                        sparePartsEscalation: 0,
+                        labourEscalation: 0,
+                        miscEscalation: 0,
+                        serviceEscalation: 0,
+                        withBundleService: bundleServiceNeed,
+                        customPortfolio: {
+                            portfolioId: portfolioId
+                        },
+                        tenantId: 0,
+                        partsRequired: true,
+                        labourRequired: true,
+                        serviceRequired: false,
+                        miscRequired: true,
+                        inclusionExclusion: true
+                    }
+
+                    const updatePriceId = await updateCustomPriceData(
+                        editAbleItemPriceData.customItemPriceDataId,
+                        priceUpdateData
+                    );
+                    setItemPriceData(updatePriceId.data)
+
+                }
+
+                let reqObj = {
+                    customItemId: parseInt(addPortFolioItem.id),
+                    itemName: addPortFolioItem.name,
+                    customItemHeaderModel: {
+                        customItemHeaderId: 0,
+                        itemHeaderDescription: addPortFolioItem.description,
+                        bundleFlag: compoFlagData,
+                        withBundleService: bundleServiceNeed,
+                        portfolioItemId: bundleServicePortfolioItemId,
+                        reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
+                        itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
+                        itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
+                        model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
+                        prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
+                        type: "MACHINE",
+                        additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
+                        currency: "",
+                        netPrice: "",
+                        itemProductHierarchy: "END_PRODUCT",
+                        itemHeaderGeographic: "ONSITE",
+                        responseTime: "PROACTIVE",
+                        usage: "",
+                        validFrom: validityData?.fromDate ? validityData?.fromDate : "",
+                        validTo: validityData?.toDate ? validityData?.toDate : "",
+                        estimatedTime: "",
+                        servicePrice: 0,
+                        status: "DRAFT",
+                        componentCode: componentData.componentCode != "" ? componentData.componentCode : "",
+                        componentDescription: componentData.description != "" ? componentData.description : "",
+                        serialNumber: componentData.serialNo != "" ? componentData.serialNo : "",
+                        itemHeaderStrategy: (addPortFolioItem.strategyTask != "") ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+                        variant: "",
+                        itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
+                            ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+                        jobCode: "",
+                        preparedBy: bundleOrServiceAdministrative.preparedBy,
+                        approvedBy: bundleOrServiceAdministrative.approvedBy,
+                        preparedOn: bundleOrServiceAdministrative.preparedOn,
+                        revisedBy: bundleOrServiceAdministrative.revisedBy,
+                        revisedOn: bundleOrServiceAdministrative.revisedOn,
+                        salesOffice: bundleOrServiceAdministrative.salesOffice,
+                        offerValidity: bundleOrServiceAdministrative.offerValidity,
+                        serviceChargable: false,
+                        serviceOptional: false
+                    },
+                    customItemBodyModel: {
+                        customItemBodyId: 0,
+                        itemBodyDescription: addPortFolioItem.description,
+                        spareParts: ["WITH_SPARE_PARTS"],
+                        labours: ["WITH_LABOUR"],
+                        miscellaneous: ["LUBRICANTS"],
+                        taskType: (addPortFolioItem.taskType != "") ? [addPortFolioItem.taskType.value] : ["EMPTY"],
+                        solutionCode: "",
+                        usageIn: (addPortFolioItem.usageIn != "") ? addPortFolioItem.usageIn.value : "",
+                        usage: "",
+                        year: addPortFolioItem.year != "" ? addPortFolioItem.year?.value : "",
+                        avgUsage: 0,
+                        unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
+                        frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
+                        customItemPrices: (editAbleItemPriceData?.customItemPriceDataId == "" ||
+                            editAbleItemPriceData.customItemPriceDataId == undefined) ? [] : [
+                            {
+                                customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
+                            }
+                        ]
+                    }
+                }
+
+                console.log("reqObj is : ", reqObj);
+                const itemUpdateRes = await updateCustomItemData(
+                    addPortFolioItem.id,
+                    reqObj
+                );
+
+                var updateItemDataArr = [];
+                setCurrentItemId(itemUpdateRes.data.customItemId)
+                updateItemDataArr.push(itemUpdateRes.data)
+
+                const _tempBundleItems = [...tempBundleItems]
+                console.log("_tempBundleItems 2574 : ", _tempBundleItems)
+                for (let i = 0; i < _tempBundleItems.length; i++) {
+                    if (itemUpdateRes.data.customItemId === _tempBundleItems[i].customItemId) {
+                        // if (_tempBundleItems[i].associatedServiceOrBundle) {
+                        //   for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+                        //     console.log("tempBundleService2", tempBundleService2)
+                        //     for (let k = 0; k < tempBundleService2.length; k++) {
+                        //       if (_tempBundleItems[i].associatedServiceOrBundle[j].customItemId == tempBundleService3[k].customItemId) {
+                        //         tempBundleService2.splice(k, 1)//remove object if already exist
+                        //         break;
+                        //       }
+                        //     }
+                        //   }
+                        //   _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService3]
+                        // } else {
+                        _tempBundleItems[i] = { ...itemUpdateRes.data, associatedServiceOrBundle: [...tempBundleService3] }
+                        // }
+                    }
+                    setTempBundleItems(_tempBundleItems)
+                    // setLoadingItem("22")
+                }
+
+                if (itemUpdateRes.status === 200) {
+                    toast(`😎 Item ${addPortFolioItem.name} updated successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    if (bundleServiceNeed) {
+                        setTabs("4");
+                    } else {
+                        setTabs("2");
+                    }
+                    console.log("itemUpdateRes is  : ", itemUpdateRes);
+                    // setTempBundleItems([itemUpdateRes.data]);
+                    // setTempBundleItems([...tempBundleItems, itemUpdateRes.data]);
+                    setCurrentItemId(addPortFolioItem.id)
+                }
+
+                if (!bundleServiceNeed) {
+                    const _bundleItems = [...bundleItems];
+                    // to check if itemEdit or bundle/service edit
+                    if (!(editItemShow && passItemEditRowData._bundleId)) {
+                        for (let i = 0; i < _bundleItems.length; i++) {
+                            if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
+                                let obj = {
+                                    ...data,
+                                    associatedServiceOrBundle:
+                                        _bundleItems[i].associatedServiceOrBundle,
+                                };
+                                _bundleItems[i] = obj;
                                 break;
                             }
                         }
-                        break;
+                        setBundleItems(_bundleItems);
+                    } else {
+                        for (let i = 0; i < _bundleItems.length; i++) {
+                            if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
+                                for (
+                                    let j = 0;
+                                    j < _bundleItems[i].associatedServiceOrBundle.length;
+                                    j++
+                                ) {
+                                    if (
+                                        _bundleItems[i].associatedServiceOrBundle[j].customItemId ==
+                                        passItemEditRowData._bundleId
+                                    ) {
+                                        _bundleItems[i].associatedServiceOrBundle[j] = data;
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        setBundleItems(_bundleItems);
                     }
                 }
-                setBundleItems(_bundleItems);
             }
         } catch (error) {
             console.log("err in handleItemEditSave", error);
@@ -2858,7 +3329,6 @@ export function CreatedCustomPortfolioTemplate(props) {
         var finalDateString = year + "-" + month + "-" + day;
         return finalDateString;
     }
-    const [selectedCustomerSegmentOption, setSelectedCustomerSegmentOption] = useState("")
     const [itemPriceData, setItemPriceData] = useState({});
     const getPriceCalculatorDataFun = (data) => {
         setPriceCalculator(data);
@@ -2893,7 +3363,6 @@ export function CreatedCustomPortfolioTemplate(props) {
                 console.log("error in getSearchQueryCoverage", err);
             });
     }
-    const [bundleServiceQuerySearchModelPrefixOption, setBundleServiceQuerySearchModelPrefixOption] = useState([])
     const selectBundleServicePrefixOption = (e) => {
         setSelectedPrefixOption(e)
         setCreateServiceOrBundle({
@@ -2913,80 +3382,84 @@ export function CreatedCustomPortfolioTemplate(props) {
     const handleSavePrices = async () => {
         console.log("addPortFolioItem ", addPortFolioItem)
         try {
-            let reqObj = {
-                itemId: parseInt(addPortFolioItem.id),
-                itemName: "",
-                itemHeaderModel: {
-                    itemHeaderId: 0,
-                    // itemHeaderId: parseInt(generalComponentData.portfolioId),
-                    itemHeaderDescription: createServiceOrBundle.description,
-                    bundleFlag:
-                        serviceOrBundlePrefix === ""
-                            ? "PORTFOLIO"
-                            : serviceOrBundlePrefix === "SERVICE"
-                                ? "SERVICE"
-                                : "BUNDLE_ITEM",
-                    reference: createServiceOrBundle.reference,
-                    itemHeaderMake: createServiceOrBundle.make,
-                    itemHeaderFamily: "",
-                    model: createServiceOrBundle.models,
-                    prefix: createServiceOrBundle.prefix,
-                    type: "MACHINE",
-                    additional: createServiceOrBundle.additional.value,
-                    currency: "",
-                    netPrice: 0,
-                    itemProductHierarchy: generalComponentData.productHierarchy,
-                    itemHeaderGeographic: generalComponentData.geographic,
-                    responseTime: generalComponentData.responseTime,
-                    usage: "",
-                    validFrom: generalComponentData.validFrom,
-                    validTo: generalComponentData.validTo,
-                    estimatedTime: "",
-                    servicePrice: 0,
-                    status: "NEW",
-                },
-                itemBodyModel: {
-                    itemBodyId: parseInt(addPortFolioItem.id),
-                    itemBodyDescription: addPortFolioItem.description,
-                    quantity: parseInt(addPortFolioItem.quantity),
-                    startUsage: priceCalculator.startUsage,
-                    endUsage: priceCalculator.endUsage,
-                    standardJobId: "",
-                    frequency: addPortFolioItem.frequency.value,
-                    additional: "",
-                    spareParts: ["WITH_SPARE_PARTS"],
-                    labours: ["WITH_LABOUR"],
-                    miscellaneous: ["LUBRICANTS"],
-                    taskType: [addPortFolioItem.taskType.value],
-                    solutionCode: "",
-                    usageIn: addPortFolioItem.usageIn.value,
-                    recommendedValue: 0,
-                    usage: "",
-                    repairKitId: "",
-                    templateDescription: addPortFolioItem.description.value,
-                    partListId: "",
-                    serviceEstimateId: "",
-                    numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
-                    repairOption: addPortFolioItem.repairOption.value,
-                    priceMethod: "LIST_PRICE",
-                    listPrice: parseInt(priceCalculator.listPrice),
-                    priceEscalation: "",
-                    calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-                    flatPrice: parseInt(priceCalculator.flatPrice),
-                    discountType: "",
-                    year: priceCalculator.priceYear.value,
-                    avgUsage: 0,
-                    unit: addPortFolioItem.unit.value,
-                    sparePartsPrice: 0,
-                    sparePartsPriceBreakDownPercentage: 0,
-                    servicePrice: 0,
-                    servicePriceBreakDownPercentage: 0,
-                    miscPrice: 0,
-                    miscPriceBreakDownPercentage: 0,
-                    totalPrice: 0,
-                },
-            };
-            const { data, status } = await updateCustomItemData(currentItemId, reqObj);
+            if (serviceOrBundlePrefix === "PORTFOLIO") {
+
+                let reqObj = {
+                    itemId: parseInt(addPortFolioItem.id),
+                    itemName: "",
+                    itemHeaderModel: {
+                        itemHeaderId: 0,
+                        // itemHeaderId: parseInt(generalComponentData.portfolioId),
+                        itemHeaderDescription: createServiceOrBundle.description,
+                        bundleFlag:
+                            serviceOrBundlePrefix === ""
+                                ? "PORTFOLIO"
+                                : serviceOrBundlePrefix === "SERVICE"
+                                    ? "SERVICE"
+                                    : "BUNDLE_ITEM",
+                        reference: createServiceOrBundle.reference,
+                        itemHeaderMake: createServiceOrBundle.make,
+                        itemHeaderFamily: "",
+                        model: createServiceOrBundle.models,
+                        prefix: createServiceOrBundle.prefix,
+                        type: "MACHINE",
+                        additional: createServiceOrBundle.additional.value,
+                        currency: "",
+                        netPrice: 0,
+                        itemProductHierarchy: generalComponentData.productHierarchy,
+                        itemHeaderGeographic: generalComponentData.geographic,
+                        responseTime: generalComponentData.responseTime,
+                        usage: "",
+                        validFrom: generalComponentData.validFrom,
+                        validTo: generalComponentData.validTo,
+                        estimatedTime: "",
+                        servicePrice: 0,
+                        status: "NEW",
+                    },
+                    itemBodyModel: {
+                        itemBodyId: parseInt(addPortFolioItem.id),
+                        itemBodyDescription: addPortFolioItem.description,
+                        quantity: parseInt(addPortFolioItem.quantity),
+                        startUsage: priceCalculator.startUsage,
+                        endUsage: priceCalculator.endUsage,
+                        standardJobId: "",
+                        frequency: addPortFolioItem.frequency.value,
+                        additional: "",
+                        spareParts: ["WITH_SPARE_PARTS"],
+                        labours: ["WITH_LABOUR"],
+                        miscellaneous: ["LUBRICANTS"],
+                        taskType: [addPortFolioItem.taskType.value],
+                        solutionCode: "",
+                        usageIn: addPortFolioItem.usageIn.value,
+                        recommendedValue: 0,
+                        usage: "",
+                        repairKitId: "",
+                        templateDescription: addPortFolioItem.description.value,
+                        partListId: "",
+                        serviceEstimateId: "",
+                        numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
+                        repairOption: addPortFolioItem.repairOption.value,
+                        priceMethod: "LIST_PRICE",
+                        listPrice: parseInt(priceCalculator.listPrice),
+                        priceEscalation: "",
+                        calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+                        flatPrice: parseInt(priceCalculator.flatPrice),
+                        discountType: "",
+                        year: priceCalculator.priceYear.value,
+                        avgUsage: 0,
+                        unit: addPortFolioItem.unit.value,
+                        sparePartsPrice: 0,
+                        sparePartsPriceBreakDownPercentage: 0,
+                        servicePrice: 0,
+                        servicePriceBreakDownPercentage: 0,
+                        miscPrice: 0,
+                        miscPriceBreakDownPercentage: 0,
+                        totalPrice: 0,
+                    },
+                };
+                const { data, status } = await updateCustomItemData(currentItemId, reqObj);
+            }
+
         } catch (error) {
             console.log("error in handleSavePrices", error);
             toast("😐" + error, {
@@ -3001,7 +3474,7 @@ export function CreatedCustomPortfolioTemplate(props) {
             return;
         }
     };
-    const [bundleServiceQuerySearchModelResult, setBundleServiceQuerySearchModelResult] = useState([])
+
     const [currentItemId, setCurrentItemId] = useState();
     const handleDropdownChange = (type, e) => {
         if (type == ENUM.STRATEGY_TASK) {
@@ -4511,34 +4984,100 @@ export function CreatedCustomPortfolioTemplate(props) {
         let customItemArr = [];
         let createdCustomCoverages = [];
 
-        // Set Data By Item Relation Data Data
-        for (let b = 0; b < result.itemRelations.length; b++) {
-            let expendedArrObj = [];
-            let obj = result.customItems.find(obj => obj.customItemId == result.itemRelations[b].portfolioItemId);
-            for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+        let newArrItem = [];
 
-                let bundleObj = result.customItems.find((objBundle, i) => {
-                    if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
+        console.log("result.customItems : ", result.customItems)
+        if (result.customItems.length > 0) {
 
-                        return objBundle; // stop searching
+            for (let i = 0; i < result.customItems.length; i++) {
+
+
+
+                if (result.customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
+                    let myObj = result.customItems[i];
+                    console.log("myObj data : ", myObj)
+                    let expendedArrObj = [];
+                    if (result.itemRelations != null) {
+                        if (result.itemRelations.length > 0) {
+                            for (let b = 0; b < result.itemRelations.length; b++) {
+                                if (result.customItems[i].customItemId === result.itemRelations[b].portfolioItemId) {
+                                    for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+                                        let bundleObj = result.customItems.find((objBundle, i) => {
+                                            if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
+
+                                                return objBundle; // stop searching
+                                            }
+                                        });
+                                        expendedArrObj.push(bundleObj);
+                                    }
+
+                                    for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+                                        let serviceObj = result.customItems.find((objService, i) => {
+                                            if (objService.customItemId == result.itemRelations[b].services[d]) {
+                                                return objService; // stop searching
+                                            }
+                                        });
+                                        expendedArrObj.push(serviceObj);
+                                    }
+                                }
+
+                                myObj.associatedServiceOrBundle = expendedArrObj;
+                                itemsArrData.push(myObj);
+                                // let obj = result.customItems.find(obj => obj.customItemId == result.itemRelations[b].portfolioItemId);
+                            }
+                        } else {
+                            myObj.associatedServiceOrBundle = expendedArrObj;
+                            itemsArrData.push(myObj);
+                        }
+
+                    } else {
+                        myObj.associatedServiceOrBundle = expendedArrObj;
+                        itemsArrData.push(myObj);
                     }
-                });
-                expendedArrObj.push(bundleObj);
-            }
 
-            for (let d = 0; d < result.itemRelations[b].services.length; d++) {
-                let serviceObj = result.customItems.find((objService, i) => {
-                    if (objService.customItemId == result.itemRelations[b].services[d]) {
-                        return objService; // stop searching
-                    }
-                });
-                expendedArrObj.push(serviceObj);
-            }
+                    console.log("itemsArrDat 4560 : ", itemsArrData)
 
-            obj.associatedServiceOrBundle = expendedArrObj;
-            itemsArrData.push(obj);
+                }
+
+                console.log("itemsArrData : ", itemsArrData)
+
+                setSelectedSolutionItems(itemsArrData);
+
+                // console.log("result.customItems ", result.customItems[i].customItemId, result.customItems[i].customItemHeaderModel.bundleFlag)
+
+
+            }
         }
-        setSelectedSolutionItems(itemsArrData);
+
+        // // Set Data By Item Relation Data Data
+        // for (let b = 0; b < result.itemRelations.length; b++) {
+        //     let expendedArrObj = [];
+        //     let obj = result.customItems.find(obj => obj.customItemId == result.itemRelations[b].portfolioItemId);
+        //     for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+        //         let bundleObj = result.customItems.find((objBundle, i) => {
+        //             if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
+
+        //                 return objBundle; // stop searching
+        //             }
+        //         });
+        //         expendedArrObj.push(bundleObj);
+        //     }
+
+        //     for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+        //         let serviceObj = result.customItems.find((objService, i) => {
+        //             if (objService.customItemId == result.itemRelations[b].services[d]) {
+        //                 return objService; // stop searching
+        //             }
+        //         });
+        //         expendedArrObj.push(serviceObj);
+        //     }
+
+        //     obj.associatedServiceOrBundle = expendedArrObj;
+        //     itemsArrData.push(obj);
+        // }
+        // setSelectedSolutionItems(itemsArrData);
 
         // for Update  Custom-Item in Portfolio Item Data BY Id 
         for (let i = 0; i < result.customItems.length; i++) {
@@ -4551,6 +5090,8 @@ export function CreatedCustomPortfolioTemplate(props) {
         // setBundleItems(itemsArrData)
 
     }
+
+    console.log("setSelectedSolutionItems : ", selectedSolutionItems)
 
     const handleSnack = (snackSeverity, snackMessage) => {
         setSnackMessage(snackMessage);
@@ -4630,6 +5171,12 @@ export function CreatedCustomPortfolioTemplate(props) {
         { value: 'Construction', label: 'Construction' },
     ];
 
+    const discountTypeOptions = [
+        { value: "PROGRAM_DISCOUNT", label: "Program" },
+        { value: "CUSTOMER_DISCOUNT", label: "Customer" },
+        { value: "PORTFOLIO_DISCOUNT", label: "Portfolio" },
+    ]
+
     const options2 = [
         { value: "chocolate", label: "Archived" },
         { value: "strawberry", label: "Draft" },
@@ -4665,7 +5212,23 @@ export function CreatedCustomPortfolioTemplate(props) {
     const handleClose = () => setOpen(false);
     const handleClose1 = () => setOpen1(false);
     const handleCoveragetable = () => setOpenCoveragetable(false);
-
+    const data = [
+        {
+            id: 1,
+            caseId: 13322,
+            BundleId: "Pc",
+            Bundledescription: "Ex2487518",
+            S1: "CAT DEO",
+            strategy: "3",
+            Standardjob: "$43.09",
+            repairoption: "$100",
+            frequency: "USD",
+            quantity: "80%",
+            part$: "$80",
+            srevic$: "80% usage observed on previous work.",
+            Total$: "80% usage observed on previous work.",
+        },
+    ];
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -4690,6 +5253,8 @@ export function CreatedCustomPortfolioTemplate(props) {
         // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
     ];
 
+
+    // View Custom Portfolio Bundle/Service
     const handleExpendedBundleServiceUpdate = async (i, data) => {
 
         // alert(i)
@@ -4765,20 +5330,9 @@ export function CreatedCustomPortfolioTemplate(props) {
 
         setBundleServiceShow(true);
     }
-    const [associatedServiceOrBundleIndex, setAssociatedServiceOrBundleIndex] = useState(0);
+
     const [editBundleService, setEditBundleService] = useState(false);
-    const [bundleAndServiceEditAble, setBundleAndServiceEditAble] = useState(false);
-    const [bundleServicePortfolioItemId, setBundleServicePortfolioItemId] = useState(0);
-    const [bundleServiceItemPriceData, setBundleServiceItemPriceData] = useState([]);
-    const [bundleOrServiceAdministrative, setBundleOrServiceAdministrative] = useState({
-        preparedBy: null,
-        approvedBy: null,
-        preparedOn: new Date(),
-        revisedBy: null,
-        revisedOn: new Date(),
-        salesOffice: null,
-        offerValidity: null,
-    });
+
     const showPriceDataOfBundleOrService = async (bundleServiceData) => {
         // setBundleServicePriceCalculator
         // serviceOrBundlePrefix={serviceOrBundlePrefix}
@@ -5758,16 +6312,24 @@ export function CreatedCustomPortfolioTemplate(props) {
     const handleEditPortfolioItem = (e, row) => {
 
         console.log("row 1942 : ", row);
-        // setTempBundleService3(row.associatedServiceOrBundle)
-        // // data.associatedServiceOrBundle?.map((bundleAndService, i)
-        // setTabs("1");
+        setTempBundleService3(row.associatedServiceOrBundle)
+        setComponentData({
+            ...componentData,
+            componentCode: row.customItemHeaderModel.componentCode,
+            description: row.customItemHeaderModel.componentDescription,
+            model: row.customItemHeaderModel.model,
+            make: row.customItemHeaderModel.itemHeaderMake,
+            serialNo: row.customItemHeaderModel.serialNumber,
+        });
+        // data.associatedServiceOrBundle?.map((bundleAndService, i)
+        setTabs("1");
         setItemModelShow(true);
         setPortfolioItemDataEditable(true);
-        // setPassItemEditRowData({ ...row, _itemId: row.itemId });
+        setPassItemEditRowData({ ...row, _customItemId: row.customItemId });
 
-        // setOpenSearchSolution(false);
-        // setCreateNewBundle(false);
-        // setOpenAddBundleItemHeader("Add New Portfolio Item");
+        setOpenSearchSolution(false);
+        setCreateNewBundle(false);
+        setOpenAddBundleItemHeader("Add New Portfolio Item");
     }
     const [portfolioItemDataEditable, setPortfolioItemDataEditable] = useState(false);
     const Inclusion_Exclusion = (e, data) => {
@@ -6010,15 +6572,194 @@ export function CreatedCustomPortfolioTemplate(props) {
         });
     };
 
-    const handleAddNewServiceOrBundle = () => {
-        // setServiceOrBundleShow(false);
-        if (serviceOrBundlePrefix === "SERVICE") {
-            setBundleTabs("3")
+    const handleAddNewServiceOrBundle = async () => {
+        try {
+
+            // ====== Validation for Bundle Item Create/Update ====== //
+            if (serviceOrBundlePrefix === "BUNDLE") {
+                if ((createServiceOrBundle.name == "") ||
+                    (createServiceOrBundle.name == undefined)) {
+                    throw "Bundle Name is a required field, you can’t leave it blank";
+                }
+                if ((createServiceOrBundle.description == "") ||
+                    (createServiceOrBundle.description == undefined)) {
+                    throw "Bundle Description is a required field, you can’t leave it blank";
+                }
+                if ((createServiceOrBundle.model == "") ||
+                    (createServiceOrBundle.model == undefined)) {
+                    throw "Model is a required field, you can’t leave it blank";
+                }
+                setBundleTabs("bundleServiceItems");
+            }
+
+            // ====== Validation for Service Item Create/Update ====== //
+            if (serviceOrBundlePrefix === "SERVICE") {
+                // if ((createServiceOrBundle.name == "") ||
+                //   (createServiceOrBundle.name == undefined)) {
+                //   throw "Service Name is a required field, you can’t leave it blank";
+                // }
+                // if ((createServiceOrBundle.description == "") ||
+                //   (createServiceOrBundle.description == undefined)) {
+                //   throw "Service Description is a required field, you can’t leave it blank";
+                // }
+                // if ((createServiceOrBundle.model == "") ||
+                //   (createServiceOrBundle.model == undefined)) {
+                //   throw "Model is a required field, you can’t leave it blank";
+                // }
+
+                // let reqObj = {
+                //   itemId: createServiceOrBundle.id,
+                //   itemName: createServiceOrBundle.name,
+                //   itemHeaderModel: {
+                //     itemHeaderId: createServiceOrBundle.id,
+                //     itemHeaderDescription: createServiceOrBundle.description,
+                //     bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+                //     portfolioItemId: bundleServicePortfolioItemId,
+                //     reference: createServiceOrBundle.reference,
+                //     itemHeaderMake: createServiceOrBundle.make,
+                //     itemHeaderFamily: createServiceOrBundle.family,
+                //     model: createServiceOrBundle.model,
+                //     prefix: createServiceOrBundle.prefix?.value,
+                //     type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+                //     additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+                //     currency: "",
+                //     netPrice: 0,
+                //     itemProductHierarchy: "END_PRODUCT",
+                //     itemHeaderGeographic: "ONSITE",
+                //     responseTime: "PROACTIVE",
+                //     usage: "",
+                //     validFrom: "",
+                //     validTo: "",
+                //     estimatedTime: "",
+                //     servicePrice: 0,
+                //     status: "DRAFT",
+                //     itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+                //     componentCode: "",
+                //     componentDescription: "",
+                //     serialNumber: "",
+                //     variant: "",
+                //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+                //     jobCode: "",
+                //     preparedBy: administrative.preparedBy,
+                //     approvedBy: administrative.approvedBy,
+                //     preparedOn: administrative.preparedOn,
+                //     revisedBy: administrative.revisedBy,
+                //     revisedOn: administrative.revisedOn,
+                //     salesOffice: administrative.salesOffice?.value,
+                //     offerValidity: administrative.offerValidity?.value
+                //   },
+                //   itemBodyModel: {
+                //     itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+                //     itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+                //     frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+                //     spareParts: ["WITH_SPARE_PARTS"],
+                //     labours: ["WITH_LABOUR"],
+                //     miscellaneous: ["LUBRICANTS"],
+                //     taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+                //     solutionCode: "",
+                //     usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+                //     recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+                //     usage: "",
+                //     year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+                //     avgUsage: 0,
+                //     unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+                //     itemPrices: serviceOrBundlePrefix === "BUNDLE" ?
+                //       bundleServiceItemPriceData : [],
+                //   }
+                // }
+
+
+                let reqObj = {
+                    customItemId: createServiceOrBundle.id,
+                    itemName: createServiceOrBundle.name,
+                    customItemHeaderModel: {
+                        customItemHeaderId: createServiceOrBundle.id,
+                        itemHeaderDescription: createServiceOrBundle.description,
+                        bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+                        withBundleService: false,
+                        portfolioItemId: bundleServicePortfolioItemId,
+                        reference: createServiceOrBundle.reference,
+                        itemHeaderMake: createServiceOrBundle.make,
+                        itemHeaderFamily: createServiceOrBundle.family,
+                        model: createServiceOrBundle.model,
+                        prefix: createServiceOrBundle.prefix?.value,
+                        type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+                        additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+                        currency: "",
+                        netPrice: "",
+                        itemProductHierarchy: "EMPTY",
+                        itemHeaderGeographic: "EMPTY",
+                        responseTime: "EMPTY",
+                        usage: "",
+                        validFrom: "",
+                        validTo: "",
+                        estimatedTime: "",
+                        servicePrice: "",
+                        status: "DRAFT",
+                        componentCode: componentData.componentCode,
+                        componentDescription: componentData.description,
+                        serialNumber: componentData.serialNo,
+                        itemHeaderStrategy: "EMPTY",
+                        variant: "",
+                        itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+                        jobCode: "",
+                        preparedBy: bundleOrServiceAdministrative.preparedBy,
+                        approvedBy: bundleOrServiceAdministrative.approvedBy,
+                        preparedOn: bundleOrServiceAdministrative.preparedOn,
+                        revisedBy: bundleOrServiceAdministrative.revisedBy,
+                        revisedOn: bundleOrServiceAdministrative.revisedOn,
+                        salesOffice: bundleOrServiceAdministrative.salesOffice?.value,
+                        offerValidity: bundleOrServiceAdministrative.offerValidity?.value,
+                        serviceChargable: false,
+                        serviceOptional: false
+                    },
+                    customItemBodyModel: {
+                        customItemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+                        itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+                        spareParts: ["WITH_SPARE_PARTS"],
+                        labours: ["WITH_LABOUR"],
+                        miscellaneous: ["LUBRICANTS"],
+                        taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["EMPTY"],
+                        solutionCode: "",
+                        usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+                        usage: "",
+                        year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+                        avgUsage: 0,
+                        unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+                        frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+                        customItemPrices: serviceOrBundlePrefix === "BUNDLE" ?
+                            bundleServiceItemPriceData : [],
+                    }
+                }
+                const res = await updateCustomItemData(createServiceOrBundle.id, reqObj);
+                if (res.status === 200) {
+                    toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setCreatedServiceData(res.data);
+                    setUpdatedServiceBundleItemData(res.data);
+                    setBundleTabs("bundleServicePriceCalculator")
+                }
+            }
+
+        } catch (error) {
+
         }
         if (serviceOrBundlePrefix === "BUNDLE") {
-            // setOpenAddBundleItem(true);
-            setBundleTabs("2")
+            setBundleTabs("2");
         }
+        if (serviceOrBundlePrefix === "SERVICE") {
+            setBundleTabs("3");
+            saveAddNewServiceOrBundle();
+        }
+        setTabs("4") //moving to component Data tab in create Item model
+
     };
 
     const ShowRelatedIncludeModelBox = async (i, dataRow) => {
@@ -6232,160 +6973,613 @@ export function CreatedCustomPortfolioTemplate(props) {
         alert("Edit row");
     };
 
-    const getAddportfolioItemDataFun = (data) => {
-        setAddportFolioItem(data)
-    }
+    const getAddPortfolioItemDataFun = async (data) => {
+        console.log("dataaaaa23324442", data)
+        setAddportFolioItem(data);
+
+        // Old Todo 
+        // const rObj = {
+        //     itemPriceDataId: 0,
+        //     quantity: parseInt(data.quantity),
+        //     startUsage: "",
+        //     endUsage: "",
+        //     standardJobId: data.templateId,
+        //     repairKitId: "",
+        //     templateDescription: data.templateDescription?.value,
+        //     repairOption: "",
+        //     additional: "",
+        //     partListId: "",
+        //     serviceEstimateId: "",
+        //     numberOfEvents: parseInt(data.numberOfEvents),
+        //     priceMethod: "LIST_PRICE",
+        //     priceType: "FIXED",
+        //     listPrice: 0,
+        //     priceEscalation: "",
+        //     calculatedPrice: 0,
+        //     flatPrice: 0,
+        //     discountType: "",
+        //     year: data.year,
+        //     noOfYear: data.noOfYear,
+        //     sparePartsPrice: 0,
+        //     sparePartsPriceBreakDownPercentage: 0,
+        //     servicePrice: 0,
+        //     labourPrice: 0,
+        //     labourPriceBreakDownPercentage: 0,
+        //     miscPrice: 0,
+        //     miscPriceBreakDownPercentage: 0,
+        //     totalPrice: 0,
+        //     netService: 0,
+        //     portfolio: {
+        //         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+        //     },
+        //     tenantId: 0,
+        //     createdAt: "2022-12-09T13:52:27.880Z",
+        //     partsRequired: true,
+        //     serviceRequired: false,
+        //     labourRequired: true,
+        //     miscRequired: true
+        // };
+
+        // New Todo
+        const rObj = {
+            customItemPriceDataId: 0,
+            quantity: 0,
+            standardJobId: data.templateId,
+            repairKitId: data.repairOption,
+            templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
+            repairOption: "",
+            additional: "",
+            partListId: "",
+            serviceEstimateId: "",
+            numberOfEvents: 0,
+            priceMethod: "EMPTY",
+            priceType: "EMPTY",
+            listPrice: 0,
+            priceEscalation: "",
+            calculatedPrice: 0,
+            flatPrice: 0,
+            year: data.year?.value,
+            noOfYear: parseInt(data.noOfYear),
+            sparePartsPrice: 0,
+            sparePartsPriceBreakDownPercentage: 0,
+            servicePrice: 0,
+            labourPrice: 0,
+            labourPriceBreakDownPercentage: 0,
+            miscPrice: 0,
+            miscPriceBreakDownPercentage: 0,
+            totalPrice: 0,
+            netService: 0,
+            additionalPriceType: "ABSOLUTE",
+            additionalPriceValue: 0,
+            discountType: "EMPTY",
+            discountValue: 0,
+            recommendedValue: data.recommendedValue,
+            startUsage: data.startUsage,
+            endUsage: data.endUsage,
+            sparePartsEscalation: 0,
+            labourEscalation: 0,
+            miscEscalation: 0,
+            serviceEscalation: 0,
+            withBundleService: bundleServiceNeed,
+            customPortfolio: {
+                portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+            },
+            tenantId: 0,
+            partsRequired: true,
+            labourRequired: true,
+            miscRequired: true,
+            serviceRequired: false,
+            inclusionExclusion: true
+        }
+
+        const itemPriceDataRes = await customPriceCreation(rObj)
+
+        if (itemPriceDataRes.status === 200) {
+
+            setItemPriceData(itemPriceDataRes.data)
+            // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
+            handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+            setTempBundleService1([]);
+            setTempBundleService2([]);
+            setTempBundleService3([]);
+        } else {
+            toast("😐" + "Something Went wrong/ Item not Created", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
+    };
+
+    // const ExpandedComponent = ({ data }) => (
+    //     // {data?.}
+    //     <div>
+    //         {/* {data.associatedServiceOrBundle?.length > 0 ?
+    //     <> */}
+    //         <div
+    //             id="row-0"
+    //             role="row"
+    //             className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+    //             style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+    //         >
+    //             <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+    //                 {/* <div class="checkbox">
+    //             <input type="checkbox" value=""></input>
+    //         </div> */}
+    //             </div>
+    //             <div
+    //                 id="cell-1-undefined"
+    //                 data-column-id="1"
+    //                 role="gridcell"
+    //                 className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <span className="portfolio-icon mr-1">
+    //                     <svg style={{ width: "11px" }}
+    //                         id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+    //                         xmlns="http://www.w3.org/2000/svg"
+    //                         viewBox="0 0 119.30736 133.59966"
+    //                     >
+    //                         <path
+    //                             className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+    //                             d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+    //                         />
+    //                     </svg>
+    //                 </span>
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
+    //             </div>
+    //             <div
+    //                 id="cell-2-undefined"
+    //                 data-column-id="2"
+    //                 role="gridcell"
+    //                 className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
+    //             </div>
+    //             <div
+    //                 id="cell-3-undefined"
+    //                 data-column-id="3"
+    //                 role="gridcell"
+    //                 className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
+    //             </div>
+    //             <div
+    //                 id="cell-4-undefined"
+    //                 data-column-id="4"
+    //                 role="gridcell"
+    //                 className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
+    //             </div>
+    //             <div
+    //                 id="cell-5-undefined"
+    //                 data-column-id="5"
+    //                 role="gridcell"
+    //                 className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Ids</p>
+    //             </div>
+    //             <div
+    //                 id="cell-6-undefined"
+    //                 data-column-id="6"
+    //                 role="gridcell"
+    //                 className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
+    //             </div>
+    //             <div
+    //                 id="cell-7-undefined"
+    //                 data-column-id="7"
+    //                 role="gridcell"
+    //                 className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
+    //             </div>
+    //             <div
+    //                 id="cell-8-undefined"
+    //                 data-column-id="8"
+    //                 role="gridcell"
+    //                 className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Quantity</p>
+    //             </div>
+    //             <div
+    //                 id="cell-9-undefined"
+    //                 data-column-id="9"
+    //                 role="gridcell"
+    //                 className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
+    //             </div>
+    //             <div
+    //                 id="cell-10-undefined"
+    //                 data-column-id="10"
+    //                 role="gridcell"
+    //                 className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
+    //             </div>
+    //             <div
+    //                 id="cell-10-undefined"
+    //                 data-column-id="10"
+    //                 role="gridcell"
+    //                 className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
+    //             </div>
+    //             <div
+    //                 id="cell-10-undefined"
+    //                 data-column-id="11"
+    //                 role="gridcell"
+    //                 className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                 data-tag="allowRowEvents"
+    //             >
+    //                 <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
+    //             </div>
+    //         </div>
+    //         <div className="scrollbar" id="style">
+    //             {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+    //                 <div
+    //                     key={i}
+    //                     id="row-0"
+    //                     role="row"
+    //                     className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+    //                     style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+    //                 >
+    //                     <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+    //                         {/* <div class="checkbox">
+    //             <input type="checkbox" value=""></input>
+    //         </div> */}
+    //                     </div>
+    //                     <div
+    //                         id="cell-1-undefined"
+    //                         data-column-id="1"
+    //                         role="gridcell"
+    //                         className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div>{(i + 1) * 10}</div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-2-undefined"
+    //                         data-column-id="2"
+    //                         role="gridcell"
+    //                         className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
+    //                             <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+    //                                 <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+    //               c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+    //               c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+    //               c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+    //               l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+    //               c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+    //               c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+    //               M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+    //               c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+    //               c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+    //               c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+    //               c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+    //               c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+    //               c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+    //               c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+    //               c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+    //                             </svg></span>
+    //                         </div>
+    //                         <div className="align-items-center d-flex justify-content-center">
+    //                             {bundleAndService.itemName}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-3-undefined"
+    //                         data-column-id="3"
+    //                         role="gridcell"
+    //                         className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div className="d-flex align-items-center" data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemHeaderModel.itemHeaderDescription}
+    //                         </div>
+    //                         <div className="d-flex align-items-center">
+    //                             <div
+    //                                 className="description cursor mr-1"
+    //                                 onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+    //                             >
+    //                                 <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+    //                                     <g>
+    //                                         <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+    //                   c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+    //                   c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+    //                   c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+    //                   c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+    //                                         <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+    //                   c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+    //                   c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+    //                   c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+    //                                     </g>
+    //                                 </svg>
+    //                             </div>
+    //                             <div className=""><KeyboardArrowDownIcon /></div>
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-4-undefined"
+    //                         data-column-id="4"
+    //                         role="gridcell"
+    //                         className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
+    //                             <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+    //                                 <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+    //               c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+    //               c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+    //               c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+    //               l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+    //               c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+    //               c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+    //               M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+    //               c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+    //               c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+    //               c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+    //               c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+    //               c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+    //               c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+    //               c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+    //               c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+    //                             </svg></span>
+    //                         </div>
+    //                         <div className="align-items-center d-flex" data-tag="allowRowEvents">
+    //                             {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-5-undefined"
+    //                         data-column-id="5"
+    //                         role="gridcell"
+    //                         className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div className="d-flex " data-tag="allowRowEvents">SJ1034
+    //                         </div>
+    //                         <div
+    //                             className="description cursor mr-1"
+    //                             onClick={() => setBundleServiceShow(true)}
+    //                         >
+    //                             <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+    //                                 <g>
+    //                                     <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+    //                   c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+    //                   c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+    //                   c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+    //                   c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+    //                                     <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+    //                   c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+    //                   c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+    //                   c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+    //                                 </g>
+    //                             </svg>
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-6-undefined"
+    //                         data-column-id="6"
+    //                         role="gridcell"
+    //                         className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
+    //                         <div
+    //                             className="description mr-1"
+    //                         >
+    //                             <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+    //                                 <g>
+    //                                     <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+    //                   c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+    //                   c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+    //                   c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+    //                   c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+    //                                     <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+    //                   c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+    //                   c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+    //                   c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+    //                                 </g>
+    //                             </svg>
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-7-undefined"
+    //                         data-column-id="7"
+    //                         role="gridcell"
+    //                         className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-8-undefined"
+    //                         data-column-id="8"
+    //                         role="gridcell"
+    //                         className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div>4</div>
+    //                         <div className="funds-grey">
+
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-9-undefined"
+    //                         data-column-id="9"
+    //                         role="gridcell"
+    //                         className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div>4</div>
+    //                         <div className="funds-grey">
+
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-10-undefined"
+    //                         data-column-id="10"
+    //                         role="gridcell"
+    //                         className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div>4</div>
+    //                         <div
+    //                             className="funds-grey "
+    //                         >
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-10-undefined"
+    //                         data-column-id="10"
+    //                         role="gridcell"
+    //                         className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div>4</div>
+    //                         <div
+    //                             className="funds-grey cursor"
+    //                             onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
+    //                         >
+    //                             <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+    //                                 <g>
+    //                                     <g>
+    //                                         <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+    //                   C74.2,101.4,70.7,105,66.3,105.1z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+    //                   C103.4,89.1,106.9,92.9,106.8,97.2z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+    //                   C135.6,88.9,139.3,92.5,139.4,96.8z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+    //                   C70.7,121.6,74.3,125.2,74.3,129.6z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+    //                   C103.2,121.5,106.8,125.2,106.8,129.5z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+    //                   C70.7,154.1,74.3,157.7,74.3,162.1z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+    //                   C90.7,157.7,94.3,154.1,98.6,154z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+    //                   C135.8,121.5,139.4,125.2,139.4,129.5z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+    //                   C123.2,157.7,126.8,154.1,131.1,154z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+    //                   c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
+    //                   c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
+    //                                     </g>
+    //                                     <g>
+    //                                         <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+    //                   S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
+    //                   c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
+    //                                     </g>
+    //                                 </g>
+    //                             </svg>
+    //                         </div>
+    //                     </div>
+    //                     <div
+    //                         id="cell-10-undefined"
+    //                         data-column-id="11"
+    //                         role="gridcell"
+    //                         className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+    //                         data-tag="allowRowEvents"
+    //                     >
+    //                         <div>
+    //                             <Tooltip title="View">
+    //                                 <Link
+    //                                     to="#"
+    //                                     className="px-1"
+    //                                     onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+    //                                 >
+    //                                     <VisibilityOutlinedIcon />
+    //                                 </Link>
+    //                             </Tooltip>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             ))}
+    //         </div>
+    //         {/* </> : <></>} */}
+
+    //     </div>
+    // );
 
     const ExpandedComponent = ({ data }) => (
         // {data?.}
         <div>
             {/* {data.associatedServiceOrBundle?.length > 0 ?
-        <> */}
-            <div
-                id="row-0"
-                role="row"
-                className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
-                style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
-            >
-                <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
-                    {/* <div class="checkbox">
-                <input type="checkbox" value=""></input>
-            </div> */}
-                </div>
-                <div
-                    id="cell-1-undefined"
-                    data-column-id="1"
-                    role="gridcell"
-                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <span className="portfolio-icon mr-1">
-                        <svg style={{ width: "11px" }}
-                            id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 119.30736 133.59966"
-                        >
-                            <path
-                                className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
-                                d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
-                            />
-                        </svg>
-                    </span>
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
-                </div>
-                <div
-                    id="cell-2-undefined"
-                    data-column-id="2"
-                    role="gridcell"
-                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
-                </div>
-                <div
-                    id="cell-3-undefined"
-                    data-column-id="3"
-                    role="gridcell"
-                    className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
-                </div>
-                <div
-                    id="cell-4-undefined"
-                    data-column-id="4"
-                    role="gridcell"
-                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
-                </div>
-                <div
-                    id="cell-5-undefined"
-                    data-column-id="5"
-                    role="gridcell"
-                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Ids</p>
-                </div>
-                <div
-                    id="cell-6-undefined"
-                    data-column-id="6"
-                    role="gridcell"
-                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
-                </div>
-                <div
-                    id="cell-7-undefined"
-                    data-column-id="7"
-                    role="gridcell"
-                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
-                </div>
-                <div
-                    id="cell-8-undefined"
-                    data-column-id="8"
-                    role="gridcell"
-                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Quantity</p>
-                </div>
-                <div
-                    id="cell-9-undefined"
-                    data-column-id="9"
-                    role="gridcell"
-                    className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
-                </div>
-                <div
-                    id="cell-10-undefined"
-                    data-column-id="10"
-                    role="gridcell"
-                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
-                </div>
-                <div
-                    id="cell-10-undefined"
-                    data-column-id="10"
-                    role="gridcell"
-                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
-                </div>
-                <div
-                    id="cell-10-undefined"
-                    data-column-id="11"
-                    role="gridcell"
-                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                    data-tag="allowRowEvents"
-                >
-                    <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
-                </div>
-            </div>
-            <div className="scrollbar" id="style">
-                {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+            <> */}
+            <div className="p-5">
+                <div className="border border-radius-10">
+                    <div className="d-flex align-items-center justify-content-between p-3">
+                        <div className="d-flex align-items-center">
+                            <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
+                            <div className="d-flex align-items-center">
+                                <a href="#" className="mr-2">
+                                    <span><ModeEditOutlineOutlinedIcon /></span>
+                                </a>
+                                <a href="#" className="mr-2">
+                                    <span><ShareOutlinedIcon /></span>
+                                </a>
+                                <a href="#" className="">
+                                    <span><SearchIcon /></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div className="border-left d-flex align-items-center">
+                            <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+                        </div>
+                    </div>
+
+
                     <div
-                        key={i}
                         id="row-0"
                         role="row"
-                        className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+                        className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
                         style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
                     >
                         <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
                             {/* <div class="checkbox">
-                <input type="checkbox" value=""></input>
-            </div> */}
+                    <input type="checkbox" value=""></input>
+                </div> */}
                         </div>
                         <div
                             id="cell-1-undefined"
@@ -6394,7 +7588,19 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div>{(i + 1) * 10}</div>
+                            <span className="portfolio-icon mr-1">
+                                <svg style={{ width: "11px" }}
+                                    id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 119.30736 133.59966"
+                                >
+                                    <path
+                                        className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                                        d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+                                    />
+                                </svg>
+                            </span>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
                         </div>
                         <div
                             id="cell-2-undefined"
@@ -6403,29 +7609,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
-                                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
-                                    <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
-                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
-                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
-                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
-                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
-                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
-                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
-                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
-                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
-                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
-                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
-                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
-                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
-                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
-                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
-                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
-                                </svg></span>
-                            </div>
-                            <div className="align-items-center d-flex justify-content-center">
-                                {bundleAndService.itemName}
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
                         </div>
                         <div
                             id="cell-3-undefined"
@@ -6434,30 +7618,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div className="d-flex align-items-center" data-tag="allowRowEvents">
-                                {bundleAndService.customItemHeaderModel.itemHeaderDescription}
-                            </div>
-                            <div className="d-flex align-items-center">
-                                <div
-                                    className="description cursor mr-1"
-                                    onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
-                                >
-                                    <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                                        <g>
-                                            <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
-                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
-                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
-                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
-                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                                            <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
-                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
-                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
-                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                                        </g>
-                                    </svg>
-                                </div>
-                                <div className=""><KeyboardArrowDownIcon /></div>
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
                         </div>
                         <div
                             id="cell-4-undefined"
@@ -6466,57 +7627,16 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
-                                <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
-                                    <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
-                  c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
-                  c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
-                  c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
-                  l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
-                  c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
-                  c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
-                  M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
-                  c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
-                  c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
-                  c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
-                  c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
-                  c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
-                  c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
-                  c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
-                  c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
-                                </svg></span>
-                            </div>
-                            <div className="align-items-center d-flex" data-tag="allowRowEvents">
-                                {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
                         </div>
                         <div
                             id="cell-5-undefined"
                             data-column-id="5"
                             role="gridcell"
-                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div className="d-flex " data-tag="allowRowEvents">SJ1034
-                            </div>
-                            <div
-                                className="description cursor mr-1"
-                                onClick={() => setBundleServiceShow(true)}
-                            >
-                                <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                                    <g>
-                                        <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
-                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
-                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
-                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
-                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                                        <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
-                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
-                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
-                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                                    </g>
-                                </svg>
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Ids</p>
                         </div>
                         <div
                             id="cell-6-undefined"
@@ -6525,24 +7645,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
-                            <div
-                                className="description mr-1"
-                            >
-                                <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                                    <g>
-                                        <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
-                      c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
-                      c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
-                      c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
-                      c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
-                                        <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
-                      c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
-                      c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
-                      c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
-                                    </g>
-                                </svg>
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
                         </div>
                         <div
                             id="cell-7-undefined"
@@ -6551,7 +7654,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
                         </div>
                         <div
                             id="cell-8-undefined"
@@ -6560,10 +7663,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div>4</div>
-                            <div className="funds-grey">
-
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Quantity</p>
                         </div>
                         <div
                             id="cell-9-undefined"
@@ -6572,10 +7672,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div>4</div>
-                            <div className="funds-grey">
-
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
                         </div>
                         <div
                             id="cell-10-undefined"
@@ -6584,75 +7681,16 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div>4</div>
-                            <div
-                                className="funds-grey "
-                            >
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
                         </div>
                         <div
                             id="cell-10-undefined"
                             data-column-id="10"
                             role="gridcell"
-                            className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div>4</div>
-                            <div
-                                className="funds-grey cursor"
-                                onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
-                            >
-                                <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                                    <g>
-                                        <g>
-                                            <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
-                      C74.2,101.4,70.7,105,66.3,105.1z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
-                      C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
-                      C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
-                      C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
-                      C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
-                      C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
-                      C90.7,157.7,94.3,154.1,98.6,154z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
-                      C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
-                      C123.2,157.7,126.8,154.1,131.1,154z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
-                      c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
-                      c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                                        </g>
-                                        <g>
-                                            <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
-                      S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
-                      c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
-                                        </g>
-                                    </g>
-                                </svg>
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
                         </div>
                         <div
                             id="cell-10-undefined"
@@ -6661,26 +7699,367 @@ export function CreatedCustomPortfolioTemplate(props) {
                             className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                             data-tag="allowRowEvents"
                         >
-                            <div>
-                                <Tooltip title="View">
-                                    <Link
-                                        to="#"
-                                        className="px-1"
-                                        onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
-                                    >
-                                        <VisibilityOutlinedIcon />
-                                    </Link>
-                                </Tooltip>
-                            </div>
+                            <p className="mb-0 font-size-12 font-weight-500 text-white">Actions</p>
                         </div>
                     </div>
-                ))}
+                    <div className="scrollbar" id="style">
+                        {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+                            <div
+                                key={i}
+                                id="row-0"
+                                role="row"
+                                className="sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+                                style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+                            >
+                                <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+                                    {/* <div class="checkbox">
+                    <input type="checkbox" value=""></input>
+                </div> */}
+                                </div>
+                                <div
+                                    id="cell-1-undefined"
+                                    data-column-id="1"
+                                    role="gridcell"
+                                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div>{(i + 1) * 10}</div>
+                                </div>
+                                <div
+                                    id="cell-2-undefined"
+                                    data-column-id="2"
+                                    role="gridcell"
+                                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
+                                        <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                                            <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+                      c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+                      c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+                      c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+                      l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+                      c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+                      c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+                      M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+                      c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+                      c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+                      c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+                      c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+                      c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+                      c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+                      c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+                      c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+                                        </svg></span>
+                                    </div>
+                                    <div className="align-items-center d-flex justify-content-center">
+                                        {bundleAndService.itemName}
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-3-undefined"
+                                    data-column-id="3"
+                                    role="gridcell"
+                                    className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div className="d-flex align-items-center" data-tag="allowRowEvents">
+                                        {bundleAndService.customItemHeaderModel.itemHeaderDescription}
+                                    </div>
+                                    <div className="d-flex align-items-center">
+                                        <div
+                                            className="description cursor mr-1"
+                                            onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                                        >
+                                            <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                                <g>
+                                                    <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                          c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                          c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                          c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                          c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                                                    <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                          c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                          c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                          c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        <div className=""><KeyboardArrowDownIcon /></div>
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-4-undefined"
+                                    data-column-id="4"
+                                    role="gridcell"
+                                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
+                                        <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
+                                            <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
+                      c-2.9,0-5.9,0-8.7-0.1c-2.9,0-5.9-0.1-8.8-0.1h-1.9c0-0.2,0-0.3,0-0.5c0-1.9,0-3.7,0-5.5c-0.2-11.3-7.2-19.4-16.8-19.6
+                      c-7.4-0.1-14.9-0.2-22.4-0.2c-7.4,0-15,0.1-22.4,0.2c-9.7,0.2-16.6,8.2-16.8,19.5c0,1.7,0,3.5,0,5.3c0,0.2,0,0.4,0,0.7
+                      c-0.5,0-1,0.1-1.5,0.1c-2.8,0-5.6,0-8.4,0.1c-3,0-6.2,0.1-9.3,0.1c-4.4,0-8-0.1-11.3-0.2c-0.5,0-1,0-1.5,0c-10.1,0-16.5,5-19.7,15.2
+                      l-0.1,0.3v119.5l0.1,0.3c3.3,10.4,9.9,15.2,20.9,15.2l0.2,0c23.3-0.1,46.8-0.2,69.9-0.2c23.3,0,46.8,0.1,69.8,0.2l0.2,0
+                      c11,0,17.6-4.8,20.9-15.2l0.1-0.3V51.9L191,51.6z M127.3,35.6c0,0.2,0,0.5,0,0.7H72.8c0-0.3,0-0.5,0-0.8c-0.1-2.1-0.1-4.1,0.1-6
+                      c0.3-3.4,2.2-5.4,5.1-5.4c7.3,0,14.8-0.1,22.3-0.1c7,0,14.3,0,21.6,0.1c4.2,0,5.2,3.7,5.3,5.9C127.4,31.8,127.3,33.6,127.3,35.6z
+                      M104.8,101.2v12.1h-9.7v-12.1H104.8z M179,88.6c0,6.6-2.3,7.9-6.6,7.9c-8,0-16,0-23.9,0l-31.3,0c0-0.5,0-0.9,0-1.4
+                      c0-4.4-2.4-7.1-6.3-7.2c-3.6-0.1-7.2-0.1-10.8-0.1c-3.6,0-7.2,0-10.8,0.1c-3,0-6.3,2-6.3,7.2c0,0.4,0,0.8,0,1.3c-0.4,0-0.9,0-1.3,0
+                      c-10.5,0-21,0-31.5,0c-7.4,0-14.8,0-22.2,0c-4.9,0-6.9-1.2-6.9-8.3c0-11.9,0-21.6,0-30.5c0-6.7,2.2-7.9,6.6-7.9
+                      c24.1,0,48.3,0,72.4,0c24.1,0,48.3,0,72.4,0c4.3,0,6.5,1.2,6.5,8C179,68.2,179,78.6,179,88.6z M21,165.2c0-16.7,0-33.6,0-50
+                      c0,0,0-6.2,0-6.2c0.9,0.1,1.8,0.1,2.8,0.2c3.6,0.3,7.4,0.5,11.1,0.6c5.9,0,12.3,0.1,20.1,0.1c4.3,0,8.7,0,13,0c4.3,0,8.7,0,13,0H83
+                      c0,0.5,0,1,0,1.6c0,2.6,0,5.1,0,7.6c0.1,3.9,0.9,7.8,7,7.9c2.1,0,4.1,0,6.2,0c1.4,0,2.8,0,4.2,0c1.4,0,2.8,0,4.2,0
+                      c1.8,0,3.7,0,5.5,0h0.1c2.1,0,3.8-0.6,5-1.8c1.3-1.3,2-3.3,1.9-5.9c0-2.5,0-5.1,0-7.8c0-0.5,0-1,0-1.6h2.1c4.5,0,8.9,0,13.4,0
+                      c4.5,0,8.9,0,13.4,0c9.2,0,16.4,0,23.1-0.1c2.8,0,5.6-0.3,8.5-0.7c0.5-0.1,1-0.1,1.5-0.2l0,16.7c0,13.1,0,26.2,0,39.3
+                      c0,7.4-1.8,8.7-7.3,8.7c-23.3,0-46.6,0-69.9,0c-24.5,0-49,0-73.6,0C22.9,173.6,21,172.3,21,165.2z"/>
+                                        </svg></span>
+                                    </div>
+                                    <div className="align-items-center d-flex" data-tag="allowRowEvents">
+                                        {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-5-undefined"
+                                    data-column-id="5"
+                                    role="gridcell"
+                                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div className="d-flex " data-tag="allowRowEvents">SJ1034
+                                    </div>
+                                    <div
+                                        className="description cursor mr-1"
+                                        onClick={() => setBundleServiceShow(true)}
+                                    >
+                                        <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                            <g>
+                                                <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                          c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                          c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                          c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                          c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                                                <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                          c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                          c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                          c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-6-undefined"
+                                    data-column-id="6"
+                                    role="gridcell"
+                                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div className="d-flex " data-tag="allowRowEvents">RB1034</div>
+                                    <div
+                                        className="description mr-1"
+                                    >
+                                        <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                            <g>
+                                                <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
+                          c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
+                          c3.5,0,6.1-1.7,7.6-4.8c1.5-3,1.1-5.9-0.9-8.6c-2-2.7-4.8-3.5-8-3.5c-21.4,0.1-42.9,0-64.3,0C12.2,30,5.4,36.8,5.4,48.7
+                          c0,21,0,41.9,0,62.9c0,21.3,0,42.6,0,63.9c0,10.3,7.2,17.5,17.5,17.5c42.6,0,85.2,0,127.9,0c10.5,0,17.6-7.2,17.6-17.7
+                          c0-10.3,0-20.6,0-30.9C168.4,132.7,168.5,121,168.4,109.3z"/>
+                                                <path class="st0" d="M193.7,13.9c0-5-2-6.9-7.1-6.9c-12.3,0-24.6,0-36.9,0c-5.7,0-9.5,3.5-9.4,8.6c0.1,4.9,3.9,8.2,9.4,8.3
+                          c4.8,0,9.5,0,14.3,0c0.2,0.3,0.3,0.7,0.5,1c-0.8,0.6-1.6,1-2.3,1.7c-28.6,28.5-57.1,57.1-85.7,85.6c-5.2,5.2-6,10.1-2.2,14
+                          c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
+                          c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-7-undefined"
+                                    data-column-id="7"
+                                    role="gridcell"
+                                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div className="d-flex " data-tag="allowRowEvents">250 hours</div>
+                                </div>
+                                <div
+                                    id="cell-8-undefined"
+                                    data-column-id="8"
+                                    role="gridcell"
+                                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div>4</div>
+                                    <div className="funds-grey">
+
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-9-undefined"
+                                    data-column-id="9"
+                                    role="gridcell"
+                                    className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div>4</div>
+                                    <div className="funds-grey">
+
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-10-undefined"
+                                    data-column-id="10"
+                                    role="gridcell"
+                                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div>4</div>
+                                    <div
+                                        className="funds-grey "
+                                    >
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-10-undefined"
+                                    data-column-id="10"
+                                    role="gridcell"
+                                    className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div>4</div>
+                                    <div
+                                        className="funds-grey cursor"
+                                        onClick={() => showPriceDataOfBundleOrService(bundleAndService)}
+                                    >
+                                        <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                            <g>
+                                                <g>
+                                                    <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                          C74.2,101.4,70.7,105,66.3,105.1z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                          C103.4,89.1,106.9,92.9,106.8,97.2z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                          C135.6,88.9,139.3,92.5,139.4,96.8z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          C70.7,121.6,74.3,125.2,74.3,129.6z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          C103.2,121.5,106.8,125.2,106.8,129.5z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          C70.7,154.1,74.3,157.7,74.3,162.1z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                          C90.7,157.7,94.3,154.1,98.6,154z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          C135.8,121.5,139.4,125.2,139.4,129.5z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                          C123.2,157.7,126.8,154.1,131.1,154z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                          c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
+                          c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
+                                                </g>
+                                                <g>
+                                                    <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                          S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
+                          c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
+                                                </g>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div
+                                    id="cell-10-undefined"
+                                    data-column-id="11"
+                                    role="gridcell"
+                                    className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                                    data-tag="allowRowEvents"
+                                >
+                                    <div>
+                                        <Tooltip title="View">
+                                            <Link
+                                                to="#"
+                                                className="px-1"
+                                                onClick={() => handleExpendedBundleServiceUpdate(i, bundleAndService)}
+                                            >
+                                                <VisibilityOutlinedIcon />
+                                            </Link>
+                                        </Tooltip>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {/* <div className="p-5">
+                        <div className="border border-radius-10">
+                            <div className="d-flex align-items-center border-bottom justify-content-between p-3">
+                                <div className="d-flex align-items-center">
+                                    <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Components</h6>
+                                    <div className="d-flex align-items-center">
+                                        <a href="#" className="mr-2">
+                                            <span><ModeEditOutlineOutlinedIcon /></span>
+                                        </a>
+                                        <a href="#" className="mr-2">
+                                            <span><ShareOutlinedIcon /></span>
+                                        </a>
+                                        <a href="#" className="">
+                                            <span><SearchIcon /></span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div className="border-left d-flex align-items-center">
+                                    <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+                                </div>
+                            </div>
+                            <ul className="mb-0 component-li">
+                                <li className="border-bottom p-3">
+                                    <div className="d-flex align-items-center">
+                                        <div class="checkbox mr-3">
+                                            <input type="checkbox" value=""></input>
+                                        </div>
+                                        <p className="mb-0 font-size-14">Component Code</p>
+                                    </div>
+                                </li>
+                                <li className="border-bottom p-3">
+                                    <div className="d-flex align-items-center">
+                                        <div class="checkbox mr-3">
+                                            <input type="checkbox" value=""></input>
+                                        </div>
+                                        <p className="mb-0 font-size-14">Component Code</p>
+                                    </div>
+                                </li>
+                                <li className="border-bottom p-3">
+                                    <div className="d-flex align-items-center">
+                                        <div class="checkbox mr-3">
+                                            <input type="checkbox" value=""></input>
+                                        </div>
+                                        <p className="mb-0 font-size-14">Component Code</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div> */}
+                </div>
             </div>
             {/* </> : <></>} */}
 
         </div>
     );
-
 
     return (
         <>
@@ -8392,7 +9771,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 <div className="d-flex align-items-center w-100">
                                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                                         <h5 className="mb-3 text-black">
-                                            <span>Portfolio Items</span>
+                                            <span>Solution Items</span>
                                         </h5>
                                     </div>
                                 </div>
@@ -8782,8 +10161,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <AddCustomPortfolioItem
                                                     stratgyTaskTypeKeyValue={stratgyTaskTypeKeyValue}
                                                     setTabs={setTabs}
-                                                    getAddportfolioItemDataFun={getAddportfolioItemDataFun}
+                                                    getAddPortfolioItemDataFun={getAddPortfolioItemDataFun}
                                                     compoFlag="ITEM"
+                                                    setBundleServiceNeed={setBundleServiceNeed}
+                                                    createdBundleItems={createdBundleItems}
+                                                    portfolioDataId={portfolioId}
+                                                    itemModelShow={setItemModelShow}
                                                 />
                                             </> :
                                             <>
@@ -8791,6 +10174,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     passItemEditRowData={passItemEditRowData}
                                                     handleItemEditSave={handleItemEditSave}
                                                     compoFlag="itemEdit"
+                                                    compoFlagTest="itemEditPort"
+                                                    setBundleServiceNeed={setBundleServiceNeed}
                                                 />
                                             </>
                                         }
@@ -9246,7 +10631,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </>
                                     </TabPanel>
                                     <TabPanel value="5">
-                                        {/* <PriceCalculator
+                                        {/* <PriceCalculatorCustomItem
                   setTabs={setTabs}
                   priceCalculator={priceCalculator}
                   serviceOrBundlePrefix={serviceOrBundlePrefix}
@@ -9292,7 +10677,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                         <Select
                                                             options={priceMethodKeyValue}
                                                             className="text-primary"
-                                                            defaultValue={props?.priceCalculator?.priceMethod}
+                                                            // defaultValue={props?.priceCalculator?.priceMethod}
                                                             value={priceCalculator.priceMethod}
                                                             name="priceMethod"
                                                             onChange={(e) =>
@@ -9340,10 +10725,10 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                         className="form-controldate border-radius-10"
                                                                         label=""
                                                                         name="preparedOn"
-                                                                        value={priceDetails.priceDate}
+                                                                        value={priceCalculator.priceDate}
                                                                         onChange={(e) =>
-                                                                            setPriceDetails({
-                                                                                ...priceDetails,
+                                                                            setPriceCalculator({
+                                                                                ...priceCalculator,
                                                                                 priceDate: e,
                                                                             })
                                                                         }
@@ -9414,7 +10799,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 type="text"
                                                                 className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                                 placeholder="10%"
-                                                                defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                                                                // defaultValue={props?.priceCalculator?.priceAdditionalInput}
                                                                 value={priceCalculator.priceAdditionalInput}
                                                                 name="priceAdditionalInput"
                                                                 onChange={(e) =>
@@ -9438,10 +10823,17 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                         </label>
                                                         <div className=" d-flex align-items-center form-control-date">
                                                             <Select
-                                                                className="select-input"
+                                                                className="select-input text-primary"
                                                                 id="priceEscalationSelect"
                                                                 options={priceHeadTypeKeyValue}
                                                                 placeholder="placeholder "
+                                                                onChange={(e) =>
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        priceEscalationSelect: e,
+                                                                    })
+                                                                }
+                                                                value={priceCalculator.priceEscalationSelect}
                                                             // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
                                                             // value={expandedPriceCalculator.priceEscalationSelect}
                                                             />
@@ -9450,8 +10842,13 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 className="form-control rounded-top-left-0 rounded-bottom-left-0"
                                                                 placeholder="20%"
                                                                 id="priceEscalationInput"
-                                                            // value={escalationPriceValue}
-                                                            // onchange={(e) = setEscalationPriceValue(e.target.value)}
+                                                                value={priceCalculator.priceEscalationInput}
+                                                                onChange={(e) =>
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        priceEscalationInput: e.target.value
+                                                                    })
+                                                                }
                                                             // defaultValue={data.itemBodyModel.priceEscalation}
                                                             // value={expandedPriceCalculator.priceEscalationInput}
                                                             // onChange={handleExpandePriceChange}
@@ -9469,7 +10866,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 }}
                                                                 control={
                                                                     <Switch1
-                                                                        checked={extWorkData.flatRateIndicator}
+                                                                        checked={priceCalculator.flatRateIndicator}
                                                                         onChange={(e) =>
                                                                             handleFlatPriceIndicator(e)
                                                                         }
@@ -9505,7 +10902,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                     flatPrice: e.target.value,
                                                                 })
                                                             }
-                                                            disabled={!extWorkData.flatRateIndicator}
+                                                            disabled={!priceCalculator.flatRateIndicator}
                                                             placeholder="0"
                                                         />
                                                     </div>
@@ -9531,7 +10928,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                         })
                                                                     }
                                                                     isClearable={true}
-                                                                    options={options}
+                                                                    options={discountTypeOptions}
                                                                     placeholder="Select"
                                                                 />
                                                             </div>
@@ -9563,8 +10960,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                             <Select
                                                                 className="select-input text-primary"
                                                                 defaultValue={selectedOption}
-                                                                onChange={setSelectedOption}
-                                                                // options={options}
+                                                                onChange={(e) =>
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        priceBrackDownType: e,
+                                                                    })}
+                                                                value={priceCalculator.priceBrackDownType}
                                                                 options={priceHeadTypeKeyValue}
                                                                 placeholder="Select "
                                                             />
@@ -9574,6 +10975,13 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 id="exampleInputEmail1"
                                                                 aria-describedby="emailHelp"
                                                                 placeholder="optional"
+                                                                onChange={(e) =>
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        priceBrackDownPercantage: e.target.value,
+                                                                    })
+                                                                }
+                                                                value={priceCalculator.priceBrackDownPercantage}
                                                             />
                                                         </div>
                                                     </div>
@@ -9602,9 +11010,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 placeholder="Select..."
                                                                 className="text-primary"
                                                                 onChange={(e) =>
-                                                                    setAddportFolioItem({ ...addPortFolioItem, year: e })
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        year: e
+                                                                    })
                                                                 }
-                                                                value={addPortFolioItem.year}
+                                                                value={priceCalculator.year}
                                                             />
                                                         </div>
                                                     </div>
@@ -9623,8 +11034,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 placeholder="No. of Years"
                                                                 // defaultValue={props?.priceCalculator?.startUsage}
                                                                 // value={priceCalculator.startUsage}
-                                                                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
-                                                                value={addPortFolioItem.noOfYear}
+                                                                onChange={(e) =>
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
+                                                                        noOfYear: e.target.value,
+                                                                    })}
+                                                                value={priceCalculator.noOfYear}
                                                                 name="noOfYear"
                                                             />
                                                             {/* <Select
@@ -9664,11 +11079,15 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                     placeholder="10,000 hours"
                                                                     // defaultValue={props?.priceCalculator?.startUsage}
                                                                     // value={priceCalculator.startUsage}
-                                                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
-                                                                    value={addPortFolioItem.startUsage}
+                                                                    onChange={(e) =>
+                                                                        setPriceCalculator({
+                                                                            ...priceCalculator,
+                                                                            startUsage: e.target.value,
+                                                                        })}
+                                                                    value={priceCalculator.startUsage}
                                                                     name="startUsage"
                                                                 />
-                                                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
                                                             </div>
                                                             <div className="css-w8dmq8">*Mandatory</div>
                                                         </div>
@@ -9692,11 +11111,15 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                     placeholder="16,000 hours"
                                                                     // defaultValue={props?.priceCalculator?.startUsage}
                                                                     // value={priceCalculator.startUsage}
-                                                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
-                                                                    value={addPortFolioItem.endUsage}
+                                                                    onChange={(e) =>
+                                                                        setPriceCalculator({
+                                                                            ...priceCalculator,
+                                                                            endUsage: e.target.value,
+                                                                        })}
+                                                                    value={priceCalculator.endUsage}
                                                                     name="endUsage"
                                                                 />
-                                                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
                                                             </div>
                                                             <div className="css-w8dmq8">*Mandatory</div>
                                                         </div>
@@ -9714,12 +11137,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 placeholder="Planned Usage"
                                                                 className="text-primary"
                                                                 onChange={(e) =>
-                                                                    setAddportFolioItem({
-                                                                        ...addPortFolioItem,
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
                                                                         usageType: e,
                                                                     })
                                                                 }
-                                                                value={addPortFolioItem.usageType}
+                                                                value={priceCalculator.usageType}
                                                             />
                                                         </div>
                                                     </div>
@@ -9736,12 +11159,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 placeholder="Select....."
                                                                 className="text-primary"
                                                                 onChange={(e) =>
-                                                                    setAddportFolioItem({
-                                                                        ...addPortFolioItem,
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
                                                                         frequency: e,
                                                                     })
                                                                 }
-                                                                value={addPortFolioItem.frequency}
+                                                                value={priceCalculator.frequency}
                                                             />
                                                         </div>
                                                     </div>
@@ -9766,9 +11189,11 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 placeholder="Select..."
                                                                 className="text-primary"
                                                                 onChange={(e) =>
-                                                                    setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator, unit: e
+                                                                    })
                                                                 }
-                                                                value={addPortFolioItem.unit}
+                                                                value={priceCalculator.unit}
                                                             />
                                                         </div>
                                                     </div>
@@ -9791,8 +11216,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                     placeholder="Recommended Value"
                                                                     // defaultValue={props?.priceCalculator?.startUsage}
                                                                     // value={priceCalculator.startUsage}
-                                                                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
-                                                                    value={addPortFolioItem.recommendedValue}
+                                                                    onChange={(e) =>
+                                                                        setPriceCalculator({
+                                                                            ...priceCalculator,
+                                                                            recommendedValue: e.target.value,
+                                                                        })}
+                                                                    value={priceCalculator.recommendedValue}
                                                                     name="recommendedValue"
                                                                 // name="startUsage"
                                                                 // onChange={(e) =>
@@ -9802,7 +11231,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 //   })
                                                                 // }
                                                                 />
-                                                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
                                                             </div>
                                                             <div className="css-w8dmq8">*Mandatory</div>
                                                         </div>
@@ -9820,12 +11249,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 className="form-control border-radius-10 text-primary"
                                                                 placeholder="NO. OF EVENTS"
                                                                 onChange={(e) =>
-                                                                    setAddportFolioItem({
-                                                                        ...addPortFolioItem,
+                                                                    setPriceCalculator({
+                                                                        ...priceCalculator,
                                                                         numberOfEvents: e.target.value,
                                                                     })
                                                                 }
-                                                                value={addPortFolioItem.numberOfEvents}
+                                                                value={priceCalculator.numberOfEvents}
                                                             />
                                                             <div className="css-w8dmq8">*Mandatory</div>
                                                         </div>
@@ -9920,19 +11349,38 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                         </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
                                                 </div>
                                             </div>
-                                            <div className="m-3 text-right">
-                                                <a
-                                                    href="#"
-                                                    className="btn text-white bg-primary"
-                                                    onClick={handleItemPriceCalculatorSave}
-                                                >
-                                                    Save
-                                                </a>
+                                            <div className="d-flex align-items-center justify-content-between mt-3">
+                                                <div className="d-flex align-items-center">
+                                                    <div className="d-block mr-4">
+                                                        <p className="mb-0 font-size-14 text-grey">NET PRICE</p>
+                                                        <p className="mb-0 font-size-14 text-black">${priceCalculator.netPrice}</p>
+                                                    </div>
+                                                    <div className="d-block">
+                                                        <p className="mb-0 font-size-14 text-grey">TOTAL PRICE</p>
+                                                        <p className="mb-0 font-size-14 text-black">${priceCalculator.totalPrice}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <a
+                                                        href="#"
+                                                        className="btn text-white bg-primary"
+                                                        onClick={handleItemPriceCalculatorSave}
+                                                    >
+                                                        Save
+                                                    </a>
+                                                </div>
                                             </div>
+                                            {/* <div className="m-3 text-right">
+                                        <a
+                                            href="#"
+                                            className="btn text-white bg-primary"
+                                            onClick={handleItemPriceCalculatorSave}
+                                        >
+                                            Save
+                                        </a>
+                                    </div> */}
                                         </div>
                                     </TabPanel>
-
-
                                     <TabPanel value="6">
                                         {loadingItem === "02" ? (
                                             <div className="d-flex align-items-center justify-content-center">
@@ -11238,6 +12686,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                             passItemEditRowData={passItemEditRowData}
                                             handleItemEditSave={handleItemEditSave}
                                             compoFlag="itemEdit"
+                                            compoFlagTest="itemEditBundle"
+                                            setBundleTabs={setBundleTabs}
                                         />
                                         {/* <AddPortfolioItem
                                     passItemEditRowData={passItemEditRowData}
@@ -11248,7 +12698,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 /> */}
                                     </TabPanel>
                                     <TabPanel value="bundleServicePriceCalculator">
-                                        <PriceCalculator
+                                        <PriceCalculatorCustomItem
                                             serviceOrBundlePrefix={serviceOrBundlePrefix}
                                             setBundleTabs={setBundleTabs}
                                             setBundleServiceShow={setBundleServiceShow}
@@ -11256,7 +12706,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                             priceCalculator={itemPriceData}
                                             priceCompFlag="editAble"
                                         />
-                                        {/* <PriceCalculator
+                                        {/* <PriceCalculatorCustomItem
                   serviceOrBundlePrefix={serviceOrBundlePrefix}
                   setBundleTabs={setBundleTabs}
                   setBundleServiceShow={setBundleServiceShow}
