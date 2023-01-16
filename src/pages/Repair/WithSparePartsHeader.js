@@ -22,9 +22,7 @@ import {
   createBuilderVersion,
   createStandardJob,
   fetchBuilderDetails,
-  fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
-  fetchSegments,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
@@ -44,7 +42,13 @@ import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT, QUOTE_OPTIONS, STATUS_OPTIONS } from "./CONSTANTS";
+import {
+  ERROR_MAX_VERSIONS,
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
+  QUOTE_OPTIONS,
+  STATUS_OPTIONS,
+} from "./CONSTANTS";
 import { useAppSelector } from "app/hooks";
 import {
   selectDropdownOption,
@@ -53,7 +57,6 @@ import {
 import LoadingProgress from "./components/Loader";
 import { MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import WithoutSparePartsOperation from "./WithoutSparePartsOperation";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import CreateKIT from "./components/CreateKIT";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
@@ -62,7 +65,6 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import WithSparePartsSegments from "./WithSparePartsSegments";
 import WithSparePartsOperation from "./WithSparePartsOperation";
-
 
 function WithSparePartsHeader(props) {
   const history = useHistory();
@@ -216,7 +218,6 @@ function WithSparePartsHeader(props) {
         .then((result) => {
           setBuilderId(result.builderId);
           populateHeader(result);
-          populateSegments(builderId);
         })
         .catch((err) => {
           console.log(err);
@@ -225,17 +226,7 @@ function WithSparePartsHeader(props) {
       setHeaderLoading(false);
     }
   };
-  const populateSegments = (builderId) => {
-    fetchSegments(builderId)
-      .then((result) => {
-        if (result?.length > 0) {
-          setSegments(result);
-        }
-      })
-      .catch((e) => {
-        handleSnack("error", "Error occurred while fetching the segments");
-      });
-  };
+
   const [headerLoading, setHeaderLoading] = useState(false);
   const [builderVersionOptions, setBuilderVersionOptions] = useState([
     { label: "Version 1", value: 1 },
@@ -289,6 +280,7 @@ function WithSparePartsHeader(props) {
     populateGeneralData(result);
     populateEstData(result);
     populatePricingData(result);
+    setSegments(result.segmentDTOs);
   };
 
   const populateCustomerData = (result) => {
@@ -686,10 +678,9 @@ function WithSparePartsHeader(props) {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    if(selBuilderStatus?.value !== "ACTIVE")
-      handleSnack('info','Set active status to do “convert to”');
-    else
-      setOpen(true);
+    if (selBuilderStatus?.value !== "ACTIVE")
+      handleSnack("info", "Set active status to do “convert to”");
+    else setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
@@ -736,33 +727,33 @@ function WithSparePartsHeader(props) {
 
   const handleCreateTemplate = () => {
     // if (selBuilderStatus?.value === "ACTIVE") {
-      const data = {
-        description: templateDescription,
-        reference: templateReference,
-        version: templateVersion?.value,
-      };
-      createStandardJob(bId, data)
-        .then((res) => {
-          handleSnack(
-            "success",
-            `Template ${res.standardJobId} has been successfully created!`
-          );
-          let templateDetails = {
-            templateId: "",
-            templateDBId: "",
-            type: "fetch",
-          };
-          templateDetails.templateId = res.templateId;
-          templateDetails.templateDBId = res.id;
-          history.push({
-            pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
-            state: templateDetails,
-          });
-        })
-        .catch((e) => {
-          handleSnack("error", "Conversion to Standard Job has been failed!");
-          setTemplateOpen(false);
+    const data = {
+      description: templateDescription,
+      reference: templateReference,
+      version: templateVersion?.value,
+    };
+    createStandardJob(bId, data)
+      .then((res) => {
+        handleSnack(
+          "success",
+          `Template ${res.standardJobId} has been successfully created!`
+        );
+        let templateDetails = {
+          templateId: "",
+          templateDBId: "",
+          type: "fetch",
+        };
+        templateDetails.templateId = res.templateId;
+        templateDetails.templateDBId = res.id;
+        history.push({
+          pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
+          state: templateDetails,
         });
+      })
+      .catch((e) => {
+        handleSnack("error", "Conversion to Standard Job has been failed!");
+        setTemplateOpen(false);
+      });
     // } else {
     //   handleSnack("warning", "Builder is not active yet!");
     // }
@@ -966,40 +957,37 @@ function WithSparePartsHeader(props) {
                       With Spare Parts Header
                     </span>
                     <div className="btn-sm cursor text-white">
-                  <Tooltip title="Edit">
-                    <EditIcon
-                      onClick={() =>
-                        ["DRAFT", "REVISED"].indexOf(
-                          selBuilderStatus?.value
-                        ) > -1
-                          ? makeHeaderEditable()
-                          : handleSnack(
-                              "info",
-                              "Set revised status to modify active builders"
-                            )
-                      }
-                    />
-                  </Tooltip>
-                </div>
-                <div className="btn-sm cursor text-white">
-                  <Tooltip title="Reset">
-                    <ReplayIcon
-                    onClick={() => handleResetData("RESET")}
-                    />
-                  </Tooltip>
-                </div>
-                <div className="btn-sm cursor text-white">
-                  <Tooltip title="Share">
-                    <ShareOutlinedIcon />
-                  </Tooltip>
-                </div>
+                      <Tooltip title="Edit">
+                        <EditIcon
+                          onClick={() =>
+                            ["DRAFT", "REVISED"].indexOf(
+                              selBuilderStatus?.value
+                            ) > -1
+                              ? makeHeaderEditable()
+                              : handleSnack(
+                                  "info",
+                                  "Set revised status to modify active builders"
+                                )
+                          }
+                        />
+                      </Tooltip>
+                    </div>
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Reset">
+                        <ReplayIcon onClick={() => handleResetData("RESET")} />
+                      </Tooltip>
+                    </div>
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Share">
+                        <ShareOutlinedIcon />
+                      </Tooltip>
+                    </div>
 
-                <div className="btn-sm cursor text-white">
-                  <Tooltip title="Add to Review">
-                    <ReviewAddIcon />
-                  </Tooltip>
-                </div>
-
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Add to Review">
+                        <ReviewAddIcon />
+                      </Tooltip>
+                    </div>
                   </div>
                   {/* <div className="hr"></div> */}
                 </h5>

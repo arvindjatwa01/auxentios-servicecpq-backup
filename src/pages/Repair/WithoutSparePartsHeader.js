@@ -22,9 +22,7 @@ import {
   createBuilderVersion,
   createStandardJob,
   fetchBuilderDetails,
-  fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
-  fetchSegments,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
@@ -67,6 +65,7 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
+import WithSparePartsSegments from "./WithSparePartsSegments";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -220,7 +219,6 @@ function WithoutSparePartsHeader(props) {
         .then((result) => {
           setBuilderId(result.builderId);
           populateHeader(result);
-          populateSegments(builderId);
         })
         .catch((err) => {
           console.log(err);
@@ -229,17 +227,7 @@ function WithoutSparePartsHeader(props) {
       setHeaderLoading(false);
     }
   };
-  const populateSegments = (builderId) => {
-    fetchSegments(builderId)
-      .then((result) => {
-        if (result?.length > 0) {
-          setSegments(result);
-        }
-      })
-      .catch((e) => {
-        handleSnack("error", "Error occurred while fetching the segments");
-      });
-  };
+  
   const [headerLoading, setHeaderLoading] = useState(false);
   const [builderVersionOptions, setBuilderVersionOptions] = useState([
     { label: "Version 1", value: 1 },
@@ -293,6 +281,7 @@ function WithoutSparePartsHeader(props) {
     populateGeneralData(result);
     populateEstData(result);
     populatePricingData(result);
+    setSegments(result.segmentDTOs);
   };
 
   const populateCustomerData = (result) => {
@@ -2082,7 +2071,7 @@ function WithoutSparePartsHeader(props) {
             </React.Fragment>
           )}
           {activeElement.name === "segment" && (
-            <WithoutSparePartsSegments
+            <WithSparePartsSegments
               builderDetails={{
                 activeElement,
                 setActiveElement,

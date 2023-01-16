@@ -5,12 +5,17 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import React, { useEffect, useState } from "react";
-import { AddOperation, fetchOperations } from "services/repairBuilderServices";
+import {
+  AddOperation,
+  fetchOperations,
+  RemoveOperation,
+} from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,
   jobCodeSearch,
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
+import DeleteIcon from "../../assets/icons/svg/delete.svg";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
@@ -25,6 +30,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import Checkbox from "@mui/material/Checkbox";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { MuiMenuComponent } from "pages/Operational";
+import { RenderConfirmDialog } from "./components/ConfirmationBox";
 function WithSparePartsOperation(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
 
@@ -39,6 +45,7 @@ function WithSparePartsOperation(props) {
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -61,22 +68,27 @@ function WithSparePartsOperation(props) {
     fetchOperationsOfSegment();
   }, []);
 
-  const fetchOperationsOfSegment = () => {
+  const [opIndex, setOpIndex] = useState(0);
+  const fetchOperationsOfSegment = async () => {
     setOperationLoading(true);
     if (activeElement.sId) {
-      fetchOperations(activeElement.sId)
+      await fetchOperations(activeElement.sId)
         .then((result) => {
-          if (result?.length > 0) {
-            // result.sort((a, b) => a.operationNumber > b.operationNumber);
-
-            setOperations(result);
+          let operationsFetched = result?.operations;
+          if (operationsFetched?.length > 0) {
+            setOperations(operationsFetched);
             setOperationViewOnly(true);
             // Default last operation or selected operation for back traverse from service estimate
             let opToLoad = operationData?.id
-              ? result.filter((x) => x.id === operationData.id)[0]
+              ? operationsFetched.filter((x) => x.id === operationData.id)[0]
               : activeElement.oId
-              ? result.filter((x) => x.id === activeElement.oId)[0]
-              : result[result.length - 1];
+              ? operationsFetched.filter((x) => x.id === activeElement.oId)[0]
+              : operationsFetched[operationsFetched.length - 1];
+            setOpIndex(
+              operationsFetched.findIndex((obj) => {
+                return obj.id === opToLoad.id;
+              })
+            );
 
             setOperationData({
               ...opToLoad,
@@ -111,6 +123,23 @@ function WithSparePartsOperation(props) {
     return String(num).padStart(3, "0");
   }
 
+  const removeOpFromSegment = async () => {
+    await RemoveOperation(operationData.id)
+      .then((result) => {
+        handleSnack(
+          "success",
+          `Operation ${operationData.operationNumber} deleted successfully`
+        );
+        fetchOperationsOfSegment();
+        setConfirmationOpen(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        handleSnack("error", "Error occurred while deleting the operation");
+        setConfirmationOpen(false);
+      });
+  };
+
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
     setSearchJobCodeResults([]);
@@ -136,9 +165,12 @@ function WithSparePartsOperation(props) {
       ...operationData,
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
-      description: operationData.componentCodeDescription
-        ? currentItem.description + " " + operationData.componentCodeDescription
-        : "",
+      description:
+        currentItem.description && operationData.componentCodeDescription
+          ? currentItem.description +
+            " " +
+            operationData.componentCodeDescription
+          : "",
     });
     setSearchJobCodeResults([]);
   };
@@ -169,9 +201,10 @@ function WithSparePartsOperation(props) {
       componentCode: currentItem.componentCode,
       componentCodeDescription: currentItem.description,
       // description: currentItem.componentCode + " - " + currentItem.description,
-      description: operationData.jobCodeDescription
-        ? operationData.jobCodeDescription + " " + currentItem.description
-        : "",
+      description:
+        operationData.jobCodeDescription && currentItem.description
+          ? operationData.jobCodeDescription + " " + currentItem.description
+          : "",
     });
     setSearchCompCodeResults([]);
   };
@@ -183,46 +216,34 @@ function WithSparePartsOperation(props) {
     setOpenSnack(true);
   };
 
-  const handleAnchors = (direction) => {
+  const handleAnchors = (direction, index) => {
     if (direction === "backward") {
-      let operationToLoad = [];
-      if (operationData.header === NEW_OPERATION) {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operations.length - 1
-        );
-        setOperationViewOnly(true);
-      } else {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operationData.operationNumber - 1
-        );
-      }
+      if (opIndex > 0) setOpIndex(opIndex - 1);
+
       setOperationData({
-        ...operationToLoad[0],
+        ...operations[index],
         header:
           "Operation " +
-          formatOperationNum(operationToLoad[0]?.operationNumber) +
+          formatOperationNum(operations[index]?.operationNumber) +
           " - " +
-          operationToLoad[0]?.description, //Rename once changed in API
+          operations[index]?.description, //Rename once changed in API
       });
     } else if (direction === "forward") {
-      let operationToLoad = [];
       if (
         operations[operations.length - 1].header === NEW_OPERATION &&
-        operations.length - 1 === operationData.operationNumber
+        operations.length - 1 === index
       ) {
-        setOperationData({ ...operations[operations.length - 1] });
+        setOperationData({ ...operations[index] });
         setOperationViewOnly(false);
-      } else if (operations.length > operationData.operationNumber) {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operationData.operationNumber + 1
-        );
+      } else {
+        if (operations.length - 1 > opIndex) setOpIndex(opIndex + 1);
         setOperationData({
-          ...operationToLoad[0],
+          ...operations[index],
           header:
             "Operation " +
-            formatOperationNum(operationToLoad[0].operationNumber) +
+            formatOperationNum(operations[index].operationNumber) +
             " - " +
-            operationToLoad[0].description, //Rename
+            operations[index].description, //Rename
         });
       }
     }
@@ -243,18 +264,18 @@ function WithSparePartsOperation(props) {
       .then((result) => {
         fetchOperationsOfSegment();
 
-        // setOperationData({
-        //   ...operationData,
-        //   operationNumber: result.operationNumber,
-        //   // description: result.description,
-        //   id: result.id,
-        //   header:
-        //     "Operation " +
-        //     formatOperationNum(result.operationNumber) +
-        //     " - " +
-        //     result.description, //Rename to description once API is changed
-        // });
+        setOperationData({
+          ...operationData,
+          operationNumber: result.operationNumber,
+          id: result.id,
+          header:
+            "Operation " +
+            formatOperationNum(result.operationNumber) +
+            " - " +
+            result.description, //Rename to description once API is changed
+        });
         // console.log(operationData)
+        operations[opIndex] = result;
         setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(
@@ -270,6 +291,7 @@ function WithSparePartsOperation(props) {
     setOperationViewOnly(false);
     setOperationData(newOperation);
     operations.push(newOperation);
+    setOpIndex(operations.length - 1);
     setShowAddNewButton(false);
   };
   const makeHeaderEditable = () => {
@@ -283,6 +305,7 @@ function WithSparePartsOperation(props) {
           operations.findIndex((a) => a.header === NEW_OPERATION),
           1
         );
+        setOpIndex(operations.length - 1);
         setOperationData({
           ...operations[operations.length - 1],
           header:
@@ -297,7 +320,12 @@ function WithSparePartsOperation(props) {
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
-      setActiveElement({ ...activeElement, name: "segment" });
+      if(operationData.header === NEW_OPERATION){
+        setActiveElement({ ...activeElement, name: "segment" });
+      } else {
+        setOperationViewOnly(true);
+        setShowAddNewButton(true);
+      }
     }
   };
 
@@ -309,69 +337,98 @@ function WithSparePartsOperation(props) {
         severity={severity}
         message={snackMessage}
       />
+      <RenderConfirmDialog
+        confimationOpen={confirmationOpen}
+        message={`Are you sure you want to remove this operation?`}
+        handleNo={() => setConfirmationOpen(false)}
+        handleYes={removeOpFromSegment}
+      />
       <div className="card p-4 mt-5">
-        <div className="d-flex justify-content-end align-items-center mb-0">
-          <div className="text-right">
-            <button
-              onClick={() => handleAnchors("backward")}
-              className="btn-no-border"
-              disabled={
-                !(
-                  operationData.operationNumber > 1 ||
-                  (operationData.header === NEW_OPERATION &&
-                    operations.length > 1)
-                )
-              }
-            >
-              <KeyboardArrowLeftIcon />
-            </button>
-            <span className="text-primary">{operationData.header}</span>
-            <button
-              onClick={() => handleAnchors("forward")}
-              className="btn-no-border"
-              disabled={
-                operationData.operationNumber === operations.length ||
-                operationData.header === NEW_OPERATION
-              }
-            >
-              <KeyboardArrowRightIcon />
-            </button>
-            {showAddNewButton &&
-              ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                -1 && (
-                <button
-                  className="btn-no-border ml-2"
-                  onClick={loadNewOperationUI}
-                >
-                  <span className="ml-2">
-                    <AddIcon />
-                  </span>
-                  Add New Operation
-                </button>
-              )}
-          </div>
-        </div>
-        <h5 className="d-flex align-items-center mb-0">
-          <div className="" style={{ display: "contents" }}>
+        <div className="row align-items-center mb-0">
+          <div
+            className="col-md-6 col-sm-6"
+            style={{ fontSize: "1rem", fontWeight: 600, color: "black" }}
+          >
             <span className="mr-3 white-space">{operationData.header}</span>
-            <div className="btn-sm cursor">
-              <Tooltip title="Edit">
-                <EditIcon
-                  onClick={() =>
-                    ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                    -1
-                      ? makeHeaderEditable()
-                      : handleSnack(
-                          "info",
-                          "Set revised status to modify active builders"
-                        )
-                  }
-                />
-              </Tooltip>
+            {operationViewOnly && (
+              <span className="btn-sm cursor">
+                <Tooltip title="Edit">
+                  <EditIcon
+                    onClick={() =>
+                      ["DRAFT", "REVISED"].indexOf(
+                        activeElement?.builderStatus
+                      ) > -1
+                        ? makeHeaderEditable()
+                        : handleSnack(
+                            "info",
+                            "Set revised status to modify active builders"
+                          )
+                    }
+                  />
+                </Tooltip>
+                <Tooltip title="Delete" className="ml-2">
+                  <img
+                    src={DeleteIcon}
+                    alt="Delete"
+                    onClick={() =>
+                      ["DRAFT", "REVISED"].indexOf(
+                        activeElement?.builderStatus
+                      ) > -1
+                        ? setConfirmationOpen(true)
+                        : handleSnack(
+                            "info",
+                            "Set revised status to modify active builders"
+                          )
+                    }
+                  />
+                </Tooltip>
+              </span>
+            )}
+          </div>
+          <div className="col-md-6 col-sm-6 align-items-center mb-0 ">
+            <div className="justify-content-end text-right">
+              <button
+                onClick={() => handleAnchors("backward", opIndex - 1)}
+                className="btn-no-border"
+                disabled={
+                  !(
+                    opIndex > 0 ||
+                    (operationData.header === NEW_OPERATION &&
+                      operations.length > 1)
+                  )
+                }
+              >
+                <KeyboardArrowLeftIcon />
+              </button>
+              <span className="text-primary">{operationData.header}</span>
+              <button
+                onClick={() => handleAnchors("forward", opIndex + 1)}
+                className="btn-no-border"
+                disabled={
+                  opIndex === operations.length - 1 ||
+                  operationData.header === NEW_OPERATION
+                }
+              >
+                <KeyboardArrowRightIcon />
+              </button>
+              {showAddNewButton &&
+                ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                  -1 && (
+                  <button
+                    className="btn-no-border ml-2"
+                    onClick={loadNewOperationUI}
+                  >
+                    <span className="ml-2">
+                      <AddIcon />
+                    </span>
+                    Add New Operation
+                  </button>
+                )}
             </div>
           </div>
-          <div className="hr"></div>
-        </h5>
+        </div>
+        <div className="hr"></div>
+
         {operationLoading ? (
           <LoadingProgress />
         ) : !operationViewOnly ? (
@@ -411,6 +468,7 @@ function WithSparePartsOperation(props) {
                     onSelect={handleJobCodeSelect}
                     noOptions={noOptionsJobCode}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -524,6 +582,552 @@ function WithSparePartsOperation(props) {
                 className="col-md-4 col-sm-4"
               />
             </div>
+
+            <h5 className="d-flex align-items-center  mx-2">
+              <div className="" style={{ display: "contents" }}>
+                <span className="mr-3 white-space">Part List</span>
+              </div>
+              <div className="hr"></div>
+            </h5>
+            <div className="row">
+              <div className="col-md-4">
+                <div className="card border" style={{ overflow: "hidden" }}>
+                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                    <div className="" style={{ display: "contents" }}>
+                      <span className="mr-3 white-space font-size-16 text-white">
+                        023-Remove Engine partlist
+                      </span>
+                    </div>
+                    <div className="d-flex">
+                      <div>
+                        <Checkbox className="p-0 text-white" />
+                      </div>
+                      <a href="#">
+                        <FileUploadOutlinedIcon
+                          className="ml-3 font-size-21 text-white"
+                          titleAccess="Upload"
+                        />
+                      </a>
+                      <a href="#">
+                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="bg-white px-3 pt-4 pb-2">
+                    <div className="d-flex align-items-center justify-content-between mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <a
+                          href="#"
+                          className="btn-sm text-white bg-primary mr-3"
+                        >
+                          Version 1
+                        </a>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="row my-4">
+                      <div className="col-auto">
+                        <div className="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL PARTS
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-2">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">7</h6>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">6</h6>
+                        </div>
+                      </div>
+                      <div className="col-4">
+                        <div class="d-flex justify-content-center">
+                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL COSTS
+                          </p>
+                          <h6 className=" font-size-14 font-weight-600">$48</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group my-4">
+                      <div className="d-flex align-items-center">
+                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
+                          STATUS
+                        </p>
+                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
+                        <div class="progress w-100">
+                          <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style={{ width: "75%" }}
+                            aria-valuenow="75"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hr"></div>
+                  </div>
+                  <div className="bg-white py-2 px-3">
+                    <div className="d-flex align-items-center justify-content-between mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <a
+                          href="#"
+                          className="btn-sm text-white bg-primary mr-3"
+                        >
+                          Version 1
+                        </a>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="row my-4">
+                      <div className="col-auto">
+                        <div className="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL PARTS
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-2">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">7</h6>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">6</h6>
+                        </div>
+                      </div>
+                      <div className="col-4">
+                        <div class="d-flex justify-content-center">
+                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL COSTS
+                          </p>
+                          <h6 className=" font-size-14 font-weight-600">$48</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group my-4">
+                      <div className="d-flex align-items-center">
+                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
+                          STATUS
+                        </p>
+                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
+                        <div class="progress w-100">
+                          <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style={{ width: "75%" }}
+                            aria-valuenow="75"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="card border" style={{ overflow: "hidden" }}>
+                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                    <div className="" style={{ display: "contents" }}>
+                      <span className="mr-3 white-space font-size-16 text-white">
+                        023-Remove Engine partlist
+                      </span>
+                    </div>
+                    <div className="d-flex">
+                      <div>
+                        <Checkbox className="p-0 text-white" />
+                      </div>
+                      <a href="#">
+                        <FileUploadOutlinedIcon
+                          className="ml-3 font-size-21 text-white"
+                          titleAccess="Upload"
+                        />
+                      </a>
+                      <a href="#">
+                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="bg-white px-3 pt-4 pb-2">
+                    <div className="d-flex align-items-center justify-content-between mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <a
+                          href="#"
+                          className="btn-sm text-white bg-primary mr-3"
+                        >
+                          Version 1
+                        </a>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="row my-4">
+                      <div className="col-auto">
+                        <div className="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL PARTS
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-2">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">7</h6>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">6</h6>
+                        </div>
+                      </div>
+                      <div className="col-4">
+                        <div class="d-flex justify-content-center">
+                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL COSTS
+                          </p>
+                          <h6 className=" font-size-14 font-weight-600">$48</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group my-4">
+                      <div className="d-flex align-items-center">
+                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
+                          STATUS
+                        </p>
+                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
+                        <div class="progress w-100">
+                          <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style={{ width: "75%" }}
+                            aria-valuenow="75"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hr"></div>
+                  </div>
+                  <div className="bg-white py-2 px-3">
+                    <div className="d-flex align-items-center justify-content-between mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <a
+                          href="#"
+                          className="btn-sm text-white bg-primary mr-3"
+                        >
+                          Version 1
+                        </a>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="row my-4">
+                      <div className="col-auto">
+                        <div className="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL PARTS
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-2">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">7</h6>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">6</h6>
+                        </div>
+                      </div>
+                      <div className="col-4">
+                        <div class="d-flex justify-content-center">
+                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL COSTS
+                          </p>
+                          <h6 className=" font-size-14 font-weight-600">$48</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group my-4">
+                      <div className="d-flex align-items-center">
+                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
+                          STATUS
+                        </p>
+                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
+                        <div class="progress w-100">
+                          <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style={{ width: "75%" }}
+                            aria-valuenow="75"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="card border" style={{ overflow: "hidden" }}>
+                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                    <div className="" style={{ display: "contents" }}>
+                      <span className="mr-3 white-space font-size-16 text-white">
+                        023-Remove Engine partlist
+                      </span>
+                    </div>
+                    <div className="d-flex">
+                      <div>
+                        <Checkbox className="p-0 text-white" />
+                      </div>
+                      <a href="#">
+                        <FileUploadOutlinedIcon
+                          className="ml-3 font-size-21 text-white"
+                          titleAccess="Upload"
+                        />
+                      </a>
+                      <a href="#">
+                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="bg-white px-3 pt-4 pb-2">
+                    <div className="d-flex align-items-center justify-content-between mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <a
+                          href="#"
+                          className="btn-sm text-white bg-primary mr-3"
+                        >
+                          Version 1
+                        </a>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="row my-4">
+                      <div className="col-auto">
+                        <div className="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL PARTS
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-2">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">7</h6>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">6</h6>
+                        </div>
+                      </div>
+                      <div className="col-4">
+                        <div class="d-flex justify-content-center">
+                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL COSTS
+                          </p>
+                          <h6 className=" font-size-14 font-weight-600">$48</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group my-4">
+                      <div className="d-flex align-items-center">
+                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
+                          STATUS
+                        </p>
+                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
+                        <div class="progress w-100">
+                          <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style={{ width: "75%" }}
+                            aria-valuenow="75"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hr"></div>
+                  </div>
+                  <div className="bg-white py-2 px-3">
+                    <div className="d-flex align-items-center justify-content-between mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <a
+                          href="#"
+                          className="btn-sm text-white bg-primary mr-3"
+                        >
+                          Version 1
+                        </a>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="row my-4">
+                      <div className="col-auto">
+                        <div className="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL PARTS
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-2">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">7</h6>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">6</h6>
+                        </div>
+                      </div>
+                      <div className="col-4">
+                        <div class="d-flex justify-content-center">
+                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL COSTS
+                          </p>
+                          <h6 className=" font-size-14 font-weight-600">$48</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-group my-4">
+                      <div className="d-flex align-items-center">
+                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
+                          STATUS
+                        </p>
+                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
+                        <div class="progress w-100">
+                          <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style={{ width: "75%" }}
+                            aria-valuenow="75"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
                 className="btn bg-primary text-white"
@@ -564,553 +1168,6 @@ function WithSparePartsOperation(props) {
                 </span>
                 Add Service Estimate
               </button>
-            </div>
-            <h5 className="d-flex align-items-center  mx-2">
-              <div className="" style={{ display: "contents" }}>
-                <span className="mr-3 white-space">Part List</span>
-              </div>
-              <div className="hr"></div>
-            </h5>
-            <div className="row">
-              <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-16 text-white">
-                        023-Remove Engine partlist
-                      </span>
-                    </div>
-                    <div className="d-flex">
-                      <div>
-                        <Checkbox className="p-0 text-white" />
-                      </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-
-                    </div>
-                  </div>
-                  <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>
-                  <div className="bg-white py-2 px-3">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-16 text-white">
-                        023-Remove Engine partlist
-                      </span>
-                    </div>
-                    <div className="d-flex">
-                      <div>
-                        <Checkbox className="p-0 text-white" />
-                      </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a> 
-                    </div>
-                  </div>
-                  <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>
-                  <div className="bg-white py-2 px-3">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-16 text-white">
-                        023-Remove Engine partlist
-                      </span>
-                    </div>
-                    <div className="d-flex">
-                      <div>
-                        <Checkbox className="p-0 text-white" />
-                      </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-
-                    </div>
-                  </div>
-                  <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>
-                  <div className="bg-white py-2 px-3">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </React.Fragment>
         )}

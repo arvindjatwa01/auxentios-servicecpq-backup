@@ -282,7 +282,7 @@ export const createSegmentStandardJob = (templateId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(SJ_SEGMENT(templateId), data, config)
+        .put(SJ_SEGMENT(templateId), data, config)
         .then((res) => {
           console.log("template -> createSegmentStandardJob response: ", res);
           if (res.status === 200) {

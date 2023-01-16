@@ -5,18 +5,24 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import React, { useEffect, useState } from "react";
-import { AddOperation, fetchOperations } from "services/repairBuilderServices";
+import {
+  AddOperation,
+  fetchOperations,
+  RemoveOperation,
+} from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,
   jobCodeSearch,
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
+import DeleteIcon from "../../assets/icons/svg/delete.svg";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import { Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 
+import { RenderConfirmDialog } from "./components/ConfirmationBox";
 function WithoutSparePartsOperation(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
 
@@ -31,6 +37,7 @@ function WithoutSparePartsOperation(props) {
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -53,22 +60,27 @@ function WithoutSparePartsOperation(props) {
     fetchOperationsOfSegment();
   }, []);
 
-  const fetchOperationsOfSegment = () => {
+  const [opIndex, setOpIndex] = useState(0);
+  const fetchOperationsOfSegment = async () => {
     setOperationLoading(true);
     if (activeElement.sId) {
-      fetchOperations(activeElement.sId)
+      await fetchOperations(activeElement.sId)
         .then((result) => {
-          if (result?.length > 0) {
-            // result.sort((a, b) => a.operationNumber > b.operationNumber);
-
-            setOperations(result);
+          let operationsFetched = result?.operations;
+          if (operationsFetched?.length > 0) {
+            setOperations(operationsFetched);
             setOperationViewOnly(true);
             // Default last operation or selected operation for back traverse from service estimate
             let opToLoad = operationData?.id
-              ? result.filter((x) => x.id === operationData.id)[0]
+              ? operationsFetched.filter((x) => x.id === operationData.id)[0]
               : activeElement.oId
-              ? result.filter((x) => x.id === activeElement.oId)[0]
-              : result[result.length - 1];
+              ? operationsFetched.filter((x) => x.id === activeElement.oId)[0]
+              : operationsFetched[operationsFetched.length - 1];
+            setOpIndex(
+              operationsFetched.findIndex((obj) => {
+                return obj.id === opToLoad.id;
+              })
+            );
 
             setOperationData({
               ...opToLoad,
@@ -103,6 +115,23 @@ function WithoutSparePartsOperation(props) {
     return String(num).padStart(3, "0");
   }
 
+
+  const removeOpFromSegment = async () => {
+    await RemoveOperation(operationData.id)
+      .then((result) => {
+        handleSnack(
+          "success",
+          `Operation ${operationData.operationNumber} deleted successfully`
+        );
+        fetchOperationsOfSegment();
+        setConfirmationOpen(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        handleSnack("error", "Error occurred while deleting the operation");
+        setConfirmationOpen(false);
+      });
+  };
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
     setSearchJobCodeResults([]);
@@ -128,7 +157,7 @@ function WithoutSparePartsOperation(props) {
       ...operationData,
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
-      description: operationData.componentCodeDescription
+      description: currentItem.description && operationData.componentCodeDescription
         ? currentItem.description + " " + operationData.componentCodeDescription
         : "",
     });
@@ -161,7 +190,7 @@ function WithoutSparePartsOperation(props) {
       componentCode: currentItem.componentCode,
       componentCodeDescription: currentItem.description,
       // description: currentItem.componentCode + " - " + currentItem.description,
-      description: operationData.jobCodeDescription
+      description: operationData.jobCodeDescription && currentItem.description
         ? operationData.jobCodeDescription + " " + currentItem.description
         : "",
     });
@@ -175,46 +204,34 @@ function WithoutSparePartsOperation(props) {
     setOpenSnack(true);
   };
 
-  const handleAnchors = (direction) => {
+  const handleAnchors = (direction, index) => {
     if (direction === "backward") {
-      let operationToLoad = [];
-      if (operationData.header === NEW_OPERATION) {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operations.length - 1
-        );
-        setOperationViewOnly(true);
-      } else {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operationData.operationNumber - 1
-        );
-      }
+      if (opIndex > 0) setOpIndex(opIndex - 1);
+
       setOperationData({
-        ...operationToLoad[0],
+        ...operations[index],
         header:
           "Operation " +
-          formatOperationNum(operationToLoad[0]?.operationNumber) +
+          formatOperationNum(operations[index]?.operationNumber) +
           " - " +
-          operationToLoad[0]?.description, //Rename once changed in API
+          operations[index]?.description, //Rename once changed in API
       });
     } else if (direction === "forward") {
-      let operationToLoad = [];
       if (
         operations[operations.length - 1].header === NEW_OPERATION &&
-        operations.length - 1 === operationData.operationNumber
+        operations.length - 1 === index
       ) {
-        setOperationData({ ...operations[operations.length - 1] });
+        setOperationData({ ...operations[index] });
         setOperationViewOnly(false);
-      } else if (operations.length > operationData.operationNumber) {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operationData.operationNumber + 1
-        );
+      } else {
+        if (operations.length - 1 > opIndex) setOpIndex(opIndex + 1);
         setOperationData({
-          ...operationToLoad[0],
+          ...operations[index],
           header:
             "Operation " +
-            formatOperationNum(operationToLoad[0].operationNumber) +
+            formatOperationNum(operations[index].operationNumber) +
             " - " +
-            operationToLoad[0].description, //Rename
+            operations[index].description, //Rename
         });
       }
     }
@@ -235,18 +252,18 @@ function WithoutSparePartsOperation(props) {
       .then((result) => {
         fetchOperationsOfSegment();
 
-        // setOperationData({
-        //   ...operationData,
-        //   operationNumber: result.operationNumber,
-        //   // description: result.description,
-        //   id: result.id,
-        //   header:
-        //     "Operation " +
-        //     formatOperationNum(result.operationNumber) +
-        //     " - " +
-        //     result.description, //Rename to description once API is changed
-        // });
+        setOperationData({
+          ...operationData,
+          operationNumber: result.operationNumber,
+          id: result.id,
+          header:
+            "Operation " +
+            formatOperationNum(result.operationNumber) +
+            " - " +
+            result.description, //Rename to description once API is changed
+        });
         // console.log(operationData)
+        operations[opIndex] = result;
         setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(
@@ -262,6 +279,7 @@ function WithoutSparePartsOperation(props) {
     setOperationViewOnly(false);
     setOperationData(newOperation);
     operations.push(newOperation);
+    setOpIndex(operations.length - 1);
     setShowAddNewButton(false);
   };
   const makeHeaderEditable = () => {
@@ -275,6 +293,7 @@ function WithoutSparePartsOperation(props) {
           operations.findIndex((a) => a.header === NEW_OPERATION),
           1
         );
+        setOpIndex(operations.length - 1);
         setOperationData({
           ...operations[operations.length - 1],
           header:
@@ -289,7 +308,12 @@ function WithoutSparePartsOperation(props) {
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
+      if(operationData.header === NEW_OPERATION){
       setActiveElement({ ...activeElement, name: "segment" });
+      } else {
+        setOperationViewOnly(true);
+        setShowAddNewButton(true);
+      }
     }
   };
 
@@ -301,15 +325,62 @@ function WithoutSparePartsOperation(props) {
         severity={severity}
         message={snackMessage}
       />
+      <RenderConfirmDialog
+        confimationOpen={confirmationOpen}
+        message={`Are you sure you want to remove this operation?`}
+        handleNo={() => setConfirmationOpen(false)}
+        handleYes={removeOpFromSegment}
+      />
       <div className="card p-4 mt-5">
-        <div className="d-flex justify-content-end align-items-center mb-0">
-          <div className="text-right">
+        <div className="row align-items-center mb-0">
+          <div
+            className="col-md-6 col-sm-6"
+            style={{ fontSize: "1rem", fontWeight: 600, color: "black" }}
+          >
+            <span className="mr-3 white-space">{operationData.header}</span>
+            {operationViewOnly && (
+              <span className="btn-sm cursor">
+                <Tooltip title="Edit">
+                  <EditIcon
+                    onClick={() =>
+                      ["DRAFT", "REVISED"].indexOf(
+                        activeElement?.builderStatus
+                      ) > -1
+                        ? makeHeaderEditable()
+                        : handleSnack(
+                            "info",
+                            "Set revised status to modify active builders"
+                          )
+                    }
+                  />
+                </Tooltip>
+                <Tooltip title="Delete" className="ml-2">
+                  <img
+                    src={DeleteIcon}
+                    alt="Delete"
+                    onClick={() =>
+                      ["DRAFT", "REVISED"].indexOf(
+                        activeElement?.builderStatus
+                      ) > -1
+                        ? setConfirmationOpen(true)
+                        : handleSnack(
+                            "info",
+                            "Set revised status to modify active builders"
+                          )
+                    }
+                  />
+                </Tooltip>
+              </span>
+            )}
+          </div>
+          <div className="col-md-6 col-sm-6 align-items-center mb-0 ">
+            <div className="justify-content-end text-right">
             <button
-              onClick={() => handleAnchors("backward")}
+                onClick={() => handleAnchors("backward", opIndex - 1)}
               className="btn-no-border"
               disabled={
                 !(
-                  operationData.operationNumber > 1 ||
+                    opIndex > 0 ||
                   (operationData.header === NEW_OPERATION &&
                     operations.length > 1)
                 )
@@ -319,10 +390,10 @@ function WithoutSparePartsOperation(props) {
             </button>
             <span className="text-primary">{operationData.header}</span>
             <button
-              onClick={() => handleAnchors("forward")}
+                onClick={() => handleAnchors("forward", opIndex + 1)}
               className="btn-no-border"
               disabled={
-                operationData.operationNumber === operations.length ||
+                  opIndex === operations.length - 1 ||
                 operationData.header === NEW_OPERATION
               }
             >
@@ -343,27 +414,9 @@ function WithoutSparePartsOperation(props) {
               )}
           </div>
         </div>
-        <h5 className="d-flex align-items-center mb-0">
-          <div className="" style={{ display: "contents" }}>
-            <span className="mr-3 white-space">{operationData.header}</span>
-            <div className="btn-sm cursor">
-              <Tooltip title="Edit">
-                <EditIcon
-                  onClick={() =>
-                    ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                    -1
-                      ? makeHeaderEditable()
-                      : handleSnack(
-                          "info",
-                          "Set revised status to modify active builders"
-                        )
-                  }
-                />
-              </Tooltip>
-            </div>
           </div>
           <div className="hr"></div>
-        </h5>
+
         {operationLoading ? (
           <LoadingProgress />
         ) : !operationViewOnly ? (
@@ -403,6 +456,7 @@ function WithoutSparePartsOperation(props) {
                     onSelect={handleJobCodeSelect}
                     noOptions={noOptionsJobCode}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">

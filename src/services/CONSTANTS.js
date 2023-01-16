@@ -168,7 +168,7 @@ export const SEGMENT_OPERATION = (segmentId) => REPAIR_BUILDER_URI + `segment/${
 export const OPERATION_SERVICE = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate`;
 export const OPERATION_SERVICE_EST_DETAILS = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate`;
 export const SEGMENT_REMOVE = (segmentId) => REPAIR_BUILDER_URI + `/segment/${segmentId}`;
-export const OPERATION_REMOVE = (operationId) => REPAIR_BUILDER_URI + `/segment/${operationId}`;
+export const OPERATION_REMOVE = (operationId) => REPAIR_BUILDER_URI + `/operation/${operationId}`;
 
 export const LABOR_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/labour`;
 export const LABOR_ITEM = (labourId) => REPAIR_BUILDER_URI + `labour/${labourId}/labour-item`;

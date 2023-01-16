@@ -1,5 +1,6 @@
 import { Box, Menu, MenuItem, Paper } from "@mui/material";
 import * as React from "react";
+import { useState } from "react";
 import jobOpIcon from "../../../assets/icons/svg/JobOperation.svg";
 import segIcon from "../../../assets/icons/svg/Segment.svg";
 
@@ -24,9 +25,11 @@ function formatOperationHeader(convertOperation) {
   );
 }
 export default function ListComp(props) {
-  const { content } = props;
+  const { content, idSelected } = props;
+  // console.log("id", idSelected);
+  const [selectedIndex, setSelectedIndex] = useState(idSelected);
   return (
-    <Box >
+    <Box>
       <Menu
         anchorEl={props.anchorEl}
         id="account-menu"
@@ -35,12 +38,27 @@ export default function ListComp(props) {
         onClick={props.handleClose}
         PaperProps={{
           elevation: 0,
+          style: {
+            maxHeight: "50%",
+          },
           sx: {
-            overflow: "visible",
-            padding:1,
-            border: 20,
-            borderColor: '#BEBEBE',
-            maxHeight: 20,
+            overflow: "auto",
+            scrollbarWidth: "thin",
+            "&::-webkit-scrollbar": {
+              width: "0.4em",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "#f1f1f1",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#888",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              background: "#555",
+            },
+            padding: 1,
+            border: 15,
+            borderColor: "#BEBEBE",
             filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
             mt: 1.5,
             "& .MuiAvatar-root": {
@@ -67,19 +85,43 @@ export default function ListComp(props) {
         anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
       >
         {content?.map((indSegment, index) => {
-          return (
-            
-              <MenuItem >
-                <img src={segIcon} height={15} style={{ marginInline: 15 }} alt="Segment"/>
-                <span style={{ color: "grey", fontSize: 13 }} onClick={() =>
-                props.loadSegmentOnSelect(indSegment.id)
-                  }>
-                  {formatSegmentHeader(indSegment)}
-                </span>
+          return [
+            <MenuItem
+              onClick={() => {
+                setSelectedIndex(indSegment.id);
+                props.loadSegmentOnSelect(indSegment.id);
+              }}
+              selected={
+                indSegment.id === selectedIndex || indSegment.id === idSelected
+              }
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: "#E7D5FD",
+                  borderRadius: 3,
+                },
+              }}
+            >
               
-              {indSegment.operations?.map((indOperation, indexOp) => {
-                return <MenuItem
-                  style={{ paddingLeft: 20 }}
+              <img
+                src={segIcon}
+                height={15}
+                style={{ marginInline: 15 }}
+                alt="Segment"
+              />
+              <span
+                style={{
+                  color: "grey",
+                  fontSize: 13,
+                }}
+              >
+                {formatSegmentHeader(indSegment)}
+              </span>
+            </MenuItem>,
+
+            indSegment.operations?.map((indOperation, indexOp) => {
+              return (
+                <MenuItem
+                  style={{ paddingLeft: 25 }}
                   onClick={() =>
                     props.setActiveElement({
                       ...props.activeElement,
@@ -99,9 +141,9 @@ export default function ListComp(props) {
                     {formatOperationHeader(indOperation)}
                   </span>
                 </MenuItem>
-        })}
-            </MenuItem>
-          );
+              );
+            }),
+          ];
         })}
       </Menu>
     </Box>

@@ -8,7 +8,6 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import {
   createSegment,
-  fetchOperations,
   fetchSegments,
   RemoveSegment,
 } from "services/repairBuilderServices";
@@ -41,8 +40,6 @@ function WithSparePartsSegments(props) {
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
   const [segmentLoading, setSegmentLoading] = useState(false);
-  const [treeLoading, setTreeLoading] = useState(true);
-
   const [operations, setOperations] = useState([]);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const handleSnackBarClose = (event, reason) => {
@@ -82,7 +79,6 @@ function WithSparePartsSegments(props) {
   };
   useEffect(() => {
     fetchSegmentsOfBuilder();
-    fetchSegOpOfBuilder();
   }, []);
 
   const [segIndex, setSegIndex] = useState(0);
@@ -91,17 +87,18 @@ function WithSparePartsSegments(props) {
     if (activeElement.bId) {
       await fetchSegments(activeElement.bId)
         .then((result) => {
-          if (result?.length > 0) {
-            setSegments(result);
+          let segmentsFetched = result?.segments;
+          if (result?.segments?.length > 0) {
+            setSegments(segmentsFetched);
             setSegmentViewOnly(true);
             let segmentToLoad = activeElement.sId
-              ? result.filter((x) => x.id === activeElement.sId)[0]
-                ? result.filter((x) => x.id === activeElement.sId)[0]
-                : result[result.length - 1]
-              : result[result.length - 1];
+              ? segmentsFetched.filter((x) => x.id === activeElement.sId)[0]
+                ? segmentsFetched.filter((x) => x.id === activeElement.sId)[0]
+                : segmentsFetched[segmentsFetched.length - 1]
+              : segmentsFetched[segmentsFetched.length - 1];
             console.log(segmentToLoad);
             setSegIndex(
-              result.findIndex((obj) => {
+              segmentsFetched.findIndex((obj) => {
                 return obj.id === segmentToLoad.id;
               })
             );
@@ -109,7 +106,7 @@ function WithSparePartsSegments(props) {
               ...segmentToLoad,
               header: formatSegmentHeader(segmentToLoad),
             });
-            if (segmentToLoad) populateOperations(segmentToLoad.id);
+            if (segmentToLoad) setOperations(segmentToLoad.operations);
           } else {
             loadNewSegmentUI();
           }
@@ -126,7 +123,7 @@ function WithSparePartsSegments(props) {
     }
   };
 
-  const [segmentsTreeContent, setSegmentsTreeContent] = useState([]);
+  // const [segmentsTreeContent, setSegmentsTreeContent] = useState([]);
 
   const loadSegmentOnSelect = (segmentId) => {
     setActiveElement({ ...activeElement, name: "segment", sId: segmentId });
@@ -145,40 +142,9 @@ function WithSparePartsSegments(props) {
       ...segmentToLoad,
       header: formatSegmentHeader(segmentToLoad),
     });
-    if (segmentToLoad) populateOperations(segmentToLoad.id);
+    if (segmentToLoad) setOperations(segmentToLoad.operations);
   };
-  async function fetchSegOpOfBuilder() {
-    if (activeElement.bId) {
-      const result = await fetchSegments(activeElement.bId);
 
-      const complete = await Promise.all(
-        result.map(async (indSegment) => {
-          let ops = await fetchOperations(indSegment.id);
-          indSegment.operations = ops;
-        })
-      );
-      console.log(result);
-      if (complete) setSegmentsTreeContent(result);
-    } else {
-      handleSnack("error", "Not a valid builder!");
-    }
-  }
-
-  const populateOperations = (segmentId) => {
-    if (segmentId) {
-      fetchOperations(segmentId)
-        .then((result) => {
-          if (result?.length > 0) {
-            setOperations(result);
-          } else {
-            setOperations([]);
-          }
-        })
-        .catch((e) => {
-          handleSnack("error", "Error occurred while fetching the operations");
-        });
-    }
-  };
 
   const makeHeaderEditable = () => {
     if (segmentViewOnly) setSegmentViewOnly(false);
@@ -277,7 +243,7 @@ function WithSparePartsSegments(props) {
   const handleAnchors = (direction, index) => {
     setSegmentViewOnly(true);
     if (direction === "backward") {
-      populateOperations(segments[index].id);
+      setOperations(segments[index].operations);
       if (segIndex > 0) setSegIndex(segIndex - 1);
       setSegmentData({
         ...segments[index],
@@ -296,7 +262,7 @@ function WithSparePartsSegments(props) {
           ...segments[index],
           header: formatSegmentHeader(segments[index]),
         });
-        populateOperations(segments[index].id);
+        setOperations(segments[index].operations);
       }
     }
   };
@@ -383,7 +349,7 @@ function WithSparePartsSegments(props) {
             style={{ fontSize: "1rem", fontWeight: 600, color: "black" }}
           >
             <span className="mr-3 white-space">{segmentData.header}</span>
-            <span className="btn-sm cursor">
+            {segmentViewOnly && <span className="btn-sm cursor">
               <Tooltip title="Edit">
                 <EditIcon
                   onClick={() =>
@@ -415,7 +381,7 @@ function WithSparePartsSegments(props) {
               <Tooltip title="Navigate" className="ml-2">
                 <NavIcon onClick={handleClick} />
               </Tooltip>
-            </span>
+            </span>}
           </div>
           <div className="col-md-6 col-sm-6 align-items-center mb-0 ">
             <div className="justify-content-end text-right">
@@ -584,51 +550,37 @@ function WithSparePartsSegments(props) {
         ) : (
           <React.Fragment>
             <div className="row mt-4">
-              <div className="col-md-8 col-sm-8">
-                <div className="row mt-4">
-                  <ReadOnlyField
-                    label="SEGMENT #"
-                    value={String(segmentData.segmentNumber).padStart(2, "0")}
-                    className="col-md-6 col-sm-6"
-                  />
-                  <ReadOnlyField
-                    label="TITLE"
-                    value={segmentData.title}
-                    className="col-md-6 col-sm-6"
-                  />
-                  <ReadOnlyField
-                    label="JOB CODE"
-                    value={
-                      segmentData.jobCode +
-                      " - " +
-                      segmentData.jobCodeDescription
-                    }
-                    className="col-md-6 col-sm-6"
-                  />
-                  <ReadOnlyField
-                    label="COMPONENT CODE"
-                    value={
-                      segmentData.componentCode +
-                      " - " +
-                      segmentData.description
-                    }
-                    className="col-md-6 col-sm-6"
-                  />
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                {segmentsTreeContent.length > 0 && (
-                  <ListComp
-                    content={segmentsTreeContent}
-                    setActiveElement={setActiveElement}
-                    activeElement={activeElement}
-                    open={open}
-                    handleClose={handleClose}
-                    anchorEl={anchorEl}
-                    loadSegmentOnSelect={loadSegmentOnSelect}
-                  />
-                )}
-              </div>
+              {/* <div className="col-md-8 col-sm-8"> */}
+              {/* <div className="row mt-4"> */}
+              <ReadOnlyField
+                label="SEGMENT #"
+                value={String(segmentData.segmentNumber).padStart(2, "0")}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="TITLE"
+                value={segmentData.title}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="JOB CODE"
+                value={
+                  segmentData.jobCode + " - " + segmentData.jobCodeDescription
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="COMPONENT CODE"
+                value={
+                  segmentData.componentCode + " - " + segmentData.description
+                }
+                className="col-md-6 col-sm-6"
+              />
+              {/* </div> */}
+              {/* </div> */}
+              {/* <div className="col-md-4 col-sm-4">
+                
+              </div> */}
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10">
               <button
@@ -693,6 +645,18 @@ function WithSparePartsSegments(props) {
           </React.Fragment>
         )}
       </div>
+      {segments.length > 0 && (
+        <ListComp
+          content={segments}
+          setActiveElement={setActiveElement}
+          activeElement={activeElement}
+          open={open}
+          idSelected={segmentData.id}
+          handleClose={handleClose}
+          anchorEl={anchorEl}
+          loadSegmentOnSelect={loadSegmentOnSelect}
+        />
+      )}
     </>
   );
 }

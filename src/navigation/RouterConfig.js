@@ -23,11 +23,9 @@ import { AnalyticsDashboard, ReportDashboard } from "../pages/Dashboard/index"
 import { AccountActivated, Permissions, PermissionsSetting } from "../pages/Profile/index"
 import { VerifyEmail } from "../pages/LoginSignUp/index"
 import { Account } from "pages/User/Account";
-import WithSparePartsSegments from "pages/Repair/WithSparePartsSegments";
 import Segment01Disassemble from "pages/Repair/Segment01Disassemble";
 import RepairOption01 from "pages/Repair/RepairOption01";
 import RepairServiceEstimate from "pages/Repair/RepairServiceEstimate";
-import WithoutSpareParts from "pages/Repair/WithoutSparePartsSegments";
 import PartList from "pages/Repair/PartList";
 import { RepairPartlist } from "pages/Repair/RepairPartlist";
 import { RepairWithSpareParts } from "pages/Repair/RepairWithSpareParts";
@@ -40,7 +38,6 @@ import { CommanComponents } from "../components/CommanComponents";
 import AddPartlist from "pages/Repair/AddPartlist";
 import WithSpareParts from "pages/Repair/WithSparePartsHeader";
 import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
-// import WithoutRepairOption01 from "pages/Repair/WithoutRepairOption01";
 import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 import QuoteSpareParts from "pages/SolutionModules/QuoteSpareParts";
 import QuoteSearchQuote from "pages/SolutionModules/QuoteSearchQuote";
@@ -121,12 +118,10 @@ export const RouterConfig = () => {
         <Route exact path={SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT} component={SolutionTemplateResult} />
         <Route exact path={PROFILE} component={Profile} />
         <Route exact path={ACCOUNT} component={Account} />
-        <Route exact path={RIPAIR_WITH_SP_SEGMENT} component={WithSparePartsSegments} />
         <Route exact path={RIPAIR_SEGMENT01_DISASSEMBLE} component={Segment01Disassemble} />
         <Route exact path={RIPAIR_OPTION01} component={RepairOption01} />
         {/* <Route exact path={WITHOUT_REPAIR_OPTION01} component={WithoutRepairOption01} /> */}
         <Route exact path={RIPAIR_SERVICE_ESTIMATE} component={RepairServiceEstimate} />
-        <Route exact path={WITHOUTSPARE_REPAIR_OPTION} component={WithoutSpareParts} />
         <Route exact path={WITH_SPARE_PARTS} component={WithSpareParts} />
         <Route exact path={PART_LIST} component={PartList} />
         <Route exact path={REPAIR_PARTLIST} component={RepairPartlist} />

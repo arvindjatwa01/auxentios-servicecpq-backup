@@ -23,7 +23,9 @@ import { ReadOnlyField } from "./components/ReadOnlyField";
 import { Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import DeleteIcon from "../../assets/icons/svg/delete.svg";
+import NavIcon from "@mui/icons-material/SortOutlined";
 import { RenderConfirmDialog } from "./components/ConfirmationBox";
+import ListComp from "./components/ListComp";
 
 function WithoutSparePartsSegments(props) {
   const { activeElement, setActiveElement, fetchAllDetails } =
@@ -70,6 +72,14 @@ function WithoutSparePartsSegments(props) {
     jobCodeDescription: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   useEffect(() => {
     fetchSegmentsOfBuilder();
     fetchSegOpOfBuilder();
@@ -118,6 +128,25 @@ function WithoutSparePartsSegments(props) {
 
   const [segmentsTreeContent, setSegmentsTreeContent] = useState([]);
 
+  const loadSegmentOnSelect = (segmentId) => {
+    setActiveElement({ ...activeElement, name: "segment", sId: segmentId });
+    let segmentToLoad = segmentId
+      ? segments.filter((x) => x.id === segmentId)[0]
+        ? segments.filter((x) => x.id === segmentId)[0]
+        : segments[segments.length - 1]
+      : segments[segments.length - 1];
+    console.log(segmentToLoad);
+    setSegIndex(
+      segments.findIndex((obj) => {
+        return obj.id === segmentToLoad.id;
+      })
+    );
+    setSegmentData({
+      ...segmentToLoad,
+      header: formatSegmentHeader(segmentToLoad),
+    });
+    if (segmentToLoad) populateOperations(segmentToLoad.id);
+  };
   async function fetchSegOpOfBuilder() {
     if (activeElement.bId) {
       const result = await fetchSegments(activeElement.bId);
@@ -368,7 +397,7 @@ function WithoutSparePartsSegments(props) {
                   }
                 />
               </Tooltip>
-              <Tooltip title="Delete" className="ml-1">
+              <Tooltip title="Delete" className="ml-2">
                 <img
                   src={DeleteIcon}
                   alt="Delete"
@@ -382,6 +411,9 @@ function WithoutSparePartsSegments(props) {
                         )
                   }
                 />
+              </Tooltip>
+              <Tooltip title="Navigate" className="ml-2">
+                <NavIcon onClick={handleClick} />
               </Tooltip>
             </span>
           </div>
@@ -640,6 +672,17 @@ function WithoutSparePartsSegments(props) {
           </React.Fragment>
         )}
       </div>
+      {segmentsTreeContent.length > 0 && (
+        <ListComp
+          content={segmentsTreeContent}
+          setActiveElement={setActiveElement}
+          activeElement={activeElement}
+          open={open}
+          handleClose={handleClose}
+          anchorEl={anchorEl}
+          loadSegmentOnSelect={loadSegmentOnSelect}
+        />
+      )}
     </>
   );
 }

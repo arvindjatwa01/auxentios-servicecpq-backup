@@ -395,6 +395,7 @@ function ServiceOnlyTemplateEstimation(props) {
             netPrice: result.netPrice ? result.netPrice : 0.0,
             adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
             priceDate: result.priceDate,
+            flatRateIndicator: result.flatRateIndicator,
             priceMethod: priceMethodOptions.find(
               (element) => element.value === result.priceMethod
             ),
@@ -700,8 +701,7 @@ function ServiceOnlyTemplateEstimation(props) {
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
-      // flatRateIndicator: serviceEstimateData.flatRateIndicator, //TODO - uncomment once API changes are done
-      flatRateIndicator: undefined, //TODO - Remove once API changes are done
+      flatRateIndicator: serviceEstimateData.flatRateIndicator, 
       adjustedPrice: serviceEstimateData.flatRateIndicator
         ? serviceEstimateData.adjustedPrice
         : 0.0,

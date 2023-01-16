@@ -19,7 +19,6 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 
 function ServiceOnlyTemplateOperation(props) {
   const { activeElement, setActiveElement } = props.templateDetails;
-
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -31,7 +30,6 @@ function ServiceOnlyTemplateOperation(props) {
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
   const [operationLoading, setOperationLoading] = useState(false);
-
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -46,29 +44,36 @@ function ServiceOnlyTemplateOperation(props) {
     componentCodeDescription: "",
     jobCodeDescription: "",
     modifier: "",
+    id: "",
     description: "",
-    requiredIndicator: true,
+    required: true
   };
   const [operationData, setOperationData] = useState(newOperation);
   useEffect(() => {
     fetchOperationsOfSegment();
   }, []);
 
-  const fetchOperationsOfSegment = () => {
+  const [opIndex, setOpIndex] = useState(0);
+  const fetchOperationsOfSegment = async () => {
     setOperationLoading(true);
     if (activeElement.sId) {
-      fetchOperations(activeElement.sId)
+      await fetchOperations(activeElement.sId)
         .then((result) => {
-          if (result?.length > 0) {
-            setOperations(result);
+          let operationsFetched = result?.operations;
+          if (operationsFetched?.length > 0) {
+            setOperations(operationsFetched);
             setOperationViewOnly(true);
             // Default last operation or selected operation for back traverse from service estimate
-            let opToLoad = operationData?.id ? 
-            
-              result.filter((x) => x.id === operationData.id)[0] :
-              (activeElement.oId
-                ? result.filter((x) => x.id === activeElement.oId)[0]
-                : result[result.length - 1]);
+            let opToLoad = operationData?.id
+              ? operationsFetched.filter((x) => x.id === operationData.id)[0]
+              : activeElement.oId
+              ? operationsFetched.filter((x) => x.id === activeElement.oId)[0]
+              : operationsFetched[operationsFetched.length - 1];
+            setOpIndex(
+              operationsFetched.findIndex((obj) => {
+                return obj.id === opToLoad.id;
+              })
+            );
 
             setOperationData({
               ...opToLoad,
@@ -94,15 +99,29 @@ function ServiceOnlyTemplateOperation(props) {
           setOperationLoading(false);
         });
     } else {
-      handleSnack("error", "Not a valid segment!");
       setOperationLoading(false);
+      handleSnack("error", "Not a valid segment!");
     }
   };
 
   function formatOperationNum(num) {
     return String(num).padStart(3, "0");
   }
-
+// To indicate whether segment price will be included in total price
+const handleChangeSwitch = (event) => {
+  let sid = activeElement?.sId;
+  AddOperation(sid,  {
+    id: operationData.id,
+    required: event.target.checked,
+  })
+    .then((result) => {
+      setOperationData({ ...operationData, required: result.required });
+      handleSnack("success", "Operation updated successfully!");
+    })
+    .catch((e) => {
+      handleSnack("error", "Error occured while updating the details!");
+    });
+};
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
     setSearchJobCodeResults([]);
@@ -128,7 +147,7 @@ function ServiceOnlyTemplateOperation(props) {
       ...operationData,
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
-      description: operationData.componentCodeDescription
+      description: currentItem.description && operationData.componentCodeDescription
         ? currentItem.description + " " + operationData.componentCodeDescription
         : "",
     });
@@ -161,7 +180,7 @@ function ServiceOnlyTemplateOperation(props) {
       componentCode: currentItem.componentCode,
       componentCodeDescription: currentItem.description,
       // description: currentItem.componentCode + " - " + currentItem.description,
-      description: operationData.jobCodeDescription
+      description: operationData.jobCodeDescription && currentItem.description
         ? operationData.jobCodeDescription + " " + currentItem.description
         : "",
     });
@@ -175,46 +194,34 @@ function ServiceOnlyTemplateOperation(props) {
     setOpenSnack(true);
   };
 
-  const handleAnchors = (direction) => {
+  const handleAnchors = (direction, index) => {
     if (direction === "backward") {
-      let operationToLoad = [];
-      if (operationData.header === NEW_OPERATION) {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operations.length - 1
-        );
-        setOperationViewOnly(true);
-      } else {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operationData.operationNumber - 1
-        );
-      }
+      if (opIndex > 0) setOpIndex(opIndex - 1);
+
       setOperationData({
-        ...operationToLoad[0],
+        ...operations[index],
         header:
           "Operation " +
-          formatOperationNum(operationToLoad[0]?.operationNumber) +
+          formatOperationNum(operations[index]?.operationNumber) +
           " - " +
-          operationToLoad[0]?.description, //Rename once changed in API
+          operations[index]?.description, //Rename once changed in API
       });
     } else if (direction === "forward") {
-      let operationToLoad = [];
       if (
         operations[operations.length - 1].header === NEW_OPERATION &&
-        operations.length - 1 === operationData.operationNumber
+        operations.length - 1 === index
       ) {
-        setOperationData({ ...operations[operations.length - 1] });
+        setOperationData({ ...operations[index] });
         setOperationViewOnly(false);
-      } else if (operations.length > operationData.operationNumber) {
-        operationToLoad = operations.filter(
-          (x) => x.operationNumber === operationData.operationNumber + 1
-        );
+      } else {
+        if (operations.length - 1 > opIndex) setOpIndex(opIndex + 1);
         setOperationData({
-          ...operationToLoad[0],
+          ...operations[index],
           header:
             "Operation " +
-            formatOperationNum(operationToLoad[0].operationNumber) +
+            formatOperationNum(operations[index].operationNumber) +
             " - " +
-            operationToLoad[0].description, //Rename
+            operations[index].description, //Rename
         });
       }
     }
@@ -233,20 +240,19 @@ function ServiceOnlyTemplateOperation(props) {
     };
     AddOperation(sid, data)
       .then((result) => {
-        fetchOperationsOfSegment(); 
-        
-        // setOperationData({
-        //   ...operationData,
-        //   operationNumber: result.operationNumber,
-        //   // description: result.description,
-        //   id: result.id,
-        //   header:
-        //     "Operation " +
-        //     formatOperationNum(result.operationNumber) +
-        //     " - " +
-        //     result.description, //Rename to description once API is changed
-        // });
+        fetchOperationsOfSegment();
+        setOperationData({
+          ...operationData,
+          operationNumber: result.operationNumber,
+          id: result.id,
+          header:
+            "Operation " +
+            formatOperationNum(result.operationNumber) +
+            " - " +
+            result.description, //Rename to description once API is changed
+        });
         // console.log(operationData)
+        operations[opIndex] = result;
         setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(
@@ -262,6 +268,7 @@ function ServiceOnlyTemplateOperation(props) {
     setOperationViewOnly(false);
     setOperationData(newOperation);
     operations.push(newOperation);
+    setOpIndex(operations.length - 1);
     setShowAddNewButton(false);
   };
   const makeHeaderEditable = () => {
@@ -270,11 +277,12 @@ function ServiceOnlyTemplateOperation(props) {
 
   const handleCancelOperation = () => {
     if (operations.length > 1) {
-      if(operationData.header === NEW_OPERATION){
+      if (operationData.header === NEW_OPERATION) {
         operations.splice(
           operations.findIndex((a) => a.header === NEW_OPERATION),
           1
         );
+        setOpIndex(operations.length - 1);
         setOperationData({
           ...operations[operations.length - 1],
           header:
@@ -285,30 +293,19 @@ function ServiceOnlyTemplateOperation(props) {
             " - " +
             operations[operations.length - 1].description,
         });
-        
-      } 
+      }
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
+      if(operationData.header === NEW_OPERATION){
       setActiveElement({ ...activeElement, name: "segment" });
+      } else {
+        setOperationViewOnly(true);
+        setShowAddNewButton(true);
+      }
     }
   };
-  // To indicate whether operation price will be included in total price
-  const handleChangeSwitch = (event) => {
-    setOperationData({
-      ...operationData,
-      requiredIndicator: event.target.checked,
-    });
-    // updateOperation(activeElement.sId, {
-    //   requiredIndicator: event.target.checked,
-    // })
-    //   .then((result) => {
-    //     handleSnack("success", "Segment updated successfully!");
-    //   })
-    //   .catch((e) => {
-    //     handleSnack("error", "Error occured while updating the details!");
-    //   });
-  };
+
   return (
     <>
       <CustomizedSnackbar
@@ -318,14 +315,40 @@ function ServiceOnlyTemplateOperation(props) {
         message={snackMessage}
       />
       <div className="card p-4 mt-5">
-        <div className="d-flex justify-content-end align-items-center mb-0">
-          <div className="text-right">
+        <div className="row align-items-center mb-0">
+          <div
+            className="col-md-6 col-sm-6"
+            style={{ fontSize: "1rem", fontWeight: 600, color: "black" }}
+          >
+            <span className="mr-3 white-space">{operationData.header}</span>
+            {operationViewOnly && (
+              <span className="btn-sm cursor">
+                <Tooltip title="Edit">
+                  <EditIcon
+                    onClick={() =>
+                      ["DRAFT", "REVISED"].indexOf(
+                        activeElement?.builderStatus
+                      ) > -1
+                        ? makeHeaderEditable()
+                        : handleSnack(
+                            "info",
+                            "Set revised status to modify active builders"
+                          )
+                    }
+                  />
+                </Tooltip>
+                
+              </span>
+            )}
+          </div>
+          <div className="col-md-6 col-sm-6 align-items-center mb-0 ">
+            <div className="justify-content-end text-right">
             <button
-              onClick={() => handleAnchors("backward")}
+                onClick={() => handleAnchors("backward", opIndex - 1)}
               className="btn-no-border"
               disabled={
                 !(
-                  operationData.operationNumber > 1 ||
+                    opIndex > 0 ||
                   (operationData.header === NEW_OPERATION &&
                     operations.length > 1)
                 )
@@ -335,17 +358,17 @@ function ServiceOnlyTemplateOperation(props) {
             </button>
             <span className="text-primary">{operationData.header}</span>
             <button
-              onClick={() => handleAnchors("forward")}
+                onClick={() => handleAnchors("forward", opIndex + 1)}
               className="btn-no-border"
               disabled={
-                operationData.operationNumber === operations.length ||
+                  opIndex === operations.length - 1 ||
                 operationData.header === NEW_OPERATION
               }
             >
               <KeyboardArrowRightIcon />
             </button>
-            {/* {showAddNewButton &&
-              ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
+            {showAddNewButton &&
+              ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
                 -1 && (
                 <button
                   className="btn-no-border ml-2"
@@ -356,234 +379,210 @@ function ServiceOnlyTemplateOperation(props) {
                   </span>
                   Add New Operation
                 </button>
-              )} */}
+              )}
           </div>
         </div>
-        <h5 className="d-flex align-items-center mb-0">
-          <div className="" style={{ display: "contents" }}>
-            <span className="mr-3 white-space">{operationData.header}</span>
-            <div className="btn-sm cursor">
-              <Tooltip title="Edit">
-                <EditIcon
-                  onClick={() =>
-                    ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
-                    -1
-                      ? makeHeaderEditable()
-                      : handleSnack(
-                          "info",
-                          "Set revised status to modify active operations"
-                        )
-                  }
-                />
-              </Tooltip>
-            </div>
           </div>
           <div className="hr"></div>
-        </h5>
+
         {operationLoading ? (
           <LoadingProgress />
-        ) : (
+        ) : !operationViewOnly ? (
           <>
-            <div className="col-md-12 col-sm-12">
-              <div className=" d-flex justify-content-between align-items-center">
-                <div>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={operationData.requiredIndicator}
-                          onChange={handleChangeSwitch}
-                          name="operationRequired"
-                        />
-                      }
-                      label="REQUIRED"
-                    />
-                  </FormGroup>
+            <div className="row mt-4 input-fields">
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600">
+                    TITLE
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control border-radius-10"
+                    value={operationData.description}
+                    onChange={(e) =>
+                      setOperationData({
+                        ...operationData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Auto Filled"
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6"></div>
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600">
+                    JOB CODE
+                  </label>
+                  <SearchBox
+                    value={operationData.jobCode}
+                    onChange={(e) => handleJobCodeSearch(e.target.value)}
+                    type="jobCode"
+                    result={searchJobCodeResults}
+                    onSelect={handleJobCodeSelect}
+                    noOptions={noOptionsJobCode}
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600">
+                    JOB CODE DESCRIPTION
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control border-radius-10"
+                    value={operationData.jobCodeDescription}
+                    disabled
+                    placeholder="Auto Filled"
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600">
+                    COMPONENT CODE
+                  </label>
+                  <SearchBox
+                    value={operationData.componentCode}
+                    onChange={(e) => handleComponentCodeSearch(e.target.value)}
+                    type="componentCode"
+                    result={searchCompCodeResults}
+                    onSelect={handleCompCodeSelect}
+                    noOptions={noOptionsCompCode}
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
+                </div>
+              </div>
+
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600">
+                    COMPONENT CODE DESCRIPTION
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control border-radius-10"
+                    value={operationData.componentCodeDescription}
+                    placeholder="Auto Filled"
+                    disabled
+                  />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
             </div>
-            {!operationViewOnly ? (
-              <>
-                <div className="row mt-4 input-fields">
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        TITLE
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control border-radius-10"
-                        value={operationData.description}
-                        onChange={(e) =>
-                          setOperationData({
-                            ...operationData,
-                            description: e.target.value,
-                          })
-                        }
-                        placeholder="Auto Filled"
-                      />
-                      <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6"></div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        JOB CODE
-                      </label>
-                      <SearchBox
-                        value={operationData.jobCode}
-                        onChange={(e) => handleJobCodeSearch(e.target.value)}
-                        type="jobCode"
-                        result={searchJobCodeResults}
-                        onSelect={handleJobCodeSelect}
-                        noOptions={noOptionsJobCode}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        JOB CODE DESCRIPTION
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control border-radius-10"
-                        value={operationData.jobCodeDescription}
-                        disabled
-                        placeholder="Auto Filled"
-                      />
-                      <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        COMPONENT CODE
-                      </label>
-                      <SearchBox
-                        value={operationData.componentCode}
-                        onChange={(e) =>
-                          handleComponentCodeSearch(e.target.value)
-                        }
-                        type="componentCode"
-                        result={searchCompCodeResults}
-                        onSelect={handleCompCodeSelect}
-                        noOptions={noOptionsCompCode}
-                      />
-                      <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                  </div>
 
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        COMPONENT CODE DESCRIPTION
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control border-radius-10"
-                        value={operationData.componentCodeDescription}
-                        placeholder="Auto Filled"
-                        disabled
-                      />
-                      <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className=" text-right">
-                  {operations.length > 0 && (
-                    <button
-                      className="btn border bg-primary text-white mr-2"
-                      onClick={handleCancelOperation}
-                    >
-                      Cancel
-                    </button>
-                  )}
-                  <button
-                    className="btn border bg-primary text-white"
-                    onClick={handleCreateOperation}
-                    disabled={
-                      !(
-                        operationData.componentCode &&
-                        operationData.componentCodeDescription &&
-                        operationData.jobCode &&
-                        operationData.jobCodeDescription &&
-                        operationData.description
-                      ) ||
-                      noOptionsCompCode ||
-                      noOptionsJobCode
-                    }
-                  >
-                    Save
-                  </button>
-                </div>
-              </>
-            ) : (
-              <React.Fragment>
-                <div className="row mt-4">
-                  <ReadOnlyField
-                    label="OPERATION #"
-                    value={String(operationData.operationNumber).padStart(
-                      3,
-                      "0"
-                    )}
-                    className="col-md-6 col-sm-6"
-                  />
-                  <ReadOnlyField
-                    label="TITLE"
-                    value={operationData.description}
-                    className="col-md-6 col-sm-6"
-                  />
-                  <ReadOnlyField
-                    label="JOB CODE"
-                    value={
-                      operationData.jobCode +
-                      " - " +
-                      operationData.jobCodeDescription
-                    }
-                    className="col-md-6 col-sm-6"
-                  />
-                  <ReadOnlyField
-                    label="COMPONENT CODE"
-                    value={
-                      operationData.componentCode +
-                      " - " +
-                      operationData.componentCodeDescription
-                    }
-                    className="col-md-4 col-sm-4"
-                  />
-                </div>
-                <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
-                  <button
-                    className="btn bg-primary text-white"
-                    onClick={() =>
-                      setActiveElement({ ...activeElement, name: "segment" })
-                    }
-                  >
-                    Back
-                  </button>
-                  <button
-                    // to="/RepairServiceEstimate"
-                    onClick={() =>
-                      setActiveElement({
-                        ...activeElement,
-                        name: "service",
-                        oId: operationData.id,
-                      })
-                    }
-                    className="btn bg-primary text-white ml-2"
-                  >
-                    <span className="mr-2">
-                      <FontAwesomeIcon icon={faPlus} />
-                    </span>
-                    Add Service Estimate
-                  </button>
-                </div>
-              </React.Fragment>
-            )}
+            <div className=" text-right">
+              {operations.length > 0 && (
+                <button
+                  className="btn border bg-primary text-white mr-2"
+                  onClick={handleCancelOperation}
+                >
+                  Cancel
+                </button>
+              )}
+              <button
+                className="btn border bg-primary text-white"
+                onClick={handleCreateOperation}
+                disabled={
+                  !(
+                    operationData.componentCode &&
+                    operationData.componentCodeDescription &&
+                    operationData.jobCode &&
+                    operationData.jobCodeDescription &&
+                    operationData.description
+                  ) ||
+                  noOptionsCompCode ||
+                  noOptionsJobCode
+                }
+              >
+                Save
+              </button>
+            </div>
           </>
+        ) : (
+          <React.Fragment>
+            <div className="row mt-4">
+            <div className="col-md-12 col-sm-12 mb-4">
+                    <div className=" d-flex justify-content-between align-items-center">
+                      <div>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={operationData.required}
+                                onChange={handleChangeSwitch}
+                                name="operationRequired"
+                              />
+                            }
+                            label="REQUIRED"
+                          />
+                        </FormGroup>
+                      </div>
+                    </div>
+                  </div>
+              <ReadOnlyField
+                label="OPERATION #"
+                value={String(operationData.operationNumber).padStart(3, "0")}
+                className="col-md-6 col-sm-6"
+              />
+
+              <ReadOnlyField
+                label="TITLE"
+                value={operationData.description}
+                className="col-md-6 col-sm-6"
+              />
+
+              <ReadOnlyField
+                label="JOB CODE"
+                value={
+                  operationData.jobCode +
+                  " - " +
+                  operationData.jobCodeDescription
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="COMPONENT CODE"
+                value={
+                  operationData.componentCode +
+                  " - " +
+                  operationData.componentCodeDescription
+                }
+                className="col-md-4 col-sm-4"
+              />
+            </div>
+            <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
+              <button
+                className="btn bg-primary text-white"
+                onClick={() =>
+                  setActiveElement({ ...activeElement, name: "segment" })
+                }
+              >
+                Back
+              </button>
+              <button
+                // to="/RepairServiceEstimate"
+                onClick={() =>
+                  setActiveElement({
+                    ...activeElement,
+                    name: "service",
+                    oId: operationData.id,
+                  })
+                }
+                className="btn bg-primary text-white ml-2"
+              >
+                <span className="mr-2">
+                  <FontAwesomeIcon icon={faPlus} />
+                </span>
+                Add Service Estimate
+              </button>
+            </div>
+          </React.Fragment>
         )}
       </div>
     </>

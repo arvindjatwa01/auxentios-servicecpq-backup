@@ -392,6 +392,7 @@ function RepairServiceEstimate(props) {
             componentCode: result.componentCode,
             componentCodeDescription: result.componentCodeDescription,
             jobOperation: result.jobOperation,
+            flatRateIndicator: result.flatRateIndicator,
             netPrice: result.netPrice ? result.netPrice : 0.0,
             adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
             priceDate: result.priceDate,
@@ -701,12 +702,10 @@ function RepairServiceEstimate(props) {
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
-      // flatRateIndicator: serviceEstimateData.flatRateIndicator, //TODO - uncomment once API changes are done
-      flatRateIndicator: undefined, //TODO - Remove once API changes are done
+      flatRateIndicator: serviceEstimateData.flatRateIndicator, 
       adjustedPrice: serviceEstimateData.flatRateIndicator
         ? serviceEstimateData.adjustedPrice
         : 0.0,
-      // priceMethod: null,
     };
     AddServiceHeader(activeElement.oId, data)
       .then((result) => {
