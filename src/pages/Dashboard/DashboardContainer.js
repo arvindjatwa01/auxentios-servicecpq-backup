@@ -63,7 +63,7 @@ export const DashboardContainer = () => {
     <div>
       {/* <CommanComponents /> */}
       <div className="content-body bg-white" style={{ minHeight: '884px' }}>
-        <div className="container-fluid mt-3">
+        <div className="container-fluid p-32-60 mt-3">
           <h5 className="">Operational Dashboar</h5>
           <div className="row mt-4">
             <div className="col-md-6 col-sm-6">
@@ -128,10 +128,10 @@ export const DashboardContainer = () => {
                         <a href="#" className="btn bg-white border">Review</a>
                       </div>
                       <div className="d-flex">
-                        <a href="#" className="mr-2 text-danger font-weight-500">
+                        <a href="#" className="mr-2 text-green font-weight-500">
                           <CheckCircleOutlinedIcon style={{ fontSize: "40px" }} />
                         </a>
-                        <a href="#" className="text-green font-weight-500">
+                        <a href="#" className="text-danger font-weight-500">
                           <CancelOutlinedIcon style={{ fontSize: "40px" }} />
                         </a>
                       </div>
@@ -150,10 +150,10 @@ export const DashboardContainer = () => {
                         <a href="#" className="btn bg-white border">Review</a>
                       </div>
                       <div className="d-flex">
-                        <a href="#" className="mr-2 text-danger font-weight-500">
+                        <a href="#" className="mr-2 text-green font-weight-500">
                           <CheckCircleOutlinedIcon style={{ fontSize: "40px" }} />
                         </a>
-                        <a href="#" className="text-green font-weight-500">
+                        <a href="#" className="text-danger font-weight-500">
                           <CancelOutlinedIcon style={{ fontSize: "40px" }} />
                         </a>
                       </div>
@@ -172,10 +172,10 @@ export const DashboardContainer = () => {
                         <a href="#" className="btn bg-white border">Review</a>
                       </div>
                       <div className="d-flex">
-                        <a href="#" className="mr-2 text-danger font-weight-500">
+                        <a href="#" className="mr-2 text-green font-weight-500">
                           <CheckCircleOutlinedIcon style={{ fontSize: "40px" }} />
                         </a>
-                        <a href="#" className="text-green font-weight-500">
+                        <a href="#" className="text-danger font-weight-500">
                           <CancelOutlinedIcon style={{ fontSize: "40px" }} />
                         </a>
                       </div>
@@ -252,7 +252,7 @@ export const DashboardContainer = () => {
           <div className="card overflow-hidden border">
             <div className="activity-div bg-white border-bottom p-3">
               <div className="d-flex justify-content-between align-items-center">
-                <h6 className="font-weight-500 font-size-16 text-dark-black mb-0 d-flex align-items-center"><span className="mr-2"><NotificationsNoneOutlinedIcon style={{fontSize: "35px", color: "B2EAE8"}}/></span>No of transactions</h6>
+                <h6 className="font-weight-500 font-size-16 text-dark-black mb-0 d-flex align-items-center"><span className="mr-2"><NotificationsNoneOutlinedIcon style={{ fontSize: "35px", color: "B2EAE8" }} /></span>No of transactions</h6>
                 <MuiMenuComponent options={transOptions} />
               </div>
             </div>
@@ -264,7 +264,14 @@ export const DashboardContainer = () => {
                       <a href="#" data-toggle="collapse" data-target="#bysoluction"><span><i className="fa fa-angle-down f-s-16 mr-2" aria-hidden="true"></i></span><span className="font-weight-500">By Solution</span></a>
                       <div className="collapse show" id="bysoluction">
                         <p > Bars represent solutions</p>
-                        <Chart1 />
+                        {/* <Chart1 /> */}
+                        <div className="stack-chart">
+                          <div id="tooltip" class="hidden">
+                            <p>Region: <span id="region"></span></p>
+                            <p>Gender: <span id="gender"></span></p>
+                            <p>Suicides: <span id="suicides"></span></p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
