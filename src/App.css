@@ -673,7 +673,7 @@ button:focus {
   /* border-right: 1px solid #EEEEEE; */
   box-shadow: none;
   border-bottom: 1px solid #EEEEEE;
-  z-index: 1;
+  z-index: 2;
 }
 
 .content-body {
@@ -700,7 +700,7 @@ button:focus {
   transition: all .2s ease;
   box-shadow: none !important;
   border-bottom: 1px solid #EEEEEE;
-  z-index: 1;
+  z-index: 2;
 }
 
 .header {
@@ -3860,10 +3860,17 @@ color: #fff !important;}
   min-width: 167px !important;
 }
 .bg-white{background-color: #ffffff !important;}
-.color{color: #B2EAE8;
-  color: #FFD1DE;
-  color: #D7B7D7;}
 .height-custom .css-1s2u09g-control{min-height: 32px !important;
 height: 32px !important;}
 .height-custom  .css-1pahdxg-control{min-height: 32px !important;
   height: 32px !important;}
+.percent-div{position: absolute;
+  left: 6px;
+  top: 6px;
+  z-index: 1;}
+.percent-p .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+    padding-left: 11px;
+}
+.component-li{}
+.component-li li:hover{ background: #872ff7 !important;
+color: #fff !important;}

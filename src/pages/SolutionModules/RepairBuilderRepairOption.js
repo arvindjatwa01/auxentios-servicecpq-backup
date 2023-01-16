@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from 'react-bootstrap';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
@@ -29,15 +29,15 @@ import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import Checkbox from '@mui/material/Checkbox';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faPen} from '@fortawesome/free-solid-svg-icons'
+import { faPen } from '@fortawesome/free-solid-svg-icons'
 import EditIcon from '@mui/icons-material/Edit';
-import {faPlus} from '@fortawesome/free-solid-svg-icons'
-import {faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
-import {faShareAlt} from '@fortawesome/free-solid-svg-icons'
-import {faUpload} from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
+import { faShareAlt } from '@fortawesome/free-solid-svg-icons'
+import { faUpload } from '@fortawesome/free-solid-svg-icons'
 import ArchiveIcon from '@mui/icons-material/Archive';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons'
+import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { CommanComponents } from "../../components/index"
 import shareIcon from '../../assets/icons/svg/share.svg'
 import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
@@ -63,18 +63,18 @@ const RepairBuilderRepairOption = () => {
   const [age1, setAge1] = React.useState('5');
   const [age2, setAge2] = React.useState('5');
   const [show, setShow] = React.useState(false);
-  
-  const handleOpen=()=>setShow(true)
-  
+
+  const handleOpen = () => setShow(true)
+
   const handleChangedrop = (event) => {
     setAge(event.target.value);
-};
-const handleChangedrop1 = (event) => {
+  };
+  const handleChangedrop1 = (event) => {
     setAge1(event.target.value);
-};
-const handleChangedrop2 = (event) => {
+  };
+  const handleChangedrop2 = (event) => {
     setAge2(event.target.value);
-};
+  };
   function getStyles(name, personName, theme) {
     return {
       fontWeight:
@@ -90,7 +90,7 @@ const handleChangedrop2 = (event) => {
   const handleOpen1 = () => {
     setOpen1(true);
   };
-  
+
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
 
@@ -101,6 +101,7 @@ const handleChangedrop2 = (event) => {
     setPersonName(
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
+      
     );
   };
 
@@ -114,7 +115,7 @@ const handleChangedrop2 = (event) => {
       },
     },
   };
-  
+
   const names = [
     'Oliver Hansen',
     'Van Henry',
@@ -136,7 +137,7 @@ const handleChangedrop2 = (event) => {
     'In revision',
     'Revised',
     'Accepted',
-    
+
   ];
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -193,7 +194,7 @@ const handleChangedrop2 = (event) => {
     setValue(newValue);
   };
 
-  
+
   const activityOptions = [
     'None',
     'Atria',
@@ -202,19 +203,19 @@ const handleChangedrop2 = (event) => {
   const data = [
     {
       id: 1,
-      caseId:13322,
-      BundleId:'Pc',
-      Bundledescription:'Ex2487518',
-      S1:"CAT DEO",
-      strategy:'3',
-      Standardjob:'$43.09',
-      repairoption:'$100',
-      frequency:'USD',
-      quantity:'80%',
-      part$:'$80',
-      srevic$:'80% usage observed on previous work.',
-      Total$:'80% usage observed on previous work.',
-    
+      caseId: 13322,
+      BundleId: 'Pc',
+      Bundledescription: 'Ex2487518',
+      S1: "CAT DEO",
+      strategy: '3',
+      Standardjob: '$43.09',
+      repairoption: '$100',
+      frequency: 'USD',
+      quantity: '80%',
+      part$: '$80',
+      srevic$: '80% usage observed on previous work.',
+      Total$: '80% usage observed on previous work.',
+
     },
   ]
   const customStyles = {
@@ -238,7 +239,7 @@ const handleChangedrop2 = (event) => {
     },
   };
 
-    
+
   const columns = [
     {
       name: <><div><img className='mr-2' src={boxicon}></img>Case ID</div></>,
@@ -248,84 +249,84 @@ const handleChangedrop2 = (event) => {
       cell: row => row.caseId,
     },
     {
-      name:<><div><img className='mr-2' src={boxicon}></img>Bundle iD</div></>,
+      name: <><div><img className='mr-2' src={boxicon}></img>Bundle iD</div></>,
       selector: row => row.BundleId,
       wrap: true,
       sortable: true,
-      cell: (row) => <div><HexagonOutlinedIcon className="font-size-18 mr-2"/>{row.BundleId}</div>
+      cell: (row) => <div><HexagonOutlinedIcon className="font-size-18 mr-2" />{row.BundleId}</div>
     },
     {
-      name:<><div>Bundle Description
+      name: <><div>Bundle Description
       </div></>,
       selector: row => row.Bundledescription,
       wrap: true,
       sortable: true,
       cell: (row) => <div>
-                      <div style={{fontWeight:'600'}}>{row.Bundledescription}</div>
-                      <div className=" font-size-12">{row.S1}</div>
-                    </div>
+        <div style={{ fontWeight: '600' }}>{row.Bundledescription}</div>
+        <div className=" font-size-12">{row.S1}</div>
+      </div>
       // format: row =>row.Source,
     },
     {
-      name:<><div>strategy
+      name: <><div>strategy
       </div></>,
       selector: row => row.strategy,
       wrap: true,
       sortable: true,
-      format: row =>row.strategy,
+      format: row => row.strategy,
     },
     {
-      name:<><div>Standard job
+      name: <><div>Standard job
       </div></>,
       selector: row => row.Standardjob,
       wrap: true,
       sortable: true,
-      format: row =>row.Standardjob,
+      format: row => row.Standardjob,
     },
     {
-      name:<><div>repair Option
+      name: <><div>repair Option
       </div></>,
       selector: row => row.repairoption,
       wrap: true,
       sortable: true,
-      format: row =>row.repairoption,
+      format: row => row.repairoption,
     },
     {
-      name:<><div>frequency
+      name: <><div>frequency
       </div></>,
       selector: row => row.frequency,
       wrap: true,
       sortable: true,
-      format: row =>row.frequency
+      format: row => row.frequency
       ,
     },
     {
-      name:<><div>% Usage 
+      name: <><div>% Usage
       </div></>,
       selector: row => row.Usage,
       wrap: true,
       sortable: true,
-      format: row =>row.Usage
+      format: row => row.Usage
       ,
     },
 
     {
-      name:<><div>Total price 
+      name: <><div>Total price
       </div></>,
       selector: row => row.Totalprice,
       wrap: true,
       sortable: true,
-      format: row =>row.Totalprice
+      format: row => row.Totalprice
       ,
     },
     {
-      name:<><div>Comments 
+      name: <><div>Comments
       </div></>,
       selector: row => row.Comments,
       wrap: true,
       sortable: true,
       minWidth: '200px',
-      format: row =>row.Comments
+      format: row => row.Comments
       ,
     },
 
@@ -334,13 +335,13 @@ const handleChangedrop2 = (event) => {
       button: true,
       minWidth: '200px',
       cell: (row) =>
-      <div className="d-flex align-items-center">
-        <div className="">
-          <Link><span className="mr-2"><MoreVertIcon className="font-size-18"/></span>More Actions</Link>
+        <div className="d-flex align-items-center">
+          <div className="">
+            <Link><span className="mr-2"><MoreVertIcon className="font-size-18" /></span>More Actions</Link>
+
+          </div>
 
         </div>
-      
-      </div>
       // cell: () => <Button>Download Poster</Button>,
     },
   ];
@@ -351,354 +352,354 @@ const handleChangedrop2 = (event) => {
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div className="container-fluid mt-4">
           <div className="d-flex align-items-center justify-content-between mt-2">
-          <h5 className="font-weight-600 mb-0" style={{fontSize:"18px"}}>Repair Option</h5>
-          <div className="d-flex justify-content-center align-items-center">
-          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
-                            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-                            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
-                            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-           
+            <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>Repair Option</h5>
+            <div className="d-flex justify-content-center align-items-center">
+              <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+              <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
+              <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+              {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+              <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+              <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+              <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+
+            </div>
           </div>
-          </div>
-    <div className="card p-4 mt-5">
-          <h5 className="d-flex bg-primary p-3 border-radius-10 align-items-center mb-0">
-              <div className="" style={{ display:'contents'}}><span className="mr-3 text-white" style={{whiteSpace:'pre', fontSize:"20px"}}>Quote Header</span>
-              <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-              <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> 
-              <a href="#" className="btn-sm text-white"><DriveFolderUploadOutlinedIcon /></a></div>
+          <div className="card p-4 mt-5">
+            <h5 className="d-flex bg-primary p-3 border-radius-10 align-items-center mb-0">
+              <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{ whiteSpace: 'pre', fontSize: "20px" }}>Quote Header</span>
+                <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                <a href="#" className="btn-sm text-white"><DriveFolderUploadOutlinedIcon /></a></div>
               {/* <div class="hr"></div> */}
-              </h5>
-              <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
-                <TabContext value={value}>
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
-                      <Tab label="Customer" value="1" />
-                      <Tab label="Machine" value="2" />
-                      <Tab label="Estimation Team" value="3" />
-                      <Tab label="Estimate" value="4" />
-                      <Tab label="Pricing/Billing" value="5" />
-                    </TabList>
-                  </Box>
-                  <TabPanel value="1">
-                <div className="row mt-4 input-fields">
-                <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REQUESTER</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER NAME</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER ZIP CODE</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102"/>
-                </div>
-              </div>
-                </div>
-                <div class="row mt-4">
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">SOURCE ID</p>
-              <h6 class="font-weight-600">EPR Work Order</h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">REQUESTER</p>
-              <h6 class="font-weight-600">Andrew Peplow</h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
-              <h6 class="font-weight-600">203037</h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">COSTOMER NAME</p>
-              <h6 class="font-weight-600">CHINALCO Bejing</h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER EMAIL</p>
-              <h6 class="font-weight-600">peplow@ferreycorp.com</h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">COSTOMER ZIP CODE</p>
-              <h6 class="font-weight-600">765-102</h6>
-              </div>
-            </div>
-            </div>
-            <a href="#" className="btn text-white bg-primary pull-right">Next</a>
-             
-            </TabPanel>
-            <TabPanel value="2">
-            <div className="row mt-4 input-fields">
-                <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REQUESTER</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER NAME</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com"/>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6">
-               <div class="form-group">
-                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER ZIP CODE</label>
-                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102"/>
-                </div>
-              </div>
-              <div className=" col-md-12  col-sm-12">
-               <a href="#" className="btn text-white bg-primary pull-right">Next</a>
-              </div>
-                </div>
-             
-            </TabPanel>
-            <TabPanel value="3">
-           <p>Data Not Found</p>
-            </TabPanel>
-            <TabPanel value="4">
-            <p>Data Not Found</p>
-            </TabPanel>
-           
-            <TabPanel value="5">
-            <div class="row mt-4">
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">SOURCE ID</p>
-              <div>
-                <FormControl className="customseleact">
-                  <Select className=""
-                    multiple
-                    displayEmpty
-                    value={personName}
-                    onChange={handleChange1}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return <em>30dayes</em>;
-                      }
+            </h5>
+            <Box className="mt-4 tab2" sx={{ width: '100%', typography: 'body1' }}>
+              <TabContext value={value}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <TabList className="" onChange={handleChange} aria-label="lab API tabs example">
+                    <Tab label="Customer" value="1" className="heading-tabs" />
+                    <Tab label="Machine" value="2" className="heading-tabs" />
+                    <Tab label="Estimation Team" value="3" className="heading-tabs" />
+                    <Tab label="Estimate" value="4" className="heading-tabs" />
+                    <Tab label="Pricing/Billing" value="5" className="heading-tabs" />
+                  </TabList>
+                </Box>
+                <TabPanel value="1">
+                  <div className="row mt-4 input-fields">
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REQUESTER</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER NAME</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER ZIP CODE</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row mt-4">
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">SOURCE ID</p>
+                        <h6 class="font-weight-600">EPR Work Order</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">REQUESTER</p>
+                        <h6 class="font-weight-600">Andrew Peplow</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
+                        <h6 class="font-weight-600">203037</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">COSTOMER NAME</p>
+                        <h6 class="font-weight-600">CHINALCO Bejing</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER EMAIL</p>
+                        <h6 class="font-weight-600">peplow@ferreycorp.com</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">COSTOMER ZIP CODE</p>
+                        <h6 class="font-weight-600">765-102</h6>
+                      </div>
+                    </div>
+                  </div>
+                  <a href="#" className="btn text-white bg-primary pull-right">Next</a>
 
-                      return selected.join(', ');
-                    }}
-                    MenuProps={MenuProps}
-                    inputProps={{ 'aria-label': 'Without label' }}
-                  >
-                    <MenuItem disabled value="">
-                      <em>30dayes</em>
-                    </MenuItem>
-                    {names.map((name) => (
-                      <MenuItem
-                        key={name}
-                        value={name}
-                        style={getStyles(name, personName, theme)}
-                      >
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">REQUESTER</p>
-              <div>
-                <FormControl className="customseleact">
-                  <Select className=""
-                    multiple
-                    displayEmpty
-                    value={personName}
-                    onChange={handleChange1}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return <em>30dayes</em>;
-                      }
+                </TabPanel>
+                <TabPanel value="2">
+                  <div className="row mt-4 input-fields">
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REQUESTER</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER NAME</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com" />
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                      <div class="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER ZIP CODE</label>
+                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102" />
+                      </div>
+                    </div>
+                    <div className=" col-md-12  col-sm-12">
+                      <a href="#" className="btn text-white bg-primary pull-right">Next</a>
+                    </div>
+                  </div>
 
-                      return selected.join(', ');
-                    }}
-                    MenuProps={MenuProps}
-                    inputProps={{ 'aria-label': 'Without label' }}
-                  >
-                    <MenuItem disabled value="">
-                      <em>30dayes</em>
-                    </MenuItem>
-                    {names.map((name) => (
-                      <MenuItem
-                        key={name}
-                        value={name}
-                        style={getStyles(name, personName, theme)}
-                      >
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
-              <div>
-                <FormControl className="customseleact">
-                  <Select className=""
-                    multiple
-                    displayEmpty
-                    value={personName}
-                    onChange={handleChange1}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return <em>30dayes</em>;
-                      }
+                </TabPanel>
+                <TabPanel value="3">
+                  <p>Data Not Found</p>
+                </TabPanel>
+                <TabPanel value="4">
+                  <p>Data Not Found</p>
+                </TabPanel>
 
-                      return selected.join(', ');
-                    }}
-                    MenuProps={MenuProps}
-                    inputProps={{ 'aria-label': 'Without label' }}
-                  >
-                    <MenuItem disabled value="">
-                      <em>30dayes</em>
-                    </MenuItem>
-                    {names.map((name) => (
-                      <MenuItem
-                        key={name}
-                        value={name}
-                        style={getStyles(name, personName, theme)}
-                      >
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">COSTOMER NAME</p>
-              <h6 class="font-weight-600"><MonetizationOnOutlinedIcon className="text-light font-size-36"/></h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
-              <h6 class="font-weight-600">752.740.10</h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">FLAT RATE(ALL $)</p>
-              <h6 class="font-weight-600">No</h6>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">FLAT RATE(ALL $)</p>
-              <div>
-                <FormControl className="customseleact">
-                  <Select className=""
-                    multiple
-                    displayEmpty
-                    value={personName}
-                    onChange={handleChange1}
-                    input={<OutlinedInput />}
-                    renderValue={(selected) => {
-                      if (selected.length === 0) {
-                        return <em>30dayes</em>;
-                      }
+                <TabPanel value="5">
+                  <div class="row mt-4">
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">SOURCE ID</p>
+                        <div>
+                          <FormControl className="customseleact">
+                            <Select className=""
+                              multiple
+                              displayEmpty
+                              value={personName}
+                              onChange={handleChange1}
+                              input={<OutlinedInput />}
+                              renderValue={(selected) => {
+                                if (selected.length === 0) {
+                                  return <em>30dayes</em>;
+                                }
 
-                      return selected.join(', ');
-                    }}
-                    MenuProps={MenuProps}
-                    inputProps={{ 'aria-label': 'Without label' }}
-                  >
-                    <MenuItem disabled value="">
-                      <em>30dayes</em>
-                    </MenuItem>
-                    {names.map((name) => (
-                      <MenuItem
-                        key={name}
-                        value={name}
-                        style={getStyles(name, personName, theme)}
-                      >
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              </div>
-            </div>
-            <div class="col-md-3 col-sm-3">
-            <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
-              <h6 class="font-weight-600">21.01.2022</h6>
-              </div>
-            </div>
-            
-            </div>
-            <a href="/QuoteRepairOption" className="btn text-white bg-primary pull-right">Next</a>
-            </TabPanel>
-            
-          </TabContext>
-        </Box>
-        </div>
+                                return selected.join(', ');
+                              }}
+                              MenuProps={MenuProps}
+                              inputProps={{ 'aria-label': 'Without label' }}
+                            >
+                              <MenuItem disabled value="">
+                                <em>30dayes</em>
+                              </MenuItem>
+                              {names.map((name) => (
+                                <MenuItem
+                                  key={name}
+                                  value={name}
+                                  style={getStyles(name, personName, theme)}
+                                >
+                                  {name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">REQUESTER</p>
+                        <div>
+                          <FormControl className="customseleact">
+                            <Select className=""
+                              multiple
+                              displayEmpty
+                              value={personName}
+                              onChange={handleChange1}
+                              input={<OutlinedInput />}
+                              renderValue={(selected) => {
+                                if (selected.length === 0) {
+                                  return <em>30dayes</em>;
+                                }
+
+                                return selected.join(', ');
+                              }}
+                              MenuProps={MenuProps}
+                              inputProps={{ 'aria-label': 'Without label' }}
+                            >
+                              <MenuItem disabled value="">
+                                <em>30dayes</em>
+                              </MenuItem>
+                              {names.map((name) => (
+                                <MenuItem
+                                  key={name}
+                                  value={name}
+                                  style={getStyles(name, personName, theme)}
+                                >
+                                  {name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
+                        <div>
+                          <FormControl className="customseleact">
+                            <Select className=""
+                              multiple
+                              displayEmpty
+                              value={personName}
+                              onChange={handleChange1}
+                              input={<OutlinedInput />}
+                              renderValue={(selected) => {
+                                if (selected.length === 0) {
+                                  return <em>30dayes</em>;
+                                }
+
+                                return selected.join(', ');
+                              }}
+                              MenuProps={MenuProps}
+                              inputProps={{ 'aria-label': 'Without label' }}
+                            >
+                              <MenuItem disabled value="">
+                                <em>30dayes</em>
+                              </MenuItem>
+                              {names.map((name) => (
+                                <MenuItem
+                                  key={name}
+                                  value={name}
+                                  style={getStyles(name, personName, theme)}
+                                >
+                                  {name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">COSTOMER NAME</p>
+                        <h6 class="font-weight-600"><MonetizationOnOutlinedIcon className="text-light font-size-36" /></h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
+                        <h6 class="font-weight-600">752.740.10</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">FLAT RATE(ALL $)</p>
+                        <h6 class="font-weight-600">No</h6>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">FLAT RATE(ALL $)</p>
+                        <div>
+                          <FormControl className="customseleact">
+                            <Select className=""
+                              multiple
+                              displayEmpty
+                              value={personName}
+                              onChange={handleChange1}
+                              input={<OutlinedInput />}
+                              renderValue={(selected) => {
+                                if (selected.length === 0) {
+                                  return <em>30dayes</em>;
+                                }
+
+                                return selected.join(', ');
+                              }}
+                              MenuProps={MenuProps}
+                              inputProps={{ 'aria-label': 'Without label' }}
+                            >
+                              <MenuItem disabled value="">
+                                <em>30dayes</em>
+                              </MenuItem>
+                              {names.map((name) => (
+                                <MenuItem
+                                  key={name}
+                                  value={name}
+                                  style={getStyles(name, personName, theme)}
+                                >
+                                  {name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                      <div class="form-group">
+                        <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
+                        <h6 class="font-weight-600">21.01.2022</h6>
+                      </div>
+                    </div>
+
+                  </div>
+                  <a href="/QuoteRepairOption" className="btn text-white bg-primary pull-right">Next</a>
+                </TabPanel>
+
+              </TabContext>
+            </Box>
+          </div>
         </div>
       </div>
 
