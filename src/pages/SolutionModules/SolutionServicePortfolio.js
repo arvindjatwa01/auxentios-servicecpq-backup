@@ -4,9 +4,15 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CommanComponents } from "../../components/index"
 import FormGroup from '@mui/material/FormGroup';
 import Select from 'react-select';
+import Select1 from '@mui/material/Select';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import Button from '@mui/material/Button';
@@ -76,7 +82,6 @@ const customStyles = {
     },
 };
 
-
 export function SolutionServicePortfolio(props) {
 
     const history = useHistory()
@@ -113,6 +118,51 @@ export function SolutionServicePortfolio(props) {
         customerGroup: "",
     });
 
+    const theme = useTheme();
+    const [personName, setPersonName] = React.useState([]);
+    const handleChange1 = (event) => {
+        const {
+            target: { value },
+        } = event;
+        setPersonName(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+    };
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
+    };
+    const names = [
+        'Oliver Hansen',
+        'Van Henry',
+        'April Tucker',
+        'Ralph Hubbard',
+        'Omar Alexander',
+        'Carlos Abbott',
+        'Miriam Wagner',
+        'Bradley Wilkerson',
+        'Virginia Andrews',
+        'Kelly Snyder',
+    ];
+    function getStyles(name, personName, theme) {
+        return {
+            fontWeight:
+                personName.indexOf(name) === -1
+                    ? theme.typography.fontWeightRegular
+                    : theme.typography.fontWeightMedium,
+        };
+    }
+
+
+
+
     const [machineData, setMachineData] = useState({
         model: "",
         serialNo: "",
@@ -129,11 +179,16 @@ export function SolutionServicePortfolio(props) {
         setAnchorEl(null);
     };
 
-    const masterColumns = [
+    const rows2 = [
+        { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
+        { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
+        { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, },
+    ];
+    const masterColumns2 = [
         {
             name: (
                 <>
-                    <div>Sub Quote Id</div>
+                    <div>Payers</div>
                 </>
             ),
             selector: (row) => row.sbQuoteId,
@@ -144,7 +199,145 @@ export function SolutionServicePortfolio(props) {
         {
             name: (
                 <>
-                    <div>Item Name</div>
+                    <div>Billing Split %</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Price $</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+    ]
+
+    const rows3 = [
+        { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
+        { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
+        { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, },
+    ];
+    const masterColumns3 = [
+        {
+            name: (
+                <>
+                    <div>Price Breakup</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Price Summary Type</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Estimated $</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Discounts %</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Actions</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+    ]
+    const rows4 = [
+        { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
+        { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
+        { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, },
+    ];
+    const masterColumns4 = [
+        {
+            name: (
+                <>
+                    <div>Other Misc Type $</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Price</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Actions</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+    ]
+    const masterColumns = [
+        {
+            name: (
+                <>
+                    <div>Id</div>
+                </>
+            ),
+            selector: (row) => row.sbQuoteId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.sbQuoteId,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
                 </>
             ),
             selector: (row) => row.itemName,
@@ -155,7 +348,7 @@ export function SolutionServicePortfolio(props) {
         {
             name: (
                 <>
-                    <div>Description</div>
+                    <div>Version</div>
                 </>
             ),
             selector: (row) => row.description,
@@ -166,7 +359,7 @@ export function SolutionServicePortfolio(props) {
         {
             name: (
                 <>
-                    <div>Quantity</div>
+                    <div>Task type</div>
                 </>
             ),
             selector: (row) => row.quantity,
@@ -177,7 +370,7 @@ export function SolutionServicePortfolio(props) {
         {
             name: (
                 <>
-                    <div>No of Event</div>
+                    <div>Qty</div>
                 </>
             ),
             selector: (row) => row.noOfEvents,
@@ -188,7 +381,7 @@ export function SolutionServicePortfolio(props) {
         {
             name: (
                 <>
-                    <div>Usage</div>
+                    <div>Model</div>
                 </>
             ),
             selector: (row) => row.Usage,
@@ -199,7 +392,7 @@ export function SolutionServicePortfolio(props) {
         {
             name: (
                 <>
-                    <div>Total Price</div>
+                    <div>Serial No.</div>
                 </>
             ),
             selector: (row) => row.totalPrice,
@@ -207,17 +400,72 @@ export function SolutionServicePortfolio(props) {
             sortable: true,
             format: (row) => row.totalPrice,
         },
-        // {
-        //     name: (
-        //         <>
-        //             <div>Comments</div>
-        //         </>
-        //     ),
-        //     selector: (row) => row.Comments,
-        //     wrap: true,
-        //     sortable: true,
-        //     format: (row) => row.Comments,
-        // },
+        {
+            name: (
+                <>
+                    <div>Valid From</div>
+                </>
+            ),
+            selector: (row) => row.Comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Comments,
+        },
+        {
+            name: (
+                <>
+                    <div>Valid To</div>
+                </>
+            ),
+            selector: (row) => row.Comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Comments,
+        },
+        {
+            name: (
+                <>
+                    <div>Unit Price</div>
+                </>
+            ),
+            selector: (row) => row.Comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Comments,
+        },
+        {
+            name: (
+                <>
+                    <div>Extended Price</div>
+                </>
+            ),
+            selector: (row) => row.Comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Comments,
+        },
+        {
+            name: (
+                <>
+                    <div>Discount</div>
+                </>
+            ),
+            selector: (row) => row.Comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Comments,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.Comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Comments,
+        },
         // {
         //     name: (
         //         <>
@@ -347,7 +595,6 @@ export function SolutionServicePortfolio(props) {
         // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
         // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
     ];
-
     // Search Customer with customer ID
     const handleCustSearch = async (searchCustfieldName, searchText) => {
         // console.log("clear data", searchText);
@@ -646,7 +893,7 @@ export function SolutionServicePortfolio(props) {
                                                     result={searchCustResults}
                                                     onSelect={handleCustSelect}
                                                 />
-                                                <span className="search-absolute"><SearchIcon /></span>
+                                                {/* <span className="search-absolute"><SearchIcon /></span> */}
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
@@ -1057,7 +1304,280 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="5">
-                                    <div class="row mt-4 input-fields">
+                                    <div class="row mt-4">
+                                        <div class="col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NAME</p>
+                                                <div>
+                                                    <FormControl className="customseleact">
+                                                        <Select1 className=""
+                                                            multiple
+                                                            displayEmpty
+                                                            value={personName}
+                                                            onChange={handleChange1}
+                                                            input={<OutlinedInput />}
+                                                            renderValue={(selected) => {
+                                                                if (selected.length === 0) {
+                                                                    return <em>30dayes</em>;
+                                                                }
+
+                                                                return selected.join(', ');
+                                                            }}
+                                                            MenuProps={MenuProps}
+                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                        >
+                                                            <MenuItem disabled value="">
+                                                                <em>30dayes</em>
+                                                            </MenuItem>
+                                                            {names.map((name) => (
+                                                                <MenuItem
+                                                                    key={name}
+                                                                    value={name}
+                                                                    style={getStyles(name, personName, theme)}
+                                                                >
+                                                                    {name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select1>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">BILLING FREQUENCY</p>
+                                                <div>
+                                                    <FormControl className="customseleact">
+                                                        <Select1 className=""
+                                                            multiple
+                                                            displayEmpty
+                                                            value={personName}
+                                                            onChange={handleChange1}
+                                                            input={<OutlinedInput />}
+                                                            renderValue={(selected) => {
+                                                                if (selected.length === 0) {
+                                                                    return <em>30dayes</em>;
+                                                                }
+
+                                                                return selected.join(', ');
+                                                            }}
+                                                            MenuProps={MenuProps}
+                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                        >
+                                                            <MenuItem disabled value="">
+                                                                <em>30dayes</em>
+                                                            </MenuItem>
+                                                            {names.map((name) => (
+                                                                <MenuItem
+                                                                    key={name}
+                                                                    value={name}
+                                                                    style={getStyles(name, personName, theme)}
+                                                                >
+                                                                    {name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select1>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PRICE SEGMENT</p>
+                                                <div>
+                                                    <FormControl className="customseleact">
+                                                        <Select1 className=""
+                                                            multiple
+                                                            displayEmpty
+                                                            value={personName}
+                                                            onChange={handleChange1}
+                                                            input={<OutlinedInput />}
+                                                            renderValue={(selected) => {
+                                                                if (selected.length === 0) {
+                                                                    return <em>30dayes</em>;
+                                                                }
+
+                                                                return selected.join(', ');
+                                                            }}
+                                                            MenuProps={MenuProps}
+                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                        >
+                                                            <MenuItem disabled value="">
+                                                                <em>30dayes</em>
+                                                            </MenuItem>
+                                                            {names.map((name) => (
+                                                                <MenuItem
+                                                                    key={name}
+                                                                    value={name}
+                                                                    style={getStyles(name, personName, theme)}
+                                                                >
+                                                                    {name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select1>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
+                                                <h6 class="font-weight-600"><MonetizationOnOutlinedIcon className="text-light font-size-36" /></h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">MARGIN (25%)</p>
+                                                <h6 class="font-weight-600">752.740.10</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">FLAT RATE(ALL $)</p>
+                                                <h6 class="font-weight-600">No</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">CURRENCY</p>
+                                                <div>
+                                                    <FormControl className="customseleact">
+                                                        <Select1 className=""
+                                                            multiple
+                                                            displayEmpty
+                                                            value={personName}
+                                                            onChange={handleChange1}
+                                                            input={<OutlinedInput />}
+                                                            renderValue={(selected) => {
+                                                                if (selected.length === 0) {
+                                                                    return <em>30dayes</em>;
+                                                                }
+
+                                                                return selected.join(', ');
+                                                            }}
+                                                            MenuProps={MenuProps}
+                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                        >
+                                                            <MenuItem disabled value="">
+                                                                <em>30dayes</em>
+                                                            </MenuItem>
+                                                            {names.map((name) => (
+                                                                <MenuItem
+                                                                    key={name}
+                                                                    value={name}
+                                                                    style={getStyles(name, personName, theme)}
+                                                                >
+                                                                    {name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select1>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
+                                                <h6 class="font-weight-600">21.01.2022</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-3">
+                                            <div class="form-group ">
+                                                <p class="font-size-12 font-weight-500 mb-2">DISCOUNT</p>
+                                                <div>
+                                                    <FormControl className="customseleact position-relative percent-p">
+                                                        <span className="percent-div bg-white p-1 text-primary" style={{ borderRadius: "50%" }}>
+                                                            8%
+                                                        </span>
+                                                        <Select1 className="btn bg-green text-white"
+                                                            multiple
+                                                            displayEmpty
+                                                            value={personName}
+                                                            onChange={handleChange1}
+                                                            input={<OutlinedInput />}
+                                                            renderValue={(selected) => {
+                                                                if (selected.length === 0) {
+                                                                    return <em>30dayes</em>;
+                                                                }
+
+                                                                return selected.join(', ');
+                                                            }}
+                                                            MenuProps={MenuProps}
+                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                        >
+                                                            <MenuItem disabled value="">
+                                                                <em>30dayes</em>
+                                                            </MenuItem>
+                                                            {names.map((name) => (
+                                                                <MenuItem
+                                                                    key={name}
+                                                                    value={name}
+                                                                    style={getStyles(name, personName, theme)}
+                                                                >
+                                                                    {name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select1>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />ADD PAYER</a>
+                                    <div className="mt-3">
+                                        <DataTable
+                                            className=""
+                                            title=""
+                                            columns={masterColumns2}
+                                            data={rows2}
+                                            customStyles={customStyles}
+                                            pagination
+                                            // onRowClicked={(e) => handleRowClick(e)}
+                                            selectableRows
+                                        />
+                                    </div>
+                                    <div className="mt-3 d-flex align-items-center justify-content-between">
+                                        <h6 className="mb-0 font-size-16 font-weight-600">PRICE/ESTIMATE SUMMARY</h6>
+                                        <div className="d-flex align-items-center">
+                                            <a href="#" className="text-primary mr-3"><ModeEditOutlineOutlinedIcon /></a>
+                                            <a href="#" className="text-primary mr-3"><ShareOutlinedIcon /></a>
+                                            <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Price Summary Type</a>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3">
+                                        <DataTable
+                                            className=""
+                                            title=""
+                                            columns={masterColumns3}
+                                            data={rows3}
+                                            customStyles={customStyles}
+                                            pagination
+                                            // onRowClicked={(e) => handleRowClick(e)}
+                                            selectableRows
+                                        />
+                                    </div>
+                                    <div className="mt-3 d-flex align-items-center justify-content-between">
+                                        <h6 className="mb-0 font-size-16 font-weight-600">OTHER MISC ITEMS $</h6>
+                                        <div className="d-flex align-items-center">
+                                            <a href="#" className="text-primary mr-3"><ModeEditOutlineOutlinedIcon /></a>
+                                            <a href="#" className="text-primary mr-3"><ShareOutlinedIcon /></a>
+                                            <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Miscellaenous Type</a>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3">
+                                        <DataTable
+                                            className=""
+                                            title=""
+                                            columns={masterColumns4}
+                                            data={rows4}
+                                            customStyles={customStyles}
+                                            pagination
+                                            // onRowClicked={(e) => handleRowClick(e)}
+                                            selectableRows
+                                        />
+                                    </div>
+                                    {/* <div class="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
                                             <div class="form-group w-100">
@@ -1151,7 +1671,7 @@ export function SolutionServicePortfolio(props) {
                                                 </Link>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </TabPanel>
                                 <TabPanel value="6">
                                     <div className="row mt-4 input-fields">
@@ -1396,7 +1916,7 @@ export function SolutionServicePortfolio(props) {
                                 </div>
                             </div>
                         </div>
-                        <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
+                        {/* <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
                             <DataTable
                                 className=""
                                 title=""
@@ -1406,7 +1926,17 @@ export function SolutionServicePortfolio(props) {
                                 selectableRows
                                 pagination
                             />
-                        </div>
+                        </div> */}
+                        <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns}
+                            data={rows}
+                            customStyles={customStyles}
+                            pagination
+                            // onRowClicked={(e) => handleRowClick(e)}
+                            selectableRows
+                        />
                         <div className="my-2">
                             <Link to="/QuoteSolutionBuilder" style={{ cursor: 'pointer' }} className=" pull-right btn bg-primary text-white">
                                 Next</Link>
