@@ -17,6 +17,7 @@ import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 
 import { getAllUsers } from "services";
+import { ChartReact } from "./ChartReact";
 
 const activityOptions = [
   'None',
@@ -263,15 +264,9 @@ export const DashboardContainer = () => {
                     <div>
                       <a href="#" data-toggle="collapse" data-target="#bysoluction"><span><i className="fa fa-angle-down f-s-16 mr-2" aria-hidden="true"></i></span><span className="font-weight-500">By Solution</span></a>
                       <div className="collapse show" id="bysoluction">
-                        <p > Bars represent solutions</p>
+                        {/* <p > Bars represent solutions</p> */}
                         {/* <Chart1 /> */}
-                        <div className="stack-chart">
-                          <div id="tooltip" class="hidden">
-                            <p>Region: <span id="region"></span></p>
-                            <p>Gender: <span id="gender"></span></p>
-                            <p>Suicides: <span id="suicides"></span></p>
-                          </div>
-                        </div>
+                        <ChartReact />
                       </div>
                     </div>
                   </div>
@@ -283,8 +278,9 @@ export const DashboardContainer = () => {
                     <div>
                       <a href="#" data-toggle="collapse" data-target="#bystatus"><span><i className="fa fa-angle-down f-s-16 mr-2" aria-hidden="true"></i></span><span className="font-weight-500">By Status</span></a>
                       <div className="collapse show" id="bystatus">
-                        <p > Bars represent solutions</p>
-                        <Chart1 />
+                        {/* <p > Bars represent solutions</p> */}
+                        {/* <Chart1 /> */}
+                        <ChartReact />
                       </div>
                     </div>
                   </div>
@@ -297,3 +293,4 @@ export const DashboardContainer = () => {
     </div>
   );
 };
+
