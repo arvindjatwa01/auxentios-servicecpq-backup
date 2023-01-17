@@ -262,8 +262,9 @@ function WithSparePartsOperation(props) {
     };
     AddOperation(sid, data)
       .then((result) => {
-        fetchOperationsOfSegment();
-
+        // fetchOperationsOfSegment();
+        operations[opIndex] = result;
+        // console.log("OpIndex", opIndex);
         setOperationData({
           ...operationData,
           operationNumber: result.operationNumber,
@@ -275,7 +276,6 @@ function WithSparePartsOperation(props) {
             result.description, //Rename to description once API is changed
         });
         // console.log(operationData)
-        operations[opIndex] = result;
         setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(

@@ -392,7 +392,7 @@ function RepairServiceEstimate(props) {
             componentCode: result.componentCode,
             componentCodeDescription: result.componentCodeDescription,
             jobOperation: result.jobOperation,
-            flatRateIndicator: result.flatRateIndicator,
+            flatRateIndicator: result.flatRateIndicator? result.flatRateIndicator : false ,
             netPrice: result.netPrice ? result.netPrice : 0.0,
             adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
             priceDate: result.priceDate,

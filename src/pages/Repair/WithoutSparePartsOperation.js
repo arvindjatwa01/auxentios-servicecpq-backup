@@ -250,8 +250,8 @@ function WithoutSparePartsOperation(props) {
     };
     AddOperation(sid, data)
       .then((result) => {
-        fetchOperationsOfSegment();
-
+        operations[opIndex] = result;
+        console.log("OpIndex", opIndex);
         setOperationData({
           ...operationData,
           operationNumber: result.operationNumber,
@@ -260,10 +260,8 @@ function WithoutSparePartsOperation(props) {
             "Operation " +
             formatOperationNum(result.operationNumber) +
             " - " +
-            result.description, //Rename to description once API is changed
+            result.description, 
         });
-        // console.log(operationData)
-        operations[opIndex] = result;
         setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(
