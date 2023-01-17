@@ -159,6 +159,7 @@ import {
   getcustomItemPriceById,
   updateCustomPriceData,
   convertPortfolioToQuoteData,
+  portfolioSearch,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -275,6 +276,11 @@ export function CreateCustomPortfolio(props) {
   const [solutionTypeListKeyValue, setSolutionTypeListKeyValue] = useState([]);
   const [solutionLevelListKeyValue, setSolutionLevelListKeyValue] = useState([]);
   // const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
+
+  const [searchPortfolioOption, setSearchPortfolioOption] = useState({
+    label: "Portfolio",
+    value: "Portfolio"
+  })
   const [age, setAge] = useState("5");
   const [extWorkData, setExtWorkData] = useState({
     jobCode: "",
@@ -462,6 +468,12 @@ export function CreateCustomPortfolio(props) {
     offerValidity: null,
   });
 
+  const [searchPortfolioDetails, setSearchPortfolioDetails] = useState("");
+  const [searchPortfolioList, setSearchPortfolioList] = useState([]);
+
+  const [searchedPortfolioItemsData, setSearchedPortfolioItemsData] = useState([]);
+  const [currentSearchExpendPortfolioItemRow, setCurrentSearchExpendPortfolioItemRow] = useState(null)
+  const [expendedSubComponent, setExpendedSubComponent] = useState(null);
 
   const [coverageData, setCoverageData] = useState({
     make: "",
@@ -2668,7 +2680,7 @@ export function CreateCustomPortfolio(props) {
     }
   };
 
-  console.log("_tempBundleItems 2671 : ", tempBundleItems)
+  // console.log("_tempBundleItems 2671 : ", tempBundleItems)
 
   const handleAddNewBundle = () => {
     // alert("Save And Continue")
@@ -9327,6 +9339,262 @@ export function CreateCustomPortfolio(props) {
       ),
     },
   ];
+
+  const searchItemsColumns = [
+    {
+      name: (
+        <>
+          <div className="d-flex align-items-baseline">
+            <span className="portfolio-icon mr-1">
+              <svg style={{ width: "11px" }}
+                id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 119.30736 133.59966"
+              >
+                <path
+                  className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                  d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+                />
+              </svg>
+            </span>
+            <p className="mb-0 font-size-12 font-weight-500">Solution Sequence</p>
+          </div>
+        </>
+      ),
+      selector: (row) => row.itemId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemId,
+    },
+    {
+      name: (
+        <>
+          <div>Solution ID</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Solution Description</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.itemHeaderStrategy,
+    },
+    {
+      name: (
+        <>
+          <div>Task Type</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price (per one)</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Parts</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.additional,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.additional,
+    },
+    {
+      name: (
+        <>
+          <div>Net Service</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel?.partsprice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel?.partsprice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.comments,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Actions</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.customItemBodyModel?.type,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.customItemBodyModel?.type,
+    //   cell: (row) => (
+    //     <div
+    //       className="d-flex justify-content-center align-items-center row-svg-div"
+    //       style={{ minWidth: "180px !important" }}
+    //     >
+    //       <div>
+    //         <Tooltip title="View">
+    //           <Link to="#" className="px-1" onClick={(e) => handleEditPortfolioItem(e, row)}>
+    //             <VisibilityOutlinedIcon />
+    //           </Link>
+    //         </Tooltip>
+    //       </div>
+    //       <div>
+    //         <DropdownButton
+    //           className="customDropdown ml-2 width-p"
+    //           id="dropdown-item-button"
+    //         >
+    //           <Dropdown.Item className=" cursor" data-toggle="modal" data-target="#myModal12">
+    //             <Tooltip title="Inclusion">
+    //               <Link to="#" className="px-1" onClick={(e) => Inclusion_Exclusion(e, row)} >
+    //                 <img src={cpqIcon}></img><span className="ml-2">Inclusion/Exclusion</span>
+    //               </Link>
+    //             </Tooltip>
+    //           </Dropdown.Item>
+    //           <Dropdown.Item className="" onClick={(e) => handleServiceItemDelete(e, row)}>
+    //             <Tooltip title="Delete">
+    //               <Link to="#" className="px-1">
+    //                 <svg
+    //                   data-name="Layer 41"
+    //                   id="Layer_41"
+    //                   viewBox="0 0 50 50"
+    //                   xmlns="http://www.w3.org/2000/svg"
+    //                 >
+    //                   <title />
+    //                   <path
+    //                     className="cls-1"
+    //                     d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+    //                   />
+    //                   <path
+    //                     className="cls-1"
+    //                     d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+    //                   />
+    //                   <path
+    //                     className="cls-1"
+    //                     d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+    //                   />
+    //                 </svg><span className="ml-2">Delete</span>
+    //               </Link>
+    //             </Tooltip>
+    //           </Dropdown.Item>
+    //         </DropdownButton>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
+  ];
+
+  const searchItemsExpendedColumns = [
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price (per one)</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.netPrice,
+    },
+
+  ];
+
   const tempBundleItemColumns = [
     {
       name: (
@@ -11449,6 +11717,105 @@ export function CreateCustomPortfolio(props) {
     </div>
   );
 
+  const ExpandedComponentOfSearchedPort = ({ data }) => (
+    <>
+      <div className="p-5 border-bottom">
+        <div className="border border-radius-10">
+          <div className="d-flex align-items-center justify-content-between p-3">
+            <div className="d-flex align-items-center">
+              <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
+              <div className="d-flex align-items-center">
+                <a href="#" className="mr-2">
+                  <span><ModeEditOutlineOutlinedIcon /></span>
+                </a>
+                <a href="#" className="mr-2">
+                  <span><ShareOutlinedIcon /></span>
+                </a>
+                {/* <a href="#" className="">
+                  <span><SearchIcon /></span>
+                </a> */}
+              </div>
+            </div>
+            <div className="border-left d-flex align-items-center">
+              <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+            </div>
+          </div>
+          {data.associatedServiceOrBundle ?
+            <>
+              <DataTable
+                title=""
+                columns={searchItemsExpendedColumns}
+                data={data.associatedServiceOrBundle}
+                customStyles={customStyles}
+                expandableRows
+                selectableRows
+                expandableRowExpanded={(row) => (row === expendedSubComponent)}
+                expandOnRowClicked
+                onRowClicked={(row) => setExpendedSubComponent(row)}
+                expandableRowsComponent={ExpandedComponentCodeData}
+                onRowExpandToggled={(bool, row) => setExpendedSubComponent(row)}
+                pagination
+              />
+            </> : <></>}
+        </div>
+      </div>
+
+    </>
+
+  );
+
+  const ExpandedComponentCodeData = ({ data }) => (
+    <div className="p-5">
+      <div className="border border-radius-10">
+        <div className="d-flex align-items-center border-bottom justify-content-between p-3">
+          <div className="d-flex align-items-center">
+            <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Components</h6>
+            <div className="d-flex align-items-center">
+              <a href="#" className="mr-2">
+                <span><ModeEditOutlineOutlinedIcon /></span>
+              </a>
+              <a href="#" className="mr-2">
+                <span><ShareOutlinedIcon /></span>
+              </a>
+              {/* <a href="#" className="">
+                <span><SearchIcon /></span>
+              </a> */}
+            </div>
+          </div>
+          <div className="border-left d-flex align-items-center">
+            <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+          </div>
+        </div>
+        <ul className="mb-0 component-li">
+          <li className="border-bottom p-3">
+            <div className="d-flex align-items-center">
+              <div class="checkbox mr-3">
+                <input type="checkbox" value=""></input>
+              </div>
+              <p className="mb-0 font-size-14">Component Code</p>
+            </div>
+          </li>
+          <li className="border-bottom p-3">
+            <div className="d-flex align-items-center">
+              <div class="checkbox mr-3">
+                <input type="checkbox" value=""></input>
+              </div>
+              <p className="mb-0 font-size-14">Component Code</p>
+            </div>
+          </li>
+          <li className="border-bottom p-3">
+            <div className="d-flex align-items-center">
+              <div class="checkbox mr-3">
+                <input type="checkbox" value=""></input>
+              </div>
+              <p className="mb-0 font-size-14">Component Code</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  )
+
   // const ExpandedComponent = ({ data }) => (
   //     <>
 
@@ -12526,6 +12893,126 @@ export function CreateCustomPortfolio(props) {
   const handleContinueOfServiceOrBundle = async () => {
     setTabs("4")
   }
+
+  const handleSearchPortfolioData = async (e) => {
+    setSearchPortfolioDetails(e.target.value)
+    console.log("e.target.value ", e.target.value)
+    var searchStr = `name~${e.target.value}`;
+    // console.log("event is ", e.target.value)
+    let SearchResArr = [];
+    if (e.target.value == null || e.target.value == "") {
+      setSearchPortfolioList([])
+    } else {
+      const res3 = await portfolioSearch(searchStr)
+      if (res3.status === 200) {
+        for (let i = 0; i < res3.data.length; i++) {
+          SearchResArr.push(res3.data[i].name)
+        }
+        setSearchPortfolioList(SearchResArr);
+      }
+      console.log("res3 is  : ", res3);
+    }
+
+  }
+
+  const handlePortfolioSearchListClick = (e, currentItem) => {
+    setSearchPortfolioDetails(currentItem)
+    setSearchPortfolioList([]);
+  }
+
+  const showSearchPortfolioData = async () => {
+    try {
+      if (searchPortfolioDetails == "" || searchPortfolioDetails == null) {
+        throw "Please fill data properly";
+      }
+
+      var searchStr = `name:"${searchPortfolioDetails}"`;
+      const portfolioItemsRes = await portfolioSearch(searchStr)
+      if (portfolioItemsRes.status === 200) {
+        console.log("result3 is 1234566 : ", portfolioItemsRes)
+        var myArr = [];
+        var result = portfolioItemsRes.data;
+        for (let a = 0; a < result.length; a++) {
+          let itemsArrData = [];
+          let customItemArr = [];
+          let createdCoverages = [];
+
+
+          // Set Data By Item Relation Data Data
+          console.log("result[a].items is  : ", result[a].items)
+          if (result[a].items.length > 0) {
+            for (let i = 0; i < result[a].items.length; i++) {
+              if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+                let myObj = result[a].items[i];
+                let expendedArrObj = [];
+
+                if (result[a].itemRelations != null) {
+                  if (result[a].itemRelations.length > 0) {
+                    for (let b = 0; b < result[a].itemRelations.length; b++) {
+                      if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
+
+                        for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+
+                          let bundleObj = result[a].items.find((objBundle, i) => {
+                            if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
+
+                              return objBundle; // stop searching
+                            }
+                          });
+                          expendedArrObj.push(bundleObj);
+                        }
+
+                        for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+                          let serviceObj = result[a].items.find((objService, i) => {
+                            if (objService.itemId == result[a].itemRelations[b].services[d]) {
+
+                              return objService; // stop searching
+                            }
+                          });
+                          expendedArrObj.push(serviceObj);
+                        }
+
+                      }
+                      myObj.associatedServiceOrBundle = expendedArrObj;
+                      itemsArrData.push(myObj);
+                    }
+                  } else {
+                    myObj.associatedServiceOrBundle = expendedArrObj;
+                    itemsArrData.push(myObj);
+                  }
+                } else {
+                  myObj.associatedServiceOrBundle = expendedArrObj;
+                  itemsArrData.push(myObj);
+                  // myArr.push(myObj);
+                }
+              }
+            }
+            myArr.push(itemsArrData)
+            console.log("myArr array data is : ", myArr)
+          }
+        }
+        let arrayData = [];
+        for (let x = 0; x < myArr.length; x++) {
+          arrayData.push(myArr[x])
+        }
+        setSearchedPortfolioItemsData(...arrayData);
+      }
+
+
+    } catch (err) {
+      toast.error(err, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
 
   return (
     <PortfolioContext.Provider
@@ -14843,34 +15330,71 @@ onChange={handleAdministrativreChange}
                         </a>
                       </div>
                     </div>
-                    <div class="mr-3 input-group icons border-radius-10 border">
+                    <div class="mr-3 input-group icons border-radius-10 overflow-hidden border">
                       <div class="input-group-prepend bg-white border-radius-10">
-                        <span class="border-radius-10 bg-white input-group-text border-0 pr-0 " id="basic-addon1">
+                        <span class=" bg-white input-group-text border-0 pr-0 " id="basic-addon1">
                           <SearchIcon /></span>
                       </div>
-                      <div class="input-group-prepend align-items-center bg-white">
-                        <div className="w-100 mx-2">
+                      <div
+                      // class="input-group-prepend align-items-center bg-white"
+                      // onClick={showSearchPortfolioData}
+                      >
+                        {/* <span className="p-2 bg-light-grey">Portfolio</span> */}
+                        {/* <div className="mx-2">
                           <div className="height-custom machine-drop d-flex align-items-center bg-white border-none">
-                            {/* <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div> */}
+                            <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div>
                             <FormControl className="border-none" >
                               <Select
                                 id="demo-simple-select-autowidth"
                                 className=""
-                                value={age}
+                                value={searchPortfolioOption}
                                 onChange={handleChangedrop}
                                 autoWidth
+                                disabled
                               >
                                 <MenuItem value="5">
                                   <em>Portfolio</em>
                                 </MenuItem>
                                 <MenuItem value={10}>Solution</MenuItem>
-                                {/* <MenuItem value={21}>Solution</MenuItem> */}
                               </Select>
                             </FormControl>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
-                      <input type="search" class=" border-radius-10 form-control search-form-control" aria-label="Search Dashboard" />
+                      <input
+                        type="search"
+                        class=" border-radius-10 form-control search-form-control"
+                        aria-label="Search Dashboard"
+                        value={searchPortfolioDetails}
+                        onChange={(e) =>
+                          handleSearchPortfolioData(e)
+                        }
+                      />
+                      <div className="input-group-prepend align-items-center cursor">
+                        <a href={undefined}
+                          className="bg-primary btn text-white"
+                          style={{ zIndex: "0" }}
+                          onClick={showSearchPortfolioData}
+                        ><span className="mr-2"><SearchIcon /></span>Search</a>
+                      </div>
+                      {
+                        <ul
+                          className={`list-group customselectsearch-list scrollbar scrollbar-0 style1`}
+
+                        >
+                          {searchPortfolioList.map(
+                            (currentItem, j) => (
+                              <li
+                                className="list-group-item cursor"
+                                key={j}
+                                onClick={(e) => handlePortfolioSearchListClick(e, currentItem)}
+                              >
+                                {currentItem}
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      }
 
                     </div>
                     <div className="border-left d-flex align-items-center px-2 py-2">
@@ -14890,26 +15414,13 @@ onChange={handleAdministrativreChange}
                   </div> */}
                 </>
               }
-
-              {selectedSolutionItems.length > 0 ? (
+              {/* ============= commented on 16 Jan 2023 start ============ */}
+              {/* {selectedSolutionItems.length > 0 ? (
                 <div>
                   <div
                     className="custom-table  card mt-3"
                     style={{ minHeight: 200, height: "auto", width: "100%" }}
                   >
-                    {/* <DataTable
-                                        title=""
-                                        columns={bundleItemColumns}
-                                        data={bundleItems}
-                                        customStyles={customStyles}
-                                        expandableRows
-                                        expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
-                                        expandOnRowClicked
-                                        onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
-                                        expandableRowsComponent={ExpandedComponent}
-                                        onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
-                                        pagination
-                                    /> */}
                     <DataTable
                       title=""
                       columns={bundleItemColumns}
@@ -14976,7 +15487,33 @@ onChange={handleAdministrativreChange}
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
+
+              {/* ============= commented on 16 Jan 2023 End ================ */}
+
+
+              <div>
+                <div
+                  className="custom-table  card mt-3"
+                  style={{ minHeight: 200, height: "auto", width: "100%" }}
+                >
+                  <DataTable
+                    title=""
+                    columns={searchItemsColumns}
+                    data={searchedPortfolioItemsData}
+                    customStyles={customStyles}
+                    expandableRows
+                    selectableRows
+                    expandableRowExpanded={(row) => (row === currentSearchExpendPortfolioItemRow)}
+                    expandOnRowClicked
+                    onRowClicked={(row) => setCurrentSearchExpendPortfolioItemRow(row)}
+                    expandableRowsComponent={ExpandedComponentOfSearchedPort}
+                    onRowExpandToggled={(bool, row) => setCurrentSearchExpendPortfolioItemRow(row)}
+                    pagination
+                  />
+                </div>
+              </div>
+
             </div>
           </>}
         </div>

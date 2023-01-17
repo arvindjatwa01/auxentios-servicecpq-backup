@@ -593,21 +593,38 @@ export const Analytics = () => {
 
 
    // Click on Portfolio Result Row
-   const handleOnPortfolioResultRow = async (id) => {
+   const handleOnPortfolioResultRow = async (id, portName) => {
 
-      const portfolioToCustomPortfolioCopy = await copyPortfolioICustomPortfolio(`portfolioIds=${id}`);
+      try {
+         const portfolioToCustomPortfolioCopy = await copyPortfolioICustomPortfolio(`portfolioIds=${id}`);
 
-      setPortfolioToSolutionProgress(true)
-      let solutionPortfolioDetails = {
-         portfolioId: portfolioToCustomPortfolioCopy.data.customPortfolioId,
-         type: "fetch",
-      };
-      history.push({
-         pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
-         state: solutionPortfolioDetails,
-      });
+         if (portfolioToCustomPortfolioCopy.status != 200) {
+            throw `Solution ${portName} already exits,Please select another Portfolio.`;
+         } else {
+            setPortfolioToSolutionProgress(true)
+            let solutionPortfolioDetails = {
+               portfolioId: portfolioToCustomPortfolioCopy.data.customPortfolioId,
+               type: "fetch",
+            };
+            history.push({
+               pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+               state: solutionPortfolioDetails,
+            });
+         }
 
-
+      } catch (error) {
+         // toast.error("😐" + error, {
+         toast("😐" + error, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+         });
+         return
+      }
    }
 
    // Click on Solution Portfolio Result Row
@@ -4468,7 +4485,7 @@ export const Analytics = () => {
                                           <div className="result py-4 px-3 font-size-14"><b>RESULTS</b></div>
                                        </li>
                                        {portfolioTempMasterData.map((row, i) =>
-                                          <li key={i} className="border-bottom cursor " onClick={() => handleOnPortfolioResultRow(row.portfolioId)}>
+                                          <li key={i} className="border-bottom cursor " onClick={() => handleOnPortfolioResultRow(row.portfolioId, row.name)}>
                                              <div className="d-flex align-items-center p-3">
                                                 <div className="d-flex mr-4">
                                                    {/* <div class="checkbox mr-3">

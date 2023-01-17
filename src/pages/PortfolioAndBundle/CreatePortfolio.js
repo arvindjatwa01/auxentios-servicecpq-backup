@@ -5235,58 +5235,116 @@ export function CreatePortfolio(props) {
     let createdCoverages = [];
 
     // Set Data By Item Relation Data Data
-    if (result.itemRelations.length > 0) {
-      for (let b = 0; b < result.itemRelations.length; b++) {
-        let expendedArrObj = [];
-        let obj = result.items.find(obj => obj.itemId == result.itemRelations[b].portfolioItemId);
-        for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
 
-          let bundleObj = result.items.find((objBundle, i) => {
-            if (objBundle.itemId == result.itemRelations[b].bundles[c]) {
+    if (result.items.length > 0) {
+      console.log("result.items ", result.items.length)
+      for (let i = 0; i < result.items.length; i++) {
+        if (result.items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+          let myObj = result.items[i];
+          let expendedArrObj = [];
 
-              return objBundle; // stop searching
+          if (result.itemRelations != null) {
+            if (result.itemRelations.length > 0) {
+              for (let b = 0; b < result.itemRelations.length; b++) {
+                if (result.items[i].itemId == result.itemRelations[b].portfolioItemId) {
+
+                  for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+                    let bundleObj = result.items.find((objBundle, i) => {
+                      if (objBundle.itemId == result.itemRelations[b].bundles[c]) {
+
+                        return objBundle; // stop searching
+                      }
+                    });
+                    expendedArrObj.push(bundleObj);
+                  }
+
+                  for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+
+                    let serviceObj = result.items.find((objService, i) => {
+                      if (objService.itemId == result.itemRelations[b].services[d]) {
+
+                        return objService; // stop searching
+                      }
+                    });
+                    expendedArrObj.push(serviceObj);
+                  }
+
+                }
+                myObj.associatedServiceOrBundle = expendedArrObj;
+                itemsArrData.push(myObj);
+              }
+            } else {
+              myObj.associatedServiceOrBundle = expendedArrObj;
+              itemsArrData.push(myObj);
             }
-          });
-          expendedArrObj.push(bundleObj);
+          } else {
+            myObj.associatedServiceOrBundle = expendedArrObj;
+            itemsArrData.push(myObj);
+          }
         }
-
-        for (let d = 0; d < result.itemRelations[b].services.length; d++) {
-
-          let serviceObj = result.items.find((objService, i) => {
-            if (objService.itemId == result.itemRelations[b].services[d]) {
-
-              return objService; // stop searching
-            }
-          });
-          expendedArrObj.push(serviceObj);
-        }
-        obj.associatedServiceOrBundle = expendedArrObj;
-        itemsArrData.push(obj);
+        setBundleItems(itemsArrData);
+        setTempBundleItems(itemsArrData);
       }
-      setBundleItems(itemsArrData);
-    } else {
-      var newPortfolioItemRelation = [];
-      var newExpendedItemsData = [];
-      // for (let i = 0; i < result.items.length; i++) {
-      let obj1 = result.items.find((objBundleService, i) => {
-        if (objBundleService.itemHeaderModel.bundleFlag === "PORTFOLIO") {
-          return objBundleService;
-        }
-      });
-      // let bundleServiceObjData = result.items.find((objBundleService, i) => {
-      //   if (objBundleService.itemHeaderModel.bundleFlag !== "PORTFOLIO") {
-      //     return objBundleService;
-      //   }
-      // });
-      // newExpendedItemsData.push(bundleServiceObjData);
-      // obj1.associatedServiceOrBundle = newExpendedItemsData;
-
-
-      newPortfolioItemRelation.push(obj1);
-      // }
-      console.log("newPortfolioItemRelation data is: ", newPortfolioItemRelation);
-      setBundleItems(newPortfolioItemRelation);
     }
+
+
+
+    // if (result.itemRelations.length > 0) {
+    //   for (let b = 0; b < result.itemRelations.length; b++) {
+    //     let expendedArrObj = [];
+    //     let obj = result.items.find(obj => obj.itemId == result.itemRelations[b].portfolioItemId);
+    //     for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+    //       let bundleObj = result.items.find((objBundle, i) => {
+    //         if (objBundle.itemId == result.itemRelations[b].bundles[c]) {
+
+    //           return objBundle; // stop searching
+    //         }
+    //       });
+    //       expendedArrObj.push(bundleObj);
+    //     }
+
+    //     for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+
+    //       let serviceObj = result.items.find((objService, i) => {
+    //         if (objService.itemId == result.itemRelations[b].services[d]) {
+
+    //           return objService; // stop searching
+    //         }
+    //       });
+    //       expendedArrObj.push(serviceObj);
+    //     }
+    //     obj.associatedServiceOrBundle = expendedArrObj;
+    //     itemsArrData.push(obj);
+    //   }
+    //   setBundleItems(itemsArrData);
+    // }
+    //  else {
+    //   var newPortfolioItemRelation = [];
+    //   var newExpendedItemsData = [];
+    //   // for (let i = 0; i < result.items.length; i++) {
+    //   let obj1 = result.items.find((objBundleService, i) => {
+    //     if (objBundleService.itemHeaderModel.bundleFlag === "PORTFOLIO") {
+    //       return objBundleService;
+    //     }
+    //   });
+    //   // let bundleServiceObjData = result.items.find((objBundleService, i) => {
+    //   //   if (objBundleService.itemHeaderModel.bundleFlag !== "PORTFOLIO") {
+    //   //     return objBundleService;
+    //   //   }
+    //   // });
+    //   // newExpendedItemsData.push(bundleServiceObjData);
+    //   // obj1.associatedServiceOrBundle = newExpendedItemsData;
+
+
+    //   newPortfolioItemRelation.push(obj1);
+    //   // }
+    //   console.log("newPortfolioItemRelation data is: ", newPortfolioItemRelation);
+    //   setBundleItems(newPortfolioItemRelation);
+    // }
+
+
 
 
     // for Update Item in Portfolio Item Data BY Id 
@@ -19105,28 +19163,31 @@ export function CreatePortfolio(props) {
           <div className=' p-2'>
             <div className="row">
               {/* {optionalServiceListData.length} */}
-              {optionalServiceListData.map((serviceData, i) =>
-                <div className="col-md-6 col-sm-6">
-                  <div className="card p-4">
-                    <div className="d-flex align-items-center ">
-                      <div class="checkbox mr-3">
-                        <input type="checkbox" value=""></input>
+              {
+                optionalServiceListData.message === undefined ?
+                  <>
+                    {optionalServiceListData.map((serviceData, i) =>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="card p-4">
+                          <div className="d-flex align-items-center ">
+                            <div class="checkbox mr-3">
+                              <input type="checkbox" value=""></input>
+                            </div>
+                            <p className="mb-0 font-size-16 text-black">
+                              {/* <b>AIR FILTER REPLACEMENT</b> */}
+                              <b>{serviceData.itemName}</b>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="px-2">
+                          <p className="mb-0 font-size-14">
+                            {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
+                            {serviceData.itemHeaderDescription}
+                          </p>
+                        </div>
                       </div>
-                      <p className="mb-0 font-size-16 text-black">
-                        {/* <b>AIR FILTER REPLACEMENT</b> */}
-                        <b>{serviceData.itemName}</b>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="px-2">
-                    <p className="mb-0 font-size-14">
-                      {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
-                      {serviceData.itemHeaderDescription}
-                    </p>
-                  </div>
-                </div>
-              )}
-              {/* <div className="col-md-6 col-sm-6">
+                    )}
+                    {/* <div className="col-md-6 col-sm-6">
                 <div className="card p-4">
                   <div className="d-flex align-items-center ">
                     <div class="checkbox mr-3">
@@ -19165,6 +19226,11 @@ export function CreatePortfolio(props) {
                   <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
                 </div>
               </div> */}
+                  </>
+                  :
+                  <>
+                  </>
+              }
             </div>
             {/* <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p> */}
           </div>
