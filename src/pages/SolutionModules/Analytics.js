@@ -4069,7 +4069,10 @@ export const Analytics = () => {
             centered>
             <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
                <Modal.Title><b>Choose the option to create solutions</b></Modal.Title>
-               <button onClick={PopupExoploreSolutionShow} className="btn text-white bg-primary" >Explore avilable solution</button>
+               <button 
+               // onClick={PopupExoploreSolutionShow} 
+               className="btn text-white bg-primary" 
+               >Explore available solution</button>
             </Modal.Header>
             <Modal.Body>
                <div className=' p-4'>
