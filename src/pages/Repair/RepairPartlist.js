@@ -6,19 +6,12 @@ import {
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import $ from "jquery";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import EditIcon from "@mui/icons-material/EditTwoTone";
-import SelectFilter from "react-select";
+import { useHistory } from "react-router-dom";
 
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import {

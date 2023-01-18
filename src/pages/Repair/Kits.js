@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Select from "react-select";
-import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { MuiMenuComponent } from "pages/Operational";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
@@ -17,16 +13,9 @@ import penIcon from "../../assets/images/pen.png";
 import deleteIcon from "../../assets/icons/svg/delete.svg";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
 import DataTable from "react-data-table-component";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import $ from "jquery";
-import { Button, Modal } from "react-bootstrap";
-import FormGroup from "@mui/material/FormGroup";
-import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import { FileUploader } from "react-drag-drop-files";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import { Modal } from "react-bootstrap";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
@@ -135,7 +124,7 @@ function Kits(props) {
   const [addPartOpen, setAddPartOpen] = useState(false);
   const [searchResultOpen, setSearchResultOpen] = useState(false);
   const [partsLoading, setPartsLoading] = useState(false);
-  const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
+  // const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [searchCoverageModelResults, setSearchCoverageModelResults] = useState(
     []
@@ -151,7 +140,7 @@ function Kits(props) {
   const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
   const [partFieldViewonly, setPartFieldViewonly] = useState(false);
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  // const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -781,7 +770,7 @@ function Kits(props) {
       headerName: "Qty",
       field: "quantity",
       flex: 1,
-      editable: true,
+      // editable: true,
       filterable: false,
     },
     {
@@ -807,7 +796,7 @@ function Kits(props) {
       headerName: "% Usage",
       field: "usagePercentage",
       flex: 1,
-      editable: true,
+      // editable: true,
       filterable: false,
     },
     {
@@ -820,7 +809,7 @@ function Kits(props) {
       headerName: "Comment",
       field: "comment",
       flex: 1,
-      editable: true,
+      // editable: true,
       renderEditCell: CommentEditInputCell,
       filterable: false,
     },
@@ -1416,27 +1405,27 @@ function Kits(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14" title="Share">
+                <a href={undefined} className="ml-3 font-size-14" title="Share">
                   <img src={shareIcon}></img>
                 </a>
                 <a
-                  href="#"
+                  href={undefined}
                   className="ml-3 font-size-14"
                   title="Items to Review"
                 >
                   <img src={folderaddIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14" title="Upload">
+                <a href={undefined} className="ml-3 font-size-14" title="Upload">
                   <img src={uploadIcon}></img>
                 </a>
                 {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-                <a href="#" className="ml-3 font-size-14" title="Delete">
+                <a href={undefined} className="ml-3 font-size-14" title="Delete">
                   <img src={deleteIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14" title="Copy">
+                <a href={undefined} className="ml-3 font-size-14" title="Copy">
                   <img src={copyIcon}></img>
                 </a>
-                <a href="#" className="ml-2">
+                <a href={undefined} className="ml-2">
                   <MuiMenuComponent options={activityOptions} />
                 </a>
               </div>
@@ -2587,7 +2576,7 @@ function Kits(props) {
                 ...column,
                 filterOperators,
               }))}
-              editMode="row"
+              // editMode="row"
               page={page}
               pageSize={pageSize}
               onPageChange={(newPage) =>
@@ -2596,12 +2585,12 @@ function Kits(props) {
               onPageSizeChange={(newPageSize) =>
                 fetchPartsOfPartlist(partListId, page, newPageSize)
               }
-              onRowEditStart={(e) => setBulkUpdateProgress(true)}
+              // onRowEditStart={(e) => setBulkUpdateProgress(true)}
               sortingMode="server"
               onSortModelChange={(e) => sortPartsTable(e)}
               filterMode="server"
               onFilterModelChange={onPartsFilterChange}
-              onRowEditStop={(e) => setBulkUpdateProgress(false)}
+              // onRowEditStop={(e) => setBulkUpdateProgress(false)}
               paginationMode="server"              
               loading={partsLoading}
               rowsPerPageOptions={[5, 10, 20]}
@@ -2615,7 +2604,8 @@ function Kits(props) {
               // getRowHeight={() => "auto"}
               onProcessRowUpdateError={(error) => console.log(error)}
             />
-            <div className=" my-3 text-right">
+            <div className="my-3" />
+            {/* <div className=" my-3 text-right">
               {(selKITStatus?.value === "DRAFT" ||
                 selKITStatus?.value === "REVISED") && (
                 <button
@@ -2626,7 +2616,7 @@ function Kits(props) {
                   Save
                 </button>
               )}
-            </div>
+            </div> */}
           </div>
           {/* Open Modal to add individual spare part to the part list */}
           <AddNewSparepartModal

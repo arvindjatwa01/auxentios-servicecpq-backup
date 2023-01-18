@@ -10,7 +10,7 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import $ from "jquery";
 import penIcon from "../../assets/images/pen.png";
 import { Tooltip, Typography } from "@mui/material";
