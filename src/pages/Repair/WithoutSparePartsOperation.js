@@ -115,7 +115,6 @@ function WithoutSparePartsOperation(props) {
     return String(num).padStart(3, "0");
   }
 
-
   const removeOpFromSegment = async () => {
     await RemoveOperation(operationData.id)
       .then((result) => {
@@ -157,9 +156,12 @@ function WithoutSparePartsOperation(props) {
       ...operationData,
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
-      description: currentItem.description && operationData.componentCodeDescription
-        ? currentItem.description + " " + operationData.componentCodeDescription
-        : "",
+      description:
+        currentItem.description && operationData.componentCodeDescription
+          ? currentItem.description +
+            " " +
+            operationData.componentCodeDescription
+          : "",
     });
     setSearchJobCodeResults([]);
   };
@@ -190,9 +192,10 @@ function WithoutSparePartsOperation(props) {
       componentCode: currentItem.componentCode,
       componentCodeDescription: currentItem.description,
       // description: currentItem.componentCode + " - " + currentItem.description,
-      description: operationData.jobCodeDescription && currentItem.description
-        ? operationData.jobCodeDescription + " " + currentItem.description
-        : "",
+      description:
+        operationData.jobCodeDescription && currentItem.description
+          ? operationData.jobCodeDescription + " " + currentItem.description
+          : "",
     });
     setSearchCompCodeResults([]);
   };
@@ -260,7 +263,7 @@ function WithoutSparePartsOperation(props) {
             "Operation " +
             formatOperationNum(result.operationNumber) +
             " - " +
-            result.description, 
+            result.description,
         });
         setShowAddNewButton(true);
         setOperationViewOnly(true);
@@ -306,8 +309,8 @@ function WithoutSparePartsOperation(props) {
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
-      if(operationData.header === NEW_OPERATION){
-      setActiveElement({ ...activeElement, name: "segment" });
+      if (operationData.header === NEW_OPERATION) {
+        setActiveElement({ ...activeElement, name: "segment" });
       } else {
         setOperationViewOnly(true);
         setShowAddNewButton(true);
@@ -373,47 +376,47 @@ function WithoutSparePartsOperation(props) {
           </div>
           <div className="col-md-6 col-sm-6 align-items-center mb-0 ">
             <div className="justify-content-end text-right">
-            <button
+              <button
                 onClick={() => handleAnchors("backward", opIndex - 1)}
-              className="btn-no-border"
-              disabled={
-                !(
+                className="btn-no-border"
+                disabled={
+                  !(
                     opIndex > 0 ||
-                  (operationData.header === NEW_OPERATION &&
-                    operations.length > 1)
-                )
-              }
-            >
-              <KeyboardArrowLeftIcon />
-            </button>
-            <span className="text-primary">{operationData.header}</span>
-            <button
+                    (operationData.header === NEW_OPERATION &&
+                      operations.length > 1)
+                  )
+                }
+              >
+                <KeyboardArrowLeftIcon />
+              </button>
+              <span className="text-primary">{operationData.header}</span>
+              <button
                 onClick={() => handleAnchors("forward", opIndex + 1)}
-              className="btn-no-border"
-              disabled={
+                className="btn-no-border"
+                disabled={
                   opIndex === operations.length - 1 ||
-                operationData.header === NEW_OPERATION
-              }
-            >
-              <KeyboardArrowRightIcon />
-            </button>
-            {showAddNewButton &&
-              ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                -1 && (
-                <button
-                  className="btn-no-border ml-2"
-                  onClick={loadNewOperationUI}
-                >
-                  <span className="ml-2">
-                    <AddIcon />
-                  </span>
-                  Add New Operation
-                </button>
-              )}
+                  operationData.header === NEW_OPERATION
+                }
+              >
+                <KeyboardArrowRightIcon />
+              </button>
+              {showAddNewButton &&
+                ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                  -1 && (
+                  <button
+                    className="btn-no-border ml-2"
+                    onClick={loadNewOperationUI}
+                  >
+                    <span className="ml-2">
+                      <AddIcon />
+                    </span>
+                    Add New Operation
+                  </button>
+                )}
+            </div>
           </div>
         </div>
-          </div>
-          <div className="hr"></div>
+        <div className="hr"></div>
 
         {operationLoading ? (
           <LoadingProgress />

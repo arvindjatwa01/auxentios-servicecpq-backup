@@ -354,11 +354,18 @@ function WithoutSparePartsSegments(props) {
           ...segments[segments.length - 1],
           header: formatSegmentHeader(segments[segments.length - 1]),
         });
+      } else {
+        setSegmentData(segments[segIndex]);
       }
       setShowAddNewButton(true);
       setSegmentViewOnly(true);
     } else {
-      setActiveElement({ ...activeElement, name: "header" });
+      if (segmentData.header === NEW_SEGMENT) {
+        setActiveElement({ ...activeElement, name: "header" });
+      } else {
+        setSegmentViewOnly(true);
+        setShowAddNewButton(true);
+      }
     }
   };
 

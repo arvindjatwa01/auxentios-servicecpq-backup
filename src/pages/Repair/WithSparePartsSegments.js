@@ -145,7 +145,6 @@ function WithSparePartsSegments(props) {
     if (segmentToLoad) setOperations(segmentToLoad.operations);
   };
 
-
   const makeHeaderEditable = () => {
     if (segmentViewOnly) setSegmentViewOnly(false);
   };
@@ -320,11 +319,22 @@ function WithSparePartsSegments(props) {
           ...segments[segments.length - 1],
           header: formatSegmentHeader(segments[segments.length - 1]),
         });
+      } else {
+        setSegmentData(segments[segIndex]);
       }
       setShowAddNewButton(true);
       setSegmentViewOnly(true);
     } else {
-      setActiveElement({ ...activeElement, name: "header" });
+      if (segmentData.header === NEW_SEGMENT) {
+        setActiveElement({ ...activeElement, name: "header" });
+      } else {
+        setSegmentData({
+          ...segments[0],
+          header: formatSegmentHeader(segments[0]),
+        });
+        setSegmentViewOnly(true);
+        setShowAddNewButton(true);
+      }
     }
   };
 
@@ -349,39 +359,43 @@ function WithSparePartsSegments(props) {
             style={{ fontSize: "1rem", fontWeight: 600, color: "black" }}
           >
             <span className="mr-3 white-space">{segmentData.header}</span>
-            {segmentViewOnly && <span className="btn-sm cursor">
-              <Tooltip title="Edit">
-                <EditIcon
-                  onClick={() =>
-                    ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                    -1
-                      ? makeHeaderEditable()
-                      : handleSnack(
-                          "info",
-                          "Set revised status to modify active builders"
-                        )
-                  }
-                />
-              </Tooltip>
-              <Tooltip title="Delete" className="ml-2">
-                <img
-                  src={DeleteIcon}
-                  alt="Delete"
-                  onClick={() =>
-                    ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                    -1
-                      ? setConfirmationOpen(true)
-                      : handleSnack(
-                          "info",
-                          "Set revised status to modify active builders"
-                        )
-                  }
-                />
-              </Tooltip>
-              <Tooltip title="Navigate" className="ml-2">
-                <NavIcon onClick={handleClick} />
-              </Tooltip>
-            </span>}
+            {segmentViewOnly && (
+              <span className="btn-sm cursor">
+                <Tooltip title="Edit">
+                  <EditIcon
+                    onClick={() =>
+                      ["DRAFT", "REVISED"].indexOf(
+                        activeElement?.builderStatus
+                      ) > -1
+                        ? makeHeaderEditable()
+                        : handleSnack(
+                            "info",
+                            "Set revised status to modify active builders"
+                          )
+                    }
+                  />
+                </Tooltip>
+                <Tooltip title="Delete" className="ml-2">
+                  <img
+                    src={DeleteIcon}
+                    alt="Delete"
+                    onClick={() =>
+                      ["DRAFT", "REVISED"].indexOf(
+                        activeElement?.builderStatus
+                      ) > -1
+                        ? setConfirmationOpen(true)
+                        : handleSnack(
+                            "info",
+                            "Set revised status to modify active builders"
+                          )
+                    }
+                  />
+                </Tooltip>
+                <Tooltip title="Navigate" className="ml-2">
+                  <NavIcon onClick={handleClick} />
+                </Tooltip>
+              </span>
+            )}
           </div>
           <div className="col-md-6 col-sm-6 align-items-center mb-0 ">
             <div className="justify-content-end text-right">

@@ -392,7 +392,9 @@ function RepairServiceEstimate(props) {
             componentCode: result.componentCode,
             componentCodeDescription: result.componentCodeDescription,
             jobOperation: result.jobOperation,
-            flatRateIndicator: result.flatRateIndicator? result.flatRateIndicator : false ,
+            flatRateIndicator: result.flatRateIndicator
+              ? result.flatRateIndicator
+              : false,
             netPrice: result.netPrice ? result.netPrice : 0.0,
             adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
             priceDate: result.priceDate,
@@ -590,7 +592,9 @@ function RepairServiceEstimate(props) {
             // type: miscTypeList.find(
             //   (element) => element.value === resultMisc.type
             // ),
-            type: miscTypeList.filter(function(element){ return resultMisc.type?.includes(element.value)}),
+            type: miscTypeList.filter(function (element) {
+              return resultMisc.type?.includes(element.value);
+            }),
             totalPrice: resultMisc.totalPrice ? resultMisc.totalPrice : 0,
           });
           setMiscViewOnly(true);
@@ -615,7 +619,10 @@ function RepairServiceEstimate(props) {
         setExtWorkViewOnly(false);
       else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
     } else {
-      handleSnack("info", "Active Builder cannot be changed, change status to REVISE!");
+      handleSnack(
+        "info",
+        "Active Builder cannot be changed, change status to REVISE!"
+      );
     }
   };
   // Search Vendors
@@ -702,7 +709,7 @@ function RepairServiceEstimate(props) {
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
-      flatRateIndicator: serviceEstimateData.flatRateIndicator, 
+      flatRateIndicator: serviceEstimateData.flatRateIndicator,
       adjustedPrice: serviceEstimateData.flatRateIndicator
         ? serviceEstimateData.adjustedPrice
         : 0.0,
@@ -844,7 +851,7 @@ function RepairServiceEstimate(props) {
   const updateMiscHeader = () => {
     // console.log(miscData.type);
     let miscTypes = [];
-    miscData.type?.map(element => miscTypes.push(element.value));
+    miscData.type?.map((element) => miscTypes.push(element.value));
     let data = {
       ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
@@ -1501,7 +1508,6 @@ function RepairServiceEstimate(props) {
                     <ReviewAddIcon />
                   </Tooltip>
                 </div>
-               
               </div>
             </h5>
 
@@ -1917,53 +1923,59 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4"></div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group  mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  PRICE METHOD
-                                </label>
-                                <Select
-                                  onChange={(e) =>
-                                    setLabourData({
-                                      ...labourData,
-                                      pricingMethod: e,
-                                    })
-                                  }
-                                  options={LABOR_PRICE_OPTIONS}
-                                  value={labourData.pricingMethod}
-                                  styles={FONT_STYLE_SELECT}
-                                />
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  RATE PER HOUR / DAY
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  value={labourData.ratePerHourOrDay}
-                                />
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  value={labourData.totalPrice}
-                                />
-                                <div className="css-w8dmq8">*Mandatory</div>
-                              </div>
-                            </div>
+                            {!labourData.flatRateIndicator ? (
+                              <>
+                                <div className="col-md-4 col-sm-4">
+                                  <div className="form-group  mt-3">
+                                    <label className="text-light-dark font-size-12 font-weight-500">
+                                      PRICE METHOD
+                                    </label>
+                                    <Select
+                                      onChange={(e) =>
+                                        setLabourData({
+                                          ...labourData,
+                                          pricingMethod: e,
+                                        })
+                                      }
+                                      options={LABOR_PRICE_OPTIONS}
+                                      value={labourData.pricingMethod}
+                                      styles={FONT_STYLE_SELECT}
+                                    />
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                  </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <label className="text-light-dark font-size-12 font-weight-600">
+                                      RATE PER HOUR / DAY
+                                    </label>
+                                    <input
+                                      type="text"
+                                      disabled
+                                      class="form-control border-radius-10 text-primary"
+                                      value={labourData.ratePerHourOrDay}
+                                    />
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                  </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <label className="text-light-dark font-size-12 font-weight-600">
+                                      NET PRICE
+                                    </label>
+                                    <input
+                                      type="text"
+                                      disabled
+                                      class="form-control border-radius-10 text-primary"
+                                      value={labourData.totalPrice}
+                                    />
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
@@ -2025,10 +2037,9 @@ function RepairServiceEstimate(props) {
                                   disabled={
                                     !(
                                       labourData.laborCode &&
-                                      labourData.pricingMethod &&
                                       (labourData.flatRateIndicator
                                         ? labourData.adjustedPrice
-                                        : true)
+                                        : labourData.pricingMethod)
                                     )
                                   }
                                 >
@@ -2061,21 +2072,27 @@ function RepairServiceEstimate(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <div className="col-md-4 col-sm-4"></div>
-                            <ReadOnlyField
-                              label="PRICE METHOD"
-                              value={labourData.pricingMethod?.label}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="RATE PER HOUR / DAY"
-                              value={labourData.ratePerHourOrDay}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="NET PRICE"
-                              value={labourData.totalPrice}
-                              className="col-md-4 col-sm-4"
-                            />
+                            {!labourData.flatRateIndicator ? (
+                              <>
+                                <ReadOnlyField
+                                  label="PRICE METHOD"
+                                  value={labourData.pricingMethod?.label}
+                                  className="col-md-4 col-sm-4"
+                                />
+                                <ReadOnlyField
+                                  label="RATE PER HOUR / DAY"
+                                  value={labourData.ratePerHourOrDay}
+                                  className="col-md-4 col-sm-4"
+                                />
+                                <ReadOnlyField
+                                  label="NET PRICE"
+                                  value={labourData.totalPrice}
+                                  className="col-md-4 col-sm-4"
+                                />
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={labourData.adjustedPrice}
@@ -3195,8 +3212,13 @@ function RepairServiceEstimate(props) {
                             />
                             <ReadOnlyField
                               label="TYPE OF MISC."
-                              value={<>{miscData.type?.map(element => <div>{element.label}</div>)}</>}
-                              
+                              value={
+                                <>
+                                  {miscData.type?.map((element) => (
+                                    <div>{element.label}</div>
+                                  ))}
+                                </>
+                              }
                               className="col-md-4 col-sm-4"
                             />
                             {!miscData.flatRateIndicator ? (

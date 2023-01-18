@@ -320,7 +320,7 @@ function WithSparePartsOperation(props) {
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
-      if(operationData.header === NEW_OPERATION){
+      if (operationData.header === NEW_OPERATION) {
         setActiveElement({ ...activeElement, name: "segment" });
       } else {
         setOperationViewOnly(true);
@@ -702,7 +702,7 @@ function WithSparePartsOperation(props) {
                           href="#"
                           className="btn-sm text-white bg-primary mr-3"
                         >
-                          Version 1
+                          Version 2
                         </a>
                       </div>
                       <div style={{ textAlign: "right" }}>
@@ -881,7 +881,7 @@ function WithSparePartsOperation(props) {
                           href="#"
                           className="btn-sm text-white bg-primary mr-3"
                         >
-                          Version 1
+                          Version 2
                         </a>
                       </div>
                       <div style={{ textAlign: "right" }}>
@@ -1060,7 +1060,7 @@ function WithSparePartsOperation(props) {
                           href="#"
                           className="btn-sm text-white bg-primary mr-3"
                         >
-                          Version 1
+                          Version 2
                         </a>
                       </div>
                       <div style={{ textAlign: "right" }}>
