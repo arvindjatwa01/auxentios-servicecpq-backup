@@ -3,14 +3,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { SEARCH_COMPONENT_CODE } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -25,7 +29,7 @@ export const getComponentCodeSuggetions = (query) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(SEARCH_COMPONENT_CODE(query), { headers: headersdata })
+        .get(SEARCH_COMPONENT_CODE(query), { headers: headersData })
         .then((res) => {
           console.log("getComponentCodeSuggetions > axios res=", res);
           resolve(res.data);

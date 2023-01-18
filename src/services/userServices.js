@@ -3,15 +3,19 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -27,7 +31,7 @@ export const signup = (data) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .post(USER_SERVICE_SIGNUP_URL(), data, { headers: headersdata })
+        .post(USER_SERVICE_SIGNUP_URL(), data, { headers: headersData })
         .then((res) => {
           console.log("signup > axios res=", res);
           resolve(res.data);
@@ -51,7 +55,7 @@ export const signIn = (data) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .post(USER_SERVICE_SIGNIN_URL(), data, { headers: headersdata })
+        .post(USER_SERVICE_SIGNIN_URL(), data, { headers: headersData })
         .then((res) => {
           console.log("signIn > axios res=", res);
           resolve(res.data);
@@ -78,7 +82,7 @@ export const getAllUsers = () => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .get(GET_ALL_USERS(), { headers: headersdata })
+        .get(GET_ALL_USERS(), { headers: headersData })
         .then((res) => {
           console.log("getAllUsers > axios res=", res);
           resolve(res.data);
@@ -105,7 +109,7 @@ export const getUserDetails = (id) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .get(GET_USER_DETAILS(id), { headers: headersdata })
+        .get(GET_USER_DETAILS(id), { headers: headersData })
         .then((res) => {
           console.log("getUserDetails > axios res=", res);
           resolve(res.data);

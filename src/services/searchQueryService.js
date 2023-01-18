@@ -1,14 +1,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -20,7 +24,7 @@ export const getSearchQueryCoverage = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(GET_SEARCH_COVERAGE + searchStr, { headers: headersdata })
+        .get(GET_SEARCH_COVERAGE + searchStr, { headers: headersData })
         .then((res) => {
           console.log("getSearchQueryCoverage > axios res=", res);
           resolve(res.data);
@@ -41,7 +45,7 @@ export const getSearchCoverageForFamily = (family, familyValue) => {
     console.log("GET_SEARCH_FAMILY_COVERAGE", `${GET_SEARCH_FAMILY_COVERAGE}${family}?${family}=${familyValue}`)
     try {
       axios
-        .get(GET_SEARCH_FAMILY_COVERAGE + "?" + family + "=" + familyValue, { headers: headersdata })
+        .get(GET_SEARCH_FAMILY_COVERAGE + "?" + family + "=" + familyValue, { headers: headersData })
         .then((res) => {
           console.log("getSearchCoverageForFamily > axios res=", res);
           resolve(res.data);
@@ -64,7 +68,7 @@ export const getSearchForPortfolio = (family, familyValue) => {
       console.log("PORTFOLIO_SEARCH_URL is : ", PORTFOLIO_SEARCH_URL)
       console.log("family is : ", family);
       axios
-        .get(RECENT_PORTFOLIO_URL + family + "~" + familyValue, { headers: headersdata })
+        .get(RECENT_PORTFOLIO_URL + family + "~" + familyValue, { headers: headersData })
         .then((res) => {
           console.log("getSearchForPortfolio > axios res=", res);
           resolve(res.data);
@@ -89,8 +93,8 @@ export const getSearchForRecentPortfolio = () => {
     // console.log("RECENT_PORTFOLIO_URL", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
     try {
       axios
-        // .get(RECENT_PORTFOLIO_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
-        .get(RECENT_PORTFOLIO_URL + "/recent", { headers: headersdata })
+        // .get(RECENT_PORTFOLIO_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersData })
+        .get(RECENT_PORTFOLIO_URL + "/recent", { headers: headersData })
         .then((res) => {
           console.log("getSearchForRecentPortfolio > axios res=", res);
           resolve(res.data);
@@ -114,7 +118,7 @@ export const getSearchForRecentBundleService = () => {
     // console.log("RECENT_PORTFOLIO_URL", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
     try {
       axios
-        .get(GET_RECENT_BUNDLE_SERVICE_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+        .get(GET_RECENT_BUNDLE_SERVICE_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersData })
         .then((res) => {
           console.log("getSearchForRecentBundleService > axios res=", res);
           resolve(res.data);
@@ -136,7 +140,7 @@ export const getSearchQueryCoverageMaster = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(GET_SEARCH_COVERAGE + searchStr, { headers: headersdata })
+        .get(GET_SEARCH_COVERAGE + searchStr, { headers: headersData })
         .then((res) => {
           console.log("getSearchQueryCoverageMaster > axios res=", res);
           resolve(res.data);
@@ -158,7 +162,7 @@ export const getSearchStandardJobId = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(GET_SEARCH_STANDARD_JOB_ID + searchStr, { headers: headersdata })
+        .get(GET_SEARCH_STANDARD_JOB_ID + searchStr, { headers: headersData })
         .then((res) => {
           console.log("getSearchStandardJobId > axios res=", res);
           resolve(res.data);
@@ -180,7 +184,7 @@ export const getSearchKitId = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(GET_SEARCH_KIT_ID + searchStr, { headers: headersdata })
+        .get(GET_SEARCH_KIT_ID + searchStr, { headers: headersData })
         .then((res) => {
           console.log("getSearchKitId > axios res=", res);
           resolve(res.data);

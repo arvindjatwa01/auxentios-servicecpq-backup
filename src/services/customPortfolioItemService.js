@@ -1,14 +1,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { CREATE_CUSTOM_PORTFOLIO_ITEM, DELETE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, CUSTOM_PORTFOLIO_ITEM_PRICE_SJID } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -19,7 +23,7 @@ export const customitemCreation = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CREATE_CUSTOM_PORTFOLIO_ITEM(), payLoad, { headers: headersdata })
+        .post(CREATE_CUSTOM_PORTFOLIO_ITEM(), payLoad, { headers: headersData })
         .then((res) => {
           console.log("cusomitemCreation > axios res=", res);
           resolve(res);
@@ -40,7 +44,7 @@ export const getCustomItemData = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`, { headers: headersdata })
+        .get(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("getcustomItemData > axios res=", res);
           resolve(res.data);
@@ -57,19 +61,16 @@ export const getCustomItemData = (id) => {
 };
 
 export const getSearchCustomPortfolio = (searchStr) => {
-  // console.log("Query customPortfolio > getSearchCustomPortfolio called...");
-  // console.log("new search str is :", searchStr);
-  // console.log("padth : ", CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr);
-
   return new Promise((resolve, reject) => {
     try {
       console.log("path is : ", CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr);
       console.log("path 2 is : ", `${CUSTOM_PORTFOLIO_SEARCH_QUERY}${searchStr}`);
       axios
-        .get(`${CUSTOM_PORTFOLIO_SEARCH_QUERY}${searchStr}`, { headers: headersdata })
+        .get(`${CUSTOM_PORTFOLIO_SEARCH_QUERY}${searchStr}`, { headers: headersData })
         .then((res) => {
           console.log("getSearchCustomPortfolio > axios res=", res);
-          resolve(res.data);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getSearchCustomPortfolio > axios err=", err);
@@ -87,7 +88,7 @@ export const getcustomItemPriceById = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(`${CREATE_CUSTOM_PRICE()}/${id}`, { headers: headersdata })
+        .get(`${CREATE_CUSTOM_PRICE()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("getcustomItemPriceById > axios res=", res);
           resolve(res);
@@ -108,7 +109,7 @@ export const getcustomItemPrice = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(CUSTOM_PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersdata })
+        .put(CUSTOM_PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersData })
         .then((res) => {
           console.log("getcustomItemPrice > axios res=", res);
           resolve(res.data);
@@ -129,7 +130,7 @@ export const updateCustomItemData = (id, payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`, payLoad, { headers: headersdata })
+        .put(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`, payLoad, { headers: headersData })
         .then((res) => {
           console.log("updatecustomItemData > axios res=", res);
           resolve(res);
@@ -150,7 +151,7 @@ export const deleteCustomItem = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .delete(DELETE_CUSTOM_PORTFOLIO_ITEM + id, { headers: headersdata })
+        .delete(DELETE_CUSTOM_PORTFOLIO_ITEM + id, { headers: headersData })
         .then((res) => {
           console.log("deletecustomItem > axios res=", res);
           resolve(res);
@@ -171,7 +172,7 @@ export const customPriceCreation = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CREATE_CUSTOM_PRICE(), payLoad, { headers: headersdata })
+        .post(CREATE_CUSTOM_PRICE(), payLoad, { headers: headersData })
         .then((res) => {
           console.log("customPriceCreation > axios res=", res);
           resolve(res);
@@ -192,7 +193,7 @@ export const updateCustomPriceData = (id, payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${CREATE_CUSTOM_PRICE()}/${id}`, payLoad, { headers: headersdata })
+        .put(`${CREATE_CUSTOM_PRICE()}/${id}`, payLoad, { headers: headersData })
         .then((res) => {
           console.log("updateCustomPriceData > axios res=", res);
           resolve(res);
@@ -214,7 +215,7 @@ export const customPortfolioItemPriceSJID = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(CUSTOM_PORTFOLIO_ITEM_PRICE_SJID(), data, { headers: headersdata })
+        .put(CUSTOM_PORTFOLIO_ITEM_PRICE_SJID(), data, { headers: headersData })
         .then((res) => {
           console.log("customPortfolioItemPriceSJID > axios res=", res);
           resolve(res);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Modal,
   SplitButton,
@@ -160,6 +160,7 @@ import {
   updateCustomPriceData,
   convertPortfolioToQuoteData,
   portfolioSearch,
+  getSearchCustomPortfolio,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -471,9 +472,11 @@ export function CreateCustomPortfolio(props) {
   const [searchPortfolioDetails, setSearchPortfolioDetails] = useState("");
   const [searchPortfolioList, setSearchPortfolioList] = useState([]);
 
+  const [preSelectedRowsData, setPreSelectedRowsData] = useState([]);
   const [searchedPortfolioItemsData, setSearchedPortfolioItemsData] = useState([]);
   const [currentSearchExpendPortfolioItemRow, setCurrentSearchExpendPortfolioItemRow] = useState(null)
   const [expendedSubComponent, setExpendedSubComponent] = useState(null);
+  const [selectedPortfolioOrSolutionItemsList, setSelectedPortfolioOrSolutionItemsList] = useState([]);
 
   const [coverageData, setCoverageData] = useState({
     make: "",
@@ -700,6 +703,14 @@ export function CreateCustomPortfolio(props) {
     machine: "",
     additional: "",
   });
+
+  const [bundleServiceItemData, setBundleServiceItemData] = useState([]);
+  const [recentPortfolio, setRecentPortfolio] = useState([])
+  const [selectedItemType, setSelectedItemType] = useState("");
+  const [familySelectOption, setFamilySelectOption] = useState([]);
+  const [showColumnDataOnService, setShowColumnDataOnService] = useState(false);
+  const [portfolioItemData, setPortfolioItemData] = useState([]);
+
   const [tabs, setTabs] = useState("1");
   const [itemModelShow, setItemModelShow] = useState(false);
   const [portfolioItemDataEditable, setPortfolioItemDataEditable] = useState(false);
@@ -747,6 +758,17 @@ export function CreateCustomPortfolio(props) {
     netPrice: "",
     netAdditionals: "",
   })
+
+  const [querySearchSelector, setQuerySearchSelector] = useState([
+    {
+      id: 0,
+      selectFamily: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    },
+  ]);
 
   const location = useLocation();
 
@@ -811,6 +833,302 @@ export function CreateCustomPortfolio(props) {
         console.log("error in getSearchQueryCoverage", err);
       });
   }
+
+  const handleItemType = useCallback(
+    (e, i) => {
+      setBundleServiceItemData([]);
+      setPortfolioItemData([]);
+      setSelectedItemType(e.value);
+
+      let tempArray = [...querySearchSelector];
+      setQuerySearchSelector([{
+        id: 0,
+        selectFamily: "",
+        selectOperator: "",
+        inputSearch: "",
+        selectOptions: [],
+        selectedOption: "",
+      }]);
+
+      if (e.value === "PORTFOLIO") {
+        setFamilySelectOption([
+          { label: "Make", value: "make", id: i },
+          { label: "Family", value: "family", id: i },
+          { label: "Model", value: "modelNo", id: i },
+          { label: "Prefix", value: "serialNumberPrefix", id: i },
+          { label: "Name", value: "name", id: i },
+          { label: "Description", value: "description", id: i },
+        ])
+        setShowColumnDataOnService(false);
+      } else if (e.value === "SOLUTION") {
+        setFamilySelectOption([
+          { label: "Make", value: "make", id: i },
+          { label: "Family", value: "family", id: i },
+          { label: "Model", value: "modelNo", id: i },
+          { label: "Prefix", value: "serialNumberPrefix", id: i },
+          { label: "Name", value: "name", id: i },
+          { label: "Description", value: "description", id: i },
+        ])
+        setShowColumnDataOnService(false);
+      }
+    },
+    [],
+  );
+
+  const handleFamily = (e, id) => {
+    let tempArray = [...querySearchSelector];
+    console.log("handleFamily e:", tempArray[id]);
+    let obj = tempArray[id];
+    obj.selectFamily = e;
+    tempArray[id] = obj;
+    setQuerySearchSelector([...tempArray]);
+  };
+
+  const handleInputSearch = (e, id) => {
+
+    let tempArray = [...querySearchSelector];
+    let obj = tempArray[id];
+    if (e.target.value == "" || e.target.value == null) {
+      obj.selectOptions = [];
+      tempArray[id] = obj;
+      obj.inputSearch = e.target.value;
+      setQuerySearchSelector([...tempArray]);
+      $(`.scrollbar-${id}`).css("display", "none");
+    } else {
+      // obj.inputSearch = e.target.value;
+      if (selectedItemType === "PORTFOLIO") {
+        var newArr = [];
+        var SearchResArr = [];
+        portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+          .then((res) => {
+            if (tempArray[id].selectFamily.value === "make") {
+              for (let i = 0; i < res.data.length; i++) {
+                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                  SearchResArr.push(res.data[i].coverages[j].make)
+                }
+              }
+
+            } else if (tempArray[id].selectFamily.value == "family") {
+              for (let i = 0; i < res.data.length; i++) {
+                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                  SearchResArr.push(res.data[i].coverages[j].family)
+                }
+              }
+            } else if (tempArray[id].selectFamily.value == "modelNo") {
+              for (let i = 0; i < res.data.length; i++) {
+                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                  SearchResArr.push(res.data[i].coverages[j].modelNo)
+                }
+              }
+            } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+              for (let i = 0; i < res.data.length; i++) {
+                for (let j = 0; j < res.data[i].coverages.length; j++) {
+                  SearchResArr.push(res.data[i].coverages[j].serialNumberPrefix)
+                }
+              }
+            } else if (tempArray[id].selectFamily.value == "name") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].name)
+              }
+            } else if (tempArray[id].selectFamily.value == "description") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].description)
+              }
+            }
+            obj.selectOptions = SearchResArr;
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+          })
+          .catch((err) => {
+            console.log("err in api call", err);
+          });
+      } else if (selectedItemType === "SOLUTION") {
+        var newArr = [];
+        var SearchResArr = [];
+        getSearchCustomPortfolio(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+          .then((res) => {
+            if (res.status === 200) {
+              if (tempArray[id].selectFamily.value === "make") {
+                for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                    SearchResArr.push(res.data[i].customCoverages[j].make)
+                  }
+                }
+
+              } else if (tempArray[id].selectFamily.value == "family") {
+                for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                    SearchResArr.push(res.data[i].customCoverages[j].family)
+                  }
+                }
+              } else if (tempArray[id].selectFamily.value == "modelNo") {
+                for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                    SearchResArr.push(res.data[i].customCoverages[j].modelNo)
+                  }
+                }
+              } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+                for (let i = 0; i < res.data.length; i++) {
+                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                    SearchResArr.push(res.data[i].customCoverages[j].serialNumberPrefix)
+                  }
+                }
+              } else if (tempArray[id].selectFamily.value == "name") {
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].name)
+                }
+              } else if (tempArray[id].selectFamily.value == "description") {
+                for (let i = 0; i < res.data.length; i++) {
+                  SearchResArr.push(res.data[i].description)
+                }
+              }
+              obj.selectOptions = SearchResArr;
+              tempArray[id] = obj;
+              setQuerySearchSelector([...tempArray]);
+              $(`.scrollbar-${id}`).css("display", "block");
+            }
+          })
+          .catch((err) => {
+            console.log("err in api call", err);
+          });
+      }
+      obj.inputSearch = e.target.value;
+      setQuerySearchSelector([...tempArray]);
+    }
+  };
+
+  const handleSearchListClick = (e, currentItem, obj1, id) => {
+    let tempArray = [...querySearchSelector];
+    let obj = tempArray[id];
+    obj.inputSearch = currentItem;
+    obj.selectedOption = currentItem;
+    tempArray[id] = obj;
+    setQuerySearchSelector([...tempArray]);
+    $(`.scrollbar-${id}`).css("display", "none");
+  };
+
+  const handleLandingPageQuerySearchClick = async () => {
+    try {
+      if (selectedItemType == "" ||
+        querySearchSelector[0]?.selectFamily?.value == "" ||
+        querySearchSelector[0]?.inputSearch == "" ||
+        querySearchSelector[0]?.selectFamily?.value === undefined) {
+        throw "Please fill data properly"
+      }
+      var searchStr;
+      if (selectedItemType === "PORTFOLIO") {
+        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+      } else {
+        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+      }
+
+      for (let i = 1; i < querySearchSelector.length; i++) {
+        if (
+          querySearchSelector[i]?.selectFamily?.value == "" ||
+          querySearchSelector[i]?.inputSearch == "" ||
+          querySearchSelector[i]?.selectOperator?.value == ""
+
+        ) {
+          throw "Please fill data properly"
+        }
+        if (selectedItemType === "PORTFOLIO") {
+          searchStr =
+            searchStr +
+            " " +
+            querySearchSelector[i].selectOperator.value + " " +
+            querySearchSelector[i].selectFamily.value +
+            ":\"" +
+            querySearchSelector[i].inputSearch + "\"";
+        } else {
+          searchStr =
+            searchStr +
+            " " +
+            querySearchSelector[i].selectOperator.value + " " +
+            querySearchSelector[i].selectFamily.value +
+            ":\"" +
+            querySearchSelector[i].inputSearch + "\"";
+        }
+      }
+
+      console.log("portfolio search searchStr : ", searchStr);
+
+      if (selectedItemType === "PORTFOLIO") {
+        var newArr = [];
+        const res2 = await portfolioSearch(searchStr)
+        if (res2.status === 200) {
+          for (var j = 0; j < res2.data.length; j++) {
+            for (var k = 0; k < res2.data[j].items.length; k++) {
+              newArr.push(res2.data[j].items[k]);
+            }
+          }
+          var result = newArr.reduce((unique, o) => {
+            if (!unique.some(obj => obj.itemId === o.itemId)) {
+              unique.push(o);
+            }
+            return unique;
+          }, []);
+          // setPortfolioItemData(result);
+          setPortfolioItemData(res2.data);
+
+        } else {
+          throw "No information is found for your search, change the search criteria";
+        }
+
+
+
+
+        console.log("set PortfolioItemData : ", res2)
+      } else if (selectedItemType === "BUNDLE_ITEM") {
+        searchStr = "bundleFlag:BUNDLE_ITEM AND " + searchStr;
+        // const res1 = await itemSearch(searchStr);
+
+        // if (res1.status === 200) {
+        //   setBundleServiceItemData(res1.data)
+        // } else {
+        //   throw "No information is found for your search, change the search criteria";
+        // }
+
+        // console.log("res1 is fsfnasjkvna", res1.data);
+        // console.log(res1)
+
+      }
+      else if (selectedItemType === "SERVICE") {
+        searchStr = "bundleFlag:SERVICE AND " + searchStr;
+        // const res1 = await itemSearch(searchStr);
+
+
+        // if (res1.status === 200) {
+        //   setBundleServiceItemData(res1.data);
+        // } else {
+        //   throw "No information is found for your search, change the search criteria";
+        // }
+        // console.log(res1)
+
+      }
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
+    }
+  };
+
+  const handleOperator = (e, id) => {
+    let tempArray = [...querySearchSelector];
+    let obj = tempArray[id];
+    obj.selectOperator = e;
+    tempArray[id] = obj;
+    setQuerySearchSelector([...tempArray]);
+
+  };
 
   const handleBundleServiceModelListClick = (e, currentItem) => {
     setCreateServiceOrBundle({
@@ -7513,6 +7831,8 @@ export function CreateCustomPortfolio(props) {
 
         setSelectedSolutionItems(itemsArrData);
         setTempBundleItems(itemsArrData);
+        setSearchedPortfolioItemsData(itemsArrData);
+        setPreSelectedRowsData(itemsArrData);
 
         // console.log("result.customItems ", result.customItems[i].customItemId, result.customItems[i].customItemHeaderModel.bundleFlag)
 
@@ -7915,6 +8235,10 @@ export function CreateCustomPortfolio(props) {
       setFilterMasterData(updated);
     }
   };
+
+  const handleExpendableRowCheckBoxData = (state) => {
+    console.log("event and row is ", state.selectedRows)
+  }
 
   useEffect(() => {
     if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
@@ -9922,83 +10246,83 @@ export function CreateCustomPortfolio(props) {
       sortable: true,
       format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Task Type</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.taskType,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemBodyModel.taskType,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Quantity</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel?.quantity,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemBodyModel?.quantity,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Unit Price (per one)</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.netPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.netPrice,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Parts</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.additional,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.additional,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Service</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel?.partsprice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemBodyModel?.partsprice,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Price</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.netPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.netPrice,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Comments</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.comments,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.comments,
-    // },
+    {
+      name: (
+        <>
+          <div>Task Type</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price (per one)</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Parts</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+    },
+    {
+      name: (
+        <>
+          <div>Net Service</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+    },
 
     // {
     //   name: (
@@ -13590,58 +13914,81 @@ export function CreateCustomPortfolio(props) {
 
   const showSearchPortfolioData = async () => {
     try {
-      if (searchPortfolioDetails == "" || searchPortfolioDetails == null) {
-        throw "Please fill data properly";
+
+      if (selectedItemType == "" ||
+        querySearchSelector[0]?.selectFamily?.value == "" ||
+        querySearchSelector[0]?.inputSearch == "" ||
+        querySearchSelector[0]?.selectFamily?.value === undefined) {
+        throw "Please fill data properly"
       }
 
-      var searchStr = `name:"${searchPortfolioDetails}"`;
-      const portfolioItemsRes = await portfolioSearch(searchStr)
-      if (portfolioItemsRes.status === 200) {
-        // console.log("result3 is 1234566 : ", portfolioItemsRes)
-        var myArr = [];
-        var result = portfolioItemsRes.data;
-        for (let a = 0; a < result.length; a++) {
-          let itemsArrData = [];
-          let customItemArr = [];
-          let createdCoverages = [];
+      var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
 
+      if (selectedItemType === "PORTFOLIO") {
+        // var newArr = [];
+        // const res2 = await portfolioSearch(searchStr)
+        // if (res2.status === 200) {
+        //   for (var j = 0; j < res2.data.length; j++) {
+        //     for (var k = 0; k < res2.data[j].items.length; k++) {
+        //       newArr.push(res2.data[j].items[k]);
+        //     }
+        //   }
+        //   var result = newArr.reduce((unique, o) => {
+        //     if (!unique.some(obj => obj.itemId === o.itemId)) {
+        //       unique.push(o);
+        //     }
+        //     return unique;
+        //   }, []);
+        //   setPortfolioItemData(res2.data);
 
-          // Set Data By Item Relation Data Data
-          // console.log("result[a].items is  : ", result[a].items)
-          if (result[a].items.length > 0) {
-            for (let i = 0; i < result[a].items.length; i++) {
-              if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
-                let myObj = result[a].items[i];
-                let expendedArrObj = [];
+        // } else {
+        //   throw "No information is found for your search, change the search criteria";
+        // }
+        const portfolioItemsRes = await portfolioSearch(searchStr);
+        if (portfolioItemsRes.status === 200) {
+          var myArr = [];
+          var result = portfolioItemsRes.data;
 
-                if (result[a].itemRelations != null) {
-                  if (result[a].itemRelations.length > 0) {
-                    for (let b = 0; b < result[a].itemRelations.length; b++) {
-                      if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
+          for (let a = 0; a < result.length; a++) {
+            let itemsArrData = [];
 
-                        for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+            if (result[a].items.length > 0) {
+              for (let i = 0; i < result[a].items.length; i++) {
+                if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+                  let myObj = result[a].items[i];
+                  let expendedArrObj = [];
+                  if (result[a].itemRelations != null) {
+                    if (result[a].itemRelations.length > 0) {
+                      for (let b = 0; b < result[a].itemRelations.length; b++) {
+                        if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
 
-                          let bundleObj = result[a].items.find((objBundle, i) => {
-                            if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
+                          for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
 
-                              return objBundle; // stop searching
-                            }
-                          });
-                          expendedArrObj.push(bundleObj);
+                            let bundleObj = result[a].items.find((objBundle, i) => {
+                              if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
+
+                                return objBundle; // stop searching
+                              }
+                            });
+                            expendedArrObj.push(bundleObj);
+                          }
+
+                          for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+                            let serviceObj = result[a].items.find((objService, i) => {
+                              if (objService.itemId == result[a].itemRelations[b].services[d]) {
+
+                                return objService; // stop searching
+                              }
+                            });
+                            expendedArrObj.push(serviceObj);
+                          }
+
                         }
-
-                        for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
-
-                          let serviceObj = result[a].items.find((objService, i) => {
-                            if (objService.itemId == result[a].itemRelations[b].services[d]) {
-
-                              return objService; // stop searching
-                            }
-                          });
-                          expendedArrObj.push(serviceObj);
-                        }
-
+                        myObj.associatedServiceOrBundle = expendedArrObj;
+                        itemsArrData.push(myObj);
                       }
+                    } else {
                       myObj.associatedServiceOrBundle = expendedArrObj;
                       itemsArrData.push(myObj);
                     }
@@ -13649,37 +13996,193 @@ export function CreateCustomPortfolio(props) {
                     myObj.associatedServiceOrBundle = expendedArrObj;
                     itemsArrData.push(myObj);
                   }
-                } else {
-                  myObj.associatedServiceOrBundle = expendedArrObj;
-                  itemsArrData.push(myObj);
-                  // myArr.push(myObj);
                 }
               }
+              myArr.push(...itemsArrData)
             }
-            myArr.push(...itemsArrData)
-            // console.log("myArr array data is : ", myArr)
           }
+          let cloneArr = []
+          console.log("my arrr issssssssssss ", myArr);
+          myArr.map((data, i) => {
+            console.log("data: ", data)
+            const exist = searchedPortfolioItemsData.some(item =>
+              item.itemId === data.itemId)
+            console.log("exist: ", exist)
+            if (!exist) {
+              cloneArr.push(data)
+            }
+          })
+          setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+        } else {
+          throw "No information is found for your search, change the search criteria";
+        }
+      } else if (selectedItemType === "SOLUTION") {
+
+        const portfolioItemsRes = await getSearchCustomPortfolio(searchStr);
+        if (portfolioItemsRes.status === 200) {
+          var myArr = [];
+          var result = portfolioItemsRes.data;
+
+          for (let a = 0; a < result.length; a++) {
+            let itemsArrData = [];
+
+            if (result[a].customItems.length > 0) {
+              for (let i = 0; i < result[a].customItems.length; i++) {
+                if (result[a].customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
+                  let myObj = result[a].customItems[i];
+                  let expendedArrObj = [];
+                  if (result[a].itemRelations != null) {
+                    if (result[a].itemRelations.length > 0) {
+                      for (let b = 0; b < result[a].itemRelations.length; b++) {
+                        if (result[a].customItems[i].customItemId == result[a].itemRelations[b].portfolioItemId) {
+
+                          for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+
+                            let bundleObj = result[a].customItems.find((objBundle, i) => {
+                              if (objBundle.customItemId == result[a].itemRelations[b].bundles[c]) {
+
+                                return objBundle; // stop searching
+                              }
+                            });
+                            expendedArrObj.push(bundleObj);
+                          }
+
+                          for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+                            let serviceObj = result[a].customItems.find((objService, i) => {
+                              if (objService.customItemId == result[a].itemRelations[b].services[d]) {
+
+                                return objService; // stop searching
+                              }
+                            });
+                            expendedArrObj.push(serviceObj);
+                          }
+
+                        }
+                        myObj.associatedServiceOrBundle = expendedArrObj;
+                        itemsArrData.push(myObj);
+                      }
+                    } else {
+                      myObj.associatedServiceOrBundle = expendedArrObj;
+                      itemsArrData.push(myObj);
+                    }
+                  } else {
+                    myObj.associatedServiceOrBundle = expendedArrObj;
+                    itemsArrData.push(myObj);
+                  }
+                }
+              }
+              myArr.push(...itemsArrData)
+            }
+          }
+          let cloneArr = []
+          console.log("my arrr issssssssssss ", myArr);
+          myArr.map((data, i) => {
+            console.log("data: ", data)
+            const exist = searchedPortfolioItemsData.some(item =>
+              item.customItemId === data.customItemId)
+            console.log("exist: ", exist)
+            if (!exist) {
+              cloneArr.push(data)
+            }
+          })
+          setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+        } else {
+          throw "No information is found for your search, change the search criteria";
         }
 
-        let cloneArr = []
-        console.log("my arrr issssssssssss ", myArr);
-        myArr.map((data, i) => {
-          console.log("data: ", data)
-          const exist = searchedPortfolioItemsData.some(item =>
-            item.itemId === data.itemId)
-          console.log("exist: ", exist)
-          if (!exist) {
-            cloneArr.push(data)
-            // setSelectedMasterData([...selectedMasterData, data])
-          }
-        })
-        setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
-
-        // let _searchedPortfolioItemsData = [...searchedPortfolioItemsData];
-        // // var arrIndex = _searchedPortfolioItemsData.findIndex(data => data.itemId === currentSearchExpendPortfolioItemRow.itemId)
-        // _searchedPortfolioItemsData.push(...myArr[0])
-        // setSearchedPortfolioItemsData(_searchedPortfolioItemsData);
       }
+
+      // if (searchPortfolioDetails == "" || searchPortfolioDetails == null) {
+      //   throw "Please fill data properly";
+      // }
+
+      // var searchStr = `name:"${searchPortfolioDetails}"`;
+      // const portfolioItemsRes = await portfolioSearch(searchStr)
+      // if (portfolioItemsRes.status === 200) {
+      //   // console.log("result3 is 1234566 : ", portfolioItemsRes)
+      //   var myArr = [];
+      //   var result = portfolioItemsRes.data;
+      //   for (let a = 0; a < result.length; a++) {
+      //     let itemsArrData = [];
+      //     let customItemArr = [];
+      //     let createdCoverages = [];
+
+
+      //     // Set Data By Item Relation Data Data
+      //     // console.log("result[a].customItems is  : ", result[a].items)
+      //     if (result[a].items.length > 0) {
+      //       for (let i = 0; i < result[a].items.length; i++) {
+      //         if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+      //           let myObj = result[a].items[i];
+      //           let expendedArrObj = [];
+
+      //           if (result[a].itemRelations != null) {
+      //             if (result[a].itemRelations.length > 0) {
+      //               for (let b = 0; b < result[a].itemRelations.length; b++) {
+      //                 if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
+
+      //                   for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+
+      //                     let bundleObj = result[a].items.find((objBundle, i) => {
+      //                       if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
+
+      //                         return objBundle; // stop searching
+      //                       }
+      //                     });
+      //                     expendedArrObj.push(bundleObj);
+      //                   }
+
+      //                   for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+      //                     let serviceObj = result[a].items.find((objService, i) => {
+      //                       if (objService.itemId == result[a].itemRelations[b].services[d]) {
+
+      //                         return objService; // stop searching
+      //                       }
+      //                     });
+      //                     expendedArrObj.push(serviceObj);
+      //                   }
+
+      //                 }
+      //                 myObj.associatedServiceOrBundle = expendedArrObj;
+      //                 itemsArrData.push(myObj);
+      //               }
+      //             } else {
+      //               myObj.associatedServiceOrBundle = expendedArrObj;
+      //               itemsArrData.push(myObj);
+      //             }
+      //           } else {
+      //             myObj.associatedServiceOrBundle = expendedArrObj;
+      //             itemsArrData.push(myObj);
+      //             // myArr.push(myObj);
+      //           }
+      //         }
+      //       }
+      //       myArr.push(...itemsArrData)
+      //       // console.log("myArr array data is : ", myArr)
+      //     }
+      //   }
+
+      //   let cloneArr = []
+      //   console.log("my arrr issssssssssss ", myArr);
+      //   myArr.map((data, i) => {
+      //     console.log("data: ", data)
+      //     const exist = searchedPortfolioItemsData.some(item =>
+      //       item.itemId === data.itemId)
+      //     console.log("exist: ", exist)
+      //     if (!exist) {
+      //       cloneArr.push(data)
+      //       // setSelectedMasterData([...selectedMasterData, data])
+      //     }
+      //   })
+      //   setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+
+      //   // let _searchedPortfolioItemsData = [...searchedPortfolioItemsData];
+      //   // // var arrIndex = _searchedPortfolioItemsData.findIndex(data => data.itemId === currentSearchExpendPortfolioItemRow.itemId)
+      //   // _searchedPortfolioItemsData.push(...myArr[0])
+      //   // setSearchedPortfolioItemsData(_searchedPortfolioItemsData);
+      // }
 
 
     } catch (err) {
@@ -13696,7 +14199,7 @@ export function CreateCustomPortfolio(props) {
   }
 
 
-  console.log("searchedPortfolioItemsData 123456789 ", searchedPortfolioItemsData)
+  // console.log("searchedPortfolioItemsData 123456789 ", searchedPortfolioItemsData)
 
   const showAddCustomItemPopup = () => {
     // console.log("hello");
@@ -16031,10 +16534,110 @@ onChange={handleAdministrativreChange}
                         </a>
                       </div>
                     </div>
-                    <div class="mr-3 input-group icons border-radius-10 overflow-hidden border">
+                    <div class="mr-3 input-group icons border-radius-10 border">
                       <div class="input-group-prepend bg-white border-radius-10">
                         <span class=" bg-white input-group-text border-0 pr-0 " id="basic-addon1">
                           <SearchIcon /></span>
+                      </div>
+                      <div className="input-group-prepend">
+                        {querySearchSelector.map((obj, i) => {
+                          return (
+                            <>
+                              <div className={`customselect ${i < ((querySearchSelector.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-10`}>
+                                {i === 0 ?
+                                  <>
+                                    <Select
+                                      className="color-dropdown"
+                                      placeholder="Select Type."
+                                      options={([
+                                        { label: "Portfolio", value: "PORTFOLIO" },
+                                        { label: "Solution", value: "SOLUTION" },
+                                      ])}
+                                      value={querySearchSelector.itemType}
+                                      onChange={(e) => handleItemType(e, i)}
+                                    // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
+                                    />
+                                  </>
+                                  : <></>}
+                                {/* {i > 0 ? (
+                                  <Select
+                                    isClearable={true}
+                                    defaultValue={{ label: "AND", value: "AND" }}
+                                    options={[
+                                      { label: "AND", value: "AND", id: i },
+                                      { label: "OR", value: "OR", id: i },
+                                    ]}
+                                    placeholder="AND/OR"
+                                    onChange={(e) => handleOperator(e, i)}
+                                    // value={querySearchOperator[i]}
+                                    value={obj.selectOperator}
+                                  />
+                                ) : (
+                                  <></>
+                                )} */}
+
+                                <div>
+                                  <Select
+                                    // isClearable={true}
+                                    options={familySelectOption}
+                                    onChange={(e) => handleFamily(e, i)}
+                                    className="color-dropdown"
+                                    value={obj.selectFamily}
+                                  />
+                                </div>
+                                <div className="customselectsearch">
+                                  <input
+                                    className="custom-input-sleact pr-1"
+                                    type="text"
+                                    placeholder="Search string"
+                                    value={obj.inputSearch}
+                                    onChange={(e) => handleInputSearch(e, i)}
+                                    id={"inputSearch-" + i}
+                                    autoComplete="off"
+                                  />
+
+                                  {
+                                    <ul
+                                      className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                      id="style"
+                                    >
+                                      {obj.selectOptions.map((currentItem, j) => (
+                                        <li
+                                          className="list-group-item"
+                                          key={j}
+                                          onClick={(e) =>
+                                            handleSearchListClick(
+                                              e,
+                                              currentItem,
+                                              obj,
+                                              i
+                                            )
+                                          }
+                                        >
+                                          {currentItem}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  }
+
+                                </div>
+                                {(querySearchSelector.length - 1) === i ? <>
+                                  <Link
+                                    to={undefined}
+                                    className="btn bg-primary text-white border-radius-10 cursor"
+                                    // onClick={handleLandingPageQuerySearchClick}
+                                    style={{ zIndex: 0 }}
+                                    onClick={showSearchPortfolioData}
+                                  >
+                                    <SearchIcon />
+                                    <span className="ml-1">Search</span>
+                                  </Link>
+                                </> : <></>}
+
+                              </div>
+                            </>
+                          );
+                        })}
                       </div>
                       <div
                       // class="input-group-prepend align-items-center bg-white"
@@ -16062,7 +16665,7 @@ onChange={handleAdministrativreChange}
                           </div>
                         </div> */}
                       </div>
-                      <input
+                      {/* <input
                         type="search"
                         class=" border-radius-10 form-control search-form-control"
                         aria-label="Search Dashboard"
@@ -16070,15 +16673,15 @@ onChange={handleAdministrativreChange}
                         onChange={(e) =>
                           handleSearchPortfolioData(e)
                         }
-                      />
-                      <div className="input-group-prepend align-items-center cursor">
+                      /> */}
+                      {/* <div className="input-group-prepend align-items-center cursor">
                         <a href={undefined}
                           className="bg-primary btn text-white"
                           style={{ zIndex: "0" }}
                           onClick={showSearchPortfolioData}
                         ><span className="mr-2"><SearchIcon /></span>Search</a>
-                      </div>
-                      {
+                      </div> */}
+                      {/* {
                         <ul
                           className={`list-group customselectsearch-list scrollbar scrollbar-0 style1`}
 
@@ -16095,7 +16698,7 @@ onChange={handleAdministrativreChange}
                             )
                           )}
                         </ul>
-                      }
+                      } */}
 
                     </div>
                     <div className="border-left d-flex align-items-center px-2 py-2">
@@ -16215,6 +16818,8 @@ onChange={handleAdministrativreChange}
                     customStyles={customStyles}
                     expandableRows
                     selectableRows
+                    // selectableRowSelected={(row) => preSelectedRowsData.includes(row) ? true : false}
+                    // onSelectedRowsChange={handleExpendableRowCheckBoxData}
                     expandableRowExpanded={(row) => (row === currentSearchExpendPortfolioItemRow)}
                     expandOnRowClicked
                     onRowClicked={(row) => setCurrentSearchExpendPortfolioItemRow(row)}

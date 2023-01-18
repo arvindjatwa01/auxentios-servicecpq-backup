@@ -3,18 +3,25 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG, CUSTOM_PORTFOLIO_SEARCH_QUERY, GET_RECENT_SOLUTION_PORTFOLIO_LIST, GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL, COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+
+// console.log("CookiesSetData is : ", getCookiesJsonData)
+const headersData = {
     'content-type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': accessToken != undefined ?  accessToken : ''
+    // 'Authorization': accessToken != undefined ? accessToken : ''
+    'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
     // 'Authorization': url.Auth_Token
 }
 
-console.log("headersdata : ", headersdata)
+// console.log("headersData : ", headersData)
 
 /* ------------------------------------------------------------ */
 
@@ -26,7 +33,7 @@ export const createCustomPortfolio = (data) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .post(CUSTOM_PORTFOLIO_URL(), data, { headers: headersdata })
+                .post(CUSTOM_PORTFOLIO_URL(), data, { headers: headersData })
                 .then((res) => {
                     console.log("createCustomPortfolio > axios res=", res);
                     resolve(res);
@@ -49,7 +56,7 @@ export const updateCustomPortfolio = (portfolioId, data) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .put(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId, data, { headers: headersdata })
+                .put(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId, data, { headers: headersData })
                 .then((res) => {
                     console.log("updatePortfolio > axios res=", res);
                     resolve(res);
@@ -74,7 +81,7 @@ export const getCustomPortfolio = (portfolioId) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId, { headers: headersdata })
+                .get(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId, { headers: headersData })
                 .then((res) => {
                     console.log("getPortfolio > axios res=", res);
                     resolve(res.data);
@@ -97,7 +104,7 @@ export const getAllPortfolios = () => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(GET_ALL_SOLUTION_PORTFOLIOS(), { headers: headersdata })
+                .get(GET_ALL_SOLUTION_PORTFOLIOS(), { headers: headersData })
                 .then((res) => {
                     console.log("getAllPortfolios > axios res=", res);
                     resolve(res.data);
@@ -125,7 +132,7 @@ export const getUserDetails = (id) => {
         try {
             // do an SDK, DB call or API endpoint axios call here and return the promise.
             axios
-                .get(GET_USER_DETAILS(id), { headers: headersdata })
+                .get(GET_USER_DETAILS(id), { headers: headersData })
                 .then((res) => {
                     console.log("getUserDetails > axios res=", res);
                     resolve(res.data);
@@ -173,7 +180,7 @@ export const solutionPortfolioSearch = (searchStr) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr, { headers: headersdata })
+                .get(CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr, { headers: headersData })
                 .then((res) => {
                     console.log("solutionPortfolioSearch > axios res=", res);
                     // resolve(res.data);
@@ -202,8 +209,8 @@ export const getSearchForRecentSolutionPortfolio = () => {
         // console.log("GET_RECENT_SOLUTION_PORTFOLIO_LIST", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
         try {
             axios
-                // .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
-                .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "/recent", { headers: headersdata })
+                // .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersData })
+                .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "/recent", { headers: headersData })
                 .then((res) => {
                     console.log("getSearchForRecentSolutionPortfolio > axios res=", res);
                     // resolve(res.data);
@@ -231,7 +238,7 @@ export const getSearchForRecentSolutionBundleService = () => {
         // console.log("RECENT_PORTFOLIO_URL", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
         try {
             axios
-                .get(GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+                .get(GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersData })
                 .then((res) => {
                     console.log("getSearchForRecentSolutionBundleService > axios res=", res);
                     resolve(res.data);
@@ -253,7 +260,7 @@ export const copyPortfolioICustomPortfolio = (data) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO + data, { headers: headersdata })
+                .get(COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO + data, { headers: headersData })
                 .then((res) => {
                     console.log("copyPortfolioICustomPortfolio > axios res=", res);
                     resolve(res);

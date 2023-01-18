@@ -83,46 +83,47 @@ const SolutionQuerySearchComp = (props) => {
             var SearchResArr = [];
             getSearchCustomPortfolio(`${tempArray[id].selectFamily.value}~${e.target.value}`)
                 .then((res) => {
-                    if (tempArray[id].selectFamily.value === "make") {
-                        for (let i = 0; i < res.length; i++) {
-                            for (let j = 0; j < res[i].customCoverages.length; j++) {
-                                SearchResArr.push(res[i].customCoverages[j].make)
+                    if (res.status === 200) {
+                        if (tempArray[id].selectFamily.value === "make") {
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                                    SearchResArr.push(res.data[i].customCoverages[j].make)
+                                }
                             }
-                        }
 
-                    } else if (tempArray[id].selectFamily.value == "family") {
-                        for (let i = 0; i < res.length; i++) {
-                            for (let j = 0; j < res[i].customCoverages.length; j++) {
-                                SearchResArr.push(res[i].customCoverages[j].family)
+                        } else if (tempArray[id].selectFamily.value == "family") {
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                                    SearchResArr.push(res.data[i].customCoverages[j].family)
+                                }
+                            }
+                        } else if (tempArray[id].selectFamily.value == "modelNo") {
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                                    SearchResArr.push(res.data[i].customCoverages[j].modelNo)
+                                }
+                            }
+                        } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+                            for (let i = 0; i < res.data.length; i++) {
+                                for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+                                    SearchResArr.push(res.data[i].customCoverages[j].serialNumberPrefix)
+                                }
+                            }
+                        } else if (tempArray[id].selectFamily.value == "name") {
+                            for (let i = 0; i < res.data.length; i++) {
+                                SearchResArr.push(res.data[i].name)
+                            }
+                        } else if (tempArray[id].selectFamily.value == "description") {
+                            for (let i = 0; i < res.data.length; i++) {
+                                SearchResArr.push(res.data[i].description)
                             }
                         }
-                    } else if (tempArray[id].selectFamily.value == "modelNo") {
-                        for (let i = 0; i < res.length; i++) {
-                            for (let j = 0; j < res[i].customCoverages.length; j++) {
-                                SearchResArr.push(res[i].customCoverages[j].modelNo)
-                            }
-                        }
-                    } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
-                        for (let i = 0; i < res.length; i++) {
-                            for (let j = 0; j < res[i].customCoverages.length; j++) {
-                                SearchResArr.push(res[i].customCoverages[j].serialNumberPrefix)
-                            }
-                        }
-                    } else if (tempArray[id].selectFamily.value == "name") {
-                        for (let i = 0; i < res.length; i++) {
-                            SearchResArr.push(res[i].name)
-                        }
-                    } else if (tempArray[id].selectFamily.value == "description") {
-                        for (let i = 0; i < res.length; i++) {
-                            SearchResArr.push(res[i].description)
-                        }
+                        obj.selectOptions = SearchResArr;
+                        tempArray[id] = obj;
+                        setQuerySearchSelector([...tempArray]);
+                        $(`.scrollbar-${id}`).css("display", "block");
+                        console.log("search Query Result :", res.data)
                     }
-                    obj.selectOptions = SearchResArr;
-                    tempArray[id] = obj;
-                    setQuerySearchSelector([...tempArray]);
-                    $(`.scrollbar-${id}`).css("display", "block");
-                    console.log("search Query Result :", res)
-
                 }).catch((err) => {
                     console.log("error in getSearchQueryCoverage", err)
                 })
@@ -366,17 +367,23 @@ const SolutionQuerySearchComp = (props) => {
 
                 const res4 = await getSearchCustomPortfolio(searchStr)
                 console.log("getSearchCustomPortfolio res is : ", res4)
-                if (!res4.length > 0) {
 
-                    props.setSolutionLoadingStatus("")
-                    props.setSolutionTempMasterData([])
-                    // throw "No record found"
+                if (res4.status !== 200) {
                     throw "No information is found for your search, change the search criteria";
                 } else {
-                    props.setSolutionTempMasterData(res4)
+                    // if (!res4.length > 0) {
+
+                    //     props.setSolutionLoadingStatus("")
+                    //     props.setSolutionTempMasterData([])
+                    //     // throw "No record found"
+                    //     throw "No information is found for your search, change the search criteria";
+                    // } else {
+                    props.setSolutionTempMasterData(res4.data)
                     props.setSolutionLoadingStatus("")
 
+                    // }
                 }
+
 
             } else {
                 // for other cases or default case

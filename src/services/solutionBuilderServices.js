@@ -3,14 +3,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, CUSTOM_PORTFOLIO_URL } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -27,7 +31,7 @@ export const getSolutionPortfolioById = (portfolioId) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(`${CUSTOM_PORTFOLIO_URL()}/${portfolioId}`, { headers: headersdata })
+        .get(`${CUSTOM_PORTFOLIO_URL()}/${portfolioId}`, { headers: headersData })
         .then((res) => {
           console.log("getSolutionPortfolio > axios res=", res);
           resolve(res.data);
@@ -51,11 +55,11 @@ export const getAllPortfolios = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(GET_ALL_SOLUTION_PORTFOLIOS(), { headers: headersdata })
+        .get(GET_ALL_SOLUTION_PORTFOLIOS(), { headers: headersData })
         .then((res) => {
           console.log("getAllPortfolios > axios res=", res);
           // console.log("getAllPortfolios > axios res data=", res.data);
-          
+
           resolve(res.data);
         })
         .catch((err) => {
@@ -80,7 +84,7 @@ export const getUserDetails = (id) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .get(GET_USER_DETAILS(id), { headers: headersdata })
+        .get(GET_USER_DETAILS(id), { headers: headersData })
         .then((res) => {
           console.log("getUserDetails > axios res=", res);
           resolve(res.data);

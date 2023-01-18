@@ -414,7 +414,7 @@ h5 {
 
 .btn {
   padding: 8px 25px;
-  border-radius: 6px !important;
+  border-radius: 6px;
 }
 
 a.text-light:hover,
@@ -3883,3 +3883,4 @@ color: #fff !important;}
   height: auto;
   overflow-y: auto;
 }
+.color-dropdown svg{color: #872ff7 !important;}
