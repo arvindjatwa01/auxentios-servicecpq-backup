@@ -704,6 +704,13 @@ export function CreateCustomPortfolio(props) {
   const [itemModelShow, setItemModelShow] = useState(false);
   const [portfolioItemDataEditable, setPortfolioItemDataEditable] = useState(false);
 
+  const [showAddCustomPortfolioItemModelPopup, setShowAddCustomPortfolioItemModelPopup] = useState(false);
+  const [showAddBundleServiceItemsModelPopup, setShowAddBundleServiceItemsModelPopup] = useState(false);
+  const [showAddItemComponentDataModelPopup, setShowAddItemComponentDataModelPopup] = useState(false);
+  const [addBundleServiceItem1, setAddBundleServiceItem1] = useState([]);
+  const [addBundleServiceItem2, setAddBundleServiceItem2] = useState([]);
+  const [addBundleServiceItem3, setAddBundleServiceItem3] = useState([]);
+
   const [loadingItem, setLoadingItem] = useState("");
   const [tempBundleItems, setTempBundleItems] = useState([]);
   const [valueOfUseCase, setValueOfUseCase] = useState(4);
@@ -1358,6 +1365,252 @@ export function CreateCustomPortfolio(props) {
 
       setOpenAddBundleItem(false);
       setOpenSearchSolution(false);
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+  }
+
+  const handleCustomPortfolioItemSaveAndContinue = async (itemData, itemPriceData) => {
+    try {
+
+      if ((portfolioId == "") ||
+        (portfolioId == undefined) ||
+        (portfolioId == null)) {
+        throw "Please Create Solution First, then you can Add Item";
+      }
+
+      let reqObj = {
+        customItemId: 0,
+        itemName: itemData.name,
+        customItemHeaderModel: {
+          customItemHeaderId: 0,
+          itemHeaderDescription: itemData.description,
+          bundleFlag: "PORTFOLIO",
+          withBundleService: bundleServiceNeed,
+          portfolioItemId: 0,
+          reference: generalComponentData.externalReference,
+          itemHeaderMake: itemData?.make,
+          itemHeaderFamily: itemData?.family,
+          model: itemData.model,
+          prefix: itemData.prefix,
+          type: "MACHINE",
+          additional: "",
+          currency: "",
+          netPrice: 0,
+          itemProductHierarchy: "END_PRODUCT",
+          itemHeaderGeographic: "ONSITE",
+          responseTime: "PROACTIVE",
+          usage: "",
+          validFrom: generalComponentData.validFrom,
+          validTo: generalComponentData.validTo,
+          estimatedTime: "",
+          servicePrice: 0,
+          status: "DRAFT",
+          componentCode: "",
+          componentDescription: "",
+          serialNumber: "",
+          itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
+          variant: "",
+          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+          jobCode: "",
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          salesOffice: administrative.salesOffice?.value,
+          offerValidity: administrative.offerValidity?.value,
+          serviceChargable: true,
+          serviceOptional: true
+        },
+        customItemBodyModel: {
+          customItemBodyId: 0,
+          itemBodyDescription: itemData.description,
+          spareParts: ["WITH_SPARE_PARTS"],
+          labours: ["WITH_LABOUR"],
+          miscellaneous: ["LUBRICANTS"],
+          taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["PM1"],
+          solutionCode: "",
+          usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "REPAIR_OR_REPLACE",
+          usage: "",
+          year: itemData.year?.value,
+          avgUsage: 0,
+          unit: itemData.unit != "" ? itemData.unit?.value : "",
+          frequency: itemData.frequency != "" ? itemData.frequency?.value : "once",
+          customItemPrices: [
+            {
+              customItemPriceDataId: itemPriceData.customItemPriceDataId
+            }
+          ]
+        }
+      }
+
+
+      const itemRes = await customitemCreation(reqObj);
+
+      if (itemRes.status !== 200) {
+        throw "Something went wrong/Item not created"
+      }
+
+      let reqObjSJId = {
+        itemId: itemRes.data.customItemId,
+        standardJobId: itemPriceData.standardJobId,
+        repairKitId: itemPriceData.repairKitId,
+        itemPriceDataId: itemPriceData.customItemPriceDataId
+      }
+
+      const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+      const resPrice = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+      setPriceCalculator({
+        ...priceCalculator,
+        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          resPrice.data.priceMethod != "" ||
+          resPrice.data.priceMethod != null) ? {
+          label: resPrice.data.priceMethod,
+          value: resPrice.data.priceMethod
+        } : "",
+        priceType: (resPrice.data.priceType != "EMPTY" ||
+          resPrice.data.priceType != "" ||
+          resPrice.data.priceType != null) ? {
+          label: resPrice.data.priceType,
+          value: resPrice.data.priceType
+        } : "",
+        priceAdditionalSelect: {
+          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+        },
+        priceAdditionalInput: resPrice.data.additionalPriceValue,
+        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          resPrice.data.discountType != "" ||
+          resPrice.data.discountType != null) ? {
+          label: resPrice.data.discountType,
+          value: resPrice.data.discountType
+        } : "",
+        discountTypeInput: resPrice.data.discountValue,
+        year: {
+          label: resPrice.data.year, value: resPrice.data.year
+        },
+        noOfYear: resPrice.data.noOfYear,
+        startUsage: resPrice.data.startUsage,
+        endUsage: resPrice.data.endUsage,
+        recommendedValue: resPrice.data.recommendedValue,
+        netPrice: resPrice.data.netService,
+        totalPrice: resPrice.data.totalPrice,
+        id: resPrice.data.customItemPriceDataId,
+      })
+
+      itemRes.data.associatedServiceOrBundle = [];
+      setSearchedPortfolioItemsData([...searchedPortfolioItemsData, itemRes.data]);
+      setShowAddCustomPortfolioItemModelPopup(false);
+
+      setCurrentItemId(itemRes.data.customItemId);
+      const _generalComponentData = { ...generalComponentData };
+      _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
+      var _itemArrData = [...selectedSolutionCustomItems];
+      _itemArrData.push({ customItemId: itemRes.data.customItemId })
+      setSelectedSolutionCustomItems(_itemArrData);
+
+
+      // let obj = {
+      //   name: generalComponentData.name,
+      //   description: generalComponentData.description,
+      //   customerId: parseInt(customerData.customerID),
+      //   externalReference: generalComponentData.externalReference,
+      //   customerGroup: customerData.customerGroup,
+      //   customerSegment: generalComponentData?.customerSegment != "" ?
+      //     generalComponentData?.customerSegment?.value : "",
+      //   template: flagTemplate,
+      //   visibleInCommerce: flagCommerce,
+
+      //   validFrom: validityData.fromDate,
+      //   validTo: validityData.toDate,
+
+      //   responseTime: stratgyResponseTimeKeyValue?.value ?
+      //     stratgyResponseTimeKeyValue?.value : "EMPTY",
+      //   productHierarchy: stratgyHierarchyKeyValue?.value ?
+      //     stratgyHierarchyKeyValue?.value : "EMPTY",
+      //   geographic: stratgyGeographicKeyValue?.value ?
+      //     stratgyGeographicKeyValue?.value : "EMPTY",
+      //   solutionType: solutionTypeListKeyValue?.value ?
+      //     solutionTypeListKeyValue?.value : "EMPTY",
+      //   solutionLevel: solutionLevelListKeyValue?.value ?
+      //     solutionLevelListKeyValue?.value : "EMPTY",
+
+      //   portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+      //     ? portfolioPriceDataId : null,
+
+      //   customCoverages: selectedSolutionCustomCoverages,
+
+      //   preparedBy: (administrative.preparedBy != null ||
+      //     administrative.preparedBy != "" ? administrative.preparedBy : ""),
+      //   approvedBy: (administrative.approvedBy != null ||
+      //     administrative.approvedBy != "" ? administrative.approvedBy : ""),
+      //   preparedOn: administrative.preparedOn,
+      //   revisedBy: (administrative.revisedBy != null ||
+      //     administrative.revisedBy != "" ? administrative.revisedBy : ""),
+      //   revisedOn: administrative.revisedOn,
+      //   salesOffice: (administrative.salesOffice != null ||
+      //     administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
+      //   offerValidity: (administrative.offerValidity != null ||
+      //     administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
+
+      //   status: value2.value,
+      //   supportLevel: value3.value,
+
+      //   machineType: "NEW",
+      //   searchTerm: "",
+      //   lubricant: true,
+      //   strategyTask: "PREVENTIVE_MAINTENANCE",
+      //   taskType: "PM1",
+      //   usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+      //   availability: "AVAILABILITY_GREATER_95",
+      //   type: "MACHINE",
+      //   application: "HILL",
+      //   contractOrSupport: "LEVEL_I",
+      //   lifeStageOfMachine: "NEW_BREAKIN",
+      //   numberOfEvents: 0,
+      //   rating: "",
+      //   startUsage: 0,
+      //   endUsage: 0,
+      //   unit: "HOURS",
+      //   additionals: "",
+      //   customItems: _itemArrData,
+      // }
+
+      // if ((portfolioId !== "" || (portfolioId !== undefined))) {
+      //   const updatePortfolioRes = await updateCustomPortfolio(
+      //     portfolioId,
+      //     obj
+      //   );
+      //   if (updatePortfolioRes.status === 200) {
+      //     toast(`👏 Solution ${generalComponentData.name} saved Successfully`, {
+      //       position: "top-right",
+      //       autoClose: 5000,
+      //       hideProgressBar: false,
+      //       closeOnClick: true,
+      //       pauseOnHover: true,
+      //       draggable: true,
+      //       progress: undefined,
+      //     });
+      //   } else {
+      //     throw `${updatePortfolioRes.status}:Something went wrong`;
+      //   }
+      // }
+
+      // setGeneralComponentData(_generalComponentData);
+      // setTempBundleItems([...tempBundleItems, itemRes.data]);
+
+      // setOpenAddBundleItem(false);
+      // setOpenSearchSolution(false);
 
     } catch (error) {
       toast("😐" + error, {
@@ -8472,6 +8725,274 @@ export function CreateCustomPortfolio(props) {
 
   }
 
+  const handleAddBundleServiceItemsInExpendData = async () => {
+    try {
+      if (currentSearchExpendPortfolioItemRow != null) {
+        if (currentSearchExpendPortfolioItemRow.itemId != undefined) {
+          var _selectedBundleServiceItemData = [...addBundleServiceItem2];
+          let cloneArr = []
+          addBundleServiceItem2.map((data, i) => {
+            console.log("data: ", data)
+            const exist = addBundleServiceItem3.some(item => item.itemId === data.itemId)
+            console.log("exist: ", exist)
+            if (!exist) {
+              cloneArr.push(data)
+            }
+          })
+
+          console.log("cloneArr ", cloneArr)
+          setAddBundleServiceItem3([...addBundleServiceItem3, ...cloneArr])
+
+          let _searchedPortfolioItemsData = [...searchedPortfolioItemsData];
+          var arrIndex = _searchedPortfolioItemsData.findIndex(data => data.itemId === currentSearchExpendPortfolioItemRow.itemId)
+          _searchedPortfolioItemsData[arrIndex].associatedServiceOrBundle.push(...cloneArr)
+
+          setSearchedPortfolioItemsData(_searchedPortfolioItemsData);
+          // setCurrentSearchExpendPortfolioItemRow([...currentSearchExpendPortfolioItemRow, ...cloneArr])
+          setAddBundleServiceItem1([])
+
+        } else if (currentSearchExpendPortfolioItemRow.customItemId != undefined) {
+          let reqObj = {};
+          for (let i = 0; i < tempBundleItems.length; i++) {
+            createdItemId = tempBundleItems[i].customItemId;
+            if (tempBundleItems[i].customItemId === currentItemId) {
+              reqObj = {
+                itemId: tempBundleItems[i].customItemId,
+                standardJobId: itemPriceData.standardJobId,
+                repairKitId: itemPriceData.repairKitId,
+                itemPriceDataId: itemPriceData.customItemPriceDataId
+              }
+              break;
+            }
+          }
+          var createdItemId = 0;
+
+          var createdNewCustomItems = [];
+          console.log("addBundleServiceItem2 is : ", addBundleServiceItem2)
+          for (let i = 0; i < addBundleServiceItem2.length; i++) {
+            console.log("i is :", i);
+            var customItemsIdData = [];
+            var customPriceIdArr = [];
+            var customPriceIdIs = 0;
+            var repairKitIdIs = "";
+            var standardJobIdIs = "";
+
+            if (addBundleServiceItem2[i].itemBodyModel.itemPrices.length > 0) {
+
+              for (let j = 0; j < addBundleServiceItem2[i].itemBodyModel.itemPrices.length; j++) {
+
+                /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+                var itemsPrice = await itemPriceDataId(addBundleServiceItem2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+                console.log("item price is before : ", itemsPrice)
+
+                let itemPriceObj = {
+                  customItemPriceDataId: 0,
+                  quantity: parseInt(itemsPrice.quantity),
+                  standardJobId: itemsPrice.standardJobId,
+                  repairKitId: itemsPrice.repairKitId,
+                  templateDescription: itemsPrice.templateDescription,
+                  repairOption: itemsPrice.repairOption,
+                  additional: itemsPrice.additional,
+                  partListId: itemsPrice.partListId,
+                  serviceEstimateId: itemsPrice.serviceEstimateId,
+                  numberOfEvents: 0,
+                  priceMethod: itemsPrice.priceMethod,
+                  priceType: itemsPrice.priceType,
+                  listPrice: itemsPrice.listPrice,
+                  priceEscalation: itemsPrice.priceEscalation,
+                  calculatedPrice: itemsPrice.calculatedPrice,
+                  flatPrice: itemsPrice.flatPrice,
+                  year: itemsPrice.year,
+                  noOfYear: parseInt(itemsPrice.noOfYear),
+                  sparePartsPrice: itemsPrice.sparePartsPrice,
+                  sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  servicePrice: itemsPrice.totalPrice,
+                  labourPrice: itemsPrice.labourPrice,
+                  labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  miscPrice: itemsPrice.miscPrice,
+                  miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  totalPrice: itemsPrice.totalPrice,
+                  netService: itemsPrice.netService,
+                  additionalPriceType: itemsPrice.additionalPriceType,
+                  additionalPriceValue: itemsPrice.additionalPriceValue,
+                  discountType: itemsPrice.discountType,
+                  discountValue: itemsPrice.discountValue,
+                  recommendedValue: itemsPrice.recommendedValue,
+                  startUsage: itemsPrice.startUsage,
+                  endUsage: itemsPrice.endUsage,
+                  sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                  labourEscalation: itemsPrice.labourEscalation,
+                  miscEscalation: itemsPrice.miscEscalation,
+                  serviceEscalation: itemsPrice.serviceEscalation,
+                  withBundleService: itemsPrice.withBundleService,
+                  customPortfolio: {
+                    portfolioId: portfolioId
+                  },
+                  tenantId: itemsPrice.tenantId,
+                  partsRequired: itemsPrice.partsRequired,
+                  labourRequired: itemsPrice.labourRequired,
+                  miscRequired: itemsPrice.miscRequired,
+                  serviceRequired: itemsPrice.serviceRequired,
+                  inclusionExclusion: itemsPrice.inclusionExclusion
+                }
+
+                const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
+
+                customItemsIdData.push(createPriceForCustomItem.data)
+                customPriceIdArr.push({
+                  customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+                })
+
+                customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+                repairKitIdIs = createPriceForCustomItem.data.standardJobId;
+                standardJobIdIs = createPriceForCustomItem.data.repairKitId;
+              }
+
+            }
+
+            let customItemObj = {
+              customItemId: 0,
+              itemName: addBundleServiceItem2[i].itemName,
+              customItemHeaderModel: {
+                customItemHeaderId: 0,
+                itemHeaderDescription: addBundleServiceItem2[i].itemHeaderModel.itemHeaderDescription,
+                bundleFlag: addBundleServiceItem2[i].itemHeaderModel.bundleFlag,
+                withBundleService: addBundleServiceItem2[i].itemHeaderModel.withBundleService,
+                portfolioItemId: currentItemId,
+                reference: addBundleServiceItem2[i].itemHeaderModel.reference,
+                itemHeaderMake: addBundleServiceItem2[i].itemHeaderModel.itemHeaderMake,
+                itemHeaderFamily: addBundleServiceItem2[i].itemHeaderModel.itemHeaderFamily,
+                model: addBundleServiceItem2[i].itemHeaderModel.model,
+                prefix: addBundleServiceItem2[i].itemHeaderModel.prefix,
+                type: addBundleServiceItem2[i].itemHeaderModel.type,
+                additional: addBundleServiceItem2[i].itemHeaderModel.additional,
+                currency: addBundleServiceItem2[i].itemHeaderModel.currency,
+                netPrice: addBundleServiceItem2[i].itemHeaderModel.netPrice,
+                itemProductHierarchy: addBundleServiceItem2[i].itemHeaderModel.itemProductHierarchy,
+                itemHeaderGeographic: addBundleServiceItem2[i].itemHeaderModel.itemHeaderGeographic,
+                responseTime: addBundleServiceItem2[i].itemHeaderModel.responseTime,
+                usage: addBundleServiceItem2[i].itemHeaderModel.usage,
+                validFrom: addBundleServiceItem2[i].itemHeaderModel.validFrom,
+                validTo: addBundleServiceItem2[i].itemHeaderModel.validTo,
+                estimatedTime: addBundleServiceItem2[i].itemHeaderModel.estimatedTime,
+                servicePrice: addBundleServiceItem2[i].itemHeaderModel.servicePrice,
+                status: addBundleServiceItem2[i].itemHeaderModel.status,
+                componentCode: addBundleServiceItem2[i].itemHeaderModel.componentCode,
+                componentDescription: addBundleServiceItem2[i].itemHeaderModel.componentDescription,
+                serialNumber: addBundleServiceItem2[i].itemHeaderModel.serialNumber,
+                itemHeaderStrategy: addBundleServiceItem2[i].itemHeaderModel.itemHeaderStrategy,
+                variant: addBundleServiceItem2[i].itemHeaderModel.variant,
+                itemHeaderCustomerSegment: addBundleServiceItem2[i].itemHeaderModel.itemHeaderCustomerSegment,
+                jobCode: addBundleServiceItem2[i].itemHeaderModel.jobCode,
+                preparedBy: addBundleServiceItem2[i].itemHeaderModel.preparedBy,
+                approvedBy: addBundleServiceItem2[i].itemHeaderModel.approvedBy,
+                preparedOn: addBundleServiceItem2[i].itemHeaderModel.preparedOn,
+                revisedBy: addBundleServiceItem2[i].itemHeaderModel.revisedBy,
+                revisedOn: addBundleServiceItem2[i].itemHeaderModel.revisedOn,
+                salesOffice: addBundleServiceItem2[i].itemHeaderModel.salesOffice,
+                offerValidity: addBundleServiceItem2[i].itemHeaderModel.offerValidity,
+                serviceChargable: addBundleServiceItem2[i].itemHeaderModel.serviceChargable,
+                serviceOptional: addBundleServiceItem2[i].itemHeaderModel.serviceOptional
+              },
+              customItemBodyModel: {
+                customItemBodyId: 0,
+                itemBodyDescription: addBundleServiceItem2[i].itemBodyModel.itemBodyDescription,
+                spareParts: addBundleServiceItem2[i].itemBodyModel.spareParts,
+                labours: addBundleServiceItem2[i].itemBodyModel.labours,
+                miscellaneous: addBundleServiceItem2[i].itemBodyModel.miscellaneous,
+                taskType: addBundleServiceItem2[i].itemBodyModel.taskType,
+                solutionCode: addBundleServiceItem2[i].itemBodyModel.solutionCode,
+                usageIn: addBundleServiceItem2[i].itemBodyModel.usageIn,
+                usage: addBundleServiceItem2[i].itemBodyModel.usage,
+                year: addBundleServiceItem2[i].itemBodyModel.year,
+                avgUsage: addBundleServiceItem2[i].itemBodyModel.avgUsage,
+                unit: addBundleServiceItem2[i].itemBodyModel.unit,
+                frequency: addBundleServiceItem2[i].itemBodyModel.frequency,
+                customItemPrices: customPriceIdArr
+              }
+            }
+
+            const itemRes = await customitemCreation(customItemObj)
+            if (itemRes.status === 200) {
+              createdNewCustomItems.push(itemRes.data)
+              let _searchedPortfolioItemsData = [...searchedPortfolioItemsData];
+              var arrIndex = _searchedPortfolioItemsData.findIndex(data => data.itemId === currentSearchExpendPortfolioItemRow.itemId)
+              _searchedPortfolioItemsData[arrIndex].associatedServiceOrBundle.push(itemRes.data)
+              // if (customPriceIdIs != 0) {
+
+              //   // currentSearchExpendPortfolioItemRow
+
+              //   var newreqObj = {
+              //     itemId: itemRes.data.customItemId,
+              //     standardJobId: standardJobIdIs,
+              //     repairKitId: repairKitIdIs,
+              //     itemPriceDataId: customPriceIdIs
+              //   }
+              //   const updateCreatePriceSjIdData = await customPortfolioItemPriceSJID(newreqObj)
+              // }
+            }
+          }
+
+          // const res2 = await customPortfolioItemPriceSJID(reqObj)
+          // const resPrice = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+
+          // setPriceCalculator({
+          //   ...priceCalculator,
+          //   priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          //     resPrice.data.priceMethod != "" ||
+          //     resPrice.data.priceMethod != null) ? {
+          //     label: resPrice.data.priceMethod,
+          //     value: resPrice.data.priceMethod
+          //   } : "",
+          //   priceType: (resPrice.data.priceType != "EMPTY" ||
+          //     resPrice.data.priceType != "" ||
+          //     resPrice.data.priceType != null) ? {
+          //     label: resPrice.data.priceType,
+          //     value: resPrice.data.priceType
+          //   } : "",
+          //   priceAdditionalSelect: {
+          //     label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+          //   },
+          //   priceAdditionalInput: resPrice.data.additionalPriceValue,
+          //   discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          //     resPrice.data.discountType != "" ||
+          //     resPrice.data.discountType != null) ? {
+          //     label: resPrice.data.discountType,
+          //     value: resPrice.data.discountType
+          //   } : "",
+          //   discountTypeInput: resPrice.data.discountValue,
+          //   year: {
+          //     label: resPrice.data.year, value: resPrice.data.year
+          //   },
+          //   noOfYear: resPrice.data.noOfYear,
+          //   startUsage: resPrice.data.startUsage,
+          //   endUsage: resPrice.data.endUsage,
+          //   recommendedValue: resPrice.data.recommendedValue,
+          //   netPrice: resPrice.data.netService,
+          //   totalPrice: resPrice.data.totalPrice,
+          //   id: resPrice.data.customItemPriceDataId,
+          // })
+
+          setAddBundleServiceItem3([...addBundleServiceItem3, ...createdNewCustomItems]);
+          setAddBundleServiceItem1([])
+        }
+      }
+
+    } catch (error) {
+      toast(`😐 ` + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+
+  }
+
   // console.log("tempBundleService3 Newwwww------------ : ", tempBundleService3);
 
   const columns = [
@@ -9361,10 +9882,10 @@ export function CreateCustomPortfolio(props) {
           </div>
         </>
       ),
-      selector: (row) => row.itemId,
+      selector: (row) => row.itemId == undefined ? row.customItemId : row.itemId,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemId,
+      format: (row) => row.itemId == undefined ? row.customItemId : row.itemId,
     },
     {
       name: (
@@ -9383,10 +9904,10 @@ export function CreateCustomPortfolio(props) {
           <div>Solution Description</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
       minWidth: "150px",
       maxWidth: "150px",
     },
@@ -9396,88 +9917,89 @@ export function CreateCustomPortfolio(props) {
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.itemHeaderStrategy,
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.itemHeaderStrategy,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
     },
-    {
-      name: (
-        <>
-          <div>Task Type</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.taskType,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel.taskType,
-    },
-    {
-      name: (
-        <>
-          <div>Quantity</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel?.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel?.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Unit Price (per one)</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.netPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.netPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Parts</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.additional,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.additional,
-    },
-    {
-      name: (
-        <>
-          <div>Net Service</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel?.partsprice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel?.partsprice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Price</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.netPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.netPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.comments,
-    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Task Type</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.taskType,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.taskType,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Quantity</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel?.quantity,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel?.quantity,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Unit Price (per one)</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel?.netPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel?.netPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Parts</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel?.additional,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel?.additional,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Service</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel?.partsprice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel?.partsprice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel?.netPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel?.netPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Comments</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel?.comments,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel?.comments,
+    // },
+
     // {
     //   name: (
     //     <>
@@ -9552,10 +10074,10 @@ export function CreateCustomPortfolio(props) {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
       minWidth: "150px",
       maxWidth: "150px",
     },
@@ -9565,10 +10087,10 @@ export function CreateCustomPortfolio(props) {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel?.quantity,
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel?.quantity,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
     },
     {
       name: (
@@ -9576,10 +10098,10 @@ export function CreateCustomPortfolio(props) {
           <div>Unit Price (per one)</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.netPrice,
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.netPrice,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
     },
     {
       name: (
@@ -9587,10 +10109,10 @@ export function CreateCustomPortfolio(props) {
           <div>Net Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.netPrice,
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.netPrice,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
     },
 
   ];
@@ -9898,6 +10420,7 @@ export function CreateCustomPortfolio(props) {
       format: (row) => row.customItemHeaderModel?.comments,
     },
   ];
+
   const tempBundleItemColumns1 = [
 
     // {
@@ -10077,6 +10600,131 @@ export function CreateCustomPortfolio(props) {
     //     format: (row) => row.itemBodyModel.totalPrice,
     // },
   ];
+
+  const bundleServiceSelectedItemsColumn = [
+    {
+      name: (
+        <>
+          <div>Item Name</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Item Description</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
+    },
+    {
+      name: (
+        <>
+          <div>Task Type</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel?.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel?.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Additional</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+    },
+    {
+      name: (
+        <>
+          <div>Net Parts Price</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+    },
+    {
+      name: (
+        <>
+          <div>Total $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.totalPrice : row.itemBodyModel?.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.totalPrice : row.itemBodyModel?.totalPrice,
+    },
+  ];
+
   const tempBundleItemColumns1New = [
 
     // {
@@ -10212,7 +10860,6 @@ export function CreateCustomPortfolio(props) {
       format: (row) => row.customItemBodyModel.totalPrice,
     },
   ];
-
 
   const columns4 = [
     {
@@ -10920,7 +11567,8 @@ export function CreateCustomPortfolio(props) {
 
       setItemPriceData(itemPriceDataRes.data)
       // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
-      handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+      // handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+      handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
       setTempBundleService1([]);
       setTempBundleService2([]);
       setTempBundleService3([]);
@@ -11737,7 +12385,17 @@ export function CreateCustomPortfolio(props) {
               </div>
             </div>
             <div className="border-left d-flex align-items-center">
-              <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+              <a
+                href={undefined}
+                style={{ whiteSpace: "pre" }}
+                className="btn-sm cursor"
+                onClick={showAddBundleServiceItemPopup}
+              >
+                <span className="mr-2">
+                  <AddIcon />
+                </span>
+                Add
+              </a>
             </div>
           </div>
           {data.associatedServiceOrBundle ?
@@ -11783,7 +12441,17 @@ export function CreateCustomPortfolio(props) {
             </div>
           </div>
           <div className="border-left d-flex align-items-center">
-            <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+            <a
+              href={undefined}
+              style={{ whiteSpace: "pre" }}
+              className="btn-sm cursor"
+              onClick={showAddComponentDataPopup}
+            >
+              <span className="mr-2">
+                <AddIcon />
+              </span>
+              Add
+            </a>
           </div>
         </div>
         <ul className="mb-0 component-li">
@@ -12929,7 +13597,7 @@ export function CreateCustomPortfolio(props) {
       var searchStr = `name:"${searchPortfolioDetails}"`;
       const portfolioItemsRes = await portfolioSearch(searchStr)
       if (portfolioItemsRes.status === 200) {
-        console.log("result3 is 1234566 : ", portfolioItemsRes)
+        // console.log("result3 is 1234566 : ", portfolioItemsRes)
         var myArr = [];
         var result = portfolioItemsRes.data;
         for (let a = 0; a < result.length; a++) {
@@ -12939,7 +13607,7 @@ export function CreateCustomPortfolio(props) {
 
 
           // Set Data By Item Relation Data Data
-          console.log("result[a].items is  : ", result[a].items)
+          // console.log("result[a].items is  : ", result[a].items)
           if (result[a].items.length > 0) {
             for (let i = 0; i < result[a].items.length; i++) {
               if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
@@ -12988,15 +13656,29 @@ export function CreateCustomPortfolio(props) {
                 }
               }
             }
-            myArr.push(itemsArrData)
-            console.log("myArr array data is : ", myArr)
+            myArr.push(...itemsArrData)
+            // console.log("myArr array data is : ", myArr)
           }
         }
-        let arrayData = [];
-        for (let x = 0; x < myArr.length; x++) {
-          arrayData.push(myArr[x])
-        }
-        setSearchedPortfolioItemsData(...arrayData);
+
+        let cloneArr = []
+        console.log("my arrr issssssssssss ", myArr);
+        myArr.map((data, i) => {
+          console.log("data: ", data)
+          const exist = searchedPortfolioItemsData.some(item =>
+            item.itemId === data.itemId)
+          console.log("exist: ", exist)
+          if (!exist) {
+            cloneArr.push(data)
+            // setSelectedMasterData([...selectedMasterData, data])
+          }
+        })
+        setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+
+        // let _searchedPortfolioItemsData = [...searchedPortfolioItemsData];
+        // // var arrIndex = _searchedPortfolioItemsData.findIndex(data => data.itemId === currentSearchExpendPortfolioItemRow.itemId)
+        // _searchedPortfolioItemsData.push(...myArr[0])
+        // setSearchedPortfolioItemsData(_searchedPortfolioItemsData);
       }
 
 
@@ -13011,6 +13693,25 @@ export function CreateCustomPortfolio(props) {
         progress: undefined,
       });
     }
+  }
+
+
+  console.log("searchedPortfolioItemsData 123456789 ", searchedPortfolioItemsData)
+
+  const showAddCustomItemPopup = () => {
+    // console.log("hello");
+    setShowAddCustomPortfolioItemModelPopup(true);
+  }
+
+  const showAddBundleServiceItemPopup = () => {
+    setShowAddBundleServiceItemsModelPopup(true);
+    // console.log("13044");
+    console.log("currentSearchExpendPortfolioItemRow : ", currentSearchExpendPortfolioItemRow)
+  };
+
+  const showAddComponentDataPopup = () => {
+    console.log("13048")
+    setShowAddItemComponentDataModelPopup(true);
   }
 
 
@@ -15398,7 +16099,17 @@ onChange={handleAdministrativreChange}
 
                     </div>
                     <div className="border-left d-flex align-items-center px-2 py-2">
-                      <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+                      <a
+                        href={undefined}
+                        style={{ whiteSpace: "pre" }}
+                        className="btn-sm cursor"
+                        onClick={showAddCustomItemPopup}
+                      >
+                        <span className="mr-2">
+                          <AddIcon />
+                        </span>
+                        Add
+                      </a>
                     </div>
                   </div>
                   {/* <div className="row align-items-center mt-3">
@@ -16361,406 +17072,6 @@ onChange={handleAdministrativreChange}
         </Modal.Body>
       </Modal>
 
-      {/* <Modal
-        show={openAddBundleItem}
-        onHide={() => setOpenAddBundleItem(false)}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-      >
-        <Modal.Body className="">
-          {openAddBundleItemHeader}
-          <Modal.Body className="p-0 bg-white">
-            <div className="ligt-greey-bg p-3">
-              <div>
-                <span className="mr-3">
-                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Related part list(s)</span>
-                </span>
-                <span className="mr-3">
-                  <AccessAlarmOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Related service estimate(s)</span>
-                </span>
-                <span>
-                  <SellOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Split price</span>
-                </span>
-              </div>
-            </div>
-            <div className="px-3">
-              <p className="mt-4">SUMMARY</p>
-              <div className="row mt-4">
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      ID
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control border-radius-10"
-                      disabled
-                      aria-describedby="emailHelp"
-                      placeholder="(AUTO GENERATE)"
-                      value={addPortFolioItem.id ? addPortFolioItem.id : ""}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      DESCRIPTION
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control border-radius-10"
-                      placeholder="DESCRIPTION"
-                      onChange={(e) =>
-                        setAddportFolioItem({
-                          ...addPortFolioItem,
-                          description: e.target.value,
-                        })
-                      }
-                      value={addPortFolioItem.description}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      USAGE IN
-                    </label>
-                    <Select
-                      placeholder={categoryUsageKeyValue1.label}
-                      options={categoryList}
-                      // selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
-                      defaultValue={
-                        categoryUsageKeyValue1.value
-                          ? categoryUsageKeyValue1.value
-                          : ""
-                      }
-                      value={addPortFolioItem.usageIn}
-                      onChange={(e) =>
-                        setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <p className="mt-4">STRATEGY</p>
-              <div className="row mt-4">
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      TASK TYPE
-                    </label>
-                    <div className="icon-defold">
-                      <div className="form-control">
-                        <Select
-                          options={updatedTaskList}
-                          placeholder={stratgyTaskTypeKeyValue.value}
-                          // selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
-                          defaultValue={
-                            stratgyTaskTypeKeyValue.value
-                              ? stratgyTaskTypeKeyValue.value
-                              : ""
-                          }
-                          onChange={(e) =>
-                            setAddportFolioItem({
-                              ...addPortFolioItem,
-                              taskType: e,
-                            })
-                          }
-                          value={addPortFolioItem.taskType}
-                        />
-                        <span className="search-icon searchIcon">
-                          <SearchOutlinedIcon className="font-size-16" />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      FREQUENCY
-                    </label>
-                    <div className="icon-defold">
-                      <div className="form-control">
-                        <Select
-                          options={frequencyOptions}
-                          placeholder="FREQUENCY"
-                          onChange={(e) =>
-                            setAddportFolioItem({
-                              ...addPortFolioItem,
-                              frequency: e,
-                            })
-                          }
-                          value={addPortFolioItem.frequency}
-                        />
-                        <span className="search-icon searchIcon">
-                          <SearchOutlinedIcon className="font-size-16" />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      UNIT
-                    </label>
-                    <Select
-                      options={[
-                        { value: "per Hr", label: "per Hr" },
-                        { value: "per Km", label: "per Km" },
-                        { value: "per Miles", label: "per Miles" },
-                        { value: "per year", label: "per year" },
-                        { value: "per month", label: "per month" },
-                        { value: "per day", label: "per day" },
-                        { value: "per quarter", label: "per quarter" },
-                      ]}
-                      placeholder="HOURS"
-                      onChange={(e) =>
-                        setAddportFolioItem({ ...addPortFolioItem, unit: e })
-                      }
-                      value={addPortFolioItem.unit}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      RECOMMENDED VALUE
-                    </label>
-                    <Select
-                      // defaultValue={selectedOption}
-                      onChange={(e) =>
-                        setAddportFolioItem({
-                          ...addPortFolioItem,
-                          recomondedValue: e,
-                        })
-                      }
-                      value={addPortFolioItem.recomondedValue}
-                      options={options}
-                      placeholder="RECOMMENDED VALUE"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      QUANTITY
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control border-radius-10"
-                      // id="exampleInputEmail1"
-                      // aria-describedby="emailHelp"
-                      placeholder="QUANTITY"
-                      onChange={(e) =>
-                        setAddportFolioItem({
-                          ...addPortFolioItem,
-                          quantity: e.target.value,
-                        })
-                      }
-                      value={addPortFolioItem.quantity}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      NO. OF EVENTS
-                    </label>
-                    <input
-                      type="email"
-                      className="form-control border-radius-10"
-                      // id="exampleInputEmail1"
-                      // aria-describedby="emailHelp"
-                      placeholder="NO. OF EVENTS"
-                      onChange={(e) =>
-                        setAddportFolioItem({
-                          ...addPortFolioItem,
-                          numberOfEvents: e.target.value,
-                        })
-                      }
-                      value={addPortFolioItem.numberOfEvents}
-                    />
-                  </div>
-                </div>
-              </div>
-              <p className="mt-4">TEMPLATES</p>
-              <div className="row">
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      TEMPLATE ID
-                    </label>
-                    <div className="icon-defold">
-                      <div className="form-control">
-                        <Select
-                          // defaultValue={selectedOption}
-                          // onChange={setSelectedOption}
-                          options={options}
-                          placeholder="TEMPLATE ID"
-                          onChange={(e) =>
-                            setAddportFolioItem({
-                              ...addPortFolioItem,
-                              templateId: e,
-                            })
-                          }
-                          value={addPortFolioItem.templateId}
-                        />
-                        <span className="search-icon searchIcon">
-                          <SearchOutlinedIcon className="font-size-16" />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      TEMPLATE DESCRIPTION
-                    </label>
-                    <div className="icon-defold">
-                      <div className="form-control">
-                        <Select
-                          // defaultValue={selectedOption}
-                          // onChange={setSelectedOption}
-                          options={options}
-                          placeholder="TEMPLATE DESCRIPTION"
-                          onChange={(e) =>
-                            setAddportFolioItem({
-                              ...addPortFolioItem,
-                              templateDescription: e,
-                            })
-                          }
-                          value={addPortFolioItem.templateDescription}
-                        />
-                        <span className="search-icon searchIcon">
-                          <SearchOutlinedIcon className="font-size-16" />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <div className="mt-4">
-                      <a
-                        href="#"
-                        className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
-                      >
-                        <span className="mr-2">+</span>Add Template / Kit
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <p className="mt-4">REPAIR OPTIONS</p>
-              <div className="row">
-                <div className="col-md-4 col-sm-4">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      REPAIR OPTION
-                    </label>
-                    <div className="icon-defold">
-                      <div className="form-control">
-                        <Select
-                          // defaultValue={selectedOption}
-                          // onChange={setSelectedOption}
-                          options={options}
-                          placeholder="REPAIR OPTION"
-                          onChange={(e) =>
-                            setAddportFolioItem({
-                              ...addPortFolioItem,
-                              repairOption: e,
-                            })
-                          }
-                          value={addPortFolioItem.repairOption}
-                        />
-                        <span className="search-icon searchIcon">
-                          <SearchOutlinedIcon className="font-size-16" />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div className="form-group">
-                    <div className="mt-4">
-                      <a
-                        href="#"
-                        className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
-                      >
-                        <span className="mr-2">+</span>Add Repair Option
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="text-right pb-2">
-                <a
-                  href="#"
-                  className="btn border mr-4"
-                  onClick={() => setOpenAddBundleItem(false)}
-                >
-                  Cancel
-                </a>
-                <Link
-                  to="#"
-                  className="btn border mr-4"
-                  onClick={() => {
-                    setOpenAddBundleItem(false);
-                    setOpen2(true);
-                  }}
-                >
-                  Save & Continue
-                </Link>
-              </div>
-            </div>
-          </Modal.Body>
-        </Modal.Body>
-      </Modal> */}
-
       <Modal
         show={open2}
         onHide={() => setOpen2(false)}
@@ -17373,6 +17684,806 @@ onChange={handleAdministrativreChange}
           </div>
         </Modal.Body>
       </Modal>
+
+      {/* Modal Box Popup For Add New Custom Items */}
+      <Modal
+        size="xl"
+        show={showAddCustomPortfolioItemModelPopup}
+        onHide={() => setShowAddCustomPortfolioItemModelPopup(false)}
+      >
+        <Modal.Body>
+          {!portfolioItemDataEditable ?
+            <>
+              <AddCustomPortfolioItem
+                stratgyTaskTypeKeyValue={stratgyTaskTypeKeyValue}
+                setTabs={setTabs}
+                getAddPortfolioItemDataFun={getAddPortfolioItemDataFun}
+                compoFlag="ITEM"
+                setBundleServiceNeed={setBundleServiceNeed}
+                createdBundleItems={createdBundleItems}
+                portfolioDataId={portfolioId}
+                itemModelShow={setItemModelShow}
+              />
+            </> :
+            <>
+              <AddCustomPortfolioItem
+                passItemEditRowData={passItemEditRowData}
+                handleItemEditSave={handleItemEditSave}
+                compoFlag="itemEdit"
+                compoFlagTest="itemEditPort"
+                setBundleServiceNeed={setBundleServiceNeed}
+              />
+            </>
+          }
+        </Modal.Body>
+      </Modal>
+
+      {/* Modal Box Popup For Add Bundle/Service Items */}
+      <Modal
+        size="xl"
+        show={showAddBundleServiceItemsModelPopup}
+        onHide={() => setShowAddBundleServiceItemsModelPopup(false)}
+      >
+        <Modal.Body>
+          <QuerySearchComp
+            compoFlag="bundleSearch"
+            options={[
+              { label: "Make", value: "itemHeaderMake" },
+              { label: "Family", value: "itemHeaderFamily" },
+              { label: "Model", value: "model" },
+              { label: "Prefix", value: "prefix" },
+              // { label: "Item Id", value: "itemId" },
+              { label: "Item Name", value: "itemName" },
+              { label: "Description", value: "description" },
+            ]}
+            setTempBundleService1={setAddBundleServiceItem1}
+            setLoadingItem={setLoadingItem}
+          />
+          {loadingItem === "01" ? ("loading") :
+            <>
+              {addBundleServiceItem1.length > 0 && (<>
+                <DataTable
+                  title=""
+                  columns={tempBundleItemColumns1}
+                  data={addBundleServiceItem1}
+                  customStyles={customStyles}
+                  selectableRows
+                  onSelectedRowsChange={(state) => setAddBundleServiceItem2(state.selectedRows)}
+                  pagination
+                />{addBundleServiceItem2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                  <button
+                    type="button"
+                    className="btn btn-light"
+                    // onClick={() => {
+                    //     setTempBundleService3(tempBundleService2)
+                    //     setTempBundleService1([])
+                    // }}
+                    // onClick={handleCreateCustomItem_SearchResult}
+                    onClick={handleAddBundleServiceItemsInExpendData}
+                  >
+                    Add Selected
+                  </button>
+                </div>)}
+              </>)}
+            </>
+
+          }
+          {addBundleServiceItem3.length > 0 && <>
+            <DataTable
+              title=""
+              columns={bundleServiceSelectedItemsColumn}
+              data={addBundleServiceItem3}
+              customStyles={customStyles}
+              expandableRows
+              // expandableRowsComponent={ExpandedPriceCalculator}
+              expandableRowsComponent={ExpendCustomItemTablePopup}
+              onRowExpandToggled={handleExpandRowForPriceCalculator}
+              pagination
+            />
+            <div className="row mt-5" style={{ justifyContent: "right" }}>
+              <button type="button" className="btn btn-light"
+                onClick={handleContinueOfServiceOrBundle}>Continue</button>
+            </div>
+          </>}
+        </Modal.Body>
+      </Modal>
+
+      {/* Modal Box Popup For Add Component Data Items */}
+      <Modal
+        size="xl"
+        show={showAddItemComponentDataModelPopup}
+        onHide={() => setShowAddItemComponentDataModelPopup(false)}
+      >
+        <Modal.Body>
+          <>
+            <div className="ligt-greey-bg p-3 mb-5">
+              <div>
+                <span className="mr-3 cursor">
+                  <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                  <span className="ml-2">Edit</span>
+                </span>
+                <span className="mr-3">
+                  <SellOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related repair option</span>
+                </span>
+                <span className="mr-3">
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related Standard Job</span>
+                </span>
+                <span className="mr-3">
+                  <AccessAlarmOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related Kit</span>
+                </span>
+              </div>
+            </div>
+            <div className="row input-fields">
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Component Code
+                  </label>
+
+                  <div className="customselectsearch">
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      name="componentCode"
+                      value={componentData.componentCode}
+                      onChange={handleComponentChange}
+                      autoComplete="off"
+                      placeholder="Search Component Code Here"
+                    />
+
+                    {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
+                      {componentData.codeSuggestions.map(
+                        (currentItem, j) => (
+                          <li className="list-group-item" key={j} onClick={(e) => handleComponentCodeSuggetionsClick(e, j)}
+                          >
+                            {currentItem.componentCode}
+                          </li>
+                        )
+                      )}
+                    </ul>}
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500">
+                    Component Description
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10"
+                    name="description"
+                    value={componentData.description}
+                    onChange={handleComponentChange}
+                    placeholder="Optional"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    Make
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10 text-primary"
+                    id="make-id"
+                    name="make"
+                    value={componentData.make}
+                    onChange={handleMachineDataChange}
+                    placeholder="Auto Filled"
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    MODEL
+                  </label>
+                  <SearchBox
+                    value={componentData.model}
+                    onChange={(e) =>
+                      handleMachineSearch(
+                        "model",
+                        e.target.value
+                      )
+                    }
+                    type="model"
+                    result={searchModelResults}
+                    onSelect={handleModelSelect}
+                    noOptions={noOptionsModel}
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    SERIAL #
+                  </label>
+                  <SearchBox
+                    value={componentData.serialNo}
+                    onChange={(e) =>
+                      handleMachineSearch(
+                        "serialNo",
+                        e.target.value
+                      )
+                    }
+                    type="equipmentNumber"
+                    result={searchSerialResults}
+                    onSelect={handleModelSelect}
+                    noOptions={noOptionsSerial}
+                  />
+                </div>
+              </div>
+            </div>
+            <hr />
+            <div className="row mt-2 input-fields">
+              <div className="col-md-6 col-sm-6 input-fields">
+                <div className="form-group">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    PRICE METHOD
+                  </label>
+                  <Select
+                    options={priceMethodKeyValue}
+                    value={componentData.priceMethod}
+                    name="priceMethod"
+                    onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
+                    placeholder="placeholder (Optional)"
+                    className="text-primary"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group date-box">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    ADDITIONAL
+                  </label>
+                  <div className=" d-flex form-control-date">
+                    <div className="">
+                      <Select
+                        isClearable={true}
+                        value={componentData.priceAdditionalSelect}
+                        name="priceAdditionalSelect"
+                        onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
+                        options={options}
+                        placeholder="Select"
+                        className="text-primary"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                      placeholder="10%"
+                      // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                      value={componentData.priceAdditionalInput}
+                      name="priceAdditionalInput"
+                      onChange={handleComponentChange}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group date-box">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    PRICE ESCALATON
+                  </label>
+                  <div className=" d-flex align-items-center form-control-date">
+                    <Select
+                      className="select-input text-primary"
+                      value={componentData.priceEscalationSelect}
+                      name="priceEscalationSelect"
+                      onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
+                      options={options}
+                      placeholder="placeholder "
+                    />
+                    <input
+                      type="text"
+                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                      placeholder="20%"
+                      // defaultValue={props?.priceCalculator?.priceEscalationInput}
+                      value={componentData.priceEscalationInput}
+                      name="priceEscalationInput"
+                      onChange={handleComponentChange}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    CALCULATED PRICE
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10 text-primary"
+                    // defaultValue={props?.priceCalculator?.calculatedPrice}
+                    value={componentData.calculatedPrice}
+                    name="calculatedPrice"
+                    onChange={handleComponentChange}
+                    placeholder="$100"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    FLAT PRICE / ADJUSTED PRICE
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10 text-primary"
+                    value={componentData.flatPrice}
+                    name="flatPrice"
+                    onChange={handleComponentChange}
+                    placeholder="$100"
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group date-box">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    DISCOUNT TYPE
+                  </label>
+                  <div className=" d-flex form-control-date">
+                    <div className="">
+                      <Select
+                        value={componentData.discountTypeSelect}
+                        name="discountTypeSelect"
+                        onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
+                        isClearable={true}
+                        options={options}
+                        placeholder="Select"
+                        className="text-primary"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                      value={componentData.discountTypeInput}
+                      name="discountTypeInput"
+                      onChange={handleComponentChange}
+                      placeholder="10%"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="row mt-5" style={{ justifyContent: "right" }}>
+              <button
+                type="button"
+                onClick={handleComponentDataSave}
+                className="btn btn-light"
+              >
+                Save and Continue
+              </button>
+            </div>
+          </>
+        </Modal.Body>
+      </Modal>
+
+      {/* <Modal
+        show={openAddBundleItem}
+        onHide={() => setOpenAddBundleItem(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+      >
+        <Modal.Body className="">
+          {openAddBundleItemHeader}
+          <Modal.Body className="p-0 bg-white">
+            <div className="ligt-greey-bg p-3">
+              <div>
+                <span className="mr-3">
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related part list(s)</span>
+                </span>
+                <span className="mr-3">
+                  <AccessAlarmOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related service estimate(s)</span>
+                </span>
+                <span>
+                  <SellOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Split price</span>
+                </span>
+              </div>
+            </div>
+            <div className="px-3">
+              <p className="mt-4">SUMMARY</p>
+              <div className="row mt-4">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      ID
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      disabled
+                      aria-describedby="emailHelp"
+                      placeholder="(AUTO GENERATE)"
+                      value={addPortFolioItem.id ? addPortFolioItem.id : ""}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      DESCRIPTION
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="DESCRIPTION"
+                      onChange={(e) =>
+                        setAddportFolioItem({
+                          ...addPortFolioItem,
+                          description: e.target.value,
+                        })
+                      }
+                      value={addPortFolioItem.description}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      USAGE IN
+                    </label>
+                    <Select
+                      placeholder={categoryUsageKeyValue1.label}
+                      options={categoryList}
+                      // selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                      defaultValue={
+                        categoryUsageKeyValue1.value
+                          ? categoryUsageKeyValue1.value
+                          : ""
+                      }
+                      value={addPortFolioItem.usageIn}
+                      onChange={(e) =>
+                        setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <p className="mt-4">STRATEGY</p>
+              <div className="row mt-4">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      TASK TYPE
+                    </label>
+                    <div className="icon-defold">
+                      <div className="form-control">
+                        <Select
+                          options={updatedTaskList}
+                          placeholder={stratgyTaskTypeKeyValue.value}
+                          // selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                          defaultValue={
+                            stratgyTaskTypeKeyValue.value
+                              ? stratgyTaskTypeKeyValue.value
+                              : ""
+                          }
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              taskType: e,
+                            })
+                          }
+                          value={addPortFolioItem.taskType}
+                        />
+                        <span className="search-icon searchIcon">
+                          <SearchOutlinedIcon className="font-size-16" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      FREQUENCY
+                    </label>
+                    <div className="icon-defold">
+                      <div className="form-control">
+                        <Select
+                          options={frequencyOptions}
+                          placeholder="FREQUENCY"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              frequency: e,
+                            })
+                          }
+                          value={addPortFolioItem.frequency}
+                        />
+                        <span className="search-icon searchIcon">
+                          <SearchOutlinedIcon className="font-size-16" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      UNIT
+                    </label>
+                    <Select
+                      options={[
+                        { value: "per Hr", label: "per Hr" },
+                        { value: "per Km", label: "per Km" },
+                        { value: "per Miles", label: "per Miles" },
+                        { value: "per year", label: "per year" },
+                        { value: "per month", label: "per month" },
+                        { value: "per day", label: "per day" },
+                        { value: "per quarter", label: "per quarter" },
+                      ]}
+                      placeholder="HOURS"
+                      onChange={(e) =>
+                        setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                      }
+                      value={addPortFolioItem.unit}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      RECOMMENDED VALUE
+                    </label>
+                    <Select
+                      // defaultValue={selectedOption}
+                      onChange={(e) =>
+                        setAddportFolioItem({
+                          ...addPortFolioItem,
+                          recomondedValue: e,
+                        })
+                      }
+                      value={addPortFolioItem.recomondedValue}
+                      options={options}
+                      placeholder="RECOMMENDED VALUE"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      QUANTITY
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
+                      placeholder="QUANTITY"
+                      onChange={(e) =>
+                        setAddportFolioItem({
+                          ...addPortFolioItem,
+                          quantity: e.target.value,
+                        })
+                      }
+                      value={addPortFolioItem.quantity}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      NO. OF EVENTS
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
+                      placeholder="NO. OF EVENTS"
+                      onChange={(e) =>
+                        setAddportFolioItem({
+                          ...addPortFolioItem,
+                          numberOfEvents: e.target.value,
+                        })
+                      }
+                      value={addPortFolioItem.numberOfEvents}
+                    />
+                  </div>
+                </div>
+              </div>
+              <p className="mt-4">TEMPLATES</p>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      TEMPLATE ID
+                    </label>
+                    <div className="icon-defold">
+                      <div className="form-control">
+                        <Select
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
+                          options={options}
+                          placeholder="TEMPLATE ID"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              templateId: e,
+                            })
+                          }
+                          value={addPortFolioItem.templateId}
+                        />
+                        <span className="search-icon searchIcon">
+                          <SearchOutlinedIcon className="font-size-16" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      TEMPLATE DESCRIPTION
+                    </label>
+                    <div className="icon-defold">
+                      <div className="form-control">
+                        <Select
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
+                          options={options}
+                          placeholder="TEMPLATE DESCRIPTION"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              templateDescription: e,
+                            })
+                          }
+                          value={addPortFolioItem.templateDescription}
+                        />
+                        <span className="search-icon searchIcon">
+                          <SearchOutlinedIcon className="font-size-16" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <div className="mt-4">
+                      <a
+                        href="#"
+                        className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                      >
+                        <span className="mr-2">+</span>Add Template / Kit
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="mt-4">REPAIR OPTIONS</p>
+              <div className="row">
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      REPAIR OPTION
+                    </label>
+                    <div className="icon-defold">
+                      <div className="form-control">
+                        <Select
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
+                          options={options}
+                          placeholder="REPAIR OPTION"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              repairOption: e,
+                            })
+                          }
+                          value={addPortFolioItem.repairOption}
+                        />
+                        <span className="search-icon searchIcon">
+                          <SearchOutlinedIcon className="font-size-16" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <div className="mt-4">
+                      <a
+                        href="#"
+                        className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                      >
+                        <span className="mr-2">+</span>Add Repair Option
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right pb-2">
+                <a
+                  href="#"
+                  className="btn border mr-4"
+                  onClick={() => setOpenAddBundleItem(false)}
+                >
+                  Cancel
+                </a>
+                <Link
+                  to="#"
+                  className="btn border mr-4"
+                  onClick={() => {
+                    setOpenAddBundleItem(false);
+                    setOpen2(true);
+                  }}
+                >
+                  Save & Continue
+                </Link>
+              </div>
+            </div>
+          </Modal.Body>
+        </Modal.Body>
+      </Modal> */}
+
       <div
         className="modal fade"
         id="AddCoverage"
