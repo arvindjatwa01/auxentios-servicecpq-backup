@@ -6,7 +6,17 @@ import { FETCH_KIT, KIT_MULTI_PARTS_TO_PARTLIST, KIT_PART_OF_PARTLIST, SEARCH_KI
 const accessToken = localStorage.getItem("access_token");
 
 var CookiesSetData = Cookies.get("loginTenantDtl");
-var getCookiesJsonData = JSON.parse(CookiesSetData)
+var getCookiesJsonData;
+if (CookiesSetData != undefined) {
+  getCookiesJsonData = JSON.parse(CookiesSetData);
+}
+//  else {
+//   getCookiesJsonData = {
+//     access_token: "Bearer null",
+//   }
+// }
+// var getCookiesJsonData = JSON.parse(CookiesSetData);
+
 // const headersData = {
 //   'content-type': 'application/json',
 //   'Accept': 'application/json',
@@ -18,7 +28,7 @@ var getCookiesJsonData = JSON.parse(CookiesSetData)
 const config = {
   headers: {
     "Content-Type": "application/json",
-    Authorization: `${getCookiesJsonData.access_token}`,
+    Authorization: `${getCookiesJsonData?.access_token}`,
   },
   // xsrfCookieName: "XSRF-TOKEN",
   // xsrfHeaderName: "X-XSRF-TOKEN",

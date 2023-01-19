@@ -6,12 +6,16 @@ import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_SJ_COVERAGE, UPDATE_SJ_GENERAL_
 const accessToken = localStorage.getItem("access_token");
 
 var CookiesSetData = Cookies.get("loginTenantDtl");
-var getCookiesJsonData = JSON.parse(CookiesSetData)
+var getCookiesJsonData;
+if (CookiesSetData != undefined) {
+  getCookiesJsonData = JSON.parse(CookiesSetData);
+}
+// var getCookiesJsonData = JSON.parse(CookiesSetData);
 
 const config = {
   headers: {
     "Content-Type": "application/json",
-    Authorization: `${getCookiesJsonData.access_token}`,
+    Authorization: `${getCookiesJsonData?.access_token}`,
   },
   // xsrfCookieName: "XSRF-TOKEN",
   // xsrfHeaderName: "X-XSRF-TOKEN",
