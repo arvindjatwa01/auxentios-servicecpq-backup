@@ -1,14 +1,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { CREATE_PORTFOLIO_ITEM, PORTFOLIO_ITEM_SEARCH, PORTFOLIO_ITEM_PRICE_RKID, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -20,7 +24,7 @@ export const itemCreation = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CREATE_PORTFOLIO_ITEM(), payLoad, { headers: headersdata })
+        .post(CREATE_PORTFOLIO_ITEM(), payLoad, { headers: headersData })
         .then((res) => {
           console.log("itemCreation > axios res=", res);
           resolve(res);
@@ -41,7 +45,7 @@ export const getItemDataById = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(`${CREATE_PORTFOLIO_ITEM()}/${id}`, { headers: headersdata })
+        .get(`${CREATE_PORTFOLIO_ITEM()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("getItemDataById > axios res=", res);
           resolve(res.data);
@@ -62,7 +66,7 @@ export const getAllItems = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(CREATE_PORTFOLIO_ITEM(), { headers: headersdata })
+        .get(CREATE_PORTFOLIO_ITEM(), { headers: headersData })
         .then((res) => {
           console.log("getAllItems > axios res=", res);
           resolve(res.data);
@@ -83,7 +87,7 @@ export const getServiceItemsList = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(CREATE_PORTFOLIO_ITEM()+ "/services", { headers: headersdata })
+        .get(CREATE_PORTFOLIO_ITEM() + "/services", { headers: headersData })
         .then((res) => {
           console.log("getServiceItemsList > axios res=", res);
           resolve(res.data);
@@ -104,7 +108,7 @@ export const itemSearchSuggestion = (family, familyValue) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(CREATE_PORTFOLIO_ITEM() + `/${family}?${family}=${familyValue}`, { headers: headersdata })
+        .get(CREATE_PORTFOLIO_ITEM() + `/${family}?${family}=${familyValue}`, { headers: headersData })
         .then((res) => {
           console.log("itemSearchSuggestion > axios res=", res);
           resolve(res.data);
@@ -125,7 +129,7 @@ export const itemSearch = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_ITEM_SEARCH() + searchStr, { headers: headersdata })
+        .get(PORTFOLIO_ITEM_SEARCH() + searchStr, { headers: headersData })
         .then((res) => {
           console.log("itemSearch > axios res=", res);
           // resolve(res.data);
@@ -147,7 +151,7 @@ export const updateItemData = (id, payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${CREATE_PORTFOLIO_ITEM()}/${id}`, payLoad, { headers: headersdata })
+        .put(`${CREATE_PORTFOLIO_ITEM()}/${id}`, payLoad, { headers: headersData })
         .then((res) => {
           console.log("updateItemData > axios res=", res);
           resolve(res);
@@ -168,7 +172,7 @@ export const deleteItem = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .delete(`${CREATE_PORTFOLIO_ITEM()}/${id}`, { headers: headersdata })
+        .delete(`${CREATE_PORTFOLIO_ITEM()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("deleteItem > axios res=", res);
           resolve(res);
@@ -190,7 +194,7 @@ export const getItemPrice = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersdata })
+        .put(PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersData })
         .then((res) => {
           console.log("getItemPrice > axios res=", res);
           resolve(res.data);
@@ -211,7 +215,7 @@ export const itemPriceDataId = (searchId) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + searchId, { headers: headersdata })
+        .get(PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + searchId, { headers: headersData })
         .then((res) => {
           // console.log("itemPricedataSearch > axios res=", res);
           resolve(res.data);
@@ -232,7 +236,7 @@ export const updateItemPriceData = (id, payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}/${id}`, payLoad, { headers: headersdata })
+        .put(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}/${id}`, payLoad, { headers: headersData })
         .then((res) => {
           console.log("updateItemPriceData > axios res=", res);
           resolve(res);
@@ -253,7 +257,7 @@ export const createItemPriceData = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}`, payLoad, { headers: headersdata })
+        .post(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}`, payLoad, { headers: headersData })
         .then((res) => {
           console.log("createItemPriceData > axios res=", res);
           resolve(res);

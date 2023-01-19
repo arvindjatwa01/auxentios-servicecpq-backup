@@ -3,13 +3,17 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios';
 import { SOLUTION_QUOTE_URL } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 
 var accessToken = localStorage.getItem("access_token");
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
 const headersData = {
     'content-type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': accessToken != undefined ? accessToken : ''
+    // 'Authorization': accessToken != undefined ? accessToken : ''
+    'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
     // 'Authorization': url.Auth_Token
 }
 

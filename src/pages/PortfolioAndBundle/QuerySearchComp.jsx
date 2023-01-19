@@ -303,17 +303,20 @@ const QuerySearchComp = (props) => {
         // props.setLoadingStatus("")
       } else if (props.compoFlag === "solutionTempItemSearch") {
         const res4 = await getSearchCustomPortfolio(searchStr)
-        if (!res4.length > 0) {
-          props.setSolutionLoadingStatus("")
-          props.setSolutionTempMasterData([])
-          // throw "No record found"
-          throw "No information is found for your search, change the search criteria";
+        if (res4.status === 200) {
+          if (!res4.data.length > 0) {
+            props.setSolutionLoadingStatus("")
+            props.setSolutionTempMasterData([])
+            // throw "No record found"
+            throw "No information is found for your search, change the search criteria";
+          } else {
+            props.setSolutionTempMasterData(res4.data)
+            props.setSolutionLoadingStatus("")
+
+          }
         } else {
-          props.setSolutionTempMasterData(res4)
-          props.setSolutionLoadingStatus("")
-
+          throw "No information is found for your search, change the search criteria";
         }
-
       } else {
         // for other cases or default case
         const res = await getSearchQueryCoverage(searchStr)

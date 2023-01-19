@@ -1,14 +1,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { PRICING_COMMON_CONFIG, SOLUTION_PRICING_COMMON_CONFIG, PRICE_HEAD_TYPE, PORTFOLIO_PRICE_CREATE, PRICE_LIST, PRICE_TYPE, ADDITIONAL_PRICE_GET, ESCALATION_PRICE_GET, PORTFOLIO_ITEM_PRICE_SJID, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID, GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -27,7 +31,7 @@ export const getPortfolioCommonConfig = (endpath) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PRICING_COMMON_CONFIG + endpath, { headers: headersdata })
+        .get(PRICING_COMMON_CONFIG + endpath, { headers: headersData })
         .then((res) => {
           console.log("getPortfolioCommonConfig > axios res=", res);
           resolve(res.data);
@@ -51,7 +55,7 @@ export const getSolutionPriceCommonConfig = (endpath) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(SOLUTION_PRICING_COMMON_CONFIG + endpath, { headers: headersdata })
+        .get(SOLUTION_PRICING_COMMON_CONFIG + endpath, { headers: headersData })
         .then((res) => {
           console.log("getSolutionPriceCommonConfig > axios res=", res);
           resolve(res.data);
@@ -75,7 +79,7 @@ export const getPortfolioPriceTypeCommonConfig = (endpath) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PRICE_TYPE + endpath, { headers: headersdata })
+        .get(PRICE_TYPE + endpath, { headers: headersData })
         .then((res) => {
           console.log("getPortfolioPriceTypeCommonConfig > axios res=", res);
           resolve(res.data);
@@ -99,7 +103,7 @@ export const getPortfolioPriceHeadTypeCommonConfig = (endpath) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PRICE_HEAD_TYPE + endpath, { headers: headersdata })
+        .get(PRICE_HEAD_TYPE + endpath, { headers: headersData })
         .then((res) => {
           console.log("getPortfolioPriceHeadTypeCommonConfig > axios res=", res);
           resolve(res.data);
@@ -123,7 +127,7 @@ export const additionalPriceCreation = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(ADDITIONAL_PRICE_GET(), payLoad, { headers: headersdata })
+        .post(ADDITIONAL_PRICE_GET(), payLoad, { headers: headersData })
         .then((res) => {
           console.log("additionalPriceCreation > axios res=", res);
           resolve(res);
@@ -147,7 +151,7 @@ export const escalationPriceCreation = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(ESCALATION_PRICE_GET(), data, { headers: headersdata })
+        .post(ESCALATION_PRICE_GET(), data, { headers: headersData })
         .then((res) => {
           console.log("escalationPriceCreation > axios res=", res);
           resolve(res);
@@ -171,7 +175,7 @@ export const portfolioPriceCreation = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(PORTFOLIO_PRICE_CREATE(), data, { headers: headersdata })
+        .post(PORTFOLIO_PRICE_CREATE(), data, { headers: headersData })
         .then((res) => {
           console.log("portfolioPriceCreation > axios res=", res);
           resolve(res);
@@ -195,7 +199,7 @@ export const portfolioItemPriceSjid = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(PORTFOLIO_ITEM_PRICE_SJID(), data, { headers: headersdata })
+        .put(PORTFOLIO_ITEM_PRICE_SJID(), data, { headers: headersData })
         .then((res) => {
           console.log("portfolioItemPriceSjid > axios res=", res);
           resolve(res);
@@ -219,7 +223,7 @@ export const getItemPriceData = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}/${id}`, { headers: headersdata })
+        .get(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("getItemPriceData > axios res=", res);
           resolve(res);
@@ -243,7 +247,7 @@ export const getCustomItemPriceData = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA + "/" + id, { headers: headersdata })
+        .get(GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA + "/" + id, { headers: headersData })
         .then((res) => {
           console.log("getCustomItemPriceData > axios res=", res);
           resolve(res);
@@ -268,7 +272,7 @@ export const updateAdditionalPriceById = (payLoad, id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${ADDITIONAL_PRICE_GET()}/${id}`, payLoad, { headers: headersdata })
+        .put(`${ADDITIONAL_PRICE_GET()}/${id}`, payLoad, { headers: headersData })
         .then((res) => {
           console.log("updateAdditionalPriceById > axios res=", res);
           resolve(res);
@@ -292,7 +296,7 @@ export const updateEscalationPriceById = (data, id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${ESCALATION_PRICE_GET()}/${id}`, data, { headers: headersdata })
+        .put(`${ESCALATION_PRICE_GET()}/${id}`, data, { headers: headersData })
         .then((res) => {
           console.log("updateEscalationPriceById > axios res=", res);
           resolve(res);
@@ -316,7 +320,7 @@ export const updatePortfolioPrice = (data, id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${PORTFOLIO_PRICE_CREATE()}/${id}`, data, { headers: headersdata })
+        .put(`${PORTFOLIO_PRICE_CREATE()}/${id}`, data, { headers: headersData })
         .then((res) => {
           console.log("updatePortfolioPrice > axios res=", res);
           resolve(res);
@@ -341,7 +345,7 @@ export const getPortfolioPriceById = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(`${PORTFOLIO_PRICE_CREATE()}/${id}`, { headers: headersdata })
+        .get(`${PORTFOLIO_PRICE_CREATE()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("getPortfolioPriceById > axios res=", res);
           resolve(res);

@@ -4,6 +4,7 @@ import { LoginPayload, authActions } from './authSlice';
 import { push } from 'connected-react-router';
 import { HttpService } from "../../apiService/HTTPService";
 import { USER_SERVICE_SIGNIN_URL } from "../../services/CONSTANTS";
+import Cookies from 'js-cookie';
 
 function* handleLogin(payload: LoginPayload) {
   try {
@@ -27,6 +28,20 @@ function* handleLogin(payload: LoginPayload) {
 
     // Redirect to Admin page
     if (res.status == 200) {
+
+      var cookiesData = {
+        user_tenantId: res.data.tenantId,
+        user_userId: res.data.userId,
+        user_userEmail: res.data.userEmail,
+        user_accessToken: res.data.accessToken,
+        access_token: res.data.accessToken ? `Bearer ${res.data.accessToken}` : '',
+        user_roles: res.data.roles,
+        user_planId: res.data.planId,
+        user_logIn_Status: true
+      }
+      var setAbleCookiesData = JSON.stringify(cookiesData);
+      Cookies.set('loginTenantDtl', setAbleCookiesData, { expires: 1 });
+
       localStorage.setItem('user_tenantId', res.data.tenantId);
       localStorage.setItem('user_userId', res.data.userId);
       localStorage.setItem('user_userEmail', res.data.userEmail);

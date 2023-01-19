@@ -3,14 +3,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, PRICING_COMMON_CONFIG, PORTFOLIO_SEARCH_URL, PORTFOLIO_SEARCH_DROPDOWN_LIST_URL } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -25,7 +29,7 @@ export const createPortfolio = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(PORTFOLIO_URL(), data, { headers: headersdata })
+        .post(PORTFOLIO_URL(), data, { headers: headersData })
         .then((res) => {
           console.log("createPortfolio > axios res=", res);
           resolve(res);
@@ -48,7 +52,7 @@ export const updatePortfolio = (portfolioId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(PORTFOLIO_URL() + "/" + portfolioId, data, { headers: headersdata })
+        .put(PORTFOLIO_URL() + "/" + portfolioId, data, { headers: headersData })
         .then((res) => {
           console.log("updatePortfolio > axios res=", res);
           resolve(res);
@@ -70,7 +74,7 @@ export const portfolioSearch = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_SEARCH_URL + searchStr, { headers: headersdata })
+        .get(PORTFOLIO_SEARCH_URL + searchStr, { headers: headersData })
         .then((res) => {
           console.log("portfolioSearch > axios res=", res);
           // resolve(res.data);
@@ -97,7 +101,7 @@ export const getPortfolio = (portfolioId) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_URL() + "/" + portfolioId, { headers: headersdata })
+        .get(PORTFOLIO_URL() + "/" + portfolioId, { headers: headersData })
         .then((res) => {
           console.log("getPortfolio > axios res=", res);
           resolve(res.data);
@@ -120,7 +124,7 @@ export const getAllPortfolios = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(GET_ALL_SOLUTION_PORTFOLIOS(), { headers: headersdata })
+        .get(GET_ALL_SOLUTION_PORTFOLIOS(), { headers: headersData })
         .then((res) => {
           console.log("getAllPortfolios > axios res=", res);
           resolve(res.data);
@@ -148,7 +152,7 @@ export const getUserDetails = (id) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .get(GET_USER_DETAILS(id), { headers: headersdata })
+        .get(GET_USER_DETAILS(id), { headers: headersData })
         .then((res) => {
           console.log("getUserDetails > axios res=", res);
           resolve(res.data);
@@ -193,7 +197,7 @@ export const portfolioSearchList = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_SEARCH_DROPDOWN_LIST_URL + searchStr, { headers: headersdata })
+        .get(PORTFOLIO_SEARCH_DROPDOWN_LIST_URL + searchStr, { headers: headersData })
         .then((res) => {
           console.log("portfolioSearchList > axios res=", res);
           // resolve(res.data);

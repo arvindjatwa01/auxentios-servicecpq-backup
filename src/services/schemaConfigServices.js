@@ -3,14 +3,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { SCHEMA_CONFIG } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
   'content-type': 'application/json',
   'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': accessToken != undefined ? accessToken : ''
+  'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
   // 'Authorization': url.Auth_Token
 }
 
@@ -24,7 +28,7 @@ export const getPortfolioSchema = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(SCHEMA_CONFIG() + "/portfolio", { headers: headersdata })
+        .get(SCHEMA_CONFIG() + "/portfolio", { headers: headersData })
         .then((res) => {
           console.log("getPortfolioSchemas > axios res=", res);
           resolve(res.data);

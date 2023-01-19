@@ -1,14 +1,18 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL, CONVERT_PORTFOLIO_TO_QUOTE, GET_COVERT_QUOTE_DETAILS } from "./CONSTANTS";
+import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
-const headersdata = {
+var CookiesSetData = Cookies.get("loginTenantDtl");
+var getCookiesJsonData = JSON.parse(CookiesSetData)
+const headersData = {
     'content-type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': accessToken != undefined ? accessToken : ''
+    // 'Authorization': accessToken != undefined ? accessToken : ''
+    'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
     // 'Authorization': url.Auth_Token
 }
 
@@ -20,7 +24,7 @@ export const quoteCreation = (payLoad) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .post(QUOTE_CREATION(), payLoad, { headers: headersdata })
+                .post(QUOTE_CREATION(), payLoad, { headers: headersData })
                 .then((res) => {
                     console.log("quoteCreation > axios res=", res);
                     resolve(res);
@@ -41,7 +45,7 @@ export const getQuoteMasterData = (id) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(`${QUOTE_CREATION()}/${id}`, { headers: headersdata })
+                .get(`${QUOTE_CREATION()}/${id}`, { headers: headersData })
                 .then((res) => {
                     console.log("getQuoteMasterData > axios res=", res);
                     resolve(res);
@@ -65,7 +69,7 @@ export const getSearchQuoteData = (searchStr) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(SEARCH_QUOTE_URL() + searchStr, { headers: headersdata })
+                .get(SEARCH_QUOTE_URL() + searchStr, { headers: headersData })
                 .then((res) => {
                     console.log("getSearchQuoteData > axios res=", res);
                     // resolve(res.data);
@@ -87,7 +91,7 @@ export const updateMasterQuoteData = (id, payLoad) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .put(`${QUOTE_CREATION()}/${id}`, payLoad, { headers: headersdata })
+                .put(`${QUOTE_CREATION()}/${id}`, payLoad, { headers: headersData })
                 .then((res) => {
                     console.log("updateMasterQuoteData > axios res=", res);
                     resolve(res);
@@ -108,7 +112,7 @@ export const deleteMasterQuote = (id) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .delete(`${QUOTE_CREATION()}/${id}`, { headers: headersdata })
+                .delete(`${QUOTE_CREATION()}/${id}`, { headers: headersData })
                 .then((res) => {
                     console.log("deleteMasterQuote > axios res=", res);
                     resolve(res);
@@ -129,7 +133,7 @@ export const convertPortfolioToQuoteData = (portfolioId) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(CONVERT_PORTFOLIO_TO_QUOTE + portfolioId, { headers: headersdata })
+                .get(CONVERT_PORTFOLIO_TO_QUOTE + portfolioId, { headers: headersData })
                 .then((res) => {
                     console.log("convertPortfolioToQuoteData > axios res=", res);
                     resolve(res);
@@ -150,8 +154,8 @@ export const getConvertQuoteData = (id) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                // .get(GET_COVERT_QUOTE_DETAILS + "/" + id, { headers: headersdata })
-                .get(GET_COVERT_QUOTE_DETAILS + id, { headers: headersdata })
+                // .get(GET_COVERT_QUOTE_DETAILS + "/" + id, { headers: headersData })
+                .get(GET_COVERT_QUOTE_DETAILS + id, { headers: headersData })
                 .then((res) => {
                     console.log("getConvertQuoteData > axios res=", res);
                     resolve(res);
