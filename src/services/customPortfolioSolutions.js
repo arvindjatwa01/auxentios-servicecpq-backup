@@ -10,14 +10,21 @@ import Cookies from "js-cookie";
 var accessToken = localStorage.getItem("access_token");
 
 var CookiesSetData = Cookies.get("loginTenantDtl");
-var getCookiesJsonData = JSON.parse(CookiesSetData)
-
-// console.log("CookiesSetData is : ", getCookiesJsonData)
+var getCookiesJsonData;
+if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+}
+//  else {
+//   getCookiesJsonData = {
+//     access_token: "Bearer null",
+//   }
+// }
+// var getCookiesJsonData = JSON.parse(CookiesSetData);
 const headersData = {
     'content-type': 'application/json',
     'Accept': 'application/json',
     // 'Authorization': accessToken != undefined ? accessToken : ''
-    'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
+    'Authorization': CookiesSetData != undefined ? getCookiesJsonData?.access_token : ''
     // 'Authorization': url.Auth_Token
 }
 
