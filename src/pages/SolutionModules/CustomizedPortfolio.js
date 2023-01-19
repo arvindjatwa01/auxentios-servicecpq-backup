@@ -104,12 +104,13 @@ import {
     itemCreation,
     createCoverage,
     updateItemData,
-    customitemCreation,
+    customItemCreation,
     createCustomCoverage,
     getItemPrice,
     itemPriceDataId,
     customPriceCreation,
-    getcustomItemPrice,
+    customPortfolioItemPriceRkId,
+    customPortfolioItemPriceSJID,
     updateCustomItemData,
     getComponentCodeSuggetions
 } from "../../services/index";
@@ -569,8 +570,8 @@ export function CustomizedPortfolio(props) {
             };
 
             console.log("my req object is : ", reqObj)
-            const itemRes = await customitemCreation(reqObj);
-            console.log("customitemCreation res:", itemRes);
+            const itemRes = await customItemCreation(reqObj);
+            console.log("customItemCreation res:", itemRes);
             if (itemRes.status !== 200) {
                 // alert("something went wrong");
                 // return;
@@ -581,7 +582,7 @@ export function CustomizedPortfolio(props) {
 
             console.log("custom itemRes : ", itemRes);
 
-            // const itemPriceRes = await getcustomItemPrice({
+            // const itemPriceRes = await customPortfolioItemPriceRkId({
             //     standardJobId: itemRes.data.customItemBodyModel.standardJobId,
             //     repairKitId: itemRes.data.customItemBodyModel.repairKitId,
             //     itemId: itemRes.data.customItemId
@@ -787,7 +788,7 @@ export function CustomizedPortfolio(props) {
             };
             setOpen2(false); //Hide Price Calculator Screen
 
-            const res = await customitemCreation(reqObj);
+            const res = await customItemCreation(reqObj);
             console.log("service or bundle res:", res);
             if (res.status == 200) {
                 toast(`👏 ${serviceOrBundlePrefix} created`, {
@@ -898,7 +899,7 @@ export function CustomizedPortfolio(props) {
                 throw `${res.status}: ${serviceOrBundlePrefix} not created`;
             }
         } catch (error) {
-            console.log("customitemCreation err:", error);
+            console.log("customItemCreation err:", error);
             toast("😐" + error, {
                 position: "top-right",
                 autoClose: 5000,
@@ -2094,7 +2095,8 @@ export function CustomizedPortfolio(props) {
                     customPortfolio: {
                         portfolioId: 26
                     },
-                    tenantId: itemsPrice.tenantId,
+                    // tenantId: itemsPrice.tenantId,
+                    tenantId: 74,
                     partsRequired: itemsPrice.partsRequired,
                     labourRequired: itemsPrice.labourRequired,
                     serviceRequired: itemsPrice.serviceRequired,
@@ -2173,7 +2175,7 @@ export function CustomizedPortfolio(props) {
                 }
             }
 
-            const itemRes = await customitemCreation(customItemObj)
+            const itemRes = await customItemCreation(customItemObj)
 
             console.log(" Response is : ", itemRes.data)
 
@@ -4039,14 +4041,26 @@ export function CustomizedPortfolio(props) {
                     break;
                 }
             }
-            const itemPriceRes = await getcustomItemPrice(reqObj)
-            setItemPriceCalculator({
-                netParts: "11",
-                netService: "11",
-                priceType: "11",
-                netPrice: itemPriceRes.customItemHeaderModel.netPrice,
-                netAdditionals: "11",
-            })
+
+            if ((reqObj.standardJobId == "") ||
+                (reqObj.standardJobId == null) ||
+                (reqObj.repairKitId != "")) {
+                const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+            }
+
+            if ((reqObj.repairKitId == "") ||
+                (reqObj.repairKitId == null) ||
+                (reqObj.standardJobId != "")) {
+                const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+            }
+
+            // setItemPriceCalculator({
+            //     netParts: "11",
+            //     netService: "11",
+            //     priceType: "11",
+            //     netPrice: itemPriceRes.customItemHeaderModel.netPrice,
+            //     netAdditionals: "11",
+            // })
             setTabs("5")
 
 
@@ -4159,15 +4173,25 @@ export function CustomizedPortfolio(props) {
             }
 
             console.log("my reqObj is : ", reqObj);
-            const itemPriceRes = await getcustomItemPrice(reqObj)
+            if ((reqObj.standardJobId == "") ||
+                (reqObj.standardJobId == null) ||
+                (reqObj.repairKitId != "")) {
+                const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+            }
+
+            if ((reqObj.repairKitId == "") ||
+                (reqObj.repairKitId == null) ||
+                (reqObj.standardJobId != "")) {
+                const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+            }
             // console.log("item price : ", itemPriceRes.customItemHeaderModel.netPrice)
-            setItemPriceCalculator({
-                netParts: "11",
-                netService: "11",
-                priceType: "11",
-                netPrice: itemPriceRes.customItemHeaderModel.netPrice,
-                netAdditionals: "11",
-            })
+            // setItemPriceCalculator({
+            //     netParts: "11",
+            //     netService: "11",
+            //     priceType: "11",
+            //     netPrice: itemPriceRes.customItemHeaderModel.netPrice,
+            //     netAdditionals: "11",
+            // })
 
 
 

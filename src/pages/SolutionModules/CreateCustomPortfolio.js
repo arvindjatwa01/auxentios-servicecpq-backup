@@ -132,13 +132,12 @@ import {
   updateItemPriceData,
   updateCustomPortfolio,
   getCustomPortfolio,
-  customitemCreation,
+  customItemCreation,
   createCustomPortfolio,
   createCustomCoverage,
   updateCustomItemData,
   deleteCustomItem,
   customPriceCreation,
-  getcustomItemPrice,
   quoteCreation,
   getQuoteMasterData,
   getSearchQuoteData,
@@ -154,9 +153,10 @@ import {
   updateEscalationPriceById,
   updateAdditionalPriceById,
   getPortfolioPriceById,
-  getCustomItemData,
+  getCustomItemDataById,
   customPortfolioItemPriceSJID,
-  getcustomItemPriceById,
+  customPortfolioItemPriceRkId,
+  getCustomItemPriceById,
   updateCustomPriceData,
   convertPortfolioToQuoteData,
   portfolioSearch,
@@ -473,6 +473,7 @@ export function CreateCustomPortfolio(props) {
   const [searchPortfolioList, setSearchPortfolioList] = useState([]);
 
   const [preSelectedRowsData, setPreSelectedRowsData] = useState([]);
+  const [selectedSearchRowsData, setSelectedSearchRowsData] = useState([]);
   const [searchedPortfolioItemsData, setSearchedPortfolioItemsData] = useState([]);
   const [currentSearchExpendPortfolioItemRow, setCurrentSearchExpendPortfolioItemRow] = useState(null)
   const [expendedSubComponent, setExpendedSubComponent] = useState(null);
@@ -1177,7 +1178,7 @@ export function CreateCustomPortfolio(props) {
     if (bundleServiceData.customItemBodyModel.customItemPrices.length > 0) {
       const rObjId = bundleServiceData.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
 
-      const res = await getcustomItemPriceById(rObjId)
+      const res = await getCustomItemPriceById(rObjId)
       console.log("ressss : ", res)
       var newVal = res.data;
       setPriceCalculator(res.data)
@@ -1530,7 +1531,7 @@ export function CreateCustomPortfolio(props) {
       }
 
 
-      const itemRes = await customitemCreation(reqObj);
+      const itemRes = await customItemCreation(reqObj);
 
       if (itemRes.status !== 200) {
         throw "Something went wrong/Item not created"
@@ -1543,8 +1544,19 @@ export function CreateCustomPortfolio(props) {
         itemPriceDataId: itemPriceData.customItemPriceDataId
       }
 
-      const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
-      const resPrice = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+      if ((itemPriceData.standardJobId == "") ||
+        (itemPriceData.standardJobId == null) ||
+        (itemPriceData.repairKitId != "")) {
+        const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+      }
+
+      if ((itemPriceData.repairKitId == "") ||
+        (itemPriceData.repairKitId == null) ||
+        (itemPriceData.standardJobId != "")) {
+        const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+      }
+
+      const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
         priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
@@ -1774,7 +1786,7 @@ export function CreateCustomPortfolio(props) {
       }
 
 
-      const itemRes = await customitemCreation(reqObj);
+      const itemRes = await customItemCreation(reqObj);
 
       if (itemRes.status !== 200) {
         throw "Something went wrong/Item not created"
@@ -1787,8 +1799,19 @@ export function CreateCustomPortfolio(props) {
         itemPriceDataId: itemPriceData.customItemPriceDataId
       }
 
-      const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
-      const resPrice = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+      if ((itemPriceData.standardJobId == "") ||
+        (itemPriceData.standardJobId == null) ||
+        (itemPriceData.repairKitId != "")) {
+        const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+      }
+
+      if ((itemPriceData.repairKitId == "") ||
+        (itemPriceData.repairKitId == null) ||
+        (itemPriceData.standardJobId != "")) {
+        const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+      }
+
+      const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
         priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
@@ -2080,7 +2103,7 @@ export function CreateCustomPortfolio(props) {
         },
       }
 
-      const itemRes = await customitemCreation(reqObj);
+      const itemRes = await customItemCreation(reqObj);
       if (itemRes.status !== 200) {
         throw "Something went wrong/Item not created"
       }
@@ -2341,7 +2364,7 @@ export function CreateCustomPortfolio(props) {
         },
       };
 
-      const res = await customitemCreation(reqObj);
+      const res = await customItemCreation(reqObj);
       setCurrentItemId(res.data.itemId);
       if (res.status == 200) {
         toast(`👏 ${serviceOrBundlePrefix} created`, {
@@ -2354,7 +2377,7 @@ export function CreateCustomPortfolio(props) {
           progress: undefined,
         });
 
-        const itemPriceRes = await getcustomItemPrice({
+        const itemPriceRes = await customPortfolioItemPriceRkId({
           standardJobId: res.data.customItemBodyModel.standardJobId,
           repairKitId: res.data.customItemBodyModel.repairKitId,
           itemId: res.data.customItemId,
@@ -2649,7 +2672,8 @@ export function CreateCustomPortfolio(props) {
           // editAbleItemPriceData.customPortfolio,
           portfolioId: portfolioId
         },
-        tenantId: editAbleItemPriceData.tenantId,
+        // tenantId: editAbleItemPriceData.tenantId,
+        tenantId: 74,
         partsRequired: true,
         serviceRequired: false,
         labourRequired: true,
@@ -2905,7 +2929,7 @@ export function CreateCustomPortfolio(props) {
             customPortfolio: {
               portfolioId: portfolioId
             },
-            tenantId: 0,
+            tenantId: 74,
             partsRequired: true,
             labourRequired: true,
             serviceRequired: false,
@@ -3059,7 +3083,7 @@ export function CreateCustomPortfolio(props) {
             customPortfolio: {
               portfolioId: portfolioId
             },
-            tenantId: 0,
+            tenantId: 74,
             partsRequired: true,
             labourRequired: true,
             serviceRequired: false,
@@ -3333,7 +3357,7 @@ export function CreateCustomPortfolio(props) {
     setBundleAndServiceEditAble(true)
     setBundleTabs("bundleServiceHeader");
 
-    const newData = await getCustomItemData(data.customItemId)
+    const newData = await getCustomItemDataById(data.customItemId)
 
     console.log("my newData : ", newData)
 
@@ -3405,7 +3429,7 @@ export function CreateCustomPortfolio(props) {
   const handleServiceItemEdit = async (e, row) => {
 
     console.log("row ------ : ", row);
-    const editAbleRow = await getCustomItemData(row.customItemId);
+    const editAbleRow = await getCustomItemDataById(row.customItemId);
     if (editAbleRow.status === 200) {
       setEditItemShow(true);
       setPassItemEditRowData({ ...editAbleRow.data, _itemId: editAbleRow.data.customItemId });
@@ -8238,6 +8262,7 @@ export function CreateCustomPortfolio(props) {
 
   const handleExpendableRowCheckBoxData = (state) => {
     console.log("event and row is ", state.selectedRows)
+    setSelectedSearchRowsData(state.selectedRows)
   }
 
   useEffect(() => {
@@ -8783,7 +8808,8 @@ export function CreateCustomPortfolio(props) {
               customPortfolio: {
                 portfolioId: portfolioId
               },
-              tenantId: itemsPrice.tenantId,
+              // tenantId: itemsPrice.tenantId,
+              tenantId: 74,
               partsRequired: itemsPrice.partsRequired,
               labourRequired: itemsPrice.labourRequired,
               miscRequired: itemsPrice.miscRequired,
@@ -8926,7 +8952,7 @@ export function CreateCustomPortfolio(props) {
           }
         }
 
-        const itemRes = await customitemCreation(customItemObj)
+        const itemRes = await customItemCreation(customItemObj)
         if (itemRes.status === 200) {
           createdNewCustomItems.push(itemRes.data)
           if (customPriceIdIs != 0) {
@@ -8937,17 +8963,34 @@ export function CreateCustomPortfolio(props) {
               repairKitId: repairKitIdIs,
               itemPriceDataId: customPriceIdIs
             }
-            const updateCreatePriceSjIdData = await customPortfolioItemPriceSJID(newreqObj)
+            if ((standardJobIdIs == "") ||
+              (standardJobIdIs == null) ||
+              (repairKitIdIs != "")) {
+              const price_RkIdUpdate = await customPortfolioItemPriceRkId(newreqObj)
+            }
+
+            if ((repairKitIdIs == "") ||
+              (repairKitIdIs == null) ||
+              (standardJobIdIs != "")) {
+              const price_SjIdUpdate = await customPortfolioItemPriceSJID(newreqObj)
+            }
           }
         }
-
-
-
-
       }
 
-      const res2 = await customPortfolioItemPriceSJID(reqObj)
-      const resPrice = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+      if ((itemPriceData.standardJobId == "") ||
+        (itemPriceData.standardJobId == null) ||
+        (itemPriceData.repairKitId != "")) {
+        const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+      }
+
+      if ((itemPriceData.repairKitId == "") ||
+        (itemPriceData.repairKitId == null) ||
+        (itemPriceData.standardJobId != "")) {
+        const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+      }
+
+      const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
 
       setPriceCalculator({
         ...priceCalculator,
@@ -9028,7 +9071,7 @@ export function CreateCustomPortfolio(props) {
     //     // } else {
     //     //     console.log("reqObj : ", reqObj)
     //     //     const res2 = await customPortfolioItemPriceSJID(reqObj)
-    //     //     const res = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+    //     //     const res = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
     //     //     setItemPriceCalculator({
     //     //         netParts: res.data.sparePartsPrice,
     //     //         netService: res.data.netService,
@@ -9153,7 +9196,8 @@ export function CreateCustomPortfolio(props) {
                   customPortfolio: {
                     portfolioId: portfolioId
                   },
-                  tenantId: itemsPrice.tenantId,
+                  // tenantId: itemsPrice.tenantId,
+                  tenantId: 74,
                   partsRequired: itemsPrice.partsRequired,
                   labourRequired: itemsPrice.labourRequired,
                   miscRequired: itemsPrice.miscRequired,
@@ -9237,7 +9281,7 @@ export function CreateCustomPortfolio(props) {
               }
             }
 
-            const itemRes = await customitemCreation(customItemObj)
+            const itemRes = await customItemCreation(customItemObj)
             if (itemRes.status === 200) {
               createdNewCustomItems.push(itemRes.data)
               let _searchedPortfolioItemsData = [...searchedPortfolioItemsData];
@@ -9259,7 +9303,7 @@ export function CreateCustomPortfolio(props) {
           }
 
           // const res2 = await customPortfolioItemPriceSJID(reqObj)
-          // const resPrice = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+          // const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
 
           // setPriceCalculator({
           //   ...priceCalculator,
@@ -11877,7 +11921,7 @@ export function CreateCustomPortfolio(props) {
       customPortfolio: {
         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
       },
-      tenantId: 0,
+      tenantId: 74,
       partsRequired: true,
       labourRequired: true,
       miscRequired: true,
@@ -12748,6 +12792,7 @@ export function CreateCustomPortfolio(props) {
 
   const ExpandedComponentCodeData = ({ data }) => (
     <div className="p-5">
+      {console.log("expendedComponent data ", data)}
       <div className="border border-radius-10">
         <div className="d-flex align-items-center border-bottom justify-content-between p-3">
           <div className="d-flex align-items-center">
@@ -12779,12 +12824,33 @@ export function CreateCustomPortfolio(props) {
           </div>
         </div>
         <ul className="mb-0 component-li">
+          {/* {data.itemHeaderModel == undefined ?
+            ((data?.customItemHeaderModel?.componentCode !== "") 
+            || (data?.customItemHeaderModel?.componentCode == null))
+             : ""} */}
+
           <li className="border-bottom p-3">
             <div className="d-flex align-items-center">
               <div class="checkbox mr-3">
                 <input type="checkbox" value=""></input>
               </div>
-              <p className="mb-0 font-size-14">Component Code</p>
+              <p className="mb-0 font-size-14">
+                {data.itemHeaderModel == undefined ?
+                  data?.customItemHeaderModel?.componentCode :
+                  data?.itemHeaderModel?.componentCode}
+                {/* Component Code */}
+                {/* {data?.customItemHeaderModel?.componentCode} */}
+              </p>
+            </div>
+          </li>
+          {/* <li className="border-bottom p-3">
+            <div className="d-flex align-items-center">
+              <div class="checkbox mr-3">
+                <input type="checkbox" value=""></input>
+              </div>
+              <p className="mb-0 font-size-14">
+                Component Code
+              </p>
             </div>
           </li>
           <li className="border-bottom p-3">
@@ -12794,15 +12860,7 @@ export function CreateCustomPortfolio(props) {
               </div>
               <p className="mb-0 font-size-14">Component Code</p>
             </div>
-          </li>
-          <li className="border-bottom p-3">
-            <div className="d-flex align-items-center">
-              <div class="checkbox mr-3">
-                <input type="checkbox" value=""></input>
-              </div>
-              <p className="mb-0 font-size-14">Component Code</p>
-            </div>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>
@@ -13646,11 +13704,21 @@ export function CreateCustomPortfolio(props) {
         });
       } else {
 
-        const res2 = await customPortfolioItemPriceSJID(reqObj)
+        if ((itemPriceData.standardJobId == "") ||
+          (itemPriceData.standardJobId == null) ||
+          (itemPriceData.repairKitId != "")) {
+          const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+        }
+
+        if ((itemPriceData.repairKitId == "") ||
+          (itemPriceData.repairKitId == null) ||
+          (itemPriceData.standardJobId != "")) {
+          const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+        }
 
         const updateItem = await updateCustomItemData(currentItemId, UpdateItemreqObj);
 
-        const res = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+        const res = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
 
         setPriceCalculator({
           ...priceCalculator,
@@ -13689,7 +13757,7 @@ export function CreateCustomPortfolio(props) {
           id: res.data.customItemPriceDataId,
         })
 
-        console.log("res 2 : ", res2)
+        // console.log("res 2 : ", res2)
         console.log("res 1 : ", res)
 
 
@@ -13801,7 +13869,7 @@ export function CreateCustomPortfolio(props) {
       customPortfolio: {
         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
       },
-      tenantId: 0,
+      tenantId: 74,
       partsRequired: true,
       labourRequired: true,
       serviceRequired: true,
@@ -13821,7 +13889,17 @@ export function CreateCustomPortfolio(props) {
       itemPriceDataId: priceCalculator.id,
     }
 
-    const price_SjIdUpdate = await customPortfolioItemPriceSJID(newReqObjSJId)
+    if ((addPortFolioItem.templateId == "") ||
+      (addPortFolioItem.templateId == null) ||
+      (addPortFolioItem.repairOption != "")) {
+      const price_RkIdUpdate = await customPortfolioItemPriceRkId(newReqObjSJId)
+    }
+
+    if ((addPortFolioItem.repairOption == "") ||
+      (addPortFolioItem.repairOption == null) ||
+      (addPortFolioItem.templateId != "")) {
+      const price_SjIdUpdate = await customPortfolioItemPriceSJID(newReqObjSJId)
+    }
 
     const _tempBundleItems = [...tempBundleItems]
     for (let i = 0; i < _tempBundleItems.length; i++) {
@@ -16819,7 +16897,7 @@ onChange={handleAdministrativreChange}
                     expandableRows
                     selectableRows
                     // selectableRowSelected={(row) => preSelectedRowsData.includes(row) ? true : false}
-                    // onSelectedRowsChange={handleExpendableRowCheckBoxData}
+                    onSelectedRowsChange={handleExpendableRowCheckBoxData}
                     expandableRowExpanded={(row) => (row === currentSearchExpendPortfolioItemRow)}
                     expandOnRowClicked
                     onRowClicked={(row) => setCurrentSearchExpendPortfolioItemRow(row)}
@@ -18355,20 +18433,25 @@ onChange={handleAdministrativreChange}
                   selectableRows
                   onSelectedRowsChange={(state) => setAddBundleServiceItem2(state.selectedRows)}
                   pagination
-                />{addBundleServiceItem2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                />
+                {/* {addBundleServiceItem2.length > 0 && ( */}
+                <div className="row mt-5" style={{ justifyContent: "right" }}>
                   <button
                     type="button"
-                    className="btn btn-light"
+                    // className="btn btn-light"
+                    className="btn btn-primary mr-3"
                     // onClick={() => {
                     //     setTempBundleService3(tempBundleService2)
                     //     setTempBundleService1([])
                     // }}
                     // onClick={handleCreateCustomItem_SearchResult}
+                    disabled={addBundleServiceItem2.length === 0}
                     onClick={handleAddBundleServiceItemsInExpendData}
                   >
                     Add Selected
                   </button>
-                </div>)}
+                </div>
+                {/* )} */}
               </>)}
             </>
 

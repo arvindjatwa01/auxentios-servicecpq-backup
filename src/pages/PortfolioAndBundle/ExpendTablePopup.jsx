@@ -25,7 +25,9 @@ import {
     getSearchKitId,
     getItemPriceData,
     getSolutionPriceCommonConfig,
-    getItemDataById
+    getItemDataById,
+    portfolioItemPriceRkId,
+    portfolioItemPriceSjid
 } from "../../services/index";
 import AddPortfolioItem from './AddPortfolioItem';
 
@@ -38,6 +40,17 @@ const ExpendTablePopup = ({ data, ...props }) => {
     const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
     const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
     const [bundleSeriveData, setBundleServiceData] = useState([]);
+
+    const [priceEscalationTypeValue, setPriceEscalationTypeValue] = useState({
+        sparePartsEscalation: 0,
+        labourEscalation: 0,
+        miscEscalation: 0,
+        serviceEscalation: 0
+    })
+
+    const [escalationPriceOptionsValue, setEscalationPriceOptionValue] = useState("");
+    const [escalationPriceOptionsValue1, setEscalationPriceOptionValue1] = useState("");
+    const [escalationPriceInputValue, setEscalationPriceInputValue] = useState(0);
 
 
     const [addPortFolioItem, setAddPortFolioItem] = useState({
@@ -229,6 +242,12 @@ const ExpendTablePopup = ({ data, ...props }) => {
                 label: newItemDataData.itemBodyModel.frequency,
                 value: newItemDataData.itemBodyModel.frequency,
             } : { label: "once", value: "once" },
+            unit: (newItemDataData.itemBodyModel.unit != "" ||
+                newItemDataData.itemBodyModel.unit != "EMPTY" ||
+                newItemDataData.itemBodyModel.unit != null) ? {
+                label: newItemDataData.itemBodyModel.unit,
+                value: newItemDataData.itemBodyModel.unit,
+            } : { label: "per day", value: "per day" },
         });
 
         if (newItemDataData.itemBodyModel?.itemPrices.length > 0) {
@@ -295,18 +314,18 @@ const ExpendTablePopup = ({ data, ...props }) => {
             portfolioDataId: resPrice.data.portfolio.portfolioId,
         })
 
+        const newItemDataData = await getItemDataById(data.itemId)
         console.log("data.itemBodyModel.frequency ", data.itemBodyModel.frequency)
         setAddPortFolioItem({
             ...addPortFolioItem,
-            id: data.itemId,
-            name: data.itemName,
-            description: data.itemHeaderModel.itemHeaderDescription,
-            // frequency: { label: data.itemBodyModel.frequency, value: data.itemBodyModel.frequency },
-            frequency: (data.itemBodyModel.frequency != "" ||
-                data.itemBodyModel.frequency != "EMPTY" ||
-                data.itemBodyModel.frequency != null) ? {
-                label: data.itemBodyModel.frequency,
-                value: data.itemBodyModel.frequency,
+            id: newItemDataData.itemId,
+            name: newItemDataData.itemName,
+            description: newItemDataData.itemHeaderModel.itemHeaderDescription,
+            frequency: (newItemDataData.itemBodyModel.frequency != "" ||
+                newItemDataData.itemBodyModel.frequency != "EMPTY" ||
+                newItemDataData.itemBodyModel.frequency != null) ? {
+                label: newItemDataData.itemBodyModel.frequency,
+                value: newItemDataData.itemBodyModel.frequency,
             } : { label: "once", value: "once" },
             templateId: (resPrice.data.standardJobId != "string") ?
                 resPrice.data.standardJobId : "",
@@ -316,7 +335,49 @@ const ExpendTablePopup = ({ data, ...props }) => {
             },
             repairOption: (resPrice.data.repairKitId != "string") ?
                 resPrice.data.repairKitId : "",
+            unit: (newItemDataData.itemBodyModel.unit != "" ||
+                newItemDataData.itemBodyModel.unit != "EMPTY" ||
+                newItemDataData.itemBodyModel.unit != null) ? {
+                label: newItemDataData.itemBodyModel.unit,
+                value: newItemDataData.itemBodyModel.unit,
+            } : { label: "per day", value: "per day" },
         })
+    }
+
+    const handleEscalationPriceValue = (e) => {
+        console.log(e)
+        setEscalationPriceOptionValue(e.value)
+        setEscalationPriceOptionValue1(e)
+
+        // if (e.value === "PARTS") {
+        //     setPriceEscalationTypeValue({
+        //         sparePartsEscalation: 0,
+        //         labourEscalation: 0,
+        //         miscEscalation: 0,
+        //         serviceEscalation: 0
+        //     });
+        // } else if (e.value === "LABOR") {
+        //     setPriceEscalationTypeValue({
+        //         sparePartsEscalation: 0,
+        //         labourEscalation: 0,
+        //         miscEscalation: 0,
+        //         serviceEscalation: 0
+        //     });
+        // } else if (e.value === "MISCELLANEOUS") {
+        //     setPriceEscalationTypeValue({
+        //         sparePartsEscalation: 0,
+        //         labourEscalation: 0,
+        //         miscEscalation: 0,
+        //         serviceEscalation: 0
+        //     });
+        // } else if (e.value === "SERVICE") {
+        //     setPriceEscalationTypeValue({
+        //         sparePartsEscalation: 0,
+        //         labourEscalation: 0,
+        //         miscEscalation: 0,
+        //         serviceEscalation: 0
+        //     });
+        // }
     }
 
     const [tabs, setTabs] = useState("0");
@@ -452,15 +513,23 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     recommendedValue: parseInt(priceCalculator?.recommendedValue),
                     startUsage: parseInt(priceCalculator?.startUsage),
                     endUsage: parseInt(priceCalculator?.endUsage),
-                    sparePartsEscalation: 0,
-                    labourEscalation: 0,
-                    miscEscalation: 0,
-                    serviceEscalation: 0,
+                    sparePartsEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "PARTS") ?
+                        escalationPriceInputValue : 0),
+                    labourEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "LABOR") ?
+                        escalationPriceInputValue : 0),
+                    miscEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "MISCELLANEOUS") ?
+                        escalationPriceInputValue : 0),
+                    serviceEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "SERVICE") ?
+                        escalationPriceInputValue : 0),
                     withBundleService: false,
                     portfolio: (priceCalculator.portfolioDataId != 0) ? {
                         portfolioId: priceCalculator.portfolioDataId
                     } : {},
-                    tenantId: 0,
+                    tenantId: 74,
                     partsRequired: true,
                     labourRequired: true,
                     serviceRequired: false,
@@ -501,27 +570,36 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     miscPriceBreakDownPercentage: 0,
                     totalPrice: 0,
                     netService: 0,
-                    additionalPriceType: (priceCalculator?.additionalPriceType != "EMPTY" ||
-                        priceCalculator?.additionalPriceType != "" ||
-                        priceCalculator?.additionalPriceType != null) ?
-                        priceCalculator?.additionalPriceType : "ABSOLUTE",
-                    additionalPriceValue: priceCalculator?.additionalPriceValue,
-                    discountType: (priceCalculator?.discountType != "EMPTY" ||
-                        priceCalculator?.discountType != "" ||
-                        priceCalculator?.discountType != null) ? priceCalculator?.discountType : "EMPTY",
-                    discountValue: priceCalculator?.discountValue,
+                    additionalPriceType: (priceCalculator?.priceAdditionalSelect != "EMPTY" ||
+                        priceCalculator?.priceAdditionalSelect != "" ||
+                        priceCalculator?.priceAdditionalSelect != null) ?
+                        priceCalculator?.priceAdditionalSelect?.value : "ABSOLUTE",
+                    additionalPriceValue: priceCalculator?.priceAdditionalInput,
+                    discountType: (priceCalculator?.discountTypeSelect != "EMPTY" ||
+                        priceCalculator?.discountTypeSelect != "" ||
+                        priceCalculator?.discountTypeSelect != null) ?
+                        priceCalculator?.discountTypeSelect?.value : "EMPTY",
+                    discountValue: priceCalculator?.discountTypeInput,
                     recommendedValue: parseInt(priceCalculator?.recommendedValue),
                     startUsage: parseInt(priceCalculator?.startUsage),
                     endUsage: parseInt(priceCalculator?.endUsage),
-                    sparePartsEscalation: 0,
-                    labourEscalation: 0,
-                    miscEscalation: 0,
-                    serviceEscalation: 0,
+                    sparePartsEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "PARTS") ?
+                        escalationPriceInputValue : 0),
+                    labourEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "LABOR") ?
+                        escalationPriceInputValue : 0),
+                    miscEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "MISCELLANEOUS") ?
+                        escalationPriceInputValue : 0),
+                    serviceEscalation: ((escalationPriceOptionsValue != "") &&
+                        (escalationPriceOptionsValue == "SERVICE") ?
+                        escalationPriceInputValue : 0),
                     withBundleService: false,
                     portfolio: (priceCalculator.portfolioDataId != 0) ? {
                         portfolioId: priceCalculator.portfolioDataId
                     } : {},
-                    tenantId: 0,
+                    tenantId: 74,
                     partsRequired: true,
                     labourRequired: true,
                     serviceRequired: false,
@@ -529,7 +607,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     inclusionExclusion: false
                 }
 
-                // console.log("priceUpdateData Now : ", priceUpdateData)
+                console.log("priceUpdateData Now : ", priceUpdateData1)
                 const updatePriceId = await updateItemPriceData(
                     priceCalculator.id,
                     priceUpdateData1
@@ -588,7 +666,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     solutionCode: rowData.itemBodyModel?.solutionCode,
                     usageIn: rowData.itemBodyModel?.usageIn,
                     usage: rowData.itemBodyModel?.usage,
-                    year: addPortFolioItem.year?.value ? addPortFolioItem.year?.value : "",
+                    year: priceCalculator?.year?.value,
                     avgUsage: 0,
                     unit: rowData.itemBodyModel?.unit,
                     frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
@@ -615,6 +693,29 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     progress: undefined,
                 });
             }
+
+            if (rowData.itemBodyModel.itemPrices.length > 0) {
+
+                let reqRkOrSjIdObj = {
+                    standardJobId: addPortFolioItem.templateId,
+                    repairKitId: addPortFolioItem.repairOption,
+                    itemId: addPortFolioItem.id,
+                    itemPriceDataId: priceCalculator.id
+                }
+                if ((addPortFolioItem.templateId == "") ||
+                    (addPortFolioItem.templateId == null) ||
+                    addPortFolioItem.repairOption != "") {
+                    const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+
+                }
+
+                if ((addPortFolioItem.repairOption == "") ||
+                    (addPortFolioItem.repairOption == null) ||
+                    addPortFolioItem.templateId != "") {
+                    const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
+                }
+            }
+
         } catch (error) {
             toast("😐" + error, {
                 position: "top-right",
@@ -749,8 +850,16 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 onChange={(e, newValue) => setTabs(newValue)}
                                 aria-label="lab API tabs example"
                             >
-                                <Tab label="Related template(s)" value="1" />
-                                <Tab label="Related Kit" value="2" disabled={addPortFolioItem.templateId != ""} />
+                                <Tab
+                                    label="Related template(s)"
+                                    value="1"
+                                    disabled={addPortFolioItem.repairOption != "" && addPortFolioItem.repairOption != null}
+                                />
+                                <Tab
+                                    label="Related Kit"
+                                    value="2"
+                                    disabled={addPortFolioItem.templateId != "" && addPortFolioItem.templateId != null}
+                                />
                             </TabList>
                         </Box>
                         <TabPanel value="1">
@@ -769,7 +878,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                             type="text"
                                             className="form-control text-primary border-radius-10"
                                             name="model"
-                                            placeholder="TEMPLATE ID"
+                                            placeholder="Template Id"
                                             value={addPortFolioItem.templateId}
                                             // onChange={handleAddServiceBundleChange}
                                             onChange={(e) => handleStandardJobInputSearch(e)}
@@ -821,7 +930,16 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                         >
                                             TEMPLATE DESCRIPTION
                                         </label>
-                                        <Select
+                                        <input
+                                            type="text"
+                                            className="form-control text-primary border-radius-10"
+                                            name="model"
+                                            placeholder="Template Description"
+                                            value={addPortFolioItem.templateDescription?.value}
+                                            disabled
+                                            onChange={(e) => handleStandardJobInputSearch(e)}
+                                        />
+                                        {/* <Select
                                             options={options}
                                             className="text-primary"
                                             placeholder="TEMPLATE DESCRIPTION"
@@ -833,7 +951,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                             }
                                             value={addPortFolioItem.templateDescription}
                                             isDisabled
-                                        />
+                                        /> */}
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
@@ -843,7 +961,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                                 href="#"
                                                 className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                                             >
-                                                <span className="mr-2">+</span>Add Template / Kit
+                                                <span className="mr-2">+</span>Go To Template
                                             </a>
                                         </div>
                                     </div>
@@ -851,21 +969,21 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             </div>
                         </TabPanel>
                         <TabPanel value="2">
-                            <p className="mt-4 font-size-14">REPAIR OPTIONS</p>
+                            <p className="mt-4 font-size-14">RELATED KIT</p>
                             <div className="row input-fields">
-                                <div className="col-md-4 col-sm-4">
+                                <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
                                         <label
                                             className="text-light-dark font-size-12 font-weight-500"
                                             for="exampleInputEmail1"
                                         >
-                                            REPAIR OPTION
+                                            RELATED KIT
                                         </label>
                                         <input
                                             type="text"
                                             className="form-control text-primary border-radius-10"
                                             name="repairOption"
-                                            placeholder="REPAIR OPTION"
+                                            placeholder="Kit Id"
                                             value={addPortFolioItem.repairOption}
                                             onChange={(e) => handleRelatedKitInputSearch(e)}
                                         />
@@ -908,20 +1026,39 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                         /> */}
                                     </div>
                                 </div>
-                                <div className="col-md-4 col-sm-4">
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            for="exampleInputEmail1"
+                                        >
+                                            KIT DESCRIPTION
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control text-primary border-radius-10"
+                                            name="repairOption"
+                                            placeholder="Kit Description"
+                                            value={addPortFolioItem.kitDescription?.value}
+                                            onChange={(e) => handleRelatedKitInputSearch(e)}
+                                            disabled
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
                                         <div className="mt-4">
                                             <a
                                                 href="#"
                                                 className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                                             >
-                                                <span className="mr-2">+</span>Add Repair Option
+                                                <span className="mr-2">+</span>Go To Related Kit
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="text-right pb-2">
+                            {/* <div className="text-right pb-2">
                                 <Link
                                     to="#"
                                     className="btn border mr-4"
@@ -931,7 +1068,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                         ? "Save Changes"
                                         : "Save & Continue"}
                                 </Link>
-                            </div>
+                            </div> */}
                         </TabPanel>
                     </TabContext>
                 </div>
@@ -1089,14 +1226,18 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 className="text-light-dark font-size-12 font-weight-500"
                                 for="exampleInputEmail1"
                             >
-                                PRICE ESCALATON
+                                PRICE ESCALATION
                             </label>
                             <div className=" d-flex align-items-center form-control-date">
                                 <Select
                                     className="select-input text-primary"
                                     id="priceEscalationSelect"
-                                    options={options}
+                                    options={priceHeadTypeKeyValue}
                                     placeholder="placeholder "
+                                    value={escalationPriceOptionsValue1}
+                                    onChange={(e) =>
+                                        handleEscalationPriceValue(e)
+                                    }
                                 // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
                                 // value={expandedPriceCalculator.priceEscalationSelect}
                                 />
@@ -1105,6 +1246,10 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                     className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                     placeholder="20%"
                                     id="priceEscalationInput"
+                                    value={escalationPriceInputValue}
+                                    onChange={(e) => {
+                                        setEscalationPriceInputValue(e.target.value)
+                                    }}
                                 // defaultValue={data.itemBodyModel.priceEscalation}
                                 // value={expandedPriceCalculator.priceEscalationInput}
                                 // onChange={handleExpandePriceChange}
@@ -1131,34 +1276,6 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             // onChange={handleExpandePriceChange}
                             />
                             {/* <div className="css-w8dmq8">*Mandatory</div> */}
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                        >
-                            PRICE ESCALATON
-                        </label>
-                        <div className=" d-flex align-items-center form-control-date">
-                            <Select
-                                className="select-input text-primary"
-                                id="priceEscalationSelect"
-                                options={priceHeadTypeKeyValue}
-                                placeholder="placeholder "
-                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
-                            // value={expandedPriceCalculator.priceEscalationSelect}
-                            />
-                            <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="flatPrice"
-                                placeholder="$100"
-                            // value={expandedPriceCalculator.flatPrice}
-                            // onChange={handleExpandePriceChange}
-                            />
                         </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
@@ -1201,6 +1318,13 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                     className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                     id="discountTypeInput"
                                     placeholder="10%"
+                                    value={priceCalculator.discountTypeInput}
+                                    onChange={(e) =>
+                                        setPriceCalculator({
+                                            ...priceCalculator,
+                                            discountTypeInput: e.target.value,
+                                        })
+                                    }
                                 // defaultValue={data.itemBodyModel.discountType}
                                 // value={expandedPriceCalculator.discountTypeInput}
                                 // onChange={handleExpandePriceChange}
@@ -1209,9 +1333,39 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         </div>
                     </div>
                 </div>
+                {/* <div className="col-md-6 col-sm-6">
+                    <div className="form-group date-box">
+                        <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                        >
+                            PRICE ESCALATON
+                        </label>
+                        <div className=" d-flex align-items-center form-control-date">
+                            <Select
+                                className="select-input text-primary"
+                                id="priceEscalationSelect"
+                                options={priceHeadTypeKeyValue}
+                                placeholder="placeholder "
+                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                            // value={expandedPriceCalculator.priceEscalationSelect}
+                            />
+                            <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                id="flatPrice"
+                                placeholder="$100"
+                            // value={expandedPriceCalculator.flatPrice}
+                            // onChange={handleExpandePriceChange}
+                            />
+                        </div>
+                    </div>
+                    
+                </div> */}
+
                 <p className="font-size-14 text-black font-weight-500 my-3">USAGE</p>
                 <div className='row input-fields'>
-                <div className="col-md-6 col-sm-6">
+                    <div className="col-md-6 col-sm-6">
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-12 font-weight-500"
@@ -1233,8 +1387,8 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 // value={expandedPriceCalculator.startUsage}
                                 // onChange={handleExpandePriceChange}
                                 />
-
-                                <Select
+                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                {/* <Select
                                     isClearable={true}
                                     id=""
                                     options={optionsusage}
@@ -1242,7 +1396,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                     className='text-primary'
                                 // value={expandedPriceCalculator.priceAdditionalSelect}
                                 // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
-                                />
+                                /> */}
 
                             </div>
                             <div className="css-w8dmq8">*Mandatory</div>
@@ -1274,7 +1428,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 // onChange={handleExpandePriceChange}
                                 />
 
-                                <span className="hours-div">hours</span>
+                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
                             </div>
                             <div className="css-w8dmq8">*Mandatory</div>
                         </div>
@@ -1318,6 +1472,33 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                 className="text-light-dark font-size-14 font-weight-500"
                                 for="exampleInputEmail1"
                             >
+                                UNIT
+                            </label>
+                            <Select
+                                options={[
+                                    { value: "per Hr", label: "per Hr" },
+                                    { value: "per Km", label: "per Km" },
+                                    { value: "per Miles", label: "per Miles" },
+                                    { value: "per year", label: "per year" },
+                                    { value: "per month", label: "per month" },
+                                    { value: "per day", label: "per day" },
+                                    { value: "per quarter", label: "per quarter" },
+                                ]}
+                                placeholder="Select..."
+                                className="text-primary"
+                                onChange={(e) =>
+                                    setAddPortFolioItem({ ...addPortFolioItem, unit: e })
+                                }
+                                value={addPortFolioItem.unit}
+                            />
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                            <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                            >
                                 RECOMMENDED VALUE
                             </label>
                             <div
@@ -1338,7 +1519,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                                     // onChange={handleExpandePriceChange}
                                     autoComplete="off"
                                 />
-                                <span className="hours-div text-primary">unit</span>
+                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
                             </div>
                             <div className="css-w8dmq8">*Mandatory</div>
                         </div>

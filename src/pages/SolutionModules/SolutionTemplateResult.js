@@ -117,7 +117,7 @@ import {
    createCustomCoverage,
    updateCustomCoverage,
    getItemPrice,
-   getcustomItemPriceById,
+   getCustomItemPriceById,
    updateCustomPriceData,
    escalationPriceCreation,
    additionalPriceCreation,
@@ -129,7 +129,7 @@ import {
    updateEscalationPriceById,
    updateAdditionalPriceById,
    getPortfolioPriceById,
-   getCustomItemData,
+   getCustomItemDataById,
 } from "../../services/index";
 import {
    selectCategoryList,
@@ -1443,7 +1443,7 @@ export function SolutionTemplateResult(props) {
       // console.log("handleServiceItemEdit", row);
 
       console.log("row ------ : ", row);
-      const editAbleRow = await getCustomItemData(row.customItemId);
+      const editAbleRow = await getCustomItemDataById(row.customItemId);
       if (editAbleRow.status === 200) {
          setPassItemEditRowData({ ...editAbleRow.data, _itemId: editAbleRow.data.customItemId });
          setEditItemShow(true);
@@ -3117,7 +3117,7 @@ export function SolutionTemplateResult(props) {
       if (editAbleCustomPriceData.length > 0) {
          // console.log("hello")
          for (let y = 0; y < editAbleCustomPriceData.length; y++) {
-            var getCustomPriceData = await getcustomItemPriceById(editAbleCustomPriceData[y].customItemPriceDataId);
+            var getCustomPriceData = await getCustomItemPriceById(editAbleCustomPriceData[y].customItemPriceDataId);
             console.log("y is : ", getCustomPriceData);
 
             getCustomPriceData.partsRequired = partsRequired;

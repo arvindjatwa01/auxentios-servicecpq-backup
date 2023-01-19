@@ -10343,7 +10343,7 @@ export function CreatePortfolio(props) {
         setTabs("5")
       }
       // const res2 = await customPortfolioItemPriceSJID(reqObj)
-      // const res = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+      // const res = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
       // const itemPriceRes = await getItemPrice(reqObj)
       // console.log("updateItem ------ : ", updateItem);
       // setItemPriceCalculator({

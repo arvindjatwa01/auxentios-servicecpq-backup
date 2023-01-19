@@ -97,8 +97,8 @@ import {
     createCoverage,
     createCustomCoverage,
     getItemPrice,
-    getCustomItemData,
-    getcustomItemPriceById,
+    getCustomItemDataById,
+    getCustomItemPriceById,
     updateCustomPriceData,
 } from "../../services/index";
 import {
@@ -1598,7 +1598,7 @@ export function PortfolioTemplatesResult(props) {
         if (editAbleCustomPriceData.length > 0) {
             // console.log("hello")
             for (let y = 0; y < editAbleCustomPriceData.length; y++) {
-                var getCustomPriceData = await getcustomItemPriceById(editAbleCustomPriceData[y].customItemPriceDataId);
+                var getCustomPriceData = await getCustomItemPriceById(editAbleCustomPriceData[y].customItemPriceDataId);
                 console.log("y is : ", getCustomPriceData);
 
                 getCustomPriceData.partsRequired = partsRequired;

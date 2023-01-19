@@ -88,7 +88,7 @@ import {
    itemCreation,
    getItemPrice,
    itemPriceDataId,
-   customitemCreation,
+   customItemCreation,
    customPriceCreation,
    createCustomPortfolio,
    updateCustomPortfolio,
@@ -881,7 +881,7 @@ export const Analytics = () => {
 
       //          /* ========= create custom Items with selected portfoliomasterData Items ========= */
 
-      //          const itemRes = await customitemCreation(customItemObj)
+      //          const itemRes = await customItemCreation(customItemObj)
 
       //          console.log(" Response is : ", itemRes.data)
 
@@ -1142,7 +1142,7 @@ export const Analytics = () => {
 
 
 
-      //    //    const itemRes = await customitemCreation(customItemObj)
+      //    //    const itemRes = await customItemCreation(customItemObj)
 
       //    //    console.log(" Response is : ", itemRes.data)
 
