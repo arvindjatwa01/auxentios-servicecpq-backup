@@ -198,6 +198,27 @@ export const deleteItem = (id) => {
 };
 
 
+export const portfolioItemPriceRkId = (payLoad) => {
+  console.log("portfolioItemService > getItemPrice called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersData })
+        .then((res) => {
+          console.log("getItemPrice > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getItemPrice > axios err=", err);
+          reject("Error in getItemPrice axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > getItemPrice, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 export const getItemPrice = (payLoad) => {
   console.log("portfolioItemService > getItemPrice called...");
   return new Promise((resolve, reject) => {

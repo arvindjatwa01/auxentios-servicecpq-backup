@@ -39,6 +39,10 @@ const PriceCalculator = (props) => {
   const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
   const [needFlatOrAdjustedPrice, setNeedFlatOrAdjustedPrice] = useState(false);
 
+  // const [escalationPriceOptionsValue, setEscalationPriceOptionValue] = useState("");
+  // const [escalationPriceOptionsValue1, setEscalationPriceOptionValue1] = useState("");
+  // const [escalationPriceInputValue, setEscalationPriceInputValue] = useState(0);
+
   const [additionalPriceHeadTypeKeyValue, setAdditionalPriceHeadTypeKeyValue] = useState([
     // { label: "Surcharge Percentage", value: "PERCENTAGE" },
     // { label: "Surcharge Dollar", value: "ABSOLUTE", },
@@ -107,6 +111,12 @@ const PriceCalculator = (props) => {
     suppresion: "",
     id: "",
     portfolioDataId: 1,
+    escalationPriceOptionsValue: "",
+    escalationPriceOptionsValue1: "",
+    escalationPriceInputValue: 0,
+    priceBreakDownOptionsKeyValue: "",
+    priceBreakDownOptionsKeyValue1: "",
+    priceBreakDownInputValue: 0,
   });
 
   const dispatch = useDispatch();
@@ -417,6 +427,53 @@ const PriceCalculator = (props) => {
     })
   }
 
+  const handleEscalationPriceValue = (e) => {
+    console.log(e)
+
+    setPriceCalculator({
+      ...priceCalculator,
+      escalationPriceOptionsValue: e.value,
+      escalationPriceOptionsValue1: e,
+    })
+    // if (e.value === "PARTS") {
+    //     setPriceEscalationTypeValue({
+    //         sparePartsEscalation: 0,
+    //         labourEscalation: 0,
+    //         miscEscalation: 0,
+    //         serviceEscalation: 0
+    //     });
+    // } else if (e.value === "LABOR") {
+    //     setPriceEscalationTypeValue({
+    //         sparePartsEscalation: 0,
+    //         labourEscalation: 0,
+    //         miscEscalation: 0,
+    //         serviceEscalation: 0
+    //     });
+    // } else if (e.value === "MISCELLANEOUS") {
+    //     setPriceEscalationTypeValue({
+    //         sparePartsEscalation: 0,
+    //         labourEscalation: 0,
+    //         miscEscalation: 0,
+    //         serviceEscalation: 0
+    //     });
+    // } else if (e.value === "SERVICE") {
+    //     setPriceEscalationTypeValue({
+    //         sparePartsEscalation: 0,
+    //         labourEscalation: 0,
+    //         miscEscalation: 0,
+    //         serviceEscalation: 0
+    //     });
+    // }
+  }
+
+  const handlePriceBreakDownValue = (e) => {
+    setPriceCalculator({
+      ...priceCalculator,
+      priceBreakDownOptionsKeyValue: e.value,
+      priceBreakDownOptionsKeyValue1: e,
+    })
+  }
+
   useEffect(() => {
     var yearsOptionArr = [];
     for (let i = 1; i <= priceCalculator.noOfYear; i++) {
@@ -645,11 +702,39 @@ const PriceCalculator = (props) => {
                   className="text-light-dark font-size-12 font-weight-500"
                   for="exampleInputEmail1"
                 >
-                  PRICE ESCALATON
+                  PRICE ESCALATION
                 </label>
                 <div className=" d-flex align-items-center form-control-date">
                   <Select
-                    className="select-input"
+                    className="select-input text-primary"
+                    id="priceEscalationSelect"
+                    options={priceHeadTypeKeyValue}
+                    placeholder="placeholder "
+                    value={priceCalculator.escalationPriceOptionsValue1}
+                    onChange={(e) =>
+                      handleEscalationPriceValue(e)
+                    }
+                  // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                  // value={expandedPriceCalculator.priceEscalationSelect}
+                  />
+                  <input
+                    type="text"
+                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                    placeholder="20%"
+                    id="priceEscalationInput"
+                    value={priceCalculator.escalationPriceInputValue}
+                    onChange={(e) =>
+                      setPriceCalculator({
+                        ...priceCalculator,
+                        escalationPriceInputValue: e.target.value,
+                      })
+                    }
+                  // defaultValue={data.itemBodyModel.priceEscalation}
+                  // value={expandedPriceCalculator.priceEscalationInput}
+                  // onChange={handleExpandePriceChange}
+                  />
+                  {/* <Select
+                    className="select-input text-primary"
                     id="priceEscalationSelect"
                     options={priceHeadTypeKeyValue}
                     placeholder="placeholder "
@@ -680,7 +765,7 @@ const PriceCalculator = (props) => {
                   // defaultValue={data.itemBodyModel.priceEscalation}
                   // value={expandedPriceCalculator.priceEscalationInput}
                   // onChange={handleExpandePriceChange}
-                  />
+                  /> */}
                 </div>
               </div>
             </div>
@@ -787,14 +872,15 @@ const PriceCalculator = (props) => {
                 <div className=" d-flex form-control-date">
                   <Select
                     className="select-input text-primary"
-                    // defaultValue={selectedOption}
-                    value={priceCalculator.priceBrackDownType}
-                    // onChange={setSelectedOption}
+                    // value={priceCalculator.priceBrackDownType}
+                    // onChange={(e) =>
+                    //   setPriceCalculator({
+                    //     ...priceCalculator,
+                    //     priceBrackDownType: e,
+                    //   })}
+                    value={priceCalculator.priceBreakDownOptionsKeyValue1}
                     onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        priceBrackDownType: e,
-                      })}
+                      handlePriceBreakDownValue(e)}
                     // options={options}
                     options={priceHeadTypeKeyValue}
                     placeholder="Select "
@@ -805,12 +891,19 @@ const PriceCalculator = (props) => {
                     id="exampleInputEmail1"
                     aria-describedby="emailHelp"
                     placeholder="optional"
+                    value={priceCalculator.priceBreakDownInputValue}
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
-                        priceBrackDownPercantage: e.target.value,
-                      })}
-                    value={priceCalculator.priceBrackDownPercantage}
+                        priceBreakDownInputValue: e.target.value,
+                      })
+                    }
+                  // onChange={(e) =>
+                  //   setPriceCalculator({
+                  //     ...priceCalculator,
+                  //     priceBrackDownPercantage: e.target.value,
+                  //   })}
+                  // value={priceCalculator.priceBrackDownPercantage}
                   />
                 </div>
               </div>

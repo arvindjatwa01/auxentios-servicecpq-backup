@@ -23,7 +23,7 @@ import {
     updatePortfolio,
     getPortfolioCommonConfig,
     portfolioItemPriceSjid,
-    getcustomItemPriceById,
+    getCustomItemPriceById,
     getSolutionPriceCommonConfig,
 } from "../../services/index";
 
@@ -144,7 +144,7 @@ const PriceCalculatorCustomItem = (props) => {
 
         const rObjId = props.priceCalculator.customItemPriceDataId;
 
-        const res = await getcustomItemPriceById(rObjId)
+        const res = await getCustomItemPriceById(rObjId)
 
         if (res.status === 200) {
 

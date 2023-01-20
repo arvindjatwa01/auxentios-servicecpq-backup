@@ -1542,7 +1542,7 @@ const AddPortfolioItem = (props) => {
               portfolio: {
                 portfolioId: 1
               },
-              tenantId: 0,
+              tenantId: 74,
               partsRequired: true,
               labourRequired: true,
               serviceRequired: false,
@@ -1870,28 +1870,66 @@ const AddPortfolioItem = (props) => {
         (props.compoFlagTest === "itemEditBundle")) {
         props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
       } else {
-        const rObj = {
+        // const rObj = {
+        //   itemPriceDataId: 0,
+        //   quantity: addPortFolioItem.quantity,
+        //   startUsage: addPortFolioItem.startUsage,
+        //   endUsage: addPortFolioItem.endUsage,
+        //   standardJobId: addPortFolioItem.templateId,
+        //   repairKitId: addPortFolioItem.repairOption,
+        //   templateDescription: addPortFolioItem.templateDescription,
+        //   repairOption: "",
+        //   additional: "",
+        //   partListId: "",
+        //   serviceEstimateId: "",
+        //   numberOfEvents: addPortFolioItem.numberOfEvents,
+        //   priceMethod: "LIST_PRICE",
+        //   priceType: "FIXED",
+        //   listPrice: 0,
+        //   priceEscalation: "",
+        //   calculatedPrice: 0,
+        //   flatPrice: 0,
+        //   discountType: "",
+        //   year: addPortFolioItem.year?.value,
+        //   noOfYear: addPortFolioItem.noOfYear,
+        //   sparePartsPrice: 0,
+        //   sparePartsPriceBreakDownPercentage: 0,
+        //   servicePrice: 0,
+        //   labourPrice: 0,
+        //   labourPriceBreakDownPercentage: 0,
+        //   miscPrice: 0,
+        //   miscPriceBreakDownPercentage: 0,
+        //   totalPrice: 0,
+        //   netService: 0,
+        //   portfolio: {
+        //     portfolioId: 1
+        //   },
+        //   tenantId: 0,
+        //   partsRequired: true,
+        //   serviceRequired: false,
+        //   labourRequired: true,
+        //   miscRequired: true
+        // }
+
+        const newPriceObj = {
           itemPriceDataId: 0,
-          quantity: addPortFolioItem.quantity,
-          startUsage: addPortFolioItem.startUsage,
-          endUsage: addPortFolioItem.endUsage,
+          quantity: 0,
           standardJobId: addPortFolioItem.templateId,
           repairKitId: addPortFolioItem.repairOption,
-          templateDescription: addPortFolioItem.templateDescription,
+          templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
           repairOption: "",
           additional: "",
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: addPortFolioItem.numberOfEvents,
-          priceMethod: "LIST_PRICE",
-          priceType: "FIXED",
+          numberOfEvents: 0,
+          priceMethod: "EMPTY",
+          priceType: "EMPTY",
           listPrice: 0,
           priceEscalation: "",
           calculatedPrice: 0,
           flatPrice: 0,
-          discountType: "",
           year: addPortFolioItem.year?.value,
-          noOfYear: addPortFolioItem.noOfYear,
+          noOfYear: parseInt(addPortFolioItem.noOfYear),
           sparePartsPrice: 0,
           sparePartsPriceBreakDownPercentage: 0,
           servicePrice: 0,
@@ -1901,16 +1939,30 @@ const AddPortfolioItem = (props) => {
           miscPriceBreakDownPercentage: 0,
           totalPrice: 0,
           netService: 0,
+          additionalPriceType: "ABSOLUTE",
+          additionalPriceValue: 0,
+          discountType: "EMPTY",
+          discountValue: 0,
+          recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+          startUsage: parseInt(addPortFolioItem.startUsage),
+          endUsage: parseInt(addPortFolioItem.endUsage),
+          sparePartsEscalation: 0,
+          labourEscalation: 0,
+          miscEscalation: 0,
+          serviceEscalation: 0,
+          withBundleService: false,
           portfolio: {
             portfolioId: 1
           },
-          tenantId: 0,
+          tenantId: 74,
           partsRequired: true,
-          serviceRequired: false,
           labourRequired: true,
-          miscRequired: true
+          serviceRequired: false,
+          miscRequired: true,
+          inclusionExclusion: false
         }
-        const itemPriceData = await createItemPriceData(rObj)
+
+        const itemPriceData = await createItemPriceData(newPriceObj);
         props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
         props.setBundleTabs("bundleServicePriceCalculator");
       }

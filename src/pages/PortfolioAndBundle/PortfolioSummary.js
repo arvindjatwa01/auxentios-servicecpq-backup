@@ -92,6 +92,7 @@ import {
   portfolioSearch,
   itemSearch,
   portfolioItemPriceSjid,
+  portfolioItemPriceRkId,
   getSolutionPriceCommonConfig,
   getItemDataById,
   getItemPriceData,
@@ -2947,7 +2948,7 @@ export const PortfolioSummary = () => {
         validTo: "",
         estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
         servicePrice: 0,
-        status: "DRAFT",
+        status: value2.value,
         componentCode: "",
         componentDescription: "",
         serialNumber: "",
@@ -2997,7 +2998,19 @@ export const PortfolioSummary = () => {
         itemId: res.data.itemId,
         itemPriceDataId: itemPriceData.itemPriceDataId
       }
-      const res2 = await portfolioItemPriceSjid(rObj)
+
+      if ((itemPriceData.standardJobId == "") ||
+        (itemPriceData.standardJobId == null) ||
+        itemPriceData.repairKitId != "") {
+        const updateRkId = portfolioItemPriceRkId(rObj);
+
+      }
+
+      if ((itemPriceData.repairKitId == "") ||
+        (itemPriceData.repairKitId == null) ||
+        itemPriceData.standardJobId != "") {
+        const updateSjId = portfolioItemPriceSjid(rObj);
+      }
 
       toast("😎" + `Bundle ${createServiceOrBundle.name} saved successfully`, {
         position: "top-right",
@@ -3028,7 +3041,205 @@ export const PortfolioSummary = () => {
     // setAddportFolioItem(data)
     // setItemPriceData(itemPriceData)
   }
-  const handleItemEditSave = (data, itemPriceData) => {
+  const handleItemEditSave = async (data, itemPriceData) => {
+
+
+    console.log("my data is : ", data)
+    console.log("my itemPriceData is : ", itemPriceData)
+
+    let reqObj = {
+      itemId: data.id,
+      itemName: createServiceOrBundle.name,
+      itemHeaderModel: {
+        itemHeaderId: 0,
+        itemHeaderDescription: createServiceOrBundle.description,
+        bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+        withBundleService: false,
+        portfolioItemId: 0,
+        reference: createServiceOrBundle.reference,
+        itemHeaderMake: createServiceOrBundle.make,
+        itemHeaderFamily: createServiceOrBundle.family,
+        model: createServiceOrBundle.model,
+        prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
+        type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+        additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+        currency: "",
+        netPrice: 0,
+        itemProductHierarchy: "EMPTY",
+        itemHeaderGeographic: "EMPTY",
+        responseTime: "EMPTY",
+        usage: "",
+        validFrom: "",
+        validTo: "",
+        estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
+        servicePrice: 0,
+        status: value2.value,
+        componentCode: "",
+        componentDescription: "",
+        serialNumber: "",
+        itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? data.strategyTask?.value : "EMPTY",
+        variant: "",
+        itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
+        jobCode: "",
+        preparedBy: administrative?.preparedBy ? administrative?.preparedBy : "",
+        approvedBy: administrative?.approvedBy ? administrative?.approvedBy : "",
+        preparedOn: administrative?.preparedOn ? administrative?.preparedOn : "",
+        revisedBy: administrative?.revisedBy ? administrative?.revisedBy : "",
+        revisedOn: administrative?.revisedOn ? administrative?.revisedOn : "",
+        salesOffice: administrative.salesOffice?.value ? administrative.salesOffice?.value : "",
+        offerValidity: administrative.offerValidity?.value ? administrative.offerValidity?.value : "",
+        serviceChargable: bundleServiceChargeableOrNot,
+        serviceOptional: (!bundleServiceChargeableOrNot)
+      },
+      itemBodyModel: {
+        itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+        itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? data.description : "",
+        spareParts: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_SPARE_PARTS"] : ["EMPTY"],
+        labours: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_LABOUR"] : ["EMPTY"],
+        miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
+        taskType: serviceOrBundlePrefix === "BUNDLE" ? [data.taskType?.value] : ["EMPTY"],
+        solutionCode: "",
+        usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+        usage: "",
+        year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+        avgUsage: 0,
+        unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+        frequency: serviceOrBundlePrefix === "BUNDLE" ? data.frequency?.value : "",
+        itemPrices: serviceOrBundlePrefix === "BUNDLE" &&
+          (itemPriceData?.itemPriceDataId != null ||
+            itemPriceData?.itemPriceDataId != undefined) ? [
+          {
+            itemPriceDataId: itemPriceData.itemPriceDataId
+          }
+        ] : [],
+      },
+    }
+
+    const res = await updateItemData(data.id, reqObj);
+    if (res.status === 200) {
+      toast("😎" + `Bundle ${createServiceOrBundle.name} updated successfully`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+
+      // setAddportFolioItem(data)
+      // setItemPriceData(itemPriceData)
+      // setBundleTabs("bundleServicePriceCalculator")
+      // setBundleTabs("bundleServiceCalculator");
+      // setAddportFolioItem({});
+
+    }
+
+    const priceUpdateData = {
+      itemPriceDataId: itemPriceData?.itemPriceDataId,
+      quantity: 0,
+      standardJobId: data.templateId,
+      repairKitId: data.repairOption,
+      templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
+      repairOption: "",
+      additional: "",
+      partListId: "",
+      serviceEstimateId: "",
+      numberOfEvents: 0,
+      priceMethod: (itemPriceData?.priceMethod != "EMPTY"
+        || itemPriceData?.priceMethod != "" ||
+        itemPriceData?.priceMethod != null) ?
+        itemPriceData?.priceMethod : "EMPTY",
+      priceType: (itemPriceData?.priceType != "EMPTY" ||
+        itemPriceData?.priceType != "" ||
+        itemPriceData?.priceType != null) ?
+        itemPriceData?.priceType : "EMPTY",
+      listPrice: 0,
+      priceEscalation: "",
+      calculatedPrice: 0,
+      flatPrice: 0,
+      year: data?.year?.value,
+      noOfYear: parseInt(data?.noOfYear),
+      // year: createdBundleItems?.year?.value,
+      // noOfYear: parseInt(createdBundleItems?.noOfYear),
+      sparePartsPrice: 0,
+      sparePartsPriceBreakDownPercentage: itemPriceData?.sparePartsPriceBreakDownPercentage != undefined ?
+        itemPriceData?.sparePartsPriceBreakDownPercentage : 0,
+      servicePrice: 0,
+      labourPrice: 0,
+      labourPriceBreakDownPercentage: itemPriceData?.labourPriceBreakDownPercentage != undefined ?
+        itemPriceData?.labourPriceBreakDownPercentage : 0,
+      miscPrice: 0,
+      miscPriceBreakDownPercentage: itemPriceData?.miscPriceBreakDownPercentage != undefined ?
+        itemPriceData?.miscPriceBreakDownPercentage : 0,
+      totalPrice: 0,
+      netService: 0,
+      additionalPriceType: (itemPriceData?.additionalPriceType != "EMPTY" ||
+        itemPriceData?.additionalPriceType != "" ||
+        itemPriceData?.additionalPriceType != null) ?
+        itemPriceData?.additionalPriceType : "ABSOLUTE",
+      additionalPriceValue: itemPriceData?.additionalPriceValue,
+      discountType: (itemPriceData?.discountType != "EMPTY" ||
+        itemPriceData?.discountType != "" ||
+        itemPriceData?.discountType != null) ?
+        itemPriceData?.discountType : "EMPTY",
+      discountValue: itemPriceData?.discountValue,
+      recommendedValue: parseInt(data?.recommendedValue),
+      startUsage: parseInt(data?.startUsage),
+      endUsage: parseInt(data?.endUsage),
+      sparePartsEscalation: itemPriceData?.sparePartsEscalation != undefined ?
+        itemPriceData?.sparePartsEscalation : 0,
+      labourEscalation: itemPriceData?.labourEscalation != undefined ?
+        itemPriceData?.labourEscalation : 0,
+      miscEscalation: itemPriceData?.miscEscalation != undefined ?
+        itemPriceData?.miscEscalation : 0,
+      serviceEscalation: itemPriceData?.serviceEscalation != undefined ?
+        itemPriceData?.serviceEscalation : 0,
+      withBundleService: false,
+      portfolio: (itemPriceData?.portfolio != null ||
+        itemPriceData?.portfolio != undefined) ?
+        itemPriceData?.portfolio : {},
+      tenantId: 74,
+      partsRequired: true,
+      labourRequired: true,
+      serviceRequired: false,
+      miscRequired: true,
+      inclusionExclusion: false
+    }
+
+    console.log("priceUpdateData is : ", priceUpdateData)
+
+    if ((itemPriceData?.itemPriceDataId != null ||
+      itemPriceData?.itemPriceDataId != undefined)) {
+      const updatePriceId = await updateItemPriceData(
+        itemPriceData?.itemPriceDataId,
+        priceUpdateData
+      );
+
+
+      const rObj = {
+        standardJobId: data.templateId,
+        repairKitId: data.repairOption,
+        itemId: data?.id,
+        itemPriceDataId: itemPriceData?.itemPriceDataId
+      }
+
+      if ((data.templateId == "") ||
+        (data.templateId == null) ||
+        data.repairOption != "") {
+        const updateRkId = portfolioItemPriceRkId(rObj);
+      }
+
+      if ((data.repairOption == "") ||
+        (data.repairOption == null) ||
+        data.templateId != "") {
+        const updateSjId = portfolioItemPriceSjid(rObj);
+      }
+
+    }
+
+    // console.log("reqObj is ", reqObj);
     setAddportFolioItem(data)
     setItemPriceData(itemPriceData)
     // setBundleTabs("bundleServiceAdministrative")
@@ -3039,14 +3250,14 @@ export const PortfolioSummary = () => {
     if (serviceOrBundlePrefix === "SERVICE") {
       setBundleTabs("bundleServiceAdministrative")
     } else if (serviceOrBundlePrefix === "BUNDLE") {
-      console.log("createdBundleItems : ", createdBundleItems)
+      console.log("createdBundleItems : ", addPortFolioItem)
 
       const priceUpdateData = {
         itemPriceDataId: data.id,
         quantity: 0,
-        standardJobId: createdBundleItems.templateId,
-        repairKitId: createdBundleItems.repairOption,
-        templateDescription: createdBundleItems.templateId != "" ? createdBundleItems.templateDescription?.value : "",
+        standardJobId: addPortFolioItem.templateId,
+        repairKitId: addPortFolioItem.repairOption,
+        templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
         repairOption: "",
         additional: "",
         partListId: "",
@@ -3068,12 +3279,18 @@ export const PortfolioSummary = () => {
         // year: createdBundleItems?.year?.value,
         // noOfYear: parseInt(createdBundleItems?.noOfYear),
         sparePartsPrice: 0,
-        sparePartsPriceBreakDownPercentage: 0,
+        sparePartsPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+          (data.priceBreakDownOptionsKeyValue == "PARTS") ?
+          data.priceBreakDownInputValue : 0),
         servicePrice: 0,
         labourPrice: 0,
-        labourPriceBreakDownPercentage: 0,
+        labourPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+          (data.priceBreakDownOptionsKeyValue == "LABOR") ?
+          data.priceBreakDownInputValue : 0),
         miscPrice: 0,
-        miscPriceBreakDownPercentage: 0,
+        miscPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+          (data.priceBreakDownOptionsKeyValue == "MISCELLANEOUS") ?
+          data.priceBreakDownInputValue : 0),
         totalPrice: 0,
         netService: 0,
         additionalPriceType: (data?.priceAdditionalSelect != "EMPTY" ||
@@ -3088,21 +3305,31 @@ export const PortfolioSummary = () => {
         recommendedValue: parseInt(data?.recommendedValue),
         startUsage: parseInt(data?.startUsage),
         endUsage: parseInt(data?.endUsage),
-        sparePartsEscalation: 0,
-        labourEscalation: 0,
-        miscEscalation: 0,
-        serviceEscalation: 0,
+        sparePartsEscalation: ((data.escalationPriceOptionsValue != "") &&
+          (data.escalationPriceOptionsValue == "PARTS") ?
+          data.escalationPriceInputValue : 0),
+        labourEscalation: ((data.escalationPriceOptionsValue != "") &&
+          (data.escalationPriceOptionsValue == "LABOR") ?
+          data.escalationPriceInputValue : 0),
+        miscEscalation: ((data.escalationPriceOptionsValue != "") &&
+          (data.escalationPriceOptionsValue == "MISCELLANEOUS") ?
+          data.escalationPriceInputValue : 0),
+        serviceEscalation: ((data.escalationPriceOptionsValue != "") &&
+          (data.escalationPriceOptionsValue == "SERVICE") ?
+          data.escalationPriceInputValue : 0),
         withBundleService: false,
         portfolio: (data.portfolioDataId != 0) ? {
           portfolioId: data.portfolioDataId
         } : {},
-        tenantId: 0,
+        tenantId: 74,
         partsRequired: true,
         labourRequired: true,
         serviceRequired: false,
         miscRequired: true,
         inclusionExclusion: false
       }
+
+      console.log("priceUpdateData is 23452345 ", priceUpdateData)
 
       if ((data.id != "") ||
         (data.id != null) ||
@@ -3111,6 +3338,27 @@ export const PortfolioSummary = () => {
           data.id,
           priceUpdateData
         );
+
+
+        const rObj = {
+          standardJobId: addPortFolioItem.templateId,
+          repairKitId: addPortFolioItem.repairOption,
+          itemId: addPortFolioItem.id,
+          itemPriceDataId: data.id
+        }
+
+        if ((addPortFolioItem.templateId == "") ||
+          (addPortFolioItem.templateId == null) ||
+          addPortFolioItem.repairOption != "") {
+          const updateRkId = portfolioItemPriceRkId(rObj);
+        }
+
+        if ((addPortFolioItem.repairOption == "") ||
+          (addPortFolioItem.repairOption == null) ||
+          addPortFolioItem.templateId != "") {
+          const updateSjId = portfolioItemPriceSjid(rObj);
+        }
+
       }
 
 
