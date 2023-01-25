@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_PORTFOLIO_ITEM, PORTFOLIO_ITEM_SEARCH, PORTFOLIO_ITEM_PRICE_RKID, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID } from "./CONSTANTS";
+import { CREATE_PORTFOLIO_ITEM, PORTFOLIO_ITEM_SEARCH, PORTFOLIO_ITEM_PRICE_RKID, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID, GET_RECENT_ITEMS_LIST_URL } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -154,6 +154,53 @@ export const itemSearch = (searchStr) => {
     }
   });
 };
+
+
+export const itemSearchDropdown = (searchStr) => {
+  console.log("portfolioItemService > itemSearchDropdown called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_PORTFOLIO_ITEM() + "/" + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("itemSearchDropdown > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("itemSearchDropdown > axios err=", err);
+          reject("Error in itemSearchDropdown axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > itemSearchDropdown, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+export const recentItemsList = (searchStr) => {
+  console.log("portfolioItemService > recentItemsList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(GET_RECENT_ITEMS_LIST_URL + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("recentItemsList > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("recentItemsList > axios err=", err);
+          reject("Error in recentItemsList axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > recentItemsList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+}
+
 
 export const updateItemData = (id, payLoad) => {
   console.log("portfolioItemService > updateItemData called...");
