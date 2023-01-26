@@ -91,6 +91,8 @@ import {
   updateItemData,
   portfolioSearch,
   itemSearch,
+  itemSearchDropdown,
+  recentItemsList,
   portfolioItemPriceSjid,
   portfolioItemPriceRkId,
   getSolutionPriceCommonConfig,
@@ -118,6 +120,8 @@ export const PortfolioSummary = () => {
   const [bundleServiceItemData, setBundleServiceItemData] = useState([]);
   const [recentPortfolio, setRecentPortfolio] = useState([])
   const [recentBundleService, setRecentBundleService] = useState([]);
+  const [recentBundleItemsList, setRecentBundleItemsList] = useState([]);
+  const [recentServiceItemsList, setRecentServiceItemsList] = useState([]);
 
   const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1);
   const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null);
@@ -351,10 +355,23 @@ export const PortfolioSummary = () => {
         setRecentPortfolio(res);
       })
 
-    getSearchForRecentBundleService()
+    // getSearchForRecentBundleService()
+    //   .then((res) => {
+    //     setRecentBundleService(res);
+    //   })
+
+    recentItemsList("BUNDLE_ITEM")
       .then((res) => {
-        setRecentBundleService(res);
+        setRecentBundleService(res.data);
       })
+
+    recentItemsList("SERVICE")
+      .then((res) => {
+        setRecentServiceItemsList(res.data);
+      })
+
+    // setRecentServiceItemsList
+    // setRecentBundleItemsList
 
     getSolutionPriceCommonConfig("support-level")
       .then((res) => {
@@ -707,33 +724,14 @@ export const PortfolioSummary = () => {
       } else if (selectedItemType === "SERVICE") {
         bundleServiceSearch = "bundleFlag:SERVICE AND " + `${tempArray[id].selectFamily.value}~${e.target.value}`;
       }
-      itemSearch(bundleServiceSearch)
+
+      var newSearchStr = `${tempArray[id].selectFamily.value}/${e.target.value}`;
+      itemSearchDropdown(newSearchStr)
         .then((res) => {
-          if (res.data.length > 0) {
-            if (tempArray[id].selectFamily.value == "itemName") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].itemName)
-              }
-            } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
-              }
-            } else if (tempArray[id].selectFamily.value == "make") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
-              }
-            } else if (tempArray[id].selectFamily.value == "model") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].itemHeaderModel.model)
-              }
-            } else if (tempArray[id].selectFamily.value == "family") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
-              }
-            } else if (tempArray[id].selectFamily.value == "prefix") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].itemHeaderModel.prefix)
-              }
+          console.log("ressss ", res);
+          if (res.status === 200) {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].value)
             }
           }
           obj.selectOptions = SearchResArr;
@@ -742,10 +740,50 @@ export const PortfolioSummary = () => {
           $(`.scrollbar-${id}`).css("display", "block");
         })
         .catch((err) => {
-          alert(err)
+          // alert(err)
           console.log("err in api call", err);
           return
         });
+
+      // itemSearch(bundleServiceSearch)
+      //   .then((res) => {
+      //     if (res.data.length > 0) {
+      //       if (tempArray[id].selectFamily.value == "itemName") {
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           SearchResArr.push(res.data[i].itemName)
+      //         }
+      //       } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
+      //         }
+      //       } else if (tempArray[id].selectFamily.value == "make") {
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
+      //         }
+      //       } else if (tempArray[id].selectFamily.value == "model") {
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           SearchResArr.push(res.data[i].itemHeaderModel.model)
+      //         }
+      //       } else if (tempArray[id].selectFamily.value == "family") {
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
+      //         }
+      //       } else if (tempArray[id].selectFamily.value == "prefix") {
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           SearchResArr.push(res.data[i].itemHeaderModel.prefix)
+      //         }
+      //       }
+      //     }
+      //     obj.selectOptions = SearchResArr;
+      //     tempArray[id] = obj;
+      //     setQuerySearchSelector([...tempArray]);
+      //     $(`.scrollbar-${id}`).css("display", "block");
+      //   })
+      //   .catch((err) => {
+      //     alert(err)
+      //     console.log("err in api call", err);
+      //     return
+      //   });
     }
     obj.inputSearch = e.target.value;
     setQuerySearchSelector([...tempArray]);
@@ -4248,23 +4286,21 @@ export const PortfolioSummary = () => {
                   <div className="recent-div p-3">
                     <h6 className="font-weight-600 text-grey mb-0 text-uppercase">RECENT {recentTabsValue}</h6>
                     <div className="row">
-                      {recentBundleService.map((data, sIndex) => {
-                        return (data.itemHeaderModel.bundleFlag == "PORTFOLIO") ? <></> :
-
-                          <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                              <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 overflow-hidden white-space">
-                                  <FontAwesomeIcon
-                                    className=" font-size-14"
-                                    icon={faFileAlt}
-                                  />
-                                  <span className="font-weight-500 ml-2">
-                                    {/* Portfolio{" "} {data.name} */} {data.itemName}
-                                  </span>
-                                </p>
-                                <div className="d-flex align-items-center">
-                                  {/* <div className="white-space custom-checkbox">
+                      {recentServiceItemsList.map((data, sIndex) =>
+                        <div className="col-md-4">
+                          <div className="recent-items mt-3">
+                            <div className="d-flex justify-content-between align-items-center ">
+                              <p className="mb-0 overflow-hidden white-space">
+                                <FontAwesomeIcon
+                                  className=" font-size-14"
+                                  icon={faFileAlt}
+                                />
+                                <span className="font-weight-500 ml-2">
+                                  {/* Portfolio{" "} {data.name} */} {data.itemName}
+                                </span>
+                              </p>
+                              <div className="d-flex align-items-center">
+                                {/* <div className="white-space custom-checkbox">
                               <FormGroup>
                                 <FormControlLabel
                                   control={<Checkbox />}
@@ -4272,42 +4308,44 @@ export const PortfolioSummary = () => {
                                 />
                               </FormGroup>
                             </div> */}
-                                  <a
-                                    href={undefined}
-                                    className="btn-sm"
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <i
-                                      className="fa fa-pencil"
-                                      aria-hidden="true"
-                                      onClick={() =>
-                                        makeBundleServiceEditable(data)
-                                      }
-                                    ></i>
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faShareAlt} />
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faFolderPlus} />
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faUpload} />
-                                  </a>
-                                  {/* <a href="#" className="ml-2">
+                                <a
+                                  href={undefined}
+                                  className="btn-sm"
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <i
+                                    className="fa fa-pencil"
+                                    aria-hidden="true"
+                                    onClick={() =>
+                                      makeBundleServiceEditable(data)
+                                    }
+                                  ></i>
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faShareAlt} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faFolderPlus} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faUpload} />
+                                </a>
+                                {/* <a href="#" className="ml-2">
                               <MuiMenuComponent options={activityOptions} />
                             </a> */}
-                                </div>
                               </div>
                             </div>
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                              {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                              <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
-                              <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
-                            </div>
                           </div>
+                          <div className="d-flex justify-content-between align-items-center mt-2">
+                            {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                            <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.updatedAt)}</p>
+                            <p className="font-size-12 mb-0">
+                              Service
+                              {/* {data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"} */}
+                            </p>
+                          </div>
+                        </div>
 
-                      }
                       )}
                     </div>
                   </div>
@@ -4318,23 +4356,21 @@ export const PortfolioSummary = () => {
                   <div className="recent-div p-3">
                     <h6 className="font-weight-600 text-grey mb-0 text-uppercase">RECENT {recentTabsValue}</h6>
                     <div className="row">
-                      {recentBundleService.map((data, sIndex) => {
-                        return (data.itemHeaderModel.bundleFlag == "PORTFOLIO") ? <></> :
-
-                          <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                              <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 overflow-hidden white-space">
-                                  <FontAwesomeIcon
-                                    className=" font-size-14"
-                                    icon={faFileAlt}
-                                  />
-                                  <span className="font-weight-500 ml-2">
-                                    {/* Portfolio{" "} {data.name} */} {data.itemName}
-                                  </span>
-                                </p>
-                                <div className="d-flex align-items-center">
-                                  {/* <div className="white-space custom-checkbox">
+                      {recentBundleService.map((data, sIndex) =>
+                        <div className="col-md-4">
+                          <div className="recent-items mt-3">
+                            <div className="d-flex justify-content-between align-items-center ">
+                              <p className="mb-0 overflow-hidden white-space">
+                                <FontAwesomeIcon
+                                  className=" font-size-14"
+                                  icon={faFileAlt}
+                                />
+                                <span className="font-weight-500 ml-2">
+                                  {/* Portfolio{" "} {data.name} */} {data.itemName}
+                                </span>
+                              </p>
+                              <div className="d-flex align-items-center">
+                                {/* <div className="white-space custom-checkbox">
                               <FormGroup>
                                 <FormControlLabel
                                   control={<Checkbox />}
@@ -4342,42 +4378,44 @@ export const PortfolioSummary = () => {
                                 />
                               </FormGroup>
                             </div> */}
-                                  <a
-                                    href={undefined}
-                                    className="btn-sm"
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <i
-                                      className="fa fa-pencil"
-                                      aria-hidden="true"
-                                      onClick={() =>
-                                        makeBundleServiceEditable(data)
-                                      }
-                                    ></i>
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faShareAlt} />
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faFolderPlus} />
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faUpload} />
-                                  </a>
-                                  {/* <a href="#" className="ml-2">
+                                <a
+                                  href={undefined}
+                                  className="btn-sm"
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <i
+                                    className="fa fa-pencil"
+                                    aria-hidden="true"
+                                    onClick={() =>
+                                      makeBundleServiceEditable(data)
+                                    }
+                                  ></i>
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faShareAlt} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faFolderPlus} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faUpload} />
+                                </a>
+                                {/* <a href="#" className="ml-2">
                               <MuiMenuComponent options={activityOptions} />
                             </a> */}
-                                </div>
                               </div>
                             </div>
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                              {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                              <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
-                              <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
-                            </div>
                           </div>
+                          <div className="d-flex justify-content-between align-items-center mt-2">
+                            {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                            <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.updatedAt)}</p>
+                            <p className="font-size-12 mb-0">
+                              Bundle
+                              {/* {data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"} */}
+                            </p>
+                          </div>
+                        </div>
 
-                      }
                       )}
                     </div>
                   </div>
@@ -4451,22 +4489,22 @@ export const PortfolioSummary = () => {
                           </div> : <></>
                       )}
                       {recentBundleService.map((data, sIndex) => {
-                        return (data.itemHeaderModel.bundleFlag == "PORTFOLIO") ? <></> :
+                        // return (data.itemHeaderModel.bundleFlag == "PORTFOLIO") ? <></> :
 
-                          <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                              <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 overflow-hidden white-space">
-                                  <FontAwesomeIcon
-                                    className=" font-size-14"
-                                    icon={faFileAlt}
-                                  />
-                                  <span className="font-weight-500 ml-2">
-                                    {/* Portfolio{" "} {data.name} */} {data.itemName}
-                                  </span>
-                                </p>
-                                <div className="d-flex align-items-center">
-                                  {/* <div className="white-space custom-checkbox">
+                        <div className="col-md-4">
+                          <div className="recent-items mt-3">
+                            <div className="d-flex justify-content-between align-items-center ">
+                              <p className="mb-0 overflow-hidden white-space">
+                                <FontAwesomeIcon
+                                  className=" font-size-14"
+                                  icon={faFileAlt}
+                                />
+                                <span className="font-weight-500 ml-2">
+                                  {/* Portfolio{" "} {data.name} */} {data.itemName}
+                                </span>
+                              </p>
+                              <div className="d-flex align-items-center">
+                                {/* <div className="white-space custom-checkbox">
                               <FormGroup>
                                 <FormControlLabel
                                   control={<Checkbox />}
@@ -4474,40 +4512,43 @@ export const PortfolioSummary = () => {
                                 />
                               </FormGroup>
                             </div> */}
-                                  <a
-                                    href={undefined}
-                                    className="btn-sm"
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <i
-                                      className="fa fa-pencil"
-                                      aria-hidden="true"
-                                      onClick={() =>
-                                        makeBundleServiceEditable(data)
-                                      }
-                                    ></i>
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faShareAlt} />
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faFolderPlus} />
-                                  </a>
-                                  <a href="#" className="ml-3 font-size-14">
-                                    <FontAwesomeIcon icon={faUpload} />
-                                  </a>
-                                  {/* <a href="#" className="ml-2">
+                                <a
+                                  href={undefined}
+                                  className="btn-sm"
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <i
+                                    className="fa fa-pencil"
+                                    aria-hidden="true"
+                                    onClick={() =>
+                                      makeBundleServiceEditable(data)
+                                    }
+                                  ></i>
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faShareAlt} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faFolderPlus} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faUpload} />
+                                </a>
+                                {/* <a href="#" className="ml-2">
                               <MuiMenuComponent options={activityOptions} />
                             </a> */}
-                                </div>
                               </div>
                             </div>
-                            <div className="d-flex justify-content-between align-items-center mt-2">
-                              {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                              <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
-                              <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
-                            </div>
                           </div>
+                          <div className="d-flex justify-content-between align-items-center mt-2">
+                            {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                            <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                            <p className="font-size-12 mb-0">
+                              EMPTY
+                              {/* {data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"} */}
+                            </p>
+                          </div>
+                        </div>
 
                       }
                       )}
