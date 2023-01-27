@@ -1,6 +1,14 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, DELETE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, CUSTOM_PORTFOLIO_ITEM_PRICE_SJID } from "./CONSTANTS";
+import {
+  CREATE_CUSTOM_PORTFOLIO_ITEM,
+  DELETE_CUSTOM_PORTFOLIO_ITEM,
+  CUSTOM_PORTFOLIO_ITEM_PRICE_RKID,
+  CREATE_CUSTOM_PRICE,
+  CUSTOM_PORTFOLIO_SEARCH_QUERY,
+  CUSTOM_PORTFOLIO_ITEM_PRICE_SJID,
+  CUSTOM_PORTFOLIO_URL
+} from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -275,6 +283,32 @@ export const getSearchCustomPortfolio = (searchStr) => {
         });
     } catch (error) {
       console.error("in Query customPortfolio > getSearchCustomPortfolio, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+/**
+ * Function to Search the Custom Portfolio's Dropdown List.
+ */
+
+export const getSearchCustomPortfolioDropdownList = (searchStr) => {
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(`${CUSTOM_PORTFOLIO_URL()}/${searchStr}`, { headers: headersData })
+        .then((res) => {
+          console.log("getSearchCustomPortfolioDropdownList > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getSearchCustomPortfolioDropdownList > axios err=", err);
+          reject("Error in getSearchCustomPortfolioDropdownList axios!");
+        });
+    } catch (error) {
+      console.error("in Query customPortfolio > getSearchCustomPortfolioDropdownList, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

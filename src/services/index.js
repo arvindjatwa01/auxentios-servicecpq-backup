@@ -10,7 +10,7 @@ export { getPortfolioSchema } from './schemaConfigServices';
 export { getGuidedSolution } from './guidedSolutionServices';
 export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios, getSolutionPortfolioById } from './solutionBuilderServices'
-export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch, portfolioSearchList } from './servicePortfolioServices'
+export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch, portfolioSearchDropdownList, portfolioSearchList } from './servicePortfolioServices'
 export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio, solutionPortfolioSearch, getSearchForRecentSolutionPortfolio, getSearchForRecentSolutionBundleService, copyPortfolioICustomPortfolio } from './customPortfolioSolutions'
 export { getPortfolioCommonConfig, getPortfolioPriceTypeCommonConfig, getPortfolioPriceHeadTypeCommonConfig, getSolutionPriceCommonConfig, additionalPriceCreation, escalationPriceCreation, portfolioPriceCreation, portfolioItemPriceSjid, getItemPriceData, getCustomItemPriceData, updatePortfolioPrice, updateEscalationPriceById, updateAdditionalPriceById, getPortfolioPriceById } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue, createCoverage, updateCoverage, updateCustomCoverage, createCustomCoverage } from './coverageService'
@@ -18,7 +18,7 @@ export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue,
 export { getSearchQueryCoverage, getSearchCoverageForFamily, getSearchForPortfolio, getSearchForRecentPortfolio, getSearchForRecentBundleService, getSearchStandardJobId, getSearchKitId } from "./searchQueryService"
 export { itemCreation, getItemDataById, itemSearchSuggestion, itemSearch, itemSearchDropdown, recentItemsList, getItemPrice, updateItemData, deleteItem, portfolioItemPriceRkId, itemPriceDataId, updateItemPriceData, createItemPriceData, getServiceItemsList } from './portFolioItemService';
 export { getComponentCodeSuggetions } from './masterComponentCode';
-export { customItemCreation, updateCustomItemData, deleteCustomItem, customPriceCreation, getSearchCustomPortfolio, getCustomItemDataById, getCustomItemPriceById, updateCustomPriceData, customPortfolioItemPriceSJID, customPortfolioItemPriceRkId } from './customPortfolioItemService'
+export { customItemCreation, updateCustomItemData, deleteCustomItem, customPriceCreation, getSearchCustomPortfolio, getSearchCustomPortfolioDropdownList, getCustomItemDataById, getCustomItemPriceById, updateCustomPriceData, customPortfolioItemPriceSJID, customPortfolioItemPriceRkId } from './customPortfolioItemService'
 export { quoteCreation, getQuoteMasterData, getSearchQuoteData, updateMasterQuoteData, deleteMasterQuote, convertPortfolioToQuoteData, getConvertQuoteData } from "./quoteService";
 
 export { getRecentSolutionQuotes } from "./solutionQuoteServices";
