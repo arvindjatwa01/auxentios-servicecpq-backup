@@ -179,6 +179,30 @@ export function SolutionServicePortfolio(props) {
         setAnchorEl(null);
     };
 
+
+    // Handle Save & Next Click
+    const handleNextClick = async (e) => {
+        try {
+            if (e.target.id === "customer") {
+                setValue("machine");
+            } else if (e.target.id === "machine") {
+                setValue("estimationDetails");
+            } else if (e.target.id === "estimationDetails") {
+                setValue("generalDetails");
+            } else if (e.target.id === "generalDetails") {
+                setValue("price");
+            } else if (e.target.id === "price") {
+                setValue("shipping_billing");
+            } else if (e.target.id === "shipping_billing") {
+                console.log("final")
+            }
+            console.log("e.target.id", e.target.id)
+
+        } catch (error) {
+
+        }
+    }
+
     const rows2 = [
         { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
         { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
@@ -498,7 +522,7 @@ export function SolutionServicePortfolio(props) {
     ];
     const [selectedOption, setSelectedOption] = useState(null);
 
-    const [value, setValue] = React.useState('1');
+    const [value, setValue] = React.useState('customer');
 
     const [open, setOpen] = React.useState(false);
     const [open1, setOpen1] = React.useState(false);
@@ -864,15 +888,15 @@ export function SolutionServicePortfolio(props) {
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <TabList className="" onChange={handleChange} aria-label="lab API tabs example">
-                                        <Tab label="Customer" value="1" className="heading-tabs" />
-                                        <Tab label="Machine " value="2" className="heading-tabs" />
-                                        <Tab label="Estimation Details" value="3" className="heading-tabs" />
-                                        <Tab label="General Details" value="4" className="heading-tabs" />
-                                        <Tab label="Price" value="5" className="heading-tabs" />
-                                        <Tab label="Shipping / Billing" value="6" className="heading-tabs" />
+                                        <Tab label="Customer" value="customer" className="heading-tabs" />
+                                        <Tab label="Machine " value="machine" className="heading-tabs" />
+                                        <Tab label="Estimation Details" value="estimationDetails" className="heading-tabs" />
+                                        <Tab label="General Details" value="generalDetails" className="heading-tabs" />
+                                        <Tab label="Price" value="price" className="heading-tabs" />
+                                        <Tab label="Shipping / Billing" value="shipping_billing" className="heading-tabs" />
                                     </TabList>
                                 </Box>
-                                <TabPanel value="1">
+                                <TabPanel value="customer">
                                     <div class="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
@@ -991,14 +1015,18 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <Link className="btn bg-primary text-white pull-right">
+                                                <Link
+                                                    className="btn bg-primary text-white pull-right"
+                                                    id="customer"
+                                                    onClick={handleNextClick}
+                                                >
                                                     Save & Next
                                                 </Link>
                                             </div>
                                         </div>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="2">
+                                <TabPanel value="machine">
                                     <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
@@ -1126,14 +1154,18 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <Link className="btn bg-primary text-white pull-right">
+                                                <Link
+                                                    className="btn bg-primary text-white pull-right"
+                                                    id="machine"
+                                                    onClick={handleNextClick}
+                                                >
                                                     Save & Next
                                                 </Link>
                                             </div>
                                         </div>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="3">
+                                <TabPanel value="estimationDetails">
                                     <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
@@ -1211,14 +1243,18 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <Link className="btn bg-primary text-white pull-right">
+                                                <Link
+                                                    className="btn bg-primary text-white pull-right"
+                                                    id="estimationDetails"
+                                                    onClick={handleNextClick}
+                                                >
                                                     Save & Next
                                                 </Link>
                                             </div>
                                         </div>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="4">
+                                <TabPanel value="generalDetails">
                                     <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
@@ -1296,14 +1332,18 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <Link className="btn bg-primary text-white pull-right">
+                                                <Link
+                                                    className="btn bg-primary text-white pull-right"
+                                                    id="generalDetails"
+                                                    onClick={handleNextClick}
+                                                >
                                                     Save & Next
                                                 </Link>
                                             </div>
                                         </div>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="5">
+                                <TabPanel value="price">
                                     <div class="row mt-4">
                                         <div class="col-md-3 col-sm-3">
                                             <div class="form-group">
@@ -1673,7 +1713,7 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                     </div> */}
                                 </TabPanel>
-                                <TabPanel value="6">
+                                <TabPanel value="shipping_billing">
                                     <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
@@ -1763,7 +1803,11 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <Link className="btn bg-primary text-white pull-right">
+                                                <Link
+                                                    className="btn bg-primary text-white pull-right"
+                                                    id="shipping_billing"
+                                                    onClick={handleNextClick}
+                                                >
                                                     Save & Next
                                                 </Link>
                                             </div>
@@ -1792,7 +1836,7 @@ export function SolutionServicePortfolio(props) {
                                         {querySearchSelector.map((obj, i) => {
                                             return (
                                                 <>
-                                                    <div className="customselect border-primary overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
+                                                    <div className="customselect border-primary d-flex align-items-center mr-3 my-2 border-radius-10">
                                                         {i > 0 ? (
                                                             <SelectFilter
                                                                 isClearable={true}
