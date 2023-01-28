@@ -160,7 +160,9 @@ import {
   updateCustomPriceData,
   convertPortfolioToQuoteData,
   portfolioSearch,
+  portfolioSearchDropdownList,
   getSearchCustomPortfolio,
+  getSearchCustomPortfolioDropdownList,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -900,40 +902,12 @@ export function CreateCustomPortfolio(props) {
       if (selectedItemType === "PORTFOLIO") {
         var newArr = [];
         var SearchResArr = [];
-        portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
-          .then((res) => {
-            if (tempArray[id].selectFamily.value === "make") {
-              for (let i = 0; i < res.data.length; i++) {
-                for (let j = 0; j < res.data[i].coverages.length; j++) {
-                  SearchResArr.push(res.data[i].coverages[j].make)
-                }
-              }
 
-            } else if (tempArray[id].selectFamily.value == "family") {
+        portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
+          .then((res) => {
+            if (res.status === 200) {
               for (let i = 0; i < res.data.length; i++) {
-                for (let j = 0; j < res.data[i].coverages.length; j++) {
-                  SearchResArr.push(res.data[i].coverages[j].family)
-                }
-              }
-            } else if (tempArray[id].selectFamily.value == "modelNo") {
-              for (let i = 0; i < res.data.length; i++) {
-                for (let j = 0; j < res.data[i].coverages.length; j++) {
-                  SearchResArr.push(res.data[i].coverages[j].modelNo)
-                }
-              }
-            } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
-              for (let i = 0; i < res.data.length; i++) {
-                for (let j = 0; j < res.data[i].coverages.length; j++) {
-                  SearchResArr.push(res.data[i].coverages[j].serialNumberPrefix)
-                }
-              }
-            } else if (tempArray[id].selectFamily.value == "name") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].name)
-              }
-            } else if (tempArray[id].selectFamily.value == "description") {
-              for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].description)
+                SearchResArr.push(res.data[i].value)
               }
             }
             obj.selectOptions = SearchResArr;
@@ -944,55 +918,116 @@ export function CreateCustomPortfolio(props) {
           .catch((err) => {
             console.log("err in api call", err);
           });
+
+        // portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+        //   .then((res) => {
+        //     if (tempArray[id].selectFamily.value === "make") {
+        //       for (let i = 0; i < res.data.length; i++) {
+        //         for (let j = 0; j < res.data[i].coverages.length; j++) {
+        //           SearchResArr.push(res.data[i].coverages[j].make)
+        //         }
+        //       }
+
+        //     } else if (tempArray[id].selectFamily.value == "family") {
+        //       for (let i = 0; i < res.data.length; i++) {
+        //         for (let j = 0; j < res.data[i].coverages.length; j++) {
+        //           SearchResArr.push(res.data[i].coverages[j].family)
+        //         }
+        //       }
+        //     } else if (tempArray[id].selectFamily.value == "modelNo") {
+        //       for (let i = 0; i < res.data.length; i++) {
+        //         for (let j = 0; j < res.data[i].coverages.length; j++) {
+        //           SearchResArr.push(res.data[i].coverages[j].modelNo)
+        //         }
+        //       }
+        //     } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+        //       for (let i = 0; i < res.data.length; i++) {
+        //         for (let j = 0; j < res.data[i].coverages.length; j++) {
+        //           SearchResArr.push(res.data[i].coverages[j].serialNumberPrefix)
+        //         }
+        //       }
+        //     } else if (tempArray[id].selectFamily.value == "name") {
+        //       for (let i = 0; i < res.data.length; i++) {
+        //         SearchResArr.push(res.data[i].name)
+        //       }
+        //     } else if (tempArray[id].selectFamily.value == "description") {
+        //       for (let i = 0; i < res.data.length; i++) {
+        //         SearchResArr.push(res.data[i].description)
+        //       }
+        //     }
+        //     obj.selectOptions = SearchResArr;
+        //     tempArray[id] = obj;
+        //     setQuerySearchSelector([...tempArray]);
+        //     $(`.scrollbar-${id}`).css("display", "block");
+        //   })
+        //   .catch((err) => {
+        //     console.log("err in api call", err);
+        //   });
       } else if (selectedItemType === "SOLUTION") {
         var newArr = [];
         var SearchResArr = [];
-        getSearchCustomPortfolio(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+        getSearchCustomPortfolioDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
           .then((res) => {
             if (res.status === 200) {
-              if (tempArray[id].selectFamily.value === "make") {
-                for (let i = 0; i < res.data.length; i++) {
-                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
-                    SearchResArr.push(res.data[i].customCoverages[j].make)
-                  }
-                }
-
-              } else if (tempArray[id].selectFamily.value == "family") {
-                for (let i = 0; i < res.data.length; i++) {
-                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
-                    SearchResArr.push(res.data[i].customCoverages[j].family)
-                  }
-                }
-              } else if (tempArray[id].selectFamily.value == "modelNo") {
-                for (let i = 0; i < res.data.length; i++) {
-                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
-                    SearchResArr.push(res.data[i].customCoverages[j].modelNo)
-                  }
-                }
-              } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
-                for (let i = 0; i < res.data.length; i++) {
-                  for (let j = 0; j < res.data[i].customCoverages.length; j++) {
-                    SearchResArr.push(res.data[i].customCoverages[j].serialNumberPrefix)
-                  }
-                }
-              } else if (tempArray[id].selectFamily.value == "name") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].name)
-                }
-              } else if (tempArray[id].selectFamily.value == "description") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].description)
-                }
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].value)
               }
-              obj.selectOptions = SearchResArr;
-              tempArray[id] = obj;
-              setQuerySearchSelector([...tempArray]);
-              $(`.scrollbar-${id}`).css("display", "block");
             }
+            obj.selectOptions = SearchResArr;
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
           })
           .catch((err) => {
             console.log("err in api call", err);
           });
+
+        // getSearchCustomPortfolio(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+        //   .then((res) => {
+        //     if (res.status === 200) {
+        //       if (tempArray[id].selectFamily.value === "make") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+        //             SearchResArr.push(res.data[i].customCoverages[j].make)
+        //           }
+        //         }
+
+        //       } else if (tempArray[id].selectFamily.value == "family") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+        //             SearchResArr.push(res.data[i].customCoverages[j].family)
+        //           }
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "modelNo") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+        //             SearchResArr.push(res.data[i].customCoverages[j].modelNo)
+        //           }
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           for (let j = 0; j < res.data[i].customCoverages.length; j++) {
+        //             SearchResArr.push(res.data[i].customCoverages[j].serialNumberPrefix)
+        //           }
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "name") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].name)
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "description") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].description)
+        //         }
+        //       }
+        //       obj.selectOptions = SearchResArr;
+        //       tempArray[id] = obj;
+        //       setQuerySearchSelector([...tempArray]);
+        //       $(`.scrollbar-${id}`).css("display", "block");
+        //     }
+        //   })
+        //   .catch((err) => {
+        //     console.log("err in api call", err);
+        //   });
       }
       obj.inputSearch = e.target.value;
       setQuerySearchSelector([...tempArray]);

@@ -100,6 +100,33 @@ export const portfolioSearch = (searchStr) => {
   });
 };
 
+
+/**
+ * Function to fetch the Portfolio Search Dropdown.
+ */
+
+export const portfolioSearchDropdownList = (searchStr) => {
+  console.log("portfolioService > portfolioSearchDropdownList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PORTFOLIO_URL() + "/" + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("portfolioSearchDropdownList > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("portfolioSearchDropdownList > axios err=", err);
+          reject("Error in portfolioSearchDropdownList axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioService > portfolioSearchDropdownList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 /**
  * Function to fetch the Portfolio by portfolioId.
  */

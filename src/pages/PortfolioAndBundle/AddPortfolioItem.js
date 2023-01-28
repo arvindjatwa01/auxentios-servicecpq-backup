@@ -34,6 +34,7 @@ import {
   itemCreation,
   updateItemData,
   portfolioSearch,
+  portfolioSearchDropdownList,
   itemSearch,
   portfolioItemPriceSjid,
 } from "../../services/index";
@@ -715,40 +716,11 @@ const AddPortfolioItem = (props) => {
     if (selectedItemType === "PORTFOLIO") {
       var newArr = [];
       var SearchResArr = [];
-      portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+      portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
         .then((res) => {
-          if (tempArray[id].selectFamily.value === "make") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].make)
-              }
-            }
-
-          } else if (tempArray[id].selectFamily.value == "family") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].family)
-              }
-            }
-          } else if (tempArray[id].selectFamily.value == "modelNo") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].modelNo)
-              }
-            }
-          } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
-            for (let i = 0; i < res.length; i++) {
-              for (let j = 0; j < res[i].coverages.length; j++) {
-                SearchResArr.push(res[i].coverages[j].serialNumberPrefix)
-              }
-            }
-          } else if (tempArray[id].selectFamily.value == "name") {
-            for (let i = 0; i < res.length; i++) {
-              SearchResArr.push(res[i].name)
-            }
-          } else if (tempArray[id].selectFamily.value == "description") {
-            for (let i = 0; i < res.length; i++) {
-              SearchResArr.push(res[i].description)
+          if (res.status === 200) {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].value)
             }
           }
           obj.selectOptions = SearchResArr;
@@ -759,6 +731,51 @@ const AddPortfolioItem = (props) => {
         .catch((err) => {
           console.log("err in api call", err);
         });
+
+      // portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
+      //   .then((res) => {
+      //     if (tempArray[id].selectFamily.value === "make") {
+      //       for (let i = 0; i < res.length; i++) {
+      //         for (let j = 0; j < res[i].coverages.length; j++) {
+      //           SearchResArr.push(res[i].coverages[j].make)
+      //         }
+      //       }
+
+      //     } else if (tempArray[id].selectFamily.value == "family") {
+      //       for (let i = 0; i < res.length; i++) {
+      //         for (let j = 0; j < res[i].coverages.length; j++) {
+      //           SearchResArr.push(res[i].coverages[j].family)
+      //         }
+      //       }
+      //     } else if (tempArray[id].selectFamily.value == "modelNo") {
+      //       for (let i = 0; i < res.length; i++) {
+      //         for (let j = 0; j < res[i].coverages.length; j++) {
+      //           SearchResArr.push(res[i].coverages[j].modelNo)
+      //         }
+      //       }
+      //     } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+      //       for (let i = 0; i < res.length; i++) {
+      //         for (let j = 0; j < res[i].coverages.length; j++) {
+      //           SearchResArr.push(res[i].coverages[j].serialNumberPrefix)
+      //         }
+      //       }
+      //     } else if (tempArray[id].selectFamily.value == "name") {
+      //       for (let i = 0; i < res.length; i++) {
+      //         SearchResArr.push(res[i].name)
+      //       }
+      //     } else if (tempArray[id].selectFamily.value == "description") {
+      //       for (let i = 0; i < res.length; i++) {
+      //         SearchResArr.push(res[i].description)
+      //       }
+      //     }
+      //     obj.selectOptions = SearchResArr;
+      //     tempArray[id] = obj;
+      //     setQuerySearchSelector([...tempArray]);
+      //     $(`.scrollbar-${id}`).css("display", "block");
+      //   })
+      //   .catch((err) => {
+      //     console.log("err in api call", err);
+      //   });
     } else {
       var bundleServiceSearch;
       var SearchResArr = [];
