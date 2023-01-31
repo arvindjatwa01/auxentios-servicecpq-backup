@@ -65,7 +65,7 @@ export const DashboardContainer = () => {
       {/* <CommanComponents /> */}
       <div className="content-body bg-white" style={{ minHeight: '884px' }}>
         <div className="container-fluid p-32-60 mt-3">
-          <h5 className="">Operational Dashboar</h5>
+          <h5 className="">Operational Dashboard</h5>
           <div className="row mt-4">
             <div className="col-md-6 col-sm-6">
               <div className="card overflow-hidden border" style={{ height: "400px" }}>
