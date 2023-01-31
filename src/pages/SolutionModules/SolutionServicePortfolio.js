@@ -58,6 +58,8 @@ import {
     getConvertQuoteData,
 } from "../../services/index";
 import SelectFilter from "react-select";
+import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 const customStyles = {
     rows: {
         style: {
@@ -108,14 +110,46 @@ export function SolutionServicePortfolio(props) {
 
     const [headerLoading, setHeaderLoading] = useState(false);
 
+    // Customer Tab Data 
     const [customerData, setCustomerData] = useState({
-        source: "User Generated",
+        // source: "User Generated",
+        source: "",
         customerID: "",
         customerName: "",
         contactEmail: "",
         contactName: "",
         contactPhone: "",
         customerGroup: "",
+    });
+
+    // Machine Tab Data 
+    const [machineData, setMachineData] = useState({
+        model: "",
+        serialNo: "",
+        smu: "",
+        fleetNo: "",
+        registrationNo: "",
+        chasisNo: "",
+    });
+
+    // Estimate Details Tab Data 
+    const [estimateDetails, setEstimateDetails] = useState({
+        preparedBy: "",
+        approvedBy: "",
+        preparedOn: new Date(),
+        revisedBy: "",
+        revisedOn: new Date(),
+        salesOffice: "",
+    });
+
+    // General Details Tab Data 
+    const [generalDetails, setGeneralDetails] = useState({
+        quoteDate: new Date(),
+        description: "",
+        reference: "",
+        validity: "",
+        version: "",
+        salesOffice: "",
     });
 
     const theme = useTheme();
@@ -161,16 +195,6 @@ export function SolutionServicePortfolio(props) {
     }
 
 
-
-
-    const [machineData, setMachineData] = useState({
-        model: "",
-        serialNo: "",
-        smu: "",
-        fleetNo: "",
-        registrationNo: "",
-        chasisNo: "",
-    });
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -646,7 +670,8 @@ export function SolutionServicePortfolio(props) {
             customerID: currentItem.customerId,
             contactEmail: currentItem.email,
             contactName: currentItem.contactName,
-            customerGroup: currentItem.priceGroup,
+            // customerGroup: currentItem.priceGroup,
+            customerGroup: currentItem.customerGroup,
             customerName: currentItem.fullName,
         });
         setSearchCustResults([]);
@@ -734,6 +759,26 @@ export function SolutionServicePortfolio(props) {
         var value = e.target.value;
         var name = e.target.name;
         setMachineData({
+            ...machineData,
+            [name]: value,
+        });
+    };
+
+    //Individual Estimate Details field value change
+    const handleEstimateDetailsDataChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setEstimateDetails({
+            ...machineData,
+            [name]: value,
+        });
+    };
+
+    //Individual General Details field value change
+    const handleGeneralDetailsDataChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setGeneralDetails({
             ...machineData,
             [name]: value,
         });
@@ -901,7 +946,16 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                    name="source"
+                                                    value={customerData.source}
+                                                    onChange={handleCustomerDataChange}
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
@@ -957,7 +1011,6 @@ export function SolutionServicePortfolio(props) {
                                                     name="contactPhone"
                                                     onChange={handleCustomerDataChange}
                                                     value={customerData.contactPhone}
-                                                    // disabled={true}
                                                     placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
@@ -1068,6 +1121,9 @@ export function SolutionServicePortfolio(props) {
                                                     type="email"
                                                     class="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
+                                                    name="smu"
+                                                    value={machineData.smu}
+                                                    onChange={handleMachineDataChange}
                                                     aria-describedby="emailHelp"
                                                     placeholder="Placeholder (Optional)" />
                                             </div>
@@ -1075,19 +1131,44 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="fleetNo"
+                                                    value={machineData.fleetNo}
+                                                    onChange={handleMachineDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="registrationNo"
+                                                    value={machineData.registrationNo}
+                                                    onChange={handleMachineDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="chasisNo"
+                                                    value={machineData.chasisNo}
+                                                    onChange={handleMachineDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                         {/* <div className="col-md-6 col-sm-6">
@@ -1170,37 +1251,107 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="preparedBy"
+                                                    value={estimateDetails.preparedBy}
+                                                    onChange={handleEstimateDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="approvedBy"
+                                                    value={estimateDetails.approvedBy}
+                                                    onChange={handleEstimateDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            <div className="d-flex align-items-center date-box w-100">
+                                                <div class="form-group w-100">
+                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                        <DatePicker
+                                                            variant="inline"
+                                                            format="dd/MM/yyyy"
+                                                            className="form-controldate border-radius-10"
+                                                            label=""
+                                                            name="preparedOn"
+                                                            value={estimateDetails.preparedOn}
+                                                            onChange={(e) =>
+                                                                setEstimateDetails({
+                                                                    ...estimateDetails,
+                                                                    preparedOn: e,
+                                                                })
+                                                            }
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="revisedBy"
+                                                    value={estimateDetails.revisedBy}
+                                                    onChange={handleEstimateDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            <div className="d-flex align-items-center date-box w-100">
+                                                <div class="form-group w-100">
+                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                        <DatePicker
+                                                            variant="inline"
+                                                            format="dd/MM/yyyy"
+                                                            className="form-controldate border-radius-10"
+                                                            label=""
+                                                            name="revisedOn"
+                                                            value={estimateDetails.revisedOn}
+                                                            onChange={(e) =>
+                                                                setEstimateDetails({
+                                                                    ...estimateDetails,
+                                                                    revisedOn: e,
+                                                                })
+                                                            }
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="salesOffice"
+                                                    value={estimateDetails.salesOffice}
+                                                    onChange={handleEstimateDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                     </div>
