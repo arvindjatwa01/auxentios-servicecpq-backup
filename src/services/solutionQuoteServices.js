@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios';
-import { SOLUTION_QUOTE_URL } from "./CONSTANTS";
+import { SOLUTION_QUOTE_CREATION, SOLUTION_QUOTE_URL } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -48,6 +48,56 @@ export const getRecentSolutionQuotes = () => {
                 });
         } catch (error) {
             console.error("in solutionQuoteServices > getRecentSolutionQuotes, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+/**
+ * Function to Create Solution Quote Data.
+ */
+
+export const solutionQuoteCreation = (payLoad) => {
+    console.log("solutionQuoteServices > solutionQuoteCreation called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .post(SOLUTION_QUOTE_CREATION(), payLoad, { headers: headersData })
+                .then((res) => {
+                    console.log("solutionQuoteCreation > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("solutionQuoteCreation > axios err=", err);
+                    reject("Error in solutionQuoteCreation axios!");
+                });
+        } catch (error) {
+            console.error("in solutionQuoteServices > solutionQuoteCreation, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+/**
+ * Function to Create Solution Quote Data.
+ */
+
+export const updateSolutionQuoteData = (id, payLoad) => {
+    console.log("solutionQuoteServices > updateSolutionQuoteData called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .put(`${SOLUTION_QUOTE_CREATION()}/${id}`, payLoad, { headers: headersData })
+                .then((res) => {
+                    console.log("updateSolutionQuoteData > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("updateSolutionQuoteData > axios err=", err);
+                    reject("Error in updateSolutionQuoteData axios!");
+                });
+        } catch (error) {
+            console.error("in solutionQuoteServices > updateSolutionQuoteData, Err===", error);
             reject(SYSTEM_ERROR);
         }
     });

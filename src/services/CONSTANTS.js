@@ -23,7 +23,7 @@ const QUOTE_SERVICE_BASE_URL = "http://35.200.157.237/";
 const PRICING_URI = PRICING_BASE_URL + "pricing-svc/v1/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
 
-const QUOTE_REST_SERVICE = SOLUTION_BASE_URL + "quote-svc/v1/quote/"
+const QUOTE_REST_SERVICE = SOLUTION_BASE_URL + "quote-svc/v1/quote"
 
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
 const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/"
@@ -228,7 +228,8 @@ export const GET_COVERT_QUOTE_DETAILS = QUOTE_REST_SERVICE;
 
 /* ===================== Solution Quote Service ============================= */
 
-export const SOLUTION_QUOTE_URL = () => QUOTE_REST_SERVICE + "solution-builder";
+export const SOLUTION_QUOTE_URL = () => QUOTE_REST_SERVICE + "/solution-builder";
+export const SOLUTION_QUOTE_CREATION = () => QUOTE_REST_SERVICE;
 
 
 // export const SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";
