@@ -45,7 +45,7 @@ import deleteIcon from '../../assets/icons/svg/delete.svg'
 import copyIcon from '../../assets/icons/svg/Copy.svg'
 import editIcon from '../../assets/icons/svg/edit.svg'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
 import { customerSearch, machineSearch } from "services/searchServices";
@@ -56,10 +56,12 @@ import {
     getSearchCoverageForFamily,
     getSearchQueryCoverage,
     getConvertQuoteData,
+    solutionQuoteCreation,
 } from "../../services/index";
 import SelectFilter from "react-select";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { toast } from "react-toastify";
 const customStyles = {
     rows: {
         style: {
@@ -112,8 +114,8 @@ export function SolutionServicePortfolio(props) {
 
     // Customer Tab Data 
     const [customerData, setCustomerData] = useState({
-        // source: "User Generated",
-        source: "",
+        source: "User Generated",
+        // source: "",
         customerID: "",
         customerName: "",
         contactEmail: "",
@@ -145,12 +147,20 @@ export function SolutionServicePortfolio(props) {
     // General Details Tab Data 
     const [generalDetails, setGeneralDetails] = useState({
         quoteDate: new Date(),
+        quote: "",
         description: "",
         reference: "",
         validity: "",
         version: "",
         salesOffice: "",
     });
+
+    const [generalValidityOptionKeyValue, setGeneralValidityOptionKeyValue] = useState("");
+    const generalValidityOptions = [
+        { label: "Allowed", value: "ALLOWED" },
+        { label: "Denied", value: "DENIED" },
+        { label: "Indeterminate", value: "INDETERMINATE" },
+    ]
 
     const theme = useTheme();
     const [personName, setPersonName] = React.useState([]);
@@ -208,7 +218,67 @@ export function SolutionServicePortfolio(props) {
     const handleNextClick = async (e) => {
         try {
             if (e.target.id === "customer") {
-                setValue("machine");
+                // 
+                if (customerData.customerID === "") {
+                    throw "Customer ID must not be Empty."
+                }
+
+                let solutionQuoteObj = {
+                    quoteType: "SOLUTION_QUOTE",
+                    source: customerData.source,
+                    customerId: customerData.customerID,
+                    model: machineData.model,
+                    serialNumber: machineData.serialNo,
+                    smu: machineData.smu,
+                    fleetNo: machineData.fleetNo,
+                    registrationNo: machineData.registrationNo,
+                    chasisNo: machineData.chasisNo,
+                    preparedBy: estimateDetails.preparedBy,
+                    approvedBy: estimateDetails.approvedBy,
+                    preparedOn: estimateDetails.preparedOn,
+                    revisedBy: estimateDetails.revisedBy,
+                    revisedOn: estimateDetails.revisedOn,
+                    salesOffice: estimateDetails.salesOffice,
+                    quoteDate: generalDetails.quoteDate,
+                    description: generalDetails.description,
+                    reference: generalDetails.reference,
+                    validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                    version: generalDetails.version,
+                    netPrice: 0,
+                    priceDate: "",
+                    costPrice: 0,
+                    priceMethod: "LIST_PRICE",
+                    adjustedPrice: 0,
+                    currency: "",
+                    status: "PENDING_ACTIVE",
+                    tenantId: 74,
+                    sbQuoteItems: [],
+                    rbQuoteItems: [],
+                    plQuoteItems: []
+                }
+
+                const solutionRes = await solutionQuoteCreation(solutionQuoteObj);
+                if (solutionRes.status === 200) {
+                    toast(`👏 Quote Created Successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("machine");
+                    // setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+                    //   setGeneralComponentData({
+                    //     ...generalComponentData,
+                    //     portfolioId: solutionRes.data.portfolioId,
+                    //   });
+                    setQuoteDataId(solutionRes.data.quoteId);
+                    //   setPortfolioId(solutionRes.data.portfolioId);
+                    //   setNameIsNotEditAble(true);
+                }
+
             } else if (e.target.id === "machine") {
                 setValue("estimationDetails");
             } else if (e.target.id === "estimationDetails") {
@@ -223,7 +293,16 @@ export function SolutionServicePortfolio(props) {
             console.log("e.target.id", e.target.id)
 
         } catch (error) {
-
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
         }
     }
 
@@ -702,13 +781,16 @@ export function SolutionServicePortfolio(props) {
                 : "";
         } else if (searchMachinefieldName === "serialNo") {
             machineData.serialNo = searchText;
+            // searchQueryMachine = searchText
+            //     ? machineData.model
+            //         ? `model:${machineData.model} AND equipmentNumber~` + searchText
+            //         : "equipmentNumber~" + searchText
+            //     : "";
             searchQueryMachine = searchText
-                ? machineData.model
-                    ? `model:${machineData.model} AND equipmentNumber~` + searchText
-                    : "equipmentNumber~" + searchText
+                ? "equipmentNumber~" + searchText
                 : "";
         }
-        // console.log("search query", searchQueryMachine);
+        console.log("search query", searchQueryMachine);
         if (searchQueryMachine) {
             await machineSearch(searchQueryMachine)
                 .then((result) => {
@@ -740,6 +822,9 @@ export function SolutionServicePortfolio(props) {
             setMachineData({
                 ...machineData,
                 model: currentItem.model,
+                fleetNo: currentItem.stockNumber,
+                smu: currentItem.sensorId,
+
             });
             setSearchModelResults([]);
         } else if (type === "equipmentNumber") {
@@ -953,6 +1038,7 @@ export function SolutionServicePortfolio(props) {
                                                     aria-describedby="emailHelp"
                                                     placeholder="Placeholder (Optional)"
                                                     name="source"
+                                                    disabled={true}
                                                     value={customerData.source}
                                                     onChange={handleCustomerDataChange}
                                                 />
@@ -1084,12 +1170,21 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
                                             <div class="form-group w-100">
+                                                {/* <SearchBox
+                                                    value={machineData.model}
+                                                    onChange={(e) =>
+                                                        handleMachineSearch("model", e.target.value)
+                                                    }
+                                                    type="model"
+                                                    result={searchSerialResults}
+                                                    onSelect={handleModelSelect}
+                                                /> */}
                                                 <input
                                                     type="email"
                                                     class="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
-                                                    value={machineData.serialNo}
+                                                    value={machineData.model}
                                                     disabled={true}
                                                     placeholder="Placeholder (Optional)" />
                                             </div>
@@ -1409,38 +1504,115 @@ export function SolutionServicePortfolio(props) {
                                     <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            <div className="d-flex align-items-center date-box w-100">
+                                                <div class="form-group w-100">
+                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                        <DatePicker
+                                                            variant="inline"
+                                                            format="dd/MM/yyyy"
+                                                            className="form-controldate border-radius-10"
+                                                            label=""
+                                                            name="quoteDate"
+                                                            value={generalDetails.quoteDate}
+                                                            onChange={(e) =>
+                                                                setGeneralDetails({
+                                                                    ...generalDetails,
+                                                                    quoteDate: e,
+                                                                })
+                                                            }
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                </div>
                                             </div>
+                                            {/* <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div> */}
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE #</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="quote"
+                                                    value={generalDetails.quote}
+                                                    onChange={handleGeneralDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DESCRIPTION</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="description"
+                                                    value={generalDetails.description}
+                                                    onChange={handleGeneralDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="reference"
+                                                    value={generalDetails.reference}
+                                                    onChange={handleGeneralDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                {/* <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="validity"
+                                                    value={generalDetails.validity}
+                                                    onChange={handleGeneralDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)"
+                                                /> */}
+                                                <Select
+                                                    onChange={(e) =>
+                                                        setGeneralDetails({
+                                                            ...machineData,
+                                                            validity: e,
+                                                        })
+                                                    }
+                                                    className="text-primary"
+                                                    options={generalValidityOptions}
+                                                    placeholder="Required"
+                                                    value={generalDetails.validity}
+                                                    styles={FONT_STYLE_SELECT}
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    name="version"
+                                                    value={generalDetails.version}
+                                                    onChange={handleGeneralDetailsDataChange}
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                     </div>
