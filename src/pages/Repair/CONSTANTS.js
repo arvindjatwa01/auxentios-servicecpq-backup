@@ -8,6 +8,8 @@ export const PARTS_TAG_OPTIONS = [
   { label: "Missing", value: "missing" },
   { label: "Core", value: "core" },
 ];
+export const WITH_PARTS = "BUILDER_WITH_SPAREPART";
+export const WITHOUT_PARTS = "BUILDER_WITHOUT_SPAREPART";
 export const NEW_SEGMENT = "New Segment";
 export const NEW_OPERATION = "New Operation";
 

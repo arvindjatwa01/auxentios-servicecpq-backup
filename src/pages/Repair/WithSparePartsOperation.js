@@ -641,16 +641,16 @@ function WithSparePartsOperation(props) {
                         </a>
                       </div>
                     </div>
-
+                    <hr></hr>
                     <div className="row my-4">
-                      <div className="col-auto">
+                      <div className="col-12">
                         <div className="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             TOTAL PARTS
                           </p>
                         </div>
                       </div>
-                      <div className="col-2">
+                      <div className="col-3">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             NEW
@@ -658,7 +658,7 @@ function WithSparePartsOperation(props) {
                           <h6 className="font-size-14 font-weight-600">7</h6>
                         </div>
                       </div>
-                      <div className="col-3">
+                      <div className="col-4">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             REFURBISHED
@@ -666,10 +666,10 @@ function WithSparePartsOperation(props) {
                           <h6 className="font-size-14 font-weight-600">6</h6>
                         </div>
                       </div>
-                      <div className="col-4">
+                      <div className="col-5">
                         <div class="d-flex justify-content-center">
                           <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
+                            TOTAL COST
                           </p>
                           <h6 className=" font-size-14 font-weight-600">$48</h6>
                         </div>
@@ -716,22 +716,22 @@ function WithSparePartsOperation(props) {
                     </div>
 
                     <div className="row my-4">
-                      <div className="col-auto">
+                      <div className="col-12">
                         <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                        <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             TOTAL PARTS
                           </p>
                         </div>
                       </div>
-                      <div className="col-2">
+                      <div className="col-3">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             NEW
                           </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
+                          <h6 className="font-size-14 font-weight-500">7</h6>
                         </div>
                       </div>
-                      <div className="col-3">
+                      <div className="col-4">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             REFURBISHED
@@ -739,7 +739,7 @@ function WithSparePartsOperation(props) {
                           <h6 className="font-size-14 font-weight-600">6</h6>
                         </div>
                       </div>
-                      <div className="col-4">
+                      <div className="col-5">
                         <div class="d-flex justify-content-center">
                           <p class="mr-2 font-size-12 font-weight-500 mr-2">
                             TOTAL COSTS
@@ -820,16 +820,16 @@ function WithSparePartsOperation(props) {
                         </a>
                       </div>
                     </div>
-
+                    <hr></hr>
                     <div className="row my-4">
-                      <div className="col-auto">
+                      <div className="col-12">
                         <div className="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             TOTAL PARTS
                           </p>
                         </div>
                       </div>
-                      <div className="col-2">
+                      <div className="col-3">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             NEW
@@ -837,7 +837,7 @@ function WithSparePartsOperation(props) {
                           <h6 className="font-size-14 font-weight-600">7</h6>
                         </div>
                       </div>
-                      <div className="col-3">
+                      <div className="col-4">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             REFURBISHED
@@ -845,10 +845,10 @@ function WithSparePartsOperation(props) {
                           <h6 className="font-size-14 font-weight-600">6</h6>
                         </div>
                       </div>
-                      <div className="col-4">
+                      <div className="col-5">
                         <div class="d-flex justify-content-center">
                           <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
+                            TOTAL COST
                           </p>
                           <h6 className=" font-size-14 font-weight-600">$48</h6>
                         </div>
@@ -895,22 +895,22 @@ function WithSparePartsOperation(props) {
                     </div>
 
                     <div className="row my-4">
-                      <div className="col-auto">
+                      <div className="col-12">
                         <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                        <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             TOTAL PARTS
                           </p>
                         </div>
                       </div>
-                      <div className="col-2">
+                      <div className="col-3">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             NEW
                           </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
+                          <h6 className="font-size-14 font-weight-500">7</h6>
                         </div>
                       </div>
-                      <div className="col-3">
+                      <div className="col-4">
                         <div class="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             REFURBISHED
@@ -918,7 +918,7 @@ function WithSparePartsOperation(props) {
                           <h6 className="font-size-14 font-weight-600">6</h6>
                         </div>
                       </div>
-                      <div className="col-4">
+                      <div className="col-5">
                         <div class="d-flex justify-content-center">
                           <p class="mr-2 font-size-12 font-weight-500 mr-2">
                             TOTAL COSTS
@@ -947,186 +947,7 @@ function WithSparePartsOperation(props) {
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-16 text-white">
-                        023-Remove Engine partlist
-                      </span>
-                    </div>
-                    <div className="d-flex">
-                      <div>
-                        <Checkbox className="p-0 text-white" />
-                      </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>
-                  <div className="bg-white py-2 px-3">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 2
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-auto">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-2">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </div>              
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
@@ -1137,7 +958,7 @@ function WithSparePartsOperation(props) {
               >
                 Back
               </button>
-              <button
+              {/* <button
                 onClick={() =>
                   setActiveElement({
                     ...activeElement,
@@ -1151,7 +972,7 @@ function WithSparePartsOperation(props) {
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
                 Add Part List
-              </button>
+              </button> */}
               <button
                 // to="/RepairServiceEstimate"
                 onClick={() =>

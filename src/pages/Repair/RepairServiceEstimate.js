@@ -8,7 +8,19 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import {
+  faCloudUploadAlt,
+  faFileAlt,
+  faFolderPlus,
+  faShareAlt,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  DataGrid,
+  getGridStringOperators,
+  GridActionsCellItem,
+  useGridApiContext,
+} from "@mui/x-data-grid";
 import $ from "jquery";
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
@@ -36,6 +48,13 @@ import {
   RemoveExtWorkItem,
   FetchMiscforService,
   FetchBasePrice,
+  addPartToPartList,
+  addPartlist,
+  uploadPartsToPartlist,
+  RemoveSparepart,
+  fetchPartsFromPartlist,
+  addPartlistToOperation,
+  addMultiPartsToPartList,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -58,11 +77,15 @@ import {
   getConsumables,
   getExtWork,
   getVendors,
+  sparePartSearch,
 } from "services/searchServices";
 import {
+  Checkbox,
+  debounce,
   FormControlLabel,
   FormGroup,
   Switch,
+  TextareaAutosize,
   TextField,
   Tooltip,
 } from "@mui/material";
@@ -78,6 +101,8 @@ import {
   LABOR_PRICE_OPTIONS,
   MISC_PRICE_OPTIONS,
   MISC_PRICE_OPTIONS_NOLABOR,
+  SPAREPART_SEARCH_Q_OPTIONS,
+  WITH_PARTS,
 } from "./CONSTANTS";
 import SearchComponent from "./components/SearchComponent";
 import AddExtWorkItemModal from "./components/AddExtWorkItem";
@@ -86,11 +111,43 @@ import LoadingProgress from "./components/Loader";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { ReadOnlyField } from "./components/ReadOnlyField";
+import AddNewSparepartModal from "./components/AddNewSparePart";
+import { FileUploader } from "react-drag-drop-files";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { MuiMenuComponent } from "pages/Operational";
+
+function CommentEditInputCell(props) {
+  const { id, value, field } = props;
+  // console.log(id, value, field);
+  const apiRef = useGridApiContext();
+
+  const handleCommentChange = async (event) => {
+    // console.log("newValue", event);
+    // Explore debounce option
+    apiRef.current.setEditCellValue(
+      { id, field, value: event.target.value },
+      event
+    );
+  };
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <TextareaAutosize
+        // ref={handleRef}
+        name="comment"
+        style={{ width: "100%" }}
+        value={value}
+        onChange={handleCommentChange}
+      />
+    </Box>
+  );
+}
 
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
   const [serviceEstHeaderLoading, setServiceEstHeaderLoading] = useState(true);
   const [searchResultConsOpen, setSearchResultConsOpen] = useState(false);
+  const [searchResultPartsOpen, setSearchResultPartsOpen] = useState(false);
   const [searchResultExtWorkOpen, setSearchResultExtWorkOpen] = useState(false);
   // Close consumable search modal
   const handleSearchResConsClose = () => {
@@ -220,6 +277,14 @@ function RepairServiceEstimate(props) {
     flatRateIndicator: false,
     totalHours: 0,
   });
+  const [partsData, setPartsData] = useState({
+    jobCode: "",
+    jobOperation: "",
+    description: "",
+    pricingMethod: "",
+    componentCode: "",
+    user: "USER1",
+  });
   const [laborItemOpen, setLaborItemOpen] = React.useState(false);
   const [consumableItemOpen, setConsumableItemOpen] = React.useState(false);
   const [extWorkItemOpen, setExtWorkItemOpen] = React.useState(false);
@@ -278,11 +343,43 @@ function RepairServiceEstimate(props) {
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
   // Make the headers viewonly after storing the data
+  const [partsViewOnly, setPartsViewOnly] = useState(false);
+  const [partsLoading, setPartsLoading] = useState(false);
+
+  const [totalPartsCount, setTotalPartsCount] = useState(0);
+  const [partsFilterQuery, setPartsFilterQuery] = useState("");
+  const [selectedPartsMasterData, setSelectedPartsMasterData] = useState([]);
+  const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
+  // const [rating, setRating] = useState(null);
+  const [pageSize, setPageSize] = useState(5);
+  const [page, setPage] = useState(0);
+  const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
+  const [fileUploadOpen, setFileUploadOpen] = useState(false);
+  const [partListId, setPartListId] = useState("");
+  const [partFieldViewonly, setPartFieldViewonly] = useState(false);
+  const [spareparts, setSpareparts] = useState([]);
+  const [addPartOpen, setAddPartOpen] = useState(false);
   const [laborViewOnly, setLaborViewOnly] = useState(false);
+  const [file, setFile] = useState(null);
   const [consumableViewOnly, setConsumableViewOnly] = useState(false);
   const [extWorkViewOnly, setExtWorkViewOnly] = useState(false);
   const [miscViewOnly, setMiscViewOnly] = useState(false);
   const [serviceHeaderViewOnly, setServiceHeaderViewOnly] = useState(false);
+  const initialSparePart = {
+    groupNumber: "",
+    partType: "",
+    partNumber: "",
+    quantity: "",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    unitOfMeasure: "",
+    currency: "USD",
+    usagePercentage: 0,
+    totalPrice: 0.0,
+    comment: "",
+    description: "",
+  };
+  const [sparePart, setSparePart] = useState(initialSparePart);
   //Open the snack message
   const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
@@ -296,12 +393,149 @@ function RepairServiceEstimate(props) {
     }
     setOpenSnack(false);
   };
+
+  // Search table column for spareparts
+  const columnsPartListSearch = [
+    { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
+    { headerName: "Type", field: "partType", flex: 1, width: 130 },
+    { headerName: "PartNumber", field: "partNumber", flex: 1, width: 130 },
+    {
+      headerName: "Description",
+      field: "partDescription",
+      flex: 1,
+      width: 130,
+    },
+    { headerName: "Currency", field: "currency", flex: 1, width: 130 },
+    // { headerName: "Unit Price", field: "listPrice", flex: 1, width: 130 },
+    { headerName: "Status", field: "status", flex: 1, width: 130 },
+  ];
+
+  //Columns to display spare parts for the partlist
+  const columnsPartList = [
+    // { headerName: 'Sl#', field: 'rowNum', flex: 1, },
+    { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
+    { headerName: "Type", field: "partType", flex: 1 },
+    { headerName: "Desc", field: "description", flex: 1 },
+    { headerName: "PartNumber", field: "partNumber", flex: 1 },
+    {
+      headerName: "Qty",
+      field: "quantity",
+      flex: 1,
+      editable: true,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Of Measures",
+      field: "unitOfMeasure",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Price",
+      field: "unitPrice",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Extended Price",
+      field: "extendedPrice",
+      flex: 1,
+      filterable: false,
+    },
+    { headerName: "Currency", field: "currency", flex: 1, filterable: false },
+    {
+      headerName: "% Usage",
+      field: "usagePercentage",
+      flex: 1,
+      editable: true,
+      filterable: false,
+    },
+    {
+      headerName: "Total Price",
+      field: "totalPrice",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Comment",
+      field: "comment",
+      flex: 1,
+      editable: true,
+      renderEditCell: CommentEditInputCell,
+      filterable: false,
+    },
+    // {
+    //   headerName: "Tag",
+    //   field: "tag",
+    //   flex: 1,
+    //   editable: true,
+    //   renderCell: renderTag,
+    //   renderEditCell: TagComponent
+    // },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openSparePartRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
+            label="Delete"
+            onClick={() => handleDeleteSparePart(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
+  // Close SparePart search modal
+  const handleSearchResClose = () => {
+    setSearchResultPartsOpen(false);
+    setSelectedPartsMasterData([]);
+  };
+  // Select parts to add
+  const onRowsSelectionHandler = (ids) => {
+    setSelectedPartsMasterData([]);
+    const selectedRowsData = ids.map((id) =>
+      masterData.find((row) => row.id === id)
+    );
+    // console.log(selectedRowsData);
+    setSelectedPartsMasterData(selectedRowsData);
+  };
+  const filterOperators = getGridStringOperators().filter(({ value }) =>
+    ["equals", "contains"].includes(value)
+  );
   // Consumable Search
   const handleQuerySearchClick = async (type) => {
     $(".scrollbar").css("display", "none");
     var searchStr = "";
     var querySearchSelector =
-      type === "consumables" ? queryConsSearchSelector : queryExtSearchSelector;
+      type === "consumables"
+        ? queryConsSearchSelector
+        : type === "parts"
+        ? queryPartsSearchSelector
+        : queryExtSearchSelector;
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory?.value && item.inputSearch) {
         searchStr =
@@ -337,6 +571,10 @@ function RepairServiceEstimate(props) {
           const res = await getExtWork(searchStr);
           setMasterData(res);
           setSearchResultExtWorkOpen(true);
+        } else if (type === "parts") {
+          const res = await sparePartSearch(searchStr);
+          setMasterData(res);
+          setSearchResultPartsOpen(true);
         }
       } else {
         handleSnack("info", "Please fill the search criteria!");
@@ -363,13 +601,69 @@ function RepairServiceEstimate(props) {
         handleSnack("error", "Error occured while updating the details!");
       });
   };
+  //Close Add part modal
+  const handleAddPartClose = () => {
+    setAddPartOpen(false);
+    setSparePart(initialSparePart);
+    setPartFieldViewonly(false);
+    setAddPartModalTitle("Add Part");
+  };
+
+  const createPartlistAndUpdate = async () => {
+    await addPartlistToOperation(activeElement.oId, {
+      ...(partListId && { id: partListId }),
+      activeVersion: true,
+      // operationNumber: activeElement.oId,
+      jobCode: partsData.jobCode,
+      versionNumber: 1,
+      description: partsData.description,
+      // partsData.
+      pricingMethod: partsData.pricingMethod?.value,
+    })
+      .then((partlistResult) => {
+        setPartListId(partlistResult.id);
+      })
+      .catch((err) => {
+        console.log("Error Occurred", err);
+        handleSnack("error", "Error occurred while creating partlist!");
+      });
+  };
+  const handleIndPartAdd = () => {
+    let data = {
+      ...(sparePart.id && { id: sparePart.id }),
+      groupNumber: sparePart.groupNumber,
+      partNumber: sparePart.partNumber,
+      partType: sparePart.partType,
+      quantity: sparePart.quantity,
+      // unitPrice: sparePart.unitPrice,
+      // extendedPrice: sparePart.extendedPrice,
+      currency: sparePart.currency,
+      usagePercentage: sparePart.usagePercentage,
+      // totalPrice: sparePart.totalPrice,
+      comment: sparePart.comment,
+      description: sparePart.description,
+      unitOfMeasure: sparePart.unitOfMeasure,
+    };
+    addPartToPartList(partListId, data)
+      .then((result) => {
+        handleAddPartClose();
+        if (addPartModalTitle === "Add Part")
+          handleSnack("success", `👏 New Spare Part has been added!`);
+        else
+          handleSnack("success", `👏 Selected part detail has been updated!`);
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
+      })
+      .catch((err) => {
+        handleSnack("error", `😐 Error occurred while adding spare part`);
+      });
+  };
 
   const unitOfMeasureOptions = [
     { label: "Hours", value: "HOURS" },
     { label: "Days", value: "DAYS" },
   ];
   // Sets the value for the tab (labor, consumable, misc, extWork)
-  const [value, setValue] = useState("labor");
+  const [value, setValue] = useState("");
 
   //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
@@ -381,6 +675,8 @@ function RepairServiceEstimate(props) {
     if (activeElement.oId) {
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
+          if (activeElement.builderType === WITH_PARTS) setValue("parts");
+          else setValue("labor");
           setServiceEstimateData({
             ...serviceEstimateData,
             reference: result.reference,
@@ -412,6 +708,8 @@ function RepairServiceEstimate(props) {
           //if service header exists then mark it view only
           setServiceHeaderViewOnly(result.id ? true : false);
           if (result.id) {
+            if (fetchType === "all" || fetchType === "parts")
+              populatePartsData(result);
             if (fetchType === "all" || fetchType === "labor")
               populateLaborData(result);
             if (fetchType === "all" || fetchType === "consumable")
@@ -421,6 +719,13 @@ function RepairServiceEstimate(props) {
             if (fetchType === "all" || fetchType === "misc")
               populateMiscData(result);
           } else {
+            setPartsData({
+              ...partsData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobCodeDescription,
+              jobOperation: result.jobOperation,
+              componentCode: result.componentCode,
+            });
             setLabourData({
               ...labourData,
               jobCode: result.jobCode,
@@ -453,6 +758,46 @@ function RepairServiceEstimate(props) {
         });
     }
   };
+
+  function populatePartsData(result) {
+    // FetchPartsforService(result.id)
+    //   .then((resultParts) => {
+    //     if (resultParts && resultParts.id) {
+    //       setPartsData({
+    //         ...resultParts,
+    //         id: resultParts.id,
+    //         pricingMethod: priceMethodOptions.find(
+    //           (element) => element.value === resultParts.pricingMethod
+    //         ),
+    //         laborCode: laborCodeList.find(
+    //           (element) => element.value === resultParts.laborCode
+    //         ),
+    //         totalPrice: resultParts.totalPrice ? resultParts.totalPrice : 0,
+    //       });
+    //       populatePartstems(resultParts);
+    //       setPartsViewOnly(true);
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     setPartsData({
+    //       ...partsData,
+    //       jobCode: result.jobCode,
+    //       jobCodeDescription: result.jobCodeDescription,
+    //       jobOperation: result.jobOperation
+    //     });
+    //   });
+    setPartsViewOnly(true);
+    setPartsData({
+      ...partsData,
+      jobCode: result.jobCode,
+      jobCodeDescription: result.jobCodeDescription,
+      jobOperation: result.jobOperation,
+      componentCode: result.componentCode,
+    });
+    setPartListId(39);
+    fetchPartsOfPartlist(39, 0, 5);
+  }
+
   function populateLaborData(result) {
     FetchLaborforService(result.id)
       .then((resultLabour) => {
@@ -612,6 +957,7 @@ function RepairServiceEstimate(props) {
     if (["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1) {
       if (type === "serviceEstHeader" && serviceHeaderViewOnly)
         setServiceHeaderViewOnly(false);
+      else if (value === "parts" && partsViewOnly) setPartsViewOnly(false);
       else if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
       else if (value === "consumables" && consumableViewOnly)
         setConsumableViewOnly(false);
@@ -804,6 +1150,67 @@ function RepairServiceEstimate(props) {
         handleSnack("error", "Error occurred while updating consumable data!");
       });
   };
+
+  // Add the selected parts from search result to partlist
+  const addSelectedPartsToPartList = async () => {
+    setPartsLoading(true);
+    handleSearchResClose();
+    if (partsViewOnly) {
+      const parts = [];
+      selectedPartsMasterData.map((item) => {
+        let data = {
+          partlistId: partListId,
+          groupNumber: item.groupNumber,
+          partNumber: item.partNumber,
+          partType: item.partType,
+          quantity: 1,
+          // unitPrice: item.listPrice,
+          // extendedPrice: 0,
+          // currency: pricingData.currency?.value,
+          // totalPrice: 0,
+          comment: "",
+          description: item.partDescription,
+          unitOfMeasure: item.salesUnit,
+        };
+        parts.push(data);
+      });
+
+      await addMultiPartsToPartList(partListId, parts)
+        .then((result) => {
+          handleSnack(
+            "success",
+            `New parts have been added with default quantity as 1 successfully!`
+          );
+          // if (result) {
+          //   fetchAllDetails(builderId, generalData.version);
+          // }
+          fetchPartsOfPartlist(partListId, page, pageSize);
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err && err.message === "Price not found") {
+            handleSnack("error", `😐 ${err.message}!`);
+          } else {
+            handleSnack("error", `😐 Error occurred while adding the parts!`);
+          }
+        });
+    } else {
+      handleSnack("info", "Please save all the header details!");
+    }
+    setPartsLoading(false);
+  };
+
+  function sortPartsTable(sortEvent) {
+    // console.log("sorting called");
+    if (sortEvent.length > 0) {
+      setSortDetail({
+        sortColumn: sortEvent[0].field,
+        orderBy: sortEvent[0].sort === "asc" ? "ASC" : "DESC",
+      });
+    } else {
+      setSortDetail({ sortColumn: "", orderBy: "" });
+    }
+  }
 
   // Add or Update ext work data
   const updateExtWorkHeader = () => {
@@ -1120,6 +1527,91 @@ function RepairServiceEstimate(props) {
     }
   };
 
+  const handleReadFile = (file) => {
+    // e.preventDefault();
+    if (file) {
+      setFile(file);
+    }
+  };
+  // Open spare part modal to view or edit
+  const openSparePartRow = (row) => {
+    // console.log(row);
+    setSparePart(row);
+    setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    setPartFieldViewonly(true);
+    setAddPartOpen(true);
+  };
+
+  //Remove Spare Part
+  const handleDeleteSparePart = (sparePartId) => {
+    RemoveSparepart(partListId, sparePartId)
+      .then((res) => {
+        handleSnack("success", res);
+        // fetchAllDetails(builderId, generalData.version);
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack("error", "Error occurred while removing the spare part");
+      });
+  };
+  const fetchPartsOfPartlist = async (partlistId, pageNo, rowsPerPage) => {
+    setPartsLoading(true);
+    setPage(pageNo);
+    setPageSize(rowsPerPage);
+    let sort = sortDetail.sortColumn
+      ? `&sortColumn=${sortDetail.sortColumn}&orderBY=${sortDetail.orderBy}`
+      : "";
+    let filter = partsFilterQuery ? `&search=${partsFilterQuery}` : "";
+    const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
+    await fetchPartsFromPartlist(partlistId, query)
+      .then((partsResult) => {
+        setTotalPartsCount(partsResult.totalRows);
+        // partsResult.result.map((element, i) => {
+        //   // setSlPart((pageNo*rowsPerPage - rowsPerPage) + i)
+        //   console.log(pageNo,rowsPerPage, i)
+        //   element.rowNum = (((pageNo+1)*rowsPerPage - rowsPerPage) + (i+1)) * 10
+
+        // })
+        setSpareparts(partsResult.result);
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occured while fetching parts");
+      });
+    setPartsLoading(false);
+  };
+  const onPartsFilterChange = React.useCallback((filterModel) => {
+    // console.log(filterModel);
+    filterModel.items.map((indFilter) => {
+      if (indFilter.operatorValue === "equals")
+        debounce(
+          setPartsFilterQuery(indFilter.columnField + ":" + indFilter.value),
+          200
+        );
+      else if (indFilter.operatorValue === "contains")
+        setPartsFilterQuery(indFilter.columnField + "~" + indFilter.value);
+    });
+  }, []);
+  const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
+  //Uplaod spare parts through excel sheet
+  const handleUploadFile = async () => {
+    // console.log("Upload");
+    const form = new FormData();
+    form.append("file", file);
+    await uploadPartsToPartlist(partListId, form)
+      .then((result) => {
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
+        handleSnack("success", `New parts have been uploaded to the partlist`);
+        // if (result) {
+        //   fetchAllDetails(builderId, generalData.version);
+        // }
+      })
+      .catch((err) => {
+        handleSnack("error", `Failed to upload the parts!`);
+      });
+    setFileUploadOpen(false);
+  };
+
   const handleExtWorkItemClose = () => {
     setExtWorkItemOpen(false);
     setSearchVendorResults([]);
@@ -1155,11 +1647,22 @@ function RepairServiceEstimate(props) {
       selectedOption: "",
     },
   ];
+  const initialPartsQuery = [
+    {
+      id: 0,
+      selectCategory: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    },
+  ];
   const [queryConsSearchSelector, setQueryConsSearchSelector] =
     useState(initialConsQuery);
   const [queryExtSearchSelector, setQueryExtSearchSelector] =
     useState(initialExtWorkQuery);
-
+  const [queryPartsSearchSelector, setQueryPartsSearchSelector] =
+    useState(initialPartsQuery);
   // Once parts are selected to add clear the search results
   const clearFilteredData = () => {
     setMasterData([]);
@@ -1472,7 +1975,7 @@ function RepairServiceEstimate(props) {
                   className="mr-3 ml-2 text-white"
                   style={{ fontSize: "20px" }}
                 >
-                  Service Estimation Header
+                  Estimation Header
                 </span>
                 <div className="btn-sm cursor text-white">
                   <Tooltip title="Edit">
@@ -1825,12 +2328,389 @@ function RepairServiceEstimate(props) {
                       className="custom-tabs-div"
                       onChange={handleChange}
                     >
+                      {activeElement.builderType === WITH_PARTS && (
+                        <Tab label="Parts" value="parts" />
+                      )}
                       <Tab label="Labor" value="labor" />
                       <Tab label="Consumables" value="consumables" />
                       <Tab label="External Work" value="extwork" />
                       <Tab label="Other misc." value="othrMisc" />
                     </TabList>
                   </Box>
+                  <TabPanel value="parts">
+                    {!partsViewOnly ? (
+                      <div className="row mt-2 input-fields">
+                        <div className="col-md-4 col-sm-4">
+                          <div class="form-group mt-3">
+                            <label className="text-light-dark font-size-12 font-weight-600">
+                              JOB CODE
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              class="form-control border-radius-10 text-primary"
+                              value={partsData.jobCode}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div class="form-group mt-3">
+                            <label className="text-light-dark font-size-12 font-weight-600">
+                              JOB OPERATION
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              class="form-control border-radius-10 text-primary"
+                              value={partsData.jobCodeDescription}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div class="form-group mt-3">
+                            <label className="text-light-dark font-size-12 font-weight-600">
+                              DESCRIPTION
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              class="form-control border-radius-10 text-primary"
+                              value={partsData.jobOperation}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div class="form-group mt-3">
+                            <label className="text-light-dark font-size-12 font-weight-600">
+                              COMPONENT CODE
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              class="form-control border-radius-10 text-primary"
+                              value={partsData.componentCode}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group mt-3">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              PRICE METHOD
+                            </label>
+                            <Select
+                              onChange={(e) =>
+                                setPartsData({
+                                  ...partsData,
+                                  pricingMethod: e,
+                                })
+                              }
+                              options={priceMethodOptions}
+                              value={partsData.pricingMethod}
+                              styles={FONT_STYLE_SELECT}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div class="form-group mt-3">
+                            <label className="text-light-dark font-size-12 font-weight-600">
+                              USER
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              class="form-control border-radius-10 text-primary"
+                              value={partsData.user}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-12">
+                          <div class="form-group mt-3 mb-0 text-right">
+                            <button
+                              type="button"
+                              className="btn btn-light bg-primary text-white"
+                              onClick={createPartlistAndUpdate}
+                              disabled={!partsData.pricingMethod}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="row mt-4">
+                          
+                          <ReadOnlyField
+                            label="JOB OPERATION"
+                            value={partsData.jobOperation}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="JOB CODE"
+                            value={partsData.jobCode}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="DESCRIPTION"
+                            value={partsData.description}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="COMPONENT CODE"
+                            value={partsData.componentCode}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="PRICE METHOD"
+                            value={partsData.pricingMethod?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="USER"
+                            value={partsData.user}
+                            className="col-md-4 col-sm-4"
+                          />
+                        </div>
+                        <div className="card border mt-4 px-4">
+                          <div className="row align-items-center">
+                            <div className="col-8">
+                              <div className="d-flex align-items-center w-100">
+                                <div
+                                  className="d-flex mr-3 col-auto pl-0"
+                                  style={{ whiteSpace: "pre" }}
+                                >
+                                  <h5 className="mr-2 mb-0 text-black">
+                                    <span>Parts Table</span>
+                                  </h5>
+                                  {/* <span>Version {selectedVersion.value}</span> */}
+                                </div>
+                                <SearchComponent
+                                  querySearchSelector={queryPartsSearchSelector}
+                                  setQuerySearchSelector={
+                                    setQueryPartsSearchSelector
+                                  }
+                                  clearFilteredData={clearFilteredData}
+                                  handleSnack={handleSnack}
+                                  searchAPI={sparePartSearch}
+                                  searchClick={() =>
+                                    handleQuerySearchClick("parts")
+                                  }
+                                  options={SPAREPART_SEARCH_Q_OPTIONS}
+                                  background={"white"}
+                                  type=""
+                                  buttonText="ADD PART"
+                                />
+                              </div>
+                            </div>
+                            {["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1 && (
+                              <div className="col-4">
+                                <div className="text-right pl-3 py-3">
+                                  <button
+                                    onClick={() => setFileUploadOpen(true)}
+                                    style={{ cursor: "pointer" }}
+                                    className="btn bg-primary text-white mx-2"
+                                  >
+                                    Upload
+                                  </button>
+                                  {/* <button
+                    onClick={() => setAddPartOpen(true)}
+                    className="btn bg-primary text-white "
+                  >
+                    + Add Part
+                  </button> */}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          <DataGrid
+                            sx={GRID_STYLE}
+                            rows={spareparts}
+                            autoHeight
+                            columns={columnsPartList.map((column) => ({
+                              ...column,
+                              filterOperators,
+                            }))}
+                            editMode="row"
+                            page={page}
+                            pageSize={pageSize}
+                            onPageChange={(newPage) =>
+                              fetchPartsOfPartlist(
+                                partListId,
+                                newPage,
+                                pageSize
+                              )
+                            }
+                            onPageSizeChange={(newPageSize) =>
+                              fetchPartsOfPartlist(
+                                partListId,
+                                page,
+                                newPageSize
+                              )
+                            }
+                            onRowEditStart={(e) => setBulkUpdateProgress(true)}
+                            sortingMode="server"
+                            onSortModelChange={(e) => sortPartsTable(e)}
+                            filterMode="server"
+                            onFilterModelChange={onPartsFilterChange}
+                            onRowEditStop={(e) => setBulkUpdateProgress(false)}
+                            paginationMode="server"
+                            loading={partsLoading}
+                            rowsPerPageOptions={[5, 10, 20]}
+                            pagination
+                            rowCount={totalPartsCount}
+                            experimentalFeatures={{ newEditingApi: true }}
+                            // processRowUpdate={(newRow, oldRow) =>
+                            //   processRowUpdate(newRow, oldRow)
+                            // }
+                            // getEstimatedRowHeight={() => 200}
+                            // getRowHeight={() => "auto"}
+                            onProcessRowUpdateError={(error) =>
+                              console.log(error)
+                            }
+                          />
+                          {/* <div className=" my-3 text-right">
+              {(activeElement.builderStatus?.value === "DRAFT" ||
+                activeElement.builderStatus?.value === "REVISED") && (
+                <button
+                  className="btn text-white bg-primary"
+                  onClick={() => setConfirmationOpen(true)}
+                  disabled={bulkUpdateProgress}
+                >
+                  Save
+                </button>
+              )}
+            </div> */}
+                        </div>
+                        {/* Open Modal to add individual spare part to the part list */}
+                        <AddNewSparepartModal
+                          sparePart={sparePart}
+                          setSparePart={setSparePart}
+                          handleIndPartAdd={handleIndPartAdd}
+                          searchAPI={sparePartSearch}
+                          addPartOpen={addPartOpen}
+                          handleAddPartClose={handleAddPartClose}
+                          title={addPartModalTitle}
+                          partFieldViewonly={partFieldViewonly}
+                          setPartFieldViewonly={setPartFieldViewonly}
+                          handleSnack={handleSnack}
+                        />
+
+                        <Modal
+                          show={fileUploadOpen}
+                          onHide={() => setFileUploadOpen(false)}
+                          size="md"
+                          aria-labelledby="contained-modal-title-vcenter"
+                          centered
+                        >
+                          <Modal.Header>
+                            <Modal.Title>Import Files</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body className="p-0">
+                            <div className="p-3">
+                              <div className="add-new-recod">
+                                <div>
+                                  <FontAwesomeIcon
+                                    className="cloudupload"
+                                    icon={faCloudUploadAlt}
+                                  />
+                                  <h6 className="font-weight-500 mt-3">
+                                    Drag and drop files to upload <br /> or
+                                  </h6>
+                                  <FileUploader
+                                    handleChange={handleReadFile}
+                                    name="file"
+                                    types={["xls", "xlsx"]}
+                                    onClick={(event) => {
+                                      event.currentTarget.value = null;
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                              <p className="mt-3">
+                                Single upload file should not be more than 10MB.
+                                Only the .xls, .xlsx file types are allowed
+                              </p>
+                            </div>
+                            <div className="recent-div p-3">
+                              <h6 className="font-weight-600 text-grey mb-0">
+                                RECENT
+                              </h6>
+                              <div className="recent-items mt-3">
+                                <div className="d-flex justify-content-between align-items-center ">
+                                  <p className="mb-0 ">
+                                    <FontAwesomeIcon
+                                      className=" font-size-14"
+                                      icon={faFileAlt}
+                                    />
+                                    <span className="font-weight-500 ml-2">
+                                      Engine Partlist
+                                    </span>
+                                  </p>
+                                  <div className="d-flex align-items-center">
+                                    <div className="white-space custom-checkbox">
+                                      <FormGroup>
+                                        <FormControlLabel
+                                          control={<Checkbox defaultChecked />}
+                                          label=""
+                                        />
+                                      </FormGroup>
+                                    </div>
+                                    <a href="#" className="ml-3 font-size-14">
+                                      <FontAwesomeIcon icon={faShareAlt} />
+                                    </a>
+                                    <a href="#" className="ml-3 font-size-14">
+                                      <FontAwesomeIcon icon={faFolderPlus} />
+                                    </a>
+                                    <a href="#" className="ml-3 font-size-14">
+                                      <FontAwesomeIcon icon={faUpload} />
+                                    </a>
+                                    {/* <a href="#" className="ml-2">
+                        <MuiMenuComponent options={activityOptions} />
+                      </a> */}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="d-flex justify-content-between align-items-center mt-2">
+                                <p className="font-size-12 mb-0">
+                                  2:38pm, 19 Aug 21{" "}
+                                </p>
+                                <p className="font-size-12 mb-0">Part List </p>
+                              </div>
+                            </div>
+                          </Modal.Body>
+                          <div className="row m-0 p-3">
+                            <div className="col-md-6 col-sm-6">
+                              <button
+                                className="btn border w-100 bg-white"
+                                onClick={() => setFileUploadOpen(false)}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <button
+                                className="btn btn-primary w-100"
+                                onClick={handleUploadFile}
+                                style={{ cursor: "pointer" }}
+                              >
+                                <FontAwesomeIcon
+                                  className="mr-2"
+                                  icon={faCloudUploadAlt}
+                                />
+                                Upload
+                              </button>
+                            </div>
+                          </div>
+                        </Modal>
+                      </div>
+                    )}
+                  </TabPanel>
                   <TabPanel value="labor">
                     <div className="col-md-12 col-sm-12">
                       <div className=" d-flex justify-content-between align-items-center">
@@ -3350,7 +4230,61 @@ function RepairServiceEstimate(props) {
               </div> */}
             </Modal.Body>
           </Modal>
-
+          <Modal
+            show={searchResultPartsOpen}
+            onHide={handleSearchResClose}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header>
+              <Modal.Title>Search Results</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="p-0 bg-white">
+              <div className="card w-100 p-2">
+                <div
+                  className=""
+                  style={{
+                    height: 400,
+                    width: "100%",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <DataGrid
+                    sx={{
+                      "& .MuiDataGrid-columnHeaders": {
+                        backgroundColor: "#872ff7",
+                        color: "#fff",
+                      },
+                    }}
+                    rows={masterData}
+                    columns={columnsPartListSearch}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                    checkboxSelection
+                    onSelectionModelChange={(ids) =>
+                      onRowsSelectionHandler(ids)
+                    }
+                    // onCellClick={(e) => handleRowClick(e)}
+                  />
+                </div>
+              </div>
+              <div className="m-2 text-right">
+                <button
+                  className="btn text-white bg-primary mr-2"
+                  onClick={handleSearchResClose}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn text-white bg-primary"
+                  onClick={addSelectedPartsToPartList}
+                >
+                  + Add Selected
+                </button>
+              </div>
+            </Modal.Body>
+          </Modal>
           <Modal
             show={searchResultExtWorkOpen}
             onHide={handleSearchResExtClose}

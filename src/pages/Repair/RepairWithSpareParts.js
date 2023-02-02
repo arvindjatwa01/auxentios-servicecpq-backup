@@ -18,7 +18,7 @@ import $ from "jquery";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
 import { builderSearch, createBuilder } from "services/repairBuilderServices";
-import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
+import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE, WITH_PARTS } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
@@ -31,7 +31,7 @@ export const RepairWithSpareParts = () => {
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
     fetchRecentBuilders(
-      `builderType:BUILDER_WITH_SPAREPART AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
+      `builderType:${WITH_PARTS} AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     );
     if (JSON.parse(localStorage.getItem('exitingType'))) {
       localStorage.removeItem('exitingType');
@@ -124,7 +124,7 @@ export const RepairWithSpareParts = () => {
     try {
       if (searchStr) {
         const res = await builderSearch(
-          `builderType:BUILDER_WITH_SPAREPART AND saved:true AND ${searchStr}`
+          `builderType:${WITH_PARTS} AND saved:true AND ${searchStr}`
         );
         setMasterData(res);
       } else {
@@ -176,9 +176,10 @@ export const RepairWithSpareParts = () => {
       builderId: "",
       bId: "",
       type: "new",
+      builderType: WITH_PARTS
     };
     createBuilder({
-      builderType: "BUILDER_WITH_SPAREPART",
+      builderType: WITH_PARTS,
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",
@@ -203,6 +204,7 @@ export const RepairWithSpareParts = () => {
       builderId: "",
       bId: "",
       type: "fetch",
+      builderType: WITH_PARTS,
     };
     builderDetails.builderId = builder.builderId;
     builderDetails.bId = builder.id;
@@ -337,7 +339,7 @@ export const RepairWithSpareParts = () => {
                     searchClick={handleQuerySearchClick}
                     options={BUILDER_SEARCH_Q_OPTIONS}
                     color="white"
-                    builderType="BUILDER_WITH_SPAREPART"
+                    builderType={WITH_PARTS}
                     buttonText="SEARCH"
                   />
                 </div>

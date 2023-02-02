@@ -18,7 +18,7 @@ import $ from "jquery";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
 import { builderSearch, createBuilder } from "services/repairBuilderServices";
-import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
+import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE, WITHOUT_PARTS } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
@@ -31,7 +31,7 @@ export const RepairWithoutSpareParts = () => {
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
     fetchRecentBuilders(
-      `builderType:BUILDER_WITHOUT_SPAREPART AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
+      `builderType:${WITHOUT_PARTS} AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     );
     if (JSON.parse(localStorage.getItem('exitingType'))) {
       localStorage.removeItem('exitingType');
@@ -124,7 +124,7 @@ export const RepairWithoutSpareParts = () => {
     try {
       if (searchStr) {
         const res = await builderSearch(
-          `builderType:BUILDER_WITHOUT_SPAREPART AND saved:true AND ${searchStr}`
+          `builderType:${WITHOUT_PARTS} AND saved:true AND ${searchStr}`
         );
         setMasterData(res);
       } else {
@@ -178,7 +178,7 @@ export const RepairWithoutSpareParts = () => {
       type: "new",
     };
     createBuilder({
-      builderType: "BUILDER_WITHOUT_SPAREPART",
+      builderType: WITHOUT_PARTS,
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",
@@ -337,7 +337,7 @@ export const RepairWithoutSpareParts = () => {
                     searchClick={handleQuerySearchClick}
                     options={BUILDER_SEARCH_Q_OPTIONS}
                     color="white"
-                    builderType="BUILDER_WITHOUT_SPAREPART"
+                    builderType={WITHOUT_PARTS}
                     buttonText="SEARCH"
                   />
                 </div>

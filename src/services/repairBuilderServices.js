@@ -37,6 +37,7 @@ import {
   CREATE_STANDARD_JOB,
   SEGMENT_REMOVE,
   OPERATION_REMOVE,
+  ADD_PARTLIST_OPERATION,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 var CookiesSetData = Cookies.get("loginTenantDtl");
@@ -778,6 +779,33 @@ export const addPartlist = (builderId, data) => {
     try {
       axios
         .post(ADD_REPAIR_BUILDER_PARTLIST(builderId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> add part list response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("addPrtList > axios err=", err);
+          reject("Error in CreateBuilder axios!");
+        });
+    } catch (error) {
+      console.error("addPartList general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Create Partlist for the builder
+export const addPartlistToOperation = (operationId, data) => {
+  console.log("service repairbuilder > add partlist called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(ADD_PARTLIST_OPERATION(operationId), data, config)
         .then((res) => {
           console.log("repairbuilder -> add part list response: ", res);
           if (res.status === 200) {

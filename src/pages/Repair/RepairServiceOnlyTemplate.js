@@ -21,7 +21,7 @@ import { Tooltip, Typography } from "@mui/material";
 import Moment from "react-moment";
 import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
-import { COLOR_BRONZE, COLOR_GOLD, COLOR_SILVER, GRID_STYLE, TEMPLATE_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { COLOR_BRONZE, COLOR_GOLD, COLOR_SILVER, GRID_STYLE, TEMPLATE_SEARCH_Q_OPTIONS, WITHOUT_PARTS } from "./CONSTANTS";
 import { createBuilder } from "services/repairBuilderServices";
 
 export const RepairServiceOnlyTemplate = () => {
@@ -227,7 +227,7 @@ export const RepairServiceOnlyTemplate = () => {
       type: "new",
     };
     createBuilder({
-      builderType: "BUILDER_WITHOUT_SPAREPART",
+      builderType: WITHOUT_PARTS,
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",

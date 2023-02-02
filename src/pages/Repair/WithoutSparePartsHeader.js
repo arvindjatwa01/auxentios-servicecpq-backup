@@ -94,6 +94,7 @@ function WithoutSparePartsHeader(props) {
     bId: "",
     sId: "",
     oId: "",
+    builderType: ""
   });
   const [selBuilderStatus, setSelBuilderStatus] = useState({
     value: "DRAFT",
@@ -204,6 +205,7 @@ function WithoutSparePartsHeader(props) {
       setBId(state.bId);
       fetchAllDetails(state.bId);
     }
+    setActiveElement({...activeElement, builderType: state.builderType })
   }, []);
 
   const fetchAllDetails = async (builderId) => {
