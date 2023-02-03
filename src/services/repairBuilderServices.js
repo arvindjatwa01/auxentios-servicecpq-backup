@@ -37,7 +37,7 @@ import {
   CREATE_STANDARD_JOB,
   SEGMENT_REMOVE,
   OPERATION_REMOVE,
-  ADD_PARTLIST_OPERATION,
+  PARTLIST_OPERATION,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 var CookiesSetData = Cookies.get("loginTenantDtl");
@@ -805,7 +805,7 @@ export const addPartlistToOperation = (operationId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(ADD_PARTLIST_OPERATION(operationId), data, config)
+        .post(PARTLIST_OPERATION(operationId), data, config)
         .then((res) => {
           console.log("repairbuilder -> add part list response: ", res);
           if (res.status === 200) {
@@ -1257,6 +1257,32 @@ export const fetchPartlistFromBuilder = (builderId) => {
     } catch (error) {
       console.error(
         "in RepairBuilder > fetchPartlistFromBuilder, Err===",
+        error
+      );
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch partlist from Operation (In case of with spare parts option)
+export const fetchPartlistFromOperation = (operationId) => {
+  console.log("RepairBuilder > fetchPartlistFromOperation called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PARTLIST_OPERATION(operationId), config)
+        .then((res) => {
+          console.log("fetchPartlistFromOperation > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchPartlistFromOperation");
+        })
+        .catch((err) => {
+          console.log("fetchPartlistFromOperation > axios err=", err);
+          reject("Error in fetchPartlistFromOperation axios!");
+        });
+    } catch (error) {
+      console.error(
+        "in RepairBuilder > fetchPartlistFromOperation, Err===",
         error
       );
       reject(SYSTEM_ERROR);

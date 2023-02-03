@@ -55,6 +55,7 @@ import {
   fetchPartsFromPartlist,
   addPartlistToOperation,
   addMultiPartsToPartList,
+  fetchPartlistFromOperation,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -98,6 +99,8 @@ import {
   FONT_STYLE,
   FONT_STYLE_SELECT,
   GRID_STYLE,
+  INITIAL_PAGE_NO,
+  INITIAL_PAGE_SIZE,
   LABOR_PRICE_OPTIONS,
   MISC_PRICE_OPTIONS,
   MISC_PRICE_OPTIONS_NOLABOR,
@@ -115,6 +118,7 @@ import AddNewSparepartModal from "./components/AddNewSparePart";
 import { FileUploader } from "react-drag-drop-files";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MuiMenuComponent } from "pages/Operational";
+import { RenderConfirmDialog } from "./components/ConfirmationBox";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -350,6 +354,9 @@ function RepairServiceEstimate(props) {
   const [partsFilterQuery, setPartsFilterQuery] = useState("");
   const [selectedPartsMasterData, setSelectedPartsMasterData] = useState([]);
   const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [rowsToUpdate, setRowsToUpdate] = useState([]);
+  const [partLists, setPartLists] = useState([]);
   // const [rating, setRating] = useState(null);
   const [pageSize, setPageSize] = useState(5);
   const [page, setPage] = useState(0);
@@ -613,21 +620,95 @@ function RepairServiceEstimate(props) {
     await addPartlistToOperation(activeElement.oId, {
       ...(partListId && { id: partListId }),
       activeVersion: true,
-      // operationNumber: activeElement.oId,
+      jobOperation: partsData.jobOperation,
+      componentCode: partsData.componentCode,
+      user: partsData.user,
       jobCode: partsData.jobCode,
       versionNumber: 1,
       description: partsData.description,
-      // partsData.
       pricingMethod: partsData.pricingMethod?.value,
     })
       .then((partlistResult) => {
         setPartListId(partlistResult.id);
+        setPartsViewOnly(true);
+        handleSnack('success', `Partlist updated successfully`)
       })
       .catch((err) => {
         console.log("Error Occurred", err);
-        handleSnack("error", "Error occurred while creating partlist!");
+        handleSnack("error", "Error occurred while updating partlist!");
       });
   };
+
+  // Add the sparepart edited rows to the state variable to update later
+  const processRowUpdate = React.useCallback(
+    (newRow, oldRow) =>
+      new Promise((resolve, reject) => {
+        if (
+          newRow.usagePercentage > 0 &&
+          newRow.usagePercentage <= 100 &&
+          newRow.unitPrice > 0
+        ) {
+          if (
+            newRow.quantity !== oldRow.quantity ||
+            newRow.usagePercentage !== oldRow.usagePercentage ||
+            newRow.comment !== oldRow.comment
+          ) {
+            // console.log(newRow, newRow.quantity !== oldRow.quantity);
+            const index = rowsToUpdate.findIndex(
+              (object) => object.id === newRow.id
+            );
+            newRow.extendedPrice = parseFloat(
+              newRow.quantity * newRow.unitPrice
+            ).toFixed(2);
+            newRow.totalPrice =
+              newRow.usagePercentage > 0
+                ? parseFloat(
+                    newRow.extendedPrice * 0.01 * newRow.usagePercentage
+                  ).toFixed(2)
+                : parseFloat(newRow.extendedPrice).toFixed(2);
+            if (index === -1) {
+              // console.log("add");
+              setRowsToUpdate((prevRows) => [...prevRows, newRow]);
+            } else {
+              rowsToUpdate[index] = newRow;
+            }
+
+            // Save the arguments to resolve or reject the promise later
+            resolve(newRow);
+          } else {
+            // console.log(oldRow);
+            resolve(oldRow); // Nothing was changed
+          }
+        } else {
+          handleSnack("warning", "Usage percentage should be a valid value!");
+          resolve(oldRow);
+        }
+      }),
+    []
+  );
+
+  // Updates the bulk edits
+  const bulkUpdateParts = async () => {
+    setConfirmationOpen(false);
+    if (rowsToUpdate.length === 0) {
+      handleSnack("info", `😐 No modifications to update!`);
+    } else {
+      await addMultiPartsToPartList(partListId, rowsToUpdate)
+        .then((result) => {
+          handleSnack("success", `👏 Parts have been updated!`);
+          setRowsToUpdate([]);
+          if (result) {
+            fetchPartsOfPartlist(partListId, page, pageSize);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setRowsToUpdate([]);
+          handleSnack("error", `😐 Error occurred while adding the parts!`);
+        });
+    }
+  };
+
   const handleIndPartAdd = () => {
     let data = {
       ...(sparePart.id && { id: sparePart.id }),
@@ -760,41 +841,44 @@ function RepairServiceEstimate(props) {
   };
 
   function populatePartsData(result) {
-    // FetchPartsforService(result.id)
-    //   .then((resultParts) => {
-    //     if (resultParts && resultParts.id) {
-    //       setPartsData({
-    //         ...resultParts,
-    //         id: resultParts.id,
-    //         pricingMethod: priceMethodOptions.find(
-    //           (element) => element.value === resultParts.pricingMethod
-    //         ),
-    //         laborCode: laborCodeList.find(
-    //           (element) => element.value === resultParts.laborCode
-    //         ),
-    //         totalPrice: resultParts.totalPrice ? resultParts.totalPrice : 0,
-    //       });
-    //       populatePartstems(resultParts);
-    //       setPartsViewOnly(true);
-    //     }
-    //   })
-    //   .catch((e) => {
-    //     setPartsData({
-    //       ...partsData,
-    //       jobCode: result.jobCode,
-    //       jobCodeDescription: result.jobCodeDescription,
-    //       jobOperation: result.jobOperation
-    //     });
-    //   });
-    setPartsViewOnly(true);
-    setPartsData({
-      ...partsData,
-      jobCode: result.jobCode,
-      jobCodeDescription: result.jobCodeDescription,
-      jobOperation: result.jobOperation,
-      componentCode: result.componentCode,
-    });
-    setPartListId(39);
+    fetchPartlistFromOperation(activeElement.oId)
+      .then((resultPartLists) => {
+        if (resultPartLists && resultPartLists.length > 0) {
+          setPartLists(resultPartLists);
+          setPartsData({
+            ...resultPartLists[0],
+            id: resultPartLists[0].id,
+            pricingMethod: priceMethodOptions.find(
+              (element) => element.value === resultPartLists[0].pricingMethod
+            ),
+          });
+          setPartListId(resultPartLists[0].id);
+
+          fetchPartsOfPartlist(
+            resultPartLists[0].id,
+            INITIAL_PAGE_NO,
+            INITIAL_PAGE_SIZE
+          );
+          setPartsViewOnly(true);
+        } else {
+          setPartsData({
+            ...partsData,
+            jobCode: result.jobCode,
+            description: result.jobOperation,
+            jobOperation: result.jobCodeDescription,
+            componentCode: result.componentCode,
+          });
+        }
+      })
+      .catch((e) => {
+        setPartsData({
+          ...partsData,
+          jobCode: result.jobCode,
+          jobCodeDescription: result.jobCodeDescription,
+          jobOperation: result.jobOperation,
+          componentCode: result.componentCode,
+        });
+      });
     fetchPartsOfPartlist(39, 0, 5);
   }
 
@@ -2363,7 +2447,7 @@ function RepairServiceEstimate(props) {
                               type="text"
                               disabled
                               class="form-control border-radius-10 text-primary"
-                              value={partsData.jobCodeDescription}
+                              value={partsData.jobOperation}
                             />
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
@@ -2377,7 +2461,7 @@ function RepairServiceEstimate(props) {
                               type="text"
                               disabled
                               class="form-control border-radius-10 text-primary"
-                              value={partsData.jobOperation}
+                              value={partsData.description}
                             />
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
@@ -2444,7 +2528,6 @@ function RepairServiceEstimate(props) {
                     ) : (
                       <div>
                         <div className="row mt-4">
-                          
                           <ReadOnlyField
                             label="JOB OPERATION"
                             value={partsData.jobOperation}
@@ -2507,7 +2590,9 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            {["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) > -1 && (
+                            {["DRAFT", "REVISED"].indexOf(
+                              activeElement?.builderStatus
+                            ) > -1 && (
                               <div className="col-4">
                                 <div className="text-right pl-3 py-3">
                                   <button
@@ -2565,28 +2650,35 @@ function RepairServiceEstimate(props) {
                             pagination
                             rowCount={totalPartsCount}
                             experimentalFeatures={{ newEditingApi: true }}
-                            // processRowUpdate={(newRow, oldRow) =>
-                            //   processRowUpdate(newRow, oldRow)
-                            // }
+                            processRowUpdate={(newRow, oldRow) =>
+                              processRowUpdate(newRow, oldRow)
+                            }
                             // getEstimatedRowHeight={() => 200}
                             // getRowHeight={() => "auto"}
                             onProcessRowUpdateError={(error) =>
                               console.log(error)
                             }
                           />
-                          {/* <div className=" my-3 text-right">
-              {(activeElement.builderStatus?.value === "DRAFT" ||
-                activeElement.builderStatus?.value === "REVISED") && (
-                <button
-                  className="btn text-white bg-primary"
-                  onClick={() => setConfirmationOpen(true)}
-                  disabled={bulkUpdateProgress}
-                >
-                  Save
-                </button>
-              )}
-            </div> */}
+                          <div className=" my-3 text-right">
+                            {["DRAFT", "REVISED"].indexOf(
+                              activeElement?.builderStatus
+                            ) > -1 && (
+                              <button
+                                className="btn text-white bg-primary"
+                                onClick={() => setConfirmationOpen(true)}
+                                disabled={bulkUpdateProgress}
+                              >
+                                Save
+                              </button>
+                            )}
+                          </div>
                         </div>
+                        <RenderConfirmDialog
+                          confimationOpen={confirmationOpen}
+                          message={`Pressing 'Yes' will save all the changes to partlist`}
+                          handleNo={() => setConfirmationOpen(false)}
+                          handleYes={bulkUpdateParts}
+                        />
                         {/* Open Modal to add individual spare part to the part list */}
                         <AddNewSparepartModal
                           sparePart={sparePart}
