@@ -163,6 +163,7 @@ import {
   portfolioSearchDropdownList,
   getSearchCustomPortfolio,
   getSearchCustomPortfolioDropdownList,
+  copyMaterToCustomPortfolio,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -476,9 +477,12 @@ export function CreateCustomPortfolio(props) {
 
   const [preSelectedRowsData, setPreSelectedRowsData] = useState([]);
   const [selectedSearchRowsData, setSelectedSearchRowsData] = useState([]);
+  const [selectedSearchMasterData, setSelectedSearchMasterData] = useState([])
   const [searchedPortfolioItemsData, setSearchedPortfolioItemsData] = useState([]);
   const [currentSearchExpendPortfolioItemRow, setCurrentSearchExpendPortfolioItemRow] = useState(null)
+  const [currentExpendableItemRow, setCurrentExpendableItemRow] = useState(null);
   const [expendedSubComponent, setExpendedSubComponent] = useState(null);
+  const [expendedSolutionSubComponent, setExpendedSolutionSubComponent] = useState(null);
   const [selectedPortfolioOrSolutionItemsList, setSelectedPortfolioOrSolutionItemsList] = useState([]);
 
   const [coverageData, setCoverageData] = useState({
@@ -582,6 +586,7 @@ export function CreateCustomPortfolio(props) {
   });
 
   const [portfolioId, setPortfolioId] = useState();
+  const [searchedPortfolioId, setSearchedPortfolioId] = useState(0);
   const [currentItemId, setCurrentItemId] = useState();
   const [alignment, setAlignment] = useState("Portfolio");
   const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("");
@@ -839,9 +844,14 @@ export function CreateCustomPortfolio(props) {
 
   const handleItemType = useCallback(
     (e, i) => {
+
       setBundleServiceItemData([]);
+      setSelectedSearchRowsData([]);
       setPortfolioItemData([]);
+      setSearchedPortfolioItemsData([]);
       setSelectedItemType(e.value);
+
+
 
       let tempArray = [...querySearchSelector];
       setQuerySearchSelector([{
@@ -2705,7 +2715,7 @@ export function CreateCustomPortfolio(props) {
         netService: editAbleItemPriceData.netService,
         customPortfolio: {
           // editAbleItemPriceData.customPortfolio,
-          portfolioId: portfolioId
+          portfolioId: portfolioId != null ? portfolioId : 1
         },
         // tenantId: editAbleItemPriceData.tenantId,
         tenantId: 74,
@@ -2962,7 +2972,7 @@ export function CreateCustomPortfolio(props) {
             serviceEscalation: 0,
             withBundleService: bundleServiceNeed,
             customPortfolio: {
-              portfolioId: portfolioId
+              portfolioId: portfolioId != null ? portfolioId : 1
             },
             tenantId: 74,
             partsRequired: true,
@@ -3116,7 +3126,7 @@ export function CreateCustomPortfolio(props) {
             serviceEscalation: 0,
             withBundleService: bundleServiceNeed,
             customPortfolio: {
-              portfolioId: portfolioId
+              portfolioId: portfolioId != null ? portfolioId : 1
             },
             tenantId: 74,
             partsRequired: true,
@@ -3295,6 +3305,9 @@ export function CreateCustomPortfolio(props) {
           }
         }
       }
+      if (showAddCustomPortfolioItemModelPopup) {
+        setShowAddCustomPortfolioItemModelPopup(false)
+      }
     } catch (error) {
       console.log("err in handleItemEditSave", error);
       toast("😐" + error, {
@@ -3371,7 +3384,8 @@ export function CreateCustomPortfolio(props) {
     });
     // data.associatedServiceOrBundle?.map((bundleAndService, i)
     setTabs("1");
-    setItemModelShow(true);
+    // setItemModelShow(true);
+    setShowAddCustomPortfolioItemModelPopup(true)
     setPortfolioItemDataEditable(true);
     setPassItemEditRowData({ ...row, _customItemId: row.customItemId });
 
@@ -7888,10 +7902,10 @@ export function CreateCustomPortfolio(props) {
 
         }
 
-        setSelectedSolutionItems(itemsArrData);
+        setSelectedSearchMasterData(itemsArrData)
+        // setSelectedSolutionItems(itemsArrData);
         setTempBundleItems(itemsArrData);
-        setSearchedPortfolioItemsData(itemsArrData);
-        setPreSelectedRowsData(itemsArrData);
+        // setSearchedPortfolioItemsData(itemsArrData);
 
         // console.log("result.customItems ", result.customItems[i].customItemId, result.customItems[i].customItemHeaderModel.bundleFlag)
 
@@ -8299,6 +8313,133 @@ export function CreateCustomPortfolio(props) {
     console.log("event and row is ", state.selectedRows)
     setSelectedSearchRowsData(state.selectedRows)
   }
+
+  const handleAddSearchPortfolioSolutionItems = async () => {
+
+    if (selectedItemType === "PORTFOLIO") {
+      let myNewArray = [];
+      for (let i = 0; i < selectedSearchRowsData.length; i++) {
+        if ("portfolioId" in selectedSearchRowsData[i]) {
+          var dataIs = `portfolio_id=${selectedSearchRowsData[i].portfolioId}&custom_portfolio_id=${portfolioId != null ? portfolioId : 0}`;
+          copyMaterToCustomPortfolio(dataIs)
+            .then((res) => {
+              var myArr = [];
+              var customItemArr = [];
+              if (res.status === 200) {
+                var result = res.data;
+
+                console.log("result is ----- ", result)
+                let itemsArrData = [];
+                if (result.customItems.length > 0) {
+                  for (let i = 0; i < result.customItems.length; i++) {
+                    if (result.customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
+                      let myObj = result.customItems[i];
+                      let expendedArrObj = [];
+                      if (result.itemRelations != null) {
+                        if (result.itemRelations.length > 0) {
+                          for (let b = 0; b < result.itemRelations.length; b++) {
+                            if (result.customItems[i].customItemId == result.itemRelations[b].portfolioItemId) {
+
+                              for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+                                let bundleObj = result.customItems.find((objBundle, i) => {
+                                  if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
+
+                                    return objBundle; // stop searching
+                                  }
+                                });
+                                expendedArrObj.push(bundleObj);
+                              }
+
+                              for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+
+                                let serviceObj = result.customItems.find((objService, i) => {
+                                  if (objService.customItemId == result.itemRelations[b].services[d]) {
+
+                                    return objService; // stop searching
+                                  }
+                                });
+                                expendedArrObj.push(serviceObj);
+                              }
+
+                            }
+                            myObj.associatedServiceOrBundle = expendedArrObj;
+                            itemsArrData.push(myObj);
+                          }
+                        } else {
+                          myObj.associatedServiceOrBundle = expendedArrObj;
+                          itemsArrData.push(myObj);
+                        }
+                      } else {
+                        myObj.associatedServiceOrBundle = expendedArrObj;
+                        itemsArrData.push(myObj);
+                      }
+                    }
+                  }
+                  myArr.push(...itemsArrData)
+                }
+
+                for (let k = 0; k < result.customItems.length; k++) {
+                  customItemArr.push({ customItemId: result.customItems[k].customItemId })
+                }
+                setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemArr])
+                let cloneArr = []
+                console.log("my arrr issssssssssss ", myArr);
+                myArr.map((data, i) => {
+                  console.log("data: ", data)
+                  const exist = selectedSearchMasterData.some(item =>
+                    item.customItemId === data.customItemId)
+                  console.log("exist: ", exist)
+                  if (!exist) {
+                    cloneArr.push(data)
+                  }
+                })
+                setSelectedSearchMasterData([...selectedSearchMasterData, ...cloneArr])
+              }
+            })
+        }
+      }
+      setSearchedPortfolioItemsData([])
+      // copyMaterToCustomPortfolio("portfolio_id")
+    } else {
+      var _selectedSearchRowsData = [...selectedSearchRowsData];
+      let cloneArr = []
+      selectedSearchRowsData.map((data, i) => {
+        console.log("data: ", data)
+        const exist = selectedSearchMasterData.some(item =>
+          item.customItemId === data.customItemId)
+        console.log("exist: ", exist)
+        if (!exist) {
+          cloneArr.push(data)
+        }
+      })
+
+      var customItemArr = [];
+      var customItemIds = [];
+      for (let k = 0; k < _selectedSearchRowsData.length; k++) {
+        customItemArr.push({ customItemId: _selectedSearchRowsData[k].customItemId })
+        if (_selectedSearchRowsData[k].associatedServiceOrBundle.length > 0) {
+          for (let l = 0; l < _selectedSearchRowsData[k].associatedServiceOrBundle.length; l++) {
+            customItemArr.push({ customItemId: _selectedSearchRowsData[k].associatedServiceOrBundle[l].customItemId })
+          }
+        }
+      }
+      customItemArr.map((data, index) => {
+        const customIdExits = selectedSolutionCustomItems.some(item => item.customItemId === data.customItemId);
+        if (!customIdExits) {
+          customItemIds.push(data);
+        }
+      })
+
+      setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemIds])
+      setSelectedSearchMasterData([...selectedSearchMasterData, ...cloneArr])
+      setSearchedPortfolioItemsData([])
+    }
+
+
+  }
+
+  console.log("selectedSearchMasterData ------------ ", selectedSearchMasterData)
 
   useEffect(() => {
     if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
@@ -8841,7 +8982,7 @@ export function CreateCustomPortfolio(props) {
               serviceEscalation: itemsPrice.serviceEscalation,
               withBundleService: itemsPrice.withBundleService,
               customPortfolio: {
-                portfolioId: portfolioId
+                portfolioId: portfolioId != null ? portfolioId : 1
               },
               // tenantId: itemsPrice.tenantId,
               tenantId: 74,
@@ -9127,6 +9268,183 @@ export function CreateCustomPortfolio(props) {
 
   }
 
+  const handleAddBundleServiceForSolutionItem = async () => {
+    let reqObj = {};
+    for (let i = 0; i < tempBundleItems.length; i++) {
+      createdItemId = tempBundleItems[i].customItemId;
+      if (tempBundleItems[i].customItemId === currentItemId) {
+        reqObj = {
+          itemId: tempBundleItems[i].customItemId,
+          standardJobId: itemPriceData.standardJobId,
+          repairKitId: itemPriceData.repairKitId,
+          itemPriceDataId: itemPriceData.customItemPriceDataId
+        }
+        break;
+      }
+    }
+    var createdItemId = 0;
+    var createdNewCustomItems = [];
+    for (let i = 0; i < addBundleServiceItem2.length; i++) {
+      console.log("i is :", i);
+      var customItemsIdData = [];
+      var customPriceIdArr = [];
+      var customPriceIdIs = 0;
+      var repairKitIdIs = "";
+      var standardJobIdIs = "";
+
+      if (addBundleServiceItem2[i].itemBodyModel.itemPrices.length > 0) {
+
+        for (let j = 0; j < addBundleServiceItem2[i].itemBodyModel.itemPrices.length; j++) {
+
+          /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+          var itemsPrice = await itemPriceDataId(addBundleServiceItem2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+          console.log("item price is before : ", itemsPrice)
+
+          let itemPriceObj = {
+            customItemPriceDataId: 0,
+            quantity: parseInt(itemsPrice.quantity),
+            standardJobId: itemsPrice.standardJobId,
+            repairKitId: itemsPrice.repairKitId,
+            templateDescription: itemsPrice.templateDescription,
+            repairOption: itemsPrice.repairOption,
+            additional: itemsPrice.additional,
+            partListId: itemsPrice.partListId,
+            serviceEstimateId: itemsPrice.serviceEstimateId,
+            numberOfEvents: 0,
+            priceMethod: itemsPrice.priceMethod,
+            priceType: itemsPrice.priceType,
+            listPrice: itemsPrice.listPrice,
+            priceEscalation: itemsPrice.priceEscalation,
+            calculatedPrice: itemsPrice.calculatedPrice,
+            flatPrice: itemsPrice.flatPrice,
+            year: itemsPrice.year,
+            noOfYear: parseInt(itemsPrice.noOfYear),
+            sparePartsPrice: itemsPrice.sparePartsPrice,
+            sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+            servicePrice: itemsPrice.totalPrice,
+            labourPrice: itemsPrice.labourPrice,
+            labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+            miscPrice: itemsPrice.miscPrice,
+            miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+            totalPrice: itemsPrice.totalPrice,
+            netService: itemsPrice.netService,
+            additionalPriceType: itemsPrice.additionalPriceType,
+            additionalPriceValue: itemsPrice.additionalPriceValue,
+            discountType: itemsPrice.discountType,
+            discountValue: itemsPrice.discountValue,
+            recommendedValue: itemsPrice.recommendedValue,
+            startUsage: itemsPrice.startUsage,
+            endUsage: itemsPrice.endUsage,
+            sparePartsEscalation: itemsPrice.sparePartsEscalation,
+            labourEscalation: itemsPrice.labourEscalation,
+            miscEscalation: itemsPrice.miscEscalation,
+            serviceEscalation: itemsPrice.serviceEscalation,
+            withBundleService: itemsPrice.withBundleService,
+            customPortfolio: {
+              portfolioId: portfolioId != null ? portfolioId : 1
+            },
+            // tenantId: itemsPrice.tenantId,
+            tenantId: 74,
+            partsRequired: itemsPrice.partsRequired,
+            labourRequired: itemsPrice.labourRequired,
+            miscRequired: itemsPrice.miscRequired,
+            serviceRequired: itemsPrice.serviceRequired,
+            inclusionExclusion: itemsPrice.inclusionExclusion
+          }
+
+          const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
+
+          customItemsIdData.push(createPriceForCustomItem.data)
+          customPriceIdArr.push({
+            customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+          })
+
+          customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+          repairKitIdIs = createPriceForCustomItem.data.standardJobId;
+          standardJobIdIs = createPriceForCustomItem.data.repairKitId;
+        }
+
+      }
+
+      let customItemObj = {
+        customItemId: 0,
+        itemName: addBundleServiceItem2[i].itemName,
+        customItemHeaderModel: {
+          customItemHeaderId: 0,
+          itemHeaderDescription: addBundleServiceItem2[i].itemHeaderModel.itemHeaderDescription,
+          bundleFlag: addBundleServiceItem2[i].itemHeaderModel.bundleFlag,
+          withBundleService: addBundleServiceItem2[i].itemHeaderModel.withBundleService,
+          portfolioItemId: currentItemId,
+          reference: addBundleServiceItem2[i].itemHeaderModel.reference,
+          itemHeaderMake: addBundleServiceItem2[i].itemHeaderModel.itemHeaderMake,
+          itemHeaderFamily: addBundleServiceItem2[i].itemHeaderModel.itemHeaderFamily,
+          model: addBundleServiceItem2[i].itemHeaderModel.model,
+          prefix: addBundleServiceItem2[i].itemHeaderModel.prefix,
+          type: addBundleServiceItem2[i].itemHeaderModel.type,
+          additional: addBundleServiceItem2[i].itemHeaderModel.additional,
+          currency: addBundleServiceItem2[i].itemHeaderModel.currency,
+          netPrice: addBundleServiceItem2[i].itemHeaderModel.netPrice,
+          itemProductHierarchy: addBundleServiceItem2[i].itemHeaderModel.itemProductHierarchy,
+          itemHeaderGeographic: addBundleServiceItem2[i].itemHeaderModel.itemHeaderGeographic,
+          responseTime: addBundleServiceItem2[i].itemHeaderModel.responseTime,
+          usage: addBundleServiceItem2[i].itemHeaderModel.usage,
+          validFrom: addBundleServiceItem2[i].itemHeaderModel.validFrom,
+          validTo: addBundleServiceItem2[i].itemHeaderModel.validTo,
+          estimatedTime: addBundleServiceItem2[i].itemHeaderModel.estimatedTime,
+          servicePrice: addBundleServiceItem2[i].itemHeaderModel.servicePrice,
+          status: addBundleServiceItem2[i].itemHeaderModel.status,
+          componentCode: addBundleServiceItem2[i].itemHeaderModel.componentCode,
+          componentDescription: addBundleServiceItem2[i].itemHeaderModel.componentDescription,
+          serialNumber: addBundleServiceItem2[i].itemHeaderModel.serialNumber,
+          itemHeaderStrategy: addBundleServiceItem2[i].itemHeaderModel.itemHeaderStrategy,
+          variant: addBundleServiceItem2[i].itemHeaderModel.variant,
+          itemHeaderCustomerSegment: addBundleServiceItem2[i].itemHeaderModel.itemHeaderCustomerSegment,
+          jobCode: addBundleServiceItem2[i].itemHeaderModel.jobCode,
+          preparedBy: addBundleServiceItem2[i].itemHeaderModel.preparedBy,
+          approvedBy: addBundleServiceItem2[i].itemHeaderModel.approvedBy,
+          preparedOn: addBundleServiceItem2[i].itemHeaderModel.preparedOn,
+          revisedBy: addBundleServiceItem2[i].itemHeaderModel.revisedBy,
+          revisedOn: addBundleServiceItem2[i].itemHeaderModel.revisedOn,
+          salesOffice: addBundleServiceItem2[i].itemHeaderModel.salesOffice,
+          offerValidity: addBundleServiceItem2[i].itemHeaderModel.offerValidity,
+          serviceChargable: addBundleServiceItem2[i].itemHeaderModel.serviceChargable,
+          serviceOptional: addBundleServiceItem2[i].itemHeaderModel.serviceOptional
+        },
+        customItemBodyModel: {
+          customItemBodyId: 0,
+          itemBodyDescription: addBundleServiceItem2[i].itemBodyModel.itemBodyDescription,
+          spareParts: addBundleServiceItem2[i].itemBodyModel.spareParts,
+          labours: addBundleServiceItem2[i].itemBodyModel.labours,
+          miscellaneous: addBundleServiceItem2[i].itemBodyModel.miscellaneous,
+          taskType: addBundleServiceItem2[i].itemBodyModel.taskType,
+          solutionCode: addBundleServiceItem2[i].itemBodyModel.solutionCode,
+          usageIn: addBundleServiceItem2[i].itemBodyModel.usageIn,
+          usage: addBundleServiceItem2[i].itemBodyModel.usage,
+          year: addBundleServiceItem2[i].itemBodyModel.year,
+          avgUsage: addBundleServiceItem2[i].itemBodyModel.avgUsage,
+          unit: addBundleServiceItem2[i].itemBodyModel.unit,
+          frequency: addBundleServiceItem2[i].itemBodyModel.frequency,
+          customItemPrices: customPriceIdArr
+        }
+      }
+
+      const itemRes = await customItemCreation(customItemObj)
+      var customItemIds = []
+      if (itemRes.status === 200) {
+        createdNewCustomItems.push(itemRes.data)
+        let _selectedSearchMasterData = [...selectedSearchMasterData];
+        var arrIndex = _selectedSearchMasterData.findIndex(data => data.itemId === currentExpendableItemRow.itemId)
+        _selectedSearchMasterData[arrIndex].associatedServiceOrBundle.push(itemRes.data)
+        customItemIds.push({ customItemId: itemRes.data.customItemId })
+      }
+    }
+    setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemIds]);
+    setAddBundleServiceItem3([...addBundleServiceItem3, ...createdNewCustomItems]);
+    setAddBundleServiceItem1([])
+  }
+
+
   const handleAddBundleServiceItemsInExpendData = async () => {
     try {
       if (currentSearchExpendPortfolioItemRow != null) {
@@ -9229,7 +9547,7 @@ export function CreateCustomPortfolio(props) {
                   serviceEscalation: itemsPrice.serviceEscalation,
                   withBundleService: itemsPrice.withBundleService,
                   customPortfolio: {
-                    portfolioId: portfolioId
+                    portfolioId: portfolioId != null ? portfolioId : 1
                   },
                   // tenantId: itemsPrice.tenantId,
                   tenantId: 74,
@@ -10263,6 +10581,213 @@ export function CreateCustomPortfolio(props) {
       ),
     },
   ];
+
+  const solutionItemsColumns = [
+
+    {
+      name: (
+        <>
+          <div className="d-flex align-items-baseline">
+            <span className="portfolio-icon mr-1">
+              <svg style={{ width: "11px" }}
+                id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 119.30736 133.59966"
+              >
+                <path
+                  className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                  d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+                />
+              </svg>
+            </span>
+            <p className="mb-0 font-size-12 font-weight-500">Solution Sequence</p>
+          </div>
+        </>
+      ),
+      selector: (row) => row.customItemId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemId,
+    },
+    {
+      name: (
+        <>
+          <div>Solution ID</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Solution Description</div>
+        </>
+      ),
+      selector: (row) => row.customItemHeaderModel?.itemHeaderDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemHeaderModel?.itemHeaderDescription,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+    },
+    {
+      name: (
+        <>
+          <div>Task Type</div>
+        </>
+      ),
+      selector: (row) => row.customItemBodyModel.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemBodyModel.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.customItemBodyModel?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemBodyModel?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price (per one)</div>
+        </>
+      ),
+      selector: (row) => row.customItemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Parts</div>
+        </>
+      ),
+      selector: (row) => row.customItemHeaderModel?.additional,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemHeaderModel?.additional,
+    },
+    {
+      name: (
+        <>
+          <div>Net Service</div>
+        </>
+      ),
+      selector: (row) => row.customItemBodyModel?.partsprice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemBodyModel?.partsprice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.customItemHeaderModel?.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemHeaderModel?.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.customItemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemHeaderModel?.comments,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.customItemBodyModel?.type,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.customItemBodyModel?.type,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <div>
+            <Tooltip title="View">
+              <Link to="#" className="px-1" onClick={(e) => handleEditPortfolioItem(e, row)}>
+                <VisibilityOutlinedIcon />
+              </Link>
+            </Tooltip>
+          </div>
+          <div>
+            <DropdownButton
+              className="customDropdown ml-2 width-p"
+              id="dropdown-item-button"
+            >
+              <Dropdown.Item className=" cursor" data-toggle="modal" data-target="#myModal12">
+                <Tooltip title="Inclusion">
+                  <Link to="#" className="px-1" onClick={(e) => Inclusion_Exclusion(e, row)} >
+                    <img src={cpqIcon}></img><span className="ml-2">Inclusion/Exclusion</span>
+                  </Link>
+                </Tooltip>
+              </Dropdown.Item>
+              <Dropdown.Item className="" onClick={(e) => handleServiceItemDelete(e, row)}>
+                <Tooltip title="Delete">
+                  <Link to="#" className="px-1">
+                    <svg
+                      data-name="Layer 41"
+                      id="Layer_41"
+                      viewBox="0 0 50 50"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title />
+                      <path
+                        className="cls-1"
+                        d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                      />
+                      <path
+                        className="cls-1"
+                        d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                      />
+                      <path
+                        className="cls-1"
+                        d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                      />
+                    </svg><span className="ml-2">Delete</span>
+                  </Link>
+                </Tooltip>
+              </Dropdown.Item>
+            </DropdownButton>
+          </div>
+        </div>
+      ),
+    },
+
+  ]
 
   const searchItemsColumns = [
     {
@@ -11987,6 +12512,9 @@ export function CreateCustomPortfolio(props) {
       });
       return;
     }
+    if (showAddCustomPortfolioItemModelPopup) {
+      setShowAddCustomPortfolioItemModelPopup(false)
+    }
 
   };
   const getPriceCalculatorDataFun = (data) => {
@@ -12768,7 +13296,7 @@ export function CreateCustomPortfolio(props) {
     </div>
   );
 
-  const ExpandedComponentOfSearchedPort = ({ data }) => (
+  const SolutionExpendItemsData = ({ data }) => (
     <>
       <div className="p-5 border-bottom">
         <div className="border border-radius-10">
@@ -12809,6 +13337,61 @@ export function CreateCustomPortfolio(props) {
                 data={data.associatedServiceOrBundle}
                 customStyles={customStyles}
                 expandableRows
+                // selectableRows
+                expandableRowExpanded={(row) => (row === expendedSolutionSubComponent)}
+                expandOnRowClicked
+                onRowClicked={(row) => setExpendedSolutionSubComponent(row)}
+                expandableRowsComponent={ExpendSolutionComponentCodeData}
+                onRowExpandToggled={(bool, row) => setExpendedSolutionSubComponent(row)}
+                pagination
+              />
+            </> : <></>}
+        </div>
+      </div>
+    </>
+  );
+
+  const ExpandedComponentOfSearchedPort = ({ data }) => (
+    <>
+      <div className="p-5 border-bottom">
+        <div className="border border-radius-10">
+          <div className="d-flex align-items-center justify-content-between p-3">
+            <div className="d-flex align-items-center">
+              <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
+              <div className="d-flex align-items-center">
+                <a href="#" className="mr-2">
+                  <span><ModeEditOutlineOutlinedIcon /></span>
+                </a>
+                <a href="#" className="mr-2">
+                  <span><ShareOutlinedIcon /></span>
+                </a>
+                {/* <a href="#" className="">
+                  <span><SearchIcon /></span>
+                </a> */}
+              </div>
+            </div>
+            <div className="border-left d-flex align-items-center">
+              <a
+                href={undefined}
+                style={{ whiteSpace: "pre" }}
+                className="btn-sm cursor"
+              // onClick={showAddBundleServiceItemPopup}
+              >
+                <span className="mr-2">
+                  <AddIcon />
+                </span>
+                Add
+              </a>
+            </div>
+          </div>
+          {data.associatedServiceOrBundle ?
+            <>
+              <DataTable
+                title=""
+                columns={searchItemsExpendedColumns}
+                data={data.associatedServiceOrBundle}
+                customStyles={customStyles}
+                expandableRows
                 selectableRows
                 expandableRowExpanded={(row) => (row === expendedSubComponent)}
                 expandOnRowClicked
@@ -12825,9 +13408,8 @@ export function CreateCustomPortfolio(props) {
 
   );
 
-  const ExpandedComponentCodeData = ({ data }) => (
+  const ExpendSolutionComponentCodeData = ({ data }) => (
     <div className="p-5">
-      {console.log("expendedComponent data ", data)}
       <div className="border border-radius-10">
         <div className="d-flex align-items-center border-bottom justify-content-between p-3">
           <div className="d-flex align-items-center">
@@ -12899,7 +13481,82 @@ export function CreateCustomPortfolio(props) {
         </ul>
       </div>
     </div>
-  )
+  );
+
+  const ExpandedComponentCodeData = ({ data }) => (
+    <div className="p-5">
+      <div className="border border-radius-10">
+        <div className="d-flex align-items-center border-bottom justify-content-between p-3">
+          <div className="d-flex align-items-center">
+            <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Components</h6>
+            <div className="d-flex align-items-center">
+              <a href="#" className="mr-2">
+                <span><ModeEditOutlineOutlinedIcon /></span>
+              </a>
+              <a href="#" className="mr-2">
+                <span><ShareOutlinedIcon /></span>
+              </a>
+              {/* <a href="#" className="">
+                <span><SearchIcon /></span>
+              </a> */}
+            </div>
+          </div>
+          <div className="border-left d-flex align-items-center">
+            <a
+              href={undefined}
+              style={{ whiteSpace: "pre" }}
+              className="btn-sm cursor"
+            // onClick={showAddComponentDataPopup}
+            >
+              <span className="mr-2">
+                <AddIcon />
+              </span>
+              Add
+            </a>
+          </div>
+        </div>
+        <ul className="mb-0 component-li">
+          {/* {data.itemHeaderModel == undefined ?
+            ((data?.customItemHeaderModel?.componentCode !== "") 
+            || (data?.customItemHeaderModel?.componentCode == null))
+             : ""} */}
+
+          <li className="border-bottom p-3">
+            <div className="d-flex align-items-center">
+              <div class="checkbox mr-3">
+                <input type="checkbox" value=""></input>
+              </div>
+              <p className="mb-0 font-size-14">
+                {data.itemHeaderModel == undefined ?
+                  data?.customItemHeaderModel?.componentCode :
+                  data?.itemHeaderModel?.componentCode}
+                {/* Component Code */}
+                {/* {data?.customItemHeaderModel?.componentCode} */}
+              </p>
+            </div>
+          </li>
+          {/* <li className="border-bottom p-3">
+            <div className="d-flex align-items-center">
+              <div class="checkbox mr-3">
+                <input type="checkbox" value=""></input>
+              </div>
+              <p className="mb-0 font-size-14">
+                Component Code
+              </p>
+            </div>
+          </li>
+          <li className="border-bottom p-3">
+            <div className="d-flex align-items-center">
+              <div class="checkbox mr-3">
+                <input type="checkbox" value=""></input>
+              </div>
+              <p className="mb-0 font-size-14">Component Code</p>
+            </div>
+          </li> */}
+        </ul>
+      </div>
+    </div>
+  );
 
   // const ExpandedComponent = ({ data }) => (
   //     <>
@@ -13634,11 +14291,9 @@ export function CreateCustomPortfolio(props) {
 
   const handleComponentDataSave = async () => {
     try {
-
       if (portfolioId == "") {
         throw "Please Create Solution First.";
       }
-
       // call put API for portfolio item to get price calculator data
       let reqObj = {}
       let itemReqObj = {};
@@ -13996,6 +14651,9 @@ export function CreateCustomPortfolio(props) {
     return finalDateString;
   }
   const handleContinueOfServiceOrBundle = async () => {
+    if (showAddBundleServiceItemsModelPopup) {
+      setShowAddBundleServiceItemsModelPopup(false)
+    }
     setTabs("4")
   }
 
@@ -14060,62 +14718,61 @@ export function CreateCustomPortfolio(props) {
         const portfolioItemsRes = await portfolioSearch(searchStr);
         if (portfolioItemsRes.status === 200) {
           var myArr = [];
+          var searchArray = [];
           var result = portfolioItemsRes.data;
+          for (let p = 0; p < portfolioItemsRes.data.length; p++) {
 
-          for (let a = 0; a < result.length; a++) {
-            let itemsArrData = [];
+            if (portfolioItemsRes.data[p].items.length > 0) {
+              var portfolioObjIs = { portfolioId: portfolioItemsRes.data[p].portfolioId };
+              for (let q = 0; q < portfolioItemsRes.data[p].items.length; q++) {
+                if (portfolioItemsRes.data[p].items[q].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+                  let myObj = portfolioItemsRes.data[p].items[q];
+                  portfolioObjIs = { ...portfolioObjIs, ...myObj, associatedServiceOrBundle: [] }
+                  if (portfolioItemsRes.data[p].itemRelations != null) {
+                    if (portfolioItemsRes.data[p].itemRelations.length > 0) {
+                      for (let r = 0; r < portfolioItemsRes.data[p].itemRelations.length; r++) {
+                        if (portfolioItemsRes.data[p].items[q].itemId === portfolioItemsRes.data[p].itemRelations[r].portfolioItemId) {
 
-            if (result[a].items.length > 0) {
-              for (let i = 0; i < result[a].items.length; i++) {
-                if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
-                  let myObj = result[a].items[i];
-                  let expendedArrObj = [];
-                  if (result[a].itemRelations != null) {
-                    if (result[a].itemRelations.length > 0) {
-                      for (let b = 0; b < result[a].itemRelations.length; b++) {
-                        if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
-
-                          for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
-
-                            let bundleObj = result[a].items.find((objBundle, i) => {
-                              if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
-
+                          // For Bundle Items 
+                          for (let s = 0; s < portfolioItemsRes.data[p].itemRelations[r].bundles.length; s++) {
+                            let bundleObj = portfolioItemsRes.data[p].items.find((objBundle, i) => {
+                              if (objBundle.itemId == portfolioItemsRes.data[p].itemRelations[r].bundles[s]) {
                                 return objBundle; // stop searching
                               }
                             });
-                            expendedArrObj.push(bundleObj);
+                            portfolioObjIs.associatedServiceOrBundle.push(bundleObj);
                           }
 
-                          for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
-
-                            let serviceObj = result[a].items.find((objService, i) => {
-                              if (objService.itemId == result[a].itemRelations[b].services[d]) {
-
+                          // For Service Items 
+                          for (let t = 0; t < portfolioItemsRes.data[p].itemRelations[r].services.length; t++) {
+                            let serviceObj = portfolioItemsRes.data[p].items.find((objService, i) => {
+                              if (objService.itemId == portfolioItemsRes.data[p].itemRelations[r].services[t]) {
                                 return objService; // stop searching
                               }
                             });
-                            expendedArrObj.push(serviceObj);
+                            portfolioObjIs.associatedServiceOrBundle.push(serviceObj);
                           }
-
                         }
-                        myObj.associatedServiceOrBundle = expendedArrObj;
-                        itemsArrData.push(myObj);
                       }
-                    } else {
-                      myObj.associatedServiceOrBundle = expendedArrObj;
-                      itemsArrData.push(myObj);
                     }
-                  } else {
-                    myObj.associatedServiceOrBundle = expendedArrObj;
-                    itemsArrData.push(myObj);
                   }
                 }
               }
-              myArr.push(...itemsArrData)
             }
+
+            console.log("portfolioObjIs ------ ", portfolioObjIs);
+
+            const existsInArr = myArr.some(item => item.itemId === portfolioObjIs.itemId)
+            if (!existsInArr) {
+              myArr.push(portfolioObjIs)
+            }
+            // myArr.push(portfolioObjIs);
           }
+
           let cloneArr = []
           console.log("my arrr issssssssssss ", myArr);
+          var newOne = myArr.filter((item, index) => myArr.indexOf(item) === index);
+          console.log("my arrr newOne ", newOne);
           myArr.map((data, i) => {
             console.log("data: ", data)
             const exist = searchedPortfolioItemsData.some(item =>
@@ -14126,6 +14783,71 @@ export function CreateCustomPortfolio(props) {
             }
           })
           setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+
+          // for (let a = 0; a < result.length; a++) {
+          //   let itemsArrData = [];
+
+          //   if (result[a].items.length > 0) {
+          //     for (let i = 0; i < result[a].items.length; i++) {
+          //       if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+          //         let myObj = result[a].items[i];
+          //         let expendedArrObj = [];
+          //         if (result[a].itemRelations != null) {
+          //           if (result[a].itemRelations.length > 0) {
+          //             for (let b = 0; b < result[a].itemRelations.length; b++) {
+          //               if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
+
+          //                 for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+
+          //                   let bundleObj = result[a].items.find((objBundle, i) => {
+          //                     if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
+
+          //                       return objBundle; // stop searching
+          //                     }
+          //                   });
+          //                   expendedArrObj.push(bundleObj);
+          //                 }
+
+          //                 for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+          //                   let serviceObj = result[a].items.find((objService, i) => {
+          //                     if (objService.itemId == result[a].itemRelations[b].services[d]) {
+
+          //                       return objService; // stop searching
+          //                     }
+          //                   });
+          //                   expendedArrObj.push(serviceObj);
+          //                 }
+
+          //               }
+          //               myObj.associatedServiceOrBundle = expendedArrObj;
+          //               itemsArrData.push(myObj);
+          //             }
+          //           } else {
+          //             myObj.associatedServiceOrBundle = expendedArrObj;
+          //             itemsArrData.push(myObj);
+          //           }
+          //         } else {
+          //           myObj.associatedServiceOrBundle = expendedArrObj;
+          //           itemsArrData.push(myObj);
+          //         }
+          //       }
+          //     }
+          //     myArr.push(...itemsArrData)
+          //   }
+          // }
+          // let cloneArr = []
+          // console.log("my arrr issssssssssss ", myArr);
+          // myArr.map((data, i) => {
+          //   console.log("data: ", data)
+          //   const exist = searchedPortfolioItemsData.some(item =>
+          //     item.itemId === data.itemId)
+          //   console.log("exist: ", exist)
+          //   if (!exist) {
+          //     cloneArr.push(data)
+          //   }
+          // })
+          // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
         } else {
           throw "No information is found for your search, change the search criteria";
         }
@@ -14199,7 +14921,8 @@ export function CreateCustomPortfolio(props) {
               cloneArr.push(data)
             }
           })
-          setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+          // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+          setSearchedPortfolioItemsData(cloneArr)
         } else {
           throw "No information is found for your search, change the search criteria";
         }
@@ -14326,7 +15049,7 @@ export function CreateCustomPortfolio(props) {
   };
 
   const showAddComponentDataPopup = () => {
-    console.log("13048")
+    // console.log("13048")
     setShowAddItemComponentDataModelPopup(true);
   }
 
@@ -16924,22 +17647,54 @@ onChange={handleAdministrativreChange}
                   className="custom-table  card mt-3"
                   style={{ minHeight: 200, height: "auto", width: "100%" }}
                 >
-                  <DataTable
-                    title=""
-                    columns={searchItemsColumns}
-                    data={searchedPortfolioItemsData}
-                    customStyles={customStyles}
-                    expandableRows
-                    selectableRows
-                    // selectableRowSelected={(row) => preSelectedRowsData.includes(row) ? true : false}
-                    onSelectedRowsChange={handleExpendableRowCheckBoxData}
-                    expandableRowExpanded={(row) => (row === currentSearchExpendPortfolioItemRow)}
-                    expandOnRowClicked
-                    onRowClicked={(row) => setCurrentSearchExpendPortfolioItemRow(row)}
-                    expandableRowsComponent={ExpandedComponentOfSearchedPort}
-                    onRowExpandToggled={(bool, row) => setCurrentSearchExpendPortfolioItemRow(row)}
-                    pagination
-                  />
+                  {searchedPortfolioItemsData.length > 0 &&
+                    <>
+                      <DataTable
+                        title=""
+                        columns={searchItemsColumns}
+                        data={searchedPortfolioItemsData}
+                        customStyles={customStyles}
+                        expandableRows
+                        selectableRows
+                        // selectableRowSelected={(row) => preSelectedRowsData.includes(row) ? true : false}
+                        onSelectedRowsChange={handleExpendableRowCheckBoxData}
+                        expandableRowExpanded={(row) => (row === currentSearchExpendPortfolioItemRow)}
+                        expandOnRowClicked
+                        onRowClicked={(row) => setCurrentSearchExpendPortfolioItemRow(row)}
+                        expandableRowsComponent={ExpandedComponentOfSearchedPort}
+                        onRowExpandToggled={(bool, row) => setCurrentSearchExpendPortfolioItemRow(row)}
+                        pagination
+                      />
+                      <div>
+                        <div className="text-right pb-3 pr-4">
+                          <input
+                            onClick={handleAddSearchPortfolioSolutionItems}
+                            className="btn bg-primary text-white"
+                            value="+ Add Selected"
+                            // disabled={!flagIs}
+                            disabled={selectedSearchRowsData.length == 0}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  }
+
+                  {
+                    selectedSearchMasterData.length > 0 &&
+                    <DataTable
+                      title=""
+                      columns={solutionItemsColumns}
+                      data={selectedSearchMasterData}
+                      customStyles={customStyles}
+                      expandableRows
+                      expandableRowExpanded={(row) => (row === currentExpendableItemRow)}
+                      expandOnRowClicked
+                      onRowClicked={(row) => setCurrentExpendableItemRow(row)}
+                      expandableRowsComponent={SolutionExpendItemsData}
+                      onRowExpandToggled={(bool, row) => setCurrentExpendableItemRow(row)}
+                      pagination
+                    />
+                  }
                 </div>
               </div>
 
@@ -18481,7 +19236,8 @@ onChange={handleAdministrativreChange}
                     // }}
                     // onClick={handleCreateCustomItem_SearchResult}
                     disabled={addBundleServiceItem2.length === 0}
-                    onClick={handleAddBundleServiceItemsInExpendData}
+                    // onClick={handleAddBundleServiceItemsInExpendData}
+                    onClick={handleAddBundleServiceForSolutionItem}
                   >
                     Add Selected
                   </button>
