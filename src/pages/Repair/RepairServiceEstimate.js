@@ -3,6 +3,7 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
+import AddIcon from '@mui/icons-material/Add';
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -56,6 +57,7 @@ import {
   addPartlistToOperation,
   addMultiPartsToPartList,
   fetchPartlistFromOperation,
+  createPartlistVersion,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -95,6 +97,7 @@ import {
   CONSEXT_PRICE_OPTIONS_NOLABOR,
   CONSUMABLE_SEARCH_Q_OPTIONS,
   CONS_EXT_PRICE_OPTIONS,
+  ERROR_MAX_VERSIONS,
   EXTWORK_SEARCH_Q_OPTIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
@@ -355,6 +358,8 @@ function RepairServiceEstimate(props) {
   const [selectedPartsMasterData, setSelectedPartsMasterData] = useState([]);
   const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [confirmationVersionOpen, setConfirmationVersionOpen] = useState(false);
+
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
   const [partLists, setPartLists] = useState([]);
   // const [rating, setRating] = useState(null);
@@ -614,6 +619,49 @@ function RepairServiceEstimate(props) {
     setSparePart(initialSparePart);
     setPartFieldViewonly(false);
     setAddPartModalTitle("Add Part");
+  };
+
+  const createPartsTableVersion = async () => {
+    await createPartlistVersion(partListId)
+      .then((result) => {
+        setConfirmationVersionOpen(false);
+        // setSelectedVersion({
+        //   label: "Version " + result.versionNumber,
+        //   value: result.versionNumber,
+        // });
+        fetchPartlistFromOperation(activeElement.oId)
+      .then((resultPartLists) => {
+        if (resultPartLists && resultPartLists.length > 0) {
+          setPartLists(resultPartLists);
+          setPartsData({
+            ...result,
+            id: result.id,
+            pricingMethod: priceMethodOptions.find(
+              (element) => element.value === result.pricingMethod
+            ),
+          });
+          setPartListId(result.id);
+          fetchPartsOfPartlist(
+            result.id,
+            INITIAL_PAGE_NO,
+            INITIAL_PAGE_SIZE
+          );
+          setPartsViewOnly(true);
+        handleSnack(
+          "success",
+          `Version ${result.versionNumber} created successfully`
+        );
+      }
+      })
+      .catch((err) => {
+        setConfirmationVersionOpen(false);
+
+        if (err.message === "Not Allowed")
+          handleSnack("warning", ERROR_MAX_VERSIONS);
+        else
+          handleSnack("error", "Error occurred while creating partlist version");
+      });
+    });
   };
 
   const createPartlistAndUpdate = async () => {
@@ -879,7 +927,6 @@ function RepairServiceEstimate(props) {
           componentCode: result.componentCode,
         });
       });
-    fetchPartsOfPartlist(39, 0, 5);
   }
 
   function populateLaborData(result) {
@@ -2527,7 +2574,33 @@ function RepairServiceEstimate(props) {
                       </div>
                     ) : (
                       <div>
+                        <div className="text-right pl-3 py-3">
+                        {/* <a
+                        href={undefined}
+                        style={{ whiteSpace: "pre" }}
+                        className="btn-sm text-violet cursor"
+                        // onClick={showAddCustomItemPopup}
+                      >
+                        <span className="mr-2">
+                          <AddIcon />
+                        </span>
+                        Add New Partlist
+                      </a> */}
+                      <a
+                        href={undefined}
+                        style={{ whiteSpace: "pre"}}
+                        className="btn-sm text-violet cursor"
+                        onClick={() => setConfirmationVersionOpen(true)}
+                      >
+                        New Version
+                      </a>
+                        {/* <button
+                                  type="button"
+                                  className="btn btn-light text-violet"
+                                  onClick={updateConsumableHeader}>Add New Partlist</button> */}
+                        </div>
                         <div className="row mt-4">
+                        
                           <ReadOnlyField
                             label="JOB OPERATION"
                             value={partsData.jobOperation}
@@ -2559,6 +2632,12 @@ function RepairServiceEstimate(props) {
                             className="col-md-4 col-sm-4"
                           />
                         </div>
+                        <RenderConfirmDialog
+                          confimationOpen={confirmationVersionOpen}
+                          message={`Pressing 'Yes' will create another version of this partlist`}
+                          handleNo={() => setConfirmationVersionOpen(false)}
+                          handleYes={createPartsTableVersion}
+                        />
                         <div className="card border mt-4 px-4">
                           <div className="row align-items-center">
                             <div className="col-8">

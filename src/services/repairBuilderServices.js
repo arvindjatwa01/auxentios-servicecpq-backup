@@ -38,6 +38,7 @@ import {
   SEGMENT_REMOVE,
   OPERATION_REMOVE,
   PARTLIST_OPERATION,
+  CREATE_PARTLIST_VERSION,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 var CookiesSetData = Cookies.get("loginTenantDtl");
@@ -1168,6 +1169,30 @@ export const createPartlistBuilderVersion = (builderId, description) => {
     }
   });
 };
+
+//Create a new partlist version
+export const createPartlistVersion = (partlistId) => {
+  console.log("RepairBuilder > createPartlistVersion called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CREATE_PARTLIST_VERSION(partlistId), {}, config)
+        .then((res) => {
+          console.log("createPartlistVersion > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("createPartlistVersion > axios err=", err);
+          reject("Error in createVersion axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > createPartlistVersion, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 
 //Create a new builder version
 export const createBuilderVersion = (builderId, description) => {
