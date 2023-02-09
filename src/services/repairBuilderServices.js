@@ -39,6 +39,7 @@ import {
   OPERATION_REMOVE,
   PARTLIST_OPERATION,
   CREATE_PARTLIST_VERSION,
+  REMOVE_PARTLIST,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 var CookiesSetData = Cookies.get("loginTenantDtl");
@@ -344,6 +345,32 @@ export const RemoveLaborItem = (laborId, laborItemId) => {
         });
     } catch (error) {
       console.error("removeLaborItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Remove partlist
+export const RemovePartlist = (partlistId) => {
+  console.log("service repairbuilder > removePartList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(REMOVE_PARTLIST(partlistId), config)
+        .then((res) => {
+          console.log("repairbuilder -> removePartList response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the partlist!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("removePartList > axios err=", err);
+          reject("Error in removePartList axios!");
+        });
+    } catch (error) {
+      console.error("removePartList general exception", error);
       reject(SYSTEM_ERROR);
     }
   });

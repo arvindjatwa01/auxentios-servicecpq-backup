@@ -3,7 +3,8 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
-import AddIcon from '@mui/icons-material/Add';
+import EYEIcon from "@mui/icons-material/VisibilityOutlined";
+import AddIcon from "@mui/icons-material/Add";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
@@ -24,7 +25,7 @@ import {
 } from "@mui/x-data-grid";
 import $ from "jquery";
 import React, { useState } from "react";
-import { Modal } from "react-bootstrap";
+import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { default as Select } from "react-select";
 import { useEffect } from "react";
@@ -58,6 +59,7 @@ import {
   addMultiPartsToPartList,
   fetchPartlistFromOperation,
   createPartlistVersion,
+  RemovePartlist,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -285,6 +287,7 @@ function RepairServiceEstimate(props) {
     totalHours: 0,
   });
   const [partsData, setPartsData] = useState({
+    id: "",
     jobCode: "",
     jobOperation: "",
     description: "",
@@ -292,6 +295,9 @@ function RepairServiceEstimate(props) {
     componentCode: "",
     user: "USER1",
   });
+
+  const [selectedVersion, setSelectedVersion] = useState("Version 1");
+
   const [laborItemOpen, setLaborItemOpen] = React.useState(false);
   const [consumableItemOpen, setConsumableItemOpen] = React.useState(false);
   const [extWorkItemOpen, setExtWorkItemOpen] = React.useState(false);
@@ -372,6 +378,7 @@ function RepairServiceEstimate(props) {
   const [spareparts, setSpareparts] = useState([]);
   const [addPartOpen, setAddPartOpen] = useState(false);
   const [laborViewOnly, setLaborViewOnly] = useState(false);
+  const [showParts, setShowParts] = useState(false);
   const [file, setFile] = useState(null);
   const [consumableViewOnly, setConsumableViewOnly] = useState(false);
   const [extWorkViewOnly, setExtWorkViewOnly] = useState(false);
@@ -422,8 +429,99 @@ function RepairServiceEstimate(props) {
     { headerName: "Status", field: "status", flex: 1, width: 130 },
   ];
 
+  const partlistColumns = [
+    {
+      field: "partlistId",
+      headerName: "Partlist Id",
+      flex: 1,
+      width: 70,
+      renderCell: (params) => (
+        <div>
+          {params.value}{" "}
+          <span style={{ fontSize: 9 }}>
+            {"  " + params.row.versionNumber + ".0"}
+          </span>{" "}
+        </div>
+      ),
+    },
+    {
+      field: "componentCode",
+      headerName: "componentCode",
+      flex: 1,
+      width: 130,
+    },
+    {
+      field: "description",
+      headerName: "Description",
+      flex: 1,
+      width: 130,
+    },
+
+    {
+      field: "activeVersion",
+      headerName: "Status",
+      flex: 1,
+      width: 130,
+      renderCell: (params) => (
+        <div>
+          {params.value && (
+            <span
+              style={{
+                backgroundColor: "#00b8b0",
+                color: "white",
+                fontSize: 12,
+                borderRadius: 7,
+                padding: 5,
+              }}
+            >
+              ACTIVE
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <EYEIcon />
+                  {/* <img className="m-1" src={penIcon} alt="Edit" /> */}
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            onClick={() => loadPartlist(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Remove">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
+            label="Delete"
+            onClick={() => handleDeletePartlist(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+      flex: 1,
+      width: 130,
+    },
+  ];
+
   //Columns to display spare parts for the partlist
-  const columnsPartList = [
+  const columnsPartListSpareParts = [
     // { headerName: 'Sl#', field: 'rowNum', flex: 1, },
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
@@ -620,47 +718,51 @@ function RepairServiceEstimate(props) {
     setPartFieldViewonly(false);
     setAddPartModalTitle("Add Part");
   };
-
+  function groupBy(array, property) {
+    var hash = {};
+    for (var i = 0; i < array.length; i++) {
+      if (!hash[array[i][property]]) hash[array[i][property]] = [];
+      hash[array[i][property]].push(array[i]);
+    }
+    return hash;
+  }
   const createPartsTableVersion = async () => {
-    await createPartlistVersion(partListId)
-      .then((result) => {
-        setConfirmationVersionOpen(false);
-        // setSelectedVersion({
-        //   label: "Version " + result.versionNumber,
-        //   value: result.versionNumber,
-        // });
-        fetchPartlistFromOperation(activeElement.oId)
-      .then((resultPartLists) => {
-        if (resultPartLists && resultPartLists.length > 0) {
-          setPartLists(resultPartLists);
-          setPartsData({
-            ...result,
-            id: result.id,
-            pricingMethod: priceMethodOptions.find(
-              (element) => element.value === result.pricingMethod
-            ),
-          });
-          setPartListId(result.id);
-          fetchPartsOfPartlist(
-            result.id,
-            INITIAL_PAGE_NO,
-            INITIAL_PAGE_SIZE
-          );
-          setPartsViewOnly(true);
-        handleSnack(
-          "success",
-          `Version ${result.versionNumber} created successfully`
-        );
-      }
-      })
-      .catch((err) => {
-        setConfirmationVersionOpen(false);
+    await createPartlistVersion(partListId).then((result) => {
+      setConfirmationVersionOpen(false);
+      setSelectedVersion("Version " + result.versionNumber);
+      fetchPartlistFromOperation(activeElement.oId)
+        .then((resultPartLists) => {
+          if (resultPartLists && resultPartLists.length > 0) {
+            // let groupedPartList = groupBy(resultPartLists, "partlistId")
+            // console.log(groupedPartList);
+            setPartLists(resultPartLists);
+            setPartsData({
+              ...result,
+              id: result.id,
+              pricingMethod: priceMethodOptions.find(
+                (element) => element.value === result.pricingMethod
+              ),
+            });
+            setPartListId(result.id);
+            fetchPartsOfPartlist(result.id, INITIAL_PAGE_NO, INITIAL_PAGE_SIZE);
+            setPartsViewOnly(true);
+            handleSnack(
+              "success",
+              `Version ${result.versionNumber} created successfully`
+            );
+          }
+        })
+        .catch((err) => {
+          setConfirmationVersionOpen(false);
 
-        if (err.message === "Not Allowed")
-          handleSnack("warning", ERROR_MAX_VERSIONS);
-        else
-          handleSnack("error", "Error occurred while creating partlist version");
-      });
+          if (err.message === "Not Allowed")
+            handleSnack("warning", ERROR_MAX_VERSIONS);
+          else
+            handleSnack(
+              "error",
+              "Error occurred while creating partlist version"
+            );
+        });
     });
   };
 
@@ -671,15 +773,25 @@ function RepairServiceEstimate(props) {
       jobOperation: partsData.jobOperation,
       componentCode: partsData.componentCode,
       user: partsData.user,
+      // currency: serviceEstimateData.currency,
       jobCode: partsData.jobCode,
       versionNumber: 1,
       description: partsData.description,
       pricingMethod: partsData.pricingMethod?.value,
     })
-      .then((partlistResult) => {
-        setPartListId(partlistResult.id);
+      .then(async (newPartlist) => {
+        await fetchPartlistFromOperation(activeElement.oId).then(
+          (resultPartLists) => {
+            if (resultPartLists && resultPartLists.length > 0) {
+              // let groupedPartList = groupBy(resultPartLists, "partlistId")
+              //   console.log(groupedPartList);
+              setPartLists(resultPartLists);
+            }
+          }
+        );
+        setPartListId(newPartlist.id);
         setPartsViewOnly(true);
-        handleSnack('success', `Partlist updated successfully`)
+        handleSnack("success", `Partlist updated successfully`);
       })
       .catch((err) => {
         console.log("Error Occurred", err);
@@ -787,6 +899,20 @@ function RepairServiceEstimate(props) {
       });
   };
 
+  //Remove partlist
+  const handleDeletePartlist = async (id) => {
+    await RemovePartlist(id)
+      .then((res) => {
+        handleSnack("success", res);
+        setPartListId("");
+        populatePartsData(serviceEstimateData);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack("error", "Error occurred while removing the partlist");
+      });
+  };
+
   const unitOfMeasureOptions = [
     { label: "Hours", value: "HOURS" },
     { label: "Days", value: "DAYS" },
@@ -888,45 +1014,79 @@ function RepairServiceEstimate(props) {
     }
   };
 
+  const loadNewPartList = () => {
+    setPartListId("");
+    setPartsData({
+      id: "",
+      jobCode: serviceEstimateData.jobCode,
+      description: serviceEstimateData.jobOperation,
+      jobOperation: serviceEstimateData.jobCodeDescription,
+      componentCode: serviceEstimateData.componentCode,
+      pricingMethod: "",
+      user: "USER 1",
+    });
+    setPartsViewOnly(false);
+  };
   function populatePartsData(result) {
-    fetchPartlistFromOperation(activeElement.oId)
-      .then((resultPartLists) => {
-        if (resultPartLists && resultPartLists.length > 0) {
-          setPartLists(resultPartLists);
-          setPartsData({
-            ...resultPartLists[0],
-            id: resultPartLists[0].id,
-            pricingMethod: priceMethodOptions.find(
-              (element) => element.value === resultPartLists[0].pricingMethod
-            ),
-          });
-          setPartListId(resultPartLists[0].id);
-
-          fetchPartsOfPartlist(
-            resultPartLists[0].id,
-            INITIAL_PAGE_NO,
-            INITIAL_PAGE_SIZE
-          );
-          setPartsViewOnly(true);
-        } else {
+    if (partListId) {
+      let partListDetails = partLists.filter(
+        (partlist) => partlist.id === partListId
+      );
+      setPartsData({
+        ...partListDetails[0],
+        id: partListDetails[0].id,
+        pricingMethod: priceMethodOptions.find(
+          (element) => element.value === partListDetails[0].pricingMethod
+        ),
+      });
+      setPartListId(partListDetails[0].id);
+      fetchPartsOfPartlist(
+        partListDetails[0].id,
+        INITIAL_PAGE_NO,
+        INITIAL_PAGE_SIZE
+      );
+      setPartsViewOnly(true);
+    } else {
+      fetchPartlistFromOperation(activeElement.oId)
+        .then((resultPartLists) => {
+          if (resultPartLists && resultPartLists.length > 0) {
+            // let groupedPartList = groupBy(resultPartLists, "partlistId")
+            //   console.log(groupedPartList);
+            setPartLists(resultPartLists);
+            setPartsData({
+              ...resultPartLists[0],
+              id: resultPartLists[0].id,
+              pricingMethod: priceMethodOptions.find(
+                (element) => element.value === resultPartLists[0].pricingMethod
+              ),
+            });
+            setPartListId(resultPartLists[0].id);
+            fetchPartsOfPartlist(
+              resultPartLists[0].id,
+              INITIAL_PAGE_NO,
+              INITIAL_PAGE_SIZE
+            );
+            setPartsViewOnly(true);
+          } else {
+            setPartsData({
+              ...partsData,
+              jobCode: result.jobCode,
+              description: result.jobOperation,
+              jobOperation: result.jobCodeDescription,
+              componentCode: result.componentCode,
+            });
+          }
+        })
+        .catch((e) => {
           setPartsData({
             ...partsData,
             jobCode: result.jobCode,
-            description: result.jobOperation,
-            jobOperation: result.jobCodeDescription,
+            jobCodeDescription: result.jobCodeDescription,
+            jobOperation: result.jobOperation,
             componentCode: result.componentCode,
           });
-        }
-      })
-      .catch((e) => {
-        setPartsData({
-          ...partsData,
-          jobCode: result.jobCode,
-          jobCodeDescription: result.jobCodeDescription,
-          jobOperation: result.jobOperation,
-          componentCode: result.componentCode,
         });
-      });
+    }
   }
 
   function populateLaborData(result) {
@@ -1295,10 +1455,7 @@ function RepairServiceEstimate(props) {
           partNumber: item.partNumber,
           partType: item.partType,
           quantity: 1,
-          // unitPrice: item.listPrice,
-          // extendedPrice: 0,
-          // currency: pricingData.currency?.value,
-          // totalPrice: 0,
+          currency: serviceEstimateData.currency,
           comment: "",
           description: item.partDescription,
           unitOfMeasure: item.salesUnit,
@@ -1329,6 +1486,23 @@ function RepairServiceEstimate(props) {
       handleSnack("info", "Please save all the header details!");
     }
     setPartsLoading(false);
+  };
+
+  // Open Labor item to view or edit
+  const loadPartlist = (row) => {
+    setPartsData({
+      ...row,
+      pricingMethod: priceMethodOptions.find(
+        (element) => element.value === row.pricingMenthod
+      ),
+    });
+    setShowParts(true);
+    setPartListId(row.id);
+    setSelectedVersion("Version " + row.versionNumber);
+
+    fetchPartsOfPartlist(row.id, INITIAL_PAGE_NO, INITIAL_PAGE_SIZE);
+    // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    // setPartFieldViewonly(true);
   };
 
   function sortPartsTable(sortEvent) {
@@ -2440,18 +2614,37 @@ function RepairServiceEstimate(props) {
           </div>
           {serviceEstimateData.id && (
             <div className="card p-4 mt-5">
-              <h5 className="d-flex align-items-center mb-2">
-                <div className="" style={{ display: "contents" }}>
-                  <span className="mr-3">Header</span>
-                  <a
-                    href={undefined}
-                    className="ml-3"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <EditOutlinedIcon onClick={() => makeHeaderEditable()} />
-                  </a>
+              <div className="row align-items-center">
+                <div className="col-10 mx-2">
+                  <div className="d-flex align-items-center w-100">
+                    <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                      <h5 className="mr-2 mb-0">
+                        <span className="mr-3">Header</span>
+                      </h5>
+                      <a
+                        href={undefined}
+                        className="ml-3"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <EditOutlinedIcon
+                          onClick={() => makeHeaderEditable()}
+                        />
+                      </a>
+                    </div>
+                  </div>
                 </div>
-              </h5>
+                {value === "parts" && (
+                  <div class="">
+                    <button
+                      className="btn text-violet border"
+                      onClick={() => loadNewPartList()}
+                    >
+                      Create New Partlist
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <Box sx={{ width: "100%", typography: "body1" }}>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -2564,6 +2757,15 @@ function RepairServiceEstimate(props) {
                             <button
                               type="button"
                               className="btn btn-light bg-primary text-white"
+                              onClick={() =>
+                                populatePartsData(serviceEstimateData)
+                              }
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-light bg-primary text-white"
                               onClick={createPartlistAndUpdate}
                               disabled={!partsData.pricingMethod}
                             >
@@ -2573,313 +2775,364 @@ function RepairServiceEstimate(props) {
                         </div>
                       </div>
                     ) : (
-                      <div>
-                        <div className="text-right pl-3 py-3">
-                        {/* <a
-                        href={undefined}
-                        style={{ whiteSpace: "pre" }}
-                        className="btn-sm text-violet cursor"
-                        // onClick={showAddCustomItemPopup}
-                      >
-                        <span className="mr-2">
-                          <AddIcon />
-                        </span>
-                        Add New Partlist
-                      </a> */}
-                      <a
-                        href={undefined}
-                        style={{ whiteSpace: "pre"}}
-                        className="btn-sm text-violet cursor"
-                        onClick={() => setConfirmationVersionOpen(true)}
-                      >
-                        New Version
-                      </a>
-                        {/* <button
-                                  type="button"
-                                  className="btn btn-light text-violet"
-                                  onClick={updateConsumableHeader}>Add New Partlist</button> */}
-                        </div>
-                        <div className="row mt-4">
-                        
-                          <ReadOnlyField
-                            label="JOB OPERATION"
-                            value={partsData.jobOperation}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="JOB CODE"
-                            value={partsData.jobCode}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="DESCRIPTION"
-                            value={partsData.description}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="COMPONENT CODE"
-                            value={partsData.componentCode}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="PRICE METHOD"
-                            value={partsData.pricingMethod?.label}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="USER"
-                            value={partsData.user}
-                            className="col-md-4 col-sm-4"
-                          />
-                        </div>
-                        <RenderConfirmDialog
-                          confimationOpen={confirmationVersionOpen}
-                          message={`Pressing 'Yes' will create another version of this partlist`}
-                          handleNo={() => setConfirmationVersionOpen(false)}
-                          handleYes={createPartsTableVersion}
-                        />
-                        <div className="card border mt-4 px-4">
-                          <div className="row align-items-center">
-                            <div className="col-8">
-                              <div className="d-flex align-items-center w-100">
-                                <div
-                                  className="d-flex mr-3 col-auto pl-0"
-                                  style={{ whiteSpace: "pre" }}
+                      <>
+                        {partLists && partLists.length > 1 && !showParts ? (
+                          <div>
+                            <DataGrid
+                              sx={{
+                                ...GRID_STYLE,
+                                width: "80%",
+                                marginInline: "auto",
+                              }}
+                              paginationMode="client"
+                              rows={partLists}
+                              columns={partlistColumns}
+                              pageSize={5}
+                              rowsPerPageOptions={[5]}
+                              autoHeight
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="text-right pl-3 py-3">
+                              <div className="d-inline-flex ml-3">
+                                <DropdownButton
+                                  className="customDropdown ml-2"
+                                  id="dropdown-item-button"
                                 >
-                                  <h5 className="mr-2 mb-0 text-black">
-                                    <span>Parts Table</span>
-                                  </h5>
-                                  {/* <span>Version {selectedVersion.value}</span> */}
-                                </div>
-                                <SearchComponent
-                                  querySearchSelector={queryPartsSearchSelector}
-                                  setQuerySearchSelector={
-                                    setQueryPartsSearchSelector
-                                  }
-                                  clearFilteredData={clearFilteredData}
-                                  handleSnack={handleSnack}
-                                  searchAPI={sparePartSearch}
-                                  searchClick={() =>
-                                    handleQuerySearchClick("parts")
-                                  }
-                                  options={SPAREPART_SEARCH_Q_OPTIONS}
-                                  background={"white"}
-                                  type=""
-                                  buttonText="ADD PART"
-                                />
+                                  <Dropdown.Item
+                                    as="button"
+                                    onClick={() =>
+                                      setConfirmationVersionOpen(true)
+                                    }
+                                  >
+                                    New Version
+                                  </Dropdown.Item>
+                                  <Dropdown.Item as="button">
+                                    New Partlist
+                                  </Dropdown.Item>
+                                </DropdownButton>
                               </div>
                             </div>
-                            {["DRAFT", "REVISED"].indexOf(
-                              activeElement?.builderStatus
-                            ) > -1 && (
-                              <div className="col-4">
-                                <div className="text-right pl-3 py-3">
+                            <div className="row mt-4">
+                              <ReadOnlyField
+                                label="JOB OPERATION"
+                                value={partsData.jobOperation}
+                                className="col-md-4 col-sm-4"
+                              />
+                              <ReadOnlyField
+                                label="JOB CODE"
+                                value={partsData.jobCode}
+                                className="col-md-4 col-sm-4"
+                              />
+                              <ReadOnlyField
+                                label="DESCRIPTION"
+                                value={partsData.description}
+                                className="col-md-4 col-sm-4"
+                              />
+                              <ReadOnlyField
+                                label="COMPONENT CODE"
+                                value={partsData.componentCode}
+                                className="col-md-4 col-sm-4"
+                              />
+                              <ReadOnlyField
+                                label="PRICE METHOD"
+                                value={partsData.pricingMethod?.label}
+                                className="col-md-4 col-sm-4"
+                              />
+                              <ReadOnlyField
+                                label="USER"
+                                value={partsData.user}
+                                className="col-md-4 col-sm-4"
+                              />
+                            </div>
+                            {partLists && partLists.length > 1 && (
+                              <div className="col-md-12">
+                                <div class="form-group mt-3 mb-0 text-right">
                                   <button
-                                    onClick={() => setFileUploadOpen(true)}
-                                    style={{ cursor: "pointer" }}
-                                    className="btn bg-primary text-white mx-2"
+                                    type="button"
+                                    className="btn btn-light bg-primary text-white"
+                                    onClick={() => setShowParts(false)}
                                   >
-                                    Upload
+                                    Back To Partlists
                                   </button>
-                                  {/* <button
+                                </div>
+                              </div>
+                            )}
+                            <RenderConfirmDialog
+                              confimationOpen={confirmationVersionOpen}
+                              message={`Pressing 'Yes' will create another version of this partlist`}
+                              handleNo={() => setConfirmationVersionOpen(false)}
+                              handleYes={createPartsTableVersion}
+                            />
+                            <div className="card border mt-4 px-4">
+                              <div className="row align-items-center">
+                                <div className="col-8">
+                                  <div className="d-flex align-items-center w-100">
+                                    <div
+                                      className="d-flex mr-3 col-auto pl-0"
+                                      style={{ whiteSpace: "pre" }}
+                                    >
+                                      <h5 className="mr-2 mb-0 text-black">
+                                        <span>Parts Table</span>
+                                      </h5>
+                                      <span>{selectedVersion}</span>
+                                    </div>
+                                    <SearchComponent
+                                      querySearchSelector={
+                                        queryPartsSearchSelector
+                                      }
+                                      setQuerySearchSelector={
+                                        setQueryPartsSearchSelector
+                                      }
+                                      clearFilteredData={clearFilteredData}
+                                      handleSnack={handleSnack}
+                                      searchAPI={sparePartSearch}
+                                      searchClick={() =>
+                                        handleQuerySearchClick("parts")
+                                      }
+                                      options={SPAREPART_SEARCH_Q_OPTIONS}
+                                      background={"white"}
+                                      type=""
+                                      buttonText="ADD PART"
+                                    />
+                                  </div>
+                                </div>
+                                {["DRAFT", "REVISED"].indexOf(
+                                  activeElement?.builderStatus
+                                ) > -1 && (
+                                  <div className="col-4">
+                                    <div className="text-right pl-3 py-3">
+                                      <button
+                                        onClick={() => setFileUploadOpen(true)}
+                                        style={{ cursor: "pointer" }}
+                                        className="btn bg-primary text-white mx-2"
+                                      >
+                                        Upload
+                                      </button>
+                                      {/* <button
                     onClick={() => setAddPartOpen(true)}
                     className="btn bg-primary text-white "
                   >
                     + Add Part
                   </button> */}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          <DataGrid
-                            sx={GRID_STYLE}
-                            rows={spareparts}
-                            autoHeight
-                            columns={columnsPartList.map((column) => ({
-                              ...column,
-                              filterOperators,
-                            }))}
-                            editMode="row"
-                            page={page}
-                            pageSize={pageSize}
-                            onPageChange={(newPage) =>
-                              fetchPartsOfPartlist(
-                                partListId,
-                                newPage,
-                                pageSize
-                              )
-                            }
-                            onPageSizeChange={(newPageSize) =>
-                              fetchPartsOfPartlist(
-                                partListId,
-                                page,
-                                newPageSize
-                              )
-                            }
-                            onRowEditStart={(e) => setBulkUpdateProgress(true)}
-                            sortingMode="server"
-                            onSortModelChange={(e) => sortPartsTable(e)}
-                            filterMode="server"
-                            onFilterModelChange={onPartsFilterChange}
-                            onRowEditStop={(e) => setBulkUpdateProgress(false)}
-                            paginationMode="server"
-                            loading={partsLoading}
-                            rowsPerPageOptions={[5, 10, 20]}
-                            pagination
-                            rowCount={totalPartsCount}
-                            experimentalFeatures={{ newEditingApi: true }}
-                            processRowUpdate={(newRow, oldRow) =>
-                              processRowUpdate(newRow, oldRow)
-                            }
-                            // getEstimatedRowHeight={() => 200}
-                            // getRowHeight={() => "auto"}
-                            onProcessRowUpdateError={(error) =>
-                              console.log(error)
-                            }
-                          />
-                          <div className=" my-3 text-right">
-                            {["DRAFT", "REVISED"].indexOf(
-                              activeElement?.builderStatus
-                            ) > -1 && (
-                              <button
-                                className="btn text-white bg-primary"
-                                onClick={() => setConfirmationOpen(true)}
-                                disabled={bulkUpdateProgress}
-                              >
-                                Save
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        <RenderConfirmDialog
-                          confimationOpen={confirmationOpen}
-                          message={`Pressing 'Yes' will save all the changes to partlist`}
-                          handleNo={() => setConfirmationOpen(false)}
-                          handleYes={bulkUpdateParts}
-                        />
-                        {/* Open Modal to add individual spare part to the part list */}
-                        <AddNewSparepartModal
-                          sparePart={sparePart}
-                          setSparePart={setSparePart}
-                          handleIndPartAdd={handleIndPartAdd}
-                          searchAPI={sparePartSearch}
-                          addPartOpen={addPartOpen}
-                          handleAddPartClose={handleAddPartClose}
-                          title={addPartModalTitle}
-                          partFieldViewonly={partFieldViewonly}
-                          setPartFieldViewonly={setPartFieldViewonly}
-                          handleSnack={handleSnack}
-                        />
-
-                        <Modal
-                          show={fileUploadOpen}
-                          onHide={() => setFileUploadOpen(false)}
-                          size="md"
-                          aria-labelledby="contained-modal-title-vcenter"
-                          centered
-                        >
-                          <Modal.Header>
-                            <Modal.Title>Import Files</Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body className="p-0">
-                            <div className="p-3">
-                              <div className="add-new-recod">
-                                <div>
-                                  <FontAwesomeIcon
-                                    className="cloudupload"
-                                    icon={faCloudUploadAlt}
-                                  />
-                                  <h6 className="font-weight-500 mt-3">
-                                    Drag and drop files to upload <br /> or
-                                  </h6>
-                                  <FileUploader
-                                    handleChange={handleReadFile}
-                                    name="file"
-                                    types={["xls", "xlsx"]}
-                                    onClick={(event) => {
-                                      event.currentTarget.value = null;
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                              <p className="mt-3">
-                                Single upload file should not be more than 10MB.
-                                Only the .xls, .xlsx file types are allowed
-                              </p>
-                            </div>
-                            <div className="recent-div p-3">
-                              <h6 className="font-weight-600 text-grey mb-0">
-                                RECENT
-                              </h6>
-                              <div className="recent-items mt-3">
-                                <div className="d-flex justify-content-between align-items-center ">
-                                  <p className="mb-0 ">
-                                    <FontAwesomeIcon
-                                      className=" font-size-14"
-                                      icon={faFileAlt}
-                                    />
-                                    <span className="font-weight-500 ml-2">
-                                      Engine Partlist
-                                    </span>
-                                  </p>
-                                  <div className="d-flex align-items-center">
-                                    <div className="white-space custom-checkbox">
-                                      <FormGroup>
-                                        <FormControlLabel
-                                          control={<Checkbox defaultChecked />}
-                                          label=""
-                                        />
-                                      </FormGroup>
                                     </div>
-                                    <a href="#" className="ml-3 font-size-14">
-                                      <FontAwesomeIcon icon={faShareAlt} />
-                                    </a>
-                                    <a href="#" className="ml-3 font-size-14">
-                                      <FontAwesomeIcon icon={faFolderPlus} />
-                                    </a>
-                                    <a href="#" className="ml-3 font-size-14">
-                                      <FontAwesomeIcon icon={faUpload} />
-                                    </a>
-                                    {/* <a href="#" className="ml-2">
+                                  </div>
+                                )}
+                              </div>
+
+                              <DataGrid
+                                sx={GRID_STYLE}
+                                rows={spareparts}
+                                autoHeight
+                                columns={columnsPartListSpareParts.map(
+                                  (column) => ({
+                                    ...column,
+                                    filterOperators,
+                                  })
+                                )}
+                                editMode="row"
+                                page={page}
+                                pageSize={pageSize}
+                                onPageChange={(newPage) =>
+                                  fetchPartsOfPartlist(
+                                    partListId,
+                                    newPage,
+                                    pageSize
+                                  )
+                                }
+                                onPageSizeChange={(newPageSize) =>
+                                  fetchPartsOfPartlist(
+                                    partListId,
+                                    page,
+                                    newPageSize
+                                  )
+                                }
+                                onRowEditStart={(e) =>
+                                  setBulkUpdateProgress(true)
+                                }
+                                sortingMode="server"
+                                onSortModelChange={(e) => sortPartsTable(e)}
+                                filterMode="server"
+                                onFilterModelChange={onPartsFilterChange}
+                                onRowEditStop={(e) =>
+                                  setBulkUpdateProgress(false)
+                                }
+                                paginationMode="server"
+                                loading={partsLoading}
+                                rowsPerPageOptions={[5, 10, 20]}
+                                pagination
+                                rowCount={totalPartsCount}
+                                experimentalFeatures={{ newEditingApi: true }}
+                                processRowUpdate={(newRow, oldRow) =>
+                                  processRowUpdate(newRow, oldRow)
+                                }
+                                // getEstimatedRowHeight={() => 200}
+                                // getRowHeight={() => "auto"}
+                                onProcessRowUpdateError={(error) =>
+                                  console.log(error)
+                                }
+                              />
+                              <div className=" my-3 text-right">
+                                {["DRAFT", "REVISED"].indexOf(
+                                  activeElement?.builderStatus
+                                ) > -1 && (
+                                  <button
+                                    className="btn text-white bg-primary"
+                                    onClick={() => setConfirmationOpen(true)}
+                                    disabled={bulkUpdateProgress}
+                                  >
+                                    Save
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            <RenderConfirmDialog
+                              confimationOpen={confirmationOpen}
+                              message={`Pressing 'Yes' will save all the changes to partlist`}
+                              handleNo={() => setConfirmationOpen(false)}
+                              handleYes={bulkUpdateParts}
+                            />
+                            {/* Open Modal to add individual spare part to the part list */}
+                            <AddNewSparepartModal
+                              sparePart={sparePart}
+                              setSparePart={setSparePart}
+                              handleIndPartAdd={handleIndPartAdd}
+                              searchAPI={sparePartSearch}
+                              addPartOpen={addPartOpen}
+                              handleAddPartClose={handleAddPartClose}
+                              title={addPartModalTitle}
+                              partFieldViewonly={partFieldViewonly}
+                              setPartFieldViewonly={setPartFieldViewonly}
+                              handleSnack={handleSnack}
+                            />
+
+                            <Modal
+                              show={fileUploadOpen}
+                              onHide={() => setFileUploadOpen(false)}
+                              size="md"
+                              aria-labelledby="contained-modal-title-vcenter"
+                              centered
+                            >
+                              <Modal.Header>
+                                <Modal.Title>Import Files</Modal.Title>
+                              </Modal.Header>
+                              <Modal.Body className="p-0">
+                                <div className="p-3">
+                                  <div className="add-new-recod">
+                                    <div>
+                                      <FontAwesomeIcon
+                                        className="cloudupload"
+                                        icon={faCloudUploadAlt}
+                                      />
+                                      <h6 className="font-weight-500 mt-3">
+                                        Drag and drop files to upload <br /> or
+                                      </h6>
+                                      <FileUploader
+                                        handleChange={handleReadFile}
+                                        name="file"
+                                        types={["xls", "xlsx"]}
+                                        onClick={(event) => {
+                                          event.currentTarget.value = null;
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                  <p className="mt-3">
+                                    Single upload file should not be more than
+                                    10MB. Only the .xls, .xlsx file types are
+                                    allowed
+                                  </p>
+                                </div>
+                                <div className="recent-div p-3">
+                                  <h6 className="font-weight-600 text-grey mb-0">
+                                    RECENT
+                                  </h6>
+                                  <div className="recent-items mt-3">
+                                    <div className="d-flex justify-content-between align-items-center ">
+                                      <p className="mb-0 ">
+                                        <FontAwesomeIcon
+                                          className=" font-size-14"
+                                          icon={faFileAlt}
+                                        />
+                                        <span className="font-weight-500 ml-2">
+                                          Engine Partlist
+                                        </span>
+                                      </p>
+                                      <div className="d-flex align-items-center">
+                                        <div className="white-space custom-checkbox">
+                                          <FormGroup>
+                                            <FormControlLabel
+                                              control={
+                                                <Checkbox defaultChecked />
+                                              }
+                                              label=""
+                                            />
+                                          </FormGroup>
+                                        </div>
+                                        <a
+                                          href="#"
+                                          className="ml-3 font-size-14"
+                                        >
+                                          <FontAwesomeIcon icon={faShareAlt} />
+                                        </a>
+                                        <a
+                                          href="#"
+                                          className="ml-3 font-size-14"
+                                        >
+                                          <FontAwesomeIcon
+                                            icon={faFolderPlus}
+                                          />
+                                        </a>
+                                        <a
+                                          href="#"
+                                          className="ml-3 font-size-14"
+                                        >
+                                          <FontAwesomeIcon icon={faUpload} />
+                                        </a>
+                                        {/* <a href="#" className="ml-2">
                         <MuiMenuComponent options={activityOptions} />
                       </a> */}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="d-flex justify-content-between align-items-center mt-2">
+                                    <p className="font-size-12 mb-0">
+                                      2:38pm, 19 Aug 21{" "}
+                                    </p>
+                                    <p className="font-size-12 mb-0">
+                                      Part List{" "}
+                                    </p>
                                   </div>
                                 </div>
+                              </Modal.Body>
+                              <div className="row m-0 p-3">
+                                <div className="col-md-6 col-sm-6">
+                                  <button
+                                    className="btn border w-100 bg-white"
+                                    onClick={() => setFileUploadOpen(false)}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                  <button
+                                    className="btn btn-primary w-100"
+                                    onClick={handleUploadFile}
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <FontAwesomeIcon
+                                      className="mr-2"
+                                      icon={faCloudUploadAlt}
+                                    />
+                                    Upload
+                                  </button>
+                                </div>
                               </div>
-                              <div className="d-flex justify-content-between align-items-center mt-2">
-                                <p className="font-size-12 mb-0">
-                                  2:38pm, 19 Aug 21{" "}
-                                </p>
-                                <p className="font-size-12 mb-0">Part List </p>
-                              </div>
-                            </div>
-                          </Modal.Body>
-                          <div className="row m-0 p-3">
-                            <div className="col-md-6 col-sm-6">
-                              <button
-                                className="btn border w-100 bg-white"
-                                onClick={() => setFileUploadOpen(false)}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <button
-                                className="btn btn-primary w-100"
-                                onClick={handleUploadFile}
-                                style={{ cursor: "pointer" }}
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2"
-                                  icon={faCloudUploadAlt}
-                                />
-                                Upload
-                              </button>
-                            </div>
+                            </Modal>
                           </div>
-                        </Modal>
-                      </div>
+                        )}
+                      </>
                     )}
                   </TabPanel>
                   <TabPanel value="labor">

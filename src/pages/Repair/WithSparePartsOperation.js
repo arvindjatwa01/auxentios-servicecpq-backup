@@ -675,24 +675,6 @@ function WithSparePartsOperation(props) {
                         </div>
                       </div>
                     </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
                     <div className="hr"></div>
                   </div>
                   <div className="bg-white py-2 px-3">
@@ -745,24 +727,6 @@ function WithSparePartsOperation(props) {
                             TOTAL COSTS
                           </p>
                           <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
                         </div>
                       </div>
                     </div>
@@ -854,24 +818,6 @@ function WithSparePartsOperation(props) {
                         </div>
                       </div>
                     </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
                     <div className="hr"></div>
                   </div>
                   <div className="bg-white py-2 px-3">
@@ -924,24 +870,6 @@ function WithSparePartsOperation(props) {
                             TOTAL COSTS
                           </p>
                           <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="form-group my-4">
-                      <div className="d-flex align-items-center">
-                        <p class="font-size-12 font-weight-500 mr-2 mb-0">
-                          STATUS
-                        </p>
-                        <h6 class="font-weight-600 mb-0 mr-3">6/8</h6>
-                        <div class="progress w-100">
-                          <div
-                            class="progress-bar"
-                            role="progressbar"
-                            style={{ width: "75%" }}
-                            aria-valuenow="75"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
                         </div>
                       </div>
                     </div>

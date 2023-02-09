@@ -208,6 +208,7 @@ export const UPDATE_KIT_RATING = (kitId, rating) => REPAIR_BUILDER_URI + `kit/${
 export const UPDATE_KIT_VERSION = (kitId, version) => REPAIR_BUILDER_URI + `kit/${kitId}/version/${version}`;
 export const KIT_PART_OF_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `kit-partlist/${partListId}/sparepart`;
 export const KIT_MULTI_PARTS_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `kit-partlist/${partListId}/spareparts`;
+export const REMOVE_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `partlist/${partListId}`;
 
 //Standard Jobs or  Templates
 export const CREATE_STANDARD_JOB = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/standard-job`;
