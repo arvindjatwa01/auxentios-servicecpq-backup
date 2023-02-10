@@ -434,10 +434,10 @@ function RepairServiceEstimate(props) {
       field: "partlistId",
       headerName: "Partlist Id",
       flex: 1,
-      width: 70,
+      width: 40,
       renderCell: (params) => (
         <div>
-          {params.value}{" "}
+          <span style={{fontSize: 12}}>{params.value}{" "}</span>
           <span style={{ fontSize: 9 }}>
             {"  " + params.row.versionNumber + ".0"}
           </span>{" "}
@@ -445,23 +445,24 @@ function RepairServiceEstimate(props) {
       ),
     },
     {
-      field: "componentCode",
-      headerName: "componentCode",
+      field: "jobCode",
+      headerName: "Job Code",
       flex: 1,
       width: 130,
+      renderCell: params => <span style={{fontSize: 12}}>{params.value+" - "+params.row.jobOperation}</span>
     },
     {
       field: "description",
       headerName: "Description",
       flex: 1,
-      width: 130,
+      minWidth: 300,
     },
 
     {
       field: "activeVersion",
       headerName: "Status",
       flex: 1,
-      width: 130,
+      width: 50,
       renderCell: (params) => (
         <div>
           {params.value && (
@@ -490,7 +491,7 @@ function RepairServiceEstimate(props) {
           <GridActionsCellItem
             icon={
               <div className=" cursor">
-                <Tooltip title="Edit">
+                <Tooltip title="View">
                   <EYEIcon />
                   {/* <img className="m-1" src={penIcon} alt="Edit" /> */}
                 </Tooltip>
@@ -1028,6 +1029,7 @@ function RepairServiceEstimate(props) {
     setPartsViewOnly(false);
   };
   function populatePartsData(result) {
+    setPartsLoading(true);
     if (partListId) {
       let partListDetails = partLists.filter(
         (partlist) => partlist.id === partListId
@@ -1047,12 +1049,14 @@ function RepairServiceEstimate(props) {
       );
       setPartsViewOnly(true);
     } else {
+      
       fetchPartlistFromOperation(activeElement.oId)
         .then((resultPartLists) => {
           if (resultPartLists && resultPartLists.length > 0) {
             // let groupedPartList = groupBy(resultPartLists, "partlistId")
             //   console.log(groupedPartList);
             setPartLists(resultPartLists);
+            if(resultPartLists.length === 1){
             setPartsData({
               ...resultPartLists[0],
               id: resultPartLists[0].id,
@@ -1066,6 +1070,7 @@ function RepairServiceEstimate(props) {
               INITIAL_PAGE_NO,
               INITIAL_PAGE_SIZE
             );
+            }
             setPartsViewOnly(true);
           } else {
             setPartsData({
@@ -1087,6 +1092,7 @@ function RepairServiceEstimate(props) {
           });
         });
     }
+    setPartsLoading(false);
   }
 
   function populateLaborData(result) {
@@ -2662,7 +2668,7 @@ function RepairServiceEstimate(props) {
                     </TabList>
                   </Box>
                   <TabPanel value="parts">
-                    {!partsViewOnly ? (
+                    {partsLoading ?   <LoadingProgress />: !partsViewOnly ? (
                       <div className="row mt-2 input-fields">
                         <div className="col-md-4 col-sm-4">
                           <div class="form-group mt-3">
