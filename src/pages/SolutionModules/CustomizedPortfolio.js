@@ -31,6 +31,8 @@ import { FileUploader } from "react-drag-drop-files";
 import Tooltip from "@mui/material/Tooltip";
 import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
 
+import Cookies from "js-cookie";
+
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 
 import MenuItem from '@mui/material/MenuItem';
@@ -155,6 +157,12 @@ const customStyles = {
 };
 
 export function CustomizedPortfolio(props) {
+    var CookiesSetData = Cookies.get("loginTenantDtl");
+    var getCookiesJsonData;
+    if (CookiesSetData != undefined) {
+        getCookiesJsonData = JSON.parse(CookiesSetData);
+    }
+    const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
     const [disable, setDisable] = useState(true);
     const [makeKeyValue, setMakeKeyValue] = useState([]);
@@ -2096,7 +2104,7 @@ export function CustomizedPortfolio(props) {
                         portfolioId: 26
                     },
                     // tenantId: itemsPrice.tenantId,
-                    tenantId: 74,
+                    tenantId: loginTenantId,
                     partsRequired: itemsPrice.partsRequired,
                     labourRequired: itemsPrice.labourRequired,
                     serviceRequired: itemsPrice.serviceRequired,

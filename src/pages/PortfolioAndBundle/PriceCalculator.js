@@ -100,8 +100,8 @@ const PriceCalculator = (props) => {
     unit: "",
     recommendedValue: "",
     numberOfEvents: "",
-    netPrice: 1200,
-    totalPrice: 1200,
+    netPrice: 0,
+    totalPrice: 0,
     listPrice: "",
     calculatedPrice: "",
     priceYear: "",
@@ -125,9 +125,23 @@ const PriceCalculator = (props) => {
     if ((props.createdBundleItems != "")) {
       setAddportFolioItem(props.createdBundleItems)
     }
+    if (props.priceCompFlagIs === "editAble") {
+      setDisable(true);
+    }
+
+    console.log("----------- ", props)
     // console.log("props.createdBundleItems 114 : ", props.createdBundleItems)
     // console.log("props.createdBundleItems != 114 : ", props.createdBundleItems != "")
     // console.log("props.createdBundleItems != null : ", props.createdBundleItems != undefined)
+    // if (props.serviceOrBundlePrefix !== "SERVICE") {
+    if (props.serviceOrBundlePrefix === "SERVICE" && props.priceCompFlagIs === "editAble") {
+      if (props.priceCalculator) {
+        // console.log("priceCalculator 111111", props.priceCalculator)
+        // setPriceCalculator(props.priceCalculator);
+        portfolioItemPriceSjIdFun()
+      }
+    }
+
     if (props.serviceOrBundlePrefix !== "SERVICE") {
       if (props.priceCalculator) {
         // console.log("priceCalculator 111111", props.priceCalculator)
@@ -135,6 +149,8 @@ const PriceCalculator = (props) => {
         portfolioItemPriceSjIdFun()
       }
     }
+
+    // }
   }, []);
 
   // useEffect(() => {
@@ -209,6 +225,26 @@ const PriceCalculator = (props) => {
       id: res.data.itemPriceDataId,
       numberOfEvents: res.data.numberOfEvents,
       portfolioDataId: res.data.portfolio.portfolioId,
+      currency: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemHeaderModel?.currency) &&
+        (props.createdBundleItems?.itemHeaderModel?.currency != "")) ? {
+        label: props.createdBundleItems?.itemHeaderModel?.currency,
+        value: props.createdBundleItems?.itemHeaderModel?.currency
+      } : "",
+      unit: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemBodyModel?.unit) &&
+        (props.createdBundleItems?.itemBodyModel?.unit != "")) ? {
+        label: props.createdBundleItems?.itemBodyModel?.unit,
+        value: props.createdBundleItems?.itemBodyModel?.unit
+      } : "",
+      frequency: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemBodyModel?.frequency) &&
+        props.createdBundleItems?.itemBodyModel?.frequency != "") ? {
+        label: props.createdBundleItems?.itemBodyModel?.frequency,
+        value: props.createdBundleItems?.itemBodyModel?.frequency
+      } : "",
+      usageIn: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemBodyModel?.usageIn) &&
+        (props.createdBundleItems?.itemBodyModel?.usageIn != "")) ? {
+        label: props.createdBundleItems?.itemBodyModel?.usageIn,
+        value: props.createdBundleItems?.itemBodyModel?.usageIn
+      } : "",
     })
 
 
@@ -368,6 +404,11 @@ const PriceCalculator = (props) => {
     { value: "Construction", label: "Construction" },
   ];
 
+  const usageTypeOption = [
+    { value: "Planned Usage", label: "Planned Usage" },
+    { value: "sRecommended usage", label: "Recommended usage" },
+  ];
+
   const discountTypeOptions = [
     { value: "PROGRAM_DISCOUNT", label: "Program" },
     { value: "CUSTOMER_DISCOUNT", label: "Customer" },
@@ -489,9 +530,42 @@ const PriceCalculator = (props) => {
     // props.handleSavePrices(); //called it at getPriceCalculatorDataFun
   };
   const handleBundlePriceSave = () => {
+
+    try {
+
+      console.log("props ---------- ", props)
+
+      if ((priceCalculator.startUsage == "") ||
+        (priceCalculator.startUsage == undefined)) {
+        throw "Start Usage is a required field, you can’t leave it blank";
+      }
+
+      if ((priceCalculator.endUsage == "") ||
+        (priceCalculator.endUsage == undefined)) {
+        throw "End Usage is a required field, you can’t leave it blank";
+      }
+
+      if ((priceCalculator.recommendedValue == "") ||
+        (priceCalculator.recommendedValue == undefined)) {
+        throw "Recommended Value is a required field, you can’t leave it blank";
+      }
+
+      props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs);
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
     // props.setTabs("6")//just for check new flow
     // props.setBundleServiceShow(false);
-    props.getPriceCalculatorDataFun(priceCalculator);
+    // 
     // props.setBundleTabs("1")
   };
 
@@ -501,6 +575,43 @@ const PriceCalculator = (props) => {
       [e.target.name]: e.target.value,
     });
   };
+
+  const getFormattedDateTime = (timeStamp) => {
+
+    var date = new Date(timeStamp);
+    var year = date.getFullYear();
+    // var m = date.getMonth() + 1;
+    var m = date.getMonth();
+    // var month = m < 10 ? '0' + m : m;
+    var month = m;
+    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var format = "AM";
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+
+    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    if (hour > 11) {
+      format = "PM";
+    }
+    if (hour > 12) {
+      hour = hour - 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+    var finalDateString = year + "-" + month + "-" + day;
+    return finalDateString;
+  }
 
   return (
     <>
@@ -532,115 +643,329 @@ const PriceCalculator = (props) => {
           </div>
         </div>
         <div className="p-3">
-          <div className="row input-fields">
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  PRICE METHOD
-                </label>
-                <Select
-                  options={priceMethodKeyValue}
-                  className="text-primary"
-                  // defaultValue={props?.priceCalculator?.priceMethod}
-                  value={priceCalculator.priceMethod}
-                  name="priceMethod"
-                  onChange={(e) =>
-                    setPriceCalculator({
-                      ...priceCalculator,
-                      priceMethod: e
-                    })
-                  }
-                  placeholder="placeholder (Optional)"
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  CURRENCY
-                </label>
-                <Select
-                  options={priceCurrencyKeyValue}
-                  className="text-primary"
-                  // defaultValue={props?.priceCalculator?.priceMethod}
-                  value={priceCalculator.currency}
-                  name="priceMethod"
-                  onChange={(e) =>
-                    setPriceCalculator({
-                      ...priceCalculator,
-                      currency: e
-                    })
-                  }
-                  placeholder="placeholder (Optional)"
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-14 font-weight-500"
-                  htmlFor="exampleInputEmail1"
-                >
-                  PRICE DATE
-                </label>
-                <div className="d-flex align-items-center date-box w-100">
-                  <div className="form-group w-100">
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                      <DatePicker
-                        variant="inline"
-                        format="dd/MM/yyyy"
-                        className="form-controldate border-radius-10"
-                        label=""
-                        name="preparedOn"
-                        value={priceCalculator.priceDate}
-                        onChange={(e) =>
-                          setPriceCalculator({
-                            ...priceCalculator,
-                            currency: e
-                          })
-                        }
-                      // value={priceDetails.priceDate}
-                      // onChange={(e) =>
-                      //   setPriceDetails({
-                      //     ...priceDetails,
-                      //     priceDate: e,
-                      //   })
-                      // }
-                      />
-                    </MuiPickersUtilsProvider>
+          {disable ?
+            <>
+              <div className="row input-fields">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE METHOD</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.priceMethod == "" ||
+                        priceCalculator.priceMethod == undefined)
+                        ? "NA" : priceCalculator.priceMethod?.value}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> CURRENCY</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.currency == "" ||
+                        priceCalculator.currency == undefined)
+                        ? "NA" : priceCalculator.currency?.value}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE DATE</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.priceDate == "" ||
+                        priceCalculator.priceDate == undefined)
+                        ? "NA" : getFormattedDateTime(priceCalculator.priceDate)}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE TYPE</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.priceType == "" ||
+                        priceCalculator.priceType == undefined)
+                        ? "NA" : priceCalculator.priceType?.value}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> ADDITIONAL</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.priceAdditionalSelect == "" ||
+                        priceCalculator.priceAdditionalSelect == undefined)
+                        ? "NA" : priceCalculator.priceAdditionalSelect?.value}
+                      {(priceCalculator.priceAdditionalInput == "" ||
+                        priceCalculator.priceAdditionalInput == undefined)
+                        ? ` NA` : ` ${priceCalculator.priceAdditionalInput}`}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE ESCALATION</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.escalationPriceOptionsValue1 == "" ||
+                        priceCalculator.escalationPriceOptionsValue1 == undefined)
+                        ? "NA" : priceCalculator.escalationPriceOptionsValue1?.value}
+                      {(priceCalculator.escalationPriceInputValue == "" ||
+                        priceCalculator.escalationPriceInputValue == undefined)
+                        ? ` NA` : ` ${priceCalculator.escalationPriceInputValue}`}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FLAT RATE INDICATOR</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(extWorkData.flatRateIndicator == true)
+                        ? "Yes" : "No"}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FLAT PRICE / ADJUSTED PRICE</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.flatPrice == "" ||
+                        priceCalculator.flatPrice == undefined)
+                        ? ` NA` : ` ${priceCalculator.flatPrice}`}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">  DISCOUNT TYPE</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.discountTypeSelect == "" ||
+                        priceCalculator.discountTypeSelect == undefined)
+                        ? "NA" : priceCalculator.discountTypeSelect?.value}
+                      {(priceCalculator.discountTypeInput == "" ||
+                        priceCalculator.discountTypeInput == undefined)
+                        ? ` NA` : ` ${priceCalculator.discountTypeInput}`}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">  PRICE BREAK DOWN</p>
+                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                      {(priceCalculator.priceBreakDownOptionsKeyValue1 == "" ||
+                        priceCalculator.priceBreakDownOptionsKeyValue1 == undefined)
+                        ? "NA" : priceCalculator.priceBreakDownOptionsKeyValue1?.value}
+                      {(priceCalculator.priceBreakDownInputValue == "" ||
+                        priceCalculator.priceBreakDownInputValue == undefined)
+                        ? ` NA` : ` ${priceCalculator.priceBreakDownInputValue}`}
+                    </h6>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-14 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  PRICE TYPE
-                </label>
-                <Select
-                  // defaultValue={priceTypeKeyValue}
-                  className="text-primary"
-                  onChange={(e) =>
-                    // setPriceTypeKeyValue1(e)
-                    setPriceCalculator({
-                      ...priceCalculator,
-                      priceType: e
-                    })
-                  }
-                  options={priceTypeKeyValue}
-                  placeholder="placeholder (Optional)"
-                  value={priceCalculator.priceType}
-                />
-                {/* <input
+              <div className="border border-radius-10 mt-3 py-2 px-3">
+                <div className="row input-fields">
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">  YEAR</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.year == "" ||
+                          priceCalculator.year == undefined)
+                          ? "NA" : priceCalculator.year?.value}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">  NO. OF YEARS</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.noOfYear == "" ||
+                          priceCalculator.noOfYear == undefined)
+                          ? "NA" : priceCalculator.noOfYear}
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+                <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                <div className="row input-fields">
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">  START USAGE</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.startUsage == "" ||
+                          priceCalculator.startUsage == undefined)
+                          ? "NA" : priceCalculator.startUsage}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">  END USAGE</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.endUsage == "" ||
+                          priceCalculator.endUsage == undefined)
+                          ? "NA" : priceCalculator.endUsage}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">  USAGE TYPE</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.usageType == "" ||
+                          priceCalculator.usageType == undefined)
+                          ? "NA" : priceCalculator.usageType?.value}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FREQUENCY</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.frequency == "" ||
+                          priceCalculator.frequency == undefined)
+                          ? "NA" : priceCalculator.frequency?.value}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2"> UNIT</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.unit == "" ||
+                          priceCalculator.unit == undefined)
+                          ? "NA" : priceCalculator.unit?.value}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2"> RECOMMENDED VALUE</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.recommendedValue == "" ||
+                          priceCalculator.recommendedValue == undefined)
+                          ? "NA" : priceCalculator.recommendedValue}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <p className="text-light-dark font-size-12 font-weight-500 mb-2"> NO. OF EVENTS</p>
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                        {(priceCalculator.numberOfEvents == "" ||
+                          priceCalculator.numberOfEvents == undefined)
+                          ? "NA" : priceCalculator.numberOfEvents}
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </> :
+            <>
+              <div className="row input-fields">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      PRICE METHOD
+                    </label>
+                    <Select
+                      options={priceMethodKeyValue}
+                      className="text-primary"
+                      // defaultValue={props?.priceCalculator?.priceMethod}
+                      value={priceCalculator.priceMethod}
+                      name="priceMethod"
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          priceMethod: e
+                        })
+                      }
+                      placeholder="placeholder (Optional)"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      CURRENCY
+                    </label>
+                    <Select
+                      options={priceCurrencyKeyValue}
+                      className="text-primary"
+                      // defaultValue={props?.priceCalculator?.priceMethod}
+                      value={priceCalculator.currency}
+                      name="priceMethod"
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          currency: e
+                        })
+                      }
+                      placeholder="placeholder (Optional)"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      PRICE DATE
+                    </label>
+                    <div className="d-flex align-items-center date-box w-100">
+                      <div className="form-group w-100">
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                          <DatePicker
+                            variant="inline"
+                            format="dd/MM/yyyy"
+                            className="form-controldate border-radius-10"
+                            label=""
+                            name="preparedOn"
+                            value={priceCalculator.priceDate}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                priceDate: e
+                              })
+                            }
+                          // value={priceDetails.priceDate}
+                          // onChange={(e) =>
+                          //   setPriceDetails({
+                          //     ...priceDetails,
+                          //     priceDate: e,
+                          //   })
+                          // }
+                          />
+                        </MuiPickersUtilsProvider>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      PRICE TYPE
+                    </label>
+                    <Select
+                      // defaultValue={priceTypeKeyValue}
+                      className="text-primary"
+                      onChange={(e) =>
+                        // setPriceTypeKeyValue1(e)
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          priceType: e
+                        })
+                      }
+                      options={priceTypeKeyValue}
+                      placeholder="placeholder (Optional)"
+                      value={priceCalculator.priceType}
+                    />
+                    {/* <input
                   type="text"
                   className="form-control border-radius-10"
                   placeholder="Optional"
@@ -649,91 +974,91 @@ const PriceCalculator = (props) => {
                   value={itemPriceCalculator.priceType}
                   onChange={handleItemPriceCalculatorChange}
                 /> */}
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group date-box">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  ADDITIONAL
-                </label>
-                <div className=" d-flex form-control-date">
-                  <div className="">
-                    <Select
-                      // isClearable={true}
-                      className="text-primary"
-                      value={priceCalculator.priceAdditionalSelect}
-                      name="priceAdditionalSelect"
-                      onChange={(e) =>
-                        setPriceCalculator({
-                          ...priceCalculator,
-                          priceAdditionalSelect: e,
-                        })
-                      }
-                      // options={options}
-                      options={additionalPriceHeadTypeKeyValue}
-                      placeholder="Select"
-                    // isDisabled
-                    />
                   </div>
-                  <input
-                    type="text"
-                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                    placeholder="10%"
-                    // defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                    value={priceCalculator.priceAdditionalInput}
-                    name="priceAdditionalInput"
-                    onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        priceAdditionalInput: e.target.value,
-                      })
-                    }
-                  // disabled
-                  />
                 </div>
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group date-box">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  PRICE ESCALATION
-                </label>
-                <div className=" d-flex align-items-center form-control-date">
-                  <Select
-                    className="select-input text-primary"
-                    id="priceEscalationSelect"
-                    options={priceHeadTypeKeyValue}
-                    placeholder="placeholder "
-                    value={priceCalculator.escalationPriceOptionsValue1}
-                    onChange={(e) =>
-                      handleEscalationPriceValue(e)
-                    }
-                  // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
-                  // value={expandedPriceCalculator.priceEscalationSelect}
-                  />
-                  <input
-                    type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                    placeholder="20%"
-                    id="priceEscalationInput"
-                    value={priceCalculator.escalationPriceInputValue}
-                    onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        escalationPriceInputValue: e.target.value,
-                      })
-                    }
-                  // defaultValue={data.itemBodyModel.priceEscalation}
-                  // value={expandedPriceCalculator.priceEscalationInput}
-                  // onChange={handleExpandePriceChange}
-                  />
-                  {/* <Select
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      ADDITIONAL
+                    </label>
+                    <div className=" d-flex form-control-date">
+                      <div className="">
+                        <Select
+                          // isClearable={true}
+                          className="text-primary"
+                          value={priceCalculator.priceAdditionalSelect}
+                          name="priceAdditionalSelect"
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              priceAdditionalSelect: e,
+                            })
+                          }
+                          // options={options}
+                          options={additionalPriceHeadTypeKeyValue}
+                          placeholder="Select"
+                        // isDisabled
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                        placeholder="10%"
+                        // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                        value={priceCalculator.priceAdditionalInput}
+                        name="priceAdditionalInput"
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            priceAdditionalInput: e.target.value,
+                          })
+                        }
+                      // disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      PRICE ESCALATION
+                    </label>
+                    <div className=" d-flex align-items-center form-control-date">
+                      <Select
+                        className="select-input text-primary"
+                        id="priceEscalationSelect"
+                        options={priceHeadTypeKeyValue}
+                        placeholder="placeholder "
+                        value={priceCalculator.escalationPriceOptionsValue1}
+                        onChange={(e) =>
+                          handleEscalationPriceValue(e)
+                        }
+                      // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                      // value={expandedPriceCalculator.priceEscalationSelect}
+                      />
+                      <input
+                        type="text"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                        placeholder="20%"
+                        id="priceEscalationInput"
+                        value={priceCalculator.escalationPriceInputValue}
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            escalationPriceInputValue: e.target.value,
+                          })
+                        }
+                      // defaultValue={data.itemBodyModel.priceEscalation}
+                      // value={expandedPriceCalculator.priceEscalationInput}
+                      // onChange={handleExpandePriceChange}
+                      />
+                      {/* <Select
                     className="select-input text-primary"
                     id="priceEscalationSelect"
                     options={priceHeadTypeKeyValue}
@@ -766,205 +1091,204 @@ const PriceCalculator = (props) => {
                   // value={expandedPriceCalculator.priceEscalationInput}
                   // onChange={handleExpandePriceChange}
                   /> */}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div class="form-group mt-1">
-                <FormGroup>
-                  <FormControlLabel
-                    style={{
-                      alignItems: "start",
-                      marginLeft: 0,
-                    }}
-                    control={
-                      <Switch1
-                        checked={extWorkData.flatRateIndicator}
-                        onChange={(e) =>
-                          handleFlatPriceIndicator(e)
+                <div className="col-md-6 col-sm-6">
+                  <div class="form-group mt-1">
+                    <FormGroup>
+                      <FormControlLabel
+                        style={{
+                          alignItems: "start",
+                          marginLeft: 0,
+                        }}
+                        control={
+                          <Switch1
+                            checked={extWorkData.flatRateIndicator}
+                            onChange={(e) =>
+                              handleFlatPriceIndicator(e)
+                            }
+                          />
+                        }
+                        labelPlacement="top"
+                        label={
+                          <span className="text-light-dark font-size-12 font-weight-500">
+                            FLAT RATE INDICATOR
+                          </span>
                         }
                       />
-                    }
-                    labelPlacement="top"
-                    label={
-                      <span className="text-light-dark font-size-12 font-weight-500">
-                        FLAT RATE INDICATOR
-                      </span>
-                    }
-                  />
-                </FormGroup>
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  FLAT PRICE / ADJUSTED PRICE
-                </label>
-                <input
-                  // type="text"
-                  type="number"
-                  className="form-control border-radius-10 text-primary"
-                  value={priceCalculator.flatPrice}
-                  name="flatPrice"
-                  onChange={(e) =>
-                    setPriceCalculator({
-                      ...priceCalculator,
-                      flatPrice: e.target.value,
-                    })
-                  }
-                  disabled={!extWorkData.flatRateIndicator}
-                  placeholder="0"
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group date-box">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  DISCOUNT TYPE
-                </label>
-                <div className=" d-flex form-control-date">
-                  <div className="">
-                    <Select
-                      value={priceCalculator.discountTypeSelect}
-                      name="discountTypeSelect"
-                      className="text-primary"
+                    </FormGroup>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      FLAT PRICE / ADJUSTED PRICE
+                    </label>
+                    <input
+                      // type="text"
+                      type="number"
+                      className="form-control border-radius-10 text-primary"
+                      value={priceCalculator.flatPrice}
+                      name="flatPrice"
                       onChange={(e) =>
                         setPriceCalculator({
                           ...priceCalculator,
-                          discountTypeSelect: e,
+                          flatPrice: e.target.value,
                         })
                       }
-                      isClearable={true}
-                      options={discountTypeOptions}
-                      placeholder="Select"
+                      disabled={!extWorkData.flatRateIndicator}
+                      placeholder="0"
                     />
                   </div>
-                  <input
-                    type="text"
-                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                    value={priceCalculator.discountTypeInput}
-                    name="discountTypeInput"
-                    onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        discountTypeInput: e.target.value,
-                      })
-                    }
-                    placeholder="10%"
-                  />
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      DISCOUNT TYPE
+                    </label>
+                    <div className=" d-flex form-control-date">
+                      <div className="">
+                        <Select
+                          value={priceCalculator.discountTypeSelect}
+                          name="discountTypeSelect"
+                          className="text-primary"
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              discountTypeSelect: e,
+                            })
+                          }
+                          isClearable={true}
+                          options={discountTypeOptions}
+                          placeholder="Select"
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                        value={priceCalculator.discountTypeInput}
+                        name="discountTypeInput"
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            discountTypeInput: e.target.value,
+                          })
+                        }
+                        placeholder="10%"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      PRICE BREAK DOWN
+                    </label>
+                    <div className=" d-flex form-control-date">
+                      <Select
+                        className="select-input text-primary"
+                        // value={priceCalculator.priceBrackDownType}
+                        // onChange={(e) =>
+                        //   setPriceCalculator({
+                        //     ...priceCalculator,
+                        //     priceBrackDownType: e,
+                        //   })}
+                        value={priceCalculator.priceBreakDownOptionsKeyValue1}
+                        onChange={(e) =>
+                          handlePriceBreakDownValue(e)}
+                        // options={options}
+                        options={priceHeadTypeKeyValue}
+                        placeholder="Select "
+                      />
+                      <input
+                        type="text"
+                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="optional"
+                        value={priceCalculator.priceBreakDownInputValue}
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            priceBreakDownInputValue: e.target.value,
+                          })
+                        }
+                      // onChange={(e) =>
+                      //   setPriceCalculator({
+                      //     ...priceCalculator,
+                      //     priceBrackDownPercantage: e.target.value,
+                      //   })}
+                      // value={priceCalculator.priceBrackDownPercantage}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group date-box">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  htmlFor="exampleInputEmail1"
-                >
-                  PRICE BREAK DOWN
-                </label>
-                <div className=" d-flex form-control-date">
-                  <Select
-                    className="select-input text-primary"
-                    // value={priceCalculator.priceBrackDownType}
-                    // onChange={(e) =>
-                    //   setPriceCalculator({
-                    //     ...priceCalculator,
-                    //     priceBrackDownType: e,
-                    //   })}
-                    value={priceCalculator.priceBreakDownOptionsKeyValue1}
-                    onChange={(e) =>
-                      handlePriceBreakDownValue(e)}
-                    // options={options}
-                    options={priceHeadTypeKeyValue}
-                    placeholder="Select "
-                  />
-                  <input
-                    type="text"
-                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp"
-                    placeholder="optional"
-                    value={priceCalculator.priceBreakDownInputValue}
-                    onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        priceBreakDownInputValue: e.target.value,
-                      })
-                    }
-                  // onChange={(e) =>
-                  //   setPriceCalculator({
-                  //     ...priceCalculator,
-                  //     priceBrackDownPercantage: e.target.value,
-                  //   })}
-                  // value={priceCalculator.priceBrackDownPercantage}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="border border-radius-10 mt-3 py-2 px-3">
-            <div className="row input-fields">
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    YEAR
-                  </label>
+              <div className="border border-radius-10 mt-3 py-2 px-3">
+                <div className="row input-fields">
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        YEAR
+                      </label>
 
 
-                  <Select
-                    // options={[
-                    //   { value: "1", label: "1" },
-                    //   { value: "2", label: "2" },
-                    //   { value: "3", label: "3" },
-                    // ]}
-                    options={yearsOption}
-                    placeholder="Select..."
-                    className="text-primary"
-                    onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        year: e
-                      })
-                    }
-                    value={priceCalculator.year}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    NO. OF YEARS
-                  </label>
-                  <input
-                    type="number"
-                    // type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                    placeholder="No. of Years"
-                    // defaultValue={props?.priceCalculator?.startUsage}
-                    // value={priceCalculator.startUsage}
-                    onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        noOfYear: e.target.value,
-                      })}
-                    value={priceCalculator.noOfYear}
-                    name="noOfYear"
-                  />
-                  {/* <Select
+                      <Select
+                        // options={[
+                        //   { value: "1", label: "1" },
+                        //   { value: "2", label: "2" },
+                        //   { value: "3", label: "3" },
+                        // ]}
+                        options={yearsOption}
+                        placeholder="Select..."
+                        className="text-primary"
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            year: e
+                          })
+                        }
+                        value={priceCalculator.year}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        NO. OF YEARS
+                      </label>
+                      <input
+                        type="number"
+                        // type="text"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                        placeholder="No. of Years"
+                        // defaultValue={props?.priceCalculator?.startUsage}
+                        // value={priceCalculator.startUsage}
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            noOfYear: e.target.value,
+                          })}
+                        value={priceCalculator.noOfYear}
+                        name="noOfYear"
+                      />
+                      {/* <Select
                                   options={[
                                     { value: "1", label: "1" },
                                     { value: "2", label: "2" },
@@ -977,308 +1301,326 @@ const PriceCalculator = (props) => {
                                   }
                                   value={addPortFolioItem.noOfYear}
                                 /> */}
-                </div>
-              </div>
-            </div>
-            <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
-            <div className="row input-fields">
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    START USAGE
-                  </label>
-                  <div
-                    className=" d-flex form-control-date"
-                    style={{ overflow: "hidden" }}
-                  >
-                    <input
-                      type="number"
-                      // type="text"
-                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                      placeholder="10,000 hours"
-                      // defaultValue={props?.priceCalculator?.startUsage}
-                      // value={priceCalculator.startUsage}
-                      onChange={(e) =>
-                        setPriceCalculator({
-                          ...priceCalculator,
-                          startUsage: e.target.value,
-                        })
-                      }
-                      value={priceCalculator.startUsage}
-                      name="startUsage"
-                    />
-                    <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                    </div>
                   </div>
-                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    END USAGE
-                  </label>
-                  <div
-                    className=" d-flex form-control-date"
-                    style={{ overflow: "hidden" }}
-                  >
-                    <input
-                      type="number"
-                      // type="text"
-                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                      placeholder="16,000 hours"
-                      // defaultValue={props?.priceCalculator?.startUsage}
-                      // value={priceCalculator.startUsage}
-                      onChange={(e) =>
-                        setPriceCalculator({
-                          ...priceCalculator,
-                          endUsage: e.target.value,
-                        })
-                      }
-                      value={priceCalculator.endUsage}
-                      name="endUsage"
-                    />
-                    <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
-                  </div>
-                  <div className="css-w8dmq8">*Mandatory</div>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    USAGE TYPE
-                  </label>
-                  <Select
-                    options={options}
-                    placeholder="Planned Usage"
-                    className="text-primary"
-                    onChange={(e) =>
-                      setAddportFolioItem({
-                        ...addPortFolioItem,
-                        usageType: e,
-                      })
-                    }
-                    value={addPortFolioItem.usageType}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    FREQUENCY
-                  </label>
-                  <Select
-                    options={frequencyOptions}
-                    placeholder="Select....."
-                    className="text-primary"
-                    // onChange={(e) =>
-                    //   setPriceCalculator({
-                    //     ...priceCalculator,
-                    //     frequency: e,
-                    //   })
-                    // }
-                    // value={priceCalculator.frequency}
-                    onChange={(e) =>
-                      setAddportFolioItem({
-                        ...addPortFolioItem,
-                        frequency: e,
-                      })
-                    }
-                    value={addPortFolioItem.frequency}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    UNIT
-                  </label>
-                  <Select
-                    options={[
-                      { value: "per Hr", label: "per Hr" },
-                      { value: "per Km", label: "per Km" },
-                      { value: "per Miles", label: "per Miles" },
-                      { value: "per year", label: "per year" },
-                      { value: "per month", label: "per month" },
-                      { value: "per day", label: "per day" },
-                      { value: "per quarter", label: "per quarter" },
-                    ]}
-                    placeholder="Select..."
-                    className="text-primary"
-                    onChange={(e) =>
-                      setAddportFolioItem({ ...addPortFolioItem, unit: e })
-                    }
-                    value={addPortFolioItem.unit}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    RECOMMENDED VALUE
-                  </label>
-                  <div
-                    className=" d-flex form-control-date"
-                    style={{ overflow: "hidden" }}
-                  >
-                    <input
-                      type="number"
-                      // type="text"
-                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                      placeholder="Recommended Value"
-                      // defaultValue={props?.priceCalculator?.startUsage}
-                      // value={priceCalculator.startUsage}
-                      onChange={(e) =>
-                        setPriceCalculator({
-                          ...priceCalculator,
-                          recommendedValue: e.target.value,
-                        })
-                      }
-                      value={priceCalculator.recommendedValue}
-                      name="recommendedValue"
-                    // name="startUsage"
-                    // onChange={(e) =>
-                    //   setPriceCalculator({
-                    //     ...priceCalculator,
-                    //     startUsage: e.target.value,
-                    //   })
-                    // }
-                    />
-                    <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
-                  </div>
-                  <div className="css-w8dmq8">*Mandatory</div>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                  <label
-                    className="text-light-dark font-size-12 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    NO. OF EVENTS
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control border-radius-10 text-primary"
-                    placeholder="NO. OF EVENTS"
-                    onChange={(e) =>
-                      setPriceCalculator({
-                        ...priceCalculator,
-                        numberOfEvents: e.target.value,
-                      })
-                    }
-                    value={priceCalculator.numberOfEvents}
-                  />
-                  <div className="css-w8dmq8">*Mandatory</div>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group mt-1">
-                  <FormGroup>
-                    <FormControlLabel
-                      style={{
-                        alignItems: "start",
-                        marginLeft: 0,
-                      }}
-                      control={
-                        <Switch1
-                          checked={extWorkData.flatRateIndicator}
+                <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                <div className="row input-fields">
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        START USAGE
+                      </label>
+                      <div
+                        className=" d-flex form-control-date"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <input
+                          type="number"
+                          // type="text"
+                          className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                          placeholder="10,000 hours"
+                          // defaultValue={props?.priceCalculator?.startUsage}
+                          // value={priceCalculator.startUsage}
                           onChange={(e) =>
-                            setExtWorkData({
-                              ...extWorkData,
-                              flatRateIndicator: e.target.checked,
-                              adjustedPrice: e.target.checked
-                                ? extWorkData.adjustedPrice
-                                : 0.0,
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              startUsage: e.target.value,
                             })
                           }
+                          value={priceCalculator.startUsage}
+                          name="startUsage"
                         />
-                      }
-                      labelPlacement="top"
-                      label={
-                        <span className="text-light-dark font-size-12 font-weight-500">
-                          SUPRESSION
-                        </span>
-                      }
-                    />
-                  </FormGroup>
+                        <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                      </div>
+                      <div className="css-w8dmq8">*Mandatory</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        END USAGE
+                      </label>
+                      <div
+                        className=" d-flex form-control-date"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <input
+                          type="number"
+                          // type="text"
+                          className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                          placeholder="16,000 hours"
+                          // defaultValue={props?.priceCalculator?.startUsage}
+                          // value={priceCalculator.startUsage}
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              endUsage: e.target.value,
+                            })
+                          }
+                          value={priceCalculator.endUsage}
+                          name="endUsage"
+                        />
+                        <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                      </div>
+                      <div className="css-w8dmq8">*Mandatory</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        USAGE TYPE
+                      </label>
+                      <Select
+                        options={usageTypeOption}
+                        placeholder="Planned Usage"
+                        className="text-primary"
+                        onChange={(e) =>
+                          // setAddportFolioItem({
+                          //   ...addPortFolioItem,
+                          //   usageType: e,
+                          // })
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            usageType: e,
+                          })
+                        }
+                        value={priceCalculator.usageType}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        FREQUENCY
+                      </label>
+                      <Select
+                        options={frequencyOptions}
+                        placeholder="Select....."
+                        className="text-primary"
+                        // onChange={(e) =>
+                        //   setPriceCalculator({
+                        //     ...priceCalculator,
+                        //     frequency: e,
+                        //   })
+                        // }
+                        // value={priceCalculator.frequency}
+                        onChange={(e) =>
+                          // setAddportFolioItem({
+                          //   ...addPortFolioItem,
+                          //   frequency: e,
+                          // })
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            frequency: e,
+                          })
+                        }
+                        value={priceCalculator.frequency}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        UNIT
+                      </label>
+                      <Select
+                        options={[
+                          { value: "per Hr", label: "per Hr" },
+                          { value: "per Km", label: "per Km" },
+                          { value: "per Miles", label: "per Miles" },
+                          { value: "per year", label: "per year" },
+                          { value: "per month", label: "per month" },
+                          { value: "per day", label: "per day" },
+                          { value: "per quarter", label: "per quarter" },
+                        ]}
+                        placeholder="Select..."
+                        className="text-primary"
+                        onChange={(e) =>
+                          // setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            unit: e,
+                          })
+                        }
+                        value={priceCalculator.unit}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        RECOMMENDED VALUE
+                      </label>
+                      <div
+                        className=" d-flex form-control-date"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <input
+                          type="number"
+                          // type="text"
+                          className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                          placeholder="Recommended Value"
+                          // defaultValue={props?.priceCalculator?.startUsage}
+                          // value={priceCalculator.startUsage}
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              recommendedValue: e.target.value,
+                            })
+                          }
+                          value={priceCalculator.recommendedValue}
+                          name="recommendedValue"
+                        // name="startUsage"
+                        // onChange={(e) =>
+                        //   setPriceCalculator({
+                        //     ...priceCalculator,
+                        //     startUsage: e.target.value,
+                        //   })
+                        // }
+                        />
+                        <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                      </div>
+                      <div className="css-w8dmq8">*Mandatory</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group w-100">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        NO. OF EVENTS
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control border-radius-10 text-primary"
+                        placeholder="NO. OF EVENTS"
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            numberOfEvents: e.target.value,
+                          })
+                        }
+                        value={priceCalculator.numberOfEvents}
+                        disabled
+                        readonly
+                      />
+                      <div className="css-w8dmq8">*Mandatory</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group mt-1">
+                      <FormGroup>
+                        <FormControlLabel
+                          style={{
+                            alignItems: "start",
+                            marginLeft: 0,
+                          }}
+                          control={
+                            <Switch1
+                              checked={extWorkData.flatRateIndicator}
+                              onChange={(e) =>
+                                setExtWorkData({
+                                  ...extWorkData,
+                                  flatRateIndicator: e.target.checked,
+                                  adjustedPrice: e.target.checked
+                                    ? extWorkData.adjustedPrice
+                                    : 0.0,
+                                })
+                              }
+                            />
+                          }
+                          labelPlacement="top"
+                          label={
+                            <span className="text-light-dark font-size-12 font-weight-500">
+                              SUPRESSION
+                            </span>
+                          }
+                        />
+                      </FormGroup>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="my-1 d-flex align-items-center justify-content-end">
-              <Link to="#" className="btn border mr-4">Cancel</Link>
-              <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
-                <span className="mr-2 funds">
-                  <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                    <g>
-                      <g>
-                        <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                <div className="my-1 d-flex align-items-center justify-content-end">
+                  <Link to="#" className="btn border mr-4">Cancel</Link>
+                  <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                    <span className="mr-2 funds">
+                      <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                        <g>
+                          <g>
+                            <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
                               C74.2,101.4,70.7,105,66.3,105.1z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                          </g>
+                          <g>
+                            <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
                               C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                          </g>
+                          <g>
+                            <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
                               C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          </g>
+                          <g>
+                            <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          </g>
+                          <g>
+                            <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          </g>
+                          <g>
+                            <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                          </g>
+                          <g>
+                            <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C90.7,157.7,94.3,154.1,98.6,154z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                          </g>
+                          <g>
+                            <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                          </g>
+                          <g>
+                            <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C123.2,157.7,126.8,154.1,131.1,154z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                          </g>
+                          <g>
+                            <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
                               c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
                               c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                      </g>
-                      <g>
-                        <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                          </g>
+                          <g>
+                            <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
                               S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
                               c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
-                      </g>
-                    </g>
-                  </svg>
-                </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
-            </div>
-          </div>
+                          </g>
+                        </g>
+                      </svg>
+                    </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                </div>
+              </div>
+            </>}
+
+
+
 
           {/* <div className="row input-fields">
             <div className="col-md-6 col-sm-6">

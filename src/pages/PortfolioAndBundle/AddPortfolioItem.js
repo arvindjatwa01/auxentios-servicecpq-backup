@@ -12,6 +12,7 @@ import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useDispatch, useSelector } from "react-redux";
 import SearchIcon from '@mui/icons-material/Search';
+import Cookies from "js-cookie";
 import {
   createPortfolio,
   getPortfolio,
@@ -76,6 +77,13 @@ import {
 
 
 const AddPortfolioItem = (props) => {
+
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
   // console.log("AddPortfolioItem props data is : ", props)
   const [tabs, setTabs] = useState("itemSummary");
@@ -985,6 +993,10 @@ const AddPortfolioItem = (props) => {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
+  const usageTypeOption = [
+    { value: "Planned Usage", label: "Planned Usage" },
+    { value: "sRecommended usage", label: "Recommended usage" },
+  ];
 
   const [yearsOption, seYearsOption] = useState([
     {
@@ -1056,7 +1068,7 @@ const AddPortfolioItem = (props) => {
       console.log("props.passItemEditRowData : ", props.passItemEditRowData)
       // setIt accordingly for fields
       const {
-        itemName,
+        // itemName,
         itemBodyDescription,
         startUsage,
         endusage,
@@ -1107,7 +1119,7 @@ const AddPortfolioItem = (props) => {
 
   const ItemPriceDataFetchById = async () => {
 
-    // console.log("props.passItemEditRowData : ", props.passItemEditRowData)
+    console.log("props.passItemEditRowData : ", props.passItemEditRowData)
     const priceId = props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId;
 
     const priceDataId = props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId;
@@ -1176,7 +1188,6 @@ const AddPortfolioItem = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("props.createdBundleItems undefined", props.createdBundleItems === undefined)
     if (props.createdBundleItems !== undefined) {
       if (props.createdBundleItems !== "") {
         setAddportFolioItem({
@@ -1509,7 +1520,7 @@ const AddPortfolioItem = (props) => {
             //   portfolio: {
             //     portfolioId: 1
             //   },
-            //   tenantId: 0,
+            //   tenantId: loginTenantId,
             //   partsRequired: true,
             //   serviceRequired: false,
             //   labourRequired: true,
@@ -1559,7 +1570,7 @@ const AddPortfolioItem = (props) => {
               portfolio: {
                 portfolioId: 1
               },
-              tenantId: 74,
+              tenantId: loginTenantId,
               partsRequired: true,
               labourRequired: true,
               serviceRequired: false,
@@ -1625,7 +1636,7 @@ const AddPortfolioItem = (props) => {
           //   portfolio: {
           //     portfolioId: 1
           //   },
-          //   tenantId: 0,
+          //   tenantId: loginTenantId,
           //   partsRequired: true,
           //   serviceRequired: false,
           //   labourRequired: true,
@@ -1728,7 +1739,7 @@ const AddPortfolioItem = (props) => {
     //     //   portfolio: {
     //     //     portfolioId: 1
     //     //   },
-    //     //   tenantId: 0,
+    //     //   tenantId: loginTenantId,
     //     //   createdAt: "2022-12-09T13:52:27.880Z",
     //     //   partsRequired: true,
     //     //   serviceRequired: true,
@@ -1777,7 +1788,7 @@ const AddPortfolioItem = (props) => {
     //       portfolio: {
     //         portfolioId: 1
     //       },
-    //       tenantId: 0,
+    //       tenantId: loginTenantId,
     //       createdAt: "2022-12-09T13:52:27.880Z",
     //       partsRequired: true,
     //       serviceRequired: false,
@@ -1829,7 +1840,7 @@ const AddPortfolioItem = (props) => {
     //         portfolio: {
     //           portfolioId: 1
     //         },
-    //         tenantId: 0,
+    //         tenantId: loginTenantId,
     //         createdAt: "2022-12-09T13:52:27.880Z",
     //         partsRequired: true,
     //         serviceRequired: false,
@@ -1921,7 +1932,7 @@ const AddPortfolioItem = (props) => {
         //   portfolio: {
         //     portfolioId: 1
         //   },
-        //   tenantId: 0,
+        //   tenantId: loginTenantId,
         //   partsRequired: true,
         //   serviceRequired: false,
         //   labourRequired: true,
@@ -1971,7 +1982,7 @@ const AddPortfolioItem = (props) => {
           portfolio: {
             portfolioId: 1
           },
-          tenantId: 74,
+          tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
           serviceRequired: false,
@@ -2052,7 +2063,7 @@ const AddPortfolioItem = (props) => {
     //         portfolio: {
     //           portfolioId: 1
     //         },
-    //         tenantId: 0,
+    //         tenantId: loginTenantId,
     //         createdAt: "2022-12-09T13:52:27.880Z",
     //         partsRequired: true,
     //         serviceRequired: false,
@@ -2732,7 +2743,7 @@ const AddPortfolioItem = (props) => {
                 label="Related template(s)"
                 value="relatedTemplate"
                 // disabled={addPortFolioItem.repairOption != "" && editable != true}
-                disabled={addPortFolioItem.repairOption != ""}
+                disabled={addPortFolioItem.repairOption != "" && addPortFolioItem.repairOption != null}
               />
               <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
 
@@ -2740,7 +2751,7 @@ const AddPortfolioItem = (props) => {
                 label="Related Kit"
                 value="relatedKit"
                 // disabled={addPortFolioItem.templateId != "" && editable != true} />
-                disabled={addPortFolioItem.templateId != ""} />
+                disabled={addPortFolioItem.templateId != "" && addPortFolioItem.templateId != null} />
             </TabList>
           </Box>
           <TabPanel value="itemSummary">
@@ -3301,7 +3312,7 @@ const AddPortfolioItem = (props) => {
                           USAGE TYPE
                         </label>
                         <Select
-                          options={options}
+                          options={usageTypeOption}
                           placeholder="Planned Usage"
                           className="text-primary"
                           onChange={(e) =>

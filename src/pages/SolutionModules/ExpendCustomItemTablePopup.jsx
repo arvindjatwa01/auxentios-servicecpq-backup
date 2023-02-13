@@ -9,6 +9,8 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Link } from "react-router-dom";
 import { Box, Button, Stack, Tab } from "@mui/material";
 
+import Cookies from "js-cookie";
+
 import {
     getSolutionPriceCommonConfig,
     getCustomItemDataById,
@@ -27,6 +29,12 @@ import {
 const ExpendCustomItemTablePopup = ({ data, ...props }) => {
 
     console.log("props data is : ", data)
+    var CookiesSetData = Cookies.get("loginTenantDtl");
+    var getCookiesJsonData;
+    if (CookiesSetData != undefined) {
+        getCookiesJsonData = JSON.parse(CookiesSetData);
+    }
+    const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
     const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
@@ -413,7 +421,7 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
                     customPortfolio: (priceCalculator.portfolioDataId != 0) ? {
                         portfolioId: priceCalculator.portfolioDataId
                     } : null,
-                    tenantId: 74,
+                    tenantId: loginTenantId,
                     inclusionExclusion: false,
                     partsRequired: true,
                     labourRequired: true,

@@ -198,6 +198,7 @@ import PriceCalculatorCustomItem from "./PriceCalculatorCustomItem";
 import { PortfolioContext } from "../PortfolioAndBundle/ProtfolioContext";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import CustomSolution from "./CustomSolution";
+import Cookies from "js-cookie";
 
 import Validator from "../../utils/validator";
 
@@ -231,6 +232,12 @@ export function CreateCustomPortfolio(props) {
 
   const history = useHistory();
   const { state } = props.location;
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
   const [disable, setDisable] = useState(true);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
@@ -2718,7 +2725,7 @@ export function CreateCustomPortfolio(props) {
           portfolioId: portfolioId != null ? portfolioId : 1
         },
         // tenantId: editAbleItemPriceData.tenantId,
-        tenantId: 74,
+        tenantId: loginTenantId,
         partsRequired: true,
         serviceRequired: false,
         labourRequired: true,
@@ -2974,7 +2981,7 @@ export function CreateCustomPortfolio(props) {
             customPortfolio: {
               portfolioId: portfolioId != null ? portfolioId : 1
             },
-            tenantId: 74,
+            tenantId: loginTenantId,
             partsRequired: true,
             labourRequired: true,
             serviceRequired: false,
@@ -3128,7 +3135,7 @@ export function CreateCustomPortfolio(props) {
             customPortfolio: {
               portfolioId: portfolioId != null ? portfolioId : 1
             },
-            tenantId: 74,
+            tenantId: loginTenantId,
             partsRequired: true,
             labourRequired: true,
             serviceRequired: false,
@@ -8108,6 +8115,11 @@ export function CreateCustomPortfolio(props) {
     { value: "Construction", label: "Construction" },
   ];
 
+  const usageTypeOption = [
+    { value: "Planned Usage", label: "Planned Usage" },
+    { value: "sRecommended usage", label: "Recommended usage" },
+  ];
+
   const discountTypeOptions = [
     { value: "PROGRAM_DISCOUNT", label: "Program" },
     { value: "CUSTOMER_DISCOUNT", label: "Customer" },
@@ -8985,7 +8997,7 @@ export function CreateCustomPortfolio(props) {
                 portfolioId: portfolioId != null ? portfolioId : 1
               },
               // tenantId: itemsPrice.tenantId,
-              tenantId: 74,
+              tenantId: loginTenantId,
               partsRequired: itemsPrice.partsRequired,
               labourRequired: itemsPrice.labourRequired,
               miscRequired: itemsPrice.miscRequired,
@@ -9345,7 +9357,7 @@ export function CreateCustomPortfolio(props) {
               portfolioId: portfolioId != null ? portfolioId : 1
             },
             // tenantId: itemsPrice.tenantId,
-            tenantId: 74,
+            tenantId: loginTenantId,
             partsRequired: itemsPrice.partsRequired,
             labourRequired: itemsPrice.labourRequired,
             miscRequired: itemsPrice.miscRequired,
@@ -9550,7 +9562,7 @@ export function CreateCustomPortfolio(props) {
                     portfolioId: portfolioId != null ? portfolioId : 1
                   },
                   // tenantId: itemsPrice.tenantId,
-                  tenantId: 74,
+                  tenantId: loginTenantId,
                   partsRequired: itemsPrice.partsRequired,
                   labourRequired: itemsPrice.labourRequired,
                   miscRequired: itemsPrice.miscRequired,
@@ -12481,7 +12493,7 @@ export function CreateCustomPortfolio(props) {
       customPortfolio: {
         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
       },
-      tenantId: 74,
+      tenantId: loginTenantId,
       partsRequired: true,
       labourRequired: true,
       miscRequired: true,
@@ -14559,7 +14571,7 @@ export function CreateCustomPortfolio(props) {
       customPortfolio: {
         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
       },
-      tenantId: 74,
+      tenantId: loginTenantId,
       partsRequired: true,
       labourRequired: true,
       serviceRequired: true,
@@ -18882,8 +18894,8 @@ onChange={handleAdministrativreChange}
                       USAGE TYPE
                     </label>
                     <Select
-                      defaultValue={selectedOption}
-                      options={options}
+                      // defaultValue={selectedOption}
+                      options={usageTypeOption}
                       value={priceCalculator.usageType}
                       onChange={(e) =>
                         setPriceCalculator({ ...priceCalculator, usageType: e })
@@ -21852,7 +21864,7 @@ onChange={handleAdministrativreChange}
                             USAGE TYPE
                           </label>
                           <Select
-                            options={options}
+                            options={usageTypeOption}
                             placeholder="Planned Usage"
                             className="text-primary"
                             onChange={(e) =>

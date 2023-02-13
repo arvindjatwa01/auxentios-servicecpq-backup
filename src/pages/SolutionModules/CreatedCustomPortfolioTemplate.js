@@ -94,6 +94,7 @@ import { useHistory } from 'react-router-dom';
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import Cookies from "js-cookie";
 
 import DataTable from "react-data-table-component";
 import PriceCalculatorCustomItem from "./PriceCalculatorCustomItem";
@@ -242,6 +243,13 @@ export function CreatedCustomPortfolioTemplate(props) {
     const history = useHistory();
     const { state } = props.location;
     const location = useLocation();
+
+    var CookiesSetData = Cookies.get("loginTenantDtl");
+    var getCookiesJsonData;
+    if (CookiesSetData != undefined) {
+        getCookiesJsonData = JSON.parse(CookiesSetData);
+    }
+    const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
     var CreatedCustomPortfolioDetails = JSON.parse(localStorage.getItem('createdCustomPortfolioData'));
 
@@ -1161,7 +1169,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                             portfolioId: portfolioId
                         },
                         // tenantId: itemsPrice.tenantId,
-                        tenantId: 74,
+                        tenantId: loginTenantId,
                         partsRequired: itemsPrice.partsRequired,
                         labourRequired: itemsPrice.labourRequired,
                         serviceRequired: itemsPrice.serviceRequired,
@@ -2900,7 +2908,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                         customPortfolio: {
                             portfolioId: portfolioId
                         },
-                        tenantId: 74,
+                        tenantId: loginTenantId,
                         partsRequired: true,
                         labourRequired: true,
                         serviceRequired: false,
@@ -3054,7 +3062,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                         customPortfolio: {
                             portfolioId: portfolioId
                         },
-                        tenantId: 74,
+                        tenantId: loginTenantId,
                         partsRequired: true,
                         labourRequired: true,
                         serviceRequired: false,
@@ -5193,6 +5201,11 @@ export function CreatedCustomPortfolioTemplate(props) {
         { value: 'Construction', label: 'Construction' },
     ];
 
+    const usageTypeOption = [
+        { value: "Planned Usage", label: "Planned Usage" },
+        { value: "sRecommended usage", label: "Recommended usage" },
+      ];
+
     const discountTypeOptions = [
         { value: "PROGRAM_DISCOUNT", label: "Program" },
         { value: "CUSTOMER_DISCOUNT", label: "Customer" },
@@ -7086,7 +7099,7 @@ export function CreatedCustomPortfolioTemplate(props) {
             customPortfolio: {
                 portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
             },
-            tenantId: 74,
+            tenantId: loginTenantId,
             partsRequired: true,
             labourRequired: true,
             miscRequired: true,
@@ -11155,7 +11168,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 USAGE TYPE
                                                             </label>
                                                             <Select
-                                                                options={options}
+                                                                options={usageTypeOption}
                                                                 placeholder="Planned Usage"
                                                                 className="text-primary"
                                                                 onChange={(e) =>
