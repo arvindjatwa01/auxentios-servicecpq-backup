@@ -127,6 +127,8 @@ const PriceCalculator = (props) => {
     }
     if (props.priceCompFlagIs === "editAble") {
       setDisable(true);
+    } else {
+      setDisable(false);
     }
 
     console.log("----------- ", props)
@@ -225,6 +227,45 @@ const PriceCalculator = (props) => {
       id: res.data.itemPriceDataId,
       numberOfEvents: res.data.numberOfEvents,
       portfolioDataId: res.data.portfolio.portfolioId,
+
+      flatPrice: res.data.flatPrice ? parseInt(res.data.flatPrice) : 0,
+
+      escalationPriceOptionsValue1: (res.data.priceEscalation != "" ? {
+        label: res.data.priceEscalation,
+        value: res.data.priceEscalation,
+      } : ""),
+      escalationPriceOptionsValue: (res.data.priceEscalation != "" ?
+        res.data.priceEscalation : ""),
+      escalationPriceInputValue: (res.data.priceEscalation == "" ? "" :
+        res.data.priceEscalation === "PARTS" ? res.data.sparePartsEscalation :
+          res.data.priceEscalation === "LABOR" ? res.data.labourEscalation :
+            res.data.priceEscalation === "MISCELLANEOUS" ? res.data.miscEscalation :
+              res.data.priceEscalation === "SERVICE" ? res.data.serviceEscalation : ""),
+
+      priceBreakDownOptionsKeyValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
+        "PARTS" : res.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+          res.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+      priceBreakDownInputValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
+        res.data.sparePartsPriceBreakDownPercentage :
+        res.data.labourPriceBreakDownPercentage != 0 ?
+          res.data.labourPriceBreakDownPercentage :
+          res.data.miscPriceBreakDownPercentage != 0 ?
+            res.data.miscPriceBreakDownPercentage : 0,
+      // : res.data.miscPriceBreakDownPercentage != 0 ? {
+      //   label: "PARTS",
+      //   value: "PARTS",
+      // } : 
+      priceBreakDownOptionsKeyValue1: res.data.sparePartsPriceBreakDownPercentage != 0 ? {
+        label: "PARTS",
+        value: "PARTS",
+      } : res.data.labourPriceBreakDownPercentage != 0 ? {
+        label: "LABOR",
+        value: "LABOR",
+      } : res.data.miscPriceBreakDownPercentage != 0 ? {
+        label: "MISCELLANEOUS",
+        value: "MISCELLANEOUS",
+      } : "",
+
       currency: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemHeaderModel?.currency) &&
         (props.createdBundleItems?.itemHeaderModel?.currency != "")) ? {
         label: props.createdBundleItems?.itemHeaderModel?.currency,
@@ -406,7 +447,7 @@ const PriceCalculator = (props) => {
 
   const usageTypeOption = [
     { value: "Planned Usage", label: "Planned Usage" },
-    { value: "sRecommended usage", label: "Recommended usage" },
+    { value: "Recommended usage", label: "Recommended usage" },
   ];
 
   const discountTypeOptions = [
