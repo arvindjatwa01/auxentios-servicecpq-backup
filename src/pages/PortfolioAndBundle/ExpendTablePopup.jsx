@@ -8,6 +8,7 @@ import $ from "jquery";
 import { Link } from "react-router-dom";
 import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import Cookies from "js-cookie";
 
 import {
     getPortfolioCommonConfig,
@@ -33,7 +34,12 @@ import AddPortfolioItem from './AddPortfolioItem';
 
 const ExpendTablePopup = ({ data, ...props }) => {
 
-    console.log("props : ", data);
+    console.log("props : ", data); var CookiesSetData = Cookies.get("loginTenantDtl");
+    var getCookiesJsonData;
+    if (CookiesSetData != undefined) {
+        getCookiesJsonData = JSON.parse(CookiesSetData);
+    }
+    const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
     const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
@@ -529,7 +535,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     portfolio: (priceCalculator.portfolioDataId != 0) ? {
                         portfolioId: priceCalculator.portfolioDataId
                     } : {},
-                    tenantId: 74,
+                    tenantId: loginTenantId,
                     partsRequired: true,
                     labourRequired: true,
                     serviceRequired: false,
@@ -599,7 +605,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     portfolio: (priceCalculator.portfolioDataId != 0) ? {
                         portfolioId: priceCalculator.portfolioDataId
                     } : {},
-                    tenantId: 74,
+                    tenantId: loginTenantId,
                     partsRequired: true,
                     labourRequired: true,
                     serviceRequired: false,

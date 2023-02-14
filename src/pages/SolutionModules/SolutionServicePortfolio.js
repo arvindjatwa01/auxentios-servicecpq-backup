@@ -50,6 +50,8 @@ import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CON
 import SearchBox from "pages/Repair/components/SearchBox";
 import { customerSearch, machineSearch } from "services/searchServices";
 
+import Cookies from "js-cookie";
+
 import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import $ from "jquery";
 import {
@@ -91,6 +93,12 @@ export function SolutionServicePortfolio(props) {
     const history = useHistory()
     const { state } = props.location;
     console.log("props are : ", props)
+    var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
     const [age, setAge] = React.useState('5');
     const [age1, setAge1] = React.useState('5');
@@ -251,7 +259,7 @@ export function SolutionServicePortfolio(props) {
                     adjustedPrice: 0,
                     currency: "",
                     status: "PENDING_ACTIVE",
-                    tenantId: 74,
+                    tenantId: loginTenantId,
                     sbQuoteItems: [],
                     rbQuoteItems: [],
                     plQuoteItems: []

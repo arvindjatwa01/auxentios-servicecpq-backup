@@ -167,7 +167,7 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import Solution from "./Solution";
 import LoadingProgress from "../Repair/components/Loader";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-
+import Cookies from "js-cookie";
 import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
 
 
@@ -222,6 +222,13 @@ export function CreatePortfolio(props) {
 
   const history = useHistory();
   const { state } = props.location;
+
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
   const [disable, setDisable] = useState(true);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
@@ -2303,7 +2310,7 @@ export function CreatePortfolio(props) {
               portfolioId: portfolioId
             },
             // tenantId: editAbleItemPriceData.tenantId,
-            tenantId: 74,
+            tenantId: loginTenantId,
             partsRequired: true,
             labourRequired: true,
             serviceRequired: false,
@@ -2534,7 +2541,7 @@ export function CreatePortfolio(props) {
           //   portfolio: {
           //     portfolioId: portfolioId
           //   },
-          //   tenantId: 0,
+          //   tenantId: loginTenantId,
           //   partsRequired: true,
           //   labourRequired: true,
           //   serviceRequired: false,
@@ -2606,7 +2613,7 @@ export function CreatePortfolio(props) {
             portfolio: {
               portfolioId: portfolioId
             },
-            tenantId: 74,
+            tenantId: loginTenantId,
             partsRequired: true,
             labourRequired: true,
             serviceRequired: false,
@@ -6305,6 +6312,11 @@ export function CreatePortfolio(props) {
     { value: "Construction", label: "Construction" },
   ];
 
+  const usageTypeOption = [
+    { value: "Planned Usage", label: "Planned Usage" },
+    { value: "sRecommended usage", label: "Recommended usage" },
+  ];
+
   const discountTypeOptions = [
     { value: "PROGRAM_DISCOUNT", label: "Program" },
     { value: "CUSTOMER_DISCOUNT", label: "Customer" },
@@ -8881,7 +8893,7 @@ export function CreatePortfolio(props) {
       portfolio: {
         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
       },
-      tenantId: 74,
+      tenantId: loginTenantId,
       partsRequired: true,
       labourRequired: true,
       serviceRequired: false,
@@ -8923,7 +8935,7 @@ export function CreatePortfolio(props) {
     //   portfolio: {
     //     portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
     //   },
-    //   tenantId: 0,
+    //   tenantId: loginTenantId,
     //   createdAt: "2022-12-09T13:52:27.880Z",
     //   partsRequired: true,
     //   serviceRequired: false,
@@ -10787,7 +10799,7 @@ export function CreatePortfolio(props) {
       portfolio: {
         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
       },
-      tenantId: 74,
+      tenantId: loginTenantId,
       partsRequired: true,
       labourRequired: true,
       serviceRequired: false,
@@ -17974,7 +17986,7 @@ export function CreatePortfolio(props) {
                             USAGE TYPE
                           </label>
                           <Select
-                            options={options}
+                            options={usageTypeOption}
                             placeholder="Planned Usage"
                             className="text-primary"
                             onChange={(e) =>

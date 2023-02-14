@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import Select from "@mui/material/Select";
-
+import Cookies from "js-cookie";
 import DataTable from "react-data-table-component";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -101,9 +101,16 @@ import {
   getItemPriceData,
   portfolioSearchList,
   updateItemPriceData,
+  createItemPriceData,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
   const [value, setValue] = React.useState("1");
   const [openSolutionSelector, setOpenSolutionSelector] = useState(false);
   const [solutionBuilderShow, setSolutionBuilderShow] = useState(false);
@@ -242,6 +249,10 @@ export const PortfolioSummary = () => {
     machine: "",
     additional: "",
     estimatedTime: "",
+    unit: "",
+    usageType: "",
+    frequency: "",
+    currency: "",
   });
   const [portfolioServiceBundleId, setPortfolioServiceBundleId] = useState(0);
 
@@ -251,6 +262,7 @@ export const PortfolioSummary = () => {
   const [createdServiceData, setCreatedServiceData] = useState({});
 
   const [addPortFolioItem, setAddportFolioItem] = useState({})
+  const [editableServiceOrBundleData, setEditableServiceOrBundleData] = useState({})
   const [priceCalculator, setPriceCalculator] = useState({})
 
   const [selectedItemType, setSelectedItemType] = useState("");
@@ -732,12 +744,12 @@ export const PortfolioSummary = () => {
       var bundleServiceSearch;
       var SearchResArr = [];
       if (selectedItemType === "BUNDLE_ITEM") {
-        bundleServiceSearch = "bundleFlag:BUNDLE_ITEM AND " + `${tempArray[id].selectFamily.value}~${e.target.value}`;
+        bundleServiceSearch = "bundleFlag:BUNDLE_ITEM AND " + `${tempArray[id].selectFamily.value}~${e.target.value}` + "?bundle_flag=BUNDLE_ITEM";
       } else if (selectedItemType === "SERVICE") {
-        bundleServiceSearch = "bundleFlag:SERVICE AND " + `${tempArray[id].selectFamily.value}~${e.target.value}`;
+        bundleServiceSearch = "bundleFlag:SERVICE AND " + `${tempArray[id].selectFamily.value}~${e.target.value}` + "?bundle_flag=SERVICE";
       }
 
-      var newSearchStr = `${tempArray[id].selectFamily.value}/${e.target.value}`;
+      var newSearchStr = `${tempArray[id].selectFamily.value}/${e.target.value}?bundle_flag=${selectedItemType}`;
       itemSearchDropdown(newSearchStr)
         .then((res) => {
           console.log("ressss ", res);
@@ -1306,6 +1318,8 @@ export const PortfolioSummary = () => {
         salesOffice: { label: editAbleBundleService.itemHeaderModel.salesOffice, value: editAbleBundleService.itemHeaderModel.salesOffice },
         offerValidity: { label: offerValidityLabel, value: editAbleBundleService.itemHeaderModel.offerValidity },
       });
+
+      setEditableServiceOrBundleData(data);
     } else if (editAbleBundleService.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
       setServiceOrBundlePrefix("BUNDLE");
       setBundleTabs("bundleServiceHeader")
@@ -1349,7 +1363,10 @@ export const PortfolioSummary = () => {
         setIsActiveStatus(false)
       }
 
-      setPassItemEditRowData(data)
+      console.log("datais -----------", data)
+
+      setPassItemEditRowData(editAbleBundleService)
+      setEditableServiceOrBundleData(editAbleBundleService);
     }
   }
 
@@ -1723,7 +1740,7 @@ export const PortfolioSummary = () => {
               prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
               type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
               additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-              currency: "",
+              currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
               netPrice: 0,
               itemProductHierarchy: "EMPTY",
               itemHeaderGeographic: "EMPTY",
@@ -1759,13 +1776,17 @@ export const PortfolioSummary = () => {
               miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
               taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["EMPTY"],
               solutionCode: "",
-              usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+              usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
               usage: "",
               year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
               avgUsage: 0,
-              unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-              frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+              unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
+              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
               itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+                {
+                  itemPriceDataId: itemPriceData.itemPriceDataId
+                }
+              ] : serviceOrBundlePrefix === "SERVICE" ? [
                 {
                   itemPriceDataId: itemPriceData.itemPriceDataId
                 }
@@ -1796,8 +1817,6 @@ export const PortfolioSummary = () => {
           }
 
         }
-
-
 
       } else {
 
@@ -2039,7 +2058,7 @@ export const PortfolioSummary = () => {
                 prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
                 type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
                 additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-                currency: "",
+                currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
                 netPrice: 0,
                 itemProductHierarchy: "EMPTY",
                 itemHeaderGeographic: "EMPTY",
@@ -2075,13 +2094,18 @@ export const PortfolioSummary = () => {
                 miscellaneous: ["EMPTY"],
                 taskType: ["EMPTY"],
                 solutionCode: "",
-                usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+                // usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+                usageIn: addPortFolioItem?.usageIn ? addPortFolioItem.usageIn?.value : "",
                 usage: "",
                 year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
                 avgUsage: 0,
-                unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-                frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+                unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
+                frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
                 itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+                  {
+                    itemPriceDataId: itemPriceData.itemPriceDataId
+                  }
+                ] : serviceOrBundlePrefix === "SERVICE" ? [
                   {
                     itemPriceDataId: itemPriceData.itemPriceDataId
                   }
@@ -2187,7 +2211,7 @@ export const PortfolioSummary = () => {
               prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
               type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
               additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-              currency: "",
+              currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
               netPrice: 0,
               itemProductHierarchy: "EMPTY",
               itemHeaderGeographic: "EMPTY",
@@ -2223,12 +2247,12 @@ export const PortfolioSummary = () => {
               miscellaneous: ["EMPTY"],
               taskType: ["EMPTY"],
               solutionCode: "",
-              usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+              usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
               usage: "",
               year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
               avgUsage: 0,
-              unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-              frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+              unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
+              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
               itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
                 {
                   itemPriceDataId: itemPriceData.itemPriceDataId
@@ -2408,7 +2432,7 @@ export const PortfolioSummary = () => {
             prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
             type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
             additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-            currency: "",
+            currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
             netPrice: 0,
             itemProductHierarchy: "EMPTY",
             itemHeaderGeographic: "EMPTY",
@@ -2444,13 +2468,17 @@ export const PortfolioSummary = () => {
             miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
             taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["EMPTY"],
             solutionCode: "",
-            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+            usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
             usage: "",
             year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
             avgUsage: 0,
-            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+            unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
+            frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
             itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
+            ] : serviceOrBundlePrefix === "SERVICE" ? [
               {
                 itemPriceDataId: itemPriceData.itemPriceDataId
               }
@@ -2573,7 +2601,7 @@ export const PortfolioSummary = () => {
             prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
             type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
             additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-            currency: "",
+            currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
             netPrice: 0,
             itemProductHierarchy: "EMPTY",
             itemHeaderGeographic: "EMPTY",
@@ -2609,17 +2637,26 @@ export const PortfolioSummary = () => {
             miscellaneous: ["EMPTY"],
             taskType: ["EMPTY"],
             solutionCode: "",
-            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+            usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
             usage: "",
             year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
             avgUsage: 0,
-            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+            unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
+            frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
             itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
               {
                 itemPriceDataId: itemPriceData.itemPriceDataId
               }
+            ] : (serviceOrBundlePrefix === "SERVICE" && itemPriceData.itemPriceDataId) ? [
+              {
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
             ] : [],
+            // itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+            //   {
+            //     itemPriceDataId: itemPriceData.itemPriceDataId
+            //   }
+            // ] : [],
           },
         }
         const res = await updateItemData(createdServiceData.itemId, reqObj)
@@ -3024,12 +3061,12 @@ export const PortfolioSummary = () => {
         miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
         taskType: serviceOrBundlePrefix === "BUNDLE" ? [data.taskType?.value] : ["EMPTY"],
         solutionCode: "",
-        usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+        usageIn: data.usageIn ? data.usageIn?.value : "",
         usage: "",
         year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
         avgUsage: 0,
-        unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-        frequency: serviceOrBundlePrefix === "BUNDLE" ? data.frequency?.value : "",
+        unit: data.unit ? data.unit?.value : "",
+        frequency: data.frequency ? data.frequency?.value : "",
         itemPrices: serviceOrBundlePrefix === "BUNDLE" &&
           (itemPriceData?.itemPriceDataId != null ||
             itemPriceData?.itemPriceDataId != undefined) ? [
@@ -3113,7 +3150,7 @@ export const PortfolioSummary = () => {
         prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
         type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
         additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-        currency: "",
+        currency: data.currency ? data.currency?.value : "",
         netPrice: 0,
         itemProductHierarchy: "EMPTY",
         itemHeaderGeographic: "EMPTY",
@@ -3149,19 +3186,32 @@ export const PortfolioSummary = () => {
         miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
         taskType: serviceOrBundlePrefix === "BUNDLE" ? [data.taskType?.value] : ["EMPTY"],
         solutionCode: "",
-        usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+        usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
         usage: "",
         year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
         avgUsage: 0,
-        unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-        frequency: serviceOrBundlePrefix === "BUNDLE" ? data.frequency?.value : "",
+        unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
+        frequency: addPortFolioItem.frequency ? data.frequency?.value : "",
         itemPrices: serviceOrBundlePrefix === "BUNDLE" &&
           (itemPriceData?.itemPriceDataId != null ||
             itemPriceData?.itemPriceDataId != undefined) ? [
           {
             itemPriceDataId: itemPriceData.itemPriceDataId
           }
+        ] : serviceOrBundlePrefix === "SERVICE" &&
+          (itemPriceData?.itemPriceDataId != null ||
+            itemPriceData?.itemPriceDataId != undefined) ? [
+          {
+            itemPriceDataId: itemPriceData.itemPriceDataId
+          }
         ] : [],
+        // itemPrices: serviceOrBundlePrefix === "BUNDLE" &&
+        //   (itemPriceData?.itemPriceDataId != null ||
+        //     itemPriceData?.itemPriceDataId != undefined) ? [
+        //   {
+        //     itemPriceDataId: itemPriceData.itemPriceDataId
+        //   }
+        // ] : [],
       },
     }
 
@@ -3250,7 +3300,7 @@ export const PortfolioSummary = () => {
       portfolio: (itemPriceData?.portfolio != null ||
         itemPriceData?.portfolio != undefined) ?
         itemPriceData?.portfolio : {},
-      tenantId: 74,
+      tenantId: loginTenantId,
       partsRequired: true,
       labourRequired: true,
       serviceRequired: false,
@@ -3295,10 +3345,204 @@ export const PortfolioSummary = () => {
     // setBundleTabs("bundleServiceAdministrative")
     setBundleTabs("bundleServicePriceCalculator")
   }
-  const getPriceCalculatorDataFun = async (data) => {
+  const getPriceCalculatorDataFun = async (data, editAbleOrNot) => {
 
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      unit: data?.unit,
+      usageIn: data?.usageType,
+      frequency: data?.frequency,
+      currency: data?.currency
+    });
     if (serviceOrBundlePrefix === "SERVICE") {
-      setBundleTabs("bundleServiceAdministrative")
+
+      if (editAbleOrNot === "editAble") {
+        const priceUpdateData = {
+          itemPriceDataId: data.id ? data.id : 0,
+          quantity: 0,
+          // standardJobId: addPortFolioItem.templateId,
+          // repairKitId: addPortFolioItem.repairOption,
+          // templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
+          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
+          templateDescription: (addPortFolioItem.repairOption && addPortFolioItem.templateId != "") ? addPortFolioItem.templateDescription?.value : "",
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          priceMethod: (data.priceMethod != "EMPTY"
+            || data.priceMethod != "" ||
+            data.priceMethod != null) ?
+            data.priceMethod?.value : "EMPTY",
+          priceType: (data.priceType != "EMPTY" ||
+            data.priceType != "" ||
+            data.priceType != null) ? data.priceType?.value : "EMPTY",
+          listPrice: 0,
+          priceEscalation: "",
+          calculatedPrice: 0,
+          flatPrice: 0,
+          year: data?.year?.value,
+          noOfYear: parseInt(data?.noOfYear),
+          // year: createdBundleItems?.year?.value,
+          // noOfYear: parseInt(createdBundleItems?.noOfYear),
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+            (data.priceBreakDownOptionsKeyValue == "PARTS") ?
+            data.priceBreakDownInputValue : 0),
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+            (data.priceBreakDownOptionsKeyValue == "LABOR") ?
+            data.priceBreakDownInputValue : 0),
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+            (data.priceBreakDownOptionsKeyValue == "MISCELLANEOUS") ?
+            data.priceBreakDownInputValue : 0),
+          totalPrice: 0,
+          netService: 0,
+          additionalPriceType: (data?.priceAdditionalSelect != "EMPTY" ||
+            data?.priceAdditionalSelect != "" ||
+            data?.priceAdditionalSelect != null) ?
+            data?.priceAdditionalSelect?.value : "ABSOLUTE",
+          additionalPriceValue: data?.priceAdditionalInput,
+          discountType: (data?.discountTypeSelect != "EMPTY" ||
+            data?.discountTypeSelect != "" ||
+            data?.discountTypeSelect != null) ? data?.discountTypeSelect?.value : "EMPTY",
+          discountValue: data?.discountTypeInput,
+          recommendedValue: parseInt(data?.recommendedValue),
+          startUsage: parseInt(data?.startUsage),
+          endUsage: parseInt(data?.endUsage),
+          sparePartsEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "PARTS") ?
+            data.escalationPriceInputValue : 0),
+          labourEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "LABOR") ?
+            data.escalationPriceInputValue : 0),
+          miscEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "MISCELLANEOUS") ?
+            data.escalationPriceInputValue : 0),
+          serviceEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "SERVICE") ?
+            data.escalationPriceInputValue : 0),
+          withBundleService: false,
+          portfolio: (data.portfolioDataId != 0) ? {
+            portfolioId: data.portfolioDataId
+          } : {},
+          tenantId: loginTenantId,
+          partsRequired: true,
+          labourRequired: true,
+          serviceRequired: false,
+          miscRequired: true,
+          inclusionExclusion: false
+        }
+        if (data.id) {
+          const updatePriceId = await updateItemPriceData(
+            data.id,
+            priceUpdateData
+          );
+          setBundleTabs("bundleServiceAdministrative")
+        } else {
+          const itemPriceData = await createItemPriceData(priceUpdateData)
+          setItemPriceData(itemPriceData.data);
+          setBundleTabs("bundleServiceAdministrative")
+        }
+      } else if (editAbleOrNot === "noEditAble") {
+        const priceUpdateData = {
+          itemPriceDataId: 0,
+          quantity: 0,
+          // standardJobId: addPortFolioItem.templateId,
+          // repairKitId: addPortFolioItem.repairOption,
+          // templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
+          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
+          templateDescription: (addPortFolioItem.repairOption && addPortFolioItem.templateId != "") ? addPortFolioItem.templateDescription?.value : "",
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          priceMethod: (data.priceMethod != "EMPTY"
+            || data.priceMethod != "" ||
+            data.priceMethod != null) ?
+            data.priceMethod?.value : "EMPTY",
+          priceType: (data.priceType != "EMPTY" ||
+            data.priceType != "" ||
+            data.priceType != null) ? data.priceType?.value : "EMPTY",
+          listPrice: 0,
+          priceEscalation: "",
+          calculatedPrice: 0,
+          flatPrice: 0,
+          year: data?.year?.value,
+          noOfYear: parseInt(data?.noOfYear),
+          // year: createdBundleItems?.year?.value,
+          // noOfYear: parseInt(createdBundleItems?.noOfYear),
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+            (data.priceBreakDownOptionsKeyValue == "PARTS") ?
+            data.priceBreakDownInputValue : 0),
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+            (data.priceBreakDownOptionsKeyValue == "LABOR") ?
+            data.priceBreakDownInputValue : 0),
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
+            (data.priceBreakDownOptionsKeyValue == "MISCELLANEOUS") ?
+            data.priceBreakDownInputValue : 0),
+          totalPrice: 0,
+          netService: 0,
+          additionalPriceType: (data?.priceAdditionalSelect != "EMPTY" ||
+            data?.priceAdditionalSelect != "" ||
+            data?.priceAdditionalSelect != null) ?
+            data?.priceAdditionalSelect?.value : "ABSOLUTE",
+          additionalPriceValue: data?.priceAdditionalInput,
+          discountType: (data?.discountTypeSelect != "EMPTY" ||
+            data?.discountTypeSelect != "" ||
+            data?.discountTypeSelect != null) ? data?.discountTypeSelect?.value : "EMPTY",
+          discountValue: data?.discountTypeInput,
+          recommendedValue: parseInt(data?.recommendedValue),
+          startUsage: parseInt(data?.startUsage),
+          endUsage: parseInt(data?.endUsage),
+          sparePartsEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "PARTS") ?
+            data.escalationPriceInputValue : 0),
+          labourEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "LABOR") ?
+            data.escalationPriceInputValue : 0),
+          miscEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "MISCELLANEOUS") ?
+            data.escalationPriceInputValue : 0),
+          serviceEscalation: ((data.escalationPriceOptionsValue != "") &&
+            (data.escalationPriceOptionsValue == "SERVICE") ?
+            data.escalationPriceInputValue : 0),
+          withBundleService: false,
+          portfolio: (data.portfolioDataId != 0) ? {
+            portfolioId: data.portfolioDataId
+          } : {},
+          tenantId: loginTenantId,
+          partsRequired: true,
+          labourRequired: true,
+          serviceRequired: false,
+          miscRequired: true,
+          inclusionExclusion: false
+        }
+        const itemPriceData = await createItemPriceData(priceUpdateData)
+        setItemPriceData(itemPriceData.data);
+        setBundleTabs("bundleServiceAdministrative")
+      } else {
+        toast("😐" + "Something Went wrong", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+
+      // setBundleTabs("bundleServiceAdministrative")
     } else if (serviceOrBundlePrefix === "BUNDLE") {
       console.log("createdBundleItems : ", addPortFolioItem)
 
@@ -3371,7 +3615,7 @@ export const PortfolioSummary = () => {
         portfolio: (data.portfolioDataId != 0) ? {
           portfolioId: data.portfolioDataId
         } : {},
-        tenantId: 74,
+        tenantId: loginTenantId,
         partsRequired: true,
         labourRequired: true,
         serviceRequired: false,
@@ -6002,8 +6246,8 @@ export const PortfolioSummary = () => {
                       setBundleServiceShow={setBundleServiceShow}
                       getPriceCalculatorDataFun={getPriceCalculatorDataFun}
                       priceCalculator={itemPriceData}
-                      createdBundleItems={createdBundleItems}
-                      priceCompFlag="editAble"
+                      createdBundleItems={editableServiceOrBundleData}
+                      priceCompFlagIs="editAble"
                     />
                   </> :
                     <>

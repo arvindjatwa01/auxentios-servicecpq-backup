@@ -7,6 +7,7 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link } from "react-router-dom";
 import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import Cookies from "js-cookie";
 
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -53,6 +54,13 @@ import {
 } from "../../services/index";
 
 const AddCustomPortfolioItem = (props) => {
+
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
   // console.log("props for AddCustomPortfolioItem is : ", props);
   const [tabs, setTabs] = useState("itemSummary");
   const [editable, setEditable] = useState(
@@ -241,6 +249,11 @@ const AddCustomPortfolioItem = (props) => {
     { value: "strawberry", label: "Construction-Low" },
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
+  ];
+
+  const usageTypeOption = [
+    { value: "Planned Usage", label: "Planned Usage" },
+    { value: "sRecommended usage", label: "Recommended usage" },
   ];
 
   const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([
@@ -716,7 +729,7 @@ const AddCustomPortfolioItem = (props) => {
             //   portfolio: {
             //     portfolioId: 1
             //   },
-            //   tenantId: 0,
+            //   tenantId: loginTenantId,
             //   partsRequired: true,
             //   labourRequired: true,
             //   serviceRequired: false,
@@ -770,7 +783,7 @@ const AddCustomPortfolioItem = (props) => {
               customPortfolio: {
                 portfolioId: 1
               },
-              tenantId: 0,
+              tenantId: loginTenantId,
               partsRequired: true,
               labourRequired: true,
               miscRequired: true,
@@ -1023,7 +1036,7 @@ const AddCustomPortfolioItem = (props) => {
         //   portfolio: {
         //     portfolioId: 1
         //   },
-        //   tenantId: 0,
+        //   tenantId: loginTenantId,
         //   partsRequired: true,
         //   serviceRequired: false,
         //   labourRequired: true,
@@ -1076,7 +1089,7 @@ const AddCustomPortfolioItem = (props) => {
           customPortfolio: {
             portfolioId: 1
           },
-          tenantId: 0,
+          tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
           miscRequired: true,
@@ -2624,7 +2637,7 @@ const AddCustomPortfolioItem = (props) => {
                           USAGE TYPE
                         </label>
                         <Select
-                          options={options}
+                          options={usageTypeOption}
                           placeholder="Planned Usage"
                           className="text-primary"
                           onChange={(e) =>
