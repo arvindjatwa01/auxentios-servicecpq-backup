@@ -6314,7 +6314,7 @@ export function CreatePortfolio(props) {
 
   const usageTypeOption = [
     { value: "Planned Usage", label: "Planned Usage" },
-    { value: "sRecommended usage", label: "Recommended usage" },
+    { value: "Recommended usage", label: "Recommended usage" },
   ];
 
   const discountTypeOptions = [
