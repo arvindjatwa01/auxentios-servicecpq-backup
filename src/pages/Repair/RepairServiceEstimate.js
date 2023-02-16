@@ -457,7 +457,6 @@ function RepairServiceEstimate(props) {
       flex: 1,
       minWidth: 300,
     },
-
     {
       field: "activeVersion",
       headerName: "Status",
@@ -906,7 +905,7 @@ function RepairServiceEstimate(props) {
       .then((res) => {
         handleSnack("success", res);
         setPartListId("");
-        populatePartsData(serviceEstimateData);
+        populatePartsData(serviceEstimateData, true);
       })
       .catch((e) => {
         console.log(e);
@@ -965,7 +964,7 @@ function RepairServiceEstimate(props) {
           setServiceHeaderViewOnly(result.id ? true : false);
           if (result.id) {
             if (fetchType === "all" || fetchType === "parts")
-              populatePartsData(result);
+              populatePartsData(result, false);
             if (fetchType === "all" || fetchType === "labor")
               populateLaborData(result);
             if (fetchType === "all" || fetchType === "consumable")
@@ -1028,9 +1027,9 @@ function RepairServiceEstimate(props) {
     });
     setPartsViewOnly(false);
   };
-  function populatePartsData(result) {
+  function populatePartsData(result, isDelete) {
     setPartsLoading(true);
-    if (partListId) {
+    if (partListId && !isDelete) {
       let partListDetails = partLists.filter(
         (partlist) => partlist.id === partListId
       );
@@ -1056,6 +1055,9 @@ function RepairServiceEstimate(props) {
             // let groupedPartList = groupBy(resultPartLists, "partlistId")
             //   console.log(groupedPartList);
             setPartLists(resultPartLists);
+            console.log(priceMethodOptions.find(
+              (element) => element.value === resultPartLists[0].pricingMethod
+            ),)
             if(resultPartLists.length === 1){
             setPartsData({
               ...resultPartLists[0],
@@ -1496,10 +1498,11 @@ function RepairServiceEstimate(props) {
 
   // Open Labor item to view or edit
   const loadPartlist = (row) => {
+    console.log(row);
     setPartsData({
       ...row,
       pricingMethod: priceMethodOptions.find(
-        (element) => element.value === row.pricingMenthod
+        (element) => element.value === row.pricingMethod
       ),
     });
     setShowParts(true);
@@ -2764,7 +2767,7 @@ function RepairServiceEstimate(props) {
                               type="button"
                               className="btn btn-light bg-primary text-white"
                               onClick={() =>
-                                populatePartsData(serviceEstimateData)
+                                populatePartsData(serviceEstimateData, false)
                               }
                             >
                               Cancel
