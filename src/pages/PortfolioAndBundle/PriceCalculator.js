@@ -25,6 +25,7 @@ import {
   portfolioItemPriceSjid,
   getItemPriceData,
   getSolutionPriceCommonConfig,
+  getItemDataById,
 } from "../../services/index";
 
 import {
@@ -123,7 +124,12 @@ const PriceCalculator = (props) => {
   useEffect(() => {
 
     if ((props.createdBundleItems != "")) {
+      // if (props.createdBundleItems.itemId != undefined) {
+      //   // const editAbleBundleService = await getItemDataById(props.createdBundleItems.itemId);
+      //   fetchSelectedBundleServiceData(props.createdBundleItems.itemId);
+      // } else {
       setAddportFolioItem(props.createdBundleItems)
+      // }
     }
     if (props.priceCompFlagIs === "editAble") {
       setDisable(true);
@@ -169,6 +175,10 @@ const PriceCalculator = (props) => {
     const res = await getItemPriceData(rObjId)
 
     console.log("res data ", res)
+
+
+    const bundleOrServiceData = await getItemDataById(props.createdBundleItems.itemId);
+
 
     // const rObj={
     //   standardJobId: "SJ000002",
@@ -266,25 +276,25 @@ const PriceCalculator = (props) => {
         value: "MISCELLANEOUS",
       } : "",
 
-      currency: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemHeaderModel?.currency) &&
-        (props.createdBundleItems?.itemHeaderModel?.currency != "")) ? {
-        label: props.createdBundleItems?.itemHeaderModel?.currency,
-        value: props.createdBundleItems?.itemHeaderModel?.currency
+      currency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemHeaderModel?.currency) &&
+        (bundleOrServiceData?.itemHeaderModel?.currency != "")) ? {
+        label: bundleOrServiceData?.itemHeaderModel?.currency,
+        value: bundleOrServiceData?.itemHeaderModel?.currency
       } : "",
-      unit: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemBodyModel?.unit) &&
-        (props.createdBundleItems?.itemBodyModel?.unit != "")) ? {
-        label: props.createdBundleItems?.itemBodyModel?.unit,
-        value: props.createdBundleItems?.itemBodyModel?.unit
+      unit: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.unit) &&
+        (bundleOrServiceData?.itemBodyModel?.unit != "")) ? {
+        label: bundleOrServiceData?.itemBodyModel?.unit,
+        value: bundleOrServiceData?.itemBodyModel?.unit
       } : "",
-      frequency: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemBodyModel?.frequency) &&
-        props.createdBundleItems?.itemBodyModel?.frequency != "") ? {
-        label: props.createdBundleItems?.itemBodyModel?.frequency,
-        value: props.createdBundleItems?.itemBodyModel?.frequency
+      frequency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.frequency) &&
+        bundleOrServiceData?.itemBodyModel?.frequency != "") ? {
+        label: bundleOrServiceData?.itemBodyModel?.frequency,
+        value: bundleOrServiceData?.itemBodyModel?.frequency
       } : "",
-      usageIn: ((props.createdBundleItems != "") && (props.createdBundleItems?.itemBodyModel?.usageIn) &&
-        (props.createdBundleItems?.itemBodyModel?.usageIn != "")) ? {
-        label: props.createdBundleItems?.itemBodyModel?.usageIn,
-        value: props.createdBundleItems?.itemBodyModel?.usageIn
+      usageType: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.usage) &&
+        (bundleOrServiceData?.itemBodyModel?.usage != "")) ? {
+        label: bundleOrServiceData?.itemBodyModel?.usage,
+        value: bundleOrServiceData?.itemBodyModel?.usage
       } : "",
     })
 
@@ -461,7 +471,7 @@ const PriceCalculator = (props) => {
     description: "",
     // usageIn:{label:categoryUsageKeyValue1.label,value:categoryUsageKeyValue1.value},
     // taskType: {label:stratgyTaskTypeKeyValue.label,value:stratgyTaskTypeKeyValue.value},
-    usageIn: "",
+    usageType: "",
     taskType: "",
     frequency: "",
     unit: "",

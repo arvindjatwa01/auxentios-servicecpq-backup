@@ -374,6 +374,7 @@ export function CreatePortfolio(props) {
   const [modelIncludedData, setModelIncludedData] = useState([]);
 
   const [editAblePriceData, setEditAblePriceData] = useState([]);
+  const [optionalServicesData, setOptionalServicesData] = useState([])
 
   const [partsRequired, setPartsRequired] = useState(true);
   const [labourRequired, setlabourRequired] = useState(true);
@@ -406,6 +407,12 @@ export function CreatePortfolio(props) {
     // const optionalServicesList = await getServiceItemsList();
     // console.log("optionalServicesList ", optionalServicesList)
     setOptionalPopup(true)
+  }
+
+  const handleSelectOptionalService = (serviceName) => {
+    // setOptionalServicesData()
+    
+    console.log("---------", serviceName)
   }
 
   const [strategyData, setStrategyData] = useState({
@@ -19571,7 +19578,7 @@ export function CreatePortfolio(props) {
                   <>
                     {optionalServiceListData.map((serviceData, i) =>
                       <div className="col-md-6 col-sm-6">
-                        <div className="card p-4">
+                        <div className="card p-4" onClick={() => handleSelectOptionalService(serviceData.itemName)}>
                           <div className="d-flex align-items-center ">
                             <div class="checkbox mr-3">
                               <input type="checkbox" value=""></input>
