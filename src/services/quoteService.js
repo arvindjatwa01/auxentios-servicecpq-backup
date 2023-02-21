@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL, CONVERT_PORTFOLIO_TO_QUOTE, GET_COVERT_QUOTE_DETAILS } from "./CONSTANTS";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL, CONVERT_PORTFOLIO_TO_QUOTE, GET_COVERT_QUOTE_DETAILS, SEARCH_QUOTE_BY_FIELDS } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -90,6 +90,28 @@ export const getSearchQuoteData = (searchStr) => {
                 });
         } catch (error) {
             console.error("in Query customPortfolio > getSearchQuoteData, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+
+export const getQuoteSearchDropdown = (searchStr) => {
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(SEARCH_QUOTE_BY_FIELDS() + searchStr, { headers: headersData })
+                .then((res) => {
+                    console.log("getQuoteSearchDropdown > axios res=", res);
+                    // resolve(res.data);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("getQuoteSearchDropdown > axios err=", err);
+                    reject("Error in getQuoteSearchDropdown axios!");
+                });
+        } catch (error) {
+            console.error("in Quote Service > getQuoteSearchDropdown, Err===", error);
             reject(SYSTEM_ERROR);
         }
     });

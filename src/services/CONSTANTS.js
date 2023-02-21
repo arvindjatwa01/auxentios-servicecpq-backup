@@ -238,3 +238,5 @@ export const SOLUTION_QUOTE_CREATION = () => QUOTE_REST_SERVICE;
 
 // export const SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";
 export const SEARCH_QUOTE_URL = () => QUOTE_REST_SERVICE + "search?search=";
+
+export const SEARCH_QUOTE_BY_FIELDS = () => QUOTE_REST_SERVICE + "/search-by-fields?quote_type=";

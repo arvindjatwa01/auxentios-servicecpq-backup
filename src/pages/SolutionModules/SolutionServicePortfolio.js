@@ -28,6 +28,9 @@ import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import DataTable from "react-data-table-component";
 import { FileUploader } from "react-drag-drop-files";
+
+import Cookies from "js-cookie";
+
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
 import MenuItem from '@mui/material/MenuItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -50,8 +53,6 @@ import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CON
 import SearchBox from "pages/Repair/components/SearchBox";
 import { customerSearch, machineSearch } from "services/searchServices";
 
-import Cookies from "js-cookie";
-
 import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import $ from "jquery";
 import {
@@ -59,6 +60,7 @@ import {
     getSearchQueryCoverage,
     getConvertQuoteData,
     solutionQuoteCreation,
+    updateSolutionQuoteData
 } from "../../services/index";
 import SelectFilter from "react-select";
 import DateFnsUtils from "@date-io/date-fns";
@@ -93,12 +95,13 @@ export function SolutionServicePortfolio(props) {
     const history = useHistory()
     const { state } = props.location;
     console.log("props are : ", props)
+
     var CookiesSetData = Cookies.get("loginTenantDtl");
-  var getCookiesJsonData;
-  if (CookiesSetData != undefined) {
-    getCookiesJsonData = JSON.parse(CookiesSetData);
-  }
-  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
+    var getCookiesJsonData;
+    if (CookiesSetData != undefined) {
+        getCookiesJsonData = JSON.parse(CookiesSetData);
+    }
+    const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
     const [age, setAge] = React.useState('5');
     const [age1, setAge1] = React.useState('5');
@@ -110,7 +113,7 @@ export function SolutionServicePortfolio(props) {
     const [searchModelResults, setSearchModelResults] = useState([]);
     const [searchSerialResults, setSearchSerialResults] = useState([]);
 
-    const [quoteDataId, setQuoteDataId] = useState(0);
+    const [quoteIdIs, setQuoteIdIs] = useState(0);
 
     const [severity, setSeverity] = useState("");
     const [openSnack, setOpenSnack] = useState(false);
@@ -119,6 +122,16 @@ export function SolutionServicePortfolio(props) {
     const [searchCustResults, setSearchCustResults] = useState([]);
 
     const [headerLoading, setHeaderLoading] = useState(false);
+
+    // View Only Tabs Data
+    const [viewOnlyTab, setViewOnlyTab] = useState({
+        customerViewOnly: false,
+        machineViewOnly: false,
+        estimationDetailsViewOnly: false,
+        generalDetailsViewOnly: false,
+        priceViewOnly: false,
+        shippingOrBillingViewOnly: false,
+    });
 
     // Customer Tab Data 
     const [customerData, setCustomerData] = useState({
@@ -163,7 +176,27 @@ export function SolutionServicePortfolio(props) {
         salesOffice: "",
     });
 
+    // Shipping / Billing Details Tab Data 
+
+    const [shippingBillingDetails, setShippingBillingDetails] = useState({
+        deliveryType: "",
+        deliveryPriority: "",
+        paymentTerms: "",
+        billingFrequency: "",
+        payer: "",
+        split: "",
+        netPayAble: "",
+    })
+
     const [generalValidityOptionKeyValue, setGeneralValidityOptionKeyValue] = useState("");
+
+    const salesOfficeOptions = [
+        { value: "Location1", label: "Location1" },
+        { value: "Location2", label: "Location2" },
+        { value: "Location3", label: "Location3" },
+        { value: "Location4", label: "Location4" },
+    ];
+
     const generalValidityOptions = [
         { label: "Allowed", value: "ALLOWED" },
         { label: "Denied", value: "DENIED" },
@@ -228,7 +261,7 @@ export function SolutionServicePortfolio(props) {
             if (e.target.id === "customer") {
                 // 
                 if (customerData.customerID === "") {
-                    throw "Customer ID must not be Empty."
+                    throw "Customer ID is a required field, you can’t leave it blank."
                 }
 
                 let solutionQuoteObj = {
@@ -246,7 +279,8 @@ export function SolutionServicePortfolio(props) {
                     preparedOn: estimateDetails.preparedOn,
                     revisedBy: estimateDetails.revisedBy,
                     revisedOn: estimateDetails.revisedOn,
-                    salesOffice: estimateDetails.salesOffice,
+                    salesOffice: estimateDetails.salesOffice != ""
+                        ? estimateDetails.salesOffice?.value : "",
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
@@ -277,29 +311,210 @@ export function SolutionServicePortfolio(props) {
                         progress: undefined,
                     });
                     setValue("machine");
-                    // setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+                    setViewOnlyTab({ ...viewOnlyTab, customerViewOnly: true });
                     //   setGeneralComponentData({
                     //     ...generalComponentData,
                     //     portfolioId: solutionRes.data.portfolioId,
                     //   });
-                    setQuoteDataId(solutionRes.data.quoteId);
-                    //   setPortfolioId(solutionRes.data.portfolioId);
+                    setQuoteIdIs(solutionRes.data.quoteId);
                     //   setNameIsNotEditAble(true);
                 }
 
             } else if (e.target.id === "machine") {
-                setValue("estimationDetails");
+
+                if (quoteIdIs == 0) {
+                    throw "Please Create Quote First."
+                }
+
+                if (machineData.serialNo === "") {
+                    throw "Serial No is a required field, you can’t leave it blank";
+                }
+
+                let solutionQuoteObj = {
+                    quoteType: "SOLUTION_QUOTE",
+                    source: customerData.source,
+                    customerId: customerData.customerID,
+                    model: machineData.model,
+                    serialNumber: machineData.serialNo,
+                    smu: machineData.smu,
+                    fleetNo: machineData.fleetNo,
+                    registrationNo: machineData.registrationNo,
+                    chasisNo: machineData.chasisNo,
+                    preparedBy: estimateDetails.preparedBy,
+                    approvedBy: estimateDetails.approvedBy,
+                    preparedOn: estimateDetails.preparedOn,
+                    revisedBy: estimateDetails.revisedBy,
+                    revisedOn: estimateDetails.revisedOn,
+                    salesOffice: estimateDetails.salesOffice != ""
+                        ? estimateDetails.salesOffice?.value : "",
+                    quoteDate: generalDetails.quoteDate,
+                    description: generalDetails.description,
+                    reference: generalDetails.reference,
+                    validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                    version: generalDetails.version,
+                    netPrice: 0,
+                    priceDate: "",
+                    costPrice: 0,
+                    priceMethod: "LIST_PRICE",
+                    adjustedPrice: 0,
+                    currency: "",
+                    status: "PENDING_ACTIVE",
+                    tenantId: loginTenantId,
+                    sbQuoteItems: [],
+                    rbQuoteItems: [],
+                    plQuoteItems: []
+                }
+
+                const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
+                if (solutionRes.status === 200) {
+                    toast(`👏 Quote Updated Successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("estimationDetails");
+                    setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
+                }
             } else if (e.target.id === "estimationDetails") {
-                setValue("generalDetails");
+                if (quoteIdIs == 0) {
+                    throw "Please Create Quote First."
+                }
+                if (estimateDetails.preparedBy === "") {
+                    throw "Prepared By is a required field, you can’t leave it blank";
+                }
+
+                if ((estimateDetails.salesOffice === "") ||
+                    (estimateDetails.salesOffice === undefined)) {
+                    throw "Sales Office / Branch is a required field, you can’t leave it blank";
+                }
+
+                let solutionQuoteObj = {
+                    quoteType: "SOLUTION_QUOTE",
+                    source: customerData.source,
+                    customerId: customerData.customerID,
+                    model: machineData.model,
+                    serialNumber: machineData.serialNo,
+                    smu: machineData.smu,
+                    fleetNo: machineData.fleetNo,
+                    registrationNo: machineData.registrationNo,
+                    chasisNo: machineData.chasisNo,
+                    preparedBy: estimateDetails.preparedBy,
+                    approvedBy: estimateDetails.approvedBy,
+                    preparedOn: estimateDetails.preparedOn,
+                    revisedBy: estimateDetails.revisedBy,
+                    revisedOn: estimateDetails.revisedOn,
+                    salesOffice: estimateDetails.salesOffice != ""
+                        ? estimateDetails.salesOffice?.value : "",
+                    quoteDate: generalDetails.quoteDate,
+                    description: generalDetails.description,
+                    reference: generalDetails.reference,
+                    validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                    version: generalDetails.version,
+                    netPrice: 0,
+                    priceDate: "",
+                    costPrice: 0,
+                    priceMethod: "LIST_PRICE",
+                    adjustedPrice: 0,
+                    currency: "",
+                    status: "PENDING_ACTIVE",
+                    tenantId: loginTenantId,
+                    sbQuoteItems: [],
+                    rbQuoteItems: [],
+                    plQuoteItems: []
+                }
+
+                const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
+                if (solutionRes.status === 200) {
+                    toast(`👏 Quote Updated Successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("generalDetails");
+                    setViewOnlyTab({ ...viewOnlyTab, estimationDetailsViewOnly: true });
+                }
+
+
             } else if (e.target.id === "generalDetails") {
-                setValue("price");
+
+                if (quoteIdIs == 0) {
+                    throw "Please Create Quote First."
+                }
+
+                if (generalDetails.validity === "") {
+                    throw "Validity is a required field, you can’t leave it blank";
+                }
+                let solutionQuoteObj = {
+                    quoteType: "SOLUTION_QUOTE",
+                    source: customerData.source,
+                    customerId: customerData.customerID,
+                    model: machineData.model,
+                    serialNumber: machineData.serialNo,
+                    smu: machineData.smu,
+                    fleetNo: machineData.fleetNo,
+                    registrationNo: machineData.registrationNo,
+                    chasisNo: machineData.chasisNo,
+                    preparedBy: estimateDetails.preparedBy,
+                    approvedBy: estimateDetails.approvedBy,
+                    preparedOn: estimateDetails.preparedOn,
+                    revisedBy: estimateDetails.revisedBy,
+                    revisedOn: estimateDetails.revisedOn,
+                    salesOffice: estimateDetails.salesOffice != ""
+                        ? estimateDetails.salesOffice?.value : "",
+                    quoteDate: generalDetails.quoteDate,
+                    description: generalDetails.description,
+                    reference: generalDetails.reference,
+                    validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                    version: generalDetails.version,
+                    netPrice: 0,
+                    priceDate: "",
+                    costPrice: 0,
+                    priceMethod: "LIST_PRICE",
+                    adjustedPrice: 0,
+                    currency: "",
+                    status: "PENDING_ACTIVE",
+                    tenantId: loginTenantId,
+                    sbQuoteItems: [],
+                    rbQuoteItems: [],
+                    plQuoteItems: []
+                }
+
+                const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
+                if (solutionRes.status === 200) {
+                    toast(`👏 Quote Updated Successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("price");
+                    setViewOnlyTab({ ...viewOnlyTab, generalDetailsViewOnly: true });
+                }
+
+
             } else if (e.target.id === "price") {
+                if (quoteIdIs == 0) {
+                    throw "Please Create Quote First."
+                }
                 setValue("shipping_billing");
             } else if (e.target.id === "shipping_billing") {
+
+                if (quoteIdIs == 0) {
+                    throw "Please Create Quote First."
+                }
                 console.log("final")
             }
-            console.log("e.target.id", e.target.id)
-
         } catch (error) {
             toast("😐" + error, {
                 position: "top-right",
@@ -649,7 +864,7 @@ export function SolutionServicePortfolio(props) {
             // setPortfolioId(state.portfolioId);
             // setGeneralData({ ...generalData, estimationNo: state.builderId });
         } else if (state) {
-            setQuoteDataId(state.quoteId);
+            setQuoteIdIs(state.quoteId);
             fetchAllDetails(state.quoteId);
         }
     }, []);
@@ -659,11 +874,11 @@ export function SolutionServicePortfolio(props) {
     };
 
 
-    const fetchAllDetails = async (quoteDataId) => {
-        console.log("quoteDataId --- ", quoteDataId)
-        if (quoteDataId) {
+    const fetchAllDetails = async (quoteIdIs) => {
+        console.log("quoteIdIs --- ", quoteIdIs)
+        if (quoteIdIs) {
             setHeaderLoading(true);
-            await getConvertQuoteData(quoteDataId)
+            await getConvertQuoteData(quoteIdIs)
                 .then((result) => {
                     populateHeader(result);
                 })
@@ -958,6 +1173,45 @@ export function SolutionServicePortfolio(props) {
         setQuerySearchSelector([...tempArray]);
     };
     const [masterData, setMasterData] = useState([]);
+
+
+    const getFormattedDateTimeByTimeStamp = (timeStamp) => {
+
+        var date = new Date(timeStamp);
+        var year = date.getFullYear();
+        // var m = date.getMonth() + 1;
+        var m = date.getMonth();
+        // var month = m < 10 ? '0' + m : m;
+        var month = m;
+        var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+        var format = "AM";
+        var hour = date.getHours();
+        var minutes = date.getMinutes();
+
+        var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        if (hour > 11) {
+            format = "PM";
+        }
+        if (hour > 12) {
+            hour = hour - 12;
+        } else if (hour === 0) {
+            hour = 12;
+        }
+
+        if (hour < 10) {
+            hour = "0" + hour;
+        }
+
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+
+        // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+        var finalDateString = year + "-" + month + "-" + day;
+        return finalDateString;
+    }
+
     return (
         <>
             {/* <CommanComponents /> */}
@@ -1035,150 +1289,194 @@ export function SolutionServicePortfolio(props) {
                                     </TabList>
                                 </Box>
                                 <TabPanel value="customer">
-                                    <div class="row mt-4 input-fields">
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                    name="source"
-                                                    disabled={true}
-                                                    value={customerData.source}
-                                                    onChange={handleCustomerDataChange}
-                                                />
+                                    {!viewOnlyTab.customerViewOnly ?
+                                        <>
+                                            <div class="row mt-4 input-fields">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
+                                                            name="source"
+                                                            disabled={true}
+                                                            value={customerData.source}
+                                                            onChange={handleCustomerDataChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
+                                                    <div class="form-group w-100" style={{ position: "relative" }}>
+                                                        {/* <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                                                        <SearchBox
+                                                            value={customerData.customerID}
+                                                            onChange={(e) =>
+                                                                handleCustSearch("customerId", e.target.value)
+                                                            }
+                                                            type="customerId"
+                                                            result={searchCustResults}
+                                                            onSelect={handleCustSelect}
+                                                        />
+                                                        {/* <span className="search-absolute"><SearchIcon /></span> */}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            value={customerData.customerName}
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            disabled={true}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500 " for="exampleInputEmail1">CONTACT EMAIL</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            value={customerData.contactEmail}
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            disabled={true}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            name="contactPhone"
+                                                            onChange={handleCustomerDataChange}
+                                                            value={customerData.contactPhone}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            value={customerData.customerGroup}
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            disabled={true}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div class="form-group">
+                                                        <Link
+                                                            className="btn bg-primary text-white pull-right"
+                                                            id="customer"
+                                                            onClick={handleNextClick}
+                                                        >
+                                                            Save & Next
+                                                        </Link>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                                            <div class="form-group w-100" style={{ position: "relative" }}>
-                                                {/* <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
-                                                <SearchBox
-                                                    value={customerData.customerID}
-                                                    onChange={(e) =>
-                                                        handleCustSearch("customerId", e.target.value)
-                                                    }
-                                                    type="customerId"
-                                                    result={searchCustResults}
-                                                    onSelect={handleCustSelect}
-                                                />
-                                                {/* <span className="search-absolute"><SearchIcon /></span> */}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    value={customerData.customerName}
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    aria-describedby="emailHelp"
-                                                    disabled={true}
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500 " for="exampleInputEmail1">CONTACT EMAIL</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    value={customerData.contactEmail}
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    aria-describedby="emailHelp"
-                                                    disabled={true}
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    aria-describedby="emailHelp"
-                                                    name="contactPhone"
-                                                    onChange={handleCustomerDataChange}
-                                                    value={customerData.contactPhone}
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    value={customerData.customerGroup}
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    aria-describedby="emailHelp"
-                                                    disabled={true}
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
+                                        </> :
+                                        <>
+                                            <div className="row mt-4">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">SOURCE</p>
+                                                        <h6 class="font-weight-600">
+                                                            {customerData.source == "" ||
+                                                                customerData.source == null ||
+                                                                customerData.source == "string" ||
+                                                                customerData.source == undefined ?
+                                                                "NA" : customerData.source}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
+                                                        <h6 class="font-weight-600">
+                                                            {customerData.customerID == "" ||
+                                                                customerData.customerID == null ||
+                                                                customerData.customerID == "string" ||
+                                                                customerData.customerID == undefined ?
+                                                                "NA" : customerData.customerID}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER NAME</p>
+                                                        <h6 class="font-weight-600">
+                                                            {customerData.customerName == "" ||
+                                                                customerData.customerName == null ||
+                                                                customerData.customerName == "string" ||
+                                                                customerData.customerName == undefined ?
+                                                                "NA" : customerData.customerName}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">CONTACT EMAIL</p>
+                                                        <h6 class="font-weight-600">
+                                                            {customerData.contactEmail == "" ||
+                                                                customerData.contactEmail == null ||
+                                                                customerData.contactEmail == "string" ||
+                                                                customerData.contactEmail == undefined ?
+                                                                "NA" : customerData.contactEmail}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">CONTACT PHONE</p>
+                                                        <h6 class="font-weight-600">
+                                                            {customerData.contactPhone == "" ||
+                                                                customerData.contactPhone == null ||
+                                                                customerData.contactPhone == "string" ||
+                                                                customerData.contactPhone == undefined ?
+                                                                "NA" : customerData.contactPhone}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER GROUP</p>
+                                                        <h6 class="font-weight-600">
+                                                            {customerData.customerGroup == "" ||
+                                                                customerData.customerGroup == null ||
+                                                                customerData.customerGroup == "string" ||
+                                                                customerData.customerGroup == undefined ?
+                                                                "NA" : customerData.customerGroup}
+                                                        </h6>
+                                                    </div>
+                                                </div>
 
-                                    </div>
-                                    <div className="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">SOURCE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">CUSTOMER NAME</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">CONTACT EMAIL</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">CONTACT PHONE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">CUSTOMER GROUP</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div class="form-group">
-                                                <Link
-                                                    className="btn bg-primary text-white pull-right"
-                                                    id="customer"
-                                                    onClick={handleNextClick}
-                                                >
-                                                    Save & Next
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </>
+                                    }
                                 </TabPanel>
                                 <TabPanel value="machine">
-                                    <div className="row mt-4 input-fields">
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
-                                            <div class="form-group w-100">
-                                                {/* <SearchBox
+                                    {!viewOnlyTab.machineViewOnly ?
+                                        <>
+                                            <div className="row mt-4 input-fields">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
+                                                    <div class="form-group w-100">
+                                                        {/* <SearchBox
                                                     value={machineData.model}
                                                     onChange={(e) =>
                                                         handleMachineSearch("model", e.target.value)
@@ -1187,94 +1485,106 @@ export function SolutionServicePortfolio(props) {
                                                     result={searchSerialResults}
                                                     onSelect={handleModelSelect}
                                                 /> */}
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    aria-describedby="emailHelp"
-                                                    value={machineData.model}
-                                                    disabled={true}
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
-                                            <div class="form-group w-100">
-                                                {/* <input
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            value={machineData.model}
+                                                            disabled={true}
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
+                                                    <div class="form-group w-100">
+                                                        {/* <input
                                                     type="email"
                                                     class="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
                                                     placeholder="Placeholder (Optional)" /> */}
-                                                <SearchBox
-                                                    value={machineData.serialNo}
-                                                    onChange={(e) =>
-                                                        handleMachineSearch("serialNo", e.target.value)
-                                                    }
-                                                    type="equipmentNumber"
-                                                    result={searchSerialResults}
-                                                    onSelect={handleModelSelect}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="smu"
-                                                    value={machineData.smu}
-                                                    onChange={handleMachineDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="fleetNo"
-                                                    value={machineData.fleetNo}
-                                                    onChange={handleMachineDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="registrationNo"
-                                                    value={machineData.registrationNo}
-                                                    onChange={handleMachineDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="chasisNo"
-                                                    value={machineData.chasisNo}
-                                                    onChange={handleMachineDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        {/* <div className="col-md-6 col-sm-6">
+                                                        <SearchBox
+                                                            value={machineData.serialNo}
+                                                            onChange={(e) =>
+                                                                handleMachineSearch("serialNo", e.target.value)
+                                                            }
+                                                            type="equipmentNumber"
+                                                            result={searchSerialResults}
+                                                            onSelect={handleModelSelect}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="smu"
+                                                            value={machineData.smu}
+                                                            onChange={handleMachineDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="fleetNo"
+                                                            value={machineData.fleetNo}
+                                                            onChange={handleMachineDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="registrationNo"
+                                                            value={machineData.registrationNo}
+                                                            onChange={handleMachineDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="chasisNo"
+                                                            value={machineData.chasisNo}
+                                                            onChange={handleMachineDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div class="form-group">
+                                                        <Link
+                                                            className="btn bg-primary text-white pull-right"
+                                                            id="machine"
+                                                            onClick={handleNextClick}
+                                                        >
+                                                            Save & Next
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                                {/* <div className="col-md-6 col-sm-6">
                                             <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">DATE</label>
                                             <div className="d-flex align-items-center">
                                                 <div class="form-group w-100">
@@ -1286,7 +1596,7 @@ export function SolutionServicePortfolio(props) {
                                                 </div>
                                             </div>
                                         </div> */}
-                                        {/* <div className="col-md-6 col-sm-6">
+                                                {/* <div className="col-md-6 col-sm-6">
                                             <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">HOUR</label>
                                             <div className="d-flex align-items-center">
                                                 <div class="form-group w-100">
@@ -1298,154 +1608,184 @@ export function SolutionServicePortfolio(props) {
                                                 </div>
                                             </div>
                                         </div> */}
-                                    </div>
-                                    <div className="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
-                                                <h6 class="font-weight-600">X1234</h6>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">SERIAL #</p>
-                                                <h6 class="font-weight-600">X1234</h6>
+                                        </> :
+                                        <>
+                                            <div className="row mt-4">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
+                                                        <h6 class="font-weight-600">
+                                                            {machineData.model == "" ||
+                                                                machineData.model == null ||
+                                                                machineData.model == "string" ||
+                                                                machineData.model == undefined ?
+                                                                "NA" : machineData.model}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">SERIAL #</p>
+                                                        <h6 class="font-weight-600">
+                                                            {machineData.serialNo == "" ||
+                                                                machineData.serialNo == null ||
+                                                                machineData.serialNo == "string" ||
+                                                                machineData.serialNo == undefined ?
+                                                                "NA" : machineData.serialNo}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">SMU</p>
+                                                        <h6 class="font-weight-600">
+                                                            {machineData.smu == "" ||
+                                                                machineData.smu == null ||
+                                                                machineData.smu == "string" ||
+                                                                machineData.smu == undefined ?
+                                                                "NA" : machineData.smu}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">UNIT NO / FLEET NO</p>
+                                                        <h6 class="font-weight-600">
+                                                            {machineData.fleetNo == "" ||
+                                                                machineData.fleetNo == null ||
+                                                                machineData.fleetNo == "string" ||
+                                                                machineData.fleetNo == undefined ?
+                                                                "NA" : machineData.fleetNo}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">REGISTRATION NO</p>
+                                                        <h6 class="font-weight-600">
+                                                            {machineData.registrationNo == "" ||
+                                                                machineData.registrationNo == null ||
+                                                                machineData.registrationNo == "string" ||
+                                                                machineData.registrationNo == undefined ?
+                                                                "NA" : machineData.registrationNo}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">CHASIS NO</p>
+                                                        <h6 class="font-weight-600">
+                                                            {machineData.chasisNo == "" ||
+                                                                machineData.chasisNo == null ||
+                                                                machineData.chasisNo == "string" ||
+                                                                machineData.chasisNo == undefined ?
+                                                                "NA" : machineData.chasisNo}
+                                                        </h6>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">SMU</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">UNIT NO / FLEET NO</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div class="form-group">
-                                                <Link
-                                                    className="btn bg-primary text-white pull-right"
-                                                    id="machine"
-                                                    onClick={handleNextClick}
-                                                >
-                                                    Save & Next
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </>}
                                 </TabPanel>
                                 <TabPanel value="estimationDetails">
-                                    <div className="row mt-4 input-fields">
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="preparedBy"
-                                                    value={estimateDetails.preparedBy}
-                                                    onChange={handleEstimateDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="approvedBy"
-                                                    value={estimateDetails.approvedBy}
-                                                    onChange={handleEstimateDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
-                                            <div className="d-flex align-items-center date-box w-100">
-                                                <div class="form-group w-100">
-                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                        <DatePicker
-                                                            variant="inline"
-                                                            format="dd/MM/yyyy"
-                                                            className="form-controldate border-radius-10"
-                                                            label=""
-                                                            name="preparedOn"
-                                                            value={estimateDetails.preparedOn}
-                                                            onChange={(e) =>
-                                                                setEstimateDetails({
-                                                                    ...estimateDetails,
-                                                                    preparedOn: e,
-                                                                })
-                                                            }
+                                    {!viewOnlyTab.estimationDetailsViewOnly ?
+                                        <>
+                                            <div className="row mt-4 input-fields">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="preparedBy"
+                                                            value={estimateDetails.preparedBy}
+                                                            onChange={handleEstimateDetailsDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
                                                         />
-                                                    </MuiPickersUtilsProvider>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="revisedBy"
-                                                    value={estimateDetails.revisedBy}
-                                                    onChange={handleEstimateDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
-                                            <div className="d-flex align-items-center date-box w-100">
-                                                <div class="form-group w-100">
-                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                        <DatePicker
-                                                            variant="inline"
-                                                            format="dd/MM/yyyy"
-                                                            className="form-controldate border-radius-10"
-                                                            label=""
-                                                            name="revisedOn"
-                                                            value={estimateDetails.revisedOn}
-                                                            onChange={(e) =>
-                                                                setEstimateDetails({
-                                                                    ...estimateDetails,
-                                                                    revisedOn: e,
-                                                                })
-                                                            }
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="approvedBy"
+                                                            value={estimateDetails.approvedBy}
+                                                            onChange={handleEstimateDetailsDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
                                                         />
-                                                    </MuiPickersUtilsProvider>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
-                                            <div class="form-group w-100">
-                                                <input
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
+                                                    <div className="d-flex align-items-center date-box w-100">
+                                                        <div class="form-group w-100">
+                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker
+                                                                    variant="inline"
+                                                                    format="dd/MM/yyyy"
+                                                                    className="form-controldate border-radius-10"
+                                                                    label=""
+                                                                    name="preparedOn"
+                                                                    value={estimateDetails.preparedOn}
+                                                                    onChange={(e) =>
+                                                                        setEstimateDetails({
+                                                                            ...estimateDetails,
+                                                                            preparedOn: e,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </MuiPickersUtilsProvider>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="revisedBy"
+                                                            value={estimateDetails.revisedBy}
+                                                            onChange={handleEstimateDetailsDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
+                                                    <div className="d-flex align-items-center date-box w-100">
+                                                        <div class="form-group w-100">
+                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker
+                                                                    variant="inline"
+                                                                    format="dd/MM/yyyy"
+                                                                    className="form-controldate border-radius-10"
+                                                                    label=""
+                                                                    name="revisedOn"
+                                                                    value={estimateDetails.revisedOn}
+                                                                    onChange={(e) =>
+                                                                        setEstimateDetails({
+                                                                            ...estimateDetails,
+                                                                            revisedOn: e,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </MuiPickersUtilsProvider>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
+                                                    <div class="form-group w-100">
+                                                        {/* <input
                                                     type="email"
                                                     class="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
@@ -1454,137 +1794,192 @@ export function SolutionServicePortfolio(props) {
                                                     onChange={handleEstimateDetailsDataChange}
                                                     aria-describedby="emailHelp"
                                                     placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PREPARED BY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">APPROVED BY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">REVISED BY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">REVISED ON</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div class="form-group">
-                                                <Link
-                                                    className="btn bg-primary text-white pull-right"
-                                                    id="estimationDetails"
-                                                    onClick={handleNextClick}
-                                                >
-                                                    Save & Next
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </TabPanel>
-                                <TabPanel value="generalDetails">
-                                    <div className="row mt-4 input-fields">
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
-                                            <div className="d-flex align-items-center date-box w-100">
-                                                <div class="form-group w-100">
-                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                        <DatePicker
-                                                            variant="inline"
-                                                            format="dd/MM/yyyy"
-                                                            className="form-controldate border-radius-10"
-                                                            label=""
-                                                            name="quoteDate"
-                                                            value={generalDetails.quoteDate}
+                                                /> */}
+                                                        <Select
                                                             onChange={(e) =>
-                                                                setGeneralDetails({
-                                                                    ...generalDetails,
-                                                                    quoteDate: e,
+                                                                setEstimateDetails({
+                                                                    ...estimateDetails,
+                                                                    salesOffice: e,
                                                                 })
                                                             }
+                                                            className="text-primary"
+                                                            options={salesOfficeOptions}
+                                                            placeholder="Required"
+                                                            value={estimateDetails.salesOffice}
+                                                            styles={FONT_STYLE_SELECT}
                                                         />
-                                                    </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div class="form-group">
+                                                        <Link
+                                                            className="btn bg-primary text-white pull-right"
+                                                            id="estimationDetails"
+                                                            onClick={handleNextClick}
+                                                        >
+                                                            Save & Next
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            {/* <div class="form-group w-100">
+                                        </> :
+                                        <>
+                                            <div className="row mt-4">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+                                                        <h6 class="font-weight-600">
+                                                            {estimateDetails.preparedBy == "" ||
+                                                                estimateDetails.preparedBy == null ||
+                                                                estimateDetails.preparedBy == "string" ||
+                                                                estimateDetails.preparedBy == undefined ?
+                                                                "NA" : estimateDetails.preparedBy}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+                                                        <h6 class="font-weight-600">
+                                                            {estimateDetails.approvedBy == "" ||
+                                                                estimateDetails.approvedBy == null ||
+                                                                estimateDetails.approvedBy == "string" ||
+                                                                estimateDetails.approvedBy == undefined ?
+                                                                "NA" : estimateDetails.approvedBy}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+                                                        <h6 class="font-weight-600">
+                                                            {estimateDetails.preparedOn == "" ||
+                                                                estimateDetails.preparedOn == null ||
+                                                                estimateDetails.preparedOn == "string" ||
+                                                                estimateDetails.preparedOn == undefined ?
+                                                                "NA" : getFormattedDateTimeByTimeStamp(estimateDetails.preparedOn)}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">REVISED BY</p>
+                                                        <h6 class="font-weight-600">
+                                                            {estimateDetails.revisedBy == "" ||
+                                                                estimateDetails.revisedBy == null ||
+                                                                estimateDetails.revisedBy == "string" ||
+                                                                estimateDetails.revisedBy == undefined ?
+                                                                "NA" : estimateDetails.revisedBy}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">REVISED ON</p>
+                                                        <h6 class="font-weight-600">
+                                                            {estimateDetails.revisedOn == "" ||
+                                                                estimateDetails.revisedOn == null ||
+                                                                estimateDetails.revisedOn == "string" ||
+                                                                estimateDetails.revisedOn == undefined ?
+                                                                "NA" : getFormattedDateTimeByTimeStamp(estimateDetails.revisedOn)}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
+                                                        <h6 class="font-weight-600">
+                                                            {estimateDetails.salesOffice == "" ||
+                                                                estimateDetails.salesOffice == null ||
+                                                                estimateDetails.salesOffice == "string" ||
+                                                                estimateDetails.salesOffice == undefined ?
+                                                                "NA" : estimateDetails.salesOffice?.value}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    }
+                                </TabPanel>
+                                <TabPanel value="generalDetails">
+                                    {!viewOnlyTab.generalDetailsViewOnly ?
+                                        <>
+                                            <div className="row mt-4 input-fields">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
+                                                    <div className="d-flex align-items-center date-box w-100">
+                                                        <div class="form-group w-100">
+                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker
+                                                                    variant="inline"
+                                                                    format="dd/MM/yyyy"
+                                                                    className="form-controldate border-radius-10"
+                                                                    label=""
+                                                                    name="quoteDate"
+                                                                    value={generalDetails.quoteDate}
+                                                                    onChange={(e) =>
+                                                                        setGeneralDetails({
+                                                                            ...generalDetails,
+                                                                            quoteDate: e,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </MuiPickersUtilsProvider>
+                                                        </div>
+                                                    </div>
+                                                    {/* <div class="form-group w-100">
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div> */}
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE #</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="quote"
-                                                    value={generalDetails.quote}
-                                                    onChange={handleGeneralDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DESCRIPTION</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="description"
-                                                    value={generalDetails.description}
-                                                    onChange={handleGeneralDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="reference"
-                                                    value={generalDetails.reference}
-                                                    onChange={handleGeneralDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
-                                            <div class="form-group w-100">
-                                                {/* <input
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE #</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="quote"
+                                                            value={generalDetails.quote}
+                                                            onChange={handleGeneralDetailsDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DESCRIPTION</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="description"
+                                                            value={generalDetails.description}
+                                                            onChange={handleGeneralDetailsDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="reference"
+                                                            value={generalDetails.reference}
+                                                            onChange={handleGeneralDetailsDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
+                                                    <div class="form-group w-100">
+                                                        {/* <input
                                                     type="email"
                                                     class="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
@@ -1594,85 +1989,125 @@ export function SolutionServicePortfolio(props) {
                                                     aria-describedby="emailHelp"
                                                     placeholder="Placeholder (Optional)"
                                                 /> */}
-                                                <Select
-                                                    onChange={(e) =>
-                                                        setGeneralDetails({
-                                                            ...machineData,
-                                                            validity: e,
-                                                        })
-                                                    }
-                                                    className="text-primary"
-                                                    options={generalValidityOptions}
-                                                    placeholder="Required"
-                                                    value={generalDetails.validity}
-                                                    styles={FONT_STYLE_SELECT}
-                                                />
+                                                        <Select
+                                                            onChange={(e) =>
+                                                                setGeneralDetails({
+                                                                    ...machineData,
+                                                                    validity: e,
+                                                                })
+                                                            }
+                                                            className="text-primary"
+                                                            options={generalValidityOptions}
+                                                            placeholder="Required"
+                                                            value={generalDetails.validity}
+                                                            styles={FONT_STYLE_SELECT}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            name="version"
+                                                            value={generalDetails.version}
+                                                            onChange={handleGeneralDetailsDataChange}
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div class="form-group">
+                                                        <Link
+                                                            className="btn bg-primary text-white pull-right"
+                                                            id="generalDetails"
+                                                            onClick={handleNextClick}
+                                                        >
+                                                            Save & Next
+                                                        </Link>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
-                                            <div class="form-group w-100">
-                                                <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="version"
-                                                    value={generalDetails.version}
-                                                    onChange={handleGeneralDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)" />
+                                        </> :
+                                        <>
+                                            <div className="mt-4 row">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">QUOTE DATE</p>
+                                                        <h6 class="font-weight-600">
+                                                            {generalDetails.quoteDate == "" ||
+                                                                generalDetails.quoteDate == null ||
+                                                                generalDetails.quoteDate == "string" ||
+                                                                generalDetails.quoteDate == undefined ?
+                                                                "NA" : getFormattedDateTimeByTimeStamp(generalDetails.quoteDate)}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">QUOTE #</p>
+                                                        <h6 class="font-weight-600">
+                                                            {generalDetails.quote == "" ||
+                                                                generalDetails.quote == null ||
+                                                                generalDetails.quote == "string" ||
+                                                                generalDetails.quote == undefined ?
+                                                                "NA" : generalDetails.quote}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">QUOTE DESCRIPTION</p>
+                                                        <h6 class="font-weight-600">
+                                                            {generalDetails.description == "" ||
+                                                                generalDetails.description == null ||
+                                                                generalDetails.description == "string" ||
+                                                                generalDetails.description == undefined ?
+                                                                "NA" : generalDetails.description}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                                        <h6 class="font-weight-600">
+                                                            {generalDetails.reference == "" ||
+                                                                generalDetails.reference == null ||
+                                                                generalDetails.reference == "string" ||
+                                                                generalDetails.reference == undefined ?
+                                                                "NA" : generalDetails.reference}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">VALIDITY</p>
+                                                        <h6 class="font-weight-600">
+                                                            {generalDetails.validity == "" ||
+                                                                generalDetails.validity == null ||
+                                                                generalDetails.validity == "string" ||
+                                                                generalDetails.validity == undefined ?
+                                                                "NA" : generalDetails.validity?.value}
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
+                                                        <h6 class="font-weight-600">
+                                                            {generalDetails.version == "" ||
+                                                                generalDetails.version == null ||
+                                                                generalDetails.version == "string" ||
+                                                                generalDetails.version == undefined ?
+                                                                "NA" : generalDetails.version}
+                                                        </h6>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-4 row">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">QUOTE DATE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">QUOTE #</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">QUOTE DESCRIPTION</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">VALIDITY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div class="form-group">
-                                                <Link
-                                                    className="btn bg-primary text-white pull-right"
-                                                    id="generalDetails"
-                                                    onClick={handleNextClick}
-                                                >
-                                                    Save & Next
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </>
+                                    }
                                 </TabPanel>
                                 <TabPanel value="price">
                                     <div class="row mt-4">
@@ -2045,105 +2480,117 @@ export function SolutionServicePortfolio(props) {
                                     </div> */}
                                 </TabPanel>
                                 <TabPanel value="shipping_billing">
-                                    <div className="row mt-4 input-fields">
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                    {!viewOnlyTab.shippingOrBillingViewOnly ?
+                                        <>
+                                            <div className="row mt-4 input-fields">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
+                                                    <div class="form-group w-100">
+                                                        <input
+                                                            type="email"
+                                                            class="form-control border-radius-10 text-primary"
+                                                            id="exampleInputEmail1"
+                                                            aria-describedby="emailHelp"
+                                                            placeholder="Placeholder (Optional)"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY PRIORITY</label>
+                                                    <div class="form-group w-100">
+                                                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYMENT TERMS</label>
+                                                    <div class="form-group w-100">
+                                                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">BILLING FREQUENCY</label>
+                                                    <div class="form-group w-100">
+                                                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYER (s)</label>
+                                                    <div class="form-group w-100">
+                                                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% SPLIT</label>
+                                                    <div class="form-group w-100">
+                                                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PAYABLE BY PAYER</label>
+                                                    <div class="form-group w-100">
+                                                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div class="form-group">
+                                                        <Link
+                                                            className="btn bg-primary text-white pull-right"
+                                                            id="shipping_billing"
+                                                            onClick={handleNextClick}
+                                                        >
+                                                            Save & Next
+                                                        </Link>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY PRIORITY</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                        </> :
+                                        <>
+                                            <div className="row mt-4">
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">DELIVERY TYPE</p>
+                                                        <h6 class="font-weight-600">X1234</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">DELIVERY PRIORITY</p>
+                                                        <h6 class="font-weight-600">X1234</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">PAYMENT TERMS</p>
+                                                        <h6 class="font-weight-600">X1234</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">BILLING FREQUENCY</p>
+                                                        <h6 class="font-weight-600">X1234</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">PAYER (s)</p>
+                                                        <h6 class="font-weight-600">X1234</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">% SPLIT</p>
+                                                        <h6 class="font-weight-600">X1234</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-sm-4">
+                                                    <div class="form-group">
+                                                        <p class="font-size-12 font-weight-500 mb-2">NET PAYABLE BY PAYER</p>
+                                                        <h6 class="font-weight-600">X1234</h6>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYMENT TERMS</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">BILLING FREQUENCY</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYER (s)</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% SPLIT</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PAYABLE BY PAYER</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">DELIVERY TYPE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">DELIVERY PRIORITY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PAYMENT TERMS</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">BILLING FREQUENCY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PAYER (s)</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">% SPLIT</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">NET PAYABLE BY PAYER</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div class="form-group">
-                                                <Link
-                                                    className="btn bg-primary text-white pull-right"
-                                                    id="shipping_billing"
-                                                    onClick={handleNextClick}
-                                                >
-                                                    Save & Next
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        </>
+                                    }
                                 </TabPanel>
 
                             </TabContext>

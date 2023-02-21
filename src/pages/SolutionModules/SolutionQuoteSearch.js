@@ -22,6 +22,7 @@ import {
   getSearchCoverageForFamily,
   getSearchQueryCoverage,
   getSearchQuoteData,
+  getQuoteSearchDropdown,
 } from "../../services/index";
 
 const SolutionQuoteSearch = () => {
@@ -122,15 +123,40 @@ const SolutionQuoteSearch = () => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
 
+    var searchText = `SOLUTION_QUOTE&field_name=${tempArray[id].selectFamily.value}&field_value=${e.target.value}`;
     var searchStr = `quoteType:SOLUTION_QUOTE AND ${tempArray[id].selectFamily.value + "~" + e.target.value}`;
-    // getSearchQuoteData
-    // console.log("3435345453453453453 ------", tempArray[id].selectFamily.value, e.target.value)
-    // console.log("object 23243", searchStr)
-    getSearchQuoteData(searchStr)
+    var SearchResArr = [];
+    getQuoteSearchDropdown(searchText)
       .then((res) => {
-        console.log("response is : ", res)
         if (res.status == 200) {
-          obj.selectOptions = res;
+          if (tempArray[id].selectFamily.value === "preparedBy") {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].preparedBy)
+            }
+
+          } else if (tempArray[id].selectFamily.value == "customerId") {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].customerId)
+            }
+          } else if (tempArray[id].selectFamily.value == "model") {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].model)
+            }
+          } else if (tempArray[id].selectFamily.value == "serialNumber") {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].serialNumber)
+            }
+          } else if (tempArray[id].selectFamily.value == "quoteId") {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].quoteId)
+            }
+          } else if (tempArray[id].selectFamily.value == "description") {
+            for (let i = 0; i < res.data.length; i++) {
+              SearchResArr.push(res.data[i].description)
+            }
+          }
+          obj.selectOptions = SearchResArr;
+
           tempArray[id] = obj;
           setQuerySearchSelector([...tempArray]);
           $(`.scrollbar-${id}`).css("display", "block");
@@ -145,13 +171,41 @@ const SolutionQuoteSearch = () => {
             progress: undefined,
           });
         }
-        
+
 
       })
       .catch((err) => {
         console.log("err in api call", err);
       });
+
     obj.inputSearch = e.target.value;
+
+    // getSearchQuoteData(searchStr)
+    //   .then((res) => {
+    //     console.log("response is : ", res)
+    //     if (res.status == 200) {
+    //       obj.selectOptions = res;
+    //       tempArray[id] = obj;
+    //       setQuerySearchSelector([...tempArray]);
+    //       $(`.scrollbar-${id}`).css("display", "block");
+    //     } else {
+    //       toast("😐" + res.data.message, {
+    //         position: "top-right",
+    //         autoClose: 3000,
+    //         hideProgressBar: false,
+    //         closeOnClick: true,
+    //         pauseOnHover: true,
+    //         draggable: true,
+    //         progress: undefined,
+    //       });
+    //     }
+
+
+    //   })
+    //   .catch((err) => {
+    //     console.log("err in api call", err);
+    //   });
+    // obj.inputSearch = e.target.value;
   };
   const handleFamily = (e, id) => {
     let tempArray = [...querySearchSelector];
@@ -199,14 +253,15 @@ const SolutionQuoteSearch = () => {
         throw "Please fill data properly"
       }
 
-      var searchStr = "quoteType:SOLUTION_QUOTE AND " + querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+      var searchStr = `SOLUTION_QUOTE&field_name=${querySearchSelector[0].selectFamily.value}&field_value=${querySearchSelector[0].inputSearch}`;
+      // var searchText = "quoteType:SOLUTION_QUOTE AND " + querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
       }
 
       console.log("searchStr", searchStr)
-      getSearchQuoteData(searchStr).then((res) => {
+      getQuoteSearchDropdown(searchStr).then((res) => {
         console.log("search Quote Result :", res)
         if (res.status === 200) {
           setSearchQuoteMasterData(res.data)
@@ -240,7 +295,6 @@ const SolutionQuoteSearch = () => {
       });
       return
     }
-
   }
 
   const columns = [
@@ -260,6 +314,7 @@ const SolutionQuoteSearch = () => {
     //     }`,
 
   ];
+
 
   const masterColumns = [
     // {
@@ -284,101 +339,123 @@ const SolutionQuoteSearch = () => {
     {
       name: (
         <>
-          <div>Group Number</div>
+          <div>Quote ID</div>
         </>
       ),
-      selector: (row) => row.GroupNumber,
+      selector: (row) => row.quoteId,
       wrap: true,
       sortable: true,
-      format: (row) => row.GroupNumber,
+      format: (row) => row.quoteId,
     },
     {
       name: (
         <>
-          <div>Type</div>
+          <div>Description</div>
         </>
       ),
-      selector: (row) => row.Type,
+      selector: (row) => row.description,
       wrap: true,
       sortable: true,
-      format: (row) => row.Type,
+      format: (row) => row.description,
     },
     {
       name: (
         <>
-          <div>Part number</div>
+          <div>Customer ID</div>
         </>
       ),
-      selector: (row) => row.Partnumber,
+      selector: (row) => row.customerId,
       wrap: true,
       sortable: true,
-      format: (row) => row.Partnumber,
+      format: (row) => row.customerId,
     },
     {
       name: (
         <>
-          <div>Price Extended</div>
+          <div>Reference</div>
         </>
       ),
-      selector: (row) => row.PriceExtended,
+      selector: (row) => row.reference,
       wrap: true,
       sortable: true,
-      format: (row) => row.PriceExtended,
+      format: (row) => row.reference,
     },
     {
       name: (
         <>
-          <div>Price currency</div>
+          <div>Total Amount</div>
         </>
       ),
-      selector: (row) => row.Pricecurrency,
+      selector: (row) => row.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.Pricecurrency,
+      format: (row) => row.netPrice,
     },
     {
       name: (
         <>
-          <div>Usage</div>
+          <div>Serial #</div>
         </>
       ),
-      selector: (row) => row.Usage,
+      selector: (row) => row.serialNumber,
       wrap: true,
       sortable: true,
-      format: (row) => row.Usage,
+      format: (row) => row.serialNumber,
     },
     {
       name: (
         <>
-          <div>Total Price</div>
+          <div>Model</div>
         </>
       ),
-      selector: (row) => row.TotalPrice,
+      selector: (row) => row.model,
       wrap: true,
       sortable: true,
-      format: (row) => row.TotalPrice,
+      format: (row) => row.model,
     },
     {
       name: (
         <>
-          <div>Comments</div>
+          <div>Currency</div>
         </>
       ),
-      selector: (row) => row.Comments,
+      selector: (row) => row.currency,
       wrap: true,
       sortable: true,
-      format: (row) => row.Comments,
+      format: (row) => row.currency,
     },
     {
       name: (
         <>
-          <div>Actions</div>
+          <div>Created By</div>
         </>
       ),
-      selector: (row) => row.Actions,
+      selector: (row) => row.preparedBy,
       wrap: true,
       sortable: true,
-      format: (row) => row.Actions,
+      format: (row) => row.preparedBy,
+    },
+    {
+      name: (
+        <>
+          <div>Created On</div>
+        </>
+      ),
+      selector: (row) => row.preparedOn,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.preparedOn,
+    },
+    {
+      name: (
+        <>
+          <div>Status</div>
+        </>
+      ),
+      selector: (row) => row.status,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.status,
     },
   ];
 
@@ -460,9 +537,12 @@ const SolutionQuoteSearch = () => {
                               <SelectFilter
                                 // isClearable={true}
                                 options={[
-                                  { label: "Customer Id", value: "customerId" },
+                                  { label: "Created By", value: "preparedBy" },
+                                  { label: "Customer Number", value: "customerId" },
+                                  { label: "Model", value: "model" },
+                                  { label: "Serial Number", value: "serialNumber" },
+                                  { label: "Name/Id", value: "quoteId" },
                                   { label: "Description", value: "description" },
-                                  // { label: "Make", value: "make", id: i },
                                   // { label: "Family", value: "family", id: i },
                                   // { label: "Model", value: "model", id: i },
                                   // { label: "Prefix", value: "prefix", id: i },
@@ -589,7 +669,7 @@ const SolutionQuoteSearch = () => {
                 className=""
                 title=""
                 columns={masterColumns}
-                data={rows}
+                data={searchQuoteMasterData}
                 customStyles={customStyles}
                 pagination
                 onRowClicked={(e) => handleRowClick(e)}
