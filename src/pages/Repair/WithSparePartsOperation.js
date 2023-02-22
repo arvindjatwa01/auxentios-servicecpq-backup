@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import {
   AddOperation,
   fetchOperations,
+  fetchPartlistFromOperation,
   RemoveOperation,
 } from "services/repairBuilderServices";
 import {
@@ -19,7 +20,7 @@ import DeleteIcon from "../../assets/icons/svg/delete.svg";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
-import { Tooltip } from "@mui/material";
+import { Radio, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
@@ -62,6 +63,7 @@ function WithSparePartsOperation(props) {
     modifier: "",
     id: "",
     description: "",
+    partlists: []
   };
   const [operationData, setOperationData] = useState(newOperation);
   useEffect(() => {
@@ -89,9 +91,12 @@ function WithSparePartsOperation(props) {
                 return obj.id === opToLoad.id;
               })
             );
-
+            fetchPartlistFromOperation(opToLoad.id).then(resultPartlists => {
+            let groupedPartList = groupBy(resultPartlists, "partlistId");
+            console.log(groupedPartList);
             setOperationData({
               ...opToLoad,
+              partlists: groupedPartList,
               header:
                 "Operation " +
                 formatOperationNum(opToLoad.operationNumber) +
@@ -100,6 +105,7 @@ function WithSparePartsOperation(props) {
                 " " +
                 opToLoad.componentCodeDescription, //Rename after modifications in UI
             });
+          });
           } else {
             loadNewOperationUI();
           }
@@ -121,6 +127,15 @@ function WithSparePartsOperation(props) {
 
   function formatOperationNum(num) {
     return String(num).padStart(3, "0");
+  }
+
+  function groupBy(array, property) {
+    var hash = {};
+    for (var i = 0; i < array.length; i++) {
+      if (!hash[array[i][property]]) hash[array[i][property]] = [];
+      hash[array[i][property]].push(array[i]);
+    }
+    return hash;
   }
 
   const removeOpFromSegment = async () => {
@@ -590,6 +605,106 @@ function WithSparePartsOperation(props) {
               <div className="hr"></div>
             </h5>
             <div className="row">
+              {console.log(Object.entries(operationData.partlists))}
+              {Object.entries(operationData.partlists).map(partList => {
+              return <div className="col-md-4">
+                <div className="card border" style={{ overflow: "hidden" }}>
+                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                    <div className="" style={{ display: "contents" }}>
+                      <span className="mr-3 white-space font-size-14 text-white">
+                        {partList[1][0].description} partlist
+                      </span>
+                    </div>
+                    <div className="d-flex">
+                      {/* <div>
+                        <Checkbox className="p-0 text-white" />
+                      </div>
+                      <a href="#">
+                        <FileUploadOutlinedIcon
+                          className="ml-3 font-size-21 text-white"
+                          titleAccess="Upload"
+                        />
+                      </a>
+                      <a href="#">
+                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
+                      </a>
+                      <a href="#">
+                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
+                      </a> */}
+                    </div>
+                  </div>
+                  {partList[1].map(partlistVersion => <div className="bg-white px-3 pt-4 pb-2">
+                    <div className="d-flex align-items-center justify-content-between mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <a
+                          href="#"
+                          className="btn-sm text-white bg-primary mr-3"
+                        >
+                          Version {partlistVersion.versionNumber}
+                        </a>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        {/* <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a> */}
+                        <Radio
+                          checked={partlistVersion.activeVersion}
+                          // onChange={handleChange}
+                          value="a"
+                          name="radio-buttons"
+                          inputProps={{ 'aria-label': 'A' }}
+                        />
+                      </div>
+                    </div>
+                    {/* <hr></hr> */}
+                    <div className="row my-4">
+                      <div className="col-12">
+                        <div className="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL PARTS
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalNewParts}</h6>
+                        </div>
+                      </div>
+                      <div className="col-4">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRefurbishedParts}</h6>
+                        </div>
+                      </div>
+                      <div className="col-5">
+                        <div class="d-flex justify-content-center">
+                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
+                            TOTAL COST
+                          </p>
+                          <h6 className=" font-size-14 font-weight-600">$ {partlistVersion.totalPrice}</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hr"></div>
+                  </div>)}
+                </div>
+              </div>})}
+            </div>
+            {/* <div className="row">
               <div className="col-md-4">
                 <div className="card border" style={{ overflow: "hidden" }}>
                   <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
@@ -876,7 +991,7 @@ function WithSparePartsOperation(props) {
                   </div>
                 </div>
               </div>              
-            </div>
+            </div> */}
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
                 className="btn bg-primary text-white"
