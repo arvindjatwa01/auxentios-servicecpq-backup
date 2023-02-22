@@ -9,7 +9,7 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import { CommanComponents } from "../../components/index"
 import SearchIcon from '@mui/icons-material/Search';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Modal, ModalFooter } from 'react-bootstrap';
 import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
@@ -26,7 +26,7 @@ import {
 } from "../../services/index";
 
 const SolutionQuoteSearch = () => {
-
+  const history = useHistory();
   const [age, setAge] = React.useState('5');
   const [age1, setAge1] = React.useState('5');
   const [age2, setAge2] = React.useState('5');
@@ -52,6 +52,8 @@ const SolutionQuoteSearch = () => {
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [filterMasterData, setFilterMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
+
+  const [clickedQuoteRowData, setClickedQuoteRowData] = useState(null);
 
   const [searchQuoteMasterData, setSearchQuoteMasterData] = useState([]);
 
@@ -472,8 +474,23 @@ const SolutionQuoteSearch = () => {
   ];
 
   const handleRowClick = (e) => {
+    // console.log(e);
+    setClickedQuoteRowData(e)
     setShow(true)
+
   }
+
+  const handleSelectQuote = (data) => {
+    let quotesDetails = {
+      quoteId: data.quoteId,
+      type: "fetch",
+    }
+    history.push({
+      pathname: "/SolutionServicePortfolio",
+      state: quotesDetails,
+    });
+  }
+
   return (
     <>
       {/* <CommanComponents /> */}
@@ -543,9 +560,7 @@ const SolutionQuoteSearch = () => {
                                   { label: "Serial Number", value: "serialNumber" },
                                   { label: "Name/Id", value: "quoteId" },
                                   { label: "Description", value: "description" },
-                                  // { label: "Family", value: "family", id: i },
-                                  // { label: "Model", value: "model", id: i },
-                                  // { label: "Prefix", value: "prefix", id: i },
+                                  // { label: "Created Between", value: "CreatedBetween"},
                                 ]}
                                 placeholder="Search By.."
                                 onChange={(e) => handleFamily(e, i)}
@@ -663,18 +678,22 @@ const SolutionQuoteSearch = () => {
           </div>
           <div className="card">
 
-
             <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-              <DataTable
-                className=""
-                title=""
-                columns={masterColumns}
-                data={searchQuoteMasterData}
-                customStyles={customStyles}
-                pagination
-                onRowClicked={(e) => handleRowClick(e)}
-                selectableRows
-              />
+
+              {searchQuoteMasterData.length > 0 &&
+                <>
+                  <DataTable
+                    className=""
+                    title=""
+                    columns={masterColumns}
+                    data={searchQuoteMasterData}
+                    customStyles={customStyles}
+                    pagination
+                    onRowClicked={(e) => handleRowClick(e)}
+                    // selectableRows
+                  />
+                </>
+              }
             </div>
           </div>
           {/* <div className="text-right">
@@ -684,41 +703,46 @@ const SolutionQuoteSearch = () => {
         <Modal className="tablerowmodal" show={show} onHide={() => handleClose()} size="md"
           aria-labelledby="contained-modal-title-vcenter">
           <Modal.Body className="">
-            <div class="modal-header justify-content-unset" style={{ background: '#D0E1EF', justifyContent: 'unset' }}>
-              {/* <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            {clickedQuoteRowData !== null && <>
+              <div class="modal-header justify-content-unset" style={{ background: '#D0E1EF', justifyContent: 'unset' }}>
+                {/* <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
           <h4 class="modal-title">Warning!</h4> */}
-              <div><LightbulbOutlinedIcon className="text-light" /></div>
-              <div>
-                <p className="text-light ml-3">This standard job is created for replacement of engne belonging to 797,797F & 793 models</p>
+                <div><LightbulbOutlinedIcon className="text-light" /></div>
+                <div>
+                  <p className="text-light ml-3">This standard job is created for replacement of engne belonging to 797,797F & 793 models</p>
+                </div>
               </div>
-            </div>
-            <div class="p-3 bg-white">
-              <div>
-                <a href="#" className="btn bg-primary text-white">Template</a>
-              </div>
-              <h4 className="text-light mt-3">SJ671</h4>
-              <p>Your current session will expire in 5 minutes. Please Save your changes to continue your session, otherwise you
-                will lose all unsaved data and your session will time out.</p>
-              <h4 className=" mt-3">INCLUDES</h4>
-              <ul>
-                <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Spare Parts</li>
-                <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Labor Hours</li>
-                <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Miscellaenous</li>
-                <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>External Work</li>
+              <div class="p-3 bg-white">
+                <div>
+                  <a href="#" className="btn bg-primary text-white">Template</a>
+                </div>
+                <h4 className="text-light mt-3">SJ671</h4>
+                {/* <p>Your current session will expire in 5 minutes. Please Save your changes to continue your session, otherwise you
+                  will lose all unsaved data and your session will time out.</p> */}
+                <p>{clickedQuoteRowData?.description}</p>
+                <h4 className=" mt-3">INCLUDES</h4>
+                <ul>
+                  <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Spare Parts</li>
+                  <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Labor Hours</li>
+                  <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Miscellaenous</li>
+                  <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>External Work</li>
 
-              </ul>
-              <div>
-                <a href="#" style={{ textDecoration: 'underline' }}>View Details</a>
+                </ul>
+                <div>
+                  <a href="#" style={{ textDecoration: 'underline' }}>View Details</a>
+                </div>
               </div>
-            </div>
-            <div class="modal-footer justify-content-between bg-primary">
-              <div>
-                <b className="text-white">$50,000</b>
+              <div class="modal-footer justify-content-between bg-primary">
+                <div>
+                  {/* <b className="text-white">$50,000</b> */}
+                  <b className="text-white">${clickedQuoteRowData.netPrice}</b>
+                </div>
+                <div>
+                  <a href={undefined} className="text-white cursor" onClick={() => handleSelectQuote(clickedQuoteRowData)}>Select <ArrowRightAltOutlinedIcon className="" /></a>
+                  {/* <a href="/SparePartsQuoteTemplate" className="text-white">Select <ArrowRightAltOutlinedIcon className="" /></a> */}
+                </div>
               </div>
-              <div>
-                <a href="/SparePartsQuoteTemplate" className="text-white">Select <ArrowRightAltOutlinedIcon className="" /></a>
-              </div>
-            </div>
+            </>}
           </Modal.Body>
         </Modal>
 

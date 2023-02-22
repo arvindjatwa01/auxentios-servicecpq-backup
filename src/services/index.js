@@ -21,4 +21,4 @@ export { getComponentCodeSuggetions } from './masterComponentCode';
 export { customItemCreation, updateCustomItemData, deleteCustomItem, customPriceCreation, getSearchCustomPortfolio, getSearchCustomPortfolioDropdownList, getCustomItemDataById, getCustomItemPriceById, updateCustomPriceData, customPortfolioItemPriceSJID, customPortfolioItemPriceRkId } from './customPortfolioItemService'
 export { quoteCreation, getQuoteMasterData, getSearchQuoteData, updateMasterQuoteData, deleteMasterQuote, convertPortfolioToQuoteData, getConvertQuoteData, getQuoteSearchDropdown } from "./quoteService";
 
-export { getRecentSolutionQuotes, solutionQuoteCreation, updateSolutionQuoteData } from "./solutionQuoteServices";
+export { getRecentSolutionQuotes, solutionQuoteCreation, updateSolutionQuoteData, getRecentQuotes } from "./solutionQuoteServices";
