@@ -227,6 +227,7 @@ export const PortfolioSummary = () => {
 
   const [editBundleService, setEditBundleService] = useState(false);
   const [bundleAndServiceEditAble, setBundleAndServiceEditAble] = useState(false)
+  const [bundleServiceAdministrativeEditable, setBundleServiceAdministrativeEditable] = useState(false);
 
   // New Addition for bundle/Service Creation
   const [bundleServiceShow, setBundleServiceShow] = useState(false);
@@ -1203,6 +1204,7 @@ export const PortfolioSummary = () => {
     console.log("editAbleBundleService is ------ ", editAbleBundleService);
     setEditBundleService(true);
     setBundleAndServiceEditAble(true)
+    setBundleServiceAdministrativeEditable(true);
 
     if (editAbleBundleService.itemBodyModel.itemPrices.length > 0) {
       const res = await getItemPriceData(editAbleBundleService.itemBodyModel.itemPrices[0].itemPriceDataId)
@@ -1245,6 +1247,53 @@ export const PortfolioSummary = () => {
         portfolioDataId: 1,
       })
     }
+
+    // setAddportFolioItem({
+    //   id: editAbleBundleService.itemId,
+    //   name: editAbleBundleService.itemName,
+    //   description: editAbleBundleService.itemBodyModel.itemBodyDescription,
+    //   // usageIn:{label:categoryUsageKeyValue1.label,value:categoryUsageKeyValue1.value},
+    //   // taskType: {label:stratgyTaskTypeKeyValue.label,value:stratgyTaskTypeKeyValue.value},
+    //   usageIn: {
+    //     label: editAbleBundleService.itemBodyModel.usageIn,
+    //     value: editAbleBundleService.itemBodyModel.usageIn
+    //   },
+    //   taskType: {
+    //     label: editAbleBundleService.itemBodyModel.taskType[0],
+    //     value: editAbleBundleService.itemBodyModel.taskType[0]
+    //   },
+    //   frequency: {
+    //     label: editAbleBundleService.itemBodyModel.frequency,
+    //     value: editAbleBundleService.itemBodyModel.frequency
+    //   },
+    //   unit: {
+    //     label: editAbleBundleService.itemBodyModel.frequency,
+    //     value: editAbleBundleService.itemBodyModel.frequency
+    //   },
+    //   recommendedValue: "",
+    //   quantity: 1,
+    //   numberOfEvents: "",
+    //   templateId: "",
+    //   templateDescription: "",
+    //   relatedKit: "",
+    //   kitDescription: "",
+    //   repairOption: "",
+    //   strategyTask: "",
+    //   year: "",
+    //   noOfYear: "1",
+    //   headerdescription: "",
+    //   preparedBy: "",
+    //   approvedBy: "",
+    //   preparedOn: new Date(),
+    //   revisedBy: "",
+    //   revisedOn: new Date(),
+    //   branch: "",
+    //   offerValidity: "",
+    //   startUsage: "",
+    //   endUsage: "",
+    //   usageType: "",
+    //   withBundleService: false,
+    // })
 
 
     if (editAbleBundleService.itemHeaderModel.bundleFlag === "SERVICE") {
@@ -1340,6 +1389,8 @@ export const PortfolioSummary = () => {
         estimatedTime: editAbleBundleService.itemHeaderModel.estimatedTime,
         machineComponent: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
       });
+
+      setSelectedCustomerSegmentOption({ label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment })
 
       setSelectedPrefixOption({ label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix });
       setAdministrative({
@@ -1740,12 +1791,12 @@ export const PortfolioSummary = () => {
               prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
               type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
               additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-              currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
+              currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : editableServiceOrBundleData?.itemHeaderModel?.currency ? editableServiceOrBundleData?.itemHeaderModel?.currency : "",
               netPrice: 0,
               itemProductHierarchy: "EMPTY",
               itemHeaderGeographic: "EMPTY",
               responseTime: "EMPTY",
-              usage: "",
+              usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : editableServiceOrBundleData?.itemBodyModel?.usage ? editableServiceOrBundleData?.itemBodyModel?.usage : "",
               validFrom: "",
               validTo: "",
               estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
@@ -1754,7 +1805,7 @@ export const PortfolioSummary = () => {
               componentCode: "",
               componentDescription: "",
               serialNumber: "",
-              itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "EMPTY",
+              itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : editableServiceOrBundleData?.itemBodyModel?.itemHeaderStrategy ? editableServiceOrBundleData?.itemBodyModel?.itemHeaderStrategy : "EMPTY",
               variant: "",
               itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
               jobCode: "",
@@ -1776,12 +1827,12 @@ export const PortfolioSummary = () => {
               miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
               taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["EMPTY"],
               solutionCode: "",
-              usageIn: addPortFolioItem.usageTypeIn ? addPortFolioItem.usageTypeIn?.value : "",
-              usage: addPortFolioItem.usageType ? addPortFolioItem.usageTypeType?.value : "",
-              year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
+              usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : editableServiceOrBundleData?.itemBodyModel?.usageIn ? editableServiceOrBundleData?.itemBodyModel?.usageIn : "",
+              usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : editableServiceOrBundleData?.itemBodyModel?.usage ? editableServiceOrBundleData?.itemBodyModel?.usage : "",
+              year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : editableServiceOrBundleData?.itemBodyModel?.year ? editableServiceOrBundleData?.itemBodyModel?.year : "",
               avgUsage: 0,
-              unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
-              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
+              unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : editableServiceOrBundleData?.itemBodyModel?.unit ? editableServiceOrBundleData?.itemBodyModel?.unit : "",
+              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : editableServiceOrBundleData?.itemBodyModel?.frequency ? editableServiceOrBundleData?.itemBodyModel?.frequency :  "",
               itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
                 {
                   itemPriceDataId: itemPriceData.itemPriceDataId
@@ -1840,7 +1891,7 @@ export const PortfolioSummary = () => {
             itemProductHierarchy: "END_PRODUCT",
             itemHeaderGeographic: "ONSITE",
             responseTime: "PROACTIVE",
-            usage: "",
+            usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
             validFrom: "",
             validTo: "",
             estimatedTime: "",
@@ -2042,91 +2093,96 @@ export const PortfolioSummary = () => {
             //   }
             // }
 
-            let reqObj = {
-              itemId: createServiceOrBundle.id,
-              itemName: createServiceOrBundle.name,
-              itemHeaderModel: {
-                itemHeaderId: createServiceOrBundle.id,
-                itemHeaderDescription: createServiceOrBundle.description,
-                bundleFlag: "SERVICE",
-                withBundleService: false,
-                portfolioItemId: bundleServicePortfolioItemId,
-                reference: createServiceOrBundle.reference,
-                itemHeaderMake: createServiceOrBundle.make,
-                itemHeaderFamily: createServiceOrBundle.family,
-                model: createServiceOrBundle.model,
-                prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
-                type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
-                additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-                currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
-                netPrice: 0,
-                itemProductHierarchy: "EMPTY",
-                itemHeaderGeographic: "EMPTY",
-                responseTime: "EMPTY",
-                usage: "",
-                validFrom: "",
-                validTo: "",
-                estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
-                servicePrice: 0,
-                status: value2.value,
-                componentCode: "",
-                componentDescription: "",
-                serialNumber: "",
-                itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "EMPTY",
-                variant: "",
-                itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
-                jobCode: "",
-                preparedBy: administrative?.preparedBy ? administrative?.preparedBy : "",
-                approvedBy: administrative?.approvedBy ? administrative?.approvedBy : "",
-                preparedOn: administrative?.preparedOn ? administrative?.preparedOn : "",
-                revisedBy: administrative?.revisedBy ? administrative?.revisedBy : "",
-                revisedOn: administrative?.revisedOn ? administrative?.revisedOn : "",
-                salesOffice: administrative.salesOffice?.value ? administrative.salesOffice?.value : "",
-                offerValidity: administrative.offerValidity?.value ? administrative.offerValidity?.value : "",
-                serviceChargable: bundleServiceChargeableOrNot,
-                serviceOptional: (!bundleServiceChargeableOrNot)
-              },
-              itemBodyModel: {
-                itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
-                itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
-                spareParts: ["EMPTY"],
-                labours: ["EMPTY"],
-                miscellaneous: ["EMPTY"],
-                taskType: ["EMPTY"],
-                solutionCode: "",
-                // usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageTypeIn?.value : "",
-                usageIn: addPortFolioItem?.usageIn ? addPortFolioItem.usageTypeIn?.value : "",
-                usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
-                year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
-                avgUsage: 0,
-                unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
-                frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
-                itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
-                  {
-                    itemPriceDataId: itemPriceData.itemPriceDataId
-                  }
-                ] : serviceOrBundlePrefix === "SERVICE" ? [
-                  {
-                    itemPriceDataId: itemPriceData.itemPriceDataId
-                  }
-                ] : [],
-              },
+            if (bundleAndServiceEditAble) {
+              setBundleTabs("bundleServicePriceCalculator")
+            } else {
+              let reqObj = {
+                itemId: createServiceOrBundle.id,
+                itemName: createServiceOrBundle.name,
+                itemHeaderModel: {
+                  itemHeaderId: createServiceOrBundle.id,
+                  itemHeaderDescription: createServiceOrBundle.description,
+                  bundleFlag: "SERVICE",
+                  withBundleService: false,
+                  portfolioItemId: bundleServicePortfolioItemId,
+                  reference: createServiceOrBundle.reference,
+                  itemHeaderMake: createServiceOrBundle.make,
+                  itemHeaderFamily: createServiceOrBundle.family,
+                  model: createServiceOrBundle.model,
+                  prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
+                  type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+                  additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+                  currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
+                  netPrice: 0,
+                  itemProductHierarchy: "EMPTY",
+                  itemHeaderGeographic: "EMPTY",
+                  responseTime: "EMPTY",
+                  usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
+                  validFrom: "",
+                  validTo: "",
+                  estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
+                  servicePrice: 0,
+                  status: value2.value,
+                  componentCode: "",
+                  componentDescription: "",
+                  serialNumber: "",
+                  itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "EMPTY",
+                  variant: "",
+                  itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
+                  jobCode: "",
+                  preparedBy: administrative?.preparedBy ? administrative?.preparedBy : "",
+                  approvedBy: administrative?.approvedBy ? administrative?.approvedBy : "",
+                  preparedOn: administrative?.preparedOn ? administrative?.preparedOn : "",
+                  revisedBy: administrative?.revisedBy ? administrative?.revisedBy : "",
+                  revisedOn: administrative?.revisedOn ? administrative?.revisedOn : "",
+                  salesOffice: administrative.salesOffice?.value ? administrative.salesOffice?.value : "",
+                  offerValidity: administrative.offerValidity?.value ? administrative.offerValidity?.value : "",
+                  serviceChargable: bundleServiceChargeableOrNot,
+                  serviceOptional: (!bundleServiceChargeableOrNot)
+                },
+                itemBodyModel: {
+                  itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+                  itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+                  spareParts: ["EMPTY"],
+                  labours: ["EMPTY"],
+                  miscellaneous: ["EMPTY"],
+                  taskType: ["EMPTY"],
+                  solutionCode: "",
+                  // usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageTypeIn?.value : "",
+                  usageIn: addPortFolioItem?.usageIn ? addPortFolioItem.usageTypeIn?.value : "",
+                  usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
+                  year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
+                  avgUsage: 0,
+                  unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
+                  frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
+                  itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+                    {
+                      itemPriceDataId: itemPriceData.itemPriceDataId
+                    }
+                  ] : serviceOrBundlePrefix === "SERVICE" ? [
+                    {
+                      itemPriceDataId: itemPriceData.itemPriceDataId
+                    }
+                  ] : [],
+                },
+              }
+
+              const res = await updateItemData(createServiceOrBundle.id, reqObj);
+              if (res.status === 200) {
+                toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
+                  position: "top-right",
+                  autoClose: 3000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                });
+                setCreatedServiceData(res.data);
+                setBundleTabs("bundleServicePriceCalculator")
+              }
             }
 
-            const res = await updateItemData(createServiceOrBundle.id, reqObj);
-            if (res.status === 200) {
-              toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-              });
-              setCreatedServiceData(res.data);
-              setBundleTabs("bundleServicePriceCalculator")
-            }
           }
 
         } else {
@@ -2216,7 +2272,7 @@ export const PortfolioSummary = () => {
               itemProductHierarchy: "EMPTY",
               itemHeaderGeographic: "EMPTY",
               responseTime: "EMPTY",
-              usage: "",
+              usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
               validFrom: "",
               validTo: "",
               estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
@@ -2437,7 +2493,7 @@ export const PortfolioSummary = () => {
             itemProductHierarchy: "EMPTY",
             itemHeaderGeographic: "EMPTY",
             responseTime: "EMPTY",
-            usage: "",
+            usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
             validFrom: "",
             validTo: "",
             estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
@@ -2606,7 +2662,7 @@ export const PortfolioSummary = () => {
             itemProductHierarchy: "EMPTY",
             itemHeaderGeographic: "EMPTY",
             responseTime: "EMPTY",
-            usage: "",
+            usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
             validFrom: "",
             validTo: "",
             estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
@@ -2939,7 +2995,7 @@ export const PortfolioSummary = () => {
 
   const getAddPortfolioItemData = async (data, itemPriceData) => {
     console.log("Bundle ItemsTabs : ", data)
-
+    setAddportFolioItem(data)
     setItemPriceData(itemPriceData)
     setCreatedBundleItems(data);
 
@@ -3030,7 +3086,7 @@ export const PortfolioSummary = () => {
         itemProductHierarchy: "EMPTY",
         itemHeaderGeographic: "EMPTY",
         responseTime: "EMPTY",
-        usage: "",
+        usage: data.usageType ? data.usageType?.value : "",
         validFrom: "",
         validTo: "",
         estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
@@ -3062,7 +3118,7 @@ export const PortfolioSummary = () => {
         taskType: serviceOrBundlePrefix === "BUNDLE" ? [data.taskType?.value] : ["EMPTY"],
         solutionCode: "",
         usageIn: data.usageIn ? data.usageIn?.value : "",
-        usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
+        usage: data.usageType ? data.usageType?.value : "",
         year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
         avgUsage: 0,
         unit: data.unit ? data.unit?.value : "",
@@ -3155,7 +3211,7 @@ export const PortfolioSummary = () => {
         itemProductHierarchy: "EMPTY",
         itemHeaderGeographic: "EMPTY",
         responseTime: "EMPTY",
-        usage: "",
+        usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
         validFrom: "",
         validTo: "",
         estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
@@ -3186,8 +3242,8 @@ export const PortfolioSummary = () => {
         miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
         taskType: serviceOrBundlePrefix === "BUNDLE" ? [data.taskType?.value] : ["EMPTY"],
         solutionCode: "",
-        usageIn: addPortFolioItem.usageTypeIn ? addPortFolioItem.usageTypeIn?.value : "",
-        usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
+        usageIn: data.usageIn ? data.usageIn?.value : "",
+        usage: data.usageType ? data.usageType?.value : "",
         year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
         avgUsage: 0,
         unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
@@ -3677,6 +3733,8 @@ export const PortfolioSummary = () => {
   const handleCreateChange = (e) => {
     setEditBundleService(false);
     setBundleAndServiceEditAble(false);
+    setBundleServiceAdministrativeEditable(false);
+    setSelectedCustomerSegmentOption("");
     setValue2({
       value: "DRAFT",
       label: "Draft"
@@ -4299,7 +4357,6 @@ export const PortfolioSummary = () => {
   };
   // console.log("--------=-- ", recentBundleService);
 
-  console.log("addPortFolioItem.year ---------- ", priceCalculator?.year);
   return (
     <>
       {/* <CommanComponents /> */}
@@ -6209,7 +6266,7 @@ export const PortfolioSummary = () => {
                         // className="btn btn-light"
                         className="btn text-white bg-primary"
                       >
-                        Save & Next
+                        {bundleAndServiceEditAble ? "Next" : "Save & Next"}
                       </button>
                     </div>
                   </div>
@@ -6268,155 +6325,168 @@ export const PortfolioSummary = () => {
               </TabPanel>
 
               <TabPanel value="bundleServiceAdministrative">
-                {bundleAndServiceEditAble ?
-                  <>
-                    <div className="row mt-4">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(
-                              administrative.preparedBy == "" ||
-                                administrative.preparedBy == "string" ||
-                                administrative.preparedBy == undefined ||
-                                administrative.preparedBy == null
-                                ? "NA" : administrative.preparedBy
-                            )}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(
-                              administrative.approvedBy == "" ||
-                                administrative.approvedBy == "string" ||
-                                administrative.approvedBy == undefined ||
-                                administrative.approvedBy == null
-                                ? "NA" : administrative.approvedBy
-                            )}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(
-                              administrative.preparedOn == "" ||
-                                administrative.preparedOn == "string" ||
-                                administrative.preparedOn == undefined ||
-                                administrative.preparedOn == null
-                                ? "NA" :
-                                getFormattedDateTimeByTimeStampForAdministrative(administrative.preparedOn)
-                            )}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(
-                              administrative.revisedBy == "" ||
-                                administrative.revisedBy == "string" ||
-                                administrative.revisedBy == undefined ||
-                                administrative.revisedBy == null ?
-                                "NA" : administrative.revisedBy)}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(
-                              administrative.revisedOn == "" ||
-                                administrative.revisedOn == "string" ||
-                                administrative.revisedOn == undefined ||
-                                administrative.revisedOn == null
-                                ? "NA" :
-                                getFormattedDateTimeByTimeStampForAdministrative(administrative.revisedOn)
-                            )}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(
-                              administrative.salesOffice == "" ||
-                                administrative.salesOffice == "string" ||
-                                administrative.salesOffice == undefined ||
-                                administrative.salesOffice == null
-                                ? "NA" : administrative.salesOffice?.value)}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
-                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {(
-                              administrative.offerValidity == "" ||
-                                administrative.offerValidity == "string" ||
-                                administrative.offerValidity == undefined ||
-                                administrative.offerValidity == null
-                                ? "NA" : administrative.offerValidity?.label)}
-                          </h6>
-                        </div>
-                      </div>
+                <div className="">
+                  <div className="ligt-greey-bg p-3">
+                    <div>
+                      <span className="mr-3 cursor"
+                        onClick={() => setBundleServiceAdministrativeEditable(false)}
+                      >
+                        <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                        <span className="ml-2">Edit</span>
+                      </span>
                     </div>
-                  </> : <>
-                    <div className="row mt-4 input-fields">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
+                  </div>
+                  {bundleServiceAdministrativeEditable ?
+                    <>
+                      <div className="row mt-4">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(
+                                administrative.preparedBy == "" ||
+                                  administrative.preparedBy == "string" ||
+                                  administrative.preparedBy == undefined ||
+                                  administrative.preparedBy == null
+                                  ? "NA" : administrative.preparedBy
+                              )}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(
+                                administrative.approvedBy == "" ||
+                                  administrative.approvedBy == "string" ||
+                                  administrative.approvedBy == undefined ||
+                                  administrative.approvedBy == null
+                                  ? "NA" : administrative.approvedBy
+                              )}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(
+                                administrative.preparedOn == "" ||
+                                  administrative.preparedOn == "string" ||
+                                  administrative.preparedOn == undefined ||
+                                  administrative.preparedOn == null
+                                  ? "NA" :
+                                  getFormattedDateTimeByTimeStampForAdministrative(administrative.preparedOn)
+                              )}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(
+                                administrative.revisedBy == "" ||
+                                  administrative.revisedBy == "string" ||
+                                  administrative.revisedBy == undefined ||
+                                  administrative.revisedBy == null ?
+                                  "NA" : administrative.revisedBy)}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(
+                                administrative.revisedOn == "" ||
+                                  administrative.revisedOn == "string" ||
+                                  administrative.revisedOn == undefined ||
+                                  administrative.revisedOn == null
+                                  ? "NA" :
+                                  getFormattedDateTimeByTimeStampForAdministrative(administrative.revisedOn)
+                              )}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(
+                                administrative.salesOffice == "" ||
+                                  administrative.salesOffice == "string" ||
+                                  administrative.salesOffice == undefined ||
+                                  administrative.salesOffice == null ||
+                                  administrative.salesOffice?.value == ""
+                                  ? "NA" : administrative.salesOffice?.value)}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(
+                                administrative.offerValidity == "" ||
+                                  administrative.offerValidity == "string" ||
+                                  administrative.offerValidity == undefined ||
+                                  administrative.offerValidity == null ||
+                                  administrative.offerValidity?.value == ""
+                                  ? "NA" : administrative.offerValidity?.label)}
+                            </h6>
+                          </div>
+                        </div>
+                      </div>
+                    </> : <>
+                      <div className="row mt-4 input-fields">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              PREPARED BY
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="preparedBy"
+                              value={administrative.preparedBy}
+                              onChange={handleAdministrativreChange}
+                              placeholder="Required (ex-abc@gmail.com)"
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              APPROVED BY
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              placeholder="Optional  (ex-abc@gmail.com)"
+                              name="approvedBy"
+                              value={administrative.approvedBy}
+                              onChange={handleAdministrativreChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          {/* <div className="form-group"> */}
                           <label
                             className="text-light-dark font-size-14 font-weight-500"
                             htmlFor="exampleInputEmail1"
                           >
-                            PREPARED BY
+                            PREPARED ON
                           </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="preparedBy"
-                            value={administrative.preparedBy}
-                            onChange={handleAdministrativreChange}
-                            placeholder="Required (ex-abc@gmail.com)"
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            APPROVED BY
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            placeholder="Optional  (ex-abc@gmail.com)"
-                            name="approvedBy"
-                            value={administrative.approvedBy}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        {/* <div className="form-group"> */}
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PREPARED ON
-                        </label>
-                        {/* <input
+                          {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -6424,56 +6494,56 @@ export const PortfolioSummary = () => {
                           value={administrative.preparedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                        <div className="d-flex align-items-center date-box w-100">
-                          <div className="form-group w-100">
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                name="preparedOn"
-                                value={administrative.preparedOn}
-                                onChange={(e) =>
-                                  setAdministrative({
-                                    ...administrative,
-                                    preparedOn: e,
-                                  })
-                                }
-                              />
-                            </MuiPickersUtilsProvider>
-                            <div className="css-w8dmq8">*Mandatory</div>
+                          <div className="d-flex align-items-center date-box w-100">
+                            <div className="form-group w-100">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  name="preparedOn"
+                                  value={administrative.preparedOn}
+                                  onChange={(e) =>
+                                    setAdministrative({
+                                      ...administrative,
+                                      preparedOn: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          {/* </div> */}
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              REVISED BY
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
+                              placeholder="Optional  (ex-abc@gmail.com)"
+                              name="revisedBy"
+                              value={administrative.revisedBy}
+                              onChange={handleAdministrativreChange}
+                            />
                           </div>
                         </div>
-                        {/* </div> */}
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            REVISED BY
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10 text-primary"
-                            placeholder="Optional  (ex-abc@gmail.com)"
-                            name="revisedBy"
-                            value={administrative.revisedBy}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            REVISED ON
-                          </label>
-                          {/* <input
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              REVISED ON
+                            </label>
+                            {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -6481,51 +6551,51 @@ export const PortfolioSummary = () => {
                           value={administrative.revisedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                          <div className="d-flex align-items-center date-box w-100">
-                            <div className="form-group w-100 m-0">
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  label=""
-                                  name="revisedOn"
-                                  value={administrative.revisedOn}
-                                  onChange={(e) =>
-                                    setAdministrative({
-                                      ...administrative,
-                                      revisedOn: e,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
+                            <div className="d-flex align-items-center date-box w-100">
+                              <div className="form-group w-100 m-0">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    label=""
+                                    name="revisedOn"
+                                    value={administrative.revisedOn}
+                                    onChange={(e) =>
+                                      setAdministrative({
+                                        ...administrative,
+                                        revisedOn: e,
+                                      })
+                                    }
+                                  />
+                                </MuiPickersUtilsProvider>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            SALES OFFICE / BRANCH
-                          </label>
-                          <Select
-                            onChange={(e) =>
-                              setAdministrative({
-                                ...administrative,
-                                salesOffice: e,
-                              })
-                            }
-                            className="text-primary"
-                            options={salesOfficeOptions}
-                            placeholder="Required"
-                            value={administrative.salesOffice}
-                            styles={FONT_STYLE_SELECT}
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                          {/* <input
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              SALES OFFICE / BRANCH
+                            </label>
+                            <Select
+                              onChange={(e) =>
+                                setAdministrative({
+                                  ...administrative,
+                                  salesOffice: e,
+                                })
+                              }
+                              className="text-primary"
+                              options={salesOfficeOptions}
+                              placeholder="Required"
+                              value={administrative.salesOffice}
+                              styles={FONT_STYLE_SELECT}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                            {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
                             name="salesOffice"
@@ -6533,32 +6603,32 @@ export const PortfolioSummary = () => {
                             onChange={handleAdministrativreChange}
                             placeholder="Required"
                           /> */}
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            OFFER VALIDITY
-                          </label>
-                          <Select
-                            // defaultValue={selectedOption}
-                            onChange={(e) =>
-                              setAdministrative({
-                                ...administrative,
-                                offerValidity: e,
-                              })
-                            }
-                            className="text-primary"
-                            options={validityOptions}
-                            placeholder="Optional"
-                            value={administrative.offerValidity}
-                            styles={FONT_STYLE_SELECT}
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                          {/* <input
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              OFFER VALIDITY
+                            </label>
+                            <Select
+                              // defaultValue={selectedOption}
+                              onChange={(e) =>
+                                setAdministrative({
+                                  ...administrative,
+                                  offerValidity: e,
+                                })
+                              }
+                              className="text-primary"
+                              options={validityOptions}
+                              placeholder="Optional"
+                              value={administrative.offerValidity}
+                              styles={FONT_STYLE_SELECT}
+                            />
+                            <div className="css-w8dmq8">*Mandatory</div>
+                            {/* <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
                             placeholder="Optional"
@@ -6566,20 +6636,21 @@ export const PortfolioSummary = () => {
                             value={administrative.offerValidity}
                             onChange={handleAdministrativreChange}
                           /> */}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </>}
+                    </>}
 
-                <div className="row" style={{ justifyContent: "right" }}>
-                  <button
-                    type="button"
-                    onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
-                    // className="btn btn-light"
-                    className="btn text-white bg-primary"
-                  >
-                    Save
-                  </button>
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
+                      // className="btn btn-light"
+                      className="btn text-white bg-primary"
+                    >
+                      Save
+                    </button>
+                  </div>
                 </div>
               </TabPanel>
             </TabContext>

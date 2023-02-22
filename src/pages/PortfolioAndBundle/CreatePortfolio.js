@@ -374,6 +374,7 @@ export function CreatePortfolio(props) {
   const [modelIncludedData, setModelIncludedData] = useState([]);
 
   const [editAblePriceData, setEditAblePriceData] = useState([]);
+  const [optionalServicesData, setOptionalServicesData] = useState([])
 
   const [partsRequired, setPartsRequired] = useState(true);
   const [labourRequired, setlabourRequired] = useState(true);
@@ -407,6 +408,25 @@ export function CreatePortfolio(props) {
     // console.log("optionalServicesList ", optionalServicesList)
     setOptionalPopup(true)
   }
+
+  const handleSelectOptionalService = (event, serviceName) => {
+
+    let a = ['SRV_752A540', 'NEW_SERVICE_NAME_24', '126'];
+
+    console.log("============= ", a.toString())
+
+    if (event.target.checked) {
+      setOptionalServicesData([...optionalServicesData, serviceName]);
+
+    } else {
+      const _optionalServicesData = [...optionalServicesData];
+      const x = _optionalServicesData.splice(_optionalServicesData.indexOf(serviceName), 1);
+      setOptionalServicesData(_optionalServicesData);
+    }
+
+  }
+
+  console.log("--------- ", optionalServicesData)
 
   const [strategyData, setStrategyData] = useState({
     strategyTask: null,
@@ -1226,7 +1246,7 @@ export function CreatePortfolio(props) {
 
         portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
           ? portfolioPriceDataId : null,
-        optionalServices: "",
+        optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
         // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
         //   ? portfolioAdditionalPriceDataId : null,
@@ -3322,7 +3342,7 @@ export function CreatePortfolio(props) {
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
 
-            optionalServices: "",
+            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
             // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -3389,7 +3409,7 @@ export function CreatePortfolio(props) {
               supportLevel: value3.value,
               status: value2.value,
 
-              optionalServices: "",
+              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
               strategyTask: "PREVENTIVE_MAINTENANCE",
               taskType: "PM1",
@@ -3460,7 +3480,7 @@ export function CreatePortfolio(props) {
 
               portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
                 ? portfolioPriceDataId : null,
-              optionalServices: "",
+              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
               // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
               //   ? portfolioAdditionalPriceDataId : null,
@@ -3678,7 +3698,7 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: "",
+            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -3820,7 +3840,7 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: "",
+            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -3980,7 +4000,7 @@ export function CreatePortfolio(props) {
 
                 portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
                   ? portfolioPriceDataId : null,
-                optionalServices: "",
+                optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
                 // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
                 //   ? portfolioAdditionalPriceDataId : null,
                 // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -4137,7 +4157,7 @@ export function CreatePortfolio(props) {
                 portfolioPrice: {
                   portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
                 },
-                optionalServices: "",
+                optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
                 // additionalPrice: null,
                 // escalationPrice: null,
                 // additionalPrice: {
@@ -4278,7 +4298,7 @@ export function CreatePortfolio(props) {
 
               portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
                 ? portfolioPriceDataId : null,
-              optionalServices: "",
+              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
               // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
               //   ? portfolioAdditionalPriceDataId : null,
               // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -4414,7 +4434,7 @@ export function CreatePortfolio(props) {
               portfolioPrice: {
                 portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
               },
-              optionalServices: "",
+              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
               // additionalPrice: {
               //   additionalPriceId: additionalPrice.data.additionalPriceId,
@@ -4587,7 +4607,7 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: "",
+            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -4957,7 +4977,7 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: "",
+            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -5098,7 +5118,7 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: "",
+            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -5346,6 +5366,16 @@ export function CreatePortfolio(props) {
       coverageViewOnly: true,
     });
 
+    console.log("11111 ========== ", result.optionalServices != "");
+    console.log("22222 ========== ", result.optionalServices != null);
+
+    // Optional Services
+    if (result.optionalServices != null) {
+      if (result.optionalServices != "") {
+        let optionalServicesIs = result.optionalServices.split(",");
+        setOptionalServicesData(optionalServicesIs);
+      }
+    }
 
     // For set Status state 
     var statusVal, statusLabel;
@@ -6760,7 +6790,7 @@ export function CreatePortfolio(props) {
 
       portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
         ? portfolioPriceDataId : null,
-      optionalServices: "",
+      optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
       // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
       //   ? portfolioAdditionalPriceDataId : null,
       // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -11056,7 +11086,7 @@ export function CreatePortfolio(props) {
 
         portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
           ? portfolioPriceDataId : null,
-        optionalServices: "",
+        optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
         // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
         //   ? portfolioAdditionalPriceDataId : null,
         // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -13609,92 +13639,98 @@ export function CreatePortfolio(props) {
           </div>
 
           {/* hide portfolio item querySearch */}
-          <div className="card mt-4 px-4">
-            <div className="row align-items-center mt-3">
-              <div className="col-11 mx-1">
-                <div className="d-flex align-items-center w-100">
-                  <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                    <h5 className="mb-0 text-black">
-                      <span>Portfolio Items</span>
-                    </h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {bundleItems.length > 0 ? (
-              <div>
-                <div
-                  className="custom-table  card table-child"
-                  style={{ minHeight: 200, height: "auto", width: "100%" }}
-                >
-                  <DataTable
-                    title=""
-                    columns={bundleItemColumns}
-                    data={bundleItems}
-                    customStyles={customStyles}
-                    expandableRows
-                    expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
-                    expandOnRowClicked
-                    onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
-                    expandableRowsComponent={ExpandedComponent}
-                    onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
-                    pagination
-                  />
-                </div>
-              </div>
-            ) : loadingItem === "03" ? (
-              <div className="d-flex align-items-center justify-content-center">
-                <Loader
-                  type="spinner-default"
-                  bgColor={"#872ff7"}
-                  title={"spinner-default"}
-                  color={"#FFFFFF"}
-                  size={35}
-                />
-              </div>
-            ) : (
-              <div className="p-4  row">
-                <div
-                  className="col-md-6 col-sm-6"
-                  onClick={handleNewBundleItem}
-                >
-                  <Link to="#" className="add-new-recod">
-                    <div>
-                      <FontAwesomeIcon icon={faPlus} />
-                      <p className="font-weight-600">Add Portfolio Item</p>
+          {headerLoading ? <></> : <>
+            <div className="card mt-4 px-4">
+              {headerLoading ? <></> :
+                <>
+                  <div className="row align-items-center mt-3">
+                    <div className="col-11 mx-1">
+                      <div className="d-flex align-items-center w-100">
+                        <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                          <h5 className="mb-2 text-black">
+                            <span>Portfolio Items</span>
+                          </h5>
+                        </div>
+                      </div>
                     </div>
-                  </Link>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="add-new-recod">
+                  </div>
+
+                  {bundleItems.length > 0 ? (
                     <div>
-                      <FontAwesomeIcon
-                        className="cloudupload"
-                        icon={faCloudUploadAlt}
-                      />
-                      <h6 className="font-weight-500 mt-3">
-                        Drag and drop files to upload <br /> or
-                      </h6>
-                      <a
-                        onClick={() => setOpen3(true)}
-                        style={{ cursor: "pointer" }}
-                        className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
+                      <div
+                        className="custom-table  card table-child"
+                        style={{ minHeight: 200, height: "auto", width: "100%" }}
                       >
-                        <span className="mr-2">
-                          <FontAwesomeIcon icon={faPlus} />
-                        </span>
-                        Select files to upload
-                      </a>
-                      <p className="mt-3">
-                        Single upload file should not be more than <br />
-                        10MB. Only the .lgs, .lgsx file types are allowed
-                      </p>
+                        <DataTable
+                          title=""
+                          columns={bundleItemColumns}
+                          data={bundleItems}
+                          customStyles={customStyles}
+                          expandableRows
+                          expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
+                          expandOnRowClicked
+                          onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
+                          expandableRowsComponent={ExpandedComponent}
+                          onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
+                          pagination
+                        />
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+                  ) : loadingItem === "03" ? (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <Loader
+                        type="spinner-default"
+                        bgColor={"#872ff7"}
+                        title={"spinner-default"}
+                        color={"#FFFFFF"}
+                        size={35}
+                      />
+                    </div>
+                  ) : (
+                    <div className="p-4  row">
+                      <div
+                        className="col-md-6 col-sm-6"
+                        onClick={handleNewBundleItem}
+                      >
+                        <Link to="#" className="add-new-recod">
+                          <div>
+                            <FontAwesomeIcon icon={faPlus} />
+                            <p className="font-weight-600">Add Portfolio Item</p>
+                          </div>
+                        </Link>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="add-new-recod">
+                          <div>
+                            <FontAwesomeIcon
+                              className="cloudupload"
+                              icon={faCloudUploadAlt}
+                            />
+                            <h6 className="font-weight-500 mt-3">
+                              Drag and drop files to upload <br /> or
+                            </h6>
+                            <a
+                              onClick={() => setOpen3(true)}
+                              style={{ cursor: "pointer" }}
+                              className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
+                            >
+                              <span className="mr-2">
+                                <FontAwesomeIcon icon={faPlus} />
+                              </span>
+                              Select files to upload
+                            </a>
+                            <p className="mt-3">
+                              Single upload file should not be more than <br />
+                              10MB. Only the .lgs, .lgsx file types are allowed
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>}
+            </div>
+          </>}
         </div>
       </div>
       <Modal
@@ -19574,7 +19610,12 @@ export function CreatePortfolio(props) {
                         <div className="card p-4">
                           <div className="d-flex align-items-center ">
                             <div class="checkbox mr-3">
-                              <input type="checkbox" value=""></input>
+                              <input
+                                type="checkbox"
+                                value=""
+                                checked={optionalServicesData.includes(serviceData.itemName)}
+                                onChange={(e) => handleSelectOptionalService(e, serviceData.itemName)}
+                              />
                             </div>
                             <p className="mb-0 font-size-16 text-black">
                               {/* <b>AIR FILTER REPLACEMENT</b> */}
