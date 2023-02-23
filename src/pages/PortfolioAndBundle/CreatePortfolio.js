@@ -2566,7 +2566,7 @@ export function CreatePortfolio(props) {
         prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
         type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
         additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-        currency: "",
+        currency: priceCalculator?.currency ? priceCalculator?.currency?.value : "",
         netPrice: 0,
         itemProductHierarchy: "EMPTY",
         itemHeaderGeographic: "EMPTY",
@@ -9442,6 +9442,14 @@ export function CreatePortfolio(props) {
 
     console.log("my data is: ", data)
     setAddportFolioItem(data);
+    setPriceCalculator({
+      ...priceCalculator,
+      unit: data?.unit,
+      usageType: data?.usageType,
+      frequency: data?.frequency,
+      currency: data?.currency,
+      year: data?.year,
+    })
     // console.log("data------ : ", data)
 
 
@@ -17699,7 +17707,16 @@ export function CreatePortfolio(props) {
                   <div className="hr"></div>
                 </h5>
                 <FormGroup>
-                  <FormControlLabel
+                  {optionalServicesData.length > 0 &&
+                    optionalServicesData.map((data, i) => {
+                      return (
+                        <FormControlLabel
+                          control={<Switch />}
+                          label={data}
+                        />
+                      )
+                    })}
+                  {/* <FormControlLabel
                     control={<Switch disabled />}
                     label="Air Filter Replacement"
                   />
@@ -17709,7 +17726,7 @@ export function CreatePortfolio(props) {
                   />
                   <FormControlLabel
                     control={<Switch disabled />}
-                    label="Rotete Tires" />
+                    label="Rotete Tires" /> */}
                 </FormGroup>
                 <h5 className="d-flex align-items-center mb-0">
                   <div className="" style={{ display: "contents" }}>
@@ -17741,17 +17758,17 @@ export function CreatePortfolio(props) {
                 </div>
                 <div className=" d-flex justify-content-between mt-4">
                   <div>
-                    <a href="#" className="btn text-violet bg-light-blue">
+                    <a href={undefined} className="btn text-violet bg-light-blue" onClick={PopupOptionalShow}>
                       <b>
                         <span className="mr-2">+</span>Add more services
                       </b>
                     </a>
                   </div>
-                  <div>
+                  {/* <div>
                     <a href="#" className="btn text-violet">
                       <b>I Have Parts</b>
                     </a>
-                  </div>
+                  </div> */}
                 </div>
                 <div>
                   <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} data-dismiss="modal" ><b>Save Changes</b></button>

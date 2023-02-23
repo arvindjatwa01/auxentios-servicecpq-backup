@@ -200,12 +200,10 @@ const SolutionQuoteConfiguration = () => {
                     <Link to="/SolutionServicePortfolio" style={{ cursor: 'pointer' }} className="btn bg-primary text-white"><AddIcon className="mr-2" />
                       Create New</Link>
                   </div>
-                  <div className="mt-5">
-                    {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
+                  <div className="mt-5 d-none">
                     <div className="recent-div p-3">
                       <h6 className="font-weight-600 text-grey mb-0">RECENT SOLUTION QUOTE</h6>
                       {recentSolutionQuoteData.length === 0 ? (
-                        // <LoadingProgress />
                         "No Record Found"
                       ) : (
                         <div className="row">
@@ -215,11 +213,6 @@ const SolutionQuoteConfiguration = () => {
                                 <div className="d-flex justify-content-between align-items-center ">
                                   <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">{quoteData.description}</span></p>
                                   <div className="d-flex align-items-center">
-                                    {/* <div className="white-space custom-checkbox">
-                                      <FormGroup>
-                                        <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                                      </FormGroup>
-                                    </div> */}
                                     <a
                                       href={undefined}
                                       className="btn-sm"
@@ -228,9 +221,9 @@ const SolutionQuoteConfiguration = () => {
                                       <i
                                         className="fa fa-pencil"
                                         aria-hidden="true"
-                                        // onClick={() =>
-                                        //   makeSolutionQuoteEditable(quoteData)
-                                        // }
+                                      // onClick={() =>
+                                      //   makeSolutionQuoteEditable(quoteData)
+                                      // }
                                       ></i>
                                     </a>
                                     <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>

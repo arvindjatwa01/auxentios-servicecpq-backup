@@ -60,7 +60,8 @@ import {
     getSearchQueryCoverage,
     getConvertQuoteData,
     solutionQuoteCreation,
-    updateSolutionQuoteData
+    updateSolutionQuoteData,
+    searchSolutionQuotes
 } from "../../services/index";
 import SelectFilter from "react-select";
 import DateFnsUtils from "@date-io/date-fns";
@@ -1281,6 +1282,24 @@ export function SolutionServicePortfolio(props) {
         });
     }
 
+
+    const handleSolutionQuoteCheckBoxData = () => {
+        let cloneArr = [];
+        let subQuotesData = [];
+        filterQuoteItems.map((data, i) => {
+            const exist = quoteItemsMaster.some(item => item.sbQuoteId === data.sbQuoteId)
+            if (!exist) {
+                cloneArr.push(data)
+                subQuotesData.push({ "sbQuoteId": data.sbQuoteId })
+            }
+        })
+        setSubQuotesIds(subQuotesData)
+        setQuoteItemsMaster([...quoteItemsMaster, ...cloneArr])
+        setSearchQuoteItems([])
+        setFilterQuoteItems([])
+
+    }
+
     const handleDeletQuerySearch = () => {
         setQuerySearchSelector([]);
         setCount(0);
@@ -1333,17 +1352,58 @@ export function SolutionServicePortfolio(props) {
     const handleInputSearch = (e, id) => {
         let tempArray = [...querySearchSelector];
         let obj = tempArray[id];
-        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+        var SearchResArr = [];
+        searchSolutionQuotes(`${tempArray[id].selectFamily.value}~${e.target.value}`)
             .then((res) => {
-                obj.selectOptions = res;
+                if (tempArray[id].selectFamily.value === "make") {
+                    for (let i = 0; i < res.data.length; i++) {
+                        for (let j = 0; j < res.data[i].coverages.length; j++) {
+                            SearchResArr.push(res.data[i].coverages[j].make)
+                        }
+                    }
+
+                } else if (tempArray[id].selectFamily.value == "family") {
+                    for (let i = 0; i < res.data.length; i++) {
+                        for (let j = 0; j < res.data[i].coverages.length; j++) {
+                            SearchResArr.push(res.data[i].coverages[j].family)
+                        }
+                    }
+                } else if (tempArray[id].selectFamily.value == "modelNo") {
+                    for (let i = 0; i < res.data.length; i++) {
+                        for (let j = 0; j < res.data[i].coverages.length; j++) {
+                            SearchResArr.push(res.data[i].coverages[j].modelNo)
+                        }
+                    }
+                } else if (tempArray[id].selectFamily.value == "serialNumberPrefix") {
+                    for (let i = 0; i < res.data.length; i++) {
+                        for (let j = 0; j < res.data[i].coverages.length; j++) {
+                            SearchResArr.push(res.data[i].coverages[j].serialNumberPrefix)
+                        }
+                    }
+                } else if (tempArray[id].selectFamily.value == "name") {
+                    for (let i = 0; i < res.data.length; i++) {
+                        SearchResArr.push(res.data[i].name)
+                    }
+                } else if (tempArray[id].selectFamily.value == "description") {
+                    for (let i = 0; i < res.data.length; i++) {
+                        SearchResArr.push(res.data[i].description)
+                    }
+                }
+                obj.selectOptions = SearchResArr;
                 tempArray[id] = obj;
                 setQuerySearchSelector([...tempArray]);
                 $(`.scrollbar-${id}`).css("display", "block");
+
+                // obj.selectOptions = res;
+                // tempArray[id] = obj;
+                // setQuerySearchSelector([...tempArray]);
+                // $(`.scrollbar-${id}`).css("display", "block");
             })
             .catch((err) => {
                 console.log("err in api call", err);
             });
         obj.inputSearch = e.target.value;
+        setQuerySearchSelector([...tempArray]);
     };
     const handleFamily = (e, id) => {
         let tempArray = [...querySearchSelector];
@@ -1353,6 +1413,60 @@ export function SolutionServicePortfolio(props) {
         tempArray[id] = obj;
         setQuerySearchSelector([...tempArray]);
     };
+
+    const handleQuoteSearchClick = () => {
+        try {
+
+            $(".scrollbar").css("display", "none")
+            if (
+                querySearchSelector[0]?.selectFamily?.value == "" ||
+                querySearchSelector[0]?.inputSearch == "" ||
+                querySearchSelector[0]?.selectFamily?.value === undefined
+            ) {
+                throw "Please fill data properly"
+            }
+
+            var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+
+            for (let i = 1; i < querySearchSelector.length; i++) {
+                searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+            }
+
+            searchSolutionQuotes(searchStr).then((res) => {
+                if (res.status === 200) {
+                    setSearchQuoteItems(res.data)
+                } else {
+                    toast("😐" + res.data.message, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                }
+                // setBundleServiceShow(true)
+
+            }).catch((err) => {
+                console.log("error in getSearchQueryCoverage", err)
+            })
+
+        } catch (error) {
+            console.log("error in getSearchQueryCoverage", error);
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return
+        }
+    }
+
     const [filterMasterData, setFilterMasterData] = useState([]);
     const handleOperator = (e, id) => {
         let tempArray = [...querySearchSelector];
@@ -2930,8 +3044,11 @@ export function SolutionServicePortfolio(props) {
                                                                     options={[
                                                                         { label: "Make", value: "make", id: i },
                                                                         { label: "Family", value: "family", id: i },
-                                                                        { label: "Model", value: "model", id: i },
-                                                                        { label: "Prefix", value: "prefix", id: i },
+                                                                        { label: "Model", value: "modelNo", id: i },
+                                                                        { label: "Prefix", value: "serialNumberPrefix", id: i },
+                                                                        { label: "Name", value: "itemName", id: i },
+                                                                        { label: "Description", value: "description", id: i },
+
                                                                     ]}
                                                                     placeholder="Search By.."
                                                                     onChange={(e) => handleFamily(e, i)}
@@ -2950,7 +3067,12 @@ export function SolutionServicePortfolio(props) {
                                                                     id={"inputSearch-" + i}
                                                                     autoComplete="off"
                                                                 />
-                                                                <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Item</div>
+                                                                <div className="bg-primary text-white btn" onClick={handleQuoteSearchClick}>
+                                                                    <span className="mr-2">
+                                                                        <AddIcon />
+                                                                    </span>
+                                                                    Add Item
+                                                                </div>
 
                                                                 {
                                                                     <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
@@ -3036,16 +3158,17 @@ export function SolutionServicePortfolio(props) {
                                     className=""
                                     title=""
                                     columns={masterColumns}
-                                    data={rows}
+                                    data={searchQuoteItems}
                                     customStyles={customStyles}
                                     pagination
                                     // onRowClicked={(e) => handleRowClick(e)}
                                     selectableRows
+                                    onSelectedRowsChange={(state) => setFilterQuoteItems(state.selectedRows)}
                                 />
-                                <div>
+                                <div className="mb-3">
                                     <div className="text-right">
                                         <input
-                                            // onClick={handleCoverageCheckBoxData}
+                                            onClick={handleSolutionQuoteCheckBoxData}
                                             className="btn bg-primary text-white"
                                             value="+ Add Selected"
                                             disabled={filterQuoteItems.length == 0}
