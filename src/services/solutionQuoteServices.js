@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios';
-import { SOLUTION_QUOTE_CREATION, SOLUTION_QUOTE_URL } from "./CONSTANTS";
+import { SOLUTION_QUOTE_CREATION, SOLUTION_QUOTE_URL, RECENT_QUOTES_COMMON_PATH } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -98,6 +98,31 @@ export const updateSolutionQuoteData = (id, payLoad) => {
                 });
         } catch (error) {
             console.error("in solutionQuoteServices > updateSolutionQuoteData, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+/**
+ * Function to fetch the Recent Solution Quote Data.
+ */
+
+export const getRecentQuotes = (quoteType) => {
+    console.log("solutionQuoteServices > getRecentQuotes called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(RECENT_QUOTES_COMMON_PATH() + quoteType, { headers: headersData })
+                .then((res) => {
+                    console.log("getRecentQuotes > axios res=", res);
+                    resolve(res.data);
+                })
+                .catch((err) => {
+                    console.log("getRecentQuotes > axios err=", err);
+                    reject("Error in getRecentQuotes axios!");
+                });
+        } catch (error) {
+            console.error("in solutionQuoteServices > getRecentQuotes, Err===", error);
             reject(SYSTEM_ERROR);
         }
     });

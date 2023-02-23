@@ -240,3 +240,4 @@ export const SOLUTION_QUOTE_CREATION = () => QUOTE_REST_SERVICE;
 export const SEARCH_QUOTE_URL = () => QUOTE_REST_SERVICE + "search?search=";
 
 export const SEARCH_QUOTE_BY_FIELDS = () => QUOTE_REST_SERVICE + "/search-by-fields?quote_type=";
+export const RECENT_QUOTES_COMMON_PATH = () => QUOTE_REST_SERVICE + "/recent?quote_type=";

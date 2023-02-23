@@ -186,7 +186,7 @@ export const getConvertQuoteData = (id) => {
         try {
             axios
                 // .get(GET_COVERT_QUOTE_DETAILS + "/" + id, { headers: headersData })
-                .get(GET_COVERT_QUOTE_DETAILS + id, { headers: headersData })
+                .get(GET_COVERT_QUOTE_DETAILS + "/" + id, { headers: headersData })
                 .then((res) => {
                     console.log("getConvertQuoteData > axios res=", res);
                     resolve(res);

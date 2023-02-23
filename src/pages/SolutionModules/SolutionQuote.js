@@ -6,7 +6,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select';
 import { FileUploader } from "react-drag-drop-files";
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import { MuiMenuComponent } from '../Operational/index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileAlt, faFolderPlus, faSearch } from '@fortawesome/free-solid-svg-icons'
@@ -34,9 +34,12 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LoadingProgress from "../Repair/components/Loader";
 import {
   getRecentSolutionQuotes,
+  getRecentQuotes,
 } from "../../services/index";
 
 const SolutionQuote = () => {
+
+  const history = useHistory()
 
   const [value, setValue] = React.useState('1');
   const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
@@ -199,17 +202,65 @@ const SolutionQuote = () => {
 
   }
 
+  const makeSolutionQuoteEditable = (data) => {
+    let quotesDetails = {
+      quoteId: data.quoteId,
+      type: "fetch",
+    }
+    history.push({
+      pathname: "/SolutionServicePortfolio",
+      state: quotesDetails,
+    });
+  }
+
 
   useEffect(() => {
 
     setHeaderLoading(true)
-    getRecentSolutionQuotes()
+    getRecentQuotes("SOLUTION_QUOTE")
       .then((res) => {
         // setRecentPortfolioSolution(res);
         setRecentSolutionQuoteData(res);
       })
     setHeaderLoading(false)
   }, [])
+
+  const getFormattedDateTimeByTimeStamp = (timeStamp) => {
+
+    var date = new Date(timeStamp);
+    var year = date.getFullYear();
+    // var m = date.getMonth() + 1;
+    var m = date.getMonth();
+    // var month = m < 10 ? '0' + m : m;
+    var month = m;
+    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var format = "AM";
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+
+    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    if (hour > 11) {
+      format = "PM";
+    }
+    if (hour > 12) {
+      hour = hour - 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+    var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
+    return finalDateString;
+  }
 
   return (
     <>
@@ -237,16 +288,33 @@ const SolutionQuote = () => {
                   <div className="row">
                     {recentSolutionQuoteData.map((quoteData, index) =>
                       <div className="col-md-4">
-                        {console.log("quoteData -------", quoteData)}
                         <div className="recent-items mt-3 block-div">
                           <div className="d-flex justify-content-between align-items-center ">
-                            <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">{quoteData.itemName}</span></p>
+                            <p className="mb-0 overflow-hidden white-space">
+                              <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
+                              <span className="font-weight-500 ml-2">
+                                {quoteData.description}
+                              </span>
+                            </p>
                             <div className="d-flex align-items-center">
-                              <div className="white-space custom-checkbox">
+                              {/* <div className="white-space custom-checkbox">
                                 <FormGroup>
                                   <FormControlLabel control={<Checkbox className="p-0 font-size-14 text-primary" defaultChecked />} label="" />
                                 </FormGroup>
-                              </div>
+                              </div> */}
+                              <a
+                                href={undefined}
+                                className="btn-sm"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i
+                                  className="fa fa-pencil"
+                                  aria-hidden="true"
+                                  onClick={() =>
+                                    makeSolutionQuoteEditable(quoteData)
+                                  }
+                                ></i>
+                              </a>
                               <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
                               <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
                               <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
@@ -256,7 +324,7 @@ const SolutionQuote = () => {
 
                         </div>
                         <div className="d-flex justify-content-between align-items-center mt-2">
-                          <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                          <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(quoteData.updatedAt)} </p>
                           <p className="font-size-12 mb-0">Solution Option</p>
                         </div>
                       </div>
