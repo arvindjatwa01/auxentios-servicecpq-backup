@@ -234,30 +234,36 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
 
     const fetchBundleServiceDataById = async () => {
-        const newItemDataData = await getItemDataById(data.itemId)
+        const fetchItemDetailsById = await getItemDataById(data.itemId);
+        if (fetchItemDetailsById.status === 200) {
 
-        setAddPortFolioItem({
-            ...addPortFolioItem,
-            id: newItemDataData.itemId,
-            name: newItemDataData.itemName,
-            description: newItemDataData.itemHeaderModel.itemHeaderDescription,
-            // frequency: { label: newItemDataData.itemBodyModel.frequency, value: newItemDataData.itemBodyModel.frequency },
-            frequency: (newItemDataData.itemBodyModel.frequency != "" ||
-                newItemDataData.itemBodyModel.frequency != "EMPTY" ||
-                newItemDataData.itemBodyModel.frequency != null) ? {
-                label: newItemDataData.itemBodyModel.frequency,
-                value: newItemDataData.itemBodyModel.frequency,
-            } : { label: "once", value: "once" },
-            unit: (newItemDataData.itemBodyModel.unit != "" ||
-                newItemDataData.itemBodyModel.unit != "EMPTY" ||
-                newItemDataData.itemBodyModel.unit != null) ? {
-                label: newItemDataData.itemBodyModel.unit,
-                value: newItemDataData.itemBodyModel.unit,
-            } : { label: "per day", value: "per day" },
-        });
+            // const newItemDataData = await getItemDataById(data.itemId)
 
-        if (newItemDataData.itemBodyModel?.itemPrices.length > 0) {
-            ItemPriceDataFetchById();
+            const newItemDataData = fetchItemDetailsById.data
+
+            setAddPortFolioItem({
+                ...addPortFolioItem,
+                id: newItemDataData.itemId,
+                name: newItemDataData.itemName,
+                description: newItemDataData.itemHeaderModel.itemHeaderDescription,
+                // frequency: { label: newItemDataData.itemBodyModel.frequency, value: newItemDataData.itemBodyModel.frequency },
+                frequency: (newItemDataData.itemBodyModel.frequency != "" ||
+                    newItemDataData.itemBodyModel.frequency != "EMPTY" ||
+                    newItemDataData.itemBodyModel.frequency != null) ? {
+                    label: newItemDataData.itemBodyModel.frequency,
+                    value: newItemDataData.itemBodyModel.frequency,
+                } : { label: "once", value: "once" },
+                unit: (newItemDataData.itemBodyModel.unit != "" ||
+                    newItemDataData.itemBodyModel.unit != "EMPTY" ||
+                    newItemDataData.itemBodyModel.unit != null) ? {
+                    label: newItemDataData.itemBodyModel.unit,
+                    value: newItemDataData.itemBodyModel.unit,
+                } : { label: "per day", value: "per day" },
+            });
+
+            if (newItemDataData.itemBodyModel?.itemPrices.length > 0) {
+                ItemPriceDataFetchById();
+            }
         }
     }
 
@@ -320,34 +326,39 @@ const ExpendTablePopup = ({ data, ...props }) => {
             portfolioDataId: resPrice.data.portfolio.portfolioId,
         })
 
-        const newItemDataData = await getItemDataById(data.itemId)
-        console.log("data.itemBodyModel.frequency ", data.itemBodyModel.frequency)
-        setAddPortFolioItem({
-            ...addPortFolioItem,
-            id: newItemDataData.itemId,
-            name: newItemDataData.itemName,
-            description: newItemDataData.itemHeaderModel.itemHeaderDescription,
-            frequency: (newItemDataData.itemBodyModel.frequency != "" ||
-                newItemDataData.itemBodyModel.frequency != "EMPTY" ||
-                newItemDataData.itemBodyModel.frequency != null) ? {
-                label: newItemDataData.itemBodyModel.frequency,
-                value: newItemDataData.itemBodyModel.frequency,
-            } : { label: "once", value: "once" },
-            templateId: (resPrice.data.standardJobId != "string") ?
-                resPrice.data.standardJobId : "",
-            templateDescription: {
-                label: resPrice.data.templateDescription,
-                value: resPrice.data.templateDescription,
-            },
-            repairOption: (resPrice.data.repairKitId != "string") ?
-                resPrice.data.repairKitId : "",
-            unit: (newItemDataData.itemBodyModel.unit != "" ||
-                newItemDataData.itemBodyModel.unit != "EMPTY" ||
-                newItemDataData.itemBodyModel.unit != null) ? {
-                label: newItemDataData.itemBodyModel.unit,
-                value: newItemDataData.itemBodyModel.unit,
-            } : { label: "per day", value: "per day" },
-        })
+        const fetchItemDetailsById = await getItemDataById(data.itemId);
+        if (fetchItemDetailsById === 200) {
+            // const newItemDataData = await getItemDataById(data.itemId)
+            const newItemDataData = fetchItemDetailsById.data;
+            console.log("data.itemBodyModel.frequency ", data.itemBodyModel.frequency)
+            setAddPortFolioItem({
+                ...addPortFolioItem,
+                id: newItemDataData.itemId,
+                name: newItemDataData.itemName,
+                description: newItemDataData.itemHeaderModel.itemHeaderDescription,
+                frequency: (newItemDataData.itemBodyModel.frequency != "" ||
+                    newItemDataData.itemBodyModel.frequency != "EMPTY" ||
+                    newItemDataData.itemBodyModel.frequency != null) ? {
+                    label: newItemDataData.itemBodyModel.frequency,
+                    value: newItemDataData.itemBodyModel.frequency,
+                } : { label: "once", value: "once" },
+                templateId: (resPrice.data.standardJobId != "string") ?
+                    resPrice.data.standardJobId : "",
+                templateDescription: {
+                    label: resPrice.data.templateDescription,
+                    value: resPrice.data.templateDescription,
+                },
+                repairOption: (resPrice.data.repairKitId != "string") ?
+                    resPrice.data.repairKitId : "",
+                unit: (newItemDataData.itemBodyModel.unit != "" ||
+                    newItemDataData.itemBodyModel.unit != "EMPTY" ||
+                    newItemDataData.itemBodyModel.unit != null) ? {
+                    label: newItemDataData.itemBodyModel.unit,
+                    value: newItemDataData.itemBodyModel.unit,
+                } : { label: "per day", value: "per day" },
+            })
+        }
+
     }
 
     const handleEscalationPriceValue = (e) => {

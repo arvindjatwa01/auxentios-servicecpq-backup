@@ -123,6 +123,8 @@ const PriceCalculator = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
 
+    console.log("props is ============ ", props)
+
     if ((props.createdBundleItems != "")) {
       // if (props.createdBundleItems.itemId != undefined) {
       //   // const editAbleBundleService = await getItemDataById(props.createdBundleItems.itemId);
@@ -137,7 +139,7 @@ const PriceCalculator = (props) => {
       setDisable(false);
     }
 
-    console.log("----------- ", props)
+
     // console.log("props.createdBundleItems 114 : ", props.createdBundleItems)
     // console.log("props.createdBundleItems != 114 : ", props.createdBundleItems != "")
     // console.log("props.createdBundleItems != null : ", props.createdBundleItems != undefined)
@@ -176,8 +178,8 @@ const PriceCalculator = (props) => {
 
     console.log("res data ", res)
 
+    const fetchItemDetailsById = await getItemDataById(props.createdBundleItems.itemId);
 
-    const bundleOrServiceData = await getItemDataById(props.createdBundleItems.itemId);
 
 
     // const rObj={
@@ -187,116 +189,120 @@ const PriceCalculator = (props) => {
     //   itemPriceDataId: 25
     // }
 
+    if (fetchItemDetailsById.status === 200) {
+      // const bundleOrServiceData = await getItemDataById(props.createdBundleItems.itemId);
+      const bundleOrServiceData = fetchItemDetailsById.data;
+      setPriceCalculator({
+        ...priceCalculator,
+        priceMethod: (res.data.priceMethod != "EMPTY" ||
+          res.data.priceMethod != "" ||
+          res.data.priceMethod != null) ? {
+          label: res.data.priceMethod,
+          value: res.data.priceMethod
+        } : "",
+        priceType: (res.data.priceType != "EMPTY" ||
+          res.data.priceType != "" ||
+          res.data.priceType != null) ? {
+          label: res.data.priceType,
+          value: res.data.priceType
+        } : "",
+        priceAdditionalSelect: {
+          label: (res.data.additionalPriceType != "" ||
+            res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE",
+          value: (res.data.additionalPriceType != "" ||
+            res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE"
+        },
+        priceAdditionalInput: res.data.additionalPriceValue,
+        discountTypeSelect: (res.data.discountType != "EMPTY" ||
+          res.data.discountType != "" ||
+          res.data.discountType != null) ? {
+          label: res.data.discountType,
+          value: res.data.discountType
+        } : "",
+        discountTypeInput: res.data.discountValue,
+        // year: {
+        //   label: (res.data.year != "" ||
+        //     res.data.year != null) ? res.data.year : "1",
+        //   value: (res.data.year != "" ||
+        //     res.data.year != null) ? res.data.year : "1"
+        // },
+        // noOfYear: (res.data.noOfYear != null ||
+        //   res.data.noOfYear != 0) ? res.data.noOfYear : 1,
+        year: res.data.year != "" ? {
+          label: res.data.year,
+          value: res.data.year,
+        } : "",
+        noOfYear: res.data.noOfYear,
+        startUsage: res.data.startUsage,
+        endUsage: res.data.endUsage,
+        recommendedValue: res.data.recommendedValue,
+        netPrice: res.data.netService,
+        totalPrice: res.data.totalPrice,
+        id: res.data.itemPriceDataId,
+        numberOfEvents: res.data.numberOfEvents,
+        portfolioDataId: res.data.portfolio.portfolioId,
 
-    setPriceCalculator({
-      ...priceCalculator,
-      priceMethod: (res.data.priceMethod != "EMPTY" ||
-        res.data.priceMethod != "" ||
-        res.data.priceMethod != null) ? {
-        label: res.data.priceMethod,
-        value: res.data.priceMethod
-      } : "",
-      priceType: (res.data.priceType != "EMPTY" ||
-        res.data.priceType != "" ||
-        res.data.priceType != null) ? {
-        label: res.data.priceType,
-        value: res.data.priceType
-      } : "",
-      priceAdditionalSelect: {
-        label: (res.data.additionalPriceType != "" ||
-          res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE",
-        value: (res.data.additionalPriceType != "" ||
-          res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE"
-      },
-      priceAdditionalInput: res.data.additionalPriceValue,
-      discountTypeSelect: (res.data.discountType != "EMPTY" ||
-        res.data.discountType != "" ||
-        res.data.discountType != null) ? {
-        label: res.data.discountType,
-        value: res.data.discountType
-      } : "",
-      discountTypeInput: res.data.discountValue,
-      // year: {
-      //   label: (res.data.year != "" ||
-      //     res.data.year != null) ? res.data.year : "1",
-      //   value: (res.data.year != "" ||
-      //     res.data.year != null) ? res.data.year : "1"
-      // },
-      // noOfYear: (res.data.noOfYear != null ||
-      //   res.data.noOfYear != 0) ? res.data.noOfYear : 1,
-      year: {
-        label: res.data.year,
-        value: res.data.year,
-      },
-      noOfYear: res.data.noOfYear,
-      startUsage: res.data.startUsage,
-      endUsage: res.data.endUsage,
-      recommendedValue: res.data.recommendedValue,
-      netPrice: res.data.netService,
-      totalPrice: res.data.totalPrice,
-      id: res.data.itemPriceDataId,
-      numberOfEvents: res.data.numberOfEvents,
-      portfolioDataId: res.data.portfolio.portfolioId,
+        flatPrice: res.data.flatPrice ? parseInt(res.data.flatPrice) : 0,
 
-      flatPrice: res.data.flatPrice ? parseInt(res.data.flatPrice) : 0,
+        escalationPriceOptionsValue1: (res.data.priceEscalation != "" ? {
+          label: res.data.priceEscalation,
+          value: res.data.priceEscalation,
+        } : ""),
+        escalationPriceOptionsValue: (res.data.priceEscalation != "" ?
+          res.data.priceEscalation : ""),
+        escalationPriceInputValue: (res.data.priceEscalation == "" ? "" :
+          res.data.priceEscalation === "PARTS" ? res.data.sparePartsEscalation :
+            res.data.priceEscalation === "LABOR" ? res.data.labourEscalation :
+              res.data.priceEscalation === "MISCELLANEOUS" ? res.data.miscEscalation :
+                res.data.priceEscalation === "SERVICE" ? res.data.serviceEscalation : ""),
 
-      escalationPriceOptionsValue1: (res.data.priceEscalation != "" ? {
-        label: res.data.priceEscalation,
-        value: res.data.priceEscalation,
-      } : ""),
-      escalationPriceOptionsValue: (res.data.priceEscalation != "" ?
-        res.data.priceEscalation : ""),
-      escalationPriceInputValue: (res.data.priceEscalation == "" ? "" :
-        res.data.priceEscalation === "PARTS" ? res.data.sparePartsEscalation :
-          res.data.priceEscalation === "LABOR" ? res.data.labourEscalation :
-            res.data.priceEscalation === "MISCELLANEOUS" ? res.data.miscEscalation :
-              res.data.priceEscalation === "SERVICE" ? res.data.serviceEscalation : ""),
+        priceBreakDownOptionsKeyValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
+          "PARTS" : res.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+            res.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+        priceBreakDownInputValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
+          res.data.sparePartsPriceBreakDownPercentage :
+          res.data.labourPriceBreakDownPercentage != 0 ?
+            res.data.labourPriceBreakDownPercentage :
+            res.data.miscPriceBreakDownPercentage != 0 ?
+              res.data.miscPriceBreakDownPercentage : 0,
+        // : res.data.miscPriceBreakDownPercentage != 0 ? {
+        //   label: "PARTS",
+        //   value: "PARTS",
+        // } : 
+        priceBreakDownOptionsKeyValue1: res.data.sparePartsPriceBreakDownPercentage != 0 ? {
+          label: "PARTS",
+          value: "PARTS",
+        } : res.data.labourPriceBreakDownPercentage != 0 ? {
+          label: "LABOR",
+          value: "LABOR",
+        } : res.data.miscPriceBreakDownPercentage != 0 ? {
+          label: "MISCELLANEOUS",
+          value: "MISCELLANEOUS",
+        } : "",
 
-      priceBreakDownOptionsKeyValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
-        "PARTS" : res.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
-          res.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
-      priceBreakDownInputValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
-        res.data.sparePartsPriceBreakDownPercentage :
-        res.data.labourPriceBreakDownPercentage != 0 ?
-          res.data.labourPriceBreakDownPercentage :
-          res.data.miscPriceBreakDownPercentage != 0 ?
-            res.data.miscPriceBreakDownPercentage : 0,
-      // : res.data.miscPriceBreakDownPercentage != 0 ? {
-      //   label: "PARTS",
-      //   value: "PARTS",
-      // } : 
-      priceBreakDownOptionsKeyValue1: res.data.sparePartsPriceBreakDownPercentage != 0 ? {
-        label: "PARTS",
-        value: "PARTS",
-      } : res.data.labourPriceBreakDownPercentage != 0 ? {
-        label: "LABOR",
-        value: "LABOR",
-      } : res.data.miscPriceBreakDownPercentage != 0 ? {
-        label: "MISCELLANEOUS",
-        value: "MISCELLANEOUS",
-      } : "",
+        currency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemHeaderModel?.currency) &&
+          (bundleOrServiceData?.itemHeaderModel?.currency != "")) ? {
+          label: bundleOrServiceData?.itemHeaderModel?.currency,
+          value: bundleOrServiceData?.itemHeaderModel?.currency
+        } : "",
+        unit: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.unit) &&
+          (bundleOrServiceData?.itemBodyModel?.unit != "")) ? {
+          label: bundleOrServiceData?.itemBodyModel?.unit,
+          value: bundleOrServiceData?.itemBodyModel?.unit
+        } : "",
+        frequency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.frequency) &&
+          bundleOrServiceData?.itemBodyModel?.frequency != "") ? {
+          label: bundleOrServiceData?.itemBodyModel?.frequency,
+          value: bundleOrServiceData?.itemBodyModel?.frequency
+        } : "",
+        usageType: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.usage) &&
+          (bundleOrServiceData?.itemBodyModel?.usage != "")) ? {
+          label: bundleOrServiceData?.itemBodyModel?.usage,
+          value: bundleOrServiceData?.itemBodyModel?.usage
+        } : "",
+      })
+    }
 
-      currency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemHeaderModel?.currency) &&
-        (bundleOrServiceData?.itemHeaderModel?.currency != "")) ? {
-        label: bundleOrServiceData?.itemHeaderModel?.currency,
-        value: bundleOrServiceData?.itemHeaderModel?.currency
-      } : "",
-      unit: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.unit) &&
-        (bundleOrServiceData?.itemBodyModel?.unit != "")) ? {
-        label: bundleOrServiceData?.itemBodyModel?.unit,
-        value: bundleOrServiceData?.itemBodyModel?.unit
-      } : "",
-      frequency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.frequency) &&
-        bundleOrServiceData?.itemBodyModel?.frequency != "") ? {
-        label: bundleOrServiceData?.itemBodyModel?.frequency,
-        value: bundleOrServiceData?.itemBodyModel?.frequency
-      } : "",
-      usageType: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.usage) &&
-        (bundleOrServiceData?.itemBodyModel?.usage != "")) ? {
-        label: bundleOrServiceData?.itemBodyModel?.usage,
-        value: bundleOrServiceData?.itemBodyModel?.usage
-      } : "",
-    })
 
 
     // setPriceCalculator({
@@ -670,7 +676,7 @@ const PriceCalculator = (props) => {
         <div className="ligt-greey-bg p-3">
           <div>
             <span className="mr-3 cursor"
-              onClick={() => setDisable(!disable)}
+              onClick={() => { props.bundleOrServiceEditOrNot === undefined && setDisable(!disable) }}
             >
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
@@ -1865,7 +1871,7 @@ const PriceCalculator = (props) => {
                     : handleBundlePriceSave
                 }
               >
-                Save
+                {props.bundleOrServiceEditOrNot ? "Save" : "Save & Next"}
               </a>
             </div>
           </div>

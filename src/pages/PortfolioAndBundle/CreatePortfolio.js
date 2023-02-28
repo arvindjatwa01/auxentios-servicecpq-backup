@@ -251,6 +251,7 @@ export function CreatePortfolio(props) {
   const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
   const [disable, setDisable] = useState(true);
+  const [portfolioItemPriceEditable, setPortfolioItemPriceEditable] = useState(false);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
   const [extWorkData, setExtWorkData] = useState({
     jobCode: "",
@@ -279,11 +280,13 @@ export function CreatePortfolio(props) {
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
   const [optionalServiceListData, setOptionalServiceListData] = useState([]);
+  const [optionalServiceListLoading, setOptionalServiceListLoading] = useState(false);
   const [currentExpendBundleServiceRow, setCurrentExpendBundleServiceRow] = useState(null);
   const [currentExpendModelComponentRow, setCurrentExpendModelComponentRow] = useState(null);
   const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
 
   const [itemPriceData, setItemPriceData] = useState({});
+  const [bundleOrServiceItemPriceData, setBundleOrServiceItemPriceData] = useState({})
   const [isActiveStatus, setIsActiveStatus] = useState(false);
   const [value1, setValue1] = useState({
     value: "Archived",
@@ -302,6 +305,7 @@ export function CreatePortfolio(props) {
     value: "STANDARD", label: "Standard (Bronze)"
   });
   const [value3, setValue3] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
+  const [versionValue, setVersionValue] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
 
   const [value4, setValue4] = useState({ value: "chargeable", label: "Chargeable" });
 
@@ -531,6 +535,10 @@ export function CreatePortfolio(props) {
     setValue3(e);
   };
 
+  const handleVersionValue = (e) => {
+    setVersionValue(e)
+  }
+
   const handleOption4 = (e) => {
     if (e.value === "free") {
       setBundleServiceChargeableOrNot(false);
@@ -540,6 +548,28 @@ export function CreatePortfolio(props) {
     console.log(e);
     setValue4(e);
   };
+
+  const makePortfolioStatusDisabled = (optionData) => {
+    if ((optionData.value === "DRAFT" && value2.value == "ACTIVE")) {
+      setIsActiveStatus(false)
+      return true;
+    }
+
+    if ((
+      (optionData.value === "DRAFT" ||
+        optionData.value === "ACTIVE") &&
+      (value2.value == "REVISED"))) {
+      return true;
+    }
+
+    if ((
+      (optionData.value === "DRAFT" ||
+        optionData.value === "ACTIVE" ||
+        optionData.value === "REVISED") &&
+      (value2.value == "ARCHIVED"))) {
+      return true;
+    }
+  }
 
   const makeStatusValueDisabled = (optionData) => {
 
@@ -646,6 +676,27 @@ export function CreatePortfolio(props) {
     noOfYear: "",
     headerdescription: "",
   });
+
+  const [bundleServiceAddPortfolioItem, setBundleServiceAddPortfolioItem] = useState({
+    id: 0,
+    name: "",
+    description: "",
+    usageIn: "",
+    taskType: "",
+    frequency: "",
+    unit: "",
+    recomondedValue: "",
+    quantity: "",
+    numberOfEvents: "",
+    templateId: "",
+    templateDescription: "",
+    repairOption: "",
+    strategyTask: "",
+    year: "",
+    noOfYear: "",
+    headerdescription: "",
+  })
+
   const [addMiniPortFolioItem, setAddMiniportFolioItem] = useState({
     id: "",
     description: "",
@@ -696,8 +747,8 @@ export function CreatePortfolio(props) {
     unit: "",
     recommendedValue: "",
     numberOfEvents: "",
-    netPrice: 1200,
-    totalPrice: 1200,
+    netPrice: 0,
+    totalPrice: 0,
     listPrice: "",
     calculatedPrice: "",
     priceYear: "",
@@ -712,6 +763,7 @@ export function CreatePortfolio(props) {
     priceBreakDownOptionsKeyValue: "",
     priceBreakDownOptionsKeyValue1: "",
     priceBreakDownInputValue: 0,
+    calculatedPrice: 0,
   });
 
   const [serialNumber, setSerialNumber] = useState("");
@@ -737,7 +789,7 @@ export function CreatePortfolio(props) {
   const [openMiniBundleItem, setOpenMiniBundleItem] = useState(false);
   const [serviceOrBundleShow, setServiceOrBundleShow] = useState(false);
   const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("");
-
+  const [editableServiceOrBundleData, setEditableServiceOrBundleData] = useState({})
 
   const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
     id: "",
@@ -755,7 +807,7 @@ export function CreatePortfolio(props) {
   });
   const [bundleAndServiceEditAble, setBundleAndServiceEditAble] = useState(false);
   const [selectedCustomerSegmentOption, setSelectedCustomerSegmentOption] = useState("");
-  const [createdServiceData, setCreatedServiceData] = useState({});
+  const [createdServiceData, setCreatedServiceData] = useState("");
   const [bundleServicePortfolioItemId, setBundleServicePortfolioItemId] = useState(0);
   const [bundleServiceItemPriceData, setBundleServiceItemPriceData] = useState([]);
   const [bundleServiceQuerySearchModelResult, setBundleServiceQuerySearchModelResult] = useState([])
@@ -767,7 +819,6 @@ export function CreatePortfolio(props) {
 
   const [editBundleService, setEditBundleService] = useState(false);
 
-
   const [tabs, setTabs] = useState("1");
   const [itemModelShow, setItemModelShow] = useState(false);
   const [loadingItem, setLoadingItem] = useState("");
@@ -777,7 +828,9 @@ export function CreatePortfolio(props) {
   const [bundleTabs, setBundleTabs] = useState("bundleServiceHeader");
 
   const [bundleServiceShow, setBundleServiceShow] = useState(false);
+  const [bundleOrServiceEditOrNot, setBundleOrServiceEditOrNot] = useState(false)
   const [bundleServicePriceCalculator, setBundleServicePriceCalculator] = useState(false);
+  const [bundleServicePriceCalculatorData, setBundleServicePriceCalculatorData] = useState()
 
   const [editItemShow, setEditItemShow] = useState(false);
   const [passItemEditRowData, setPassItemEditRowData] = useState();
@@ -806,6 +859,7 @@ export function CreatePortfolio(props) {
     discountTypeSelect: "",
     make: "",
     family: "",
+    prefix: "",
   });
 
   const [itemPriceCalculator, setItemPriceCalculator] = useState({
@@ -824,6 +878,7 @@ export function CreatePortfolio(props) {
     { label: "alternate", value: "alternate" },
     { label: "Custom", value: "Custom" },
   ];
+
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
       ...generalComponentData,
@@ -1139,6 +1194,7 @@ export function CreatePortfolio(props) {
     }
   };
 
+  // AddPortfolio Item (Portfolio Item Create)
   const handlePortfolioItemSaveAndContinue = async (itemData, itemPriceData) => {
     try {
 
@@ -1158,13 +1214,13 @@ export function CreatePortfolio(props) {
           withBundleService: (bundleServiceNeed ? false : true),
           portfolioItemId: 0,
           reference: generalComponentData.externalReference,
-          itemHeaderMake: itemData?.make,
-          itemHeaderFamily: itemData?.family,
-          model: itemData.model,
-          prefix: itemData.prefix,
+          itemHeaderMake: componentData?.make,
+          itemHeaderFamily: componentData?.family,
+          model: componentData?.model,
+          prefix: componentData?.family,
           type: "MACHINE",
           additional: "",
-          currency: "",
+          currency: priceCalculator.currency != "" ? addPortFolioItem.currency?.value : "",
           netPrice: 0,
           itemProductHierarchy: stratgyHierarchyKeyValue.value ?
             stratgyHierarchyKeyValue.value : "END_PRODUCT",
@@ -1179,9 +1235,9 @@ export function CreatePortfolio(props) {
           servicePrice: 0,
           status: "DRAFT",
           itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
-          componentCode: "",
-          componentDescription: "",
-          serialNumber: "",
+          componentCode: componentData?.componentCode,
+          componentDescription: componentData?.description,
+          serialNumber: componentData.serialNo,
           variant: "",
           itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
           jobCode: "",
@@ -1204,11 +1260,11 @@ export function CreatePortfolio(props) {
           taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["PM1"],
           solutionCode: "",
           usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "REPAIR_OR_REPLACE",
-          usage: "",
-          year: itemData.year?.value,
+          usage: itemData?.usageType != "" ? itemData?.usageType?.value : "",
+          year: itemData.year != "" ? itemData.year?.value : "",
           avgUsage: 0,
           unit: itemData.unit != "" ? itemData.unit?.value : "",
-          frequency: itemData.frequency != "" ? itemData.frequency?.value : "once",
+          frequency: itemData.frequency != "" ? itemData.frequency?.value : "",
           // recommendedValue: parseInt(itemData.recommendedValue),
           itemPrices: [
             {
@@ -1246,6 +1302,8 @@ export function CreatePortfolio(props) {
       const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
+
+        calculatedPrice: resPrice.data.calculatedPrice,
         priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
           resPrice.data.priceMethod != "" ||
           resPrice.data.priceMethod != null) ? {
@@ -1259,7 +1317,10 @@ export function CreatePortfolio(props) {
           value: resPrice.data.priceType
         } : "",
         priceAdditionalSelect: {
-          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+          label: (resPrice.data.additionalPriceType != "" ||
+            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
+          value: (resPrice.data.additionalPriceType != "" ||
+            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
         },
         priceAdditionalInput: resPrice.data.additionalPriceValue,
         discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
@@ -1269,9 +1330,9 @@ export function CreatePortfolio(props) {
           value: resPrice.data.discountType
         } : "",
         discountTypeInput: resPrice.data.discountValue,
-        year: {
-          label: resPrice.data.year, value: resPrice.data.year
-        },
+
+        year: { label: resPrice.data.year, value: resPrice.data.year, },
+
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
         endUsage: resPrice.data.endUsage,
@@ -1279,6 +1340,95 @@ export function CreatePortfolio(props) {
         netPrice: resPrice.data.netService,
         totalPrice: resPrice.data.totalPrice,
         id: resPrice.data.itemPriceDataId,
+        numberOfEvents: resPrice.data.numberOfEvents,
+        portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+        flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+        escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+          label: resPrice.data.priceEscalation,
+          value: resPrice.data.priceEscalation,
+        } : ""),
+        escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+          resPrice.data.priceEscalation : ""),
+        escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+          resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+            resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+              resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+        priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+          "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+            resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+        priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+          resPrice.data.sparePartsPriceBreakDownPercentage :
+          resPrice.data.labourPriceBreakDownPercentage != 0 ?
+            resPrice.data.labourPriceBreakDownPercentage :
+            resPrice.data.miscPriceBreakDownPercentage != 0 ?
+              resPrice.data.miscPriceBreakDownPercentage : 0,
+
+        priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+          label: "PARTS",
+          value: "PARTS",
+        } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+          label: "LABOR",
+          value: "LABOR",
+        } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+          label: "MISCELLANEOUS",
+          value: "MISCELLANEOUS",
+        } : "",
+
+        currency: ((itemRes.data?.itemHeaderModel?.currency != "")) ? {
+          label: itemRes.data?.itemHeaderModel?.currency,
+          value: itemRes.data?.itemHeaderModel?.currency
+        } : "",
+        unit: ((itemRes.data?.itemBodyModel?.unit != "")) ? {
+          label: itemRes.data?.itemBodyModel?.unit,
+          value: itemRes.data?.itemBodyModel?.unit
+        } : "",
+        frequency: (itemRes.data?.itemBodyModel?.frequency != "") ? {
+          label: itemRes.data?.itemBodyModel?.frequency,
+          value: itemRes.data?.itemBodyModel?.frequency
+        } : "",
+        usageType: ((itemRes.data?.itemBodyModel?.usage != "")) ? {
+          label: itemRes.data?.itemBodyModel?.usage,
+          value: itemRes.data?.itemBodyModel?.usage
+        } : "",
+
+
+        // priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+        //   resPrice.data.priceMethod != "" ||
+        //   resPrice.data.priceMethod != null) ? {
+        //   label: resPrice.data.priceMethod,
+        //   value: resPrice.data.priceMethod
+        // } : "",
+        // priceType: (resPrice.data.priceType != "EMPTY" ||
+        //   resPrice.data.priceType != "" ||
+        //   resPrice.data.priceType != null) ? {
+        //   label: resPrice.data.priceType,
+        //   value: resPrice.data.priceType
+        // } : "",
+        // priceAdditionalSelect: {
+        //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+        // },
+        // priceAdditionalInput: resPrice.data.additionalPriceValue,
+        // discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+        //   resPrice.data.discountType != "" ||
+        //   resPrice.data.discountType != null) ? {
+        //   label: resPrice.data.discountType,
+        //   value: resPrice.data.discountType
+        // } : "",
+        // discountTypeInput: resPrice.data.discountValue,
+        // year: { label: resPrice.data.year, value: resPrice.data.year },
+        // noOfYear: resPrice.data.noOfYear,
+        // startUsage: resPrice.data.startUsage,
+        // endUsage: resPrice.data.endUsage,
+        // recommendedValue: resPrice.data.recommendedValue,
+        // netPrice: resPrice.data.netService,
+        // totalPrice: resPrice.data.totalPrice,
+        // id: resPrice.data.itemPriceDataId,
+        // numberOfEvents: resPrice.data.numberOfEvents,
+        // flatPrice: resPrice.data.flatPrice,
       })
       setCurrentItemId(itemRes.data.itemId);
       setCreatedItemsIdData([...createdItemsIdData, itemRes.data.itemId]);
@@ -1557,7 +1707,7 @@ export function CreatePortfolio(props) {
           prefix: data.prefix,
           type: "MACHINE",
           additional: "",
-          currency: "",
+          currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
           netPrice: 0,
           itemProductHierarchy: "END_PRODUCT",
           itemHeaderGeographic: "ONSITE",
@@ -1594,7 +1744,7 @@ export function CreatePortfolio(props) {
           solutionCode: "",
           usageIn: data.usageIn != "" ? data.usageIn.value : "REPAIR_OR_REPLACE",
           recommendedValue: parseInt(data.recommendedValue),
-          usage: "",
+          usage: data?.usageType?.value,
           year: data.year?.value,
           avgUsage: 0,
           unit: data.unit != "" ? data.unit?.value : "",
@@ -1626,6 +1776,7 @@ export function CreatePortfolio(props) {
       const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
+        calculatedPrice: resPrice.data.calculatedPrice,
         priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
           resPrice.data.priceMethod != "" ||
           resPrice.data.priceMethod != null) ? {
@@ -1893,88 +2044,211 @@ export function CreatePortfolio(props) {
       //   throw "Please fill fields properly"
       // }
       if (editBundleService) {
-        if (isActiveStatus) {
+        if (bundleOrServiceEditOrNot) {
           setBundleServiceShow(false);
           setBundleTabs("bundleServiceHeader");
-          setAddportFolioItem({})
+          // setAddportFolioItem({})
+          setBundleOrServiceItemPriceData({});
         } else {
+          if (isActiveStatus) {
+            setBundleServiceShow(false);
+            setBundleTabs("bundleServiceHeader");
+            // setAddportFolioItem({})
+            setBundleOrServiceItemPriceData({});
+          } else {
+            let reqObj = {
+              itemId: 0,
+              itemName: createServiceOrBundle.name,
+              itemHeaderModel: {
+                itemHeaderId: 0,
+                itemHeaderDescription: createServiceOrBundle.description,
+                bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+                withBundleService: false,
+                portfolioItemId: currentItemId != null ? currentItemId : 0,
+                reference: createServiceOrBundle.reference,
+                itemHeaderMake: createServiceOrBundle.make,
+                itemHeaderFamily: createServiceOrBundle.family,
+                model: createServiceOrBundle.model,
+                prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
+                type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+                additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+                currency: bundleServiceAddPortfolioItem.currency ? bundleServiceAddPortfolioItem.currency?.value : "",
+                netPrice: 0,
+                itemProductHierarchy: "EMPTY",
+                itemHeaderGeographic: "EMPTY",
+                responseTime: "EMPTY",
+                usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
+                validFrom: "",
+                validTo: "",
+                estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
+                servicePrice: 0,
+                status: serviceBundleStatus.value,
+                componentCode: "",
+                componentDescription: "",
+                serialNumber: "",
+                itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask?.value : "EMPTY",
+                variant: "",
+                itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
+                jobCode: "",
+                preparedBy: bundleOrServiceAdministrative?.preparedBy ? bundleOrServiceAdministrative?.preparedBy : "",
+                approvedBy: bundleOrServiceAdministrative?.approvedBy ? bundleOrServiceAdministrative?.approvedBy : "",
+                preparedOn: bundleOrServiceAdministrative?.preparedOn ? bundleOrServiceAdministrative?.preparedOn : "",
+                revisedBy: bundleOrServiceAdministrative?.revisedBy ? bundleOrServiceAdministrative?.revisedBy : "",
+                revisedOn: bundleOrServiceAdministrative?.revisedOn ? bundleOrServiceAdministrative?.revisedOn : "",
+                salesOffice: bundleOrServiceAdministrative.salesOffice?.value ? bundleOrServiceAdministrative.salesOffice?.value : "",
+                offerValidity: bundleOrServiceAdministrative.offerValidity?.value ? bundleOrServiceAdministrative.offerValidity?.value : "",
+                serviceChargable: bundleServiceChargeableOrNot,
+                serviceOptional: (!bundleServiceChargeableOrNot)
+              },
+              itemBodyModel: {
+                itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(bundleServiceAddPortfolioItem.id) : 0,
+                itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? bundleServiceAddPortfolioItem.description : "",
+                spareParts: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_SPARE_PARTS"] : ["EMPTY"],
+                labours: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_LABOUR"] : ["EMPTY"],
+                miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
+                taskType: serviceOrBundlePrefix === "BUNDLE" ? [bundleServiceAddPortfolioItem.taskType?.value] : ["EMPTY"],
+                solutionCode: "",
+                usageIn: bundleServiceAddPortfolioItem.usageIn ? bundleServiceAddPortfolioItem.usageIn?.value : "",
+                usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
+                year: bundleServiceAddPortfolioItem.year ? (typeof bundleServiceAddPortfolioItem.year === "object" ? bundleServiceAddPortfolioItem.year?.value : bundleServiceAddPortfolioItem.year) : "",
+                avgUsage: 0,
+                unit: bundleServiceAddPortfolioItem.unit ? bundleServiceAddPortfolioItem.unit?.value : "",
+                frequency: bundleServiceAddPortfolioItem.frequency ? bundleServiceAddPortfolioItem.frequency?.value : "",
+                itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+                  {
+                    itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+                  }
+                ] : serviceOrBundlePrefix === "SERVICE" ? [
+                  {
+                    itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+                  }
+                ] : [],
+              },
+            }
 
+            console.log("reqObj 1234567888 : ", reqObj)
+
+            // const res = await updateItemData(createServiceOrBundle.id, reqObj);
+            const res = await updateItemData(createServiceOrBundle.id, reqObj);
+            if (res.status === 200) {
+              toast("😎" + `${serviceOrBundlePrefix === "SERVICE" ? "Service" : "Bundle"} ${createServiceOrBundle.name} updated successfully`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              let cloneArr = []
+              let _tempBundleService3 = [...tempBundleService3];
+              const exist = _tempBundleService3.some(item => item.itemId === res.data.itemId)
+              if (!exist) {
+                _tempBundleService3.push(res.data)
+                // setTempBundleService3([...tempBundleService3, data])
+              } else {
+                _tempBundleService3.splice(_tempBundleService3.findIndex(item => item.itemId === res.data.itemId), 1, res.data)
+              }
+
+
+              // console.log("createdItemsIdData : ", createdItemsIdData);
+
+              setTempBundleService3(_tempBundleService3);
+
+              setBundleServiceShow(false);
+              setBundleTabs("bundleServiceHeader")
+              // setAddportFolioItem({})
+              setBundleOrServiceItemPriceData({});
+              // setBundleTabs("bundleServiceCalculator");
+              // setAddportFolioItem({});
+
+            }
+
+          }
+        }
+
+      } else {
+        if (!bundleOrServiceEditOrNot) {
           let reqObj = {
-            itemId: 0,
+            itemId: createServiceOrBundle.id,
             itemName: createServiceOrBundle.name,
             itemHeaderModel: {
               itemHeaderId: 0,
               itemHeaderDescription: createServiceOrBundle.description,
               bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
-              withBundleService: false,
-              portfolioItemId: currentItemId != null ? currentItemId : 0,
+              portfolioItemId: 0,
               reference: createServiceOrBundle.reference,
               itemHeaderMake: createServiceOrBundle.make,
               itemHeaderFamily: createServiceOrBundle.family,
               model: createServiceOrBundle.model,
-              prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
-              type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
-              additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-              currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
+              prefix: createServiceOrBundle.prefix,
+              type: "MACHINE",
+              additional: createServiceOrBundle.additional.value,
+              currency: bundleOrServiceItemPriceData?.currency ? bundleOrServiceItemPriceData?.currency?.value : "",
               netPrice: 0,
-              itemProductHierarchy: "EMPTY",
-              itemHeaderGeographic: "EMPTY",
-              responseTime: "EMPTY",
+              itemProductHierarchy: "END_PRODUCT",
+              itemHeaderGeographic: "ONSITE",
+              responseTime: "PROACTIVE",
               usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
               validFrom: "",
               validTo: "",
-              estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
+              estimatedTime: "",
               servicePrice: 0,
               status: "DRAFT",
-              componentCode: "",
-              componentDescription: "",
-              serialNumber: "",
-              itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask?.value : "EMPTY",
-              variant: "",
-              itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
-              jobCode: "",
-              preparedBy: administrative?.preparedBy ? administrative?.preparedBy : "",
-              approvedBy: administrative?.approvedBy ? administrative?.approvedBy : "",
-              preparedOn: administrative?.preparedOn ? administrative?.preparedOn : "",
-              revisedBy: administrative?.revisedBy ? administrative?.revisedBy : "",
-              revisedOn: administrative?.revisedOn ? administrative?.revisedOn : "",
-              salesOffice: administrative.salesOffice?.value ? administrative.salesOffice?.value : "",
-              offerValidity: administrative.offerValidity?.value ? administrative.offerValidity?.value : "",
-              serviceChargable: bundleServiceChargeableOrNot,
-              serviceOptional: (!bundleServiceChargeableOrNot)
+              itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+              preparedBy: administrative.preparedBy,
+              approvedBy: administrative.approvedBy,
+              preparedOn: administrative.preparedOn,
+              revisedBy: administrative.revisedBy,
+              revisedOn: administrative.revisedOn,
+              salesOffice: administrative.salesOffice?.value,
+              offerValidity: administrative.offerValidity?.value
             },
             itemBodyModel: {
               itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
               itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
-              spareParts: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_SPARE_PARTS"] : ["EMPTY"],
-              labours: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_LABOUR"] : ["EMPTY"],
-              miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
-              taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["EMPTY"],
+              quantity: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.quantity) : 0,
+              startUsage: "",
+              endUsage: priceCalculator.startUsage ? priceCalculator.startUsage : "",
+              standardJobId: priceCalculator.endUsage ? priceCalculator.endUsage : "",
+              frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+              additional: "",
+              spareParts: ["WITH_SPARE_PARTS"],
+              labours: ["WITH_LABOUR"],
+              miscellaneous: ["LUBRICANTS"],
+              taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
               solutionCode: "",
-              usageIn: addPortFolioItem.usageTypeIn ? addPortFolioItem.usageTypeIn?.value : "",
+              usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageTypeIn?.value : "",
+              recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
               usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
+              repairKitId: "",
+              templateDescription: "",
+              partListId: "",
+              serviceEstimateId: "",
+              numberOfEvents: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.numberOfEvents) : 0,
+              repairOption: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.repairOption.value : "",
+              priceMethod: "LIST_PRICE",
+              listPrice: priceCalculator.listPrice ? parseInt(priceCalculator.listPrice) : 0,
+              priceEscalation: "",
+              calculatedPrice: priceCalculator.calculatedPrice ? parseInt(priceCalculator.calculatedPrice) : 0,
+              flatPrice: priceCalculator.flatPrice ? parseInt(priceCalculator.flatPrice) : 0,
+              discountType: "",
               year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
               avgUsage: 0,
-              unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
-              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
-              itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
-                {
-                  itemPriceDataId: itemPriceData.itemPriceDataId
-                }
-              ] : serviceOrBundlePrefix === "SERVICE" ? [
-                {
-                  itemPriceDataId: itemPriceData.itemPriceDataId
-                }
-              ] : [],
-            },
+              unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+              sparePartsPrice: 0,
+              sparePartsPriceBreakDownPercentage: 0,
+              servicePrice: 0,
+              servicePriceBreakDownPercentage: 0,
+              miscPrice: 0,
+              miscPriceBreakDownPercentage: 0,
+              totalPrice: 0
+            }
           }
 
-          console.log("reqObj 1234567888 : ", reqObj)
-
-          // const res = await updateItemData(createServiceOrBundle.id, reqObj);
           const res = await updateItemData(createServiceOrBundle.id, reqObj);
           if (res.status === 200) {
-            toast("😎" + `Bundle ${createServiceOrBundle.name} updated successfully`, {
+            toast("😎" + `${serviceOrBundlePrefix === "SERVICE" ? "Service" : "Bundle"} ${createServiceOrBundle.name} updated successfully`, {
               position: "top-right",
               autoClose: 3000,
               hideProgressBar: false,
@@ -1983,6 +2257,7 @@ export function CreatePortfolio(props) {
               draggable: true,
               progress: undefined,
             });
+
             let cloneArr = []
             let _tempBundleService3 = [...tempBundleService3];
             const exist = _tempBundleService3.some(item => item.itemId === res.data.itemId)
@@ -2000,91 +2275,11 @@ export function CreatePortfolio(props) {
 
             setBundleServiceShow(false);
             setBundleTabs("bundleServiceHeader")
-            setAddportFolioItem({})
-            // setBundleTabs("bundleServiceCalculator");
-            // setAddportFolioItem({});
+            // setAddportFolioItem({})
+            setBundleServiceAddPortfolioItem({});
 
           }
 
-        }
-
-      } else {
-
-        let reqObj = {
-          itemId: 0,
-          itemName: createServiceOrBundle.name,
-          itemHeaderModel: {
-            itemHeaderId: 0,
-            itemHeaderDescription: createServiceOrBundle.description,
-            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
-            portfolioItemId: 0,
-            reference: createServiceOrBundle.reference,
-            itemHeaderMake: createServiceOrBundle.make,
-            itemHeaderFamily: createServiceOrBundle.family,
-            model: createServiceOrBundle.model,
-            prefix: createServiceOrBundle.prefix,
-            type: "MACHINE",
-            additional: createServiceOrBundle.additional.value,
-            currency: "",
-            netPrice: 0,
-            itemProductHierarchy: "END_PRODUCT",
-            itemHeaderGeographic: "ONSITE",
-            responseTime: "PROACTIVE",
-            usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
-            validFrom: "",
-            validTo: "",
-            estimatedTime: "",
-            servicePrice: 0,
-            status: "DRAFT",
-            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
-            preparedBy: administrative.preparedBy,
-            approvedBy: administrative.approvedBy,
-            preparedOn: administrative.preparedOn,
-            revisedBy: administrative.revisedBy,
-            revisedOn: administrative.revisedOn,
-            salesOffice: administrative.salesOffice?.value,
-            offerValidity: administrative.offerValidity?.value
-          },
-          itemBodyModel: {
-            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
-            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
-            quantity: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.quantity) : 0,
-            startUsage: "",
-            endUsage: priceCalculator.startUsage ? priceCalculator.startUsage : "",
-            standardJobId: priceCalculator.endUsage ? priceCalculator.endUsage : "",
-            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
-            additional: "",
-            spareParts: ["WITH_SPARE_PARTS"],
-            labours: ["WITH_LABOUR"],
-            miscellaneous: ["LUBRICANTS"],
-            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
-            solutionCode: "",
-            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageTypeIn?.value : "",
-            recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
-            usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
-            repairKitId: "",
-            templateDescription: "",
-            partListId: "",
-            serviceEstimateId: "",
-            numberOfEvents: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.numberOfEvents) : 0,
-            repairOption: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.repairOption.value : "",
-            priceMethod: "LIST_PRICE",
-            listPrice: priceCalculator.listPrice ? parseInt(priceCalculator.listPrice) : 0,
-            priceEscalation: "",
-            calculatedPrice: priceCalculator.calculatedPrice ? parseInt(priceCalculator.calculatedPrice) : 0,
-            flatPrice: priceCalculator.flatPrice ? parseInt(priceCalculator.flatPrice) : 0,
-            discountType: "",
-            year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
-            avgUsage: 0,
-            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-            sparePartsPrice: 0,
-            sparePartsPriceBreakDownPercentage: 0,
-            servicePrice: 0,
-            servicePriceBreakDownPercentage: 0,
-            miscPrice: 0,
-            miscPriceBreakDownPercentage: 0,
-            totalPrice: 0
-          }
         }
 
       }
@@ -2424,33 +2619,315 @@ export function CreatePortfolio(props) {
     }
   };
 
-  const saveEditServiceOrBundleAdministrativeData = () => {
-    setBundleServiceShow(false);
-    setBundleTabs("bundleServiceHeader");
-    setAddportFolioItem({})
+  const saveEditServiceOrBundleAdministrativeData = async () => {
+
+    try {
+
+      if (serviceOrBundlePrefix === "BUNDLE") {
+        if ((bundleOrServiceAdministrative.preparedBy == "") ||
+          (bundleOrServiceAdministrative.preparedBy == undefined)) {
+          throw "Prepared By is a required field, you can’t leave it blank";
+        }
+
+        if ((bundleOrServiceAdministrative.salesOffice == "") ||
+          (bundleOrServiceAdministrative.salesOffice == undefined)) {
+          throw "Sales Office/Branch is a required field, you can’t leave it blank";
+        }
+
+        if ((bundleOrServiceAdministrative.offerValidity == "") ||
+          (bundleOrServiceAdministrative.offerValidity == undefined)) {
+          throw "Offer Validity is a required field, you can’t leave it blank";
+        }
+
+        let reqObj = {
+          itemId: 0,
+          itemName: createServiceOrBundle.name,
+          itemHeaderModel: {
+            itemHeaderId: 0,
+            itemHeaderDescription: createServiceOrBundle.description,
+            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+            withBundleService: false,
+            portfolioItemId: 0,
+            reference: createServiceOrBundle.reference,
+            itemHeaderMake: createServiceOrBundle.make,
+            itemHeaderFamily: createServiceOrBundle.family,
+            model: createServiceOrBundle.model,
+            prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
+            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+            currency: bundleServiceAddPortfolioItem.currency ? bundleServiceAddPortfolioItem.currency?.value : "",
+            netPrice: 0,
+            itemProductHierarchy: "EMPTY",
+            itemHeaderGeographic: "EMPTY",
+            responseTime: "EMPTY",
+            usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
+            validFrom: "",
+            validTo: "",
+            estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
+            servicePrice: 0,
+            status: "DRAFT",
+            componentCode: "",
+            componentDescription: "",
+            serialNumber: "",
+            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? bundleServiceAddPortfolioItem.strategyTask?.value : "EMPTY",
+            variant: "",
+            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
+            jobCode: "",
+            preparedBy: bundleOrServiceAdministrative?.preparedBy ? bundleOrServiceAdministrative?.preparedBy : "",
+            approvedBy: bundleOrServiceAdministrative?.approvedBy ? bundleOrServiceAdministrative?.approvedBy : "",
+            preparedOn: bundleOrServiceAdministrative?.preparedOn ? bundleOrServiceAdministrative?.preparedOn : "",
+            revisedBy: bundleOrServiceAdministrative?.revisedBy ? bundleOrServiceAdministrative?.revisedBy : "",
+            revisedOn: bundleOrServiceAdministrative?.revisedOn ? bundleOrServiceAdministrative?.revisedOn : "",
+            salesOffice: bundleOrServiceAdministrative.salesOffice?.value ? bundleOrServiceAdministrative.salesOffice?.value : "",
+            offerValidity: bundleOrServiceAdministrative.offerValidity?.value ? bundleOrServiceAdministrative.offerValidity?.value : "",
+            serviceChargable: bundleServiceChargeableOrNot,
+            serviceOptional: (!bundleServiceChargeableOrNot)
+          },
+          itemBodyModel: {
+            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(bundleServiceAddPortfolioItem.id) : 0,
+            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? bundleServiceAddPortfolioItem.description : "",
+            spareParts: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_SPARE_PARTS"] : ["EMPTY"],
+            labours: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_LABOUR"] : ["EMPTY"],
+            miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? [bundleServiceAddPortfolioItem.taskType?.value] : ["EMPTY"],
+            solutionCode: "",
+            usageIn: bundleServiceAddPortfolioItem.usageTypeIn ? bundleServiceAddPortfolioItem.usageTypeIn?.value : "",
+            usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
+            year: bundleServiceAddPortfolioItem.year ? (typeof bundleServiceAddPortfolioItem.year === "object" ? bundleServiceAddPortfolioItem.year?.value : bundleServiceAddPortfolioItem.year) : "",
+            avgUsage: 0,
+            unit: bundleServiceAddPortfolioItem.unit ? bundleServiceAddPortfolioItem.unit?.value : "",
+            frequency: bundleServiceAddPortfolioItem.frequency ? bundleServiceAddPortfolioItem.frequency?.value : "",
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+              }
+            ] : serviceOrBundlePrefix === "SERVICE" ? [
+              {
+                itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+              }
+            ] : [],
+          },
+        }
+
+        const res = await updateItemData(createdServiceData.itemId, reqObj);
+        if (res.status === 200) {
+          toast("😎" + `${serviceOrBundlePrefix} ${createServiceOrBundle.name} saved successfully.`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          let cloneArr = []
+          let _tempBundleService3 = [...tempBundleService3];
+          const exist = _tempBundleService3.some(item => item.itemId === res.data.itemId)
+          if (!exist) {
+            _tempBundleService3.push(res.data)
+          } else {
+            _tempBundleService3.splice(_tempBundleService3.findIndex(item => item.itemId === res.data.itemId), 1, res.data)
+          }
+
+          setTempBundleService3(_tempBundleService3);
+          setBundleServiceShow(false);
+          setBundleTabs("bundleServiceHeader")
+          setBundleOrServiceItemPriceData({});
+        }
+      }
+      if (serviceOrBundlePrefix === "SERVICE") {
+
+        if ((bundleOrServiceAdministrative.preparedBy == "") ||
+          (bundleOrServiceAdministrative.preparedBy == undefined)) {
+          throw "Prepared By is a required field, you can’t leave it blank";
+        }
+
+        if ((bundleOrServiceAdministrative.salesOffice == "") ||
+          (bundleOrServiceAdministrative.salesOffice == undefined)) {
+          throw "Sales Office/Branch is a required field, you can’t leave it blank";
+        }
+
+        if ((bundleOrServiceAdministrative.offerValidity == "") ||
+          (bundleOrServiceAdministrative.offerValidity == undefined)) {
+          throw "Offer Validity is a required field, you can’t leave it blank";
+        }
+
+        let reqObj = {
+          itemId: createdServiceData.itemId,
+          itemName: createServiceOrBundle.name,
+          itemHeaderModel: {
+            itemHeaderId: 0,
+            itemHeaderDescription: createServiceOrBundle.description,
+            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+            withBundleService: false,
+            portfolioItemId: currentItemId != null ? currentItemId : 0,
+            reference: createServiceOrBundle.reference,
+            itemHeaderMake: createServiceOrBundle.make,
+            itemHeaderFamily: createServiceOrBundle.family,
+            model: createServiceOrBundle.model,
+            prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
+            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+            currency: bundleServiceAddPortfolioItem.currency ? bundleServiceAddPortfolioItem.currency?.value : "",
+            netPrice: 0,
+            itemProductHierarchy: "EMPTY",
+            itemHeaderGeographic: "EMPTY",
+            responseTime: "EMPTY",
+            usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
+            validFrom: "",
+            validTo: "",
+            estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
+            servicePrice: 0,
+            status: serviceBundleStatus.value,
+            componentCode: "",
+            componentDescription: "",
+            serialNumber: "",
+            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask?.value : "EMPTY",
+            variant: "",
+            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
+            jobCode: "",
+            preparedBy: bundleOrServiceAdministrative?.preparedBy ? bundleOrServiceAdministrative?.preparedBy : "",
+            approvedBy: bundleOrServiceAdministrative?.approvedBy ? bundleOrServiceAdministrative?.approvedBy : "",
+            preparedOn: bundleOrServiceAdministrative?.preparedOn ? bundleOrServiceAdministrative?.preparedOn : "",
+            revisedBy: bundleOrServiceAdministrative?.revisedBy ? bundleOrServiceAdministrative?.revisedBy : "",
+            revisedOn: bundleOrServiceAdministrative?.revisedOn ? bundleOrServiceAdministrative?.revisedOn : "",
+            salesOffice: bundleOrServiceAdministrative.salesOffice?.value ? bundleOrServiceAdministrative.salesOffice?.value : "",
+            offerValidity: bundleOrServiceAdministrative.offerValidity?.value ? bundleOrServiceAdministrative.offerValidity?.value : "",
+            serviceChargable: bundleServiceChargeableOrNot,
+            serviceOptional: (!bundleServiceChargeableOrNot)
+          },
+          itemBodyModel: {
+            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(bundleServiceAddPortfolioItem.id) : 0,
+            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? bundleServiceAddPortfolioItem.description : "",
+            spareParts: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_SPARE_PARTS"] : ["EMPTY"],
+            labours: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_LABOUR"] : ["EMPTY"],
+            miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? [bundleServiceAddPortfolioItem.taskType?.value] : ["EMPTY"],
+            solutionCode: "",
+            usageIn: bundleServiceAddPortfolioItem.usageIn ? bundleServiceAddPortfolioItem.usageIn?.value : "",
+            usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
+            year: bundleServiceAddPortfolioItem.year ? (typeof bundleServiceAddPortfolioItem.year === "object" ? bundleServiceAddPortfolioItem.year?.value : bundleServiceAddPortfolioItem.year) : "",
+            avgUsage: 0,
+            unit: bundleServiceAddPortfolioItem.unit ? bundleServiceAddPortfolioItem.unit?.value : "",
+            frequency: bundleServiceAddPortfolioItem.frequency ? bundleServiceAddPortfolioItem.frequency?.value : "",
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+              }
+            ] : serviceOrBundlePrefix === "SERVICE" ? [
+              {
+                itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+              }
+            ] : [],
+          },
+        }
+
+        console.log("=========== createdServiceData ", createdServiceData)
+
+        const res = await updateItemData(createdServiceData.itemId, reqObj);
+        if (res.status === 200) {
+          toast("😎" + `${serviceOrBundlePrefix === "SERVICE" ? "Service" : "Bundle"} ${createServiceOrBundle.name} updated successfully`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          let cloneArr = []
+          let _tempBundleService3 = [...tempBundleService3];
+          const exist = _tempBundleService3.some(item => item.itemId === res.data.itemId)
+          if (!exist) {
+            _tempBundleService3.push(res.data)
+          } else {
+            _tempBundleService3.splice(_tempBundleService3.findIndex(item => item.itemId === res.data.itemId), 1, res.data)
+          }
+
+          setTempBundleService3(_tempBundleService3);
+          setBundleServiceShow(false);
+          setBundleTabs("bundleServiceHeader")
+          setBundleOrServiceItemPriceData({});
+
+        }
+      }
+
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
+    }
+
+    // setBundleServiceShow(false);
+    // setBundleTabs("bundleServiceHeader");
+    // // setAddportFolioItem({})
+    // setBundleOrServiceItemPriceData({});
   }
 
   const showPriceDataOfBundleOrService = async (bundleServiceData) => {
-    // setBundleServicePriceCalculator
-    // serviceOrBundlePrefix={serviceOrBundlePrefix}
     if (bundleServiceData.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
       setServiceOrBundlePrefix("BUNDLE");
     } else if (bundleServiceData.itemHeaderModel.bundleFlag === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
     }
 
-    console.log("bundleServiceData.itemBodyModel : ", bundleServiceData.itemBodyModel)
+    // setAddportFolioItem({
+    //   ...addPortFolioItem,
+    //   unit: {
+    //     label: bundleServiceData.itemBodyModel.unit, value: bundleServiceData.itemBodyModel.unit
+    //   },
+    //   usageType: {
+    //     label: bundleServiceData.itemBodyModel.usage, value: bundleServiceData.itemBodyModel.usage
+    //   },
+    //   frequency: {
+    //     label: bundleServiceData.itemBodyModel.frequency
+    //     , value: bundleServiceData.itemBodyModel.frequency
+    //   },
+    //   currency: {
+    //     label: bundleServiceData.itemHeaderModel.currency
+    //     , value: bundleServiceData.itemHeaderModel.currency
+    //   },
+    //   year: {
+    //     label: bundleServiceData.itemBodyModel.year
+    //     , value: bundleServiceData.itemBodyModel.year
+    //   },
+    // });
+    setPassItemEditRowData(bundleServiceData);
 
     if (bundleServiceData.itemBodyModel.itemPrices.length > 0) {
       const rObjId = bundleServiceData.itemBodyModel.itemPrices[0].itemPriceDataId;
 
       const res = await getItemPriceData(rObjId)
-      console.log("ressss : ", res)
+
       var newVal = res.data;
-      setPriceCalculator(res.data)
+
+      setBundleServicePriceCalculatorData(res.data)
+      // setPriceCalculator(res.data)
+
+      setBundleOrServiceEditOrNot(true);
+      setBundleServicePriceCalculator(true);
+
+    } else {
+      toast("😐" + `${bundleServiceData.itemHeaderModel.bundleFlag === "SERVICE" ? "Service" : "Bundle"} have not any Price.`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
 
-    setBundleServicePriceCalculator(true);
+
   }
 
   const handleSavePrices = async () => {
@@ -2475,12 +2952,12 @@ export function CreatePortfolio(props) {
           prefix: createServiceOrBundle.prefix,
           type: "MACHINE",
           additional: createServiceOrBundle.additional.value,
-          currency: "",
+          currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
           netPrice: 0,
           itemProductHierarchy: generalComponentData.productHierarchy,
           itemHeaderGeographic: generalComponentData.geographic,
           responseTime: generalComponentData.responseTime,
-          usage: "",
+          usage: addPortFolioItem?.usageType ? typeof addPortFolioItem?.usageType === "object" ? addPortFolioItem?.usageType?.value : addPortFolioItem?.usageType : "",
           validFrom: generalComponentData.validFrom,
           validTo: generalComponentData.validTo,
           estimatedTime: "",
@@ -2503,7 +2980,7 @@ export function CreatePortfolio(props) {
           solutionCode: "",
           usageIn: addPortFolioItem.usageIn.value,
           recommendedValue: 0,
-          usage: "",
+          usage: addPortFolioItem?.usageType ? typeof addPortFolioItem?.usageType === "object" ? addPortFolioItem?.usageType?.value : addPortFolioItem?.usageType : "",
           repairKitId: "",
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
@@ -2546,9 +3023,11 @@ export function CreatePortfolio(props) {
 
   const getAddPortfolioItemData = async (data, itemPriceData) => {
     console.log("Bundle ItemsTabs : ", data)
-    setAddportFolioItem(data)
-    setItemPriceData(itemPriceData)
-    setCreatedBundleItems(data);
+    setBundleServiceAddPortfolioItem(data);
+    setBundleOrServiceItemPriceData(itemPriceData);
+    // setAddportFolioItem(data)
+    // setItemPriceData(itemPriceData)
+    // setCreatedBundleItems(data);
 
     let reqObj = {
       itemId: 0,
@@ -2566,7 +3045,7 @@ export function CreatePortfolio(props) {
         prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
         type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
         additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-        currency: priceCalculator?.currency ? priceCalculator?.currency?.value : "",
+        currency: data.currency ? data?.currency?.value : "",
         netPrice: 0,
         itemProductHierarchy: "EMPTY",
         itemHeaderGeographic: "EMPTY",
@@ -2576,7 +3055,7 @@ export function CreatePortfolio(props) {
         validTo: "",
         estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
         servicePrice: 0,
-        status: value2.value,
+        status: serviceBundleStatus.value,
         componentCode: "",
         componentDescription: "",
         serialNumber: "",
@@ -2595,7 +3074,7 @@ export function CreatePortfolio(props) {
         serviceOptional: (!bundleServiceChargeableOrNot)
       },
       itemBodyModel: {
-        itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+        itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(data?.id) : 0,
         itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? data.description : "",
         spareParts: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_SPARE_PARTS"] : ["EMPTY"],
         labours: serviceOrBundlePrefix === "BUNDLE" ? ["WITH_LABOUR"] : ["EMPTY"],
@@ -2604,7 +3083,7 @@ export function CreatePortfolio(props) {
         solutionCode: "",
         usageIn: data.usageIn ? data.usageIn?.value : "",
         usage: data.usageType ? data.usageType?.value : "",
-        year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
+        year: data?.year ? (typeof data?.year === "object" ? data?.year?.value : data?.year) : "",
         avgUsage: 0,
         unit: data.unit ? data.unit?.value : "",
         frequency: data.frequency ? data.frequency?.value : "",
@@ -2666,8 +3145,11 @@ export function CreatePortfolio(props) {
       //   id: res.data.itemId,
       // });
       setCreatedServiceData(res.data);
-      setAddportFolioItem(data)
-      setItemPriceData(itemPriceData)
+      // setCreatedBundleItems(res.data);
+      // setAddportFolioItem(data)
+      // setItemPriceData(itemPriceData)
+      setBundleServiceAddPortfolioItem(data);
+      setBundleOrServiceItemPriceData(itemPriceData);
       setBundleTabs("bundleServicePriceCalculator")
 
     }
@@ -2753,7 +3235,7 @@ export function CreatePortfolio(props) {
           }
 
           // console.log("priceUpdateData Now : ", priceUpdateData)
-          const updatePriceId = await updateItemPriceData(
+          const resPrice = await updateItemPriceData(
             editAbleItemPriceData.itemPriceDataId,
             priceUpdateData
           );
@@ -2777,7 +3259,8 @@ export function CreatePortfolio(props) {
             const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
           }
 
-          setItemPriceData(updatePriceId.data)
+          // setItemPriceData(resPrice.data)
+          setBundleOrServiceItemPriceData(resPrice.data)
         }
 
         let reqObj = {
@@ -3082,8 +3565,97 @@ export function CreatePortfolio(props) {
             const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
           }
 
-          setItemPriceData(updatePriceId.data)
+          setItemPriceData(updatePriceId.data);
+
+          setPriceCalculator({
+            ...priceCalculator,
+            calculatedPrice: updatePriceId.data.calculatedPrice,
+            priceMethod: (updatePriceId.data.priceMethod != "EMPTY" ||
+              updatePriceId.data.priceMethod != "" ||
+              updatePriceId.data.priceMethod != null) ? {
+              label: updatePriceId.data.priceMethod,
+              value: updatePriceId.data.priceMethod
+            } : "",
+            priceType: (updatePriceId.data.priceType != "EMPTY" ||
+              updatePriceId.data.priceType != "" ||
+              updatePriceId.data.priceType != null) ? {
+              label: updatePriceId.data.priceType,
+              value: updatePriceId.data.priceType
+            } : "",
+            priceAdditionalSelect: {
+              label: (updatePriceId.data.additionalPriceType != "" ||
+                updatePriceId.data.additionalPriceType != null) ? updatePriceId.data.additionalPriceType : "ABSOLUTE",
+              value: (updatePriceId.data.additionalPriceType != "" ||
+                updatePriceId.data.additionalPriceType != null) ? updatePriceId.data.additionalPriceType : "ABSOLUTE"
+            },
+            priceAdditionalInput: updatePriceId.data.additionalPriceValue,
+            discountTypeSelect: (updatePriceId.data.discountType != "EMPTY" ||
+              updatePriceId.data.discountType != "" ||
+              updatePriceId.data.discountType != null) ? {
+              label: updatePriceId.data.discountType,
+              value: updatePriceId.data.discountType
+            } : "",
+            discountTypeInput: updatePriceId.data.discountValue,
+
+            year: { label: updatePriceId.data.year, value: updatePriceId.data.year, },
+
+            noOfYear: updatePriceId.data.noOfYear,
+            startUsage: updatePriceId.data.startUsage,
+            endUsage: updatePriceId.data.endUsage,
+            recommendedValue: updatePriceId.data.recommendedValue,
+            netPrice: updatePriceId.data.netService,
+            totalPrice: updatePriceId.data.totalPrice,
+            id: updatePriceId.data.itemPriceDataId,
+            numberOfEvents: updatePriceId.data.numberOfEvents,
+            portfolioDataId: updatePriceId.data.portfolio.portfolioId,
+
+            flatPrice: updatePriceId.data.flatPrice ? parseInt(updatePriceId.data.flatPrice) : 0,
+
+            escalationPriceOptionsValue1: (updatePriceId.data.priceEscalation != "" ? {
+              label: updatePriceId.data.priceEscalation,
+              value: updatePriceId.data.priceEscalation,
+            } : ""),
+            escalationPriceOptionsValue: (updatePriceId.data.priceEscalation != "" ?
+              updatePriceId.data.priceEscalation : ""),
+            escalationPriceInputValue: (updatePriceId.data.priceEscalation == "" ? "" :
+              updatePriceId.data.priceEscalation === "PARTS" ? updatePriceId.data.sparePartsEscalation :
+                updatePriceId.data.priceEscalation === "LABOR" ? updatePriceId.data.labourEscalation :
+                  updatePriceId.data.priceEscalation === "MISCELLANEOUS" ? updatePriceId.data.miscEscalation :
+                    updatePriceId.data.priceEscalation === "SERVICE" ? updatePriceId.data.serviceEscalation : ""),
+
+            priceBreakDownOptionsKeyValue: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ?
+              "PARTS" : updatePriceId.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                updatePriceId.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+            priceBreakDownInputValue: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ?
+              updatePriceId.data.sparePartsPriceBreakDownPercentage :
+              updatePriceId.data.labourPriceBreakDownPercentage != 0 ?
+                updatePriceId.data.labourPriceBreakDownPercentage :
+                updatePriceId.data.miscPriceBreakDownPercentage != 0 ?
+                  updatePriceId.data.miscPriceBreakDownPercentage : 0,
+
+            priceBreakDownOptionsKeyValue1: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ? {
+              label: "PARTS",
+              value: "PARTS",
+            } : updatePriceId.data.labourPriceBreakDownPercentage != 0 ? {
+              label: "LABOR",
+              value: "LABOR",
+            } : updatePriceId.data.miscPriceBreakDownPercentage != 0 ? {
+              label: "MISCELLANEOUS",
+              value: "MISCELLANEOUS",
+            } : "",
+
+            currency: ((passItemEditRowData?.itemHeaderModel?.currency != "")) ? {
+              label: passItemEditRowData?.itemHeaderModel?.currency,
+              value: passItemEditRowData?.itemHeaderModel?.currency
+            } : "",
+            unit: addPortFolioItem?.unit,
+            frequency: addPortFolioItem?.frequency,
+            usageType: addPortFolioItem?.usageType,
+          })
+
         }
+
+        setAddportFolioItem(addPortFolioItem)
 
         let reqObj = {
           itemId: parseInt(addPortFolioItem.id),
@@ -3095,10 +3667,10 @@ export function CreatePortfolio(props) {
             withBundleService: (bundleServiceNeed ? false : true),
             portfolioItemId: passItemEditRowData?.itemHeaderModel?.portfolioItemId,
             reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
-            itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
-            itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
-            model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
-            prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
+            itemHeaderMake: componentData.make ? componentData?.make : "",
+            itemHeaderFamily: componentData?.family ? componentData?.family : "",
+            model: componentData?.model ? componentData?.model : "",
+            prefix: componentData?.prefix ? componentData?.prefix : "",
             type: passItemEditRowData?.itemHeaderModel?.type,
             additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
             currency: passItemEditRowData?.itemHeaderModel?.currency,
@@ -3112,9 +3684,9 @@ export function CreatePortfolio(props) {
             estimatedTime: passItemEditRowData?.itemHeaderModel?.estimatedTime,
             servicePrice: passItemEditRowData?.itemHeaderModel?.servicePrice,
             status: "DRAFT",
-            componentCode: passItemEditRowData?.itemHeaderModel?.componentCode,
-            componentDescription: passItemEditRowData?.itemHeaderModel?.componentDescription,
-            serialNumber: passItemEditRowData?.itemHeaderModel?.serialNumber,
+            componentCode: componentData?.componentCode,
+            componentDescription: componentData?.description,
+            serialNumber: componentData?.serialNo,
             itemHeaderStrategy: addPortFolioItem?.strategyTask != "" ?
               addPortFolioItem?.strategyTask : "PREVENTIVE_MAINTENANCE",
             variant: passItemEditRowData?.itemHeaderModel?.variant,
@@ -3140,7 +3712,7 @@ export function CreatePortfolio(props) {
             taskType: addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["PM1"],
             solutionCode: passItemEditRowData?.itemBodyModel?.solutionCode,
             usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "REPAIR_OR_REPLACE",
-            usage: passItemEditRowData?.itemBodyModel?.usage,
+            usage: addPortFolioItem.usageType != "" ? addPortFolioItem.usageType?.value : "",
             year: addPortFolioItem.year?.value ? addPortFolioItem.year?.value : "",
             avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
             unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
@@ -3274,28 +3846,178 @@ export function CreatePortfolio(props) {
     setCreateNewBundle(false);
   };
 
-  const handleEditPortfolioItem = (e, row) => {
+  const handleEditPortfolioItem = async (e, row) => {
 
-    console.log("row 1942 : ", row);
-    setTempBundleService3(row.associatedServiceOrBundle)
+    const fetchItemDetailsById = await getItemDataById(row.itemId);
+    if (fetchItemDetailsById.status === 200) {
 
-    setComponentData({
-      ...componentData,
-      componentCode: row.itemHeaderModel.componentCode,
-      description: row.itemHeaderModel.componentDescription,
-      model: row.itemHeaderModel.model,
-      make: row.itemHeaderModel.itemHeaderMake,
-      serialNo: row.itemHeaderModel.serialNumber,
-    });
-    // data.associatedServiceOrBundle?.map((bundleAndService, i)
-    setTabs("1");
-    setItemModelShow(true);
-    setPortfolioItemDataEditable(true);
-    setPassItemEditRowData({ ...row, _itemId: row.itemId });
+      // const  newRowData = getItemDataById(row.itemId);
+      const newRowData = fetchItemDetailsById.data;
 
-    setOpenSearchSolution(false);
-    setCreateNewBundle(false);
-    setOpenAddBundleItemHeader("Add New Portfolio Item");
+      console.log("row 1942 : ", row);
+      console.log("newRowData 1942 : ", newRowData);
+
+      if (newRowData.itemBodyModel.itemPrices.length > 0) {
+
+        const resPrice = await getItemPriceData(newRowData.itemBodyModel.itemPrices[0].itemPriceDataId)
+        setPriceCalculator({
+          ...priceCalculator,
+          calculatedPrice: resPrice.data.calculatedPrice,
+          priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+            resPrice.data.priceMethod != "" ||
+            resPrice.data.priceMethod != null) ? {
+            label: resPrice.data.priceMethod,
+            value: resPrice.data.priceMethod
+          } : "",
+          priceType: (resPrice.data.priceType != "EMPTY" ||
+            resPrice.data.priceType != "" ||
+            resPrice.data.priceType != null) ? {
+            label: resPrice.data.priceType,
+            value: resPrice.data.priceType
+          } : "",
+          priceAdditionalSelect: {
+            label: (resPrice.data.additionalPriceType != "" ||
+              resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
+            value: (resPrice.data.additionalPriceType != "" ||
+              resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
+          },
+          priceAdditionalInput: resPrice.data.additionalPriceValue,
+          discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+            resPrice.data.discountType != "" ||
+            resPrice.data.discountType != null) ? {
+            label: resPrice.data.discountType,
+            value: resPrice.data.discountType
+          } : "",
+          discountTypeInput: resPrice.data.discountValue,
+
+          year: { label: resPrice.data.year, value: resPrice.data.year, },
+
+          noOfYear: resPrice.data.noOfYear,
+          startUsage: resPrice.data.startUsage,
+          endUsage: resPrice.data.endUsage,
+          recommendedValue: resPrice.data.recommendedValue,
+          netPrice: resPrice.data.netService,
+          totalPrice: resPrice.data.totalPrice,
+          id: resPrice.data.itemPriceDataId,
+          numberOfEvents: resPrice.data.numberOfEvents,
+          portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+          flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+          escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+            label: resPrice.data.priceEscalation,
+            value: resPrice.data.priceEscalation,
+          } : ""),
+          escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+            resPrice.data.priceEscalation : ""),
+          escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+            resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+              resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                  resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+          priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+          priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            resPrice.data.sparePartsPriceBreakDownPercentage :
+            resPrice.data.labourPriceBreakDownPercentage != 0 ?
+              resPrice.data.labourPriceBreakDownPercentage :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                resPrice.data.miscPriceBreakDownPercentage : 0,
+
+          priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+            label: "PARTS",
+            value: "PARTS",
+          } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+            label: "LABOR",
+            value: "LABOR",
+          } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+            label: "MISCELLANEOUS",
+            value: "MISCELLANEOUS",
+          } : "",
+
+          currency: ((newRowData?.itemHeaderModel?.currency != "")) ? {
+            label: newRowData?.itemHeaderModel?.currency,
+            value: newRowData?.itemHeaderModel?.currency
+          } : "",
+          unit: ((newRowData?.itemBodyModel?.unit != "")) ? {
+            label: newRowData?.itemBodyModel?.unit,
+            value: newRowData?.itemBodyModel?.unit
+          } : "",
+          frequency: (newRowData?.itemBodyModel?.frequency != "") ? {
+            label: newRowData?.itemBodyModel?.frequency,
+            value: newRowData?.itemBodyModel?.frequency
+          } : "",
+          usageType: ((newRowData?.itemBodyModel?.usage != "")) ? {
+            label: newRowData?.itemBodyModel?.usage,
+            value: newRowData?.itemBodyModel?.usage
+          } : "",
+
+        });
+      }
+
+      setAddportFolioItem({
+        ...addPortFolioItem,
+        currency: ((newRowData?.itemHeaderModel?.currency != "")) ? {
+          label: newRowData?.itemHeaderModel?.currency,
+          value: newRowData?.itemHeaderModel?.currency
+        } : "",
+        unit: ((newRowData?.itemBodyModel?.unit != "")) ? {
+          label: newRowData?.itemBodyModel?.unit,
+          value: newRowData?.itemBodyModel?.unit
+        } : "",
+        frequency: (newRowData?.itemBodyModel?.frequency != "") ? {
+          label: newRowData?.itemBodyModel?.frequency,
+          value: newRowData?.itemBodyModel?.frequency
+        } : "",
+        usageType: ((newRowData?.itemBodyModel?.usage != "")) ? {
+          label: newRowData?.itemBodyModel?.usage,
+          value: newRowData?.itemBodyModel?.usage
+        } : "",
+        year: {
+          label: newRowData.itemBodyModel.year
+          , value: newRowData.itemBodyModel.year
+        },
+      });
+
+      setTempBundleService3(row.associatedServiceOrBundle)
+
+
+
+      // setComponentData({
+      //   ...componentData,
+      //   componentCode: row.itemHeaderModel.componentCode,
+      //   description: row.itemHeaderModel.componentDescription,
+      //   model: row.itemHeaderModel.model,
+      //   make: row.itemHeaderModel.itemHeaderMake,
+      //   serialNo: row.itemHeaderModel.serialNumber,
+      // });
+      // setTabs("1");
+      // setPassItemEditRowData({ ...row, _itemId: row.itemId });
+
+
+      setComponentData({
+        ...componentData,
+        componentCode: newRowData.itemHeaderModel.componentCode,
+        description: newRowData.itemHeaderModel.componentDescription,
+        model: newRowData.itemHeaderModel.model,
+        make: newRowData.itemHeaderModel.itemHeaderMake,
+        serialNo: newRowData.itemHeaderModel.serialNumber,
+      });
+
+      setTabs("1");
+      setPassItemEditRowData({ ...newRowData, _itemId: newRowData.itemId });
+
+      setOpenSearchSolution(false);
+      setCreateNewBundle(false);
+      setPortfolioItemDataEditable(true);
+      setPortfolioItemPriceEditable(true);
+      setItemModelShow(true);
+
+      setOpenAddBundleItemHeader("Add New Portfolio Item");
+    }
+
   }
 
   const handleNewBundleItem = () => {
@@ -3341,10 +4063,33 @@ export function CreatePortfolio(props) {
 
         const _bundleItems = [...bundleItems];
         const updated = _bundleItems.filter((currentItem) => {
-          if (currentItem.id !== row.id) {
+          if (currentItem.itemId !== row.itemId) {
             return currentItem;
           }
         });
+
+        const _portfolioItems = [...portfolioItems];
+        let newPortfolioItemsArray = [];
+        const newPortfolioItemsRowData = _portfolioItems.filter((currentItemData) => {
+          if (currentItemData.itemId !== row.itemId) {
+            newPortfolioItemsArray.push(currentItemData);
+          }
+        })
+        if (row.associatedServiceOrBundle) {
+          if (row.associatedServiceOrBundle.length > 0) {
+            let newArray = row.associatedServiceOrBundle.map((currentBundleService, i) => {
+              _portfolioItems.filter((currentBundleServiceItemData) => {
+                if (currentBundleServiceItemData.itemId !== currentBundleService.itemId) {
+                  newPortfolioItemsArray.push(currentBundleServiceItemData);
+                }
+              });
+            });
+          }
+        }
+
+        setPortfolioItems(newPortfolioItemsArray);
+        // itemId
+
         setBundleItems(updated);
         setServiceOrBundlePrefix("");
       }
@@ -3623,10 +4368,6 @@ export function CreatePortfolio(props) {
   const handleNextClick = async (e) => {
     try {
       if (e.target.id == "general") {
-        console.log("state general : ", state)
-        console.log("state.type general : ", state.type)
-
-
         if (prefilgabelGeneral === "") {
           throw "Select Type is a required field, you can’t leave it blank";
         }
@@ -3957,8 +4698,9 @@ export function CreatePortfolio(props) {
         }
         console.log("state validity : ", state)
         console.log("state.type validity : ", state.type)
+        console.log("validityData: --------- ", validityData)
         let reqData;
-        var diff = validityData.toDate.getTime() - validityData.fromDate.getTime();
+        // var diff = validityData.toDate.getTime() - validityData.fromDate.getTime();
 
         // var daydiff = diff / (1000 * 60 * 60 * 24);
         // console.log("difference between dates : ", daydiff);
@@ -3978,8 +4720,10 @@ export function CreatePortfolio(props) {
             validityData.dateFlag
           ) {
             reqData = {
-              validFrom: validityData.fromDate.toISOString().substring(0, 10),
-              validTo: validityData.toDate.toISOString().substring(0, 10),
+              // validFrom: validityData.fromDate.toISOString().substring(0, 10),
+              // validTo: validityData.toDate.toISOString().substring(0, 10),
+              validFrom: validityData.fromDate,
+              validTo: validityData.toDate,
             };
           } else {
             throw "Please fill date fields";
@@ -5656,56 +6400,63 @@ export function CreatePortfolio(props) {
           } else {
             verNewValue = versionObj.supportLevel;
           }
-          let createNewVersionObj = {
-            portfolioId: 0,
-            name: newVersionName,
-            description: versionObj.description,
-            machineType: versionObj.machineType,
-            searchTerm: versionObj.searchTerm,
-            lubricant: versionObj.lubricant,
-            customerId: versionObj.customerId,
-            customerGroup: versionObj.customerGroup,
-            customerSegment: versionObj.customerSegment,
-            externalReference: versionObj.externalReference,
-            status: versionObj.status,
-            validFrom: versionObj.validFrom,
-            validTo: versionObj.validTo,
-            strategyTask: versionObj.strategyTask,
-            taskType: versionObj.taskType,
-            usageCategory: versionObj.usageCategory,
-            productHierarchy: versionObj.productHierarchy,
-            geographic: versionObj.geographic,
-            availability: versionObj.availability,
-            responseTime: versionObj.responseTime,
-            type: versionObj.type,
-            application: versionObj.application,
-            contractOrSupport: versionObj.contractOrSupport,
-            lifeStageOfMachine: versionObj.lifeStageOfMachine,
-            supportLevel: verNewValue,
-            numberOfEvents: versionObj.numberOfEvents,
-            itemRelations: versionObj.itemRelations,
-            rating: versionObj.rating,
-            startUsage: versionObj.startUsage,
-            endUsage: versionObj.endUsage,
-            unit: versionObj.unit,
-            additionals: versionObj.additional,
-            preparedBy: versionObj.preparedBy,
-            approvedBy: versionObj.approvedBy,
-            preparedOn: versionObj.preparedOn,
-            revisedBy: versionObj.revisedBy,
-            revisedOn: versionObj.revisedOn,
-            salesOffice: versionObj.salesOffice,
-            offerValidity: versionObj.offerValidity,
-            items: versionObj.items,
-            coverages: versionObj.coverages,
-            portfolioPrice: versionObj.portfolioPrice,
-            additionalPrice: versionObj.additionalPrice,
-            escalationPrice: versionObj.escalationPrice,
-            saveState: versionObj.saveState,
-            userId: versionObj.userId,
-            template: versionObj.template,
-            visibleInCommerce: versionObj.visibleInCommerce,
-          }
+
+          // if (verNewValue === "PREMIUM") {
+          //   throw "All Versions already Created";
+          // } else {
+          // }
+          // if (verNewValue !== versionValue)
+            let createNewVersionObj = {
+              portfolioId: 0,
+              name: newVersionName,
+              description: versionObj.description,
+              machineType: versionObj.machineType,
+              searchTerm: versionObj.searchTerm,
+              lubricant: versionObj.lubricant,
+              customerId: versionObj.customerId,
+              customerGroup: versionObj.customerGroup,
+              customerSegment: versionObj.customerSegment,
+              externalReference: versionObj.externalReference,
+              status: versionObj.status,
+              validFrom: versionObj.validFrom,
+              validTo: versionObj.validTo,
+              strategyTask: versionObj.strategyTask,
+              taskType: versionObj.taskType,
+              usageCategory: versionObj.usageCategory,
+              productHierarchy: versionObj.productHierarchy,
+              geographic: versionObj.geographic,
+              availability: versionObj.availability,
+              responseTime: versionObj.responseTime,
+              type: versionObj.type,
+              application: versionObj.application,
+              contractOrSupport: versionObj.contractOrSupport,
+              lifeStageOfMachine: versionObj.lifeStageOfMachine,
+              // supportLevel: verNewValue,
+              supportLevel: versionValue.value,
+              numberOfEvents: versionObj.numberOfEvents,
+              itemRelations: versionObj.itemRelations,
+              rating: versionObj.rating,
+              startUsage: versionObj.startUsage,
+              endUsage: versionObj.endUsage,
+              unit: versionObj.unit,
+              additionals: versionObj.additional,
+              preparedBy: versionObj.preparedBy,
+              approvedBy: versionObj.approvedBy,
+              preparedOn: versionObj.preparedOn,
+              revisedBy: versionObj.revisedBy,
+              revisedOn: versionObj.revisedOn,
+              salesOffice: versionObj.salesOffice,
+              offerValidity: versionObj.offerValidity,
+              items: versionObj.items,
+              coverages: versionObj.coverages,
+              portfolioPrice: versionObj.portfolioPrice,
+              additionalPrice: versionObj.additionalPrice,
+              escalationPrice: versionObj.escalationPrice,
+              saveState: versionObj.saveState,
+              userId: versionObj.userId,
+              template: versionObj.template,
+              visibleInCommerce: versionObj.visibleInCommerce,
+            }
 
           const portfolioRes = await createPortfolio(createNewVersionObj);
           if (portfolioRes.status === 200) {
@@ -5824,7 +6575,8 @@ export function CreatePortfolio(props) {
       description: result.description,
       serviceDescription: "",
       externalReference: result.externalReference,
-      customerSegment: { label: result.customerSegment, value: result.customerSegment },
+      customerSegment: result.customerSegment !== "" ?
+        { label: result.customerSegment, value: result.customerSegment } : "",
       items: result.items,
       coverages: result.coverages,
     })
@@ -5837,6 +6589,9 @@ export function CreatePortfolio(props) {
       to: null,
       fromInput: "",
       toInput: "",
+      inputFlag: false,
+      dateFlag: true,
+      inputFlag: false,
     })
 
     // set Category Usage Key-Value 
@@ -6041,31 +6796,31 @@ export function CreatePortfolio(props) {
     // set Coverage Master Data 
     setSelectedMasterData(result.coverages);
 
-    if (Object.keys(result.additionalPrice).length > 0) {
-      setAdditionalPriceValue(result.additionalPrice.additionalPercentage);
-      setPriceAdditionalHeadKeyValue1(
-        {
-          label: result.additionalPrice.priceHeadType,
-          value: result.additionalPrice.priceHeadType
-        }
-      );
-      setAdditionalPriceDataId(result.additionalPrice.additionalPriceId);
-      setPortfolioAdditionalPriceDataId({
-        additionalPriceId: result.additionalPrice.additionalPriceId,
-      })
-    }
+    // if (Object.keys(result.additionalPrice).length > 0) {
+    //   setAdditionalPriceValue(result.additionalPrice.additionalPercentage);
+    //   setPriceAdditionalHeadKeyValue1(
+    //     {
+    //       label: result.additionalPrice.priceHeadType,
+    //       value: result.additionalPrice.priceHeadType
+    //     }
+    //   );
+    //   setAdditionalPriceDataId(result.additionalPrice.additionalPriceId);
+    //   setPortfolioAdditionalPriceDataId({
+    //     additionalPriceId: result.additionalPrice.additionalPriceId,
+    //   })
+    // }
 
-    if (Object.keys(result.escalationPrice).length > 0) {
-      setEscalationPriceValue(result.escalationPrice.escalationPercentage);
-      setPriceEscalationHeadKeyValue1({
-        label: result.escalationPrice.priceHeadType,
-        value: result.escalationPrice.priceHeadType
-      });
-      setEscalationPriceDataId(result.escalationPrice.escalationPriceId);
-      setPortfolioEscalationPriceDataId({
-        escalationPriceId: result.escalationPrice.escalationPriceId,
-      })
-    }
+    // if (Object.keys(result.escalationPrice).length > 0) {
+    //   setEscalationPriceValue(result.escalationPrice.escalationPercentage);
+    //   setPriceEscalationHeadKeyValue1({
+    //     label: result.escalationPrice.priceHeadType,
+    //     value: result.escalationPrice.priceHeadType
+    //   });
+    //   setEscalationPriceDataId(result.escalationPrice.escalationPriceId);
+    //   setPortfolioEscalationPriceDataId({
+    //     escalationPriceId: result.escalationPrice.escalationPriceId,
+    //   })
+    // }
 
     if (Object.keys(result.portfolioPrice).length > 0) {
 
@@ -6225,6 +6980,7 @@ export function CreatePortfolio(props) {
   };
 
   const initFetch = () => {
+    setOptionalServiceListLoading(true);
     setHeaderTypeKeyValue([
       {
         label: "PORTFOLIO",
@@ -6565,6 +7321,11 @@ export function CreatePortfolio(props) {
 
     getServiceItemsList()
       .then((res) => {
+        setOptionalServiceListLoading(true);
+        if (res.status === 200) {
+          setOptionalServiceListData(res.data)
+        }
+        setOptionalServiceListLoading(false);
         const options = []
         // res.map((d) => {
         //   if (d.key != "EMPTY") {
@@ -6575,7 +7336,6 @@ export function CreatePortfolio(props) {
         //   }
         // });
         // setStatusOption(options);
-        setOptionalServiceListData(res)
       })
       .catch((err) => {
         alert(err);
@@ -6922,9 +7682,13 @@ export function CreatePortfolio(props) {
   // Create New Service/Bundle
 
   const handleCreateChange = (e) => {
+    setBundleOrServiceEditOrNot(false);
+    setCreatedServiceData("");
+    setBundleOrServiceItemPriceData({});
     setServiceBundleStatus({ value: "DRAFT", label: "Draft" });
     setServiceBundleSupportLevel({ value: "STANDARD", label: "Standard (Bronze)" });
     setValue4({ value: "chargeable", label: "Chargeable" });
+    setSelectedCustomerSegmentOption("");
 
     if (e.value === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
@@ -6947,16 +7711,8 @@ export function CreatePortfolio(props) {
         machineComponent: "",
       });
 
-      setAdministrative({
-        preparedBy: "",
-        approvedBy: "",
-        preparedOn: new Date(),
-        revisedBy: "",
-        revisedOn: new Date(),
-        salesOffice: "",
-        offerValidity: "",
-      });
-      setItemPriceData({});
+      // setItemPriceData({});
+      setBundleOrServiceItemPriceData({});
 
       setQuerySearchModelPrefixOption([]);
       setSelectedPrefixOption("");
@@ -6997,15 +7753,8 @@ export function CreatePortfolio(props) {
         additional: "",
         machineComponent: "",
       });
-      setAdministrative({
-        preparedBy: "",
-        approvedBy: "",
-        preparedOn: new Date(),
-        revisedBy: "",
-        revisedOn: new Date(),
-        salesOffice: "",
-        offerValidity: "",
-      });
+
+      setBundleOrServiceItemPriceData({});
       setBundleOrServiceAdministrative({
         preparedBy: null,
         approvedBy: null,
@@ -8172,18 +8921,47 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Solution Id</div>
+          <div className="d-flex align-items-baseline">
+            <span className="portfolio-icon mr-1">
+              <svg style={{ width: "11px" }}
+                id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 119.30736 133.59966"
+              >
+                <path
+                  className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                  d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+                />
+              </svg>
+            </span>
+            <p className="mb-0 font-size-12 font-weight-500">Solution Sequence</p>
+          </div>
         </>
       ),
-      selector: (row) => row.itemId,
+      selector: (row, i) => ((i + 1) * 10), // row.itemId,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemId,
+      format: (row, i) => ((i + 1) * 10), // row.itemId,
     },
     {
       name: (
         <>
-          <div>Description</div>
+          <div>Solution Id</div>
+        </>
+      ),
+      // selector: (row) => row.itemId,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemId,
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Solution Description</div>
         </>
       ),
       selector: (row) => row.itemHeaderModel.itemHeaderDescription,
@@ -8229,7 +9007,7 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Net Price</div>
+          <div>Unit Price (per one)</div>
         </>
       ),
       selector: (row) => row.itemHeaderModel?.netPrice,
@@ -8240,40 +9018,73 @@ export function CreatePortfolio(props) {
     {
       name: (
         <>
-          <div>Net Additional</div>
+          <div>Net Parts</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.additional,
+      selector: (row) => row.itemBodyModel?.partsprice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.additional,
+      format: (row) => row.itemBodyModel?.partsprice,
     },
     {
       name: (
         <>
-          <div>Net Parts Price</div>
+          <div>Net Service</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.partsprice,
+      selector: (row) => row.itemBodyModel?.servicePrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.partsprice,
+      format: (row) => row.itemBodyModel?.servicePrice,
     },
     {
       name: (
         <>
-          <div>Net Service Price</div>
+          <div>Net Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.servicePrice,
+      selector: (row) => row.itemHeaderModel?.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.servicePrice,
+      format: (row) => row.itemHeaderModel?.netPrice,
     },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Additional</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel.additional,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel.additional,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Parts Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel?.partsprice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel?.partsprice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Service Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel?.servicePrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel?.servicePrice,
+    // },
     {
       name: (
         <>
-          <div>Total Price</div>
+          <div>Total $</div>
         </>
       ),
       selector: (row) => row.itemBodyModel?.totalPrice,
@@ -8875,98 +9686,101 @@ export function CreatePortfolio(props) {
         }
 
         if (editBundleService) {
-          if (isActiveStatus) {
+          if (bundleOrServiceEditOrNot) {
             setBundleTabs("bundleServicePriceCalculator")
           } else {
-            if (bundleAndServiceEditAble) {
+            if (isActiveStatus) {
               setBundleTabs("bundleServicePriceCalculator")
             } else {
-              let reqObj = {
-                itemId: parseInt(createServiceOrBundle.id),
-                itemName: createServiceOrBundle.name,
-                itemHeaderModel: {
-                  itemHeaderId: passItemEditRowData?.itemHeaderModel?.itemHeaderId,
-                  itemHeaderDescription: createServiceOrBundle.description,
-                  bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
-                  withBundleService: passItemEditRowData?.itemHeaderModel?.withBundleService,
-                  portfolioItemId: passItemEditRowData?.itemHeaderModel?.portfolioItemId,
-                  reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
-                  itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
-                  itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
-                  model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
-                  prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
-                  type: passItemEditRowData?.itemHeaderModel?.type,
-                  additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
-                  currency: passItemEditRowData?.itemHeaderModel?.currency,
-                  netPrice: passItemEditRowData?.itemHeaderModel?.netPrice,
-                  itemProductHierarchy: passItemEditRowData?.itemHeaderModel?.itemProductHierarchy,
-                  itemHeaderGeographic: passItemEditRowData?.itemHeaderModel?.itemHeaderGeographic,
-                  responseTime: passItemEditRowData?.itemHeaderModel?.responseTime,
-                  usage: passItemEditRowData?.itemHeaderModel?.responseTime,
-                  validFrom: validityData?.fromDate ? validityData?.fromDate : "",
-                  validTo: validityData?.toDate ? validityData?.toDate : "",
-                  estimatedTime: passItemEditRowData?.itemHeaderModel?.estimatedTime,
-                  servicePrice: passItemEditRowData?.itemHeaderModel?.servicePrice,
-                  status: "DRAFT",
-                  componentCode: passItemEditRowData?.itemHeaderModel?.componentCode,
-                  componentDescription: passItemEditRowData?.itemHeaderModel?.componentDescription,
-                  serialNumber: passItemEditRowData?.itemHeaderModel?.serialNumber,
-                  itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" && addPortFolioItem?.strategyTask != "" ?
-                    addPortFolioItem?.strategyTask : "EMPTY",
-                  variant: passItemEditRowData?.itemHeaderModel?.variant,
-                  itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
-                    ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
-                  jobCode: passItemEditRowData?.itemHeaderModel?.jobCode,
-                  preparedBy: bundleOrServiceAdministrative?.preparedBy ? bundleOrServiceAdministrative?.preparedBy : "",
-                  approvedBy: bundleOrServiceAdministrative?.approvedBy ? bundleOrServiceAdministrative?.approvedBy : "",
-                  preparedOn: bundleOrServiceAdministrative?.preparedOn ? bundleOrServiceAdministrative?.preparedOn : "",
-                  revisedBy: bundleOrServiceAdministrative?.revisedBy ? bundleOrServiceAdministrative?.revisedBy : "",
-                  revisedOn: bundleOrServiceAdministrative?.revisedOn ? bundleOrServiceAdministrative?.revisedOn : "",
-                  salesOffice: bundleOrServiceAdministrative.salesOffice?.value ? bundleOrServiceAdministrative.salesOffice?.value : "",
-                  offerValidity: bundleOrServiceAdministrative.offerValidity?.value ? bundleOrServiceAdministrative.offerValidity?.value : "",
-                  serviceChargable: passItemEditRowData.itemHeaderModel.serviceChargable,
-                  serviceOptional: passItemEditRowData.itemHeaderModel.serviceOptional,
-                },
-                itemBodyModel: {
-                  itemBodyId: passItemEditRowData?.itemBodyModel?.itemBodyId,
-                  itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
-                  spareParts: passItemEditRowData?.itemBodyModel?.spareParts,
-                  labours: passItemEditRowData?.itemBodyModel?.labours,
-                  miscellaneous: passItemEditRowData?.itemBodyModel?.miscellaneous,
-                  taskType: serviceOrBundlePrefix === "BUNDLE" && addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["EMPTY"],
-                  solutionCode: passItemEditRowData?.itemBodyModel?.solutionCode,
-                  usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "REPAIR_OR_REPLACE",
-                  usage: passItemEditRowData?.itemBodyModel?.usage,
-                  year: passItemEditRowData?.itemBodyModel?.year,
-                  avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
-                  unit: passItemEditRowData?.itemBodyModel?.unit,
-                  frequency: passItemEditRowData?.itemBodyModel?.frequency,
-                  recommendedValue: parseInt(passItemEditRowData?.itemBodyModel?.recommendedValue),
-                  // itemPrices: serviceOrBundlePrefix === "BUNDLE" ?
-                  //   bundleServiceItemPriceData : [],
-                  itemPrices: bundleServiceItemPriceData.length > 0 ? bundleServiceItemPriceData : [],
-                },
-              }
-
-              const res = await updateItemData(createServiceOrBundle.id, reqObj);
-              if (res.status === 200) {
-                toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
-                  position: "top-right",
-                  autoClose: 3000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                });
-                setCreatedServiceData(res.data);
-                setUpdatedServiceBundleItemData(res.data);
+              if (bundleAndServiceEditAble) {
                 setBundleTabs("bundleServicePriceCalculator")
+              } else {
+                let reqObj = {
+                  itemId: parseInt(createServiceOrBundle.id),
+                  itemName: createServiceOrBundle.name,
+                  itemHeaderModel: {
+                    itemHeaderId: passItemEditRowData?.itemHeaderModel?.itemHeaderId,
+                    itemHeaderDescription: createServiceOrBundle.description,
+                    bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+                    withBundleService: passItemEditRowData?.itemHeaderModel?.withBundleService,
+                    portfolioItemId: passItemEditRowData?.itemHeaderModel?.portfolioItemId,
+                    reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
+                    itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
+                    itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
+                    model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
+                    prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
+                    type: passItemEditRowData?.itemHeaderModel?.type,
+                    additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
+                    currency: passItemEditRowData?.itemHeaderModel?.currency,
+                    netPrice: passItemEditRowData?.itemHeaderModel?.netPrice,
+                    itemProductHierarchy: passItemEditRowData?.itemHeaderModel?.itemProductHierarchy,
+                    itemHeaderGeographic: passItemEditRowData?.itemHeaderModel?.itemHeaderGeographic,
+                    responseTime: passItemEditRowData?.itemHeaderModel?.responseTime,
+                    usage: passItemEditRowData?.itemHeaderModel?.responseTime,
+                    validFrom: validityData?.fromDate ? validityData?.fromDate : "",
+                    validTo: validityData?.toDate ? validityData?.toDate : "",
+                    estimatedTime: passItemEditRowData?.itemHeaderModel?.estimatedTime,
+                    servicePrice: passItemEditRowData?.itemHeaderModel?.servicePrice,
+                    status: "DRAFT",
+                    componentCode: passItemEditRowData?.itemHeaderModel?.componentCode,
+                    componentDescription: passItemEditRowData?.itemHeaderModel?.componentDescription,
+                    serialNumber: passItemEditRowData?.itemHeaderModel?.serialNumber,
+                    itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" && addPortFolioItem?.strategyTask != "" ?
+                      addPortFolioItem?.strategyTask : "EMPTY",
+                    variant: passItemEditRowData?.itemHeaderModel?.variant,
+                    itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
+                      ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+                    jobCode: passItemEditRowData?.itemHeaderModel?.jobCode,
+                    preparedBy: bundleOrServiceAdministrative?.preparedBy ? bundleOrServiceAdministrative?.preparedBy : "",
+                    approvedBy: bundleOrServiceAdministrative?.approvedBy ? bundleOrServiceAdministrative?.approvedBy : "",
+                    preparedOn: bundleOrServiceAdministrative?.preparedOn ? bundleOrServiceAdministrative?.preparedOn : "",
+                    revisedBy: bundleOrServiceAdministrative?.revisedBy ? bundleOrServiceAdministrative?.revisedBy : "",
+                    revisedOn: bundleOrServiceAdministrative?.revisedOn ? bundleOrServiceAdministrative?.revisedOn : "",
+                    salesOffice: bundleOrServiceAdministrative.salesOffice?.value ? bundleOrServiceAdministrative.salesOffice?.value : "",
+                    offerValidity: bundleOrServiceAdministrative.offerValidity?.value ? bundleOrServiceAdministrative.offerValidity?.value : "",
+                    serviceChargable: passItemEditRowData.itemHeaderModel.serviceChargable,
+                    serviceOptional: passItemEditRowData.itemHeaderModel.serviceOptional,
+                  },
+                  itemBodyModel: {
+                    itemBodyId: passItemEditRowData?.itemBodyModel?.itemBodyId,
+                    itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+                    spareParts: passItemEditRowData?.itemBodyModel?.spareParts,
+                    labours: passItemEditRowData?.itemBodyModel?.labours,
+                    miscellaneous: passItemEditRowData?.itemBodyModel?.miscellaneous,
+                    taskType: serviceOrBundlePrefix === "BUNDLE" && addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["EMPTY"],
+                    solutionCode: passItemEditRowData?.itemBodyModel?.solutionCode,
+                    usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "REPAIR_OR_REPLACE",
+                    usage: passItemEditRowData?.itemBodyModel?.usage,
+                    year: passItemEditRowData?.itemBodyModel?.year,
+                    avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
+                    unit: passItemEditRowData?.itemBodyModel?.unit,
+                    frequency: passItemEditRowData?.itemBodyModel?.frequency,
+                    recommendedValue: parseInt(passItemEditRowData?.itemBodyModel?.recommendedValue),
+                    // itemPrices: serviceOrBundlePrefix === "BUNDLE" ?
+                    //   bundleServiceItemPriceData : [],
+                    itemPrices: bundleServiceItemPriceData.length > 0 ? bundleServiceItemPriceData : [],
+                  },
+                }
+
+                const res = await updateItemData(createServiceOrBundle.id, reqObj);
+                if (res.status === 200) {
+                  toast("😎" + `Service ${createServiceOrBundle.name} updated successfully`, {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                  });
+                  setCreatedServiceData(res.data);
+                  setUpdatedServiceBundleItemData(res.data);
+                  setBundleTabs("bundleServicePriceCalculator")
+                }
               }
+
             }
-
           }
-
         } else {
 
           let reqObj = {
@@ -8985,21 +9799,21 @@ export function CreatePortfolio(props) {
               prefix: createServiceOrBundle.prefix?.value ? createServiceOrBundle.prefix?.value : "",
               type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
               additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
-              currency: addPortFolioItem.currency ? addPortFolioItem.currency?.value : "",
+              currency: bundleServiceAddPortfolioItem.currency ? bundleServiceAddPortfolioItem.currency?.value : "",
               netPrice: 0,
               itemProductHierarchy: "EMPTY",
               itemHeaderGeographic: "EMPTY",
               responseTime: "EMPTY",
-              usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
+              usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
               validFrom: "",
               validTo: "",
               estimatedTime: createServiceOrBundle.estimatedTime != "" ? createServiceOrBundle.estimatedTime : "",
               servicePrice: 0,
-              status: "DRAFT",
+              status: serviceBundleStatus.value,
               componentCode: "",
               componentDescription: "",
               serialNumber: "",
-              itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "EMPTY",
+              itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? bundleServiceAddPortfolioItem.strategyTask.value : "EMPTY",
               variant: "",
               itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value ? createServiceOrBundle.customerSegment?.value : "",
               jobCode: "",
@@ -9021,19 +9835,19 @@ export function CreatePortfolio(props) {
               miscellaneous: ["EMPTY"],
               taskType: ["EMPTY"],
               solutionCode: "",
-              usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
-              usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
-              year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
+              usageIn: bundleServiceAddPortfolioItem.usageIn ? bundleServiceAddPortfolioItem.usageIn?.value : "",
+              usage: bundleServiceAddPortfolioItem.usageType ? bundleServiceAddPortfolioItem.usageType?.value : "",
+              year: bundleServiceAddPortfolioItem.year ? (typeof bundleServiceAddPortfolioItem.year === "object" ? bundleServiceAddPortfolioItem.year?.value : bundleServiceAddPortfolioItem.year) : "",
               avgUsage: 0,
-              unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
-              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
+              unit: bundleServiceAddPortfolioItem.unit ? bundleServiceAddPortfolioItem.unit?.value : "",
+              frequency: bundleServiceAddPortfolioItem.frequency ? bundleServiceAddPortfolioItem.frequency?.value : "",
               itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
                 {
-                  itemPriceDataId: itemPriceData.itemPriceDataId
+                  itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
                 }
-              ] : serviceOrBundlePrefix === "SERVICE" && itemPriceData.itemPriceDataId ? [
+              ] : serviceOrBundlePrefix === "SERVICE" && bundleOrServiceItemPriceData.itemPriceDataId ? [
                 {
-                  itemPriceDataId: itemPriceData.itemPriceDataId
+                  itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
                 }
               ] : [],
             },
@@ -9550,6 +10364,7 @@ export function CreatePortfolio(props) {
 
     if (itemPriceDataRes.status === 200) {
       setItemPriceData(itemPriceDataRes.data)
+
       // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
       handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
       setTempBundleService1([]);
@@ -9598,7 +10413,16 @@ export function CreatePortfolio(props) {
       currency: data?.currency,
       year: data?.year,
     });
+
     if (serviceOrBundlePrefix === "SERVICE") {
+      setBundleServiceAddPortfolioItem({
+        ...bundleServiceAddPortfolioItem,
+        unit: data?.unit,
+        usageType: data?.usageType,
+        frequency: data?.frequency,
+        currency: data?.currency,
+        year: data?.year,
+      })
 
       if (editAbleOrNot === "editAble") {
         const priceUpdateData = {
@@ -9607,9 +10431,9 @@ export function CreatePortfolio(props) {
           // standardJobId: addPortFolioItem.templateId,
           // repairKitId: addPortFolioItem.repairOption,
           // templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
-          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
-          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
-          templateDescription: (addPortFolioItem.repairOption && addPortFolioItem.templateId != "") ? addPortFolioItem.templateDescription?.value : "",
+          standardJobId: bundleServiceAddPortfolioItem.templateId ? bundleServiceAddPortfolioItem.templateId : "",
+          repairKitId: bundleServiceAddPortfolioItem.repairOption ? bundleServiceAddPortfolioItem.repairOption : "",
+          templateDescription: (bundleServiceAddPortfolioItem.repairOption && bundleServiceAddPortfolioItem.templateId != "") ? bundleServiceAddPortfolioItem.templateDescription?.value : "",
           repairOption: "",
           additional: "",
           partListId: "",
@@ -9628,8 +10452,6 @@ export function CreatePortfolio(props) {
           flatPrice: data.flatPrice ? parseInt(data.flatPrice) : 0,
           year: data?.year?.value,
           noOfYear: parseInt(data?.noOfYear),
-          // year: createdBundleItems?.year?.value,
-          // noOfYear: parseInt(createdBundleItems?.noOfYear),
           sparePartsPrice: 0,
           sparePartsPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
             (data.priceBreakDownOptionsKeyValue == "PARTS") ?
@@ -9685,10 +10507,12 @@ export function CreatePortfolio(props) {
             data.id,
             priceUpdateData
           );
+          setBundleOrServiceItemPriceData(updatePriceId.data);
           setBundleTabs("bundleServiceAdministrative")
         } else {
           const itemPriceData = await createItemPriceData(priceUpdateData)
-          setItemPriceData(itemPriceData.data);
+          // setItemPriceData(itemPriceData.data);
+          setBundleOrServiceItemPriceData(itemPriceData.data)
           setBundleTabs("bundleServiceAdministrative")
         }
       } else if (editAbleOrNot === "noEditAble") {
@@ -9698,9 +10522,9 @@ export function CreatePortfolio(props) {
           // standardJobId: addPortFolioItem.templateId,
           // repairKitId: addPortFolioItem.repairOption,
           // templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
-          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
-          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
-          templateDescription: (addPortFolioItem.repairOption && addPortFolioItem.templateId != "") ? addPortFolioItem.templateDescription?.value : "",
+          standardJobId: bundleServiceAddPortfolioItem.templateId ? bundleServiceAddPortfolioItem.templateId : "",
+          repairKitId: bundleServiceAddPortfolioItem.repairOption ? bundleServiceAddPortfolioItem.repairOption : "",
+          templateDescription: (bundleServiceAddPortfolioItem.repairOption && bundleServiceAddPortfolioItem.templateId != "") ? bundleServiceAddPortfolioItem.templateDescription?.value : "",
           repairOption: "",
           additional: "",
           partListId: "",
@@ -9719,8 +10543,6 @@ export function CreatePortfolio(props) {
           flatPrice: data.flatPrice ? parseInt(data.flatPrice) : 0,
           year: data?.year?.value,
           noOfYear: parseInt(data?.noOfYear),
-          // year: createdBundleItems?.year?.value,
-          // noOfYear: parseInt(createdBundleItems?.noOfYear),
           sparePartsPrice: 0,
           sparePartsPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
             (data.priceBreakDownOptionsKeyValue == "PARTS") ?
@@ -9772,7 +10594,8 @@ export function CreatePortfolio(props) {
           inclusionExclusion: false
         }
         const itemPriceData = await createItemPriceData(priceUpdateData)
-        setItemPriceData(itemPriceData.data);
+        // setItemPriceData(itemPriceData.data);
+        setBundleOrServiceItemPriceData(itemPriceData.data);
         setBundleTabs("bundleServiceAdministrative")
       } else {
         toast("😐" + "Something Went wrong", {
@@ -9788,14 +10611,22 @@ export function CreatePortfolio(props) {
 
       // setBundleTabs("bundleServiceAdministrative")
     } else if (serviceOrBundlePrefix === "BUNDLE") {
-      console.log("createdBundleItems : ", addPortFolioItem)
+
+      setBundleServiceAddPortfolioItem({
+        ...bundleServiceAddPortfolioItem,
+        unit: data?.unit,
+        usageType: data?.usageType,
+        frequency: data?.frequency,
+        currency: data?.currency,
+        year: data?.year,
+      })
 
       const priceUpdateData = {
         itemPriceDataId: data.id,
         quantity: 0,
-        standardJobId: addPortFolioItem.templateId,
-        repairKitId: addPortFolioItem.repairOption,
-        templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+        standardJobId: bundleServiceAddPortfolioItem.templateId,
+        repairKitId: bundleServiceAddPortfolioItem.repairOption,
+        templateDescription: bundleServiceAddPortfolioItem.templateId != "" ? bundleServiceAddPortfolioItem.templateDescription?.value : "",
         repairOption: "",
         additional: "",
         partListId: "",
@@ -9814,8 +10645,6 @@ export function CreatePortfolio(props) {
         flatPrice: data.flatPrice ? parseInt(data.flatPrice) : 0,
         year: data?.year?.value,
         noOfYear: parseInt(data?.noOfYear),
-        // year: createdBundleItems?.year?.value,
-        // noOfYear: parseInt(createdBundleItems?.noOfYear),
         sparePartsPrice: 0,
         sparePartsPriceBreakDownPercentage: ((data.priceBreakDownOptionsKeyValue != "") &&
           (data.priceBreakDownOptionsKeyValue == "PARTS") ?
@@ -9877,34 +10706,33 @@ export function CreatePortfolio(props) {
           priceUpdateData
         );
 
+        setBundleOrServiceItemPriceData(updatePriceId.data);
+
 
         const rObj = {
-          standardJobId: addPortFolioItem.templateId,
-          repairKitId: addPortFolioItem.repairOption,
-          itemId: addPortFolioItem.id,
+          standardJobId: bundleServiceAddPortfolioItem.templateId,
+          repairKitId: bundleServiceAddPortfolioItem.repairOption,
+          itemId: bundleServiceAddPortfolioItem.id,
           itemPriceDataId: data.id
         }
 
-        if ((addPortFolioItem.templateId == "") ||
-          (addPortFolioItem.templateId == null) ||
-          addPortFolioItem.repairOption != "") {
+        if ((bundleServiceAddPortfolioItem.templateId == "") ||
+          (bundleServiceAddPortfolioItem.templateId == null) ||
+          bundleServiceAddPortfolioItem.repairOption != "") {
           const updateRkId = portfolioItemPriceRkId(rObj);
         }
 
-        if ((addPortFolioItem.repairOption == "") ||
-          (addPortFolioItem.repairOption == null) ||
-          addPortFolioItem.templateId != "") {
+        if ((bundleServiceAddPortfolioItem.repairOption == "") ||
+          (bundleServiceAddPortfolioItem.repairOption == null) ||
+          bundleServiceAddPortfolioItem.templateId != "") {
           const updateSjId = portfolioItemPriceSjid(rObj);
         }
 
       }
 
-
       setBundleTabs("bundleServiceAdministrative")
       // console.log("priceUpdateData 2677: ", priceUpdateData)
       // console.log("data 2678: ", data)
-
-
 
     } else {
       console.log("data 123456789 : ", data)
@@ -9984,199 +10812,338 @@ export function CreatePortfolio(props) {
   }
 
   const ExpendedModelComponent = ({ data }) => (
-    <div className="scrollbar" id="style">
-      {data.associatedServiceOrBundle?.length > 0 ?
-        <>
-          {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
-            <div
-              key={i}
-              id="row-0"
-              role="row"
-              className="sc-evZas cMMpBL rdt_TableRow"
-              style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+    <div>
+      <div
+        id="row-0"
+        role="row"
+        className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+        style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+      >
+        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+          {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
+        </div>
+        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+          {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
+        </div>
+        <div
+          id="cell-1-undefined"
+          data-column-id="1"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <span className="portfolio-icon mr-1">
+            <svg style={{ width: "11px" }}
+              id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 119.30736 133.59966"
             >
-              <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
-              {/* <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div> */}
+              <path
+                className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+              />
+            </svg>
+          </span>
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
+        </div>
+        <div
+          id="cell-2-undefined"
+          data-column-id="2"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
+        </div>
+        <div
+          id="cell-3-undefined"
+          data-column-id="3"
+          role="gridcell"
+          className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
+        </div>
+        <div
+          id="cell-4-undefined"
+          data-column-id="4"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
+        </div>
+        <div
+          id="cell-5-undefined"
+          data-column-id="5"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Ids</p>
+        </div>
+        <div
+          id="cell-6-undefined"
+          data-column-id="6"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
+        </div>
+        <div
+          id="cell-7-undefined"
+          data-column-id="7"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
+        </div>
+        <div
+          id="cell-8-undefined"
+          data-column-id="8"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Quantity</p>
+        </div>
+        <div
+          id="cell-9-undefined"
+          data-column-id="9"
+          role="gridcell"
+          className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
+        </div>
+        <div
+          id="cell-10-undefined"
+          data-column-id="10"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
+        </div>
+        <div
+          id="cell-10-undefined"
+          data-column-id="10"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
+        </div>
+        <div
+          id="cell-10-undefined"
+          data-column-id="11"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Comments</p>
+        </div>
+      </div>
+      <div className="scrollbar" id="style">
+        {data.associatedServiceOrBundle?.length > 0 ?
+          <>
+            {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
               <div
-                id="cell-1-undefined"
-                data-column-id="1"
-                role="gridcell"
-                className="m-w-51 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
+                key={i}
+                id="row-0"
+                role="row"
+                className="sc-evZas cMMpBL rdt_TableRow"
+                style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
               >
-                <div></div>
-                {/* <div>{bundleAndService.itemId}</div> */}
-              </div>
-              <div
-                id="cell-1-undefined"
-                data-column-id="1"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div>{bundleAndService.itemId}</div>
-              </div>
-              <div
-                id="cell-2-undefined"
-                data-column-id="2"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemHeaderModel.itemHeaderDescription}
-                </div>
-              </div>
-              <div
-                id="cell-3-undefined"
-                data-column-id="3"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemHeaderModel.itemHeaderStrategy}
-                </div>
-              </div>
-              <div
-                id="cell-4-undefined"
-                data-column-id="4"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemBodyModel.taskType}
-                </div>
-              </div>
-              <div
-                id="cell-5-undefined"
-                data-column-id="5"
-                role="gridcell"
-                className="m-w-92 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemBodyModel?.quantity}
-                </div>
-              </div>
-              <div
-                id="cell-6-undefined"
-                data-column-id="6"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemHeaderModel.netPrice}
-                </div>
-              </div>
-              <div
-                id="cell-7-undefined"
-                data-column-id="7"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemHeaderModel.additional}
-                </div>
-              </div>
-              <div
-                id="cell-8-undefined"
-                data-column-id="8"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemBodyModel?.sparePartsPrice}
-                </div>
-              </div>
-              <div
-                id="cell-9-undefined"
-                data-column-id="9"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemBodyModel?.totalPrice}
-                </div>
-              </div>
-              <div
-                id="cell-10-undefined"
-                data-column-id="10"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
-                <div data-tag="allowRowEvents">
-                  {bundleAndService.itemBodyModel?.comments}
-                </div>
-              </div>
-              {bundleItems.length > 0 && (<div
-                id="cell-11-undefined"
-                data-column-id="11"
-                role="gridcell"
-                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
-                data-tag="allowRowEvents"
-              >
+                <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+                {/* <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div> */}
                 <div
-                  className="cursor"
-                  onClick={(e) =>
-                    handleExpandedRowEdit(
-                      e,
-                      data.itemId,
-                      data.associatedServiceOrBundle[i]
-                    )
-                  }
+                  id="cell-1-undefined"
+                  data-column-id="1"
+                  role="gridcell"
+                  className="m-w-51 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
                 >
-                  <Tooltip title="Edit">
-                    <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
-                  </Tooltip>
+                  <div></div>
+                  {/* <div>{bundleAndService.itemId}</div> */}
                 </div>
                 <div
-                  className="cursor"
-                  onClick={(e) =>
-                    handleExpandedRowDelete(
-                      e,
-                      data.itemId,
-                      data.associatedServiceOrBundle[i].itemId
-                    )
-                  }
+                  id="cell-1-undefined"
+                  data-column-id="1"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
                 >
-                  <Tooltip title="Delete">
-                    <Link to="#" className="mx-1">
-                      <svg
-                        data-name="Layer 41"
-                        id="Layer_41"
-                        width="14px"
-                        viewBox="0 0 50 50"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <title />
-                        <path
-                          className="cls-1"
-                          d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                        />
-                        <path
-                          className="cls-1"
-                          d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                        />
-                        <path
-                          className="cls-1"
-                          d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                        />
-                      </svg>
-                    </Link>
-                  </Tooltip>
+                  <div>{bundleAndService.itemId}</div>
                 </div>
-              </div>)}
+                <div
+                  id="cell-2-undefined"
+                  data-column-id="2"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemHeaderModel.itemHeaderDescription}
+                  </div>
+                </div>
+                <div
+                  id="cell-3-undefined"
+                  data-column-id="3"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemHeaderModel.itemHeaderStrategy}
+                  </div>
+                </div>
+                <div
+                  id="cell-4-undefined"
+                  data-column-id="4"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemBodyModel.taskType}
+                  </div>
+                </div>
+                <div
+                  id="cell-5-undefined"
+                  data-column-id="5"
+                  role="gridcell"
+                  className="m-w-92 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemBodyModel?.quantity}
+                  </div>
+                </div>
+                <div
+                  id="cell-6-undefined"
+                  data-column-id="6"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemHeaderModel.netPrice}
+                  </div>
+                </div>
+                <div
+                  id="cell-7-undefined"
+                  data-column-id="7"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemHeaderModel.additional}
+                  </div>
+                </div>
+                <div
+                  id="cell-8-undefined"
+                  data-column-id="8"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemBodyModel?.sparePartsPrice}
+                  </div>
+                </div>
+                <div
+                  id="cell-9-undefined"
+                  data-column-id="9"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemBodyModel?.totalPrice}
+                  </div>
+                </div>
+                <div
+                  id="cell-10-undefined"
+                  data-column-id="10"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div data-tag="allowRowEvents">
+                    {bundleAndService.itemBodyModel?.comments}
+                  </div>
+                </div>
+                {bundleItems.length > 0 && (<div
+                  id="cell-11-undefined"
+                  data-column-id="11"
+                  role="gridcell"
+                  className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                  data-tag="allowRowEvents"
+                >
+                  <div
+                    className="cursor"
+                    onClick={(e) =>
+                      handleExpandedRowEdit(
+                        e,
+                        data.itemId,
+                        data.associatedServiceOrBundle[i]
+                      )
+                    }
+                  >
+                    <Tooltip title="Edit">
+                      <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                    </Tooltip>
+                  </div>
+                  <div
+                    className="cursor"
+                    onClick={(e) =>
+                      handleExpandedRowDelete(
+                        e,
+                        data.itemId,
+                        data.associatedServiceOrBundle[i].itemId
+                      )
+                    }
+                  >
+                    <Tooltip title="Delete">
+                      <Link to="#" className="mx-1">
+                        <svg
+                          data-name="Layer 41"
+                          id="Layer_41"
+                          width="14px"
+                          viewBox="0 0 50 50"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <title />
+                          <path
+                            className="cls-1"
+                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                          />
+                          <path
+                            className="cls-1"
+                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                          />
+                          <path
+                            className="cls-1"
+                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                          />
+                        </svg>
+                      </Link>
+                    </Tooltip>
+                  </div>
+                </div>)}
 
-            </div>
-          ))}
-        </> : <></>}
+              </div>
+            ))}
+          </> : <></>}
+      </div>
     </div>
   );
 
@@ -10853,92 +11820,105 @@ export function CreatePortfolio(props) {
 
   const handleExpendedBundleServiceUpdate = async (i, data) => {
 
-    // alert(i)
-    setAssociatedServiceOrBundleIndex(i)
-    setEditBundleService(true);
-    setBundleAndServiceEditAble(true)
-    setBundleTabs("bundleServiceHeader");
+    const fetchItemDetailsById = await getItemDataById(data.itemId);
 
-    const newData = await getItemDataById(data.itemId)
+    if (fetchItemDetailsById.status === 200) {
 
-    console.log("my newData : ", newData)
 
-    if (newData.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
-      setServiceOrBundlePrefix("BUNDLE");
-    } else if (newData.itemHeaderModel.bundleFlag === "SERVICE") {
-      setServiceOrBundlePrefix("SERVICE");
+      // alert(i)
+      setAssociatedServiceOrBundleIndex(i)
+      setEditBundleService(true);
+      setBundleAndServiceEditAble(true)
+      setBundleTabs("bundleServiceHeader");
+
+      const newData = fetchItemDetailsById.data;
+      // const newData = await getItemDataById(data.itemId)
+
+      console.log("my newData : ", newData)
+
+      if (newData.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+        setServiceOrBundlePrefix("BUNDLE");
+      } else if (newData.itemHeaderModel.bundleFlag === "SERVICE") {
+        setServiceOrBundlePrefix("SERVICE");
+      }
+
+
+      setCreateServiceOrBundle({
+        id: newData.itemId,
+        name: newData.itemName,
+        description: newData.itemHeaderModel.itemHeaderDescription,
+        bundleFlag: newData.itemHeaderModel.bundleFlag,
+        reference: newData.itemHeaderModel.itemHeaderDescription,
+        customerSegment: "",
+        make: newData.itemHeaderModel.itemHeaderMake,
+        model: newData.itemHeaderModel.model,
+        family: newData.itemHeaderModel.itemHeaderFamily,
+        prefix: { label: newData.itemHeaderModel.prefix, value: newData.itemHeaderModel.prefix },
+        machine: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
+        additional: "",
+        machineComponent: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
+      });
+
+      setSelectedPrefixOption({ label: newData.itemHeaderModel.prefix, value: newData.itemHeaderModel.prefix });
+
+      setPassItemEditRowData(newData);
+      setBundleServicePortfolioItemId(newData.itemHeaderModel.portfolioItemId);
+
+      setBundleServiceItemPriceData(newData.itemBodyModel.itemPrices)
+
+
+      var offerValidityLabel;
+      if (newData.itemHeaderModel.offerValidity == "15") {
+        offerValidityLabel = "15 days";
+      } else if (newData.itemHeaderModel.offerValidity == "30") {
+        offerValidityLabel = "1 month";
+      } else if (newData.itemHeaderModel.offerValidity == "45") {
+        offerValidityLabel = "45 days";
+      } else if (newData.itemHeaderModel.offerValidity == "60") {
+        offerValidityLabel = "2 month";
+      } else {
+        offerValidityLabel = newData.itemHeaderModel.offerValidity;
+      }
+
+      setServiceBundleStatus({
+        value: newData.itemHeaderModel.status,
+        label: newData.itemHeaderModel.status,
+      });
+      if (newData.itemHeaderModel.status === "ACTIVE") {
+        setIsActiveStatus(true)
+      } else {
+        setIsActiveStatus(false)
+      }
+
+      setBundleOrServiceAdministrative({
+        preparedBy: newData.itemHeaderModel.preparedBy,
+        approvedBy: newData.itemHeaderModel.approvedBy,
+        preparedOn: newData.itemHeaderModel.preparedOn,
+        revisedBy: newData.itemHeaderModel.revisedBy,
+        revisedOn: newData.itemHeaderModel.revisedOn,
+        salesOffice: (newData.itemHeaderModel.salesOffice !== "") ? {
+          value: newData.itemHeaderModel.salesOffice,
+          label: newData.itemHeaderModel.salesOffice,
+        } : (newData.itemHeaderModel.salesOffice === null) ? "" :
+          {
+            value: newData.itemHeaderModel.salesOffice,
+            label: newData.itemHeaderModel.salesOffice,
+          },
+        offerValidity: (newData.itemHeaderModel.offerValidity !== "") ? {
+          value: newData.itemHeaderModel.offerValidity,
+          label: offerValidityLabel,
+        } : (newData.itemHeaderModel.offerValidity == null) ? "" :
+          {
+            value: newData.itemHeaderModel.offerValidity,
+            label: offerValidityLabel,
+          },
+      })
+
+      setBundleOrServiceEditOrNot(true);
+      setBundleServiceShow(true);
+
     }
-
-
-    setCreateServiceOrBundle({
-      id: newData.itemId,
-      name: newData.itemName,
-      description: newData.itemHeaderModel.itemHeaderDescription,
-      bundleFlag: newData.itemHeaderModel.bundleFlag,
-      reference: newData.itemHeaderModel.itemHeaderDescription,
-      customerSegment: "",
-      make: newData.itemHeaderModel.itemHeaderMake,
-      model: newData.itemHeaderModel.model,
-      family: newData.itemHeaderModel.itemHeaderFamily,
-      prefix: { label: newData.itemHeaderModel.prefix, value: newData.itemHeaderModel.prefix },
-      machine: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
-      additional: "",
-      machineComponent: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
-    });
-
-    setSelectedPrefixOption({ label: newData.itemHeaderModel.prefix, value: newData.itemHeaderModel.prefix });
-
-    setPassItemEditRowData(newData);
-    setBundleServicePortfolioItemId(newData.itemHeaderModel.portfolioItemId);
-
-    setBundleServiceItemPriceData(newData.itemBodyModel.itemPrices)
-
-
-    var offerValidityLabel;
-    if (newData.itemHeaderModel.offerValidity == "15") {
-      offerValidityLabel = "15 days";
-    } else if (newData.itemHeaderModel.offerValidity == "30") {
-      offerValidityLabel = "1 month";
-    } else if (newData.itemHeaderModel.offerValidity == "45") {
-      offerValidityLabel = "45 days";
-    } else if (newData.itemHeaderModel.offerValidity == "60") {
-      offerValidityLabel = "2 month";
-    } else {
-      offerValidityLabel = newData.itemHeaderModel.offerValidity;
-    }
-
-    setServiceBundleStatus({
-      value: newData.itemHeaderModel.status,
-      label: newData.itemHeaderModel.status,
-    });
-    if (newData.itemHeaderModel.status === "ACTIVE") {
-      setIsActiveStatus(true)
-    } else {
-      setIsActiveStatus(false)
-    }
-
-
-
-    setBundleOrServiceAdministrative({
-      preparedBy: newData.itemHeaderModel.preparedBy,
-      approvedBy: newData.itemHeaderModel.approvedBy,
-      preparedOn: newData.itemHeaderModel.preparedOn,
-      revisedBy: newData.itemHeaderModel.revisedBy,
-      revisedOn: newData.itemHeaderModel.revisedOn,
-      salesOffice: {
-        value: newData.itemHeaderModel.salesOffice,
-        label: newData.itemHeaderModel.salesOffice,
-      },
-      offerValidity: {
-        value: newData.itemHeaderModel.offerValidity,
-        label: offerValidityLabel,
-      },
-    })
-
-    setBundleServiceShow(true);
   }
-
-
 
   const handleSelectCustomerSegment = (e) => {
     // console.log("e is : ", e)
@@ -11412,8 +12392,8 @@ export function CreatePortfolio(props) {
         ...componentData,
         model: currentItem.model,
         make: currentItem.maker,
-        family: currentItem.family,
-        prefix: currentItem.prefix,
+        family: currentItem?.family ? currentItem?.family : "",
+        prefix: currentItem.modelPrefix,
       });
       setSearchModelResults([]);
     } else if (type === "equipmentNumber") {
@@ -11422,6 +12402,8 @@ export function CreatePortfolio(props) {
         model: currentItem.model,
         serialNo: currentItem.equipmentNumber,
         make: currentItem.maker,
+        family: currentItem?.family ? currentItem?.family : "",
+        prefix: currentItem.modelPrefix,
         // family: currentItem.market,
       });
       setSearchSerialResults([]);
@@ -11510,7 +12492,7 @@ export function CreatePortfolio(props) {
           status: itemReqObj.itemHeaderModel.status,
           componentCode: componentData.componentCode,
           componentDescription: componentData.description,
-          serialNumber: itemReqObj.itemHeaderModel.serialNumber,
+          serialNumber: componentData.serialNo,
           itemHeaderStrategy: itemReqObj.itemHeaderModel.itemHeaderStrategy,
           variant: itemReqObj.itemHeaderModel.variant,
           itemHeaderCustomerSegment: itemReqObj.itemHeaderModel.itemHeaderCustomerSegment,
@@ -11576,6 +12558,8 @@ export function CreatePortfolio(props) {
         const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
         setPriceCalculator({
           ...priceCalculator,
+
+          calculatedPrice: resPrice.data.calculatedPrice,
           priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
             resPrice.data.priceMethod != "" ||
             resPrice.data.priceMethod != null) ? {
@@ -11589,7 +12573,10 @@ export function CreatePortfolio(props) {
             value: resPrice.data.priceType
           } : "",
           priceAdditionalSelect: {
-            label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+            label: (resPrice.data.additionalPriceType != "" ||
+              resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
+            value: (resPrice.data.additionalPriceType != "" ||
+              resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
           },
           priceAdditionalInput: resPrice.data.additionalPriceValue,
           discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
@@ -11599,9 +12586,9 @@ export function CreatePortfolio(props) {
             value: resPrice.data.discountType
           } : "",
           discountTypeInput: resPrice.data.discountValue,
-          year: {
-            label: resPrice.data.year, value: resPrice.data.year
-          },
+
+          year: { label: resPrice.data.year, value: resPrice.data.year, },
+
           noOfYear: resPrice.data.noOfYear,
           startUsage: resPrice.data.startUsage,
           endUsage: resPrice.data.endUsage,
@@ -11609,6 +12596,96 @@ export function CreatePortfolio(props) {
           netPrice: resPrice.data.netService,
           totalPrice: resPrice.data.totalPrice,
           id: resPrice.data.itemPriceDataId,
+          numberOfEvents: resPrice.data.numberOfEvents,
+          portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+          flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+          escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+            label: resPrice.data.priceEscalation,
+            value: resPrice.data.priceEscalation,
+          } : ""),
+          escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+            resPrice.data.priceEscalation : ""),
+          escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+            resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+              resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                  resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+          priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+          priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            resPrice.data.sparePartsPriceBreakDownPercentage :
+            resPrice.data.labourPriceBreakDownPercentage != 0 ?
+              resPrice.data.labourPriceBreakDownPercentage :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                resPrice.data.miscPriceBreakDownPercentage : 0,
+
+          priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+            label: "PARTS",
+            value: "PARTS",
+          } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+            label: "LABOR",
+            value: "LABOR",
+          } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+            label: "MISCELLANEOUS",
+            value: "MISCELLANEOUS",
+          } : "",
+
+          currency: ((itemReqObj?.itemHeaderModel?.currency != "")) ? {
+            label: itemReqObj?.itemHeaderModel?.currency,
+            value: itemReqObj?.itemHeaderModel?.currency
+          } : "",
+          unit: ((itemReqObj?.itemBodyModel?.unit != "")) ? {
+            label: itemReqObj?.itemBodyModel?.unit,
+            value: itemReqObj?.itemBodyModel?.unit
+          } : "",
+          frequency: (itemReqObj?.itemBodyModel?.frequency != "") ? {
+            label: itemReqObj?.itemBodyModel?.frequency,
+            value: itemReqObj?.itemBodyModel?.frequency
+          } : "",
+          usageType: ((itemReqObj?.itemBodyModel?.usage != "")) ? {
+            label: itemReqObj?.itemBodyModel?.usage,
+            value: itemReqObj?.itemBodyModel?.usage
+          } : "",
+
+
+          // calculatedPrice: resPrice.data.calculatedPrice,
+          // priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          //   resPrice.data.priceMethod != "" ||
+          //   resPrice.data.priceMethod != null) ? {
+          //   label: resPrice.data.priceMethod,
+          //   value: resPrice.data.priceMethod
+          // } : "",
+          // priceType: (resPrice.data.priceType != "EMPTY" ||
+          //   resPrice.data.priceType != "" ||
+          //   resPrice.data.priceType != null) ? {
+          //   label: resPrice.data.priceType,
+          //   value: resPrice.data.priceType
+          // } : "",
+          // priceAdditionalSelect: {
+          //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+          // },
+          // priceAdditionalInput: resPrice.data.additionalPriceValue,
+          // discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          //   resPrice.data.discountType != "" ||
+          //   resPrice.data.discountType != null) ? {
+          //   label: resPrice.data.discountType,
+          //   value: resPrice.data.discountType
+          // } : "",
+          // discountTypeInput: resPrice.data.discountValue,
+          // year: {
+          //   label: resPrice.data.year, value: resPrice.data.year
+          // },
+          // noOfYear: resPrice.data.noOfYear,
+          // startUsage: resPrice.data.startUsage,
+          // endUsage: resPrice.data.endUsage,
+          // recommendedValue: resPrice.data.recommendedValue,
+          // netPrice: resPrice.data.netService,
+          // totalPrice: resPrice.data.totalPrice,
+          // id: resPrice.data.itemPriceDataId,
         })
 
 
@@ -11821,6 +12898,7 @@ export function CreatePortfolio(props) {
       }
 
       let reqObj = {};
+      let currencyIs = "";
 
       for (let i = 0; i < tempBundleItems.length; i++) {
         if (tempBundleItems[i].itemId === currentItemId) {
@@ -11830,6 +12908,7 @@ export function CreatePortfolio(props) {
             repairKitId: itemPriceData.repairKitId,
             itemPriceDataId: itemPriceData.itemPriceDataId
           }
+          currencyIs = tempBundleItems[i].itemHeaderModel?.currency
           break;
         }
       }
@@ -11854,6 +12933,7 @@ export function CreatePortfolio(props) {
       const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
+        calculatedPrice: resPrice.data.calculatedPrice,
         priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
           resPrice.data.priceMethod != "" ||
           resPrice.data.priceMethod != null) ? {
@@ -11867,7 +12947,10 @@ export function CreatePortfolio(props) {
           value: resPrice.data.priceType
         } : "",
         priceAdditionalSelect: {
-          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+          label: (resPrice.data.additionalPriceType != "" ||
+            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
+          value: (resPrice.data.additionalPriceType != "" ||
+            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
         },
         priceAdditionalInput: resPrice.data.additionalPriceValue,
         discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
@@ -11877,9 +12960,9 @@ export function CreatePortfolio(props) {
           value: resPrice.data.discountType
         } : "",
         discountTypeInput: resPrice.data.discountValue,
-        year: {
-          label: resPrice.data.year, value: resPrice.data.year
-        },
+
+        year: { label: resPrice.data.year, value: resPrice.data.year, },
+
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
         endUsage: resPrice.data.endUsage,
@@ -11887,6 +12970,85 @@ export function CreatePortfolio(props) {
         netPrice: resPrice.data.netService,
         totalPrice: resPrice.data.totalPrice,
         id: resPrice.data.itemPriceDataId,
+        numberOfEvents: resPrice.data.numberOfEvents,
+        portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+        flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+        escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+          label: resPrice.data.priceEscalation,
+          value: resPrice.data.priceEscalation,
+        } : ""),
+        escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+          resPrice.data.priceEscalation : ""),
+        escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+          resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+            resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+              resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+        priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+          "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+            resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+        priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+          resPrice.data.sparePartsPriceBreakDownPercentage :
+          resPrice.data.labourPriceBreakDownPercentage != 0 ?
+            resPrice.data.labourPriceBreakDownPercentage :
+            resPrice.data.miscPriceBreakDownPercentage != 0 ?
+              resPrice.data.miscPriceBreakDownPercentage : 0,
+
+        priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+          label: "PARTS",
+          value: "PARTS",
+        } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+          label: "LABOR",
+          value: "LABOR",
+        } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+          label: "MISCELLANEOUS",
+          value: "MISCELLANEOUS",
+        } : "",
+
+        currency: ((currencyIs != "")) ? {
+          label: currencyIs,
+          value: currencyIs
+        } : "",
+        unit: addPortFolioItem?.unit,
+        frequency: addPortFolioItem?.frequency,
+        usageType: addPortFolioItem?.usageType,
+
+        // priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+        //   resPrice.data.priceMethod != "" ||
+        //   resPrice.data.priceMethod != null) ? {
+        //   label: resPrice.data.priceMethod,
+        //   value: resPrice.data.priceMethod
+        // } : "",
+        // priceType: (resPrice.data.priceType != "EMPTY" ||
+        //   resPrice.data.priceType != "" ||
+        //   resPrice.data.priceType != null) ? {
+        //   label: resPrice.data.priceType,
+        //   value: resPrice.data.priceType
+        // } : "",
+        // priceAdditionalSelect: {
+        //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+        // },
+        // priceAdditionalInput: resPrice.data.additionalPriceValue,
+        // discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+        //   resPrice.data.discountType != "" ||
+        //   resPrice.data.discountType != null) ? {
+        //   label: resPrice.data.discountType,
+        //   value: resPrice.data.discountType
+        // } : "",
+        // discountTypeInput: resPrice.data.discountValue,
+        // year: {
+        //   label: resPrice.data.year, value: resPrice.data.year
+        // },
+        // noOfYear: resPrice.data.noOfYear,
+        // startUsage: resPrice.data.startUsage,
+        // endUsage: resPrice.data.endUsage,
+        // recommendedValue: resPrice.data.recommendedValue,
+        // netPrice: resPrice.data.netService,
+        // totalPrice: resPrice.data.totalPrice,
+        // id: resPrice.data.itemPriceDataId,
       })
 
       var UpdatedBundleService3Data = [];
@@ -11966,12 +13128,9 @@ export function CreatePortfolio(props) {
           });
       }
 
-
-
       setPortfolioItems(_itemArrData);
       setTempBundleService3(UpdatedBundleService3Data);
       setTempBundleService2(UpdatedBundleService3Data);
-
 
       let obj = {
         portfolioId: portfolioId,
@@ -12077,12 +13236,37 @@ export function CreatePortfolio(props) {
 
       setPriceCalculator({
         ...priceCalculator,
+
+        calculatedPrice: resPrice.data.calculatedPrice,
+        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          resPrice.data.priceMethod != "" ||
+          resPrice.data.priceMethod != null) ? {
+          label: resPrice.data.priceMethod,
+          value: resPrice.data.priceMethod
+        } : "",
+        priceType: (resPrice.data.priceType != "EMPTY" ||
+          resPrice.data.priceType != "" ||
+          resPrice.data.priceType != null) ? {
+          label: resPrice.data.priceType,
+          value: resPrice.data.priceType
+        } : "",
         priceAdditionalSelect: {
-          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+          label: (resPrice.data.additionalPriceType != "" ||
+            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
+          value: (resPrice.data.additionalPriceType != "" ||
+            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
         },
-        year: {
-          label: resPrice.data.year, value: resPrice.data.year
-        },
+        priceAdditionalInput: resPrice.data.additionalPriceValue,
+        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          resPrice.data.discountType != "" ||
+          resPrice.data.discountType != null) ? {
+          label: resPrice.data.discountType,
+          value: resPrice.data.discountType
+        } : "",
+        discountTypeInput: resPrice.data.discountValue,
+
+        year: { label: resPrice.data.year, value: resPrice.data.year, },
+
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
         endUsage: resPrice.data.endUsage,
@@ -12090,6 +13274,65 @@ export function CreatePortfolio(props) {
         netPrice: resPrice.data.netService,
         totalPrice: resPrice.data.totalPrice,
         id: resPrice.data.itemPriceDataId,
+        numberOfEvents: resPrice.data.numberOfEvents,
+        portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+        flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+        escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+          label: resPrice.data.priceEscalation,
+          value: resPrice.data.priceEscalation,
+        } : ""),
+        escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+          resPrice.data.priceEscalation : ""),
+        escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+          resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+            resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+              resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+        priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+          "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+            resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+        priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+          resPrice.data.sparePartsPriceBreakDownPercentage :
+          resPrice.data.labourPriceBreakDownPercentage != 0 ?
+            resPrice.data.labourPriceBreakDownPercentage :
+            resPrice.data.miscPriceBreakDownPercentage != 0 ?
+              resPrice.data.miscPriceBreakDownPercentage : 0,
+
+        priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+          label: "PARTS",
+          value: "PARTS",
+        } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+          label: "LABOR",
+          value: "LABOR",
+        } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+          label: "MISCELLANEOUS",
+          value: "MISCELLANEOUS",
+        } : "",
+
+        currency: ((currencyIs != "")) ? {
+          label: currencyIs,
+          value: currencyIs
+        } : "",
+        unit: addPortFolioItem?.unit,
+        frequency: addPortFolioItem?.frequency,
+        usageType: addPortFolioItem?.usageType,
+
+        // priceAdditionalSelect: {
+        //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+        // },
+        // year: {
+        //   label: resPrice.data.year, value: resPrice.data.year
+        // },
+        // noOfYear: resPrice.data.noOfYear,
+        // startUsage: resPrice.data.startUsage,
+        // endUsage: resPrice.data.endUsage,
+        // recommendedValue: resPrice.data.recommendedValue,
+        // netPrice: resPrice.data.netService,
+        // totalPrice: resPrice.data.totalPrice,
+        // id: resPrice.data.itemPriceDataId,
       })
 
       setItemPriceCalculator({
@@ -12162,6 +13405,8 @@ export function CreatePortfolio(props) {
         const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
         setPriceCalculator({
           ...priceCalculator,
+
+          calculatedPrice: resPrice.data.calculatedPrice,
           priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
             resPrice.data.priceMethod != "" ||
             resPrice.data.priceMethod != null) ? {
@@ -12383,6 +13628,7 @@ export function CreatePortfolio(props) {
                     onChange={(e) => handleOption2(e)}
                     options={statusOption}
                     value={value2}
+                    isOptionDisabled={(option) => makePortfolioStatusDisabled(option)}
                   />
                 </div>
                 <div className="rating-star">
@@ -12835,7 +14081,7 @@ export function CreatePortfolio(props) {
                                     onChange={(e) =>
                                       setValidityData({
                                         ...validityData,
-                                        fromDate: e,
+                                        fromDate: e.toISOString().substring(0, 10),
                                         inputFlag: false,
                                       })
                                     }
@@ -12861,7 +14107,7 @@ export function CreatePortfolio(props) {
                                     onChange={(e) =>
                                       setValidityData({
                                         ...validityData,
-                                        toDate: e,
+                                        toDate: e.toISOString().substring(0, 10),
                                         dateFlag: true,
                                         inputFlag: false,
                                       })
@@ -17824,6 +19070,7 @@ export function CreatePortfolio(props) {
                     <AddPortfolioItem
                       passItemEditRowData={passItemEditRowData}
                       handleItemEditSave={handleItemEditSave}
+                      portfolioDataId={portfolioId}
                       compoFlag="itemEdit"
                       compoFlagTest="itemEditPort"
                     />
@@ -18169,301 +19416,17 @@ export function CreatePortfolio(props) {
                         >
                           PRICE METHOD
                         </label>
-                        <Select
+                        {/* <Select
                           options={priceMethodKeyValue}
                           value={componentData.priceMethod}
                           name="priceMethod"
                           onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
                           placeholder="placeholder (Optional)"
                           className=" text-primary"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          ADDITIONAL
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          <div className="">
-                            <Select
-                              isClearable={true}
-                              value={componentData.priceAdditionalSelect}
-                              name="priceAdditionalSelect"
-                              onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
-                              options={options}
-                              placeholder="Select"
-                              className=" text-primary"
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                            placeholder="10%"
-                            // defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                            value={componentData.priceAdditionalInput}
-                            name="priceAdditionalInput"
-                            onChange={handleComponentChange}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PRICE ESCALATON
-                        </label>
-                        <div className=" d-flex align-items-center form-control-date">
-                          <Select
-                            className="select-input  text-primary"
-                            value={componentData.priceEscalationSelect}
-                            name="priceEscalationSelect"
-                            onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
-                            options={options}
-                            placeholder="placeholder "
-                          />
-                          <input
-                            type="text"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                            placeholder="20%"
-                            // defaultValue={props?.priceCalculator?.priceEscalationInput}
-                            value={componentData.priceEscalationInput}
-                            name="priceEscalationInput"
-                            onChange={handleComponentChange}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          CALCULATED PRICE
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          // defaultValue={props?.priceCalculator?.calculatedPrice}
-                          value={componentData.calculatedPrice}
-                          name="calculatedPrice"
-                          onChange={handleComponentChange}
-                          placeholder="$100"
-                          disabled
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          FLAT PRICE / ADJUSTED PRICE
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          value={componentData.flatPrice}
-                          name="flatPrice"
-                          onChange={handleComponentChange}
-                          placeholder="$100"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          DISCOUNT TYPE
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          <div className="">
-                            <Select
-                              value={componentData.discountTypeSelect}
-                              name="discountTypeSelect"
-                              onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
-                              isClearable={true}
-                              options={options}
-                              placeholder="Select"
-                              className=" text-primary"
-                            />
-                          </div>
-                          <input
-                            type="text"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                            value={componentData.discountTypeInput}
-                            name="discountTypeInput"
-                            onChange={handleComponentChange}
-                            placeholder="10%"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-5" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={handleComponentDataSave}
-                      className="btn btn-light"
-                    >
-                      Save and Continue
-                    </button>
-                  </div>
-                </>
-              </TabPanel>
-              <TabPanel value="5">
-                {/* <PriceCalculator
-                  setTabs={setTabs}
-                  priceCalculator={priceCalculator}
-                  serviceOrBundlePrefix={serviceOrBundlePrefix}
-                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                  // handleSavePrices={handleSavePrices}
-                /> */}
-
-                <div className="ligt-greey-bg p-3">
-                  <div>
-                    <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
-                      <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                      <span className="ml-2">Edit</span>
-                    </span>
-                    <span className="mr-3">
-                      <MonetizationOnOutlinedIcon className=" font-size-16" />
-                      <span className="ml-2"> Adjust price</span>
-                    </span>
-                    {/* <span className="mr-3">
-                      <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                      <span className="ml-2">Related part list(s)</span>
-                    </span>
-                    <span className="mr-3">
-                      <AccessAlarmOutlinedIcon className=" font-size-16" />
-                      <span className="ml-2">Related service estimate(s)</span>
-                    </span> */}
-                    <span>
-                      <SellOutlinedIcon className=" font-size-16" />
-                      <span className="ml-2">Split price</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-3">
-                  {/* <div className="row">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Net Parts $
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="netParts"
-                          disabled={disable}
-                          value={itemPriceCalculator.netParts}
-                          onChange={handleItemPriceCalculatorChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Net Service $
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="netService"
-                          disabled={disable}
-                          value={itemPriceCalculator.netService}
-                          onChange={handleItemPriceCalculatorChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Price type
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          placeholder="Optional"
-                          name="priceType"
-                          disabled={disable}
-                          value={itemPriceCalculator.priceType}
-                          onChange={handleItemPriceCalculatorChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Net Price
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="netPrice"
-                          disabled={disable}
-                          value={itemPriceCalculator.netPrice}
-                          onChange={handleItemPriceCalculatorChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Net Additionals $
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="netAdditionals"
-                          disabled={disable}
-                          value={itemPriceCalculator.netAdditionals}
-                          onChange={handleItemPriceCalculatorChange}
-                        />
-                      </div>
-                    </div>
-                  </div> */}
-                  <div className="row input-fields">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PRICE METHOD
-                        </label>
+                        /> */}
                         <Select
                           options={priceMethodKeyValue}
                           className="text-primary"
-                          // defaultValue={props?.priceCalculator?.priceMethod}
                           value={priceCalculator.priceMethod}
                           name="priceMethod"
                           onChange={(e) =>
@@ -18471,87 +19434,6 @@ export function CreatePortfolio(props) {
                           }
                           placeholder="placeholder (Optional)"
                         />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          CURRENCY
-                        </label>
-                        <Select
-                          options={priceCurrencyKeyValue}
-                          className="text-primary"
-                          // defaultValue={props?.priceCalculator?.priceMethod}
-                          value={priceCalculator.currency}
-                          name="priceMethod"
-                          onChange={(e) =>
-                            setPriceCalculator({ ...priceCalculator, currency: e })
-                          }
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE DATE
-                        </label>
-                        <div className="d-flex align-items-center date-box w-100">
-                          <div className="form-group w-100">
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                name="preparedOn"
-                                value={priceCalculator.priceDate}
-                                onChange={(e) =>
-                                  setPriceCalculator({
-                                    ...priceCalculator,
-                                    priceDate: e,
-                                  })
-                                }
-                              />
-                            </MuiPickersUtilsProvider>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PRICE TYPE
-                        </label>
-                        <Select
-                          // defaultValue={priceTypeKeyValue}
-                          className="text-primary"
-                          onChange={(e) =>
-                            // setPriceTypeKeyValue1(e)
-                            setPriceCalculator({ ...priceCalculator, priceType: e })
-                          }
-                          options={priceTypeKeyValue}
-                          placeholder="placeholder (Optional)"
-                          value={priceCalculator.priceType}
-                        />
-                        {/* <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          placeholder="Optional"
-                          name="priceType"
-                          disabled={disable}
-                          value={itemPriceCalculator.priceType}
-                          onChange={handleItemPriceCalculatorChange}
-                        /> */}
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
@@ -18616,15 +19498,6 @@ export function CreatePortfolio(props) {
                             onChange={(e) =>
                               handleEscalationPriceValue(e)
                             }
-                          // onChange={(e) =>
-                          //   setPriceCalculator({
-                          //     ...priceCalculator,
-                          //     priceEscalationSelect: e,
-                          //   })
-                          // }
-                          // value={priceCalculator.priceEscalationSelect}
-                          // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
-                          // value={expandedPriceCalculator.priceEscalationSelect}
                           />
                           <input
                             type="text"
@@ -18638,68 +19511,116 @@ export function CreatePortfolio(props) {
                                 escalationPriceInputValue: e.target.value,
                               })
                             }
-                          // value={priceCalculator.priceEscalationInput}
-                          // onChange={(e) =>
-                          //   setPriceCalculator({
-                          //     ...priceCalculator,
-                          //     priceEscalationInput: e.target.value
-                          //   })
-                          // }
-                          // defaultValue={data.itemBodyModel.priceEscalation}
-                          // value={expandedPriceCalculator.priceEscalationInput}
-                          // onChange={handleExpandePriceChange}
                           />
                         </div>
                       </div>
                     </div>
+                    {/* <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          ADDITIONAL
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <div className="">
+                            <Select
+                              isClearable={true}
+                              value={componentData.priceAdditionalSelect}
+                              name="priceAdditionalSelect"
+                              onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
+                              options={options}
+                              placeholder="Select"
+                              className=" text-primary"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                            placeholder="10%"
+                            value={componentData.priceAdditionalInput}
+                            name="priceAdditionalInput"
+                            onChange={handleComponentChange}
+                          />
+                        </div>
+                      </div>
+                    </div> */}
+                    {/* <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE ESCALATON
+                        </label>
+                        <div className=" d-flex align-items-center form-control-date">
+                          <Select
+                            className="select-input  text-primary"
+                            value={componentData.priceEscalationSelect}
+                            name="priceEscalationSelect"
+                            onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
+                            options={options}
+                            placeholder="placeholder "
+                          />
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="20%"
+                            // defaultValue={props?.priceCalculator?.priceEscalationInput}
+                            value={componentData.priceEscalationInput}
+                            name="priceEscalationInput"
+                            onChange={handleComponentChange}
+                          />
+                        </div>
+                      </div>
+                    </div> */}
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group mt-1">
-                        <FormGroup>
-                          <FormControlLabel
-                            style={{
-                              alignItems: "start",
-                              marginLeft: 0,
-                            }}
-                            control={
-                              <Switch1
-                                checked={priceCalculator.flatRateIndicator}
-                                onChange={(e) =>
-                                  handleFlatPriceIndicator(e)
-                                }
-                              />
-                            }
-                            labelPlacement="top"
-                            label={
-                              <span className="text-light-dark font-size-12 font-weight-500">
-                                FLAT RATE INDICATOR
-                              </span>
-                            }
-                          />
-                        </FormGroup>
-                        {/* <FormGroup>
-                          <FormControlLabel
-                            style={{
-                              alignItems: "start",
-                              marginLeft: 0,
-                            }}
-                            control={
-                              <Switch
-                                checked={extWorkData.flatRateIndicator}
-                                onChange={(e) =>
-                                  handleFlatPriceIndicator(e)
-                                }
-                              />
-                            }
-                            labelPlacement="top"
-                            label={
-                              <span className="text-light-dark font-size-12 font-weight-500">
-                                FLAT RATE INDICATOR
-                              </span>
-                            }
-                          />
-                        </FormGroup> */}
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          CALCULATED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10 text-primary"
+                          // defaultValue={props?.priceCalculator?.calculatedPrice}
+                          value={priceCalculator.calculatedPrice}
+                          name="calculatedPrice"
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              calculatedPrice: e.target.value,
+                            })
+                          }
+                          // value={componentData.calculatedPrice}
+                          // name="calculatedPrice"
+                          // onChange={handleComponentChange}
+                          placeholder="$100"
+                          disabled
+                        />
                       </div>
                     </div>
+                    {/* <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          FLAT PRICE / ADJUSTED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10 text-primary"
+                          value={componentData.flatPrice}
+                          name="flatPrice"
+                          onChange={handleComponentChange}
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div> */}
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label
@@ -18719,7 +19640,7 @@ export function CreatePortfolio(props) {
                               flatPrice: e.target.value,
                             })
                           }
-                          disabled={!priceCalculator.flatRateIndicator}
+                          // disabled={!priceCalculator.flatRateIndicator}
                           placeholder="0"
                         />
                       </div>
@@ -18765,113 +19686,725 @@ export function CreatePortfolio(props) {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
+                    {/* <div className="col-md-6 col-sm-6">
                       <div className="form-group date-box">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
+                          for="exampleInputEmail1"
                         >
-                          PRICE BREAK DOWN
+                          DISCOUNT TYPE
                         </label>
                         <div className=" d-flex form-control-date">
-                          <Select
-                            className="select-input text-primary"
-                            // defaultValue={selectedOption}
-                            // onChange={(e) =>
-                            //   setPriceCalculator({
-                            //     ...priceCalculator,
-                            //     priceBrackDownType: e,
-                            //   })}
-                            // value={priceCalculator.priceBrackDownType}
-                            value={priceCalculator.priceBreakDownOptionsKeyValue1}
-                            onChange={(e) =>
-                              handlePriceBreakDownValue(e)
-                            }
-                            // options={options}
-                            options={priceHeadTypeKeyValue}
-                            placeholder="Select "
-                          />
+                          <div className="">
+                            <Select
+                              value={componentData.discountTypeSelect}
+                              name="discountTypeSelect"
+                              onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
+                              isClearable={true}
+                              options={options}
+                              placeholder="Select"
+                              className=" text-primary"
+                            />
+                          </div>
                           <input
                             type="text"
-                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="optional"
-                            value={priceCalculator.priceBreakDownInputValue}
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                priceBreakDownInputValue: e.target.value,
-                              })
-                            }
-                          // onChange={(e) =>
-                          //   setPriceCalculator({
-                          //     ...priceCalculator,
-                          //     priceBrackDownPercantage: e.target.value,
-                          //   })
-                          // }
-                          // value={priceCalculator.priceBrackDownPercantage}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border border-radius-10 mt-3 py-2 px-3">
-                    <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            YEAR
-                          </label>
-
-
-                          <Select
-                            // options={[
-                            //   { value: "1", label: "1" },
-                            //   { value: "2", label: "2" },
-                            //   { value: "3", label: "3" },
-                            // ]}
-                            options={yearsOption}
-                            placeholder="Select..."
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                year: e
-                              })
-                            }
-                            value={priceCalculator.year}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            NO. OF YEARS
-                          </label>
-                          <input
-                            type="number"
-                            // type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                            placeholder="No. of Years"
-                            // defaultValue={props?.priceCalculator?.startUsage}
-                            // value={priceCalculator.startUsage}
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                noOfYear: e.target.value,
-                              })}
-                            value={priceCalculator.noOfYear}
-                            name="noOfYear"
+                            value={componentData.discountTypeInput}
+                            name="discountTypeInput"
+                            onChange={handleComponentChange}
+                            placeholder="10%"
                           />
-                          {/* <Select
+                        </div>
+                      </div>
+                    </div> */}
+                  </div>
+                  <div className="row mt-5" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={handleComponentDataSave}
+                      className="btn btn-light"
+                    >
+                      Save and Continue
+                    </button>
+                  </div>
+                </>
+              </TabPanel>
+              <TabPanel value="5">
+                {/* <PriceCalculator
+                  setTabs={setTabs}
+                  priceCalculator={priceCalculator}
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  // handleSavePrices={handleSavePrices}
+                /> */}
+
+                <div className="ligt-greey-bg p-3">
+                  <div>
+                    <span className="mr-3 cursor"
+                      // onClick={() => setDisable(!disable)}
+                      onClick={() => setPortfolioItemPriceEditable(!portfolioItemPriceEditable)}
+                    >
+                      <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                      <span className="ml-2">Edit</span>
+                    </span>
+                    <span className="mr-3">
+                      <MonetizationOnOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2"> Adjust price</span>
+                    </span>
+                    {/* <span className="mr-3">
+                      <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related part list(s)</span>
+                    </span>
+                    <span className="mr-3">
+                      <AccessAlarmOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related service estimate(s)</span>
+                    </span> */}
+                    <span>
+                      <SellOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Split price</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+
+                  {portfolioItemPriceEditable ?
+                    <>
+                      <div className="row input-fields">
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE METHOD</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceMethod == "" ||
+                                priceCalculator?.priceMethod == undefined)
+                                ? "NA" : priceCalculator?.priceMethod?.value}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> CURRENCY</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.currency == "" ||
+                                priceCalculator?.currency == undefined)
+                                ? "NA" : priceCalculator?.currency?.value}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE DATE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceDate == "" ||
+                                priceCalculator?.priceDate == undefined)
+                                ? "NA" : getFormattedDateTimeByTimeStamp(priceCalculator?.priceDate)}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE TYPE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceType == "" ||
+                                priceCalculator?.priceType == undefined)
+                                ? "NA" : priceCalculator?.priceType?.value}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> ADDITIONAL</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceAdditionalSelect == "" ||
+                                priceCalculator?.priceAdditionalSelect == undefined)
+                                ? "NA" : priceCalculator?.priceAdditionalSelect?.value}
+                              {(priceCalculator?.priceAdditionalInput == "" ||
+                                priceCalculator?.priceAdditionalInput == undefined)
+                                ? ` NA` : ` ${priceCalculator?.priceAdditionalInput}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE ESCALATION</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.escalationPriceOptionsValue1 == "" ||
+                                priceCalculator?.escalationPriceOptionsValue1 == undefined)
+                                ? "NA" : priceCalculator?.escalationPriceOptionsValue1?.value}
+                              {(priceCalculator?.escalationPriceInputValue == "" ||
+                                priceCalculator?.escalationPriceInputValue == undefined)
+                                ? ` NA` : ` ${priceCalculator?.escalationPriceInputValue}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FLAT RATE INDICATOR</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator.flatRateIndicator == true)
+                                ? "Yes" : "No"}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FLAT PRICE / ADJUSTED PRICE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.flatPrice == "" ||
+                                priceCalculator?.flatPrice == undefined)
+                                ? ` NA` : ` ${priceCalculator?.flatPrice}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">  DISCOUNT TYPE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.discountTypeSelect == "" ||
+                                priceCalculator?.discountTypeSelect == undefined)
+                                ? "NA" : priceCalculator?.discountTypeSelect?.value}
+                              {(priceCalculator?.discountTypeInput == "" ||
+                                priceCalculator?.discountTypeInput == undefined)
+                                ? ` NA` : ` ${priceCalculator?.discountTypeInput}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">  PRICE BREAK DOWN</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceBreakDownOptionsKeyValue1 == "" ||
+                                priceCalculator?.priceBreakDownOptionsKeyValue1 == undefined)
+                                ? "NA" : priceCalculator?.priceBreakDownOptionsKeyValue1?.value}
+                              {(priceCalculator?.priceBreakDownInputValue == "" ||
+                                priceCalculator?.priceBreakDownInputValue == undefined)
+                                ? ` NA` : ` ${priceCalculator?.priceBreakDownInputValue}`}
+                            </h6>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border border-radius-10 mt-3 py-2 px-3">
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  YEAR</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.year == "" ||
+                                  priceCalculator?.year == undefined)
+                                  ? "NA" : priceCalculator?.year?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  NO. OF YEARS</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.noOfYear == "" ||
+                                  priceCalculator?.noOfYear == undefined)
+                                  ? "NA" : priceCalculator?.noOfYear}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  START USAGE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.startUsage == "" ||
+                                  priceCalculator?.startUsage == undefined)
+                                  ? "NA" : priceCalculator?.startUsage}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  END USAGE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.endUsage == "" ||
+                                  priceCalculator?.endUsage == undefined)
+                                  ? "NA" : priceCalculator?.endUsage}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  USAGE TYPE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(addPortFolioItem?.usageType == "" ||
+                                  addPortFolioItem?.usageType == undefined)
+                                  ? "NA" : addPortFolioItem?.usageType?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FREQUENCY</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(addPortFolioItem?.frequency == "" ||
+                                  addPortFolioItem?.frequency == undefined)
+                                  ? "NA" : addPortFolioItem?.frequency?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> UNIT</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(addPortFolioItem?.unit == "" ||
+                                  addPortFolioItem?.unit == undefined)
+                                  ? "NA" : addPortFolioItem?.unit?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> RECOMMENDED VALUE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.recommendedValue == "" ||
+                                  priceCalculator?.recommendedValue == undefined)
+                                  ? "NA" : priceCalculator?.recommendedValue}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> NO. OF EVENTS</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.numberOfEvents == "" ||
+                                  priceCalculator?.numberOfEvents == undefined)
+                                  ? "NA" : priceCalculator?.numberOfEvents}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                    :
+                    <>
+                      <div className="row input-fields">
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              PRICE METHOD
+                            </label>
+                            <Select
+                              options={priceMethodKeyValue}
+                              className="text-primary"
+                              // defaultValue={props?.priceCalculator?.priceMethod}
+                              value={priceCalculator.priceMethod}
+                              name="priceMethod"
+                              onChange={(e) =>
+                                setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                              }
+                              placeholder="placeholder (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              CURRENCY
+                            </label>
+                            <Select
+                              options={priceCurrencyKeyValue}
+                              className="text-primary"
+                              // defaultValue={props?.priceCalculator?.priceMethod}
+                              value={priceCalculator.currency}
+                              name="priceMethod"
+                              onChange={(e) => {
+                                setPriceCalculator({ ...priceCalculator, currency: e })
+                                setAddportFolioItem({ ...addPortFolioItem, currency: e })
+                              }
+                              }
+                              placeholder="placeholder (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              PRICE DATE
+                            </label>
+                            <div className="d-flex align-items-center date-box w-100">
+                              <div className="form-group w-100">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    label=""
+                                    name="preparedOn"
+                                    value={priceCalculator.priceDate}
+                                    onChange={(e) =>
+                                      setPriceCalculator({
+                                        ...priceCalculator,
+                                        priceDate: e,
+                                      })
+                                    }
+                                  />
+                                </MuiPickersUtilsProvider>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              PRICE TYPE
+                            </label>
+                            <Select
+                              // defaultValue={priceTypeKeyValue}
+                              className="text-primary"
+                              onChange={(e) =>
+                                // setPriceTypeKeyValue1(e)
+                                setPriceCalculator({ ...priceCalculator, priceType: e })
+                              }
+                              options={priceTypeKeyValue}
+                              placeholder="placeholder (Optional)"
+                              value={priceCalculator.priceType}
+                            />
+                            {/* <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="priceType"
+                          disabled={disable}
+                          value={itemPriceCalculator.priceType}
+                          onChange={handleItemPriceCalculatorChange}
+                        /> */}
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              ADDITIONAL
+                            </label>
+                            <div className=" d-flex form-control-date">
+                              <div className="">
+                                <Select
+                                  isClearable={true}
+                                  className="text-primary"
+                                  value={priceCalculator.priceAdditionalSelect}
+                                  name="priceAdditionalSelect"
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      priceAdditionalSelect: e,
+                                    })
+                                  }
+                                  options={additionalPriceHeadTypeKeyValue}
+                                  placeholder="Select"
+                                // isDisabled
+                                />
+                              </div>
+                              <input
+                                type="text"
+                                className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                placeholder="10%"
+                                defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                                value={priceCalculator.priceAdditionalInput}
+                                name="priceAdditionalInput"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    priceAdditionalInput: e.target.value,
+                                  })
+                                }
+                              // disabled
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              PRICE ESCALATION
+                            </label>
+                            <div className=" d-flex align-items-center form-control-date">
+                              <Select
+                                className="select-input text-primary"
+                                id="priceEscalationSelect"
+                                options={priceHeadTypeKeyValue}
+                                placeholder="placeholder "
+                                value={priceCalculator.escalationPriceOptionsValue1}
+                                onChange={(e) =>
+                                  handleEscalationPriceValue(e)
+                                }
+                              // onChange={(e) =>
+                              //   setPriceCalculator({
+                              //     ...priceCalculator,
+                              //     priceEscalationSelect: e,
+                              //   })
+                              // }
+                              // value={priceCalculator.priceEscalationSelect}
+                              // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                              // value={expandedPriceCalculator.priceEscalationSelect}
+                              />
+                              <input
+                                type="text"
+                                className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                placeholder="20%"
+                                id="priceEscalationInput"
+                                value={priceCalculator.escalationPriceInputValue}
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    escalationPriceInputValue: e.target.value,
+                                  })
+                                }
+                              // value={priceCalculator.priceEscalationInput}
+                              // onChange={(e) =>
+                              //   setPriceCalculator({
+                              //     ...priceCalculator,
+                              //     priceEscalationInput: e.target.value
+                              //   })
+                              // }
+                              // defaultValue={data.itemBodyModel.priceEscalation}
+                              // value={expandedPriceCalculator.priceEscalationInput}
+                              // onChange={handleExpandePriceChange}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group mt-1">
+                            <FormGroup>
+                              <FormControlLabel
+                                style={{
+                                  alignItems: "start",
+                                  marginLeft: 0,
+                                }}
+                                control={
+                                  <Switch1
+                                    checked={priceCalculator.flatRateIndicator}
+                                    onChange={(e) =>
+                                      handleFlatPriceIndicator(e)
+                                    }
+                                  />
+                                }
+                                labelPlacement="top"
+                                label={
+                                  <span className="text-light-dark font-size-12 font-weight-500">
+                                    FLAT RATE INDICATOR
+                                  </span>
+                                }
+                              />
+                            </FormGroup>
+                            {/* <FormGroup>
+                          <FormControlLabel
+                            style={{
+                              alignItems: "start",
+                              marginLeft: 0,
+                            }}
+                            control={
+                              <Switch
+                                checked={extWorkData.flatRateIndicator}
+                                onChange={(e) =>
+                                  handleFlatPriceIndicator(e)
+                                }
+                              />
+                            }
+                            labelPlacement="top"
+                            label={
+                              <span className="text-light-dark font-size-12 font-weight-500">
+                                FLAT RATE INDICATOR
+                              </span>
+                            }
+                          />
+                        </FormGroup> */}
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              FLAT PRICE / ADJUSTED PRICE
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
+                              value={priceCalculator.flatPrice}
+                              name="flatPrice"
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  flatPrice: e.target.value,
+                                })
+                              }
+                              disabled={!priceCalculator.flatRateIndicator}
+                              placeholder="0"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              DISCOUNT TYPE
+                            </label>
+                            <div className=" d-flex form-control-date">
+                              <div className="">
+                                <Select
+                                  value={priceCalculator.discountTypeSelect}
+                                  name="discountTypeSelect"
+                                  className="text-primary"
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      discountTypeSelect: e,
+                                    })
+                                  }
+                                  isClearable={true}
+                                  options={discountTypeOptions}
+                                  placeholder="Select"
+                                />
+                              </div>
+                              <input
+                                type="text"
+                                className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                value={priceCalculator.discountTypeInput}
+                                name="discountTypeInput"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    discountTypeInput: e.target.value,
+                                  })
+                                }
+                                placeholder="10%"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              PRICE BREAK DOWN
+                            </label>
+                            <div className=" d-flex form-control-date">
+                              <Select
+                                className="select-input text-primary"
+                                // defaultValue={selectedOption}
+                                // onChange={(e) =>
+                                //   setPriceCalculator({
+                                //     ...priceCalculator,
+                                //     priceBrackDownType: e,
+                                //   })}
+                                // value={priceCalculator.priceBrackDownType}
+                                value={priceCalculator.priceBreakDownOptionsKeyValue1}
+                                onChange={(e) =>
+                                  handlePriceBreakDownValue(e)
+                                }
+                                // options={options}
+                                options={priceHeadTypeKeyValue}
+                                placeholder="Select "
+                              />
+                              <input
+                                type="text"
+                                className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                id="exampleInputEmail1"
+                                aria-describedby="emailHelp"
+                                placeholder="optional"
+                                value={priceCalculator.priceBreakDownInputValue}
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    priceBreakDownInputValue: e.target.value,
+                                  })
+                                }
+                              // onChange={(e) =>
+                              //   setPriceCalculator({
+                              //     ...priceCalculator,
+                              //     priceBrackDownPercantage: e.target.value,
+                              //   })
+                              // }
+                              // value={priceCalculator.priceBrackDownPercantage}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border border-radius-10 mt-3 py-2 px-3">
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                YEAR
+                              </label>
+
+
+                              <Select
+                                // options={[
+                                //   { value: "1", label: "1" },
+                                //   { value: "2", label: "2" },
+                                //   { value: "3", label: "3" },
+                                // ]}
+                                options={yearsOption}
+                                placeholder="Select..."
+                                className="text-primary"
+                                onChange={(e) => {
+                                  setPriceCalculator({ ...priceCalculator, year: e })
+                                  setAddportFolioItem({ ...addPortFolioItem, year: e })
+                                }
+                                }
+                                value={priceCalculator.year}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                NO. OF YEARS
+                              </label>
+                              <input
+                                type="number"
+                                // type="text"
+                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                placeholder="No. of Years"
+                                // defaultValue={props?.priceCalculator?.startUsage}
+                                // value={priceCalculator.startUsage}
+                                onChange={(e) => {
+                                  setPriceCalculator({ ...priceCalculator, noOfYear: e.target.value, })
+                                  setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value })
+                                }
+                                }
+                                value={priceCalculator.noOfYear}
+                                name="noOfYear"
+                              />
+                              {/* <Select
                                   options={[
                                     { value: "1", label: "1" },
                                     { value: "2", label: "2" },
@@ -18884,300 +20417,300 @@ export function CreatePortfolio(props) {
                                   }
                                   value={addPortFolioItem.noOfYear}
                                 /> */}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
-                    <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            START USAGE
-                          </label>
-                          <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                          >
-                            <input
-                              type="number"
-                              // type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                              placeholder="10,000 hours"
-                              // defaultValue={props?.priceCalculator?.startUsage}
-                              // value={priceCalculator.startUsage}
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  startUsage: e.target.value,
-                                })}
-                              value={priceCalculator.startUsage}
-                              name="startUsage"
-                            />
-                            <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit.label}</span>
+                            </div>
                           </div>
-                          <div className="css-w8dmq8">*Mandatory</div>
                         </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            END USAGE
-                          </label>
-                          <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                          >
-                            <input
-                              type="number"
-                              // type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                              placeholder="16,000 hours"
-                              // defaultValue={props?.priceCalculator?.startUsage}
-                              // value={priceCalculator.startUsage}
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  endUsage: e.target.value,
-                                })}
-                              value={priceCalculator.endUsage}
-                              name="endUsage"
-                            />
-                            <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit.label}</span>
+                        <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                START USAGE
+                              </label>
+                              <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                              >
+                                <input
+                                  type="number"
+                                  // type="text"
+                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                  placeholder="10,000 hours"
+                                  // defaultValue={props?.priceCalculator?.startUsage}
+                                  // value={priceCalculator.startUsage}
+                                  onChange={(e) => {
+                                    setPriceCalculator({ ...priceCalculator, startUsage: e.target.value, })
+                                    setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value })
+                                  }
+                                  }
+                                  value={priceCalculator.startUsage}
+                                  name="startUsage"
+                                />
+                                <span className="hours-div text-primary">{addPortFolioItem?.unit == "" ? "select unit" : priceCalculator?.unit?.label}</span>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
                           </div>
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            USAGE TYPE
-                          </label>
-                          <Select
-                            options={usageTypeOption}
-                            placeholder="Planned Usage"
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                usageType: e,
-                              })
-                            }
-                            value={priceCalculator.usageType}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            FREQUENCY
-                          </label>
-                          <Select
-                            options={frequencyOptions}
-                            placeholder="Select....."
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                frequency: e,
-                              })
-                            }
-                            value={priceCalculator.frequency}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            UNIT
-                          </label>
-                          <Select
-                            options={[
-                              { value: "per Hr", label: "per Hr" },
-                              { value: "per Km", label: "per Km" },
-                              { value: "per Miles", label: "per Miles" },
-                              { value: "per year", label: "per year" },
-                              { value: "per month", label: "per month" },
-                              { value: "per day", label: "per day" },
-                              { value: "per quarter", label: "per quarter" },
-                            ]}
-                            placeholder="Select..."
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator, unit: e
-                              })
-                            }
-                            value={priceCalculator.unit}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            RECOMMENDED VALUE
-                          </label>
-                          <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                          >
-                            <input
-                              type="number"
-                              // type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                              placeholder="Recommended Value"
-                              // defaultValue={props?.priceCalculator?.startUsage}
-                              // value={priceCalculator.startUsage}
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  recommendedValue: e.target.value,
-                                })}
-                              value={priceCalculator.recommendedValue}
-                              name="recommendedValue"
-                            // name="startUsage"
-                            // onChange={(e) =>
-                            //   setPriceCalculator({
-                            //     ...priceCalculator,
-                            //     startUsage: e.target.value,
-                            //   })
-                            // }
-                            />
-                            <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit.label}</span>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                END USAGE
+                              </label>
+                              <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                              >
+                                <input
+                                  type="number"
+                                  // type="text"
+                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                  placeholder="16,000 hours"
+                                  // defaultValue={props?.priceCalculator?.startUsage}
+                                  // value={priceCalculator.startUsage}
+                                  onChange={(e) => {
+                                    setPriceCalculator({ ...priceCalculator, endUsage: e.target.value, })
+                                    setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value })
+                                  }
+                                  }
+                                  value={priceCalculator.endUsage}
+                                  name="endUsage"
+                                />
+                                <span className="hours-div text-primary">{addPortFolioItem?.unit == "" ? "select unit" : addPortFolioItem?.unit?.label}</span>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
                           </div>
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group w-100">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            NO. OF EVENTS
-                          </label>
-                          <input
-                            type="number"
-                            className="form-control border-radius-10 text-primary"
-                            placeholder="NO. OF EVENTS"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                numberOfEvents: e.target.value,
-                              })
-                            }
-                            value={priceCalculator.numberOfEvents}
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group mt-1">
-                          <FormGroup>
-                            <FormControlLabel
-                              style={{
-                                alignItems: "start",
-                                marginLeft: 0,
-                              }}
-                              control={
-                                <Switch1
-                                  checked={extWorkData.flatRateIndicator}
-                                  onChange={(e) =>
-                                    setExtWorkData({
-                                      ...extWorkData,
-                                      flatRateIndicator: e.target.checked,
-                                      adjustedPrice: e.target.checked
-                                        ? extWorkData.adjustedPrice
-                                        : 0.0,
-                                    })
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                USAGE TYPE
+                              </label>
+                              <Select
+                                options={usageTypeOption}
+                                placeholder="Planned Usage"
+                                className="text-primary"
+                                onChange={(e) => {
+                                  setPriceCalculator({ ...priceCalculator, usageType: e, })
+                                  setAddportFolioItem({ ...addPortFolioItem, usageType: e })
+                                }
+                                }
+                                value={addPortFolioItem.usageType}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                FREQUENCY
+                              </label>
+                              <Select
+                                options={frequencyOptions}
+                                placeholder="Select....."
+                                className="text-primary"
+                                onChange={(e) => {
+                                  setPriceCalculator({ ...priceCalculator, frequency: e, })
+                                  setAddportFolioItem({ ...addPortFolioItem, frequency: e })
+                                }
+                                }
+                                value={addPortFolioItem.frequency}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                UNIT
+                              </label>
+                              <Select
+                                options={[
+                                  { value: "per Hr", label: "per Hr" },
+                                  { value: "per Km", label: "per Km" },
+                                  { value: "per Miles", label: "per Miles" },
+                                  { value: "per year", label: "per year" },
+                                  { value: "per month", label: "per month" },
+                                  { value: "per day", label: "per day" },
+                                  { value: "per quarter", label: "per quarter" },
+                                ]}
+                                placeholder="Select..."
+                                className="text-primary"
+                                onChange={(e) => {
+                                  setPriceCalculator({ ...priceCalculator, unit: e })
+                                  setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                                }
+                                }
+                                value={addPortFolioItem.unit}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                RECOMMENDED VALUE
+                              </label>
+                              <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                              >
+                                <input
+                                  type="number"
+                                  // type="text"
+                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                  placeholder="Recommended Value"
+                                  // defaultValue={props?.priceCalculator?.startUsage}
+                                  // value={priceCalculator.startUsage}
+                                  onChange={(e) => {
+                                    setPriceCalculator({ ...priceCalculator, recommendedValue: e.target.value, })
+                                    setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value })
+                                  }
+                                  }
+                                  value={priceCalculator.recommendedValue}
+                                  name="recommendedValue"
+                                // name="startUsage"
+                                // onChange={(e) =>
+                                //   setPriceCalculator({
+                                //     ...priceCalculator,
+                                //     startUsage: e.target.value,
+                                //   })
+                                // }
+                                />
+                                < span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit.label}</span>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group w-100">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                NO. OF EVENTS
+                              </label>
+                              <input
+                                type="number"
+                                className="form-control border-radius-10 text-primary"
+                                placeholder="NO. OF EVENTS"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator, numberOfEvents: e.target.value,
+                                  })
+                                }
+                                value={priceCalculator.numberOfEvents}
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div class="form-group mt-1">
+                              <FormGroup>
+                                <FormControlLabel
+                                  style={{
+                                    alignItems: "start",
+                                    marginLeft: 0,
+                                  }}
+                                  control={
+                                    <Switch1
+                                      checked={extWorkData.flatRateIndicator}
+                                      onChange={(e) =>
+                                        setExtWorkData({
+                                          ...extWorkData,
+                                          flatRateIndicator: e.target.checked,
+                                          adjustedPrice: e.target.checked
+                                            ? extWorkData.adjustedPrice
+                                            : 0.0,
+                                        })
+                                      }
+                                    />
+                                  }
+                                  labelPlacement="top"
+                                  label={
+                                    <span className="text-light-dark font-size-12 font-weight-500">
+                                      SUPRESSION
+                                    </span>
                                   }
                                 />
-                              }
-                              labelPlacement="top"
-                              label={
-                                <span className="text-light-dark font-size-12 font-weight-500">
-                                  SUPRESSION
-                                </span>
-                              }
-                            />
-                          </FormGroup>
+                              </FormGroup>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="my-1 d-flex align-items-center justify-content-end">
-                      <Link to="#" className="btn border mr-4">Cancel</Link>
-                      <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
-                        <span className="mr-2 funds">
-                          <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                            <g>
-                              <g>
-                                <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                        <div className="my-1 d-flex align-items-center justify-content-end">
+                          <Link to="#" className="btn border mr-4">Cancel</Link>
+                          <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                            <span className="mr-2 funds">
+                              <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                <g>
+                                  <g>
+                                    <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
                               C74.2,101.4,70.7,105,66.3,105.1z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
                               C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
                               C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C90.7,157.7,94.3,154.1,98.6,154z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C123.2,157.7,126.8,154.1,131.1,154z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
                               c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
                               c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
                               S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
                               c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
-                              </g>
-                            </g>
-                          </svg>
-                        </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
-                    </div>
-                  </div>
+                                  </g>
+                                </g>
+                              </svg>
+                            </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                        </div>
+                      </div>
+                    </>
+                  }
+
                   <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
                       <div className="d-block mr-4">
@@ -19199,6 +20732,7 @@ export function CreatePortfolio(props) {
                       </a>
                     </div>
                   </div>
+
                 </div>
               </TabPanel>
 
@@ -19227,7 +20761,6 @@ export function CreatePortfolio(props) {
                       data={tempBundleItems}
                       customStyles={customStyles}
                       expandableRows
-                      // expandableRowsComponent={ExpandedComponent}
                       expandableRowsComponent={ExpendedModelComponent}
                       onRowExpandToggled={(bool, row) => setCurrentExpendModelComponentRow(row)}
                       pagination
@@ -19292,6 +20825,7 @@ export function CreatePortfolio(props) {
                             { value: "chargeable", label: "Chargeable" },
                           ]}
                           value={value4}
+
                         />
                       )}
                     </div>
@@ -19312,6 +20846,7 @@ export function CreatePortfolio(props) {
                           options={statusOption}
                           value={serviceBundleStatus}
                           isOptionDisabled={(option) => makeStatusValueDisabled(option)}
+                        // isDisabled={bundleOrServiceEditOrNot}
                         />
                       </div>
                       <a href="#" className="ml-3 font-size-14">
@@ -19344,7 +20879,13 @@ export function CreatePortfolio(props) {
                     <h5 className="d-flex align-items-center mb-0">
                       <div className="" style={{ display: "contents" }}>
                         <span className="mr-3">Header</span>
-                        <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }} onClick={() => setBundleAndServiceEditAble(false)}>
+                        <a
+                          href={undefined}
+                          className="btn-sm"
+                          style={{ cursor: "pointer" }}
+                          // onClick={() => setBundleAndServiceEditAble(false)}
+                          onClick={() => { !bundleOrServiceEditOrNot && setBundleAndServiceEditAble(false) }}
+                        >
                           <i className="fa fa-pencil" aria-hidden="true"></i>
                         </a>
                         <a href="#" className="btn-sm">
@@ -19762,7 +21303,7 @@ export function CreatePortfolio(props) {
                         // className="btn btn-light"
                         className="btn text-white bg-primary"
                       >
-                        Save & Next
+                        {bundleOrServiceEditOrNot ? "Next" : "Save & Next"}
                       </button>
                     </div>
                   </div>
@@ -19771,8 +21312,6 @@ export function CreatePortfolio(props) {
               <TabPanel value="bundleServiceItems">
                 {
                   editBundleService ? <>
-
-
                     <AddPortfolioItem
                       passItemEditRowData={passItemEditRowData}
                       handleItemEditSave={handleItemEditSave}
@@ -19780,6 +21319,8 @@ export function CreatePortfolio(props) {
                       compoFlagTest="itemEditBundle"
                       setBundleTabs={setBundleTabs}
                       setBundleServiceNeed={setBundleServiceNeed}
+                      portfolioDataId={portfolioId}
+                      bundleOrServiceEditOrNot={bundleOrServiceEditOrNot}
                     />
                   </> : <>
                     <AddPortfolioItem
@@ -19787,7 +21328,8 @@ export function CreatePortfolio(props) {
                       compoFlag="BUNDLE"
                       getAddPortfolioItemData={getAddPortfolioItemData}
                       editBundleService={editBundleService}
-                      createdBundleItems={createdBundleItems}
+                      createdBundleItems={createdServiceData}
+                      portfolioDataId={portfolioId}
                     /></>
                 }
               </TabPanel>
@@ -19799,8 +21341,11 @@ export function CreatePortfolio(props) {
                       setBundleTabs={setBundleTabs}
                       setBundleServiceShow={setBundleServiceShow}
                       getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                      priceCalculator={itemPriceData}
-                      priceCompFlag="editAble"
+                      // priceCalculator={itemPriceData}
+                      priceCalculator={bundleOrServiceItemPriceData}
+                      createdBundleItems={passItemEditRowData}
+                      priceCompFlagIs="editAble"
+                      bundleOrServiceEditOrNot={bundleOrServiceEditOrNot}
                     />
                   </> :
                     <>
@@ -19809,8 +21354,9 @@ export function CreatePortfolio(props) {
                         setBundleTabs={setBundleTabs}
                         setBundleServiceShow={setBundleServiceShow}
                         getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                        priceCalculator={itemPriceData}
-                        createdBundleItems={createdBundleItems}
+                        // priceCalculator={itemPriceData}
+                        priceCalculator={bundleOrServiceItemPriceData}
+                        createdBundleItems={createdServiceData}
                         priceCompFlagIs="noEditAble"
                       />
                     </>
@@ -19900,6 +21446,7 @@ export function CreatePortfolio(props) {
                               bundleOrServiceAdministrative.salesOffice == "" ||
                                 bundleOrServiceAdministrative.salesOffice == undefined ||
                                 bundleOrServiceAdministrative.salesOffice?.value == "string" ||
+                                bundleOrServiceAdministrative.salesOffice?.value == "" ||
                                 bundleOrServiceAdministrative.salesOffice == null
                                 ? "NA" : bundleOrServiceAdministrative.salesOffice?.value)}
                           </h6>
@@ -19913,6 +21460,7 @@ export function CreatePortfolio(props) {
                               bundleOrServiceAdministrative.offerValidity == "" ||
                                 bundleOrServiceAdministrative.offerValidity == undefined ||
                                 bundleOrServiceAdministrative.offerValidity?.value == "string" ||
+                                bundleOrServiceAdministrative.offerValidity?.value == "" ||
                                 bundleOrServiceAdministrative.offerValidity == null
                                 ? "NA" : bundleOrServiceAdministrative.offerValidity?.label)}
                           </h6>
@@ -20146,8 +21694,11 @@ export function CreatePortfolio(props) {
             serviceOrBundlePrefix={serviceOrBundlePrefix}
             setBundleTabs={setBundleTabs}
             setBundleServiceShow={setBundleServiceShow}
-            priceCalculator={priceCalculator}
             getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+            priceCalculator={bundleServicePriceCalculatorData}
+            createdBundleItems={passItemEditRowData}
+            priceCompFlagIs="editAble"
+            bundleOrServiceEditOrNot={bundleOrServiceEditOrNot}
           // handleSavePrices={handleSavePrices}
           />
         </Modal.Body>
@@ -20435,9 +21986,9 @@ export function CreatePortfolio(props) {
             <Select
               className="text-primary"
               // value={createServiceOrBundle.customerSegment}
-              onChange={(e) => handleOption3(e)}
+              onChange={(e) => handleVersionValue(e)}
               options={versionOption}
-              value={value3}
+              value={versionValue}
               placeholder="Version Type"
             />
           </div>
@@ -20633,39 +22184,44 @@ export function CreatePortfolio(props) {
           <Modal.Title><b>Select Optional Services</b></Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className=' p-2'>
-            <div className="row">
-              {/* {optionalServiceListData.length} */}
-              {
-                optionalServiceListData.message === undefined ?
-                  <>
-                    {optionalServiceListData.map((serviceData, i) =>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="card p-4">
-                          <div className="d-flex align-items-center ">
-                            <div class="checkbox mr-3">
-                              <input
-                                type="checkbox"
-                                value=""
-                                checked={optionalServicesData.includes(serviceData.itemName)}
-                                onChange={(e) => handleSelectOptionalService(e, serviceData.itemName)}
-                              />
+          {optionalServiceListLoading ?
+            <div className="d-flex justify-content-center">
+              <LoadingProgress />
+            </div>
+            :
+            <>
+              <div className=' p-2'>
+                <div className="row">
+                  {
+                    optionalServiceListData.message === undefined ?
+                      <>
+                        {optionalServiceListData.map((serviceData, i) =>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="card p-4">
+                              <div className="d-flex align-items-center ">
+                                <div class="checkbox mr-3">
+                                  <input
+                                    type="checkbox"
+                                    value=""
+                                    checked={optionalServicesData.includes(serviceData.itemName)}
+                                    onChange={(e) => handleSelectOptionalService(e, serviceData.itemName)}
+                                  />
+                                </div>
+                                <p className="mb-0 font-size-16 text-black">
+                                  {/* <b>AIR FILTER REPLACEMENT</b> */}
+                                  <b>{serviceData.itemName}</b>
+                                </p>
+                              </div>
                             </div>
-                            <p className="mb-0 font-size-16 text-black">
-                              {/* <b>AIR FILTER REPLACEMENT</b> */}
-                              <b>{serviceData.itemName}</b>
-                            </p>
+                            <div className="px-2">
+                              <p className="mb-0 font-size-14">
+                                {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
+                                {serviceData.itemHeaderDescription}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="px-2">
-                          <p className="mb-0 font-size-14">
-                            {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
-                            {serviceData.itemHeaderDescription}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    {/* <div className="col-md-6 col-sm-6">
+                        )}
+                        {/* <div className="col-md-6 col-sm-6">
                 <div className="card p-4">
                   <div className="d-flex align-items-center ">
                     <div class="checkbox mr-3">
@@ -20704,14 +22260,17 @@ export function CreatePortfolio(props) {
                   <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
                 </div>
               </div> */}
-                  </>
-                  :
-                  <>
-                  </>
-              }
-            </div>
-            {/* <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p> */}
-          </div>
+                      </>
+                      :
+                      <>
+                      </>
+                  }
+                </div>
+                {/* <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p> */}
+              </div>
+            </>
+          }
+
           {/* </div>
       </div>
     </div> */}

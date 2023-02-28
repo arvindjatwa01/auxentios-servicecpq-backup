@@ -1195,230 +1195,235 @@ export const PortfolioSummary = () => {
 
   const makeBundleServiceEditable = async (data) => {
 
-    const editAbleBundleService = await getItemDataById(data.itemId);
+    const fetchItemDetailsById = await getItemDataById(data.itemId);
+    if (fetchItemDetailsById.status === 200) {
+      // const editAbleBundleService = await getItemDataById(data.itemId);
+      const editAbleBundleService = fetchItemDetailsById.data;
 
-    setPortfolioServiceBundleId(editAbleBundleService.itemHeaderModel.portfolioItemId)
+      setPortfolioServiceBundleId(editAbleBundleService.itemHeaderModel.portfolioItemId)
 
-    setBundleServicePortfolioItemId(editAbleBundleService.itemHeaderModel.portfolioItemId)
+      setBundleServicePortfolioItemId(editAbleBundleService.itemHeaderModel.portfolioItemId)
 
-    console.log("editAbleBundleService is ------ ", editAbleBundleService);
-    setEditBundleService(true);
-    setBundleAndServiceEditAble(true)
-    setBundleServiceAdministrativeEditable(true);
+      console.log("editAbleBundleService is ------ ", editAbleBundleService);
+      setEditBundleService(true);
+      setBundleAndServiceEditAble(true)
+      setBundleServiceAdministrativeEditable(true);
 
-    if (editAbleBundleService.itemBodyModel.itemPrices.length > 0) {
-      const res = await getItemPriceData(editAbleBundleService.itemBodyModel.itemPrices[0].itemPriceDataId)
-      setItemPriceData(res.data);
-    } else {
-      setItemPriceData({
-        priceMethod: "",
-        currency: "",
-        priceDate: new Date(),
-        priceType: "",
-        priceAdditionalSelect: "",
-        priceAdditionalInput: "",
-        priceEscalationSelect: "",
-        discountTypeSelect: "",
-        priceEscalationInput: "",
-        flatRateIndicator: false,
-        flatPrice: "",
-        discountTypeInput: "",
-        priceBrackDownType: "",
-        priceBrackDownPercantage: "",
-        year: "",
-        noOfYear: 1,
-        startUsage: "",
-        endUsage: "",
-        usageType: "",
-        frequency: "",
-        unit: "",
-        recommendedValue: "",
-        numberOfEvents: "",
-        netPrice: 0,
-        totalPrice: 0,
-        listPrice: "",
-        calculatedPrice: "",
-        priceYear: "",
-        usageType: "",
-        frequency: "",
-        cycle: "",
-        suppresion: "",
-        id: "",
-        portfolioDataId: 1,
-      })
+      if (editAbleBundleService.itemBodyModel.itemPrices.length > 0) {
+        const res = await getItemPriceData(editAbleBundleService.itemBodyModel.itemPrices[0].itemPriceDataId)
+        setItemPriceData(res.data);
+      } else {
+        setItemPriceData({
+          priceMethod: "",
+          currency: "",
+          priceDate: new Date(),
+          priceType: "",
+          priceAdditionalSelect: "",
+          priceAdditionalInput: "",
+          priceEscalationSelect: "",
+          discountTypeSelect: "",
+          priceEscalationInput: "",
+          flatRateIndicator: false,
+          flatPrice: "",
+          discountTypeInput: "",
+          priceBrackDownType: "",
+          priceBrackDownPercantage: "",
+          year: "",
+          noOfYear: 1,
+          startUsage: "",
+          endUsage: "",
+          usageType: "",
+          frequency: "",
+          unit: "",
+          recommendedValue: "",
+          numberOfEvents: "",
+          netPrice: 0,
+          totalPrice: 0,
+          listPrice: "",
+          calculatedPrice: "",
+          priceYear: "",
+          usageType: "",
+          frequency: "",
+          cycle: "",
+          suppresion: "",
+          id: "",
+          portfolioDataId: 1,
+        })
+      }
+
+      // setAddportFolioItem({
+      //   id: editAbleBundleService.itemId,
+      //   name: editAbleBundleService.itemName,
+      //   description: editAbleBundleService.itemBodyModel.itemBodyDescription,
+      //   // usageIn:{label:categoryUsageKeyValue1.label,value:categoryUsageKeyValue1.value},
+      //   // taskType: {label:stratgyTaskTypeKeyValue.label,value:stratgyTaskTypeKeyValue.value},
+      //   usageIn: {
+      //     label: editAbleBundleService.itemBodyModel.usageIn,
+      //     value: editAbleBundleService.itemBodyModel.usageIn
+      //   },
+      //   taskType: {
+      //     label: editAbleBundleService.itemBodyModel.taskType[0],
+      //     value: editAbleBundleService.itemBodyModel.taskType[0]
+      //   },
+      //   frequency: {
+      //     label: editAbleBundleService.itemBodyModel.frequency,
+      //     value: editAbleBundleService.itemBodyModel.frequency
+      //   },
+      //   unit: {
+      //     label: editAbleBundleService.itemBodyModel.frequency,
+      //     value: editAbleBundleService.itemBodyModel.frequency
+      //   },
+      //   recommendedValue: "",
+      //   quantity: 1,
+      //   numberOfEvents: "",
+      //   templateId: "",
+      //   templateDescription: "",
+      //   relatedKit: "",
+      //   kitDescription: "",
+      //   repairOption: "",
+      //   strategyTask: "",
+      //   year: "",
+      //   noOfYear: "1",
+      //   headerdescription: "",
+      //   preparedBy: "",
+      //   approvedBy: "",
+      //   preparedOn: new Date(),
+      //   revisedBy: "",
+      //   revisedOn: new Date(),
+      //   branch: "",
+      //   offerValidity: "",
+      //   startUsage: "",
+      //   endUsage: "",
+      //   usageType: "",
+      //   withBundleService: false,
+      // })
+
+
+      if (editAbleBundleService.itemHeaderModel.bundleFlag === "SERVICE") {
+        setServiceOrBundlePrefix("SERVICE");
+        setBundleTabs("bundleServiceHeader")
+        setBundleServiceShow(true);
+        setCreateServiceOrBundle({
+          id: editAbleBundleService.itemId,
+          name: editAbleBundleService.itemName,
+          description: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
+          bundleFlag: editAbleBundleService.itemHeaderModel.bundleFlag,
+          reference: editAbleBundleService.itemHeaderModel.reference,
+          customerSegment: { label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment },
+          make: editAbleBundleService.itemHeaderModel.itemHeaderMake,
+          model: editAbleBundleService.itemHeaderModel.model,
+          family: editAbleBundleService.itemHeaderModel.itemHeaderFamily,
+          prefix: { label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix },
+          machine: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
+          additional: "",
+          estimatedTime: editAbleBundleService.itemHeaderModel.estimatedTime,
+          machineComponent: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
+        });
+
+        setSelectedCustomerSegmentOption({ label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment })
+
+        setSelectedPrefixOption({ label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix });
+
+        setBundleServiceChargeableOrNot(editAbleBundleService.itemHeaderModel.serviceChargable)
+
+        if (editAbleBundleService.itemHeaderModel.serviceChargable) {
+          setValue4({
+            value: "chargeable",
+            label: "Chargeable"
+          });
+        } else {
+          setValue4({
+            value: "free",
+            label: "Free"
+          });
+        }
+
+        var offerValidityLabel;
+        if (editAbleBundleService.itemHeaderModel.offerValidity == "15") {
+          offerValidityLabel = "15 days";
+        } else if (editAbleBundleService.itemHeaderModel.offerValidity == "30") {
+          offerValidityLabel = "1 month";
+        } else if (editAbleBundleService.itemHeaderModel.offerValidity == "45") {
+          offerValidityLabel = "45 days";
+        } else if (editAbleBundleService.itemHeaderModel.offerValidity == "60") {
+          offerValidityLabel = "2 month";
+        } else {
+          offerValidityLabel = editAbleBundleService.itemHeaderModel.offerValidity;
+        }
+
+        setValue2({
+          value: editAbleBundleService.itemHeaderModel.status,
+          label: editAbleBundleService.itemHeaderModel.status,
+        });
+        if (editAbleBundleService.itemHeaderModel.status === "ACTIVE") {
+          setIsActiveStatus(true)
+        } else {
+          setIsActiveStatus(false)
+        }
+
+        setAdministrative({
+          preparedBy: editAbleBundleService.itemHeaderModel.preparedBy,
+          approvedBy: editAbleBundleService.itemHeaderModel.approvedBy,
+          preparedOn: editAbleBundleService.itemHeaderModel.preparedOn,
+          revisedBy: editAbleBundleService.itemHeaderModel.revisedBy,
+          revisedOn: editAbleBundleService.itemHeaderModel.revisedOn,
+          salesOffice: { label: editAbleBundleService.itemHeaderModel.salesOffice, value: editAbleBundleService.itemHeaderModel.salesOffice },
+          offerValidity: { label: offerValidityLabel, value: editAbleBundleService.itemHeaderModel.offerValidity },
+        });
+
+        setEditableServiceOrBundleData(editAbleBundleService);
+      } else if (editAbleBundleService.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+        setServiceOrBundlePrefix("BUNDLE");
+        setBundleTabs("bundleServiceHeader")
+        setBundleServiceShow(true);
+        setCreateServiceOrBundle({
+          id: editAbleBundleService.itemId,
+          name: editAbleBundleService.itemName,
+          description: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
+          bundleFlag: editAbleBundleService.itemHeaderModel.bundleFlag,
+          reference: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
+          customerSegment: "",
+          make: editAbleBundleService.itemHeaderModel.itemHeaderMake,
+          model: editAbleBundleService.itemHeaderModel.model,
+          family: editAbleBundleService.itemHeaderModel.itemHeaderFamily,
+          prefix: { label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix },
+          machine: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
+          additional: "",
+          estimatedTime: editAbleBundleService.itemHeaderModel.estimatedTime,
+          machineComponent: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
+        });
+
+        setSelectedCustomerSegmentOption({ label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment })
+
+        setSelectedPrefixOption({ label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix });
+        setAdministrative({
+          preparedBy: editAbleBundleService.itemHeaderModel.preparedBy,
+          approvedBy: editAbleBundleService.itemHeaderModel.approvedBy,
+          preparedOn: editAbleBundleService.itemHeaderModel.preparedOn,
+          revisedBy: editAbleBundleService.itemHeaderModel.revisedBy,
+          revisedOn: editAbleBundleService.itemHeaderModel.revisedOn,
+          salesOffice: { label: editAbleBundleService.itemHeaderModel.salesOffice, value: editAbleBundleService.itemHeaderModel.salesOffice },
+          offerValidity: { label: editAbleBundleService.itemHeaderModel.offerValidity, value: editAbleBundleService.itemHeaderModel.offerValidity },
+        });
+
+        setValue2({
+          value: editAbleBundleService.itemHeaderModel.status,
+          label: editAbleBundleService.itemHeaderModel.status,
+        });
+
+        if (editAbleBundleService.itemHeaderModel.status === "ACTIVE") {
+          setIsActiveStatus(true)
+        } else {
+          setIsActiveStatus(false)
+        }
+
+        console.log("datais -----------", data)
+
+        setPassItemEditRowData(editAbleBundleService)
+        setEditableServiceOrBundleData(editAbleBundleService);
+      }
     }
 
-    // setAddportFolioItem({
-    //   id: editAbleBundleService.itemId,
-    //   name: editAbleBundleService.itemName,
-    //   description: editAbleBundleService.itemBodyModel.itemBodyDescription,
-    //   // usageIn:{label:categoryUsageKeyValue1.label,value:categoryUsageKeyValue1.value},
-    //   // taskType: {label:stratgyTaskTypeKeyValue.label,value:stratgyTaskTypeKeyValue.value},
-    //   usageIn: {
-    //     label: editAbleBundleService.itemBodyModel.usageIn,
-    //     value: editAbleBundleService.itemBodyModel.usageIn
-    //   },
-    //   taskType: {
-    //     label: editAbleBundleService.itemBodyModel.taskType[0],
-    //     value: editAbleBundleService.itemBodyModel.taskType[0]
-    //   },
-    //   frequency: {
-    //     label: editAbleBundleService.itemBodyModel.frequency,
-    //     value: editAbleBundleService.itemBodyModel.frequency
-    //   },
-    //   unit: {
-    //     label: editAbleBundleService.itemBodyModel.frequency,
-    //     value: editAbleBundleService.itemBodyModel.frequency
-    //   },
-    //   recommendedValue: "",
-    //   quantity: 1,
-    //   numberOfEvents: "",
-    //   templateId: "",
-    //   templateDescription: "",
-    //   relatedKit: "",
-    //   kitDescription: "",
-    //   repairOption: "",
-    //   strategyTask: "",
-    //   year: "",
-    //   noOfYear: "1",
-    //   headerdescription: "",
-    //   preparedBy: "",
-    //   approvedBy: "",
-    //   preparedOn: new Date(),
-    //   revisedBy: "",
-    //   revisedOn: new Date(),
-    //   branch: "",
-    //   offerValidity: "",
-    //   startUsage: "",
-    //   endUsage: "",
-    //   usageType: "",
-    //   withBundleService: false,
-    // })
-
-
-    if (editAbleBundleService.itemHeaderModel.bundleFlag === "SERVICE") {
-      setServiceOrBundlePrefix("SERVICE");
-      setBundleTabs("bundleServiceHeader")
-      setBundleServiceShow(true);
-      setCreateServiceOrBundle({
-        id: editAbleBundleService.itemId,
-        name: editAbleBundleService.itemName,
-        description: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
-        bundleFlag: editAbleBundleService.itemHeaderModel.bundleFlag,
-        reference: editAbleBundleService.itemHeaderModel.reference,
-        customerSegment: { label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment },
-        make: editAbleBundleService.itemHeaderModel.itemHeaderMake,
-        model: editAbleBundleService.itemHeaderModel.model,
-        family: editAbleBundleService.itemHeaderModel.itemHeaderFamily,
-        prefix: { label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix },
-        machine: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
-        additional: "",
-        estimatedTime: editAbleBundleService.itemHeaderModel.estimatedTime,
-        machineComponent: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
-      });
-
-      setSelectedCustomerSegmentOption({ label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment })
-
-      setSelectedPrefixOption({ label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix });
-
-      setBundleServiceChargeableOrNot(editAbleBundleService.itemHeaderModel.serviceChargable)
-
-      if (editAbleBundleService.itemHeaderModel.serviceChargable) {
-        setValue4({
-          value: "chargeable",
-          label: "Chargeable"
-        });
-      } else {
-        setValue4({
-          value: "free",
-          label: "Free"
-        });
-      }
-
-      var offerValidityLabel;
-      if (editAbleBundleService.itemHeaderModel.offerValidity == "15") {
-        offerValidityLabel = "15 days";
-      } else if (editAbleBundleService.itemHeaderModel.offerValidity == "30") {
-        offerValidityLabel = "1 month";
-      } else if (editAbleBundleService.itemHeaderModel.offerValidity == "45") {
-        offerValidityLabel = "45 days";
-      } else if (editAbleBundleService.itemHeaderModel.offerValidity == "60") {
-        offerValidityLabel = "2 month";
-      } else {
-        offerValidityLabel = editAbleBundleService.itemHeaderModel.offerValidity;
-      }
-
-      setValue2({
-        value: editAbleBundleService.itemHeaderModel.status,
-        label: editAbleBundleService.itemHeaderModel.status,
-      });
-      if (editAbleBundleService.itemHeaderModel.status === "ACTIVE") {
-        setIsActiveStatus(true)
-      } else {
-        setIsActiveStatus(false)
-      }
-
-      setAdministrative({
-        preparedBy: editAbleBundleService.itemHeaderModel.preparedBy,
-        approvedBy: editAbleBundleService.itemHeaderModel.approvedBy,
-        preparedOn: editAbleBundleService.itemHeaderModel.preparedOn,
-        revisedBy: editAbleBundleService.itemHeaderModel.revisedBy,
-        revisedOn: editAbleBundleService.itemHeaderModel.revisedOn,
-        salesOffice: { label: editAbleBundleService.itemHeaderModel.salesOffice, value: editAbleBundleService.itemHeaderModel.salesOffice },
-        offerValidity: { label: offerValidityLabel, value: editAbleBundleService.itemHeaderModel.offerValidity },
-      });
-
-      setEditableServiceOrBundleData(editAbleBundleService);
-    } else if (editAbleBundleService.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
-      setServiceOrBundlePrefix("BUNDLE");
-      setBundleTabs("bundleServiceHeader")
-      setBundleServiceShow(true);
-      setCreateServiceOrBundle({
-        id: editAbleBundleService.itemId,
-        name: editAbleBundleService.itemName,
-        description: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
-        bundleFlag: editAbleBundleService.itemHeaderModel.bundleFlag,
-        reference: editAbleBundleService.itemHeaderModel.itemHeaderDescription,
-        customerSegment: "",
-        make: editAbleBundleService.itemHeaderModel.itemHeaderMake,
-        model: editAbleBundleService.itemHeaderModel.model,
-        family: editAbleBundleService.itemHeaderModel.itemHeaderFamily,
-        prefix: { label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix },
-        machine: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
-        additional: "",
-        estimatedTime: editAbleBundleService.itemHeaderModel.estimatedTime,
-        machineComponent: { label: editAbleBundleService.itemHeaderModel.type, value: editAbleBundleService.itemHeaderModel.type },
-      });
-
-      setSelectedCustomerSegmentOption({ label: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment, value: editAbleBundleService.itemHeaderModel.itemHeaderCustomerSegment })
-
-      setSelectedPrefixOption({ label: editAbleBundleService.itemHeaderModel.prefix, value: editAbleBundleService.itemHeaderModel.prefix });
-      setAdministrative({
-        preparedBy: editAbleBundleService.itemHeaderModel.preparedBy,
-        approvedBy: editAbleBundleService.itemHeaderModel.approvedBy,
-        preparedOn: editAbleBundleService.itemHeaderModel.preparedOn,
-        revisedBy: editAbleBundleService.itemHeaderModel.revisedBy,
-        revisedOn: editAbleBundleService.itemHeaderModel.revisedOn,
-        salesOffice: { label: editAbleBundleService.itemHeaderModel.salesOffice, value: editAbleBundleService.itemHeaderModel.salesOffice },
-        offerValidity: { label: editAbleBundleService.itemHeaderModel.offerValidity, value: editAbleBundleService.itemHeaderModel.offerValidity },
-      });
-
-      setValue2({
-        value: editAbleBundleService.itemHeaderModel.status,
-        label: editAbleBundleService.itemHeaderModel.status,
-      });
-
-      if (editAbleBundleService.itemHeaderModel.status === "ACTIVE") {
-        setIsActiveStatus(true)
-      } else {
-        setIsActiveStatus(false)
-      }
-
-      console.log("datais -----------", data)
-
-      setPassItemEditRowData(editAbleBundleService)
-      setEditableServiceOrBundleData(editAbleBundleService);
-    }
   }
 
   const makeBundleServiceHeaderEditable = () => {
@@ -1832,7 +1837,7 @@ export const PortfolioSummary = () => {
               year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : editableServiceOrBundleData?.itemBodyModel?.year ? editableServiceOrBundleData?.itemBodyModel?.year : "",
               avgUsage: 0,
               unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : editableServiceOrBundleData?.itemBodyModel?.unit ? editableServiceOrBundleData?.itemBodyModel?.unit : "",
-              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : editableServiceOrBundleData?.itemBodyModel?.frequency ? editableServiceOrBundleData?.itemBodyModel?.frequency :  "",
+              frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : editableServiceOrBundleData?.itemBodyModel?.frequency ? editableServiceOrBundleData?.itemBodyModel?.frequency : "",
               itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
                 {
                   itemPriceDataId: itemPriceData.itemPriceDataId
