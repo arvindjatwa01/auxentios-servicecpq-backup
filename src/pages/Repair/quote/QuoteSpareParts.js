@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select';
 import { FileUploader } from "react-drag-drop-files";
 import { Link } from 'react-router-dom'
-import { MuiMenuComponent } from '../Operational/index'
+import { MuiMenuComponent } from '../../Operational/index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileAlt, faFolderPlus, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { faShareAlt } from '@fortawesome/free-solid-svg-icons'
@@ -19,15 +19,8 @@ import RadioGroup from '@mui/material/RadioGroup';
 import OwlCarousel from 'react-owl-carousel';
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
-import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
-import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
-import { CommanComponents } from "components";
+import Buttonarrow from '../../../assets/icons/svg/Button-arrow.svg'
+
 import { SolutionBuilderModal, SolutionSelector } from "pages/SolutionModules";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 

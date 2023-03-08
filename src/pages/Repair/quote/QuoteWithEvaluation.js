@@ -12,7 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import {
   getSearchCoverageForFamily,
   getSearchQueryCoverage,
-} from "../../services/index";
+} from "../../../services/index";
 import $ from 'jquery';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -30,15 +30,12 @@ import {faUpload} from '@fortawesome/free-solid-svg-icons'
 import {faPen} from '@fortawesome/free-solid-svg-icons'
 import {faPlus} from '@fortawesome/free-solid-svg-icons'
 import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons'
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
-import editIcon from '../../assets/icons/svg/edit.svg'
-import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
-import { CommanComponents } from "../../components/index"
+import shareIcon from '../../../assets/icons/svg/share.svg'
+import folderaddIcon from '../../../assets/icons/svg/folder-add.svg'
+import uploadIcon from '../../../assets/icons/svg/upload.svg'
+import deleteIcon from '../../../assets/icons/svg/delete.svg'
+import copyIcon from '../../../assets/icons/svg/Copy.svg'
+
 import { MuiMenuComponent } from "pages/Operational";
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -369,8 +366,6 @@ const customStyles = {
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
                       <Tab label="Use Repair Builder " value="1" />
-                      <Tab label="Use Repair Templates " value="2" />
-                      <Tab label="Import From Excel" value="3" />
                     </TabList>
                   </Box>
                   <TabPanel value="1">
@@ -600,175 +595,8 @@ const customStyles = {
                     </div> */}
                     </div>
                   </TabPanel>
-            <TabPanel value="2">
-          <div className="d-flex align-items-center my-3">
-              <div className="" style={{ display:'contents'}}><h5 className="mr-3 mb-0" style={{whiteSpace:'pre'}}>Search Templates</h5></div>
-              <div class="input-group icons border-radius-10 border overflow-hidden">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
-              <SearchIcon/></span>
-              </div>
-              <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
-             
-            </div>
-              </div>
-             
-           <div className="bg-primary px-3 mb-3 overflow-hidden border-radius-6">
-           <div className="row align-items-center height-66">
-          <div className="col-2">
-          <div className="d-flex ">
-          <h5 className="mb-0 text-white mr-2"><span>Templates</span></h5>
-          <p className="mb-0">
-            <a href="#" className="ml-2 text-white"><EditOutlinedIcon/></a>
-            <a href="#" className="ml-2 text-white"><ShareOutlinedIcon/></a>
-          </p>
-          </div>
-          </div>
-          <div className="col-10">
-          <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0 ">
-                      {querySearchSelector.map((obj, i) => {
-                        return (
-                          <>
-                            <div className="customselect border-white overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
-                              {i > 0 ? (
-                                <SelectFilter
-                                  isClearable={true}
-                                  defaultValue={{ label: "And", value: "AND" }}
-                                  options={[
-                                    { label: "And", value: "AND", id: i },
-                                    { label: "Or", value: "OR", id: i },
-                                  ]}
-                                  placeholder="Search By.."
-                                  onChange={(e) => handleOperator(e, i)}
-                                  // value={querySearchOperator[i]}
-                                  value={obj.selectOperator}
-                                />
-                              ) : (
-                                <></>
-                              )}
+           
 
-                              <div>
-                                <SelectFilter
-                                  // isClearable={true}
-                                  options={[
-                                    { label: "Make", value: "make", id: i },
-                                    { label: "Family", value: "family", id: i },
-                                    { label: "Model", value: "model", id: i },
-                                    { label: "Prefix", value: "prefix", id: i },
-                                  ]}
-                                  placeholder="Search By.."
-                                  onChange={(e) => handleFamily(e, i)}
-                                  value={obj.selectFamily}
-                                />
-                              </div>
-                              <div className="customselectsearch customize">
-                              <span className="search-icon-postn"><SearchIcon className="text-primary"/></span>
-                                <input
-                                  className="custom-input-sleact "
-                                  style={{position:"relative"}}
-                                  type="text"
-                                  placeholder="Search Parts"
-                                  value={obj.inputSearch}
-                                  onChange={(e) => handleInputSearch(e, i)}
-                                  id={"inputSearch-" + i}
-                                  autoComplete="off"
-                                />
-                                <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Item</div>
-                                   
-                                {
-                                  <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
-                                    {obj.selectOptions.map((currentItem, j) => (
-                                      <li
-                                        className="list-group-item"
-                                        key={j}
-                                        onClick={(e) =>
-                                          handleSearchListClick(
-                                            e,
-                                            currentItem,
-                                            obj,
-                                            i
-                                          )
-                                        }
-                                      >
-                                        {currentItem}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                }
-                              </div>
-                            </div>
-                          </>
-                        );
-                      })}
-                      <div onClick={(e) => addSearchQuerryHtml(e)}>
-                        <Link
-                          to="#"
-                          className="btn-sm text-white border mr-2"
-                          style={{ border: "1px solid #872FF7" }}
-                        >
-                          +
-                        </Link>
-                      </div>
-                      <div onClick={handleDeletQuerySearch}>
-                        <Link to="#" className="btn-sm border">
-                          <svg
-                            data-name="Layer 41"
-                            id="Layer_41"
-                            fill="#ffffff"
-                            viewBox="0 0 50 50"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <title />
-                            <path
-                              className="cls-1"
-                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                            />
-                          </svg>
-                          {/* <DeleteIcon className="font-size-16" /> */}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-         
-          </div>
-          </div>
-             </div>   
-            <div className="card">
-        
-            <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                        <DataTable
-                                className=""
-                                title=""
-                                columns={masterColumns}
-                                data={rows}
-                                customStyles={customStyles}
-                                pagination
-                                onRowClicked={(e)=>handleRowClick(e)}
-                                selectableRows
-                            />
-                        </div>  
-            </div>
-            <a href="/QuoteRepairOption" className="btn text-white bg-primary pull-right">Next</a>
-            </TabPanel>
-            <TabPanel value="3">
-            <div className="add-new-recod">
-                    <div>
-                  <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
-                  <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br/> or</h6>
-                  <a href="/QuoteRepairOption" className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
-                    <p className="mt-3">Single upload file should not be more than <br/>10MB. Only the  .xls, .xlsx file types are allowed</p>
-                    </div>
-                    </div>
-            </TabPanel>
           </TabContext>
         </Box>
         </div>

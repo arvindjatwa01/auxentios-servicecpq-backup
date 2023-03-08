@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tab from "@mui/material/Tab";
+import EYEIcon from "@mui/icons-material/VisibilityOutlined";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MuiMenuComponent } from "pages/Operational";
@@ -46,6 +47,7 @@ import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
+  GRID_STYLE,
   QUOTE_OPTIONS,
   STATUS_OPTIONS,
 } from "./CONSTANTS";
@@ -65,6 +67,8 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import WithSparePartsSegments from "./WithSparePartsSegments";
 import WithSparePartsOperation from "./WithSparePartsOperation";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import { SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
 
 function WithSparePartsHeader(props) {
   const history = useHistory();
@@ -170,6 +174,110 @@ function WithSparePartsHeader(props) {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
+
+  const partlistColumns = [
+    {
+      field: "priceBreakup",
+      headerName: "Price Breakup",
+      width: 150,
+      type: 'singleSelect',
+      valueOptions: [ 'A - Parts','B - Labor', 'C - Consumable', 'D - External work', 'E - Other Misc']
+      // renderCell: (params) => (
+      //   <div>
+      //     <span style={{fontSize: 12}}>{params.value}{" "}</span>
+      //     <span style={{ fontSize: 9 }}>
+      //       {"  " + params.row.versionNumber + ".0"}
+      //     </span>{" "}
+      //   </div>
+      // ),
+    },
+    {
+      field: "summary",
+      headerName: "Price Summary type",
+      flex: 1,
+      width: 150,
+      type: 'singleSelect',
+      valueOptions: [ 'Estimated labor', 'Estimated Parts', 'Estimated Misc.' , 'Flat Rate all', 'Environmental', 'Sundry Charges']
+      // renderCell: params => <span style={{fontSize: 12}}>{params.value+" - "+params.row.jobOperation}</span>
+    },
+    {
+      field: "priceMethod",
+      headerName: "Price Method",
+      flex: 1,
+      minWidth: 200,
+      type: 'singleSelect',
+      valueOptions: [ 'List', 'Cost', 'Special price', 'Flat rate']
+    },
+    {
+      field: "netPrice",
+      headerName: "Estimated $",
+      flex: 1,
+      minWidth: 80,      
+    },
+    {
+      field: "adjustedPrice",
+      headerName: "Adjusted $",
+      flex: 1,
+      minWidth: 80,      
+    },
+    {
+      field: "headerDiscount",
+      headerName: "Header Discount (%)",
+      flex: 1,
+      minWidth: 120,      
+    },
+    {
+      field: "Total Discount",
+      headerName: "Total Discount ($)",
+      flex: 1,
+      minWidth: 120,      
+    },    
+    {
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="View">
+                  <EYEIcon />
+                  {/* <img className="m-1" src={penIcon} alt="Edit" /> */}
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            // onClick={() => loadPartlist(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Remove">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
+            label="Delete"
+            // onClick={() => handleDeletePartlist(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+      flex: 1,
+      width: 130,
+    },
+  ];
+
+  const priceRows = [
+    {
+      priceBreakup: "Parts",
+      summary: ""
+    }
+  ]
   // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
     await updateBuilderStatus(bId, e.value)
@@ -748,7 +856,7 @@ function WithSparePartsHeader(props) {
         templateDetails.templateId = res.templateId;
         templateDetails.templateDBId = res.id;
         history.push({
-          pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
+          pathname: SERVICE_PART_TEMPLATES,
           state: templateDetails,
         });
       })
@@ -1981,6 +2089,7 @@ function WithSparePartsHeader(props) {
                             </div>
                           </>
                         ) : (
+                          <>
                           <div className="row mt-3">
                             <ReadOnlyField
                               label="NET PRICE"
@@ -2012,6 +2121,20 @@ function WithSparePartsHeader(props) {
                               className="col-md-4 col-sm-4"
                             />
                           </div>
+                          {/* <DataGrid
+                              sx={{
+                                ...GRID_STYLE,
+                                // width: "80%",
+                                marginInline: "auto",
+                              }}
+                              paginationMode="client"
+                              rows={[]}
+                              columns={partlistColumns}
+                              pageSize={5}
+                              rowsPerPageOptions={[5]}
+                              autoHeight
+                            /> */}
+                          </>
                         )}
                       </TabPanel>
                     </TabContext>

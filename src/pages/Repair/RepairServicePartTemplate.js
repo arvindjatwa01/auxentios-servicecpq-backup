@@ -21,22 +21,18 @@ import { Tooltip, Typography } from "@mui/material";
 import Moment from "react-moment";
 import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
-import Select from "react-select";
 import {
   COLOR_BRONZE,
   COLOR_GOLD,
   COLOR_SILVER,
   GRID_STYLE,
   TEMPLATE_SEARCH_Q_OPTIONS,
-  TEMPLATE_TYPES,
-  WITHOUT_PARTS,
   WITH_PARTS,
 } from "./CONSTANTS";
 import { createBuilder } from "services/repairBuilderServices";
-import { SERVICE_ONLY_TEMPLATES } from "navigation/CONSTANTS";
-import SearchComponentTemplate from "./components/SearchComponentTemplate";
+import { SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
 
-export const RepairServiceOnlyTemplate = () => {
+export const RepairServicePartTemplate = () => {
   const [recentTemplates, setRecentTemplates] = useState([]);
   // Snack Bar State
   const [severity, setSeverity] = useState("");
@@ -150,32 +146,12 @@ export const RepairServiceOnlyTemplate = () => {
     },
   ];
 
-  const customStyles = {
-    option: (provided, state) => ({
-      ...provided,
-      color: "#000",
-    }),
-    control: (provided, state) => ({
-      ...provided,
-      backgroundColor: "#872ff7",
-      width: "190px",
-      display: "flex",
-      justifyContent: "center",
-      padding: "5px 10px",
-      color: "#fff !important",
-      fontSize: "14px",
-      fontWeight: "500",
-      cursor: "pointer"
-    }),
-  }
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
     var searchStr = "";
-    console.log(querySearchSelector);
     querySearchSelector.map(function (item, i) {
-      if (i === 0 && item.selectCategory.value && item.inputSearch && item.selectType) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
         searchStr =
-          "templateType:"+item.selectType.value+" AND "+
           item.selectCategory.value +
           ":" +
           encodeURI('"' + item.inputSearch + '"');
@@ -203,8 +179,8 @@ export const RepairServiceOnlyTemplate = () => {
           let family = [],
             model = [];
           template.coverages.map((coverage) => {
-            family.push(coverage.coverageFamily);
-            model.push(coverage.coverageModel);
+            family.push(coverage.family);
+            model.push(coverage.model);
           });
           // return {...kit, family : family, model: model};
           template.family = family;
@@ -223,7 +199,6 @@ export const RepairServiceOnlyTemplate = () => {
     {
       id: 0,
       selectCategory: "",
-      selectType: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
@@ -249,7 +224,6 @@ export const RepairServiceOnlyTemplate = () => {
       partListNo: "",
       partListId: "",
       type: "fetch",
-      templateType: selectedTemplate.templateType
     };
     templateDetails.templateId = selectedTemplate.templateId;
     templateDetails.templateDBId = selectedTemplate.id;
@@ -257,20 +231,19 @@ export const RepairServiceOnlyTemplate = () => {
     // templateDetails.partListId = selectedTemplate.estimationNumber;
     // templateDetails.versionNumber = selectedTemplate.versionNumber;
     history.push({
-      pathname: SERVICE_ONLY_TEMPLATES,
+      pathname: SERVICE_PART_TEMPLATES,
       state: templateDetails,
     });
   };
 
-  const createNewBuilder = (e) => {
+  const createNewBuilder = () => {
     let builderDetails = {
       builderId: "",
       bId: "",
       type: "new",
     };
-    if(e.value === 'without'){
     createBuilder({
-      builderType: WITHOUT_PARTS,
+      builderType: WITH_PARTS,
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",
@@ -287,28 +260,7 @@ export const RepairServiceOnlyTemplate = () => {
       .catch((err) => {
         console.log("Error Occurred", err);
         handleSnack("error", "Error occurred while creating builder!");
-      });}
-      else if (e.value === 'with'){
-        createBuilder({
-          builderType: WITH_PARTS,
-          activeVersion: true,
-          versionNumber: 1,
-          status: "DRAFT",
-        })
-          .then((result) => {
-            builderDetails.builderId = result.builderId;
-            builderDetails.bId = result.id;
-    
-            history.push({
-              pathname: "/RepairWithSpareParts/BuilderDetails",
-              state: builderDetails,
-            });
-          })
-          .catch((err) => {
-            console.log("Error Occurred", err);
-            handleSnack("error", "Error occurred while creating builder!");
-          });
-      }
+      });
   };
 
   // Once opetion has been selected clear the search results
@@ -327,18 +279,9 @@ export const RepairServiceOnlyTemplate = () => {
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Templates</h5>
+            <h5 className="font-weight-600 mb-0">Service & Parts Templates</h5>
             <div>
-            <Select className="customselect1" id="custom"
-              placeholder=" + Create New"
-              styles={customStyles}
-              options={[
-                { label: "WITH SPAREPARTS", value: "with" },
-                { label: "WITHOUT SPAREPARTS", value: "without" },
-              ]}
-              onChange={createNewBuilder}
-            />
-              {/* <button
+              <button
                 onClick={createNewBuilder}
                 className="btn bg-primary text-white"
               >
@@ -346,7 +289,7 @@ export const RepairServiceOnlyTemplate = () => {
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
                 Create New<span className="ml-2"></span>
-              </button> */}
+              </button>
             </div>
           </div>
 
@@ -417,7 +360,7 @@ export const RepairServiceOnlyTemplate = () => {
                             </Moment>
                           </p>
                           <p className="font-size-12 mb-0">
-                            {indTemplate.templateType === "SERVICE_TEMPLATE"? "Service Only" : "Part & Service"}
+                            Service Only Templates
                           </p>
                         </div>
                       </div>
@@ -440,7 +383,7 @@ export const RepairServiceOnlyTemplate = () => {
                       <span>Search</span>
                     </h5>
                   </div>
-                  <SearchComponentTemplate
+                  <SearchComponent
                     querySearchSelector={querySearchSelector}
                     setQuerySearchSelector={setQuerySearchSelector}
                     clearFilteredData={clearFilteredData}
@@ -448,9 +391,7 @@ export const RepairServiceOnlyTemplate = () => {
                     searchAPI={templateSearch}
                     searchClick={handleQuerySearchClick}
                     options={TEMPLATE_SEARCH_Q_OPTIONS}
-                    typeOptions={TEMPLATE_TYPES}
                     color="white"
-                    type="template"
                     buttonText={"SEARCH"}
                   />
                 </div>

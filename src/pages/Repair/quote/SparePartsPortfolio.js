@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from 'react-bootstrap';
 import { DataGrid } from '@mui/x-data-grid';
-import { CommanComponents } from "../../components/index"
 import FormGroup from '@mui/material/FormGroup';
 import Select from 'react-select';
 import Select1 from '@mui/material/Select';
@@ -37,31 +36,31 @@ import { faUpload } from '@fortawesome/free-solid-svg-icons'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
-import editIcon from '../../assets/icons/svg/edit.svg'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
+import shareIcon from '../../../assets/icons/svg/share.svg'
+import folderaddIcon from '../../../assets/icons/svg/folder-add.svg'
+import uploadIcon from '../../../assets/icons/svg/upload.svg'
+import cpqIcon from '../../../assets/icons/svg/CPQ.svg'
+import deleteIcon from '../../../assets/icons/svg/delete.svg'
+import copyIcon from '../../../assets/icons/svg/Copy.svg'
+import editIcon from '../../../assets/icons/svg/edit.svg'
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
 import { customerSearch, machineSearch } from "services/searchServices";
 
-import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
+import searchstatusIcon from '../../../assets/icons/svg/search-status.svg'
 import $ from "jquery";
 import {
     getSearchCoverageForFamily,
     getSearchQueryCoverage,
     getConvertQuoteData,
     solutionQuoteCreation,
-} from "../../services/index";
+} from "../../../services/index";
 import SelectFilter from "react-select";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { toast } from "react-toastify";
+import { QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
 const customStyles = {
     rows: {
         style: {
@@ -2577,7 +2576,7 @@ export function SparePartsPortfolio(props) {
                             </div>
                             <div class="modal-footer" style={{ display: 'unset' }}>
                                 <div>
-                                    <a href="/SparePartsQuoteTemplate" className="my-2 btn bg-primary d-block text-white">Done</a>
+                                    <a href={QUOTE_SPARE_PARTS_TEMPLATE} className="my-2 btn bg-primary d-block text-white">Done</a>
                                 </div>
                                 <div>
                                     <button class="btn  btn-primary">Create</button>

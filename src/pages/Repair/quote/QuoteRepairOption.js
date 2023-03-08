@@ -2,29 +2,16 @@ import React,{useEffect, useState} from "react";
 import { MuiMenuComponent } from "pages/Operational";
 import Box from '@mui/material/Box';
 import Select from 'react-select';
-import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CommanComponents } from "../../components/index"
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
+import shareIcon from '../../../assets/icons/svg/share.svg'
+import folderaddIcon from '../../../assets/icons/svg/folder-add.svg'
+import uploadIcon from '../../../assets/icons/svg/upload.svg'
+import deleteIcon from '../../../assets/icons/svg/delete.svg'
+import copyIcon from '../../../assets/icons/svg/Copy.svg'
 import {faPlus} from '@fortawesome/free-solid-svg-icons'
 import {faAngleDown} from '@fortawesome/free-solid-svg-icons'
 import {Link, useHistory} from 'react-router-dom'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
 
 const QuoteRepairOption = () => {
   const history=useHistory()
@@ -471,7 +458,7 @@ const QuoteRepairOption = () => {
               </div>
               <div class="modal-footer"style={{display:'unset'}}>
                 <div className="my-2">
-                  <a href="/SparePartsQuoteTemplate" className="btn bg-primary d-block text-white">Done</a>
+                  <a href={QUOTE_SPARE_PARTS_TEMPLATE} className="btn bg-primary d-block text-white">Done</a>
                 </div>
                 <div>
                 <button class="btn  btn-primary">Create</button>

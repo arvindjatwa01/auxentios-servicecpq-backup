@@ -66,6 +66,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import WithSparePartsSegments from "./WithSparePartsSegments";
+import { SERVICE_ONLY_TEMPLATES } from "navigation/CONSTANTS";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -749,7 +750,7 @@ function WithoutSparePartsHeader(props) {
         templateDetails.templateId = res.templateId;
         templateDetails.templateDBId = res.id;
         history.push({
-          pathname: "/RepairServiceOnlyTemplate/ServiceOnlyTemplates",
+          pathname: SERVICE_ONLY_TEMPLATES,
           state: templateDetails,
         });
       })

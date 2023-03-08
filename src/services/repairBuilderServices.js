@@ -38,8 +38,8 @@ import {
   SEGMENT_REMOVE,
   OPERATION_REMOVE,
   PARTLIST_OPERATION,
-  CREATE_PARTLIST_VERSION,
   REMOVE_PARTLIST,
+  PARTLIST_VERSION,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 var CookiesSetData = Cookies.get("loginTenantDtl");
@@ -1174,6 +1174,29 @@ export const updateBuilderStatus = (builderId, status) => {
   });
 };
 
+//update partlist active version status as true
+export const updatePartlistActive = (partlistId) => {
+  console.log("RepairBuilder > updatePartlistActive called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(PARTLIST_VERSION(partlistId), {}, config)
+        .then((res) => {
+          console.log("updatePartlistActive > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling updatePartlistActive");
+        })
+        .catch((err) => {
+          console.log("updatePartlistActive > axios err=", err);
+          reject("Error in updatePartlistActive axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > updatePartlistActive, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //Create a new partlist builder version
 export const createPartlistBuilderVersion = (builderId, description) => {
   console.log("RepairBuilder > createVersion called...");
@@ -1203,7 +1226,7 @@ export const createPartlistVersion = (partlistId) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CREATE_PARTLIST_VERSION(partlistId), {}, config)
+        .post(PARTLIST_VERSION(partlistId), {}, config)
         .then((res) => {
           console.log("createPartlistVersion > axios res=", res);
           if (res.status === 200) resolve(res.data);

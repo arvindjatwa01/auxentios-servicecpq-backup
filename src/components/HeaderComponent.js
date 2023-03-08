@@ -17,7 +17,7 @@ import Select from "@mui/material/Select";
 import { useSelector, useDispatch } from 'react-redux'
 
 import { history } from 'utils';
-import { WITH_SPARE_PARTS, WITHOUT_SPARE_PARTS_DETAILS, PART_LIST, STANDARD_JOBS, KITS, PORTFOLIO_SUMMARY, SOLUTION_BUILDER_ANALYTICS, SOLUTION_QUOTE } from "../navigation/CONSTANTS"
+import { WITH_SPARE_PARTS, WITHOUT_SPARE_PARTS_DETAILS, PART_LIST, STANDARD_JOBS, KITS, PORTFOLIO_SUMMARY, SOLUTION_BUILDER_ANALYTICS, SOLUTION_QUOTE, REPAIR_SERVICE_PARTS_TEMPLATE } from "../navigation/CONSTANTS"
 import Cookies from "js-cookie";
 
 export function HeaderComponent(props) {
@@ -772,7 +772,7 @@ export function HeaderComponent(props) {
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3">
-                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push("/RepairStandardJobs")} style={{ cursor: "pointer" }}>
+                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push(REPAIR_SERVICE_PARTS_TEMPLATE)} style={{ cursor: "pointer" }}>
                             <span className="span-icon">
                               <svg
                                 id="uuid-71879914-eb74-479f-b04a-3a9b28cfee15"

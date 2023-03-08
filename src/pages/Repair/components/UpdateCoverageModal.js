@@ -28,8 +28,8 @@ const UpdateCoverageModal = (props) => {
                 className="form-control text-primary border-radius-10"
                 name="make"
                 placeholder="Auto Fill Search Model...."
-                value={props.coverageRowData.make}
-                defaultValue={props.coverageRowData.make}
+                value={props.coverageRowData.coverageMake}
+                defaultValue={props.coverageRowData.coverageMake}
                 disabled
               />
             </div>
@@ -44,8 +44,8 @@ const UpdateCoverageModal = (props) => {
                 className="form-control text-primary border-radius-10"
                 name="family"
                 placeholder="Auto Fill Search Model...."
-                value={props.coverageRowData.family}
-                defaultValue={props.coverageRowData.family}
+                value={props.coverageRowData.coverageFamily}
+                defaultValue={props.coverageRowData.coverageFamily}
                 disabled
               />
             </div>
@@ -56,7 +56,7 @@ const UpdateCoverageModal = (props) => {
                 Model No
               </label>
               <SearchBox
-                value={props.coverageRowData.model}
+                value={props.coverageRowData.coverageModel}
                 onChange={(e) =>
                   props.handleCoverageModelSearch("model", e.target.value)
                 }
@@ -75,8 +75,8 @@ const UpdateCoverageModal = (props) => {
               <Select
                 // options={categoryList}
                 options={props.querySearchModelPrefixOption}
-                placeholder={props.coverageRowData.prefix}
-                value={props.coverageRowData.prefix}
+                placeholder={props.coverageRowData.coveragePrefix}
+                value={props.coverageRowData.coveragePrefix}
                 defaultValue={props.coverageRowData.prefix}
                 className="text-primary"
                 onChange={(e) =>

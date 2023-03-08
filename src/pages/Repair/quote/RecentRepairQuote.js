@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select';
 import { FileUploader } from "react-drag-drop-files";
 import { Link } from 'react-router-dom'
-import { MuiMenuComponent } from '../Operational/index'
+import { MuiMenuComponent } from '../../Operational/index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileAlt, faFolderPlus, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { faShareAlt } from '@fortawesome/free-solid-svg-icons'
@@ -19,19 +19,14 @@ import RadioGroup from '@mui/material/RadioGroup';
 import OwlCarousel from 'react-owl-carousel';
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
-import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
-import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
-import { CommanComponents } from "components";
+import Buttonarrow from '../../../assets/icons/svg/Button-arrow.svg'
+
 import { SolutionBuilderModal, SolutionSelector } from "pages/SolutionModules";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { quoteRecent } from "services/repairQuoteServices";
+import { QUOTE_REPAIR_SEARCH } from "navigation/CONSTANTS";
 
-const  QuoteRepairQuote=()=>{
+const  RecentRepairQuote=()=>{
 
   const [value, setValue] = React.useState('1');
   const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
@@ -52,8 +47,18 @@ const  QuoteRepairQuote=()=>{
   const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
   const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
   
+  useEffect(() => {
+    fetchRecentQuotes();
+  }, [])
 
+  const fetchRecentQuotes = async () => {
+    await quoteRecent("REPAIR_QUOTE").then(quotes => {
+      console.log(quotes);
+    }).catch(e => {
+      console.log(e);
+    })
 
+  }
   const handleBuildSolution = (e) => {
     setBuildSolutionValue(e.target.value)
   }
@@ -196,7 +201,7 @@ const  QuoteRepairQuote=()=>{
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Repair Quote</h5>
             <div>
-              <Link to="/QuoteRepairSearch"  style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
+              <Link to={QUOTE_REPAIR_SEARCH}  style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
         Search Quote<ChevronRightIcon className=""/>
               </Link>
             </div>
@@ -621,4 +626,4 @@ const  QuoteRepairQuote=()=>{
     )
 }
 
-export default QuoteRepairQuote
+export default RecentRepairQuote;

@@ -246,9 +246,11 @@ function ServiceOnlyTemplates(props) {
   };
   useEffect(() => {
     if (state) {
+      console.log(state);
       setHeaderLoading(true);
       setTemplateId(state.templateId);
       setTemplateDBId(state.templateDBId);
+      setActiveElement({...activeElement, templateType: state.templateType })
       fetchAllDetails(state.templateDBId);
       if (state.templateDBId) {
         fetchSegmentsStandardJob(state.templateDBId)
@@ -568,10 +570,10 @@ function ServiceOnlyTemplates(props) {
           <div>Make</div>
         </>
       ),
-      selector: (row) => row.make,
+      selector: (row) => row.coverageMake,
       wrap: true,
       sortable: true,
-      format: (row) => row.make,
+      format: (row) => row.coverageMake,
     },
     {
       name: (
@@ -579,10 +581,10 @@ function ServiceOnlyTemplates(props) {
           <div>Family</div>
         </>
       ),
-      selector: (row) => row.family,
+      selector: (row) => row.coverageFamily,
       wrap: true,
       sortable: true,
-      format: (row) => row.family,
+      format: (row) => row.coverageFamily,
     },
     {
       name: (
@@ -590,10 +592,10 @@ function ServiceOnlyTemplates(props) {
           <div>Model</div>
         </>
       ),
-      selector: (row) => row.model,
+      selector: (row) => row.coverageModel,
       wrap: true,
       sortable: true,
-      format: (row) => row.model,
+      format: (row) => row.coverageModel,
     },
     {
       name: (
@@ -601,10 +603,10 @@ function ServiceOnlyTemplates(props) {
           <div>Prefix</div>
         </>
       ),
-      selector: (row) => row.prefix,
+      selector: (row) => row.coveragePrefix,
       wrap: true,
       sortable: true,
-      format: (row) => row.prefix,
+      format: (row) => row.coveragePrefix,
     },
 
     {
@@ -710,10 +712,10 @@ function ServiceOnlyTemplates(props) {
 
   const initialCoverageRowData = {
     id: "",
-    make: "",
-    family: "",
-    model: "",
-    prefix: "",
+    coverageMake: "",
+    coverageFamily: "",
+    coverageModel: "",
+    coveragePrefix: "",
     startSerialNumber: "",
     endSerialNumber: "",
     fleet: "",
@@ -727,10 +729,10 @@ function ServiceOnlyTemplates(props) {
     setCoverageRowData(initialCoverageRowData);
     let obj = {
       id: row.id,
-      make: row.make,
-      family: row.family,
-      model: row.model,
-      prefix: row.prefix,
+      coverageMake: row.coverageMake,
+      coverageFamily: row.coverageFamily,
+      coverageModel: row.coverageModel,
+      coveragePrefix: row.coveragePrefix,
       startSerialNumber: row.startSerialNumber,
       endSerialNumber: row.endSerialNumber,
       fleet: row.fleet,
@@ -861,10 +863,10 @@ function ServiceOnlyTemplates(props) {
     let data = [];
     filterMasterData.map((coverage) =>
       data.push({
-        model: coverage.model,
-        make: coverage.make,
-        family: coverage.family,
-        prefix: coverage.prefix,
+        coverageModel: coverage.model,
+        coverageMake: coverage.make,
+        coverageFamily: coverage.family,
+        coveragePrefix: coverage.prefix,
       })
     );
     updateTemplateCoverage(templateDBId, data)
@@ -894,7 +896,7 @@ function ServiceOnlyTemplates(props) {
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
-              <h5 className="font-weight-600 mb-0">Standard Jobs</h5>
+              <h5 className="font-weight-600 mb-0">Templates</h5>
               <div className="d-flex justify-content-center align-items-center">
                 {/* <div className="ml-3"><a href="#" className="bg-yellow text-white btn-sm rounded-pill">* Gold <KeyboardArrowDownIcon className="font-size-14"/></a></div> */}
                 <div className="ml-3">
@@ -1032,7 +1034,7 @@ function ServiceOnlyTemplates(props) {
                       className="mr-3 ml-2 text-white"
                       style={{ fontSize: "20px" }}
                     >
-                      Service Only Template Header
+                      Template Header
                     </span>
                     <a href={undefined} className="btn-sm text-white">
                       <i

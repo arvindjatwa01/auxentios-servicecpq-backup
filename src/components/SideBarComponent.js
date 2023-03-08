@@ -19,6 +19,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Modal } from "react-bootstrap";
 import Radio from "@material-ui/core/Radio";
 import { Link, NavLink, exact } from "react-router-dom";
+import { QUOTE_RECENT_REPAIR, REPAIR_SERVICE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
 
 export function SideBarComponent(props) {
   const [solutionBuilderShow, setSolutionBuilderShow] = useState(false);
@@ -996,6 +997,27 @@ export function SideBarComponent(props) {
                     </NavLink>
                   </li>
                   <li>
+                  <NavLink
+                          to="/RepairServiceOnlyTemplate"
+                          activeClassName="active"
+                          className="border-radius-50"
+                        >
+                          <span className="span-icon">
+                        <img src={TemplatesIcon} height="28" />
+                      </span>
+                          <span className="nav-text">
+                            <span
+                              className="ml-2 "
+                              style={{ display: "inline-grid" }}
+                            >
+                              <span className="font-size-14 font-weight-600 text-dark">
+                                Templates
+                              </span>
+                            </span>
+                          </span>
+                        </NavLink>
+                  </li>
+                  {/* <li>
                     <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
                       <span className="span-icon">
                         <img src={TemplatesIcon} height="28" />
@@ -1053,7 +1075,7 @@ export function SideBarComponent(props) {
                       </li>
                       <li>
                         <NavLink
-                          to="/RepairStandardJobs"
+                          to={REPAIR_SERVICE_PARTS_TEMPLATE}
                           activeClassName="active"
                           className="border-radius-50"
                         >
@@ -1124,7 +1146,7 @@ export function SideBarComponent(props) {
                         </NavLink>
                       </li>
                     </ul>
-                  </li>
+                  </li> */}
                 </ul>
               </li>
               <li>
@@ -1304,7 +1326,7 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/QuoteRepairQuote" className="border-radius-50">
+                <NavLink to={QUOTE_RECENT_REPAIR} className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-ca4af1ef-6b2a-43ba-b263-14c9653fee82"

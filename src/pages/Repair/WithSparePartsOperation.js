@@ -10,6 +10,7 @@ import {
   fetchOperations,
   fetchPartlistFromOperation,
   RemoveOperation,
+  updatePartlistActive,
 } from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,
@@ -189,6 +190,31 @@ function WithSparePartsOperation(props) {
     });
     setSearchJobCodeResults([]);
   };
+
+  const handleChange = async (id) => {
+    await updatePartlistActive(id).then(result => {
+      // if(result){
+        fetchPartlistFromOperation(operationData.id).then(resultPartlists => {
+          let groupedPartList = groupBy(resultPartlists, "partlistId");
+          console.log(groupedPartList);
+          setOperationData({
+            ...operationData,
+            partlists: groupedPartList,
+            header:
+              "Operation " +
+              formatOperationNum(operationData.operationNumber) +
+              " - " +
+              operationData.jobCodeDescription +
+              " " +
+              operationData.componentCodeDescription, //Rename after modifications in UI
+          });
+        });
+        handleSnack("success","This partlist has been activated for the builder!");
+      // }
+    }).catch(e => {
+      handleSnack("error", "Error occurred while making the partlist version active!")
+    })
+  }
 
   // Search component code
   const handleComponentCodeSearch = async (searchText) => {
@@ -598,7 +624,7 @@ function WithSparePartsOperation(props) {
               />
             </div>
 
-            <h5 className="d-flex align-items-center  mx-2">
+            {operationData.partlists && operationData.partlists.length > 0 && <><h5 className="d-flex align-items-center  mx-2">
               <div className="" style={{ display: "contents" }}>
                 <span className="mr-3 white-space">Part List</span>
               </div>
@@ -658,7 +684,7 @@ function WithSparePartsOperation(props) {
                         </a> */}
                         <Radio
                           checked={partlistVersion.activeVersion}
-                          // onChange={handleChange}
+                          onChange={() => handleChange(partlistVersion.id)}
                           value="a"
                           name="radio-buttons"
                           inputProps={{ 'aria-label': 'A' }}
@@ -667,27 +693,12 @@ function WithSparePartsOperation(props) {
                     </div>
                     {/* <hr></hr> */}
                     <div className="row my-4">
-                      <div className="col-12">
+                      <div className="col-7">
                         <div className="d-flex">
                           <p className="mr-2 font-size-12 font-weight-500 mr-2">
                             TOTAL PARTS
                           </p>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalNewParts}</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRefurbishedParts}</h6>
+                          <h6 className=" font-size-14 font-weight-600">{partlistVersion.totalParts}</h6>
                         </div>
                       </div>
                       <div className="col-5">
@@ -698,12 +709,37 @@ function WithSparePartsOperation(props) {
                           <h6 className=" font-size-14 font-weight-600">$ {partlistVersion.totalPrice}</h6>
                         </div>
                       </div>
+                      <div className="col-4">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            NEW
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalNewParts}</h6>
+                        </div>
+                      </div>
+                      <div className="col-5">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REFURBISHED
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRefurbishedParts}</h6>
+                        </div>
+                      </div>
+                      <div className="col-3">
+                        <div class="d-flex">
+                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
+                            REMAN
+                          </p>
+                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRemanParts}</h6>
+                        </div>
+                      </div>
                     </div>
                     <div className="hr"></div>
                   </div>)}
                 </div>
               </div>})}
             </div>
+            </>}
             {/* <div className="row">
               <div className="col-md-4">
                 <div className="card border" style={{ overflow: "hidden" }}>

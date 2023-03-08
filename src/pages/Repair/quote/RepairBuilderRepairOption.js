@@ -6,7 +6,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import FormGroup from '@mui/material/FormGroup';
 import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
-import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../CONSTANTS";
 import Tab from '@mui/material/Tab';
 import { customerSearch, machineSearch } from "services/searchServices";
 import { toast } from "react-toastify";
@@ -15,7 +15,7 @@ import {
   getSearchQueryCoverage,
   getConvertQuoteData,
   solutionQuoteCreation,
-} from "../../services/index";
+} from "../../../services/index";
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import Select1 from '@mui/material/Select';
 import Divider from '@mui/material/Divider';
@@ -27,7 +27,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { styled, alpha } from '@mui/material/styles';
 import TabContext from '@mui/lab/TabContext';
 import Button from '@mui/material/Button';
-import boxicon from '../../assets/icons/png/box.png'
+import boxicon from '../../../assets/icons/png/box.png'
 import { FileUploader } from "react-drag-drop-files";
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -40,27 +40,11 @@ import MenuItem from '@mui/material/MenuItem';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DataTable from 'react-data-table-component';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
-import Checkbox from '@mui/material/Checkbox';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen } from '@fortawesome/free-solid-svg-icons'
-import EditIcon from '@mui/icons-material/Edit';
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
-import { faShareAlt } from '@fortawesome/free-solid-svg-icons'
-import { faUpload } from '@fortawesome/free-solid-svg-icons'
-import ArchiveIcon from '@mui/icons-material/Archive';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
-import { CommanComponents } from "../../components/index"
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import editIcon from '../../assets/icons/svg/edit.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
+import shareIcon from '../../../assets/icons/svg/share.svg'
+import folderaddIcon from '../../../assets/icons/svg/folder-add.svg'
+import uploadIcon from '../../../assets/icons/svg/upload.svg'
+import deleteIcon from '../../../assets/icons/svg/delete.svg'
+import copyIcon from '../../../assets/icons/svg/Copy.svg'
 import { MuiMenuComponent } from "pages/Operational";
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import HexagonOutlinedIcon from '@mui/icons-material/HexagonOutlined';

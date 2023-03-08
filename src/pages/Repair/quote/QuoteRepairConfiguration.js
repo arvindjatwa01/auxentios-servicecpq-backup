@@ -21,17 +21,17 @@ import {faUpload} from '@fortawesome/free-solid-svg-icons'
 import {faPen} from '@fortawesome/free-solid-svg-icons'
 import {faPlus} from '@fortawesome/free-solid-svg-icons'
 import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons'
-import shareIcon from '../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../assets/icons/svg/upload.svg'
-import cpqIcon from '../../assets/icons/svg/CPQ.svg'
-import deleteIcon from '../../assets/icons/svg/delete.svg'
-import copyIcon from '../../assets/icons/svg/Copy.svg'
-import editIcon from '../../assets/icons/svg/edit.svg'
-import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
-import { CommanComponents } from "../../components/index"
+import shareIcon from '../../../assets/icons/svg/share.svg'
+import folderaddIcon from '../../../assets/icons/svg/folder-add.svg'
+import uploadIcon from '../../../assets/icons/svg/upload.svg'
+import cpqIcon from '../../../assets/icons/svg/CPQ.svg'
+import deleteIcon from '../../../assets/icons/svg/delete.svg'
+import copyIcon from '../../../assets/icons/svg/Copy.svg'
+import editIcon from '../../../assets/icons/svg/edit.svg'
+import searchstatusIcon from '../../../assets/icons/svg/search-status.svg'
 import { MuiMenuComponent } from "pages/Operational";
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
+import { GUIDED_REPAIR_QUOTE, REPAIR_QUOTE_WITH_EVALUATION } from "navigation/CONSTANTS";
 
 const  QuoteRepairConfiguration=()=>{
 
@@ -128,7 +128,7 @@ const  QuoteRepairConfiguration=()=>{
           <p className="my-2"><b>Choose what solution you want to configure</b></p>
           <div className="row">
                     <div className="col-md-4">
-                      <Link to="solutionBuilder/guide" className="card p-3">
+                      <Link to={GUIDED_REPAIR_QUOTE} className="card p-3">
                       <div class="d-flex">
                         <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
                         <div>
@@ -141,7 +141,7 @@ const  QuoteRepairConfiguration=()=>{
                       </Link>
                     </div>
                     <div className="col-md-4">
-                      <Link to='/QuoteWithEvaluation' className="card p-3">
+                      <Link to={REPAIR_QUOTE_WITH_EVALUATION} className="card p-3">
                       <div class="d-flex">
                         <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
                         <div>

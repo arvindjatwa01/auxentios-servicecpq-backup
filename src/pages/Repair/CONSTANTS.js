@@ -12,6 +12,8 @@ export const WITH_PARTS = "BUILDER_WITH_SPAREPART";
 export const WITHOUT_PARTS = "BUILDER_WITHOUT_SPAREPART";
 export const NEW_SEGMENT = "New Segment";
 export const NEW_OPERATION = "New Operation";
+export const SERVICE_TEMPLATE = "SERVICE_TEMPLATE";
+export const PART_AND_SERVICE_TEMPLATE = "PART_AND_SERVICE_TEMPLATE";
 
 export const ERROR_MAX_VERSIONS =
   "Three versions already exist, if  you want another version then version 3.0 must be archieved";
@@ -113,15 +115,23 @@ export const KIT_SEARCH_Q_OPTIONS = [
   },
   { label: "Customer", value: "customerId" },
 ];
+
+export const TEMPLATE_TYPES = [
+  { label: "Service Only", value: "SERVICE_TEMPLATE" },
+  {
+    label: "Parts & Service",
+    value: "PART_AND_SERVICE_TEMPLATE",
+  },
+]
 export const TEMPLATE_SEARCH_Q_OPTIONS = [
-  { label: "Model", value: "model" },
+  { label: "Model", value: "coverageModel" },
   {
     label: "Family",
-    value: "family",
+    value: "coverageFamily",
   },
   {
     label: "Prefix",
-    value: "prefix",
+    value: "coveragePrefix",
   },
   {
     label: "Status",
@@ -139,10 +149,6 @@ export const TEMPLATE_SEARCH_Q_OPTIONS = [
   {
     label: "Usage Interval",
     value: "usageInterval",
-  },
-  {
-    label: "Application",
-    value: "application",
   },
   {
     label: "Reference",
@@ -209,6 +215,7 @@ export const GRID_STYLE = {
     borderRight: `1px solid rgba(0,0,0,.12)`,
     paddingLeft: "8px",
     paddingRight: "8px",
+    minHeight: "72px"
   },
   "& .MuiDataGrid-iconSeparator": {
     display: "none",
