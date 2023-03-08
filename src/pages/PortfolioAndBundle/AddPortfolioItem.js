@@ -1571,10 +1571,10 @@ const AddPortfolioItem = (props) => {
               miscEscalation: 0,
               serviceEscalation: 0,
               withBundleService: false,
-              portfolio: {
-                portfolioId: ((props.portfolioDataId == "") ||
-                  (props.portfolioDataId == undefined) ||
-                  (props.portfolioDataId == null)) ? 1 : props.portfolioDataId
+              portfolio: ((props.portfolioDataId == "") ||
+                (props.portfolioDataId == undefined) ||
+                (props.portfolioDataId == null)) ? null : {
+                portfolioId: props.portfolioDataId
               },
               tenantId: loginTenantId,
               partsRequired: true,
@@ -1987,9 +1987,10 @@ const AddPortfolioItem = (props) => {
           miscEscalation: 0,
           serviceEscalation: 0,
           withBundleService: false,
-          portfolio: {
-            portfolioId: 1
-          },
+          // portfolio: {
+          //   portfolioId: 1
+          // },
+          portfolio: null,
           tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,

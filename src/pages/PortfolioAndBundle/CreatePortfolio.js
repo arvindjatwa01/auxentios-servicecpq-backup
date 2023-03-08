@@ -1098,19 +1098,52 @@ export function CreatePortfolio(props) {
               <Select
                 defaultValue={selectedOption}
                 onChange={setSelectedOption}
-                options={options}
-                placeholder="1000-ENGINE"
+                options={priceAgreementItemTypeOptions}
+                placeholder="Select..."
               />
             </div>
           </td>
           <td>
             <div className="form-group mb-0">
-              <Select
+              {/* <a
+                href={undefined}
+                className="input-search cursor"
+              onClick={() => setModelShowForTemplate(true)}
+              ><SearchIcon style={{ fontSize: "30px", paddingTop: "5px" }} /></a> */}
+              <input
+                type="text"
+                className="form-control text-primary border-radius-10 position-relative"
+                name="itemNumber"
+                placeholder="Search..."
+                // value={addPortFolioItem.templateId}
+                // onChange={handleAddServiceBundleChange}
+                // onChange={(e) => handleStandardJobInputSearch(e)}
+              />
+              {
+                <ul
+                  className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                  id="style" style={{ display: "block" }}
+                >
+                  {/* {querySearchStandardJobResult.map((currentItem, j) => (
+                    <li
+                      className="list-group-item"
+                      key={j}
+                    onClick={(e) => handleSearchStandardJobListClick(
+                      e,
+                      currentItem
+                    )}
+                    >
+                      {currentItem.standardJobId}  {currentItem.description}
+                    </li>
+                  ))} */}
+                </ul>
+              }
+              {/* <Select
                 defaultValue={selectedOption}
                 onChange={setSelectedOption}
                 options={options}
                 placeholder="1000-ENGINE"
-              />
+              /> */}
             </div>
           </td>
           <td>
@@ -6406,57 +6439,57 @@ export function CreatePortfolio(props) {
           // } else {
           // }
           // if (verNewValue !== versionValue)
-            let createNewVersionObj = {
-              portfolioId: 0,
-              name: newVersionName,
-              description: versionObj.description,
-              machineType: versionObj.machineType,
-              searchTerm: versionObj.searchTerm,
-              lubricant: versionObj.lubricant,
-              customerId: versionObj.customerId,
-              customerGroup: versionObj.customerGroup,
-              customerSegment: versionObj.customerSegment,
-              externalReference: versionObj.externalReference,
-              status: versionObj.status,
-              validFrom: versionObj.validFrom,
-              validTo: versionObj.validTo,
-              strategyTask: versionObj.strategyTask,
-              taskType: versionObj.taskType,
-              usageCategory: versionObj.usageCategory,
-              productHierarchy: versionObj.productHierarchy,
-              geographic: versionObj.geographic,
-              availability: versionObj.availability,
-              responseTime: versionObj.responseTime,
-              type: versionObj.type,
-              application: versionObj.application,
-              contractOrSupport: versionObj.contractOrSupport,
-              lifeStageOfMachine: versionObj.lifeStageOfMachine,
-              // supportLevel: verNewValue,
-              supportLevel: versionValue.value,
-              numberOfEvents: versionObj.numberOfEvents,
-              itemRelations: versionObj.itemRelations,
-              rating: versionObj.rating,
-              startUsage: versionObj.startUsage,
-              endUsage: versionObj.endUsage,
-              unit: versionObj.unit,
-              additionals: versionObj.additional,
-              preparedBy: versionObj.preparedBy,
-              approvedBy: versionObj.approvedBy,
-              preparedOn: versionObj.preparedOn,
-              revisedBy: versionObj.revisedBy,
-              revisedOn: versionObj.revisedOn,
-              salesOffice: versionObj.salesOffice,
-              offerValidity: versionObj.offerValidity,
-              items: versionObj.items,
-              coverages: versionObj.coverages,
-              portfolioPrice: versionObj.portfolioPrice,
-              additionalPrice: versionObj.additionalPrice,
-              escalationPrice: versionObj.escalationPrice,
-              saveState: versionObj.saveState,
-              userId: versionObj.userId,
-              template: versionObj.template,
-              visibleInCommerce: versionObj.visibleInCommerce,
-            }
+          let createNewVersionObj = {
+            portfolioId: 0,
+            name: newVersionName,
+            description: versionObj.description,
+            machineType: versionObj.machineType,
+            searchTerm: versionObj.searchTerm,
+            lubricant: versionObj.lubricant,
+            customerId: versionObj.customerId,
+            customerGroup: versionObj.customerGroup,
+            customerSegment: versionObj.customerSegment,
+            externalReference: versionObj.externalReference,
+            status: versionObj.status,
+            validFrom: versionObj.validFrom,
+            validTo: versionObj.validTo,
+            strategyTask: versionObj.strategyTask,
+            taskType: versionObj.taskType,
+            usageCategory: versionObj.usageCategory,
+            productHierarchy: versionObj.productHierarchy,
+            geographic: versionObj.geographic,
+            availability: versionObj.availability,
+            responseTime: versionObj.responseTime,
+            type: versionObj.type,
+            application: versionObj.application,
+            contractOrSupport: versionObj.contractOrSupport,
+            lifeStageOfMachine: versionObj.lifeStageOfMachine,
+            // supportLevel: verNewValue,
+            supportLevel: versionValue.value,
+            numberOfEvents: versionObj.numberOfEvents,
+            itemRelations: versionObj.itemRelations,
+            rating: versionObj.rating,
+            startUsage: versionObj.startUsage,
+            endUsage: versionObj.endUsage,
+            unit: versionObj.unit,
+            additionals: versionObj.additional,
+            preparedBy: versionObj.preparedBy,
+            approvedBy: versionObj.approvedBy,
+            preparedOn: versionObj.preparedOn,
+            revisedBy: versionObj.revisedBy,
+            revisedOn: versionObj.revisedOn,
+            salesOffice: versionObj.salesOffice,
+            offerValidity: versionObj.offerValidity,
+            items: versionObj.items,
+            coverages: versionObj.coverages,
+            portfolioPrice: versionObj.portfolioPrice,
+            additionalPrice: versionObj.additionalPrice,
+            escalationPrice: versionObj.escalationPrice,
+            saveState: versionObj.saveState,
+            userId: versionObj.userId,
+            template: versionObj.template,
+            visibleInCommerce: versionObj.visibleInCommerce,
+          }
 
           const portfolioRes = await createPortfolio(createNewVersionObj);
           if (portfolioRes.status === 200) {
@@ -7561,6 +7594,13 @@ export function CreatePortfolio(props) {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
+
+  const priceAgreementItemTypeOptions = [
+    { value: "PARTS", label: "Spare Parts" },
+    { value: "LABOUR", label: "Labor" },
+    { value: "SERVICE", label: "Service" },
+    { value: "MISC", label: "Miscellaneous" },
+  ]
 
   const [versionOption, setVersionOption] = useState([]);
   const [statusOption, setStatusOption] = useState([]);
@@ -10307,8 +10347,8 @@ export function CreatePortfolio(props) {
       miscEscalation: 0,
       serviceEscalation: 0,
       withBundleService: (bundleServiceNeed ? false : true),
-      portfolio: {
-        portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+      portfolio: ((portfolioId == 0) || (portfolioId == null) || (portfolioId == undefined)) ? null : {
+        portfolioId: portfolioId
       },
       tenantId: loginTenantId,
       partsRequired: true,
@@ -10494,7 +10534,7 @@ export function CreatePortfolio(props) {
           withBundleService: false,
           portfolio: (data.portfolioDataId != 0) ? {
             portfolioId: data.portfolioDataId
-          } : {},
+          } : null,
           tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
@@ -10585,7 +10625,7 @@ export function CreatePortfolio(props) {
           withBundleService: false,
           portfolio: (data.portfolioDataId != 0) ? {
             portfolioId: data.portfolioDataId
-          } : {},
+          } : null,
           tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
@@ -10687,7 +10727,7 @@ export function CreatePortfolio(props) {
         withBundleService: false,
         portfolio: (data.portfolioDataId != 0) ? {
           portfolioId: data.portfolioDataId
-        } : {},
+        } : null,
         tenantId: loginTenantId,
         partsRequired: true,
         labourRequired: true,
@@ -12823,8 +12863,8 @@ export function CreatePortfolio(props) {
         (priceCalculator.escalationPriceOptionsValue == "SERVICE") ?
         priceCalculator.escalationPriceInputValue : 0),
       withBundleService: (bundleServiceNeed ? false : true),
-      portfolio: {
-        portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+      portfolio: ((portfolioId == 0) || (portfolioId == null) || (portfolioId == undefined)) ? null : {
+        portfolioId: portfolioId
       },
       tenantId: loginTenantId,
       partsRequired: true,
