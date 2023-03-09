@@ -103,8 +103,8 @@ const SearchComponentTemplate = (props) => {
     let searchString =
       tempArray[id].selectCategory.value + "~" + e.target.value;
     if (tempArray[id].selectCategory.value && e.target.value) {
-      if (props.builderType) {
-        searchString = `templateType:${tempArray[0].selectType} AND saved:true AND ${searchString}`;
+      if (props.type) {
+        searchString = `templateType:${tempArray[0].selectType.value} AND saved:true AND ${searchString}`;
       }
       props
         .searchAPI(searchString)

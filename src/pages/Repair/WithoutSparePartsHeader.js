@@ -66,7 +66,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import WithSparePartsSegments from "./WithSparePartsSegments";
-import { SERVICE_ONLY_TEMPLATES } from "navigation/CONSTANTS";
+import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -160,10 +160,10 @@ function WithoutSparePartsHeader(props) {
   });
 
   const validityOptions = [
-    { value: "15", label: "15 days" },
-    { value: "30", label: "1 month" },
-    { value: "45", label: "45 days" },
-    { value: "60", label: "2 months" },
+    { value: 15, label: "15 days" },
+    { value: 30, label: "1 month" },
+    { value: 45, label: "45 days" },
+    { value: 60, label: "2 months" },
   ];
 
   const salesOfficeOptions = [
@@ -750,7 +750,7 @@ function WithoutSparePartsHeader(props) {
         templateDetails.templateId = res.templateId;
         templateDetails.templateDBId = res.id;
         history.push({
-          pathname: SERVICE_ONLY_TEMPLATES,
+          pathname: STANDARD_JOB_DETAIL,
           state: templateDetails,
         });
       })

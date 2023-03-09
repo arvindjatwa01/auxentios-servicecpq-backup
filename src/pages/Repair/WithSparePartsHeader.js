@@ -162,10 +162,10 @@ function WithSparePartsHeader(props) {
   });
 
   const validityOptions = [
-    { value: "15", label: "15 days" },
-    { value: "30", label: "1 month" },
-    { value: "45", label: "45 days" },
-    { value: "60", label: "2 months" },
+    { value: 15, label: "15 days" },
+    { value: 30, label: "1 month" },
+    { value: 45, label: "45 days" },
+    { value: 60, label: "2 months" },
   ];
 
   const salesOfficeOptions = [

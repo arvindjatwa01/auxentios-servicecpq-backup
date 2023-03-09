@@ -42,7 +42,7 @@ import { templateSearch } from "services/templateService";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Tooltip, Typography } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { SERVICE_ONLY_TEMPLATES } from "navigation/CONSTANTS";
+import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 
 export const GuidedRepairQuote = (props) => {
   const [guidedSolutions, setGuidedSolutions] = useState([]);
@@ -189,7 +189,7 @@ export const GuidedRepairQuote = (props) => {
     // templateDetails.partListId = selectedTemplate.estimationNumber;
     // templateDetails.versionNumber = selectedTemplate.versionNumber;
     history.push({
-      pathname: SERVICE_ONLY_TEMPLATES,
+      pathname: STANDARD_JOB_DETAIL,
       state: templateDetails,
     });
   };

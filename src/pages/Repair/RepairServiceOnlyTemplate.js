@@ -33,7 +33,7 @@ import {
   WITH_PARTS,
 } from "./CONSTANTS";
 import { createBuilder } from "services/repairBuilderServices";
-import { SERVICE_ONLY_TEMPLATES } from "navigation/CONSTANTS";
+import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import SearchComponentTemplate from "./components/SearchComponentTemplate";
 
 export const RepairServiceOnlyTemplate = () => {
@@ -257,7 +257,7 @@ export const RepairServiceOnlyTemplate = () => {
     // templateDetails.partListId = selectedTemplate.estimationNumber;
     // templateDetails.versionNumber = selectedTemplate.versionNumber;
     history.push({
-      pathname: SERVICE_ONLY_TEMPLATES,
+      pathname: STANDARD_JOB_DETAIL,
       state: templateDetails,
     });
   };

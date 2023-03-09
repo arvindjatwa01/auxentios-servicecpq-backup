@@ -23,15 +23,6 @@ import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import { Radio, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
-import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
-import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import Checkbox from "@mui/material/Checkbox";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { MuiMenuComponent } from "pages/Operational";
 import { RenderConfirmDialog } from "./components/ConfirmationBox";
 function WithSparePartsOperation(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
@@ -193,10 +184,10 @@ function WithSparePartsOperation(props) {
 
   const handleChange = async (id) => {
     await updatePartlistActive(id).then(result => {
-      // if(result){
+      if(result){
         fetchPartlistFromOperation(operationData.id).then(resultPartlists => {
           let groupedPartList = groupBy(resultPartlists, "partlistId");
-          console.log(groupedPartList);
+          // console.log(groupedPartList);
           setOperationData({
             ...operationData,
             partlists: groupedPartList,
@@ -210,7 +201,7 @@ function WithSparePartsOperation(props) {
           });
         });
         handleSnack("success","This partlist has been activated for the builder!");
-      // }
+      }
     }).catch(e => {
       handleSnack("error", "Error occurred while making the partlist version active!")
     })
@@ -623,8 +614,7 @@ function WithSparePartsOperation(props) {
                 className="col-md-4 col-sm-4"
               />
             </div>
-
-            {operationData.partlists && operationData.partlists.length > 0 && <><h5 className="d-flex align-items-center  mx-2">
+            {operationData.partlists && Object.entries(operationData.partlists).length > 0 && <><h5 className="d-flex align-items-center  mx-2">
               <div className="" style={{ display: "contents" }}>
                 <span className="mr-3 white-space">Part List</span>
               </div>
@@ -739,295 +729,7 @@ function WithSparePartsOperation(props) {
                 </div>
               </div>})}
             </div>
-            </>}
-            {/* <div className="row">
-              <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-16 text-white">
-                        023-Remove Engine partlist
-                      </span>
-                    </div>
-                    <div className="d-flex">
-                      <div>
-                        <Checkbox className="p-0 text-white" />
-                      </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row my-4">
-                      <div className="col-12">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COST
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>
-                  <div className="bg-white py-2 px-3">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 2
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-12">
-                        <div className="d-flex">
-                        <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-500">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-16 text-white">
-                        023-Remove Engine partlist
-                      </span>
-                    </div>
-                    <div className="d-flex">
-                      <div>
-                        <Checkbox className="p-0 text-white" />
-                      </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 1
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-                    <hr></hr>
-                    <div className="row my-4">
-                      <div className="col-12">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COST
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>
-                  <div className="bg-white py-2 px-3">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version 2
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        <a href="#" class="text-light-black font-size-12">
-                          Go to Version{" "}
-                          <span className="text-light-black">
-                            <ArrowForwardIosOutlinedIcon />
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="row my-4">
-                      <div className="col-12">
-                        <div className="d-flex">
-                        <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-500">7</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">6</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COSTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$48</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>              
-            </div> */}
+            </>}            
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
                 className="btn bg-primary text-white"

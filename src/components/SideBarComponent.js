@@ -198,7 +198,9 @@ export function SideBarComponent(props) {
     //     </div>
     // </div>
     <div>
-      <nav className="main-menu">
+      <nav className="main-menu" 
+      // style={{backgroundColor: '	#404040'}}
+      >
         <ul style={{ display: "none" }}>
           <li className="">
             <Link to="/">
@@ -997,27 +999,6 @@ export function SideBarComponent(props) {
                     </NavLink>
                   </li>
                   <li>
-                  <NavLink
-                          to="/RepairServiceOnlyTemplate"
-                          activeClassName="active"
-                          className="border-radius-50"
-                        >
-                          <span className="span-icon">
-                        <img src={TemplatesIcon} height="28" />
-                      </span>
-                          <span className="nav-text">
-                            <span
-                              className="ml-2 "
-                              style={{ display: "inline-grid" }}
-                            >
-                              <span className="font-size-14 font-weight-600 text-dark">
-                                Templates
-                              </span>
-                            </span>
-                          </span>
-                        </NavLink>
-                  </li>
-                  {/* <li>
                     <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
                       <span className="span-icon">
                         <img src={TemplatesIcon} height="28" />
@@ -1037,7 +1018,7 @@ export function SideBarComponent(props) {
                     <ul aria-expanded="false">
                     <li>
                         <NavLink
-                          to="/RepairServiceOnlyTemplate"
+                          to="/standard-job"
                           activeClassName="active"
                           className="border-radius-50"
                         >
@@ -1067,13 +1048,13 @@ export function SideBarComponent(props) {
                               style={{ display: "inline-grid" }}
                             >
                               <span className="font-size-14 font-weight-600 text-dark">
-                                Service Only Templates
+                                Standard Jobs
                               </span>
                             </span>
                           </span>
                         </NavLink>
                       </li>
-                      <li>
+                      {/* <li>
                         <NavLink
                           to={REPAIR_SERVICE_PARTS_TEMPLATE}
                           activeClassName="active"
@@ -1106,7 +1087,7 @@ export function SideBarComponent(props) {
                             </span>
                           </span>
                         </NavLink>
-                      </li>
+                      </li> */}
                       <li>
                         <NavLink to="/RepairKits" activeClassName="active" className="border-radius-50">
                           <span className="span-icon">
@@ -1146,7 +1127,7 @@ export function SideBarComponent(props) {
                         </NavLink>
                       </li>
                     </ul>
-                  </li> */}
+                  </li>
                 </ul>
               </li>
               <li>
