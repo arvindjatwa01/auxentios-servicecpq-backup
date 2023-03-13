@@ -245,3 +245,8 @@ export const SEARCH_QUOTE_URL = () => QUOTE_REST_SERVICE + "search?search=";
 
 export const SEARCH_QUOTE_BY_FIELDS = () => QUOTE_REST_SERVICE + "/search-by-fields?quote_type=";
 export const RECENT_QUOTES_COMMON_PATH = () => QUOTE_REST_SERVICE + "/recent?quote_type=";
+
+// Solution Quote
+
+export const SEARCH_SOLUTION_QUOTE = () => QUOTE_REST_SERVICE + "/solution-builder/search?search=";
+

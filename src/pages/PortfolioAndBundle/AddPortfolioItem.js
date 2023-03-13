@@ -1571,8 +1571,10 @@ const AddPortfolioItem = (props) => {
               miscEscalation: 0,
               serviceEscalation: 0,
               withBundleService: false,
-              portfolio: {
-                portfolioId: 1
+              portfolio: ((props.portfolioDataId == "") ||
+                (props.portfolioDataId == undefined) ||
+                (props.portfolioDataId == null)) ? null : {
+                portfolioId: props.portfolioDataId
               },
               tenantId: loginTenantId,
               partsRequired: true,
@@ -1585,7 +1587,9 @@ const AddPortfolioItem = (props) => {
 
 
             const itemPriceData = await createItemPriceData(newPriceObj)
-            props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data);
+            if (itemPriceData.status === 200) {
+              props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data);
+            }
           }
 
           if ((props.compoFlag === "itemEdit") &&
@@ -1983,9 +1987,10 @@ const AddPortfolioItem = (props) => {
           miscEscalation: 0,
           serviceEscalation: 0,
           withBundleService: false,
-          portfolio: {
-            portfolioId: 1
-          },
+          // portfolio: {
+          //   portfolioId: 1
+          // },
+          portfolio: null,
           tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
@@ -2155,12 +2160,18 @@ const AddPortfolioItem = (props) => {
     <>
       <div className="ligt-greey-bg p-3 d-none">
         <div>
-          {props.compoFlag === "itemEdit" && (
+          {props.bundleOrServiceEditOrNot === undefined && props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
             </span>
           )}
+          {/* {props.compoFlag === "itemEdit" && (
+            <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
+              <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+              <span className="ml-2">Edit</span>
+            </span>
+          )} */}
 
           <span className="mr-3 cursor" onClick={() => setSubTabs("A")}>
             <FormatListBulletedOutlinedIcon className=" font-size-16" />
@@ -2374,7 +2385,9 @@ const AddPortfolioItem = (props) => {
                   })
                 }
                 value={addPortFolioItem.numberOfEvents}
-                disabled={editable}
+                // disabled={editable}
+                disabled
+                readonly
               />
             </div>
           </div>
@@ -2705,7 +2718,7 @@ const AddPortfolioItem = (props) => {
           
         </div> */}
         <div>
-          {props.compoFlag === "itemEdit" && (
+          {props.bundleOrServiceEditOrNot === undefined && props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
@@ -3432,6 +3445,8 @@ const AddPortfolioItem = (props) => {
                             })
                           }
                           value={addPortFolioItem.numberOfEvents}
+                          disabled
+                          readonly
                         />
                         <div className="css-w8dmq8">*Mandatory</div>
                       </div>
@@ -4284,9 +4299,13 @@ const AddPortfolioItem = (props) => {
                     className="btn border mr-4"
                     onClick={handleAddPortfolioSave}
                   >
-                    {props.compoFlag === "itemEdit"
+                    {props.bundleOrServiceEditOrNot ? "Next" :
+                      props.compoFlag === "itemEdit"
+                        ? "Save Changes"
+                        : "Save & Continue"}
+                    {/* {props.compoFlag === "itemEdit"
                       ? "Save Changes"
-                      : "Save & Continue"}
+                      : "Save & Continue"} */}
                   </Link>
                 </div>
               </>}
@@ -4303,7 +4322,7 @@ const AddPortfolioItem = (props) => {
               className="btn cursor bg-primary text-white border mr-4"
               onClick={handleSummaryAndTemplateTabs}
             >
-              Save & Next
+              {props.bundleOrServiceEditOrNot ? "Next" : "Save & Next"}
             </Link>
           </div>
         ) : ("")}

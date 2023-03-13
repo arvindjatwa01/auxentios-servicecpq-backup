@@ -491,6 +491,44 @@ const SolutionQuoteSearch = () => {
     });
   }
 
+  const getFormattedDateTimeByTimeStamp = (timeStamp) => {
+
+    var date = new Date(timeStamp);
+    var year = date.getFullYear();
+    // var m = date.getMonth() + 1;
+    var m = date.getMonth();
+    // var month = m < 10 ? '0' + m : m;
+    var month = m;
+    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var format = "AM";
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+
+    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    if (hour > 11) {
+      format = "PM";
+    }
+    if (hour > 12) {
+      hour = hour - 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+    var finalDateString = day + " " + monthName[month - 1] + "-" + year;
+    // var finalDateString = year + "-" + month + "-" + day;
+    return finalDateString;
+  }
+
   return (
     <>
       {/* <CommanComponents /> */}
@@ -690,7 +728,7 @@ const SolutionQuoteSearch = () => {
                     customStyles={customStyles}
                     pagination
                     onRowClicked={(e) => handleRowClick(e)}
-                    // selectableRows
+                  // selectableRows
                   />
                 </>
               }
@@ -700,7 +738,7 @@ const SolutionQuoteSearch = () => {
           <a href="/ConfigurationSolutionBuilderComponent" className="btn bg-primary text-white">Next</a>
         </div> */}
         </div>
-        <Modal className="tablerowmodal" show={show} onHide={() => handleClose()} size="md"
+        <Modal className="tablerowmodal" show={show} onHide={() => handleClose()} size="ms"
           aria-labelledby="contained-modal-title-vcenter">
           <Modal.Body className="">
             {clickedQuoteRowData !== null && <>
@@ -709,25 +747,35 @@ const SolutionQuoteSearch = () => {
           <h4 class="modal-title">Warning!</h4> */}
                 <div><LightbulbOutlinedIcon className="text-light" /></div>
                 <div>
-                  <p className="text-light ml-3">This standard job is created for replacement of engne belonging to 797,797F & 793 models</p>
+                  {/* <p className="text-light ml-3">This standard job is created for replacement of engne belonging to 797,797F & 793 models</p> */}
+                  <p className="text-light ml-3">This solution quote was created by {clickedQuoteRowData?.preparedBy} on {clickedQuoteRowData?.preparedOn != null ? getFormattedDateTimeByTimeStamp(clickedQuoteRowData?.preparedOn) : ""}</p>
                 </div>
               </div>
               <div class="p-3 bg-white">
-                <div>
-                  <a href="#" className="btn bg-primary text-white">Template</a>
+                <div className="d-flex justify-content-between mb-3">
+                  <div>
+                    <a href="#" className="btn bg-primary text-white">Solution Quote</a>
+                  </div>
+                  <h4 className="text-light mt-2 mr-2">{clickedQuoteRowData?.quoteId}</h4>
                 </div>
-                <h4 className="text-light mt-3">SJ671</h4>
-                {/* <p>Your current session will expire in 5 minutes. Please Save your changes to continue your session, otherwise you
-                  will lose all unsaved data and your session will time out.</p> */}
-                <p>{clickedQuoteRowData?.description}</p>
-                <h4 className=" mt-3">INCLUDES</h4>
+                <hr />
+                <h5 className=" mt-3">Summary</h5>
+                <ul>
+                  <li className="my-2"><span className="mr-3 "><Checkbox className="p-0 font-size-14 text-primary" defaultChecked /></span>{clickedQuoteRowData?.description}</li>
+                  <li className="my-2"><span className="mr-3 "><Checkbox className="p-0 font-size-14 text-primary" defaultChecked /></span>{clickedQuoteRowData?.serialNumber}</li>
+                  <li className="my-2"><span className="mr-3 "><Checkbox className="p-0 font-size-14 text-primary" defaultChecked /></span>{clickedQuoteRowData?.model}</li>
+                  <li className="my-2"><span className="mr-3 "><Checkbox className="p-0 font-size-14 text-primary" defaultChecked /></span>{clickedQuoteRowData?.customerId}</li>
+
+                </ul>
+                {/* <p>{clickedQuoteRowData?.description}</p> */}
+                {/* <h4 className=" mt-3">INCLUDES</h4>
                 <ul>
                   <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Spare Parts</li>
                   <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Labor Hours</li>
                   <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>Miscellaenous</li>
                   <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon /></span>External Work</li>
 
-                </ul>
+                </ul> */}
                 <div>
                   <a href="#" style={{ textDecoration: 'underline' }}>View Details</a>
                 </div>

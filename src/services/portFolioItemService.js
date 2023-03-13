@@ -57,7 +57,8 @@ export const getItemDataById = (id) => {
         .get(`${CREATE_PORTFOLIO_ITEM()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("getItemDataById > axios res=", res);
-          resolve(res.data);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getItemDataById > axios err=", err);
@@ -99,7 +100,7 @@ export const getServiceItemsList = () => {
         .get(CREATE_PORTFOLIO_ITEM() + "/services", { headers: headersData })
         .then((res) => {
           console.log("getServiceItemsList > axios res=", res);
-          resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getServiceItemsList > axios err=", err);
