@@ -1,6 +1,12 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { PRICING_COMMON_CONFIG, SOLUTION_PRICING_COMMON_CONFIG, PRICE_HEAD_TYPE, PORTFOLIO_PRICE_CREATE, PRICE_LIST, PRICE_TYPE, ADDITIONAL_PRICE_GET, ESCALATION_PRICE_GET, PORTFOLIO_ITEM_PRICE_SJID, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID, GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA } from "./CONSTANTS";
+import {
+  PRICING_COMMON_CONFIG, SOLUTION_PRICING_COMMON_CONFIG, PRICE_HEAD_TYPE, PORTFOLIO_PRICE_CREATE, PRICE_LIST, PRICE_TYPE, ADDITIONAL_PRICE_GET, ESCALATION_PRICE_GET, PORTFOLIO_ITEM_PRICE_SJID, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID, GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA,
+  PORTFOLIO_PRICE_AGREEMENT_URL,
+  PORTFOLIO_PRICE_AGREEMENT_BY_ID_GET,
+  PORTFOLIO_PRICE_AGREEMENT_UPDATE_PUT,
+  PORTFOLIO_PRICE_AGREEMENT_DELETE_BY_ID_DELETE,
+} from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -345,7 +351,6 @@ export const updatePortfolioPrice = (data, id) => {
   });
 };
 
-
 /**
  * Function to fetch the Portfolio Price By Id.
  */
@@ -365,6 +370,30 @@ export const getPortfolioPriceById = (id) => {
         });
     } catch (error) {
       console.error("in pricingCommonConfig > getPortfolioPriceById, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+/**
+ * Function to Create the Portfolio Price-agreement.
+ */
+export const portfolioPriceAgreementCreation = (data) => {
+  console.log("pricingCommonConfig > portfolioPriceAgreementCreation called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(PORTFOLIO_PRICE_AGREEMENT_URL(), data, { headers: headersData })
+        .then((res) => {
+          console.log("portfolioPriceAgreementCreation > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("portfolioPriceAgreementCreation > axios err=", err);
+          reject("Error in portfolioPriceAgreementCreation axios!");
+        });
+    } catch (error) {
+      console.error("in pricingCommonConfig > portfolioPriceAgreementCreation, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
