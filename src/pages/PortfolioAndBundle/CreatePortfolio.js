@@ -65,7 +65,6 @@ import link1Icon from "../../assets/images/link1.png";
 import penIcon from "../../assets/images/pen.png";
 
 import SearchBox from "../Repair/components/SearchBox";
-import { customerSearch, machineSearch } from "services/searchServices";
 import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -131,8 +130,16 @@ import {
   getItemPriceData,
   createItemPriceData,
   getItemDataById,
-  getServiceItemsList
+  getServiceItemsList,
+  portfolioPriceAgreementCreation
 } from "../../services/index";
+
+import {
+  customerSearch,
+  machineSearch,
+  sparePartSearch,
+} from "../../services/searchServices";
+
 import {
   selectCategoryList,
   selectFrequencyList,
@@ -354,6 +361,21 @@ export function CreatePortfolio(props) {
   const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("");
   const [portfolioMenuOpen, setPortfolioMenuOpen] = useState(false);
   const [priceAgreementRows, setPriceAgreementRows] = useState([]);
+
+  const [priceAgreementRowsData, setPriceAgreementRowsData] = useState([
+    // {
+    //   id: 0,
+    //   itemType: "",
+    //   itemTypeKeyValue: { label: '', value: '' },
+    //   itemNumber: "",
+    //   specialPrice: 0,
+    //   discount: 0,
+    //   absoluteDiscount: 0
+    // },
+  ]);
+
+  const [createdPriceAgreementData, setCreatedPriceAgreementData] = useState([]);
+
   const [taskItemList, setTaskItemList] = useState(null);
   const [categoryItem, setCategoryItem] = useState(null);
 
@@ -637,6 +659,7 @@ export function CreatePortfolio(props) {
   });
 
   const [portfolioId, setPortfolioId] = useState();
+  const [newVersionStatus, setNewVersionStatus] = useState(false)
   const [currentItemId, setCurrentItemId] = useState();
   const [nameIsNotEditAble, setNameIsNotEditAble] = useState(false)
 
@@ -1084,10 +1107,102 @@ export function CreatePortfolio(props) {
     var temp = priceAgreementRows.slice();
     temp.splice(index, 1);
     setPriceAgreementRows(temp);
+
+    var tempRow = priceAgreementRowsData.slice();
+    tempRow.splice(index, 1);
+    setPriceAgreementRowsData(tempRow)
   };
+
+  const handleItemNumberSearch = async (e, itemType, id) => {
+    try {
+      let tempArray = [...priceAgreementRowsData];
+      let obj = tempArray[id];
+      obj.itemNumber = e.target.value;
+      if (itemType === "") {
+        throw "Select Item Type First."
+      }
+      if (itemType === "PARTS") {
+        let searchString = "partNumber~" + e.target.value;
+
+        sparePartSearch(searchString)
+          .then((res) => {
+            console.log("response", res);
+            obj.selectOptions = res;
+            tempArray[id] = obj;
+            setPriceAgreementRowsData([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+          })
+          .catch((err) => {
+            console.log(err)
+          });
+
+        obj.itemNumber = e.target.value;
+      } else {
+        obj.itemNumber = e.target.value;
+        tempArray[id] = obj;
+        setPriceAgreementRowsData([...tempArray]);
+      }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  const handleSearchItemNumberListClick = (e, currentItem, obj1, id) => {
+    let tempArray = [...priceAgreementRowsData];
+    let obj = tempArray[id];
+    obj.itemNumber = currentItem;
+    tempArray[id] = obj;
+    setPriceAgreementRowsData([...tempArray]);
+    $(`.scrollbar-${id}`).css("display", "none");
+  };
+
+  const handlePriceAgreementData = (e, i, type) => {
+    var tempRow = priceAgreementRowsData.slice();
+    if (type === "select") {
+      tempRow = {
+        ...tempRow[i],
+        itemType: e.value,
+        itemTypeKeyValue: e,
+      }
+    }
+    if (type == "text" || type == "number") {
+      tempRow = {
+        ...tempRow[i],
+        [e.target.name]: e.target.value,
+      }
+    }
+
+    let _priceAgreementRowsData = [...priceAgreementRowsData];
+    _priceAgreementRowsData.splice(i, 1, tempRow)
+    setPriceAgreementRowsData(_priceAgreementRowsData)
+  }
 
   const handleAddNewRowPriceAgreement = () => {
     var temp = [...priceAgreementRows];
+
+    var priceAgreementTableRowData = [...priceAgreementRowsData]
+    setPriceAgreementRowsData([
+      ...priceAgreementRowsData,
+      {
+        id: temp.length + 1,
+        itemType: "",
+        itemTypeKeyValue: { label: "", value: "", },
+        selectOptions: [],
+        itemNumber: "",
+        specialPrice: 0,
+        discount: 0,
+        absoluteDiscount: 0,
+      }
+    ]);
+
     var index = temp.length;
     var rowHtml = (
       <>
@@ -1096,8 +1211,8 @@ export function CreatePortfolio(props) {
           <td>
             <div className="form-group mb-0">
               <Select
-                defaultValue={selectedOption}
-                onChange={setSelectedOption}
+                // defaultValue={selectedOption}
+                // onChange={setSelectedOption}
                 options={priceAgreementItemTypeOptions}
                 placeholder="Select..."
               />
@@ -1115,9 +1230,9 @@ export function CreatePortfolio(props) {
                 className="form-control text-primary border-radius-10 position-relative"
                 name="itemNumber"
                 placeholder="Search..."
-                // value={addPortFolioItem.templateId}
-                // onChange={handleAddServiceBundleChange}
-                // onChange={(e) => handleStandardJobInputSearch(e)}
+              // value={addPortFolioItem.templateId}
+              // onChange={handleAddServiceBundleChange}
+              // onChange={(e) => handleStandardJobInputSearch(e)}
               />
               {
                 <ul
@@ -3367,27 +3482,27 @@ export function CreatePortfolio(props) {
         }
 
         console.log("reqObj is : ", reqObj);
-        const itemUpdateRes = await updateItemData(
-          addPortFolioItem.id,
-          reqObj
-        );
+        // const itemUpdateRes = await updateItemData(
+        //   addPortFolioItem.id,
+        //   reqObj
+        // );
 
-        if (itemUpdateRes.status === 200) {
-          toast(`😎 ${(compoFlagData == "BUNDLE_ITEM") ?
-            "Bundle" : (compoFlagData == "SERVICE") ?
-              "Service" : ""} Item ${addPortFolioItem.name} updated successfully`, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setUpdatedServiceBundleItemData(itemUpdateRes.data);
-          setBundleTabs("bundleServicePriceCalculator")
-          // setAssociatedServiceOrBundleIndex
-        }
+        // if (itemUpdateRes.status === 200) {
+        //   toast(`😎 ${(compoFlagData == "BUNDLE_ITEM") ?
+        //     "Bundle" : (compoFlagData == "SERVICE") ?
+        //       "Service" : ""} Item ${addPortFolioItem.name} updated successfully`, {
+        //     position: "top-right",
+        //     autoClose: 3000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //   });
+        //   setUpdatedServiceBundleItemData(itemUpdateRes.data);
+        //   setBundleTabs("bundleServicePriceCalculator")
+        // }
+        setBundleTabs("bundleServicePriceCalculator")
 
       } else {
         // setEditItemShow(false); //hide screen
@@ -5691,6 +5806,30 @@ export function CreatePortfolio(props) {
           }
         }
       } else if (e.target.id == "priceAgreement") {
+        // if ((portfolioId == "") ||
+        //   (portfolioId == null)) {
+        //   throw "Please Create Portfolio first"
+        // }
+        var array = [];
+        if (priceAgreementRowsData.length > 0) {
+          for (let p = 0; p < priceAgreementRowsData.length; p++) {
+            var newObj = {
+              itemType: priceAgreementRowsData[p].itemType !== "" ? priceAgreementRowsData[p].itemType : "EMPTY ",
+              itemNumber: priceAgreementRowsData[p].itemNumber,
+              specialPrice: parseFloat(priceAgreementRowsData[p].specialPrice),
+              discount: parseFloat(priceAgreementRowsData[p].discount),
+              absoluteDiscount: parseFloat(priceAgreementRowsData[p].absoluteDiscount)
+            }
+
+            const priceAgreementRes = await portfolioPriceAgreementCreation(newObj)
+            if (priceAgreementRes.status === 200) {
+              array.push({ priceAgreementId: priceAgreementRes.data.priceAgreementId })
+            }
+          }
+
+
+        }
+        setCreatedPriceAgreementData(array);
         setValue("coverage");
       } else if (e.target.id == "coverage") {
         if ((portfolioId == "") ||
@@ -6416,6 +6555,22 @@ export function CreatePortfolio(props) {
     });
   };
 
+  const goToNewCreatedVersion = (portfolioData) => {
+    let portfolioDetails = {
+      portfolioId: portfolioData.portfolioId,
+      type: "fetch",
+    };
+
+    console.log("portfolioDetails ==== ", portfolioDetails);
+    history.push({
+      pathname: "/portfolioBuilder/new",
+      state: portfolioDetails,
+    });
+    setNewVersionStatus(true);
+    // window.location.reload();
+
+  }
+
   const createNewVersion = async () => {
 
     try {
@@ -6493,7 +6648,9 @@ export function CreatePortfolio(props) {
 
           const portfolioRes = await createPortfolio(createNewVersionObj);
           if (portfolioRes.status === 200) {
-            toast("👏 New Version Created", {
+            toast(<div onClick={() => goToNewCreatedVersion(portfolioRes.data)} style={{ cursor: "pointer" }}>
+              👏 New Version Created Click Here to View
+            </div>, {
               position: "top-right",
               autoClose: 3000,
               hideProgressBar: false,
@@ -7455,7 +7612,7 @@ export function CreatePortfolio(props) {
       }
       localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
     }
-  }, []);
+  }, [newVersionStatus]);
 
   const fetchAllDetails = async (PortfolioId) => {
     if (PortfolioId) {
@@ -15138,15 +15295,116 @@ export function CreatePortfolio(props) {
                               <th scope="col">Actions</th>
                             </tr>
                           </thead>
-                          <tbody>{priceAgreementRows}</tbody>
+                          {/* <tbody>{priceAgreementRows}</tbody> */}
+                          <tbody>
+                            {/* {priceAgreementRowsData.map(() => {
+                              return 
+                            })} */}
+                            {priceAgreementRowsData.length > 0 && priceAgreementRowsData.map((data, i) => {
+                              return (
+                                <tr>
+                                  <th scope="row">{i + 1}</th>
+                                  <td>
+                                    <div className="form-group mb-0">
+                                      <Select
+                                        // defaultValue={selectedOption}
+                                        // onChange={setSelectedOption}
+                                        value={data.itemTypeKeyValue}
+                                        onChange={(e) => handlePriceAgreementData(e, i, "select")}
+                                        options={priceAgreementItemTypeOptions}
+                                        placeholder="Select..."
+                                      />
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="form-group mb-0">
+                                      {/* <a
+                href={undefined}
+                className="input-search cursor"
+              onClick={() => setModelShowForTemplate(true)}
+              ><SearchIcon style={{ fontSize: "30px", paddingTop: "5px" }} /></a> */}
+                                      <input
+                                        type="text"
+                                        className="form-control text-primary border-radius-10 position-relative"
+                                        name="itemNumber"
+                                        placeholder="Search..."
+                                        value={data.itemNumber}
+                                        // value={addPortFolioItem.templateId}
+                                        // onChange={handleAddServiceBundleChange}
+                                        onChange={(e) => handleItemNumberSearch(e, data.itemType, i)}
+                                      />
+                                      {
+                                        <ul
+                                          className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                        >
+                                          {data.selectOptions.map(
+                                            (currentItem, j) => (
+                                              <li
+                                                className="list-group-item"
+                                                key={j}
+                                                onClick={(e) => handleSearchItemNumberListClick(e, currentItem["partNumber"], data, i)}
+                                              >
+                                                {currentItem["partNumber"]}
+                                              </li>
+                                            )
+                                          )}
+                                        </ul>
+                                      }
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      placeholder="NA"
+                                      name="specialPrice"
+                                      value={data.specialPrice}
+                                      onChange={(e) => handlePriceAgreementData(e, i, e.target.type)}
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      placeholder="5%"
+                                      name="discount"
+                                      value={data.discount}
+                                      onChange={(e) => handlePriceAgreementData(e, i, e.target.type)}
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      placeholder="NA"
+                                      name="absoluteDiscount"
+                                      value={data.absoluteDiscount}
+                                      onChange={(e) => handlePriceAgreementData(e, i, e.target.type)}
+                                    />
+                                  </td>
+                                  <td>
+                                    <div>
+                                      <a href="#" className="mr-3">
+                                        <RemoveRedEyeOutlinedIcon className="font-size-16 mr-2" />
+                                        View detail
+                                      </a>
+                                      <a href="#" onClick={() => handleRemove(i)} className="">
+                                        <ModeEditIcon className="font-size-16 mr-2" />
+                                        View detail
+                                      </a>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
                         </table>
                       </div>
                     </div>
                     <div className="row" style={{ justifyContent: "right" }}>
                       <button
                         type="button"
-                        onClick={() => setValue("coverage")}
+                        // onClick={() => setValue("coverage")}
+                        onClick={handleNextClick}
                         className="btn btn-light"
+                        id="priceAgreement"
                       >
                         Save & Next
                       </button>

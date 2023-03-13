@@ -74,6 +74,14 @@ export const PORTFOLIO_PRICE_CREATE = () => SOLUTION_BUILDER_URI + "portfolio/pr
 export const PORTFOLIO_SEARCH_URL = SOLUTION_BUILDER_URI + "portfolio/search?search=";
 export const PORTFOLIO_SEARCH_DROPDOWN_LIST_URL = SOLUTION_BUILDER_URI + "portfolio/";
 
+
+//Service Portfolio PRice Agreement
+export const PORTFOLIO_PRICE_AGREEMENT_URL = () => SOLUTION_BUILDER_URI + "price-agreement";
+export const PORTFOLIO_PRICE_AGREEMENT_BY_ID_GET = SOLUTION_BUILDER_URI + "price-agreement/";
+export const PORTFOLIO_PRICE_AGREEMENT_UPDATE_PUT = SOLUTION_BUILDER_URI + "price-agreement/";
+export const PORTFOLIO_PRICE_AGREEMENT_DELETE_BY_ID_DELETE = SOLUTION_BUILDER_URI + "price-agreement/";
+
+
 export const Common_SOLUTION_BUILDER_URL = () =>
   SOLUTION_BUILDER_URI + "common-config";
 export const COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage";
