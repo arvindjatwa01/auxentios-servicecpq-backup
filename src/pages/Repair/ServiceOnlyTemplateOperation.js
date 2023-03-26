@@ -89,7 +89,7 @@ function ServiceOnlyTemplateOperation(props) {
                 " " +
                 opToLoad.componentCodeDescription, //Rename after modifications in UI
             });
-            });
+          });
           } else {
             loadNewOperationUI();
           }

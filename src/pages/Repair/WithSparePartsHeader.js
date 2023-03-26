@@ -69,6 +69,7 @@ import WithSparePartsSegments from "./WithSparePartsSegments";
 import WithSparePartsOperation from "./WithSparePartsOperation";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
+import { createRepairQuote } from "services/repairQuoteServices";
 
 function WithSparePartsHeader(props) {
   const history = useHistory();
@@ -78,6 +79,8 @@ function WithSparePartsHeader(props) {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
+  const [quoteDescription, setQuoteDescription] = useState("");
+  const [quoteReference, setQuoteReference] = useState("");
   const [versionOpen, setVersionOpen] = useState(false);
   const [versionDescription, setVersionDescription] = useState("");
   const [noOptionsCust, setNoOptionsCust] = useState(false);
@@ -278,6 +281,28 @@ function WithSparePartsHeader(props) {
       summary: ""
     }
   ]
+
+  const handleCreateQuote = () => {
+    createRepairQuote(bId, quoteDescription, quoteReference).then(createdQuote => {
+      handleSnack('success',"Quote has been created successfully!");
+      let quoteDetails = {
+        quoteId: "",
+        // templateDBId: "",
+        type: "fetch",
+      };
+      quoteDetails.quoteId = createdQuote.quoteId;
+      // templateDetails.templateDBId = createdQuote.id;
+      history.push({
+        pathname: "/RepairBuilderRepairOption",
+        state: quoteDetails,
+      });
+      // history.push("/RepairBuilderRepairOption");
+    }).catch(e => {
+      handleSnack("error", "Error occurred while creating quote");
+    })
+    
+  };
+
   // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
     await updateBuilderStatus(bId, e.value)
@@ -2249,15 +2274,12 @@ function WithSparePartsHeader(props) {
                       <label className="text-light-dark font-size-12 font-weight-500">
                         Quote Type
                       </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={QUOTE_OPTIONS}
-                        placeholder="Cyclical"
-                      />
+                      <h6 className="font-weight-500">
+                        Repair Quote
+                      </h6>
                     </div>
                   </div>
-                  <div className="col-md-12 col-sm-12">
+                  {/* <div className="col-md-12 col-sm-12">
                     <div className="form-group">
                       <label className="text-light-dark font-size-12 font-weight-500">
                         Quote ID
@@ -2268,7 +2290,7 @@ function WithSparePartsHeader(props) {
                         placeholder="Enter email"
                       />
                     </div>
-                  </div>
+                  </div> */}
                   <div className="col-md-12 col-sm-12">
                     <div className="form-group">
                       <label className="text-light-dark font-size-12 font-weight-500">
@@ -2276,8 +2298,9 @@ function WithSparePartsHeader(props) {
                       </label>
                       <textarea
                         className="form-control"
-                        id="exampleFormControlTextarea1"
                         rows="3"
+                        value={quoteDescription}
+                        onChange={e => setQuoteDescription(e.target.value)}
                       ></textarea>
                     </div>
                   </div>
@@ -2287,15 +2310,16 @@ function WithSparePartsHeader(props) {
                         Reference
                       </label>
                       <input
-                        type="email"
+                        type="text"
                         className="form-control"
-                        placeholder="Enter email"
+                        value={quoteReference}
+                        onChange={e => setQuoteReference(e.target.value)}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="row">
+                {/* <div className="row">
                   <div className="col-md-12 col-sm-12">
                     <div className="form-group mt-3">
                       <p className="font-size-12 font-weight-500 mb-2">
@@ -2330,21 +2354,11 @@ function WithSparePartsHeader(props) {
                       <h6 className="font-weight-500">Holder text</h6>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="modal-footer" style={{ display: "unset" }}>
-                <div className="mb-2">
-                  <a
-                    href="#"
-                    onClick={() => handleCreate()}
-                    data-dismiss="modal"
-                    className="btn bg-primary d-block text-white"
-                  >
-                    Done
-                  </a>
-                </div>
                 <div>
-                  <button className="btn  btn-primary">Create</button>
+                  <button className="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
                   <button
                     type="button"
                     className="btn pull-right border"

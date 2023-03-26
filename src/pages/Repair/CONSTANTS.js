@@ -163,6 +163,11 @@ export const OPTIONS_USAGE = [
   { value: "TONS", label: "Tons" },
 ];
 
+export const OPTIONS_LEADTIME_UNIT = [
+  { value: "DAY", label: "Day" },
+  { value: "HOUR", label: "Hour" }
+];
+
 export const CONSUMABLE_SEARCH_Q_OPTIONS = [
   {
     label: "Id",

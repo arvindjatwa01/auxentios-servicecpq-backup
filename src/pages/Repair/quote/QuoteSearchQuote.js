@@ -13,12 +13,16 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link } from "react-router-dom";
-import { Modal} from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import $ from "jquery";
 import { QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
+import SearchComponent from "../components/SearchComponent";
+import { BUILDER_SEARCH_Q_OPTIONS, WITHOUT_PARTS } from "../CONSTANTS";
+import { builderSearch } from "services/repairBuilderServices";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 
 const QuoteSearchQuote = () => {
   const [show, setShow] = React.useState(false);
@@ -68,83 +72,81 @@ const QuoteSearchQuote = () => {
     // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
+  // Snack Bar State
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
 
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
   const handleRowClick = (e) => {
     setShow(true);
   };
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    var searchStr = "";
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        const res = await builderSearch(
+          `builderType:${WITHOUT_PARTS} AND saved:true AND ${searchStr}`
+        );
+        setMasterData(res);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching spare parts!");
+    }
+  };
+
+  // Once opetion has been selected clear the search results
+  const clearFilteredData = () => {
     setMasterData([]);
-    setFilterMasterData([]);
-    setSelectedMasterData([]);
   };
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
-  };
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
       selectedOption: "",
     },
   ]);
-  const [count, setCount] = useState(1);
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const [selectedMasterData, setSelectedMasterData] = useState([]);
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
-    obj.inputSearch = e.target.value;
-  };
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const [filterMasterData, setFilterMasterData] = useState([]);
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
+
   const [masterData, setMasterData] = useState([]);
   const customStyles = {
     rows: {
@@ -291,7 +293,12 @@ const QuoteSearchQuote = () => {
 
   return (
     <>
-      {/* <CommanComponents /> */}
+      <CustomizedSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid ">
           <div className="card p-4 mt-5">
@@ -329,13 +336,18 @@ const QuoteSearchQuote = () => {
               </div>
             </div>
           </div>
-          <div className="bg-primary px-3 mb-3 overflow-hidden border-radius-6">
-            <div className="row align-items-center height-66">
-              <div className="col-3">
-                <div className="d-flex ">
-                  <h5 className=" mb-0 text-white">
-                    <span>Spare Parts Quotes</span>
-                  </h5>
+          <div className="bg-primary px-3 mb-3 border-radius-6">
+            <div className="row align-items-center">
+              <div className="col-11 mx-2">
+                <div className="d-flex align-items-center bg-primary w-100">
+                  <div
+                    className="d-flex mr-3 py-3"
+                    style={{ whiteSpace: "pre" }}
+                  >
+                    <h5 className="mr-2 mb-0 text-white">
+                      <span>Spare Parts Quotes</span>
+                    </h5>
+                  </div>
                   <p className=" mb-0">
                     <a href="#" className="ml-2 text-white">
                       <EditOutlinedIcon />
@@ -344,130 +356,18 @@ const QuoteSearchQuote = () => {
                       <ShareOutlinedIcon />
                     </a>
                   </p>
-                </div>
-              </div>
-              <div className="col-9">
-                <div className="d-flex justify-content-between align-items-center w-100 ">
-                  <div className="row align-items-center m-0 ">
-                    {querySearchSelector.map((obj, i) => {
-                      return (
-                        <>
-                          <div className="customselect border-white overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
-                            {i > 0 ? (
-                              <SelectFilter
-                                isClearable={true}
-                                defaultValue={{ label: "And", value: "AND" }}
-                                options={[
-                                  { label: "And", value: "AND", id: i },
-                                  { label: "Or", value: "OR", id: i },
-                                ]}
-                                placeholder="Search By.."
-                                onChange={(e) => handleOperator(e, i)}
-                                // value={querySearchOperator[i]}
-                                value={obj.selectOperator}
-                              />
-                            ) : (
-                              <></>
-                            )}
-
-                            <div>
-                              <SelectFilter
-                                // isClearable={true}
-                                options={[
-                                  { label: "Make", value: "make", id: i },
-                                  { label: "Family", value: "family", id: i },
-                                  { label: "Model", value: "model", id: i },
-                                  { label: "Prefix", value: "prefix", id: i },
-                                ]}
-                                placeholder="Search By.."
-                                onChange={(e) => handleFamily(e, i)}
-                                value={obj.selectFamily}
-                              />
-                            </div>
-                            <div className="customselectsearch customize">
-                              <span className="search-icon-postn">
-                                <SearchIcon className="text-primary" />
-                              </span>
-                              <input
-                                className="custom-input-sleact "
-                                style={{ position: "relative" }}
-                                type="text"
-                                placeholder="Search Parts"
-                                value={obj.inputSearch}
-                                onChange={(e) => handleInputSearch(e, i)}
-                                id={"inputSearch-" + i}
-                                autoComplete="off"
-                              />
-                              <div className=" bg-primary text-white btn">
-                                <span className="mr-2">
-                                  <AddIcon />
-                                </span>
-                                Add Item
-                              </div>
-
-                              {
-                                <ul
-                                  className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                >
-                                  {obj.selectOptions.map((currentItem, j) => (
-                                    <li
-                                      className="list-group-item"
-                                      key={j}
-                                      onClick={(e) =>
-                                        handleSearchListClick(
-                                          e,
-                                          currentItem,
-                                          obj,
-                                          i
-                                        )
-                                      }
-                                    >
-                                      {currentItem}
-                                    </li>
-                                  ))}
-                                </ul>
-                              }
-                            </div>
-                          </div>
-                        </>
-                      );
-                    })}
-                    <div onClick={(e) => addSearchQuerryHtml(e)}>
-                      <Link
-                        to="#"
-                        className="btn-sm text-white border mr-2"
-                        style={{ border: "1px solid #872FF7" }}
-                      >
-                        +
-                      </Link>
-                    </div>
-                    <div onClick={handleDeletQuerySearch}>
-                      <Link to="#" className="btn-sm border">
-                        <svg
-                          data-name="Layer 41"
-                          id="Layer_41"
-                          fill="#ffffff"
-                          viewBox="0 0 50 50"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <title />
-                          <path
-                            className="cls-1"
-                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                          />
-                          <path
-                            className="cls-1"
-                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                          />
-                          <path
-                            className="cls-1"
-                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                          />
-                        </svg>
-                        {/* <DeleteIcon className="font-size-16" /> */}
-                      </Link>
-                    </div>
-                  </div>
+                  <SearchComponent
+                    querySearchSelector={querySearchSelector}
+                    setQuerySearchSelector={setQuerySearchSelector}
+                    clearFilteredData={clearFilteredData}
+                    handleSnack={handleSnack}
+                    searchAPI={builderSearch}
+                    searchClick={handleQuerySearchClick}
+                    options={BUILDER_SEARCH_Q_OPTIONS}
+                    color="white"
+                    builderType={WITHOUT_PARTS}
+                    buttonText="SEARCH"
+                  />
                 </div>
               </div>
             </div>

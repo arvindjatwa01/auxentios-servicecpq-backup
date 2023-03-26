@@ -235,7 +235,9 @@ export const UPDATE_SJ_VERSION = (templateId, version) => REPAIR_BUILDER_URI + `
 /* ===================== Repair Quote Service ============================= */
 export const RECENT_QUOTES =(quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
 export const SEARCH_REPAIR_QUOTES =(searchStr) => QUOTE_REST_SERVICE + `/repair-builder/search?search=${searchStr}`;
-
+export const CREATE_REPAIR_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
+export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 /* ===================== Quote Service ============================= */
 
 export const QUOTE_CREATION = () => SOLUTION_BUILDER_URI + "/quote";

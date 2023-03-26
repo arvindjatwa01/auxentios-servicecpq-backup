@@ -37,12 +37,13 @@ import {
   getGuidedSolution,
 } from "../../../services/index";
 import SearchComponent from "../components/SearchComponent";
-import { GRID_STYLE, TEMPLATE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
+import { GRID_STYLE, TEMPLATE_SEARCH_Q_OPTIONS, TEMPLATE_TYPES } from "../CONSTANTS";
 import { templateSearch } from "services/templateService";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Tooltip, Typography } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
+import SearchComponentTemplate from "../components/SearchComponentTemplate";
 
 export const GuidedRepairQuote = (props) => {
   const [guidedSolutions, setGuidedSolutions] = useState([]);
@@ -317,9 +318,11 @@ export const GuidedRepairQuote = (props) => {
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
     var searchStr = "";
+    // console.log(querySearchSelector);
     querySearchSelector.map(function (item, i) {
-      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch && item.selectType) {
         searchStr =
+          "templateType:"+item.selectType.value+" AND "+
           item.selectCategory.value +
           ":" +
           encodeURI('"' + item.inputSearch + '"');
@@ -347,8 +350,8 @@ export const GuidedRepairQuote = (props) => {
           let family = [],
             model = [];
           template.coverages.map((coverage) => {
-            family.push(coverage.family);
-            model.push(coverage.model);
+            family.push(coverage.coverageFamily);
+            model.push(coverage.coverageModel);
           });
           // return {...kit, family : family, model: model};
           template.family = family;
@@ -1722,7 +1725,7 @@ export const GuidedRepairQuote = (props) => {
                             <span>Search</span>
                           </h5>
                         </div>
-                        <SearchComponent
+                        <SearchComponentTemplate
                           querySearchSelector={querySearchSelector}
                           setQuerySearchSelector={setQuerySearchSelector}
                           clearFilteredData={clearFilteredData}
@@ -1730,7 +1733,9 @@ export const GuidedRepairQuote = (props) => {
                           searchAPI={templateSearch}
                           searchClick={handleQuerySearchClick}
                           options={TEMPLATE_SEARCH_Q_OPTIONS}
+                          typeOptions={TEMPLATE_TYPES}
                           color="white"
+                          type="template"
                           buttonText={"SEARCH"}
                         />
                       </div>

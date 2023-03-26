@@ -203,6 +203,7 @@ function WithSparePartsOperation(props) {
         handleSnack("success","This partlist has been activated for the builder!");
       }
     }).catch(e => {
+      // console.log(e);
       handleSnack("error", "Error occurred while making the partlist version active!")
     })
   }

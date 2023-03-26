@@ -1,88 +1,98 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from 'react-bootstrap';
-import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import FormGroup from '@mui/material/FormGroup';
-import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
-import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../CONSTANTS";
-import Tab from '@mui/material/Tab';
+import { Modal } from "react-bootstrap";
+import Box from "@mui/material/Box";
+import EditIcon from "@mui/icons-material/EditOutlined";
+
+import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
+import {
+  ERROR_MAX_VERSIONS,
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
+  FONT_STYLE_UNIT_SELECT,
+  OPTIONS_LEADTIME_UNIT,
+  STATUS_OPTIONS,
+} from "../CONSTANTS";
+import Tab from "@mui/material/Tab";
 import { customerSearch, machineSearch } from "services/searchServices";
 import { toast } from "react-toastify";
-import {
-  getSearchCoverageForFamily,
-  getSearchQueryCoverage,
-  getConvertQuoteData,
-  solutionQuoteCreation,
-} from "../../../services/index";
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
-import Select1 from '@mui/material/Select';
-import Divider from '@mui/material/Divider';
+import { solutionQuoteCreation } from "../../../services/index";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import Select1 from "@mui/material/Select";
+import Divider from "@mui/material/Divider";
 import DateFnsUtils from "@date-io/date-fns";
-import Menu from '@mui/material/Menu';
+import Menu from "@mui/material/Menu";
 import SearchBox from "pages/Repair/components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import AddIcon from '@mui/icons-material/Add';
-import { styled, alpha } from '@mui/material/styles';
-import TabContext from '@mui/lab/TabContext';
-import Button from '@mui/material/Button';
-import boxicon from '../../../assets/icons/png/box.png'
+import AddIcon from "@mui/icons-material/Add";
+import { styled, alpha } from "@mui/material/styles";
+import TabContext from "@mui/lab/TabContext";
+import Button from "@mui/material/Button";
+import boxicon from "../../../assets/icons/png/box.png";
 import { FileUploader } from "react-drag-drop-files";
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import { useTheme } from '@mui/material/styles';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import MenuItem from '@mui/material/MenuItem';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import DataTable from 'react-data-table-component';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import shareIcon from '../../../assets/icons/svg/share.svg'
-import folderaddIcon from '../../../assets/icons/svg/folder-add.svg'
-import uploadIcon from '../../../assets/icons/svg/upload.svg'
-import deleteIcon from '../../../assets/icons/svg/delete.svg'
-import copyIcon from '../../../assets/icons/svg/Copy.svg'
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "react-select";
+import FormControl from "@mui/material/FormControl";
+import { useTheme } from "@mui/material/styles";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import MenuItem from "@mui/material/MenuItem";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import DataTable from "react-data-table-component";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import shareIcon from "../../../assets/icons/svg/share.svg";
+import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
+import uploadIcon from "../../../assets/icons/svg/upload.svg";
+import deleteIcon from "../../../assets/icons/svg/delete.svg";
+import copyIcon from "../../../assets/icons/svg/Copy.svg";
 import { MuiMenuComponent } from "pages/Operational";
-import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
-import HexagonOutlinedIcon from '@mui/icons-material/HexagonOutlined';
-import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
-import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
-import AccessAlarmOutlinedIcon from '@mui/icons-material/AccessAlarmOutlined';
-import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Link } from "react-router-dom";
+import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
+import HexagonOutlinedIcon from "@mui/icons-material/HexagonOutlined";
+import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
+import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
+import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
+import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Link, useHistory } from "react-router-dom";
+import {
+  fetchQuoteDetails,
+  updateQuoteHeader,
+} from "services/repairQuoteServices";
+import { ReadOnlyField } from "../components/ReadOnlyField";
+import Moment from "react-moment";
+import { Tooltip } from "@mui/material";
+import LoadingProgress from "../components/Loader";
+import Validator from "utils/validator";
 const customStyles = {
   rows: {
-      style: {
-          minHeight: "72px", // override the row height
-      },
+    style: {
+      minHeight: "72px", // override the row height
+    },
   },
   headCells: {
-      style: {
-          paddingLeft: "8px", // override the cell padding for head cells
-          paddingRight: "8px",
-          backgroundColor: "#872ff7",
-          color: "#fff",
-          borderRight: "1px solid rgba(0,0,0,.12)",
-      },
+    style: {
+      paddingLeft: "8px", // override the cell padding for head cells
+      paddingRight: "8px",
+      backgroundColor: "#872ff7",
+      color: "#fff",
+      borderRight: "1px solid rgba(0,0,0,.12)",
+    },
   },
   cells: {
-      style: {
-          paddingLeft: "8px", // override the cell padding for data cells
-          paddingRight: "8px",
-          borderRight: "1px solid rgba(0,0,0,.12)",
-      },
+    style: {
+      paddingLeft: "8px", // override the cell padding for data cells
+      paddingRight: "8px",
+      borderRight: "1px solid rgba(0,0,0,.12)",
+    },
   },
 };
 
-const RepairBuilderRepairOption = () => {
-  const [age, setAge] = React.useState('');
+const RepairBuilderRepairOption = (props) => {
+  const history = useHistory();
+  const { state } = props.location;
+  const [quoteId, setQuoteId] = useState("");
   const [open1, setOpen1] = React.useState(false);
-  const [age1, setAge1] = React.useState('5');
-  const [age2, setAge2] = React.useState('5');
+
   const [show, setShow] = React.useState(false);
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
@@ -94,9 +104,203 @@ const RepairBuilderRepairOption = () => {
     contactPhone: "",
     customerGroup: "",
   });
+  useEffect(() => {
+    console.log(state);
+    if (state) {
+      setQuoteId(state.quoteId);
+      fetchAllDetails(state.quoteId);
+    }
+    // setActiveElement({...activeElement, builderType: state.builderType })
+  }, []);
+  const validityOptions = [
+    { value: 15, label: "15 days" },
+    { value: 30, label: "1 month" },
+    { value: 45, label: "45 days" },
+    { value: 60, label: "2 months" },
+  ];
+  const paymentTermOptions = [
+    { value: 0, label: "Immediate" },
+    { value: 90, label: "90 Days" },
+    { value: 60, label: "60 days" },
+    { value: 30, label: "30 Days" },
+  ];
+  const salesOfficeOptions = [
+    { value: "Location1", label: "Location1" },
+    { value: "Location2", label: "Location2" },
+    { value: "Location3", label: "Location3" },
+    { value: "Location4", label: "Location4" },
+  ];
+  const deliveryTypeOptions = [
+    { value: "standard", label: "Standard" },
+    { value: "express", label: "Express" },
+  ];
+  const deliveryPriorityOptions = [
+    { value: "urgent", label: "urgent" },
+    { value: "normal", label: "normal" },
+    { value: "very_urgent", label: "very_urgent" },
+  ];
+  const [quoteVersionOptions, setQuoteVersionOptions] = useState([
+    { label: "Version 1", value: 1 },
+  ]);
+  const [selectedVersion, setSelectedVersion] = useState({
+    label: "Version 1",
+    value: 1,
+  });
+  const handleVersion = (e) => {
+    setSelectedVersion(e);
+    // fetchBuilderVersionDet(builderId, e.value).then((result) => {
+    //   populateHeader(result);
+    // });
+  };
+  const fetchAllDetails = async (quoteId) => {
+    // var versionHistoryData = {
+    //   builderId: "",
+    //   exitingType: "repair",
+    //   editable: false,
+    // };
+    // localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
+    if (quoteId) {
+      setHeaderLoading(true);
+      await fetchQuoteDetails(quoteId)
+        .then((result) => {
+          setQuoteId(result.quoteId);
+          populateHeader(result);
+        })
+        .catch((err) => {
+          console.log(err);
+          handleSnack("error", "Error occured while fetching header details");
+        });
+      setHeaderLoading(false);
+    }
+  };
+  const [selQuoteStatus, setSelQuoteStatus] = useState({
+    value: "DRAFT",
+    label: "Draft",
+  });
+  const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
+  const [viewOnlyTab, setViewOnlyTab] = useState({
+    custViewOnly: false,
+    machineViewOnly: false,
+    generalViewOnly: false,
+    estViewOnly: false,
+    priceViewOnly: false,
+    shippingViewOnly: false,
+  });
+  const populateHeader = (result) => {
+    setSavedQuoteDetails(result);
+    console.log("Header Details", result);
+    setViewOnlyTab({
+      custViewOnly: result.customerId ? true : false,
+      machineViewOnly: result.serialNumber ? true : false,
+      generalViewOnly: result.quoteDate ? true : false,
+      estViewOnly: result.preparedBy ? true : false,
+      priceViewOnly:
+        result.priceMethod !== "EMPTY" &&
+        result.priceMethod !== null &&
+        result.priceMethod !== ""
+          ? true
+          : false,
+    });
+    setQuoteId(result.quoteId);
+    setSelQuoteStatus(
+      STATUS_OPTIONS.filter((x) => x.value === result.status)[0]
+    );
+    let versions = result.versionList?.map((versionNo) => ({
+      value: versionNo,
+      label: "Version " + versionNo,
+    }));
+    if (versions) setQuoteVersionOptions(versions);
+    setSelectedVersion({
+      label: "Version " + result.versionNumber,
+      value: result.versionNumber,
+    });
+
+    populateCustomerData(result);
+    populateMachineData(result);
+    populateGeneralData(result);
+    populateEstData(result);
+    populatePricingData(result);
+  };
+  const populateCustomerData = (result) => {
+    setCustomerData({
+      customerID: result.customerId ? result.customerId : "",
+      contactEmail: result.contactEmail ? result.contactEmail : "",
+      contactName: result.contactName ? result.contactName : "",
+      contactPhone: result.contactPhone ? result.contactPhone : "",
+      customerGroup: result.customerGroup ? result.customerGroup : "",
+      customerName: result.customerName ? result.customerName : "",
+      source: result.source ? result.source : "User Generated",
+      customerSegment: result.customerSegment ? result.customerSegment : "",
+      country: result.country ? result.country : "",
+      regionOrState: result.regionOrState ? result.regionOrState : "",
+    });
+    setSearchCustResults([]);
+  };
+  const populateMachineData = (result) => {
+    setMachineData({
+      make: result.make ? result.make : "",
+      family: result.family ? result.family : "",
+      model: result.model ? result.model : "",
+      serialNo: result.serialNumber ? result.serialNumber : "",
+      fleetNo: result.fleetNo ? result.fleetNo : "",
+      smu: result.smu ? result.smu : "",
+      registrationNo: result.registrationNo ? result.registrationNo : "",
+      chasisNo: result.chasisNo ? result.chasisNo : "",
+      productSegment: result.productSegment ? result.productSegment : "",
+      productGroup: result.productGroup ? result.productGroup : "",
+    });
+    setSearchModelResults([]);
+    setSearchSerialResults([]);
+  };
+  const populateGeneralData = (result) => {
+    setGeneralDetails({
+      description: result.description ? result.description : "",
+      reference: result.reference ? result.reference : "",
+      quoteDate: result.quoteDate ? result.quoteDate : new Date(),
+      quoteNo: result.quoteId ? result.quoteId : "",
+      validity:
+        result.validityDays && result.validityDays !== "EMPTY"
+          ? validityOptions.find(
+              (element) => element.value === result.validityDays
+            )
+          : { label: "", value: "" },
+      version: result.version ? result.version : "",
+    });
+  };
+  const populateEstData = (result) => {
+    setEstimateDetails({
+      approvedBy: result.approver ? result.approver : "",
+      preparedBy: result.preparedBy ? result.preparedBy : "",
+      preparedOn: result.preparedOn ? result.preparedOn : new Date(),
+      revisedBy: result.revisedBy ? result.revisedBy : "",
+      revisedOn: result.revisedOn ? result.revisedOn : new Date(),
+      salesOffice: result.salesOffice
+        ? salesOfficeOptions.find(
+            (element) => element.value === result.salesOffice
+          )
+        : { label: "", value: "" },
+    });
+  };
+  const populatePricingData = (result) => {
+    // setPricingData({
+    //   priceDate: result.priceDate ? result.priceDate : new Date(),
+    //   priceMethod:
+    //     result.priceMethod && result.priceMethod !== "EMPTY"
+    //       ? priceMethodOptions.find(
+    //           (element) => element.value === result.priceMethod
+    //         )
+    //       : { label: "", value: "" },
+    //   netPrice: result.netPrice ? result.netPrice : 0.0,
+    //   adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
+    //   currency: result.currency
+    //     ? currencyOptions.find((element) => element.value === result.currency)
+    //     : { label: "", value: "" },
+    // });
+  };
+  const [headerLoading, setHeaderLoading] = useState(false);
   const [quoteDataId, setQuoteDataId] = useState(0);
+  // Machine search based on model and serial number
   const handleMachineSearch = async (searchMachinefieldName, searchText) => {
-    // console.log("cleared the result", searchText);
     let searchQueryMachine = "";
     setSearchModelResults([]);
     setSearchSerialResults([]);
@@ -108,33 +312,35 @@ const RepairBuilderRepairOption = () => {
         : "";
     } else if (searchMachinefieldName === "serialNo") {
       machineData.serialNo = searchText;
-      // searchQueryMachine = searchText
-      //     ? machineData.model
-      //         ? `model:${machineData.model} AND equipmentNumber~` + searchText
-      //         : "equipmentNumber~" + searchText
-      //     : "";
       searchQueryMachine = searchText
-        ? "equipmentNumber~" + searchText
+        ? machineData.model
+          ? `model:${machineData.model} AND equipmentNumber~` + searchText
+          : "equipmentNumber~" + searchText
         : "";
     }
-    console.log("search query", searchQueryMachine);
     if (searchQueryMachine) {
       await machineSearch(searchQueryMachine)
         .then((result) => {
           if (result) {
             if (searchMachinefieldName === "model") {
-              setSearchModelResults(result);
+              if (result && result.length > 0) {
+                setSearchModelResults(result);
+                setNoOptionsModel(false);
+              } else {
+                setNoOptionsModel(true);
+              }
             } else if (searchMachinefieldName === "serialNo") {
-              setSearchSerialResults(result);
+              if (result && result.length > 0) {
+                setSearchSerialResults(result);
+                setNoOptionsSerial(false);
+              } else {
+                setNoOptionsSerial(true);
+              }
             }
           }
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the machine!"
-          );
+          handleSnack("error", "Error occurred while searching the machine!");
         });
     } else {
       searchMachinefieldName === "model"
@@ -142,6 +348,7 @@ const RepairBuilderRepairOption = () => {
         : setSearchSerialResults([]);
     }
   };
+
   const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
@@ -151,20 +358,20 @@ const RepairBuilderRepairOption = () => {
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
   const handleCustSearch = async (searchCustfieldName, searchText) => {
-    // console.log("clear data", searchText);
     setSearchCustResults([]);
     customerData.customerID = searchText;
     if (searchText) {
       await customerSearch(searchCustfieldName + "~" + searchText)
         .then((result) => {
-          setSearchCustResults(result);
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the customer!"
-          );
+          handleSnack("error", "Error occurred while searching the customer!");
         });
     }
   };
@@ -196,7 +403,7 @@ const RepairBuilderRepairOption = () => {
     preparedOn: new Date(),
     revisedBy: "",
     revisedOn: new Date(),
-    salesOffice: "",
+    salesOffice: null,
   });
   const [machineData, setMachineData] = useState({
     model: "",
@@ -214,14 +421,12 @@ const RepairBuilderRepairOption = () => {
       [name]: value,
     });
   };
+  // Select machine from the search result
   const handleModelSelect = (type, currentItem) => {
     if (type === "model") {
       setMachineData({
         ...machineData,
         model: currentItem.model,
-        fleetNo: currentItem.stockNumber,
-        smu: currentItem.sensorId,
-
       });
       setSearchModelResults([]);
     } else if (type === "equipmentNumber") {
@@ -231,21 +436,45 @@ const RepairBuilderRepairOption = () => {
         fleetNo: currentItem.stockNumber,
         serialNo: currentItem.equipmentNumber,
         smu: currentItem.sensorId,
+        make: currentItem.maker,
+        family: currentItem.market,
+        productGroup: currentItem.productGroup,
+        productSegment: currentItem.productSegment,
       });
       setSearchSerialResults([]);
     }
   };
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
+
   const [generalDetails, setGeneralDetails] = useState({
     quoteDate: new Date(),
-    quote: "",
+    quoteNo: "",
     description: "",
     reference: "",
     validity: "",
     version: "",
-    salesOffice: "",
   });
+  const [billingDetail, setBillingDetail] = useState({
+    priceDate: new Date(),
+    paymentTerm: "",
+    currency: "",
+    billingType: "",
+    billingFrequency: "",
+    netPrice: "",
+    margin: "",
+    discount: "",
+  });
+  const [shippingDetail, setShippingDetail] = useState({
+    deliveryType: "",
+    deliveryPriority: "",
+    leadTime: "",
+    serviceRecipientAddress: "",
+    unit:""
+  });
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [noOptionsModel, setNoOptionsModel] = useState(false);
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const handleEstimateDetailsDataChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -254,12 +483,13 @@ const RepairBuilderRepairOption = () => {
       [name]: value,
     });
   };
+
   const handleNextClick = async (e) => {
     try {
       if (e.target.id === "customer") {
-        // 
+        //
         if (customerData.customerID === "") {
-          throw "Customer ID must not be Empty."
+          throw "Customer ID must not be Empty.";
         }
 
         let solutionQuoteObj = {
@@ -281,7 +511,8 @@ const RepairBuilderRepairOption = () => {
           quoteDate: generalDetails.quoteDate,
           description: generalDetails.description,
           reference: generalDetails.reference,
-          validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+          validity:
+            generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
           version: generalDetails.version,
           netPrice: 0,
           priceDate: "",
@@ -293,8 +524,8 @@ const RepairBuilderRepairOption = () => {
           tenantId: 74,
           sbQuoteItems: [],
           rbQuoteItems: [],
-          plQuoteItems: []
-        }
+          plQuoteItems: [],
+        };
 
         const solutionRes = await solutionQuoteCreation(solutionQuoteObj);
         if (solutionRes.status === 200) {
@@ -317,20 +548,18 @@ const RepairBuilderRepairOption = () => {
           //   setPortfolioId(solutionRes.data.portfolioId);
           //   setNameIsNotEditAble(true);
         }
-
       } else if (e.target.id === "machine") {
-        setValue("estimationDetails");
-      } else if (e.target.id === "estimationDetails") {
+        setValue("estimation");
+      } else if (e.target.id === "estimation") {
         setValue("generalDetails");
       } else if (e.target.id === "generalDetails") {
         setValue("price");
       } else if (e.target.id === "price") {
         setValue("shipping_billing");
       } else if (e.target.id === "shipping_billing") {
-        console.log("final")
+        console.log("final");
       }
-      console.log("e.target.id", e.target.id)
-
+      console.log("e.target.id", e.target.id);
     } catch (error) {
       toast("😐" + error, {
         position: "top-right",
@@ -343,16 +572,16 @@ const RepairBuilderRepairOption = () => {
       });
       return;
     }
-  }
+  };
   const rows4 = [
-    { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
-    { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
-    { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, },
+    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
+    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
+    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
   const rows3 = [
-    { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
-    { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
-    { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, },
+    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
+    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
+    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
   const masterColumns3 = [
     {
@@ -410,7 +639,7 @@ const RepairBuilderRepairOption = () => {
       sortable: true,
       format: (row) => row.sbQuoteId,
     },
-  ]
+  ];
   const masterColumns4 = [
     {
       name: (
@@ -445,11 +674,11 @@ const RepairBuilderRepairOption = () => {
       sortable: true,
       format: (row) => row.sbQuoteId,
     },
-  ]
+  ];
   const rows2 = [
-    { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
-    { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
-    { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, },
+    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
+    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
+    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
   const masterColumns2 = [
     {
@@ -485,12 +714,8 @@ const RepairBuilderRepairOption = () => {
       sortable: true,
       format: (row) => row.sbQuoteId,
     },
-  ]
-  const generalValidityOptions = [
-    { label: "Allowed", value: "ALLOWED" },
-    { label: "Denied", value: "DENIED" },
-    { label: "Indeterminate", value: "INDETERMINATE" },
-  ]
+  ];
+
   const handleGeneralDetailsDataChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -499,17 +724,8 @@ const RepairBuilderRepairOption = () => {
       [name]: value,
     });
   };
-  const handleOpen = () => setShow(true)
+  const handleOpen = () => setShow(true);
 
-  const handleChangedrop = (event) => {
-    setAge(event.target.value);
-  };
-  const handleChangedrop1 = (event) => {
-    setAge1(event.target.value);
-  };
-  const handleChangedrop2 = (event) => {
-    setAge2(event.target.value);
-  };
   function getStyles(name, personName, theme) {
     return {
       fontWeight:
@@ -519,7 +735,7 @@ const RepairBuilderRepairOption = () => {
     };
   }
   const handleClose1 = () => {
-    setShow(false)
+    setShow(false);
   };
 
   const handleOpen1 = () => {
@@ -535,9 +751,32 @@ const RepairBuilderRepairOption = () => {
     } = event;
     setPersonName(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-
+      typeof value === "string" ? value.split(",") : value
     );
+  };
+
+  const makeHeaderEditable = () => {
+    console.log(value);
+    if (value === "customer" && viewOnlyTab.custViewOnly)
+      setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+    else if (value === "machine" && viewOnlyTab.machineViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        machineViewOnly: false,
+      });
+    else if (value === "estimation" && viewOnlyTab.estViewOnly) {
+      console.log(value);
+      setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
+    } else if (value === "general" && viewOnlyTab.generalViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        generalViewOnly: false,
+      });
+    else if (value === "price" && viewOnlyTab.priceViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        priceViewOnly: false,
+      });
   };
 
   const ITEM_HEIGHT = 48;
@@ -552,27 +791,26 @@ const RepairBuilderRepairOption = () => {
   };
 
   const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
+    "Oliver Hansen",
+    "Van Henry",
+    "April Tucker",
+    "Ralph Hubbard",
+    "Omar Alexander",
+    "Carlos Abbott",
+    "Miriam Wagner",
+    "Bradley Wilkerson",
+    "Virginia Andrews",
+    "Kelly Snyder",
   ];
 
-  const [value, setValue] = React.useState('customer');
+  const [value, setValue] = React.useState("customer");
   const steps = [
-    'Draft',
-    'Reviewed',
-    'Sent to Costomer',
-    'In revision',
-    'Revised',
-    'Accepted',
-
+    "Draft",
+    "Reviewed",
+    "Sent to Costomer",
+    "In revision",
+    "Revised",
+    "Accepted",
   ];
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -580,42 +818,43 @@ const RepairBuilderRepairOption = () => {
     setAnchorEl(event.currentTarget);
   };
 
-
   const StyledMenu = styled((props) => (
     <Menu
       elevation={0}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'right',
+        vertical: "bottom",
+        horizontal: "right",
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: "top",
+        horizontal: "right",
       }}
       {...props}
     />
   ))(({ theme }) => ({
-    '& .MuiPaper-root': {
+    "& .MuiPaper-root": {
       borderRadius: 6,
       marginTop: theme.spacing(1),
       minWidth: 180,
       color:
-        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+        theme.palette.mode === "light"
+          ? "rgb(55, 65, 81)"
+          : theme.palette.grey[300],
       boxShadow:
-        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-      '& .MuiMenu-list': {
-        padding: '4px 0',
+        "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
+      "& .MuiMenu-list": {
+        padding: "4px 0",
       },
-      '& .MuiMenuItem-root': {
-        '& .MuiSvgIcon-root': {
+      "& .MuiMenuItem-root": {
+        "& .MuiSvgIcon-root": {
           fontSize: 18,
           color: theme.palette.text.secondary,
           marginRight: theme.spacing(1.5),
         },
-        '&:active': {
+        "&:active": {
           backgroundColor: alpha(
             theme.palette.primary.main,
-            theme.palette.action.selectedOpacity,
+            theme.palette.action.selectedOpacity
           ),
         },
       },
@@ -628,1092 +867,1353 @@ const RepairBuilderRepairOption = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const updateCustomerData = () => {
+    let data = {
+      ...savedQuoteDetails,
+      source: customerData.source,
+      customerId: customerData.customerID,
+      customerName: customerData.customerName,
+      contactName: customerData.contactName,
+      contactEmail: customerData.contactEmail,
+      customerGroup: customerData.customerGroup,
+      contactPhone: customerData.contactPhone,
+      customerSegment: customerData.customerSegment,
+      regionOrState: customerData.regionOrState,
+      country: customerData.country,
+    };
+    console.log(data);
+    const validator = new Validator();
+    if (!validator.emailValidation(customerData.contactEmail)) {
+      alert("Please enter the email address in correct format");
+    } else {
+      updateQuoteHeader(quoteId, data)
+        .then((result) => {
+          setSavedQuoteDetails(result);
+          setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
+          setValue("machine");
+          handleSnack("success", "Customer details updated!");
+        })
+        .catch((err) => {
+          handleSnack(
+            "error",
+            "Error occurred while updating the customer data!"
+          );
+        });
+    }
+  };
+  const activityOptions = ["None", "Atria", "Callisto"];
 
-
-  const activityOptions = [
-    'None',
-    'Atria',
-    'Callisto'
-  ];
-  const data = [
-    {
-      id: 1,
-      caseId: 13322,
-      BundleId: 'Pc',
-      Bundledescription: 'Ex2487518',
-      S1: "CAT DEO",
-      strategy: '3',
-      Standardjob: '$43.09',
-      repairoption: '$100',
-      frequency: 'USD',
-      quantity: '80%',
-      part$: '$80',
-      srevic$: '80% usage observed on previous work.',
-      Total$: '80% usage observed on previous work.',
-
-    },
-  ]
-
-
-  const columns = [
-    {
-      name: <><div><img className='mr-2' src={boxicon}></img>Case ID</div></>,
-      selector: row => row.caseId,
-      sortable: true,
-      maxWidth: '300px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-      cell: row => row.caseId,
-    },
-    {
-      name: <><div><img className='mr-2' src={boxicon}></img>Bundle iD</div></>,
-      selector: row => row.BundleId,
-      wrap: true,
-      sortable: true,
-      cell: (row) => <div><HexagonOutlinedIcon className="font-size-18 mr-2" />{row.BundleId}</div>
-    },
-    {
-      name: <><div>Bundle Description
-      </div></>,
-      selector: row => row.Bundledescription,
-      wrap: true,
-      sortable: true,
-      cell: (row) => <div>
-        <div style={{ fontWeight: '600' }}>{row.Bundledescription}</div>
-        <div className=" font-size-12">{row.S1}</div>
-      </div>
-      // format: row =>row.Source,
-    },
-    {
-      name: <><div>strategy
-      </div></>,
-      selector: row => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: row => row.strategy,
-    },
-    {
-      name: <><div>Standard job
-      </div></>,
-      selector: row => row.Standardjob,
-      wrap: true,
-      sortable: true,
-      format: row => row.Standardjob,
-    },
-    {
-      name: <><div>repair Option
-      </div></>,
-      selector: row => row.repairoption,
-      wrap: true,
-      sortable: true,
-      format: row => row.repairoption,
-    },
-    {
-      name: <><div>frequency
-      </div></>,
-      selector: row => row.frequency,
-      wrap: true,
-      sortable: true,
-      format: row => row.frequency
-      ,
-    },
-    {
-      name: <><div>% Usage
-      </div></>,
-      selector: row => row.Usage,
-      wrap: true,
-      sortable: true,
-      format: row => row.Usage
-      ,
-    },
-
-    {
-      name: <><div>Total price
-      </div></>,
-      selector: row => row.Totalprice,
-      wrap: true,
-      sortable: true,
-      format: row => row.Totalprice
-      ,
-    },
-    {
-      name: <><div>Comments
-      </div></>,
-      selector: row => row.Comments,
-      wrap: true,
-      sortable: true,
-      minWidth: '200px',
-      format: row => row.Comments
-      ,
-    },
-
-    {
-      name: 'Actions',
-      button: true,
-      minWidth: '200px',
-      cell: (row) =>
-        <div className="d-flex align-items-center">
-          <div className="">
-            <Link><span className="mr-2"><MoreVertIcon className="font-size-18" /></span>More Actions</Link>
-
-          </div>
-
-        </div>
-      // cell: () => <Button>Download Poster</Button>,
-    },
-  ];
-
+  const handleResetData = (action) => {
+    if (action === "RESET") {
+      value === "customer" && populateCustomerData(savedQuoteDetails);
+      value === "machine" && populateMachineData(savedQuoteDetails);
+      value === "general" && populateGeneralData(savedQuoteDetails);
+      value === "estimation" && populateEstData(savedQuoteDetails);
+      value === "price" && populatePricingData(savedQuoteDetails);
+    } else if (action === "CANCEL") {
+      populateHeader(savedQuoteDetails);
+    }
+    // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+  };
+  const updateMachineData = () => {
+    let data = {
+      ...savedQuoteDetails,
+      make: machineData.make,
+      family: machineData.family,
+      model: machineData.model,
+      fleetNo: machineData.fleetNo,
+      smu: machineData.smu,
+      registrationNo: machineData.registrationNo,
+      chasisNo: machineData.chasisNo,
+      serialNumber: machineData.serialNo,
+      productGroup: machineData.productGroup,
+      productSegment: machineData.productSegment,
+    };
+    updateQuoteHeader(quoteId, data)
+      .then((result) => {
+        setSavedQuoteDetails(result);
+        setValue("estimation");
+        setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
+        handleSnack("success", "Machine details updated!");
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while updating the machine data!");
+      });
+  };
+  const updateGeneralData = () => {
+    let data = {
+      ...savedQuoteDetails,
+      quoteDate: generalDetails.quoteDate,
+      description: generalDetails.description,
+      reference: generalDetails.reference,
+      validityDays: generalDetails.validity?.value,
+    };
+    updateQuoteHeader(quoteId, data)
+      .then((result) => {
+        setSavedQuoteDetails(result);
+        setValue("price");
+        setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+        handleSnack("success", "General details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the general details!"
+        );
+      });
+  };
+  const updateEstData = () => {
+    let data = {
+      ...savedQuoteDetails,
+      preparedBy: estimateDetails.preparedBy,
+      preparedOn: estimateDetails.preparedOn,
+      revisedBy: estimateDetails.revisedBy,
+      revisedOn: estimateDetails.revisedOn,
+      approver: estimateDetails.approvedBy,
+      salesOffice: estimateDetails.salesOffice?.value,
+    };
+    updateQuoteHeader(quoteId, data)
+      .then((result) => {
+        setSavedQuoteDetails(result);
+        setValue("general");
+        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
+        handleSnack("success", "Estimation details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the estimation details!"
+        );
+      });
+  };
+  // Update the status of the quote : Active, Revised etc.
+  const handleQuoteStatus = async (e) => {
+    // await updateBuilderStatus(bId, e.value)
+    //   .then((result) => {
+    setSelQuoteStatus(e);
+    handleSnack("success", "Status has been updated!");
+    // })
+    // .catch((err) => {
+    //   handleSnack("error", `Failed to update the status!`);
+    // });
+  };
   return (
     <>
-      {/* <CommanComponents/> */}
-      <div className="content-body" style={{ minHeight: '884px' }}>
+      <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid mt-4">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>Repair Option</h5>
+            <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>
+              Repair Option
+            </h5>
             <div className="d-flex justify-content-center align-items-center">
-              <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
-              <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
-              <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
-              {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-              <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
-              <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
-              <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+              <div className="ml-3">
+                <Select
+                  className="customselectbtn"
+                  onChange={(e) => handleVersion(e)}
+                  options={quoteVersionOptions}
+                  value={selectedVersion}
+                />
+              </div>
 
+              <div className="ml-3">
+                <Select
+                  className="customselectbtn"
+                  onChange={(e) => handleQuoteStatus(e)}
+                  // isOptionDisabled={(e) => disableStatusOptions(e)}
+                  options={STATUS_OPTIONS}
+                  value={selQuoteStatus}
+                />
+              </div>
+            </div>
+            <div className="d-flex justify-content-center align-items-center">
+              <a href="#" className="ml-3 font-size-14" title="Share">
+                <img src={shareIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14" title="Items to review">
+                <img src={folderaddIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14" title="Upload">
+                <img src={uploadIcon}></img>
+              </a>
+              {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+              <a href="#" className="ml-3 font-size-14" title="Delete">
+                <img src={deleteIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14" title="Copy">
+                <img src={copyIcon}></img>
+              </a>
+              <a href="#" className="ml-2">
+                <MuiMenuComponent options={activityOptions} />
+              </a>
             </div>
           </div>
           <div className="card p-4 mt-5">
-            <h5 className="d-flex bg-primary p-3 border-radius-10 align-items-center mb-0">
-              <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{ whiteSpace: 'pre', fontSize: "20px" }}>Quote Header</span>
-                <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
-                <a href="#" className="btn-sm text-white"><DriveFolderUploadOutlinedIcon /></a></div>
-              {/* <div class="hr"></div> */}
-            </h5>
-            <Box className="mt-4 tab2" sx={{ width: '100%', typography: 'body1' }}>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                  <TabList className="" onChange={handleChange} aria-label="lab API tabs example">
-                    <Tab label="Customer" value="customer" className="heading-tabs" />
-                    <Tab label="Machine " value="machine" className="heading-tabs" />
-                    <Tab label="Estimation Details" value="estimationDetails" className="heading-tabs" />
-                    <Tab label="General Details" value="generalDetails" className="heading-tabs" />
-                    <Tab label="Price" value="price" className="heading-tabs" />
-                    <Tab label="Shipping / Billing" value="shipping_billing" className="heading-tabs" />
-                  </TabList>
-                </Box>
-                <TabPanel value="customer">
-                  <div class="row mt-4 input-fields">
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                          name="source"
-                          disabled={true}
-                          value={customerData.source}
-                          onChange={handleCustomerDataChange}
-                        />
-                      </div>
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+              <div className="" style={{ display: "contents" }}>
+                <span
+                  className="mr-3 ml-2 text-white"
+                  style={{ fontSize: "20px" }}
+                >
+                  Quote Header
+                </span>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <EditIcon onClick={() => makeHeaderEditable()} />
+                  </Tooltip>
+                </div>
+                {/* <div className="btn-sm cursor text-white">
+                      <Tooltip title="Reset">
+                        <ReplayIcon onClick={() => handleResetData("RESET")} />
+                      </Tooltip>
                     </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                      <div class="form-group w-100" style={{ position: "relative" }}>
-                        {/* <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
-                        <SearchBox
-                          value={customerData.customerID}
-                          onChange={(e) =>
-                            handleCustSearch("customerId", e.target.value)
-                          }
-                          type="customerId"
-                          result={searchCustResults}
-                          onSelect={handleCustSelect}
-                        />
-                        {/* <span className="search-absolute"><SearchIcon /></span> */}
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
-                      <div class="form-group w-100">
-                        <input
-                          value={customerData.customerName}
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          disabled={true}
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500 " for="exampleInputEmail1">CONTACT EMAIL</label>
-                      <div class="form-group w-100">
-                        <input
-                          value={customerData.contactEmail}
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          disabled={true}
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          name="contactPhone"
-                          onChange={handleCustomerDataChange}
-                          value={customerData.contactPhone}
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
-                      <div class="form-group w-100">
-                        <input
-                          value={customerData.customerGroup}
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          disabled={true}
-                          placeholder="Placeholder (Optional)" />
-                      </div>
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Share">
+                        <ShareOutlinedIcon />
+                      </Tooltip>
                     </div>
 
-                  </div>
-                  <div className="row mt-4">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">SOURCE</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER NAME</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CONTACT EMAIL</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CONTACT PHONE</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER GROUP</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-sm-12">
-                      <div class="form-group">
-                        <Link
-                          className="btn bg-primary text-white pull-right"
-                          id="customer"
-                          onClick={handleNextClick}
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Add to Review">
+                        <ReviewAddIcon />
+                      </Tooltip>
+                    </div> */}
+              </div>
+              {/* <div className="hr"></div> */}
+            </h5>
+            <Box
+              className="mt-4 tab2"
+              sx={{ width: "100%", typography: "body1" }}
+            >
+              {headerLoading ? (
+                <LoadingProgress />
+              ) : (
+                <TabContext value={value}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList
+                      className=""
+                      onChange={handleChange}
+                      aria-label="lab API tabs example"
+                    >
+                      <Tab
+                        label="Customer"
+                        value="customer"
+                        className="heading-tabs"
+                      />
+                      <Tab
+                        label="Machine "
+                        value="machine"
+                        className="heading-tabs"
+                      />
+                      <Tab
+                        label="Estimation Details"
+                        value="estimation"
+                        className="heading-tabs"
+                      />
+                      <Tab
+                        label="General Details"
+                        value="general"
+                        className="heading-tabs"
+                      />
+                      <Tab
+                        label="Billing"
+                        value="price"
+                        className="heading-tabs"
+                      />
+                      <Tab
+                        label="Shipping"
+                        value="shipping_billing"
+                        className="heading-tabs"
+                      />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="customer">
+                    {!viewOnlyTab.custViewOnly ? (
+                      <>
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SOURCE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                className="form-control border-radius-10 text-primary"
+                                id="customer-src"
+                                value={customerData.source}
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CUSTOMER ID
+                              </label>
+                              <SearchBox
+                                value={customerData.customerID}
+                                onChange={(e) =>
+                                  handleCustSearch("customerId", e.target.value)
+                                }
+                                type="customerId"
+                                result={searchCustResults}
+                                onSelect={handleCustSelect}
+                                noOptions={noOptionsCust}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CUSTOMER NAME
+                              </label>
+                              <input
+                                type="text"
+                                value={customerData.customerName}
+                                name="customerName"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10 text-primary"
+                                id="customerNameid"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group w-100">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CONTACT NAME
+                              </label>
+                              <input
+                                type="text"
+                                value={customerData.contactName}
+                                name="contactName"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10 text-primary"
+                                id="contactNameid"
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CONTACT EMAIL
+                              </label>
+                              <input
+                                type="email"
+                                value={customerData.contactEmail}
+                                name="contactEmail"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10 text-primary"
+                                id="contatEmail"
+                                aria-describedby="emailHelp"
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CONTACT PHONE
+                              </label>
+                              <input
+                                type="tel"
+                                className="form-control border-radius-10 text-primary"
+                                onChange={handleCustomerDataChange}
+                                value={customerData.contactPhone}
+                                name="contactPhone"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CUSTOMER GROUP
+                              </label>
+                              <input
+                                type="text"
+                                value={customerData.customerGroup}
+                                name="customerGroup"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10 text-primary"
+                                id="custGroup"
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
                         >
-                          Save & Next
-                        </Link>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white mr-1"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            disabled={
+                              !(
+                                customerData.source &&
+                                customerData.contactEmail &&
+                                customerData.customerGroup &&
+                                customerData.contactName
+                              ) || noOptionsCust
+                            }
+                            onClick={updateCustomerData}
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="row mt-3">
+                        <ReadOnlyField
+                          label="SOURCE"
+                          value={customerData.source}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER ID"
+                          value={customerData.customerID}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER NAME"
+                          value={customerData.customerName}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER EMAIL"
+                          value={customerData.contactEmail}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CONTACT NAME"
+                          value={customerData.contactName}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CONTACT PHONE"
+                          value={customerData.contactPhone}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER GROUP"
+                          value={customerData.customerGroup}
+                          className="col-md-4 col-sm-4"
+                        />
                       </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="machine">
-                  <div className="row mt-4 input-fields">
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
-                      <div class="form-group w-100">
-                        {/* <SearchBox
-                                                    value={machineData.model}
-                                                    onChange={(e) =>
-                                                        handleMachineSearch("model", e.target.value)
-                                                    }
-                                                    type="model"
-                                                    result={searchSerialResults}
-                                                    onSelect={handleModelSelect}
-                                                /> */}
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
+                    )}
+                  </TabPanel>
+                  <TabPanel value="machine">
+                    {!viewOnlyTab.machineViewOnly ? (
+                      <>
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                Make
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                id="make-id"
+                                name="make"
+                                value={machineData.make}
+                                onChange={handleMachineDataChange}
+                                placeholder="Auto Filled"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                Family
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                id="family-id"
+                                name="family"
+                                value={machineData.family}
+                                onChange={handleMachineDataChange}
+                                placeholder="Auto Filled"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                MODEL
+                              </label>
+                              <SearchBox
+                                value={machineData.model}
+                                onChange={(e) =>
+                                  handleMachineSearch("model", e.target.value)
+                                }
+                                type="model"
+                                result={searchModelResults}
+                                onSelect={handleModelSelect}
+                                noOptions={noOptionsModel}
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SERIAL #
+                              </label>
+                              <SearchBox
+                                value={machineData.serialNo}
+                                onChange={(e) =>
+                                  handleMachineSearch(
+                                    "serialNo",
+                                    e.target.value
+                                  )
+                                }
+                                type="equipmentNumber"
+                                result={searchSerialResults}
+                                onSelect={handleModelSelect}
+                                noOptions={noOptionsSerial}
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SMU (Service Meter Unit)
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                id="smu-id"
+                                name="smu"
+                                value={machineData.smu}
+                                onChange={handleMachineDataChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                UNIT NO / FLEET NO
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                onChange={handleMachineDataChange}
+                                value={machineData.fleetNo}
+                                name="fleetNo"
+                                id="fleet-id"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                REGISTRATION NO
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                onChange={handleMachineDataChange}
+                                value={machineData.registrationNo}
+                                name="registrationNo"
+                                id="registration-id"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CHASIS NO
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                id="chasis-id"
+                                onChange={handleMachineDataChange}
+                                value={machineData.chasisNo}
+                                name="chasisNo"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white mr-1"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            disabled={
+                              !(machineData.model && machineData.serialNo) ||
+                              noOptionsModel ||
+                              noOptionsSerial
+                            }
+                            onClick={updateMachineData}
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="row mt-3">
+                        <ReadOnlyField
+                          label="MAKE"
+                          value={machineData.make}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="FAMILY"
+                          value={machineData.family}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="MODEL"
                           value={machineData.model}
-                          disabled={true}
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
-                      <div class="form-group w-100">
-                        {/* <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)" /> */}
-                        <SearchBox
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="SERIAL NO"
                           value={machineData.serialNo}
-                          onChange={(e) =>
-                            handleMachineSearch("serialNo", e.target.value)
-                          }
-                          type="equipmentNumber"
-                          result={searchSerialResults}
-                          onSelect={handleModelSelect}
+                          className="col-md-4 col-sm-4"
                         />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="smu"
+                        <ReadOnlyField
+                          label="SMU (Service Meter Unit)"
                           value={machineData.smu}
-                          onChange={handleMachineDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="fleetNo"
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="UNIT NO / FLEET NO"
                           value={machineData.fleetNo}
-                          onChange={handleMachineDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="registrationNo"
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="REGISTRATION NO"
                           value={machineData.registrationNo}
-                          onChange={handleMachineDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="chasisNo"
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CHASSIS NO"
                           value={machineData.chasisNo}
-                          onChange={handleMachineDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
+                          className="col-md-4 col-sm-4"
                         />
                       </div>
-                    </div>
-                    {/* <div className="col-md-6 col-sm-6">
-                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">DATE</label>
-                                            <div className="d-flex align-items-center">
-                                                <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                </div>
-                                                <div className="form-group mx-2">To</div>
-                                                <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                </div>
-                                            </div>
-                                        </div> */}
-                    {/* <div className="col-md-6 col-sm-6">
-                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">HOUR</label>
-                                            <div className="d-flex align-items-center">
-                                                <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                </div>
-                                                <div className="form-group mx-2">To</div>
-                                                <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                </div>
-                                            </div>
-                                        </div> */}
-                  </div>
-                  <div className="row mt-4">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">SERIAL #</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">SMU</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">UNIT NO / FLEET NO</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-sm-12">
-                      <div class="form-group">
-                        <Link
-                          className="btn bg-primary text-white pull-right"
-                          id="machine"
-                          onClick={handleNextClick}
+                    )}
+                  </TabPanel>
+                  <TabPanel value="estimation">
+                    {!viewOnlyTab.estViewOnly ? (
+                      <>
+                        <div className="row mt-4 input-fields">
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              PREPARED BY{" "}
+                            </label>
+                            <div class="form-group w-100">
+                              <input
+                                type="email"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                name="preparedBy"
+                                value={estimateDetails.preparedBy}
+                                onChange={handleEstimateDetailsDataChange}
+                                aria-describedby="emailHelp"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              APPROVED BY
+                            </label>
+                            <div class="form-group w-100">
+                              <input
+                                type="email"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                name="approvedBy"
+                                value={estimateDetails.approvedBy}
+                                onChange={handleEstimateDetailsDataChange}
+                                aria-describedby="emailHelp"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              PREPARED ON
+                            </label>
+                            <div className="d-flex align-items-center date-box w-100">
+                              <div class="form-group w-100">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    label=""
+                                    name="preparedOn"
+                                    value={estimateDetails.preparedOn}
+                                    onChange={(e) =>
+                                      setEstimateDetails({
+                                        ...estimateDetails,
+                                        preparedOn: e,
+                                      })
+                                    }
+                                  />
+                                </MuiPickersUtilsProvider>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              REVISED BY
+                            </label>
+                            <div class="form-group w-100">
+                              <input
+                                type="email"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                name="revisedBy"
+                                value={estimateDetails.revisedBy}
+                                onChange={handleEstimateDetailsDataChange}
+                                aria-describedby="emailHelp"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              REVISED ON
+                            </label>
+                            <div className="d-flex align-items-center date-box w-100">
+                              <div class="form-group w-100">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    label=""
+                                    name="revisedOn"
+                                    value={estimateDetails.revisedOn}
+                                    onChange={(e) =>
+                                      setEstimateDetails({
+                                        ...estimateDetails,
+                                        revisedOn: e,
+                                      })
+                                    }
+                                  />
+                                </MuiPickersUtilsProvider>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              SALES OFFICE / BRANCH
+                            </label>
+                            <div class="form-group w-100">
+                              <Select
+                                onChange={(e) =>
+                                  setEstimateDetails({
+                                    ...estimateDetails,
+                                    salesOffice: e,
+                                  })
+                                }
+                                options={salesOfficeOptions}
+                                value={estimateDetails.salesOffice}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
                         >
-                          Save & Next
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="estimationDetails">
-                  <div className="row mt-4 input-fields">
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="preparedBy"
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white mr-1"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updateEstData}
+                            disabled={
+                              !estimateDetails.preparedBy ||
+                              !estimateDetails.preparedOn ||
+                              !estimateDetails.salesOffice
+                            }
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="row mt-4">
+                        <ReadOnlyField
+                          label="PREPARED BY"
                           value={estimateDetails.preparedBy}
-                          onChange={handleEstimateDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
+                          className="col-md-4 col-sm-4"
                         />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="approvedBy"
+                        <ReadOnlyField
+                          label="APPROVED BY"
                           value={estimateDetails.approvedBy}
-                          onChange={handleEstimateDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
+                          className="col-md-4 col-sm-4"
                         />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div class="form-group w-100">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="preparedOn"
-                              value={estimateDetails.preparedOn}
-                              onChange={(e) =>
-                                setEstimateDetails({
-                                  ...estimateDetails,
-                                  preparedOn: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="revisedBy"
+
+                        <ReadOnlyField
+                          label="PREPARED ON"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {estimateDetails.preparedOn}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="REVISED BY"
                           value={estimateDetails.revisedBy}
-                          onChange={handleEstimateDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="REVISED ON"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {estimateDetails.revisedOn}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="SALES OFFICE / BRANCH"
+                          value={estimateDetails.salesOffice?.label}
+                          className="col-md-4 col-sm-4"
                         />
                       </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div class="form-group w-100">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="revisedOn"
-                              value={estimateDetails.revisedOn}
-                              onChange={(e) =>
-                                setEstimateDetails({
-                                  ...estimateDetails,
-                                  revisedOn: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="salesOffice"
-                          value={estimateDetails.salesOffice}
-                          onChange={handleEstimateDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-4">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PREPARED BY</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">APPROVED BY</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">REVISED BY</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">REVISED ON</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-sm-12">
-                      <div class="form-group">
-                        <Link
-                          className="btn bg-primary text-white pull-right"
-                          id="estimationDetails"
-                          onClick={handleNextClick}
-                        >
-                          Save & Next
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="generalDetails">
-                  <div className="row mt-4 input-fields">
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div class="form-group w-100">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="quoteDate"
-                              value={generalDetails.quoteDate}
-                              onChange={(e) =>
-                                setGeneralDetails({
-                                  ...generalDetails,
-                                  quoteDate: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
-                        </div>
-                      </div>
-                      {/* <div class="form-group w-100">
+                    )}
+                  </TabPanel>
+                  <TabPanel value="general">
+                    {!viewOnlyTab.generalViewOnly ? (
+                      <>
+                        <div className="row mt-4 input-fields">
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              QUOTE DATE
+                            </label>
+                            <div className="d-flex align-items-center date-box w-100">
+                              <div class="form-group w-100">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    label=""
+                                    name="quoteDate"
+                                    value={generalDetails.quoteDate}
+                                    onChange={(e) =>
+                                      setGeneralDetails({
+                                        ...generalDetails,
+                                        quoteDate: e,
+                                      })
+                                    }
+                                  />
+                                </MuiPickersUtilsProvider>
+                              </div>
+                            </div>
+                            {/* <div class="form-group w-100">
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div> */}
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE #</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="quote"
-                          value={generalDetails.quote}
-                          onChange={handleGeneralDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DESCRIPTION</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="description"
-                          value={generalDetails.description}
-                          onChange={handleGeneralDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="reference"
-                          value={generalDetails.reference}
-                          onChange={handleGeneralDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
-                      <div class="form-group w-100">
-                        {/* <input
-                                                    type="email"
-                                                    class="form-control border-radius-10 text-primary"
-                                                    id="exampleInputEmail1"
-                                                    name="validity"
-                                                    value={generalDetails.validity}
-                                                    onChange={handleGeneralDetailsDataChange}
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Placeholder (Optional)"
-                                                /> */}
-                        <Select
-                          onChange={(e) =>
-                            setGeneralDetails({
-                              ...machineData,
-                              validity: e,
-                            })
-                          }
-                          className="text-primary"
-                          options={generalValidityOptions}
-                          placeholder="Required"
-                          value={generalDetails.validity}
-                          styles={FONT_STYLE_SELECT}
-                        />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
-                      <div class="form-group w-100">
-                        <input
-                          type="email"
-                          class="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          name="version"
-                          value={generalDetails.version}
-                          onChange={handleGeneralDetailsDataChange}
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 row">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">QUOTE DATE</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">QUOTE #</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">QUOTE DESCRIPTION</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">VALIDITY</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-sm-12">
-                      <div class="form-group">
-                        <Link
-                          className="btn bg-primary text-white pull-right"
-                          id="generalDetails"
-                          onClick={handleNextClick}
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              QUOTE #
+                            </label>
+                            <div class="form-group w-100">
+                              <input
+                                type="email"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                name="quote"
+                                value={generalDetails.quote}
+                                onChange={handleGeneralDetailsDataChange}
+                                aria-describedby="emailHelp"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              QUOTE DESCRIPTION
+                            </label>
+                            <div class="form-group w-100">
+                              <input
+                                type="email"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                name="description"
+                                value={generalDetails.description}
+                                onChange={handleGeneralDetailsDataChange}
+                                aria-describedby="emailHelp"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              REFERENCE
+                            </label>
+                            <div class="form-group w-100">
+                              <input
+                                class="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={generalDetails.reference}
+                                onChange={handleGeneralDetailsDataChange}
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                VALIDITY
+                              </label>
+                              <Select
+                                // defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setGeneralDetails({
+                                    ...generalDetails,
+                                    validity: e,
+                                  })
+                                }
+                                options={validityOptions}
+                                value={generalDetails.validity}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                VERSION
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                disabled
+                                value={parseFloat(
+                                  selectedVersion.value
+                                ).toFixed(1)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
                         >
-                          Save & Next
-                        </Link>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white mr-1"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updateGeneralData}
+                            disabled={
+                              !generalDetails.quoteDate ||
+                              !generalDetails.description ||
+                              !generalDetails.quoteNo ||
+                              !generalDetails.reference ||
+                              !generalDetails.validity
+                            }
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mt-4 row">
+                        <ReadOnlyField
+                          label="QUOTE DATE"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {generalDetails.quoteDate}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="Quote #"
+                          value={generalDetails.quoteNo}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="QUOTE DESCRIPTION"
+                          value={generalDetails.description}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="REFERENCE"
+                          value={generalDetails.reference}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="VALIDITY"
+                          value={generalDetails.validity?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="VERSION"
+                          value={generalDetails.version?.label}
+                          className="col-md-4 col-sm-4"
+                        />
                       </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="price">
-                  <div class="row mt-4">
-                    <div class="col-md-3 col-sm-3">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NAME</p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1 className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
+                    )}
+                  </TabPanel>
+                  <TabPanel value="price">
+                    <div class="row mt-4">
+                      <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            PAYMENT TERMS
+                          </p>
+                          <div>
+                            <Select
+                              // defaultValue={selectedOption}
+                              onChange={(e) =>
+                                setBillingDetail({
+                                  ...billingDetail,
+                                  paymentTerm: e,
+                                })
+                              }
+                              options={paymentTermOptions}
+                              value={billingDetail.paymentTerm}
+                              styles={FONT_STYLE_SELECT}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-sm-2">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            BILLING FREQUENCY
+                          </p>
+                          <div>
+                            <Select
+                              onChange={(e) =>
+                                setBillingDetail({
+                                  ...billingDetail,
+                                  billingFrequency: e,
+                                })
+                              }
+                              options={paymentTermOptions}
+                              value={billingDetail.billingFrequency}
+                              styles={FONT_STYLE_SELECT}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-sm-2">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            PRICE SEGMENT
+                          </p>
+                          <div>
+                            <FormControl className="customseleact">
+                              <Select1
+                                className=""
+                                multiple
+                                displayEmpty
+                                value={personName}
+                                onChange={handleChange1}
+                                input={<OutlinedInput />}
+                                renderValue={(selected) => {
+                                  if (selected.length === 0) {
+                                    return <em>30dayes</em>;
+                                  }
 
-                                return selected.join(', ');
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ 'aria-label': 'Without label' }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
+                                  return selected.join(", ");
+                                }}
+                                MenuProps={MenuProps}
+                                inputProps={{ "aria-label": "Without label" }}
+                              >
+                                <MenuItem disabled value="">
+                                  <em>30dayes</em>
                                 </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
+                                {names.map((name) => (
+                                  <MenuItem
+                                    key={name}
+                                    value={name}
+                                    style={getStyles(name, personName, theme)}
+                                  >
+                                    {name}
+                                  </MenuItem>
+                                ))}
+                              </Select1>
+                            </FormControl>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-sm-2">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            NET PRICE
+                          </p>
+                          <h6 class="font-weight-600">
+                            <input
+                              class="form-control border-radius-10 text-primary"
+                              name="reference"
+                              value={billingDetail.netPrice}
+                              onChange={(e) =>
+                                setBillingDetail({
+                                  ...billingDetail,
+                                  netPrice: e.target.value,
+                                })
+                              }
+                            />
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-sm-2">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            MARGIN (25%)
+                          </p>
+                          <h6 class="font-weight-600">752.740.10</h6>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            FLAT RATE(ALL $)
+                          </p>
+                          <h6 class="font-weight-600">No</h6>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-sm-2">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            CURRENCY
+                          </p>
+                          <div>
+                            <FormControl className="customseleact">
+                              <Select1
+                                className=""
+                                multiple
+                                displayEmpty
+                                value={personName}
+                                onChange={handleChange1}
+                                input={<OutlinedInput />}
+                                renderValue={(selected) => {
+                                  if (selected.length === 0) {
+                                    return <em>30dayes</em>;
+                                  }
+
+                                  return selected.join(", ");
+                                }}
+                                MenuProps={MenuProps}
+                                inputProps={{ "aria-label": "Without label" }}
+                              >
+                                <MenuItem disabled value="">
+                                  <em>30dayes</em>
+                                </MenuItem>
+                                {names.map((name) => (
+                                  <MenuItem
+                                    key={name}
+                                    value={name}
+                                    style={getStyles(name, personName, theme)}
+                                  >
+                                    {name}
+                                  </MenuItem>
+                                ))}
+                              </Select1>
+                            </FormControl>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-sm-2">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            PRICE DATE
+                          </p>
+                          <h6 class="font-weight-600">21.01.2022</h6>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-sm-3">
+                        <div class="form-group ">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            DISCOUNT
+                          </p>
+                          <div>
+                            <FormControl className="customseleact position-relative percent-p">
+                              <span
+                                className="percent-div bg-white p-1 text-primary"
+                                style={{ borderRadius: "50%" }}
+                              >
+                                8%
+                              </span>
+                              <Select1
+                                className="btn bg-green text-white"
+                                multiple
+                                displayEmpty
+                                value={personName}
+                                onChange={handleChange1}
+                                input={<OutlinedInput />}
+                                renderValue={(selected) => {
+                                  if (selected.length === 0) {
+                                    return <em>30dayes</em>;
+                                  }
+
+                                  return selected.join(", ");
+                                }}
+                                MenuProps={MenuProps}
+                                inputProps={{ "aria-label": "Without label" }}
+                              >
+                                <MenuItem disabled value="">
+                                  <em>30dayes</em>
+                                </MenuItem>
+                                {names.map((name) => (
+                                  <MenuItem
+                                    key={name}
+                                    value={name}
+                                    style={getStyles(name, personName, theme)}
+                                  >
+                                    {name}
+                                  </MenuItem>
+                                ))}
+                              </Select1>
+                            </FormControl>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">BILLING FREQUENCY</p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1 className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(', ');
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ 'aria-label': 'Without label' }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
-                        </div>
+                    <hr />
+                    <a href="#" className="btn bg-primary text-white">
+                      <AddIcon className="mr-2" />
+                      ADD PAYER
+                    </a>
+                    <div className="mt-3">
+                      <DataTable
+                        className=""
+                        title=""
+                        columns={masterColumns2}
+                        data={rows2}
+                        customStyles={customStyles}
+                        pagination
+                        // onRowClicked={(e) => handleRowClick(e)}
+                        selectableRows
+                      />
+                    </div>
+                    <div className="mt-3 d-flex align-items-center justify-content-between">
+                      <h6 className="mb-0 font-size-16 font-weight-600">
+                        PRICE/ESTIMATE SUMMARY
+                      </h6>
+                      <div className="d-flex align-items-center">
+                        <a href="#" className="text-primary mr-3">
+                          <ModeEditOutlineOutlinedIcon />
+                        </a>
+                        <a href="#" className="text-primary mr-3">
+                          <ShareOutlinedIcon />
+                        </a>
+                        <a href="#" className="btn bg-primary text-white">
+                          <AddIcon className="mr-2" />
+                          Add Price Summary Type
+                        </a>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PRICE SEGMENT</p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1 className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(', ');
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ 'aria-label': 'Without label' }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
-                        </div>
+                    <div className="mt-3">
+                      <DataTable
+                        className=""
+                        title=""
+                        columns={masterColumns3}
+                        data={rows3}
+                        customStyles={customStyles}
+                        pagination
+                        // onRowClicked={(e) => handleRowClick(e)}
+                        selectableRows
+                      />
+                    </div>
+                    <div className="mt-3 d-flex align-items-center justify-content-between">
+                      <h6 className="mb-0 font-size-16 font-weight-600">
+                        OTHER MISC ITEMS $
+                      </h6>
+                      <div className="d-flex align-items-center">
+                        <a href="#" className="text-primary mr-3">
+                          <ModeEditOutlineOutlinedIcon />
+                        </a>
+                        <a href="#" className="text-primary mr-3">
+                          <ShareOutlinedIcon />
+                        </a>
+                        <a href="#" className="btn bg-primary text-white">
+                          <AddIcon className="mr-2" />
+                          Add Miscellaenous Type
+                        </a>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
-                        <h6 class="font-weight-600"><MonetizationOnOutlinedIcon className="text-light font-size-36" /></h6>
-                      </div>
+                    <div className="mt-3">
+                      <DataTable
+                        className=""
+                        title=""
+                        columns={masterColumns4}
+                        data={rows4}
+                        customStyles={customStyles}
+                        pagination
+                        // onRowClicked={(e) => handleRowClick(e)}
+                        selectableRows
+                      />
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">MARGIN (25%)</p>
-                        <h6 class="font-weight-600">752.740.10</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-3 col-sm-3">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">FLAT RATE(ALL $)</p>
-                        <h6 class="font-weight-600">No</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CURRENCY</p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1 className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(', ');
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ 'aria-label': 'Without label' }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
-                        <h6 class="font-weight-600">21.01.2022</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-3 col-sm-3">
-                      <div class="form-group ">
-                        <p class="font-size-12 font-weight-500 mb-2">DISCOUNT</p>
-                        <div>
-                          <FormControl className="customseleact position-relative percent-p">
-                            <span className="percent-div bg-white p-1 text-primary" style={{ borderRadius: "50%" }}>
-                              8%
-                            </span>
-                            <Select1 className="btn bg-green text-white"
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(', ');
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ 'aria-label': 'Without label' }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                  <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />ADD PAYER</a>
-                  <div className="mt-3">
-                    <DataTable
-                      className=""
-                      title=""
-                      columns={masterColumns2}
-                      data={rows2}
-                      customStyles={customStyles}
-                      pagination
-                      // onRowClicked={(e) => handleRowClick(e)}
-                      selectableRows
-                    />
-                  </div>
-                  <div className="mt-3 d-flex align-items-center justify-content-between">
-                    <h6 className="mb-0 font-size-16 font-weight-600">PRICE/ESTIMATE SUMMARY</h6>
-                    <div className="d-flex align-items-center">
-                      <a href="#" className="text-primary mr-3"><ModeEditOutlineOutlinedIcon /></a>
-                      <a href="#" className="text-primary mr-3"><ShareOutlinedIcon /></a>
-                      <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Price Summary Type</a>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <DataTable
-                      className=""
-                      title=""
-                      columns={masterColumns3}
-                      data={rows3}
-                      customStyles={customStyles}
-                      pagination
-                      // onRowClicked={(e) => handleRowClick(e)}
-                      selectableRows
-                    />
-                  </div>
-                  <div className="mt-3 d-flex align-items-center justify-content-between">
-                    <h6 className="mb-0 font-size-16 font-weight-600">OTHER MISC ITEMS $</h6>
-                    <div className="d-flex align-items-center">
-                      <a href="#" className="text-primary mr-3"><ModeEditOutlineOutlinedIcon /></a>
-                      <a href="#" className="text-primary mr-3"><ShareOutlinedIcon /></a>
-                      <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Miscellaenous Type</a>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <DataTable
-                      className=""
-                      title=""
-                      columns={masterColumns4}
-                      data={rows4}
-                      customStyles={customStyles}
-                      pagination
-                      // onRowClicked={(e) => handleRowClick(e)}
-                      selectableRows
-                    />
-                  </div>
-                  {/* <div class="row mt-4 input-fields">
+                    {/* <div class="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
                                             <div class="form-group w-100">
@@ -1808,117 +2308,130 @@ const RepairBuilderRepairOption = () => {
                                             </div>
                                         </div>
                                     </div> */}
-                </TabPanel>
-                <TabPanel value="shipping_billing">
-                  <div className="row mt-4 input-fields">
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
-                      <div class="form-group w-100">
-                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY PRIORITY</label>
-                      <div class="form-group w-100">
-                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYMENT TERMS</label>
-                      <div class="form-group w-100">
-                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">BILLING FREQUENCY</label>
-                      <div class="form-group w-100">
-                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYER (s)</label>
-                      <div class="form-group w-100">
-                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% SPLIT</label>
-                      <div class="form-group w-100">
-                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PAYABLE BY PAYER</label>
-                      <div class="form-group w-100">
-                        <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-4">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">DELIVERY TYPE</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">DELIVERY PRIORITY</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PAYMENT TERMS</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">BILLING FREQUENCY</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PAYER (s)</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">% SPLIT</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">NET PAYABLE BY PAYER</p>
-                        <h6 class="font-weight-600">X1234</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-sm-12">
-                      <div class="form-group">
-                        <Link
-                          className="btn bg-primary text-white pull-right"
-                          id="shipping_billing"
-                          onClick={handleNextClick}
+                  </TabPanel>
+                  <TabPanel value="shipping_billing">
+                    <div className="row mt-4 input-fields">
+                      <div class="col-md-4 col-sm-4">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
                         >
-                          Save & Next
-                        </Link>
+                          DELIVERY TYPE
+                        </label>
+                        <div class="form-group w-100">
+                          <Select
+                            onChange={(e) =>
+                              setShippingDetail({
+                                ...shippingDetail,
+                                deliveryType: e,
+                              })
+                            }
+                            options={deliveryTypeOptions}
+                            value={shippingDetail.deliveryType}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          DELIVERY PRIORITY
+                        </label>
+                        <div class="form-group w-100">
+                          <Select
+                            onChange={(e) =>
+                              setShippingDetail({
+                                ...shippingDetail,
+                                deliveryPriority: e,
+                              })
+                            }
+                            options={deliveryPriorityOptions}
+                            value={shippingDetail.deliveryPriority}
+                            styles={FONT_STYLE_SELECT}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            LEAD TIME
+                          </label>
+                          <div className="d-flex form-control-date border-radius-10">
+                            <input
+                              className="form-control border-radius-10 text-primary"
+                              type="text"
+                              id="startUsage"
+                              value={shippingDetail.leadTime}
+                              onChange={(e) =>
+                                setShippingDetail({
+                                  ...shippingDetail,
+                                  leadTime: e.target.value,
+                                })
+                              }
+                            />
+
+                            <Select
+                              defaultValue={OPTIONS_LEADTIME_UNIT[0]}
+                              isSearchable={false}
+                              styles={FONT_STYLE_UNIT_SELECT}
+                              options={OPTIONS_LEADTIME_UNIT}
+                              // className="text-primary"
+                              value={shippingDetail.unit}
+                              onChange={(e) =>
+                                setShippingDetail({
+                                  ...shippingDetail,
+                                  unit: e,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </TabPanel>
-
-              </TabContext>
+                    <div className="row mt-4">
+                    <ReadOnlyField
+                          label="DELIVERY TYPE"
+                          value={shippingDetail.deliveryType?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                      <ReadOnlyField
+                          label="DELIVERY PRIORITY"
+                          value={shippingDetail.deliveryPriority?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                      <ReadOnlyField
+                          label="LEAD TIME"
+                          value={shippingDetail.leadTime}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="SERVICE RECIPIENT ADDRESS"
+                          value={shippingDetail.serviceRecipientAddress}
+                          className="col-md-4 col-sm-4"
+                        />
+                      <div className="col-md-12 col-sm-12">
+                        <div class="form-group">
+                          <Link
+                            className="btn bg-primary text-white pull-right"
+                            id="shipping_billing"
+                            onClick={handleNextClick}
+                          >
+                            Save & Next
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </TabPanel>
+                </TabContext>
+              )}
             </Box>
           </div>
         </div>
       </div>
-
     </>
-  )
-}
+  );
+};
 
-export default RepairBuilderRepairOption
+export default RepairBuilderRepairOption;
