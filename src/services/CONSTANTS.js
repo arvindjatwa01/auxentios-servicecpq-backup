@@ -111,6 +111,7 @@ export const PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_PORTFOLIO_ITEM() + "/get-R
 export const PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM() + "/search?search=";
 export const PORTFOLIO_ITEM_PRICE_BY_ITEM_ID = () => CREATE_PORTFOLIO_ITEM() + "/price";
+export const PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = CREATE_PORTFOLIO_ITEM() + "/portfolio-service-bundle-item-prices?";
 
 // Custom Portfolio 
 

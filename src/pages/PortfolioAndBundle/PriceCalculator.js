@@ -104,7 +104,7 @@ const PriceCalculator = (props) => {
     netPrice: 0,
     totalPrice: 0,
     listPrice: "",
-    calculatedPrice: "",
+    calculatedPrice: 0,
     priceYear: "",
     usageType: "",
     frequency: "",
@@ -150,6 +150,10 @@ const PriceCalculator = (props) => {
         // setPriceCalculator(props.priceCalculator);
         portfolioItemPriceSjIdFun()
       }
+    }
+
+    if (props.serviceOrBundlePrefix === "BUNDLE") {
+      portfolioItemPriceSjIdFun();
     }
 
     if (props.serviceOrBundlePrefix !== "SERVICE") {
@@ -238,6 +242,7 @@ const PriceCalculator = (props) => {
         recommendedValue: res.data.recommendedValue,
         netPrice: res.data.netService,
         totalPrice: res.data.totalPrice,
+        calculatedPrice:  res.data.calculatedPrice,
         id: res.data.itemPriceDataId,
         numberOfEvents: res.data.numberOfEvents,
         portfolioDataId: res.data.portfolio.portfolioId,
@@ -302,6 +307,11 @@ const PriceCalculator = (props) => {
         } : "",
       })
     }
+
+    setExtWorkData({
+      ...extWorkData,
+      flatRateIndicator: res.data.flatPrice || res.data.flatPrice != 0 ? true : false,
+    })
 
 
 
@@ -1858,7 +1868,7 @@ const PriceCalculator = (props) => {
                 <h6 className="text-light-dark font-size-12 font-weight-500">
                   TOTAL PRICE
                 </h6>
-                ${priceCalculator.totalPrice}
+                ${priceCalculator.calculatedPrice}
               </div>
             </div>
             <div className="my-3 text-right">

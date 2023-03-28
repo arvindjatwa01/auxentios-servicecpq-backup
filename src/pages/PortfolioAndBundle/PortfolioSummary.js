@@ -1779,7 +1779,9 @@ export const PortfolioSummary = () => {
           // }
 
           // uncomment this code end
-
+          console.log("============= createServiceOrBundle ", createServiceOrBundle);
+          console.log("============= addPortFolioItem ", addPortFolioItem);
+          console.log("============= itemPriceData ", itemPriceData);
           let reqObj = {
             itemId: createServiceOrBundle.id,
             itemName: createServiceOrBundle.name,
@@ -1925,7 +1927,7 @@ export const PortfolioSummary = () => {
             miscellaneous: ["LUBRICANTS"],
             taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
             solutionCode: "",
-            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageTypeIn?.value : "",
+            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
             recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
             usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
             repairKitId: "",
@@ -2098,6 +2100,8 @@ export const PortfolioSummary = () => {
             //   }
             // }
 
+            console.log("========= itemPriceData ", itemPriceData);
+
             if (bundleAndServiceEditAble) {
               setBundleTabs("bundleServicePriceCalculator")
             } else {
@@ -2154,21 +2158,25 @@ export const PortfolioSummary = () => {
                   taskType: ["EMPTY"],
                   solutionCode: "",
                   // usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageTypeIn?.value : "",
-                  usageIn: addPortFolioItem?.usageIn ? addPortFolioItem.usageTypeIn?.value : "",
+                  usageIn: addPortFolioItem?.usageIn ? addPortFolioItem.usageIn?.value : "",
                   usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
                   year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
                   avgUsage: 0,
                   unit: addPortFolioItem.unit ? addPortFolioItem.unit?.value : "",
                   frequency: addPortFolioItem.frequency ? addPortFolioItem.frequency?.value : "",
-                  itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
-                    {
-                      itemPriceDataId: itemPriceData.itemPriceDataId
-                    }
-                  ] : serviceOrBundlePrefix === "SERVICE" ? [
-                    {
-                      itemPriceDataId: itemPriceData.itemPriceDataId
-                    }
-                  ] : [],
+                  itemPrices: serviceOrBundlePrefix === "BUNDLE" ?
+                    (itemPriceData.itemPriceDataId == undefined ||
+                      itemPriceData.itemPriceDataId == 0) ? [] : [
+                      {
+                        itemPriceDataId: itemPriceData.itemPriceDataId
+                      }
+                    ] : serviceOrBundlePrefix === "SERVICE" ?
+                      (itemPriceData.itemPriceDataId == undefined ||
+                        itemPriceData.itemPriceDataId == 0) ? [] : [
+                        {
+                          itemPriceDataId: itemPriceData.itemPriceDataId
+                        }
+                      ] : [],
                 },
               }
 
@@ -2308,7 +2316,7 @@ export const PortfolioSummary = () => {
               miscellaneous: ["EMPTY"],
               taskType: ["EMPTY"],
               solutionCode: "",
-              usageIn: addPortFolioItem.usageTypeIn ? addPortFolioItem.usageTypeIn?.value : "",
+              usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
               usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
               year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
               avgUsage: 0,
@@ -2529,7 +2537,7 @@ export const PortfolioSummary = () => {
             miscellaneous: serviceOrBundlePrefix === "BUNDLE" ? ["LUBRICANTS"] : ["EMPTY"],
             taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["EMPTY"],
             solutionCode: "",
-            usageIn: addPortFolioItem.usageTypeIn ? addPortFolioItem.usageTypeIn?.value : "",
+            usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
             usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
             year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
             avgUsage: 0,
@@ -2698,7 +2706,7 @@ export const PortfolioSummary = () => {
             miscellaneous: ["EMPTY"],
             taskType: ["EMPTY"],
             solutionCode: "",
-            usageIn: addPortFolioItem.usageTypeIn ? addPortFolioItem.usageTypeIn?.value : "",
+            usageIn: addPortFolioItem.usageIn ? addPortFolioItem.usageIn?.value : "",
             usage: addPortFolioItem.usageType ? addPortFolioItem.usageType?.value : "",
             year: addPortFolioItem.year ? (typeof addPortFolioItem.year === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year) : "",
             avgUsage: 0,
@@ -3174,6 +3182,7 @@ export const PortfolioSummary = () => {
       //   ...createServiceOrBundle,
       //   id: res.data.itemId,
       // });
+      setCreatedBundleItems({ ...data, itemId: res.data.itemId });
       setCreatedServiceData(res.data);
       setAddportFolioItem(data)
       setItemPriceData(itemPriceData)
@@ -3359,8 +3368,9 @@ export const PortfolioSummary = () => {
         itemPriceData?.serviceEscalation : 0,
       withBundleService: false,
       portfolio: (itemPriceData?.portfolio != null ||
-        itemPriceData?.portfolio != undefined) ?
-        itemPriceData?.portfolio : {},
+        itemPriceData?.portfolio != undefined ||
+        itemPriceData?.portfolio?.portfolioId != 0) ?
+        itemPriceData?.portfolio : null,
       tenantId: loginTenantId,
       partsRequired: true,
       labourRequired: true,
@@ -3488,9 +3498,9 @@ export const PortfolioSummary = () => {
             (data.escalationPriceOptionsValue == "SERVICE") ?
             data.escalationPriceInputValue : 0),
           withBundleService: false,
-          portfolio: (data.portfolioDataId != 0) ? {
+          portfolio: (data.portfolioDataId || data.portfolioDataId != 0) ? {
             portfolioId: data.portfolioDataId
-          } : {},
+          } : null,
           tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
@@ -3579,9 +3589,9 @@ export const PortfolioSummary = () => {
             (data.escalationPriceOptionsValue == "SERVICE") ?
             data.escalationPriceInputValue : 0),
           withBundleService: false,
-          portfolio: (data.portfolioDataId != 0) ? {
+          portfolio: (data.portfolioDataId || data.portfolioDataId != 0) ? {
             portfolioId: data.portfolioDataId
-          } : {},
+          } : null,
           tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
@@ -3674,9 +3684,9 @@ export const PortfolioSummary = () => {
           (data.escalationPriceOptionsValue == "SERVICE") ?
           data.escalationPriceInputValue : 0),
         withBundleService: false,
-        portfolio: (data.portfolioDataId != 0) ? {
+        portfolio: (data.portfolioDataId || data.portfolioDataId != 0) ? {
           portfolioId: data.portfolioDataId
-        } : {},
+        } : null,
         tenantId: loginTenantId,
         partsRequired: true,
         labourRequired: true,
@@ -6288,6 +6298,7 @@ export const PortfolioSummary = () => {
                       handleItemEditSave={handleItemEditSave}
                       compoFlag="itemEdit"
                       compoFlagTest="itemEditBundle"
+                      bundleOrServiceEditOrNot={true}
                       setBundleTabs={setBundleTabs}
                     />
                   </> : <>

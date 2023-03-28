@@ -85,7 +85,7 @@ const AddPortfolioItem = (props) => {
   }
   const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
-  // console.log("AddPortfolioItem props data is : ", props)
+  console.log("AddPortfolioItem props data is : ", props)
   const [tabs, setTabs] = useState("itemSummary");
   const [subTabs, setSubTabs] = useState("A");
   const [editable, setEditable] = useState(
@@ -1175,8 +1175,12 @@ const AddPortfolioItem = (props) => {
         value: res.data.year,
       },
       noOfYear: res.data.noOfYear,
-
-
+      currency: (props.passItemEditRowData?.itemHeaderModel?.currency ||
+        props.passItemEditRowData?.itemHeaderModel?.currency != "") ?
+        {
+          label: props.passItemEditRowData?.itemHeaderModel?.currency,
+          value: props.passItemEditRowData?.itemHeaderModel?.currency,
+        } : "",
     });
 
 
@@ -1217,6 +1221,12 @@ const AddPortfolioItem = (props) => {
           startUsage: props.createdBundleItems?.startUsage,
           endUsage: props.createdBundleItems?.endUsage,
           usageType: props.createdBundleItems?.usageType,
+          // currency: (props.passItemEditRowData?.itemHeaderModel?.currency ||
+          //   props.passItemEditRowData?.itemHeaderModel?.currency != "") ?
+          //   {
+          //     label: props.passItemEditRowData?.itemHeaderModel?.currency,
+          //     value: props.passItemEditRowData?.itemHeaderModel?.currency,
+          //   } : "",
         })
       }
     }
@@ -1298,7 +1308,7 @@ const AddPortfolioItem = (props) => {
 
   const handleSearchStandardJobListClick = (e, currentItem) => {
 
-    console.log("currentItem : ", currentItem);
+    // console.log("currentItem : ", currentItem);
     // templateDescription
     setAddportFolioItem({
       ...addPortFolioItem,
