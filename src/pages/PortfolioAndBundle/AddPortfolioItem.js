@@ -1607,7 +1607,8 @@ const AddPortfolioItem = (props) => {
             props.handleItemEditSave(
               addPortFolioItem,
               editAbleItemPrice,
-              bundleFlagType
+              bundleFlagType,
+              editable
             );
           }
 
@@ -1616,7 +1617,8 @@ const AddPortfolioItem = (props) => {
             props.handleItemEditSave(
               addPortFolioItem,
               editAbleItemPrice,
-              bundleFlagType
+              bundleFlagType,
+              editable
             );
           }
 
@@ -1911,10 +1913,10 @@ const AddPortfolioItem = (props) => {
         // props.getAddPortfolioItemDataFun(addPortFolioItem);
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditPort")) {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditBundle")) {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
       } else {
         // const rObj = {
         //   itemPriceDataId: 0,
@@ -2170,7 +2172,7 @@ const AddPortfolioItem = (props) => {
     <>
       <div className="ligt-greey-bg p-3 d-none">
         <div>
-          {props.bundleOrServiceEditOrNot === undefined && props.compoFlag === "itemEdit" && (
+          {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
@@ -2728,7 +2730,7 @@ const AddPortfolioItem = (props) => {
           
         </div> */}
         <div>
-          {props.bundleOrServiceEditOrNot === undefined && props.compoFlag === "itemEdit" && (
+          {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>

@@ -242,10 +242,12 @@ const PriceCalculator = (props) => {
         recommendedValue: res.data.recommendedValue,
         netPrice: res.data.netService,
         totalPrice: res.data.totalPrice,
-        calculatedPrice:  res.data.calculatedPrice,
+        calculatedPrice: res.data.calculatedPrice,
         id: res.data.itemPriceDataId,
         numberOfEvents: res.data.numberOfEvents,
-        portfolioDataId: res.data.portfolio.portfolioId,
+        portfolioDataId: (res.data?.portfolio != undefined ||
+          res.data?.portfolio != null) ?
+          res.data?.portfolio?.portfolioId : null,
 
         flatPrice: res.data.flatPrice ? parseInt(res.data.flatPrice) : 0,
 
@@ -600,24 +602,30 @@ const PriceCalculator = (props) => {
 
     try {
 
-      console.log("props ---------- ", props)
+      console.log("props ---------- ", props, disable)
+      if (props.bundleOrServiceEditOrNot) {
+        if (disable) {
+          props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, true);
+        }
+      } else {
+        if ((priceCalculator.startUsage == "") ||
+          (priceCalculator.startUsage == undefined)) {
+          throw "Start Usage is a required field, you can’t leave it blank";
+        }
 
-      if ((priceCalculator.startUsage == "") ||
-        (priceCalculator.startUsage == undefined)) {
-        throw "Start Usage is a required field, you can’t leave it blank";
+        if ((priceCalculator.endUsage == "") ||
+          (priceCalculator.endUsage == undefined)) {
+          throw "End Usage is a required field, you can’t leave it blank";
+        }
+
+        if ((priceCalculator.recommendedValue == "") ||
+          (priceCalculator.recommendedValue == undefined)) {
+          throw "Recommended Value is a required field, you can’t leave it blank";
+        }
+        props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, false);
+
       }
 
-      if ((priceCalculator.endUsage == "") ||
-        (priceCalculator.endUsage == undefined)) {
-        throw "End Usage is a required field, you can’t leave it blank";
-      }
-
-      if ((priceCalculator.recommendedValue == "") ||
-        (priceCalculator.recommendedValue == undefined)) {
-        throw "Recommended Value is a required field, you can’t leave it blank";
-      }
-
-      props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs);
 
     } catch (error) {
       toast("😐" + error, {
@@ -686,7 +694,7 @@ const PriceCalculator = (props) => {
         <div className="ligt-greey-bg p-3">
           <div>
             <span className="mr-3 cursor"
-              onClick={() => { props.bundleOrServiceEditOrNot === undefined && setDisable(!disable) }}
+              onClick={() => { setDisable(!disable) }}
             >
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
