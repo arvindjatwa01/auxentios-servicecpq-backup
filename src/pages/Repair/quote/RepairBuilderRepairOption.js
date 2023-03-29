@@ -135,9 +135,9 @@ const RepairBuilderRepairOption = (props) => {
     { value: "express", label: "Express" },
   ];
   const deliveryPriorityOptions = [
-    { value: "urgent", label: "urgent" },
-    { value: "normal", label: "normal" },
-    { value: "very_urgent", label: "very_urgent" },
+    { value: "urgent", label: "Urgent" },
+    { value: "normal", label: "Normal" },
+    { value: "very_urgent", label: "Very Urgent" },
   ];
   const [quoteVersionOptions, setQuoteVersionOptions] = useState([
     { label: "Version 1", value: 1 },
@@ -200,6 +200,7 @@ const RepairBuilderRepairOption = (props) => {
         result.priceMethod !== ""
           ? true
           : false,
+      shippingViewOnly: result.leadTime ? true : false,
     });
     setQuoteId(result.quoteId);
     setSelQuoteStatus(
@@ -220,6 +221,7 @@ const RepairBuilderRepairOption = (props) => {
     populateGeneralData(result);
     populateEstData(result);
     populatePricingData(result);
+    populateShippingData(result);
   };
   const populateCustomerData = (result) => {
     setCustomerData({
@@ -296,6 +298,30 @@ const RepairBuilderRepairOption = (props) => {
     //     ? currencyOptions.find((element) => element.value === result.currency)
     //     : { label: "", value: "" },
     // });
+  };
+  const populateShippingData = async (result) => {
+    let serviceRecipientAddress = "";
+    if (result.customerId) {
+      await customerSearch("customerId:" + result.customerId)
+        .then((searchRes) => {
+          console.log(searchRes);
+          if (searchRes) {
+            serviceRecipientAddress =
+              searchRes[0].serviceRecipent + " " + searchRes[0].contactAddress;
+          }
+        })
+        .catch((e) => {
+          serviceRecipientAddress = "";
+        });
+    }
+    setShippingDetail({
+      deliveryPriority: result.deliveryPriority ? result.deliveryPriority : "",
+      deliveryType: result.deliveryType ? result.deliveryType : "",
+      leadTime: result.leadTime ? result.leadTime : "",
+      serviceRecipientAddress: result.serviceRecipientAddress
+        ? result.serviceRecipientAddress
+        : serviceRecipientAddress,
+    });
   };
   const [headerLoading, setHeaderLoading] = useState(false);
   const [quoteDataId, setQuoteDataId] = useState(0);
@@ -470,7 +496,7 @@ const RepairBuilderRepairOption = (props) => {
     deliveryPriority: "",
     leadTime: "",
     serviceRecipientAddress: "",
-    unit:""
+    unit: "",
   });
   const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [noOptionsModel, setNoOptionsModel] = useState(false);
@@ -555,8 +581,8 @@ const RepairBuilderRepairOption = (props) => {
       } else if (e.target.id === "generalDetails") {
         setValue("price");
       } else if (e.target.id === "price") {
-        setValue("shipping_billing");
-      } else if (e.target.id === "shipping_billing") {
+        setValue("shipping");
+      } else if (e.target.id === "shipping") {
         console.log("final");
       }
       console.log("e.target.id", e.target.id);
@@ -977,12 +1003,33 @@ const RepairBuilderRepairOption = (props) => {
         setSavedQuoteDetails(result);
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
-        handleSnack("success", "Estimation details updated!");
+        handleSnack("success", "General details updated!");
       })
       .catch((err) => {
         handleSnack(
           "error",
-          "Error occurred while updating the estimation details!"
+          "Error occurred while updating the general details!"
+        );
+      });
+  };
+  const updateShippingData = () => {
+    let data = {
+      ...savedQuoteDetails,
+      deliveryType: shippingDetail.deliveryType?.value,
+      deliveryPriority: shippingDetail.deliveryPriority?.value,
+      leadTime: shippingDetail.leadTime + shippingDetail.unit?.value,
+      serviceRecipientAddress: shippingDetail.serviceRecipientAddress,
+    };
+    updateQuoteHeader(quoteId, data)
+      .then((result) => {
+        setSavedQuoteDetails(result);
+        setViewOnlyTab({ ...viewOnlyTab, shippingViewOnly: true });
+        handleSnack("success", "Shipping details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the shipping details!"
         );
       });
   };
@@ -1121,7 +1168,7 @@ const RepairBuilderRepairOption = (props) => {
                       />
                       <Tab
                         label="Shipping"
-                        value="shipping_billing"
+                        value="shipping"
                         className="heading-tabs"
                       />
                     </TabList>
@@ -2309,99 +2356,145 @@ const RepairBuilderRepairOption = (props) => {
                                         </div>
                                     </div> */}
                   </TabPanel>
-                  <TabPanel value="shipping_billing">
-                    <div className="row mt-4 input-fields">
-                      <div class="col-md-4 col-sm-4">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          DELIVERY TYPE
-                        </label>
-                        <div class="form-group w-100">
-                          <Select
-                            onChange={(e) =>
-                              setShippingDetail({
-                                ...shippingDetail,
-                                deliveryType: e,
-                              })
-                            }
-                            options={deliveryTypeOptions}
-                            value={shippingDetail.deliveryType}
-                            styles={FONT_STYLE_SELECT}
-                          />
-                        </div>
-                      </div>
-                      <div class="col-md-4 col-sm-4">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          DELIVERY PRIORITY
-                        </label>
-                        <div class="form-group w-100">
-                          <Select
-                            onChange={(e) =>
-                              setShippingDetail({
-                                ...shippingDetail,
-                                deliveryPriority: e,
-                              })
-                            }
-                            options={deliveryPriorityOptions}
-                            value={shippingDetail.deliveryPriority}
-                            styles={FONT_STYLE_SELECT}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            LEAD TIME
-                          </label>
-                          <div className="d-flex form-control-date border-radius-10">
-                            <input
-                              className="form-control border-radius-10 text-primary"
-                              type="text"
-                              id="startUsage"
-                              value={shippingDetail.leadTime}
-                              onChange={(e) =>
-                                setShippingDetail({
-                                  ...shippingDetail,
-                                  leadTime: e.target.value,
-                                })
-                              }
-                            />
+                  <TabPanel value="shipping">
+                    {!viewOnlyTab.shippingViewOnly ? (
+                      <>
+                        <div className="row mt-4 input-fields">
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              DELIVERY TYPE
+                            </label>
+                            <div class="form-group w-100">
+                              <Select
+                                onChange={(e) =>
+                                  setShippingDetail({
+                                    ...shippingDetail,
+                                    deliveryType: e,
+                                  })
+                                }
+                                options={deliveryTypeOptions}
+                                value={shippingDetail.deliveryType}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-4">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              DELIVERY PRIORITY
+                            </label>
+                            <div class="form-group w-100">
+                              <Select
+                                onChange={(e) =>
+                                  setShippingDetail({
+                                    ...shippingDetail,
+                                    deliveryPriority: e,
+                                  })
+                                }
+                                options={deliveryPriorityOptions}
+                                value={shippingDetail.deliveryPriority}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                LEAD TIME
+                              </label>
+                              <div className="d-flex form-control-date border-radius-10">
+                                <input
+                                  className="form-control border-radius-10 text-primary"
+                                  type="text"
+                                  id="startUsage"
+                                  value={shippingDetail.leadTime}
+                                  onChange={(e) =>
+                                    setShippingDetail({
+                                      ...shippingDetail,
+                                      leadTime: e.target.value,
+                                    })
+                                  }
+                                />
 
-                            <Select
-                              defaultValue={OPTIONS_LEADTIME_UNIT[0]}
-                              isSearchable={false}
-                              styles={FONT_STYLE_UNIT_SELECT}
-                              options={OPTIONS_LEADTIME_UNIT}
-                              // className="text-primary"
-                              value={shippingDetail.unit}
-                              onChange={(e) =>
-                                setShippingDetail({
-                                  ...shippingDetail,
-                                  unit: e,
-                                })
-                              }
-                            />
+                                <Select
+                                  defaultValue={OPTIONS_LEADTIME_UNIT[0]}
+                                  isSearchable={false}
+                                  styles={FONT_STYLE_UNIT_SELECT}
+                                  options={OPTIONS_LEADTIME_UNIT}
+                                  // className="text-primary"
+                                  value={shippingDetail.unit}
+                                  onChange={(e) =>
+                                    setShippingDetail({
+                                      ...shippingDetail,
+                                      unit: e,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SERVICE RECEPIENT ADDRESS
+                              </label>
+                              <input
+                                class="form-control border-radius-10 text-primary"
+                                value={shippingDetail.serviceRecipientAddress}
+                                onChange={(e) =>
+                                  setShippingDetail({
+                                    ...shippingDetail,
+                                    serviceRecipientAddress: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="row mt-4">
-                    <ReadOnlyField
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white mr-1"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updateShippingData}
+                            disabled={
+                              !shippingDetail.deliveryPriority ||
+                              !shippingDetail.deliveryType ||
+                              !shippingDetail.leadTime ||
+                              !shippingDetail.serviceRecipientAddress 
+                            }
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="row mt-4">
+                        <ReadOnlyField
                           label="DELIVERY TYPE"
                           value={shippingDetail.deliveryType?.label}
                           className="col-md-4 col-sm-4"
                         />
-                      <ReadOnlyField
+                        <ReadOnlyField
                           label="DELIVERY PRIORITY"
                           value={shippingDetail.deliveryPriority?.label}
                           className="col-md-4 col-sm-4"
                         />
-                      <ReadOnlyField
+                        <ReadOnlyField
                           label="LEAD TIME"
                           value={shippingDetail.leadTime}
                           className="col-md-4 col-sm-4"
@@ -2411,18 +2504,19 @@ const RepairBuilderRepairOption = (props) => {
                           value={shippingDetail.serviceRecipientAddress}
                           className="col-md-4 col-sm-4"
                         />
-                      <div className="col-md-12 col-sm-12">
-                        <div class="form-group">
-                          <Link
-                            className="btn bg-primary text-white pull-right"
-                            id="shipping_billing"
-                            onClick={handleNextClick}
-                          >
-                            Save & Next
-                          </Link>
+                        <div className="col-md-12 col-sm-12">
+                          <div class="form-group">
+                            <Link
+                              className="btn bg-primary text-white pull-right"
+                              id="shipping"
+                              onClick={handleNextClick}
+                            >
+                              Save & Next
+                            </Link>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                   </TabPanel>
                 </TabContext>
               )}

@@ -63,6 +63,32 @@ export const BUILDER_SEARCH_Q_OPTIONS = [
   { label: "SerialNo", value: "serialNo" },
   { label: "Status", value: "status" },
 ];
+
+export const QUOTE_SEARCH_Q_OPTIONS = [
+  {
+    label: "Created By",
+    value: "createdBy",
+  },
+  {
+    label: "Created Between",
+    value: "createdAt",
+  },
+  {
+    label: "Customer ID",
+    value: "customerId",
+  },
+  { label: "Model", value: "model" },
+  {
+    label: "Name",
+    value: "quoteId",
+  },
+  {
+    label: "Description",
+    value: "description",
+  },
+  { label: "SerialNo", value: "serialNo" }
+];
+
 export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
   {
     label: "ID",

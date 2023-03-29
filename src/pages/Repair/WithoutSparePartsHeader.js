@@ -977,7 +977,7 @@ function WithoutSparePartsHeader(props) {
                   <div className="" style={{ display: "contents" }}>
                     <span
                       className="mr-3 ml-2 text-white"
-                      style={{ fontSize: "20px" }}
+                      style={{ fontSize: 18 }}
                     >
                       Without Spare Parts Header
                     </span>

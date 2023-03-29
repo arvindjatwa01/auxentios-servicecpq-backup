@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { CREATE_REPAIR_QUOTE, FETCH_REPAIR_QUOTE_DETAILS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_REPAIR_QUOTE } from "./CONSTANTS";
+import { CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_REPAIR_QUOTE_DETAILS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_REPAIR_QUOTE } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -129,6 +129,30 @@ export const fetchQuoteDetails = (quoteId) => {
         });
     } catch (error) {
       console.error("in RepairBuilder > fetchQuoteDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Create Spare Part Quote
+export const createSparePartQuote = (builderId, quoteDescription, quoteReference) => {
+  console.log("RepairQuote > createSparePartQuote called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_SPARE_PART_QUOTE(builderId, quoteDescription, quoteReference), config)
+        .then((res) => {
+          console.log("createSparePartQuote  > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while creating spare part quotes");
+        })
+        .catch((err) => {
+          console.log("RepairQuote > axios err=", err);
+          reject("Error in createSparePartQuote axios!");
+        });
+    } catch (error) {
+      console.error("in RepairQuote > createSparePartQuote, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

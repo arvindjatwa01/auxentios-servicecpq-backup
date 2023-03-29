@@ -93,7 +93,10 @@ const SearchComponent = (props) => {
     if (tempArray[id].selectCategory.value && e.target.value) {
       if (props.builderType) {
         searchString = `builderType:${props.builderType} AND saved:true AND ${searchString}`;
+      } else if(props.quoteType){
+        searchString = `quoteType:${props.quoteType} AND saved:true AND ${searchString}`;
       }
+
       props
         .searchAPI(searchString)
         .then((res) => {

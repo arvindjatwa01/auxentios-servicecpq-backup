@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-  getSearchCoverageForFamily,
-  getSearchQueryCoverage,
-} from "../../../services/index";
 import DataTable from "react-data-table-component";
 import SelectFilter from "react-select";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,11 +16,11 @@ import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined
 import $ from "jquery";
 import { QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
 import SearchComponent from "../components/SearchComponent";
-import { BUILDER_SEARCH_Q_OPTIONS, WITHOUT_PARTS } from "../CONSTANTS";
+import { QUOTE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
 import { builderSearch } from "services/repairBuilderServices";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 
-const QuoteSearchQuote = () => {
+const SearchSparePartQuote = () => {
   const [show, setShow] = React.useState(false);
   const handleClose = () => setShow(false);
 
@@ -120,7 +116,7 @@ const QuoteSearchQuote = () => {
     try {
       if (searchStr) {
         const res = await builderSearch(
-          `builderType:${WITHOUT_PARTS} AND saved:true AND ${searchStr}`
+          `quoteType:PARTS_QUOTE AND saved:true AND ${searchStr}`
         );
         setMasterData(res);
       } else {
@@ -131,7 +127,7 @@ const QuoteSearchQuote = () => {
     }
   };
 
-  // Once opetion has been selected clear the search results
+  // Once option has been selected clear the search results
   const clearFilteredData = () => {
     setMasterData([]);
   };
@@ -181,7 +177,8 @@ const QuoteSearchQuote = () => {
     //     // selector: (row) => row.check1,
     //     wrap: true,
     //     sortable: true,
-    //     maxWidth: "300px",
+    //     maxWidth: "50px",
+    //     minWidth: "50px",
     //     cell: (row) => (
     //         <Checkbox
     //             className="text-black"
@@ -193,68 +190,101 @@ const QuoteSearchQuote = () => {
     {
       name: (
         <>
-          <div>Group Number</div>
+          <div>Quote Id</div>
         </>
       ),
-      selector: (row) => row.GroupNumber,
+      selector: (row) => row.quoteId,
       wrap: true,
       sortable: true,
-      format: (row) => row.GroupNumber,
+      format: (row) => row.quoteId,
     },
     {
       name: (
         <>
-          <div>Type</div>
+          <div>Description</div>
         </>
       ),
-      selector: (row) => row.Type,
+      selector: (row) => row.description,
       wrap: true,
       sortable: true,
-      format: (row) => row.Type,
+      format: (row) => row.description,
     },
     {
       name: (
         <>
-          <div>Part number</div>
+          <div>Version</div>
         </>
       ),
-      selector: (row) => row.Partnumber,
+      selector: (row) => row.version,
       wrap: true,
       sortable: true,
-      format: (row) => row.Partnumber,
+      format: (row) => row.version,
     },
     {
       name: (
         <>
-          <div>Price Extended</div>
+          <div>Status</div>
         </>
       ),
-      selector: (row) => row.PriceExtended,
+      selector: (row) => row.status,
       wrap: true,
       sortable: true,
-      format: (row) => row.PriceExtended,
+      format: (row) => row.status,
     },
     {
       name: (
         <>
-          <div>Price currency</div>
+          <div>Created On</div>
         </>
       ),
-      selector: (row) => row.Pricecurrency,
+      selector: (row) => row.createdOn,
       wrap: true,
       sortable: true,
-      format: (row) => row.Pricecurrency,
+      format: (row) => row.createdOn,
     },
     {
       name: (
         <>
-          <div>Usage</div>
+          <div>Validity</div>
         </>
       ),
-      selector: (row) => row.Usage,
+      selector: (row) => row.validity,
       wrap: true,
       sortable: true,
-      format: (row) => row.Usage,
+      format: (row) => row.validity,
+    },
+    {
+      name: (
+        <>
+          <div>Serial No</div>
+        </>
+      ),
+      selector: (row) => row.serialNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.serialNumber,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>currency</div>
+        </>
+      ),
+      selector: (row) => row.currency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.currency,
     },
     {
       name: (
@@ -262,32 +292,10 @@ const QuoteSearchQuote = () => {
           <div>Total Price</div>
         </>
       ),
-      selector: (row) => row.TotalPrice,
+      selector: (row) => row.totalPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.TotalPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      selector: (row) => row.Actions,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Actions,
+      format: (row) => row.totalPrice,
     },
   ];
 
@@ -304,28 +312,12 @@ const QuoteSearchQuote = () => {
           <div className="card p-4 mt-5">
             <div className="d-flex align-items-center mb-0">
               <div className="" style={{ display: "contents" }}>
-                <h5 className="mr-3 mb-0" style={{ whiteSpace: "pre" }}>
+              <h5 className="col-10 mr-3 mb-0" style={{ whiteSpace: "pre" }}>
                   Search Quote
                 </h5>
               </div>
-              <div class="input-group icons border-radius-10 border overflow-hidden">
-                <div class="input-group-prepend">
-                  <span
-                    class="input-group-text bg-transparent border-0 pr-0 "
-                    id="basic-addon1"
-                  >
-                    <SearchIcon />
-                  </span>
-                </div>
-                <input
-                  type="search"
-                  class="form-control search-form-control"
-                  aria-label="Search Dashboard"
-                />
-              </div>
-              <div className="ml-2">
-                <Link className="btn bg-primary text-white">Search</Link>
-              </div>
+
+
               <div className="ml-2">
                 <Link
                   to="/QuoteConfiguration"
@@ -363,9 +355,9 @@ const QuoteSearchQuote = () => {
                     handleSnack={handleSnack}
                     searchAPI={builderSearch}
                     searchClick={handleQuerySearchClick}
-                    options={BUILDER_SEARCH_Q_OPTIONS}
+                    options={QUOTE_SEARCH_Q_OPTIONS}
                     color="white"
-                    builderType={WITHOUT_PARTS}
+                    quoteType={"PARTS_QUOTE"}
                     buttonText="SEARCH"
                   />
                 </div>
@@ -381,7 +373,7 @@ const QuoteSearchQuote = () => {
                 className=""
                 title=""
                 columns={masterColumns}
-                data={rows}
+                data={masterData}
                 customStyles={customStyles}
                 pagination
                 selectableRows
@@ -477,4 +469,4 @@ const QuoteSearchQuote = () => {
   );
 };
 
-export default QuoteSearchQuote;
+export default SearchSparePartQuote;

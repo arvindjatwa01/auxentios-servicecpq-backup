@@ -1,4 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import { ToastContainer, toast } from "react-toastify";
+import Select from "react-select";
+import { FileUploader } from "react-drag-drop-files";
 import { Link, useHistory } from "react-router-dom";
 import { MuiMenuComponent } from "../../Operational/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,15 +25,16 @@ import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import Buttonarrow from "../../../assets/icons/svg/Button-arrow.svg";
 
+import { SolutionBuilderModal, SolutionSelector } from "pages/SolutionModules";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { quoteRecent } from "services/repairQuoteServices";
-import { QUOTE_REPAIR_SEARCH } from "navigation/CONSTANTS";
-import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import Moment from "react-moment";
 import { Typography } from "@mui/material";
 import LoadingProgress from "../components/Loader";
-import Moment from "react-moment";
+import { QUOTE_SPARE_PARTS_SEARCH } from "navigation/CONSTANTS";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { quoteRecent } from "services/repairQuoteServices";
 
-const RecentRepairQuote = () => {
+const RecentSparePartQuote = () => {
   const [modalComponent, setModalComponent] = useState(null);
   const [recentQuotesLoading, setRecentQuotesLoading] = useState(false);
   const [recentQuotes, setRecentQuotes] = useState([]);
@@ -52,13 +60,13 @@ const RecentRepairQuote = () => {
 
   const fetchRecentQuotes = async () => {
     setRecentQuotesLoading(true);
-    await quoteRecent("REPAIR_QUOTE")
+    await quoteRecent("PARTS_QUOTE")
       .then((quotes) => {
         setRecentQuotes(quotes);
         setRecentQuotesLoading(false);
       })
       .catch((e) => {
-        handleSnack("error", "Error occurred while fetching repair quotes!");
+        handleSnack("error", "Error occurred while fetching spare parts quotes!");
         setRecentQuotesLoading(false);
       });
   };
@@ -70,7 +78,7 @@ const RecentRepairQuote = () => {
     };
     quoteDetails.quoteId = quote.quoteId;
     history.push({
-      pathname: "/RepairBuilderRepairOption",
+      pathname: "/SparePartsPortfolio",
       state: quoteDetails,
     });
   };
@@ -87,10 +95,10 @@ const RecentRepairQuote = () => {
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Repair Quote</h5>
+            <h5 className="font-weight-600 mb-0">Spare Parts Quote</h5>
             <div>
               <Link
-                to={QUOTE_REPAIR_SEARCH}
+                to={QUOTE_SPARE_PARTS_SEARCH}
                 style={{ cursor: "pointer" }}
                 className="btn bg-primary text-white pull-right"
               >
@@ -104,7 +112,7 @@ const RecentRepairQuote = () => {
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">
-                  RECENT REPAIR QUOTE
+                  RECENT SPARE PART QUOTE
                 </h6>
                 <div className="row">
                   {recentQuotesLoading ? (
@@ -120,7 +128,7 @@ const RecentRepairQuote = () => {
                                 icon={faFileAlt}
                               />
                               <span className="font-weight-500 ml-2">
-                                Repair Quote {indQuote.quoteId}
+                                Spare Part Quote {indQuote.quoteId}
                               </span>
                             </p>
                             <div className="d-flex align-items-center">
@@ -163,7 +171,7 @@ const RecentRepairQuote = () => {
                               {indQuote.updatedAt}
                             </Moment>
                           </p>
-                          <p className="font-size-12 mb-0">Repair Quote</p>
+                          <p className="font-size-12 mb-0">Spare Part Quote</p>
                         </div>
                       </div>
                     ))
@@ -183,4 +191,4 @@ const RecentRepairQuote = () => {
   );
 };
 
-export default RecentRepairQuote;
+export default RecentSparePartQuote;

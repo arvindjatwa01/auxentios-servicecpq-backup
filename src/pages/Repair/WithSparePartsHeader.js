@@ -70,6 +70,7 @@ import WithSparePartsOperation from "./WithSparePartsOperation";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
 import { createRepairQuote } from "services/repairQuoteServices";
+import QuoteModal from "./components/QuoteModal";
 
 function WithSparePartsHeader(props) {
   const history = useHistory();
@@ -89,6 +90,7 @@ function WithSparePartsHeader(props) {
   const currencyOptions = [{ value: "USD", label: "USD" }];
   const [savedHeaderDetails, setSavedBuilderDetails] = useState([]);
   const [templateOpen, setTemplateOpen] = useState(false);
+  const [openQuotePopup, setOpenQuotePopup] = useState(false);
   const [templateVersion, setTemplateVersion] = useState({
     value: "GOLD",
     label: "Gold",
@@ -282,8 +284,8 @@ function WithSparePartsHeader(props) {
     }
   ]
 
-  const handleCreateQuote = () => {
-    createRepairQuote(bId, quoteDescription, quoteReference).then(createdQuote => {
+  const handleCreateQuote = async () => {
+    await createRepairQuote(bId, quoteDescription, quoteReference).then(createdQuote => {
       handleSnack('success',"Quote has been created successfully!");
       let quoteDetails = {
         quoteId: "",
@@ -300,7 +302,7 @@ function WithSparePartsHeader(props) {
     }).catch(e => {
       handleSnack("error", "Error occurred while creating quote");
     })
-    
+    setOpenQuotePopup(false);
   };
 
   // Update the status of the builder : Active, Revised etc.
@@ -1035,8 +1037,7 @@ function WithSparePartsHeader(props) {
                     <Divider />
                     <MenuItem
                       data-toggle="modal"
-                      data-target="#quotecreat"
-                      className="custommenu ml-2 mr-4"
+                      onClick={() => setOpenQuotePopup(true)}
                     >
                       Quote
                     </MenuItem>
@@ -2239,138 +2240,15 @@ function WithSparePartsHeader(props) {
             />
           )}
         </div>
-        <div
-          className="modal fade"
-          id="quotecreat"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content bg-white border-none">
-              <div className="modal-header border-none">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Quote Create
-                </h5>
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <p className="d-block px-3">
-                It is a long established fact that a reader will be distracted
-                by the readable content of a page when looking at its layout.
-              </p>
-              <hr className="my-1" />
-              <div className="modal-body">
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Quote Type
-                      </label>
-                      <h6 className="font-weight-500">
-                        Repair Quote
-                      </h6>
-                    </div>
-                  </div>
-                  {/* <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Quote ID
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div> */}
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Description
-                      </label>
-                      <textarea
-                        className="form-control"
-                        rows="3"
-                        value={quoteDescription}
-                        onChange={e => setQuoteDescription(e.target.value)}
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Reference
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={quoteReference}
-                        onChange={e => setQuoteReference(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        QUOTE TYPE{" "}
-                      </p>
-                      <h6 className="font-weight-500">
-                        Repair Quote with Spare Parts
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        Quote ID{" "}
-                      </p>
-                      <h6 className="font-weight-500">SB12345</h6>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        QUOTE DESCRIPTION
-                      </p>
-                      <h6 className="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        REFERENCE
-                      </p>
-                      <h6 className="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                </div> */}
-              </div>
-              <div className="modal-footer" style={{ display: "unset" }}>
-                <div>
-                  <button className="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
-                  <button
-                    type="button"
-                    className="btn pull-right border"
-                    data-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <QuoteModal
+        setOpenQuotePopup={setOpenQuotePopup}
+        openQuotePopup={openQuotePopup}
+        setQuoteDescription={setQuoteDescription}
+        quoteDescription={quoteDescription}
+        quoteReference={quoteReference}
+        setQuoteReference={setQuoteReference}
+        handleCreateQuote={handleCreateQuote}
+      />
       </div>
       <CreateKIT
         kitOpen={templateOpen}

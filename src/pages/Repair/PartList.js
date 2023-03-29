@@ -107,6 +107,8 @@ import CreateKIT from "./components/CreateKIT";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { ReadOnlyField } from "./components/ReadOnlyField";
+import QuoteModal from "./components/QuoteModal";
+import { createSparePartQuote } from "services/repairQuoteServices";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -203,7 +205,9 @@ function PartList(props) {
   // const [rating, setRating] = useState(null);
   const [pageSize, setPageSize] = useState(5);
   const [page, setPage] = useState(0);
-  const [savedBuilderHeaderDetails, setSavedBuilderHeaderDetails] = useState([]);
+  const [savedBuilderHeaderDetails, setSavedBuilderHeaderDetails] = useState(
+    []
+  );
   const [tagClicked, setTagClicked] = useState("");
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
@@ -292,6 +296,9 @@ function PartList(props) {
     description: "",
   };
   const [sparePart, setSparePart] = useState(initialSparePart);
+  const [openQuotePopup, setOpenQuotePopup] = useState(false);
+  const [quoteDescription, setQuoteDescription] = useState("");
+  const [quoteReference, setQuoteReference] = useState("");
   const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
   const [partFieldViewonly, setPartFieldViewonly] = useState(false);
   const validityOptions = [
@@ -962,6 +969,29 @@ function PartList(props) {
     setAddPartModalTitle("Add Part");
   };
 
+  const handleCreateQuote = async () => {
+    await createSparePartQuote(bId, quoteDescription, quoteReference)
+      .then((createdQuote) => {
+        handleSnack("success", "Quote has been created successfully!");
+        let quoteDetails = {
+          quoteId: "",
+          // templateDBId: "",
+          type: "fetch",
+        };
+        quoteDetails.quoteId = createdQuote.quoteId;
+        // templateDetails.templateDBId = createdQuote.id;
+        history.push({
+          pathname: "/SparePartsPortfolio",
+          state: quoteDetails,
+        });
+        // history.push("/RepairBuilderRepairOption");
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occurred while creating quote");
+      });
+    setOpenQuotePopup(false);
+  };
+
   // Close SparePart search modal
   const handleSearchResClose = () => {
     setSearchResultOpen(false);
@@ -1135,10 +1165,9 @@ function PartList(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    if(selBuilderStatus?.value !== "ACTIVE")
-      handleSnack('info','Set active status to do “convert to”');
-    else
-      setOpen(true);
+    if (selBuilderStatus?.value !== "ACTIVE")
+      handleSnack("info", "Set active status to do “convert to”");
+    else setOpen(true);
   };
   const handleCreate = () => {
     history.push("/quoteTemplate");
@@ -1146,37 +1175,37 @@ function PartList(props) {
 
   const handleCreateKIT = () => {
     // if (selBuilderStatus?.value === "ACTIVE") {
-      const data = {
-        description: kitDescription,
-        reference: kitReference,
-        version: kitVersion?.value,
-      };
-      createKIT(bId, data)
-        .then((res) => {
-          handleSnack(
-            "success",
-            `KIT ${res.kitId} has been successfully created!`
-          );
-          let kitDetails = {
-            kitId: "",
-            kitDBId: "",
-            partListNo: "",
-            partListId: "",
-            type: "fetch",
-          };
-          kitDetails.kitId = res.kitId;
-          kitDetails.kitDBId = res.id;
-          // kitDetails.partListNo = kitDetails.;
-          // kitDetails.partListId = selectedKIT.estimationNumber;
-          // kitDetails.versionNumber = selectedKIT.versionNumber;
-          history.push({
-            pathname: "/RepairKits/Kits",
-            state: kitDetails,
-          });
-        })
-        .catch((e) => {
-          handleSnack("error", "Conversion to KIt has been failed!");
+    const data = {
+      description: kitDescription,
+      reference: kitReference,
+      version: kitVersion?.value,
+    };
+    createKIT(bId, data)
+      .then((res) => {
+        handleSnack(
+          "success",
+          `KIT ${res.kitId} has been successfully created!`
+        );
+        let kitDetails = {
+          kitId: "",
+          kitDBId: "",
+          partListNo: "",
+          partListId: "",
+          type: "fetch",
+        };
+        kitDetails.kitId = res.kitId;
+        kitDetails.kitDBId = res.id;
+        // kitDetails.partListNo = kitDetails.;
+        // kitDetails.partListId = selectedKIT.estimationNumber;
+        // kitDetails.versionNumber = selectedKIT.versionNumber;
+        history.push({
+          pathname: "/RepairKits/Kits",
+          state: kitDetails,
         });
+      })
+      .catch((e) => {
+        handleSnack("error", "Conversion to KIt has been failed!");
+      });
     // } else {
     //   handleSnack("warning", "Partlist is not active yet!");
     // }
@@ -1583,8 +1612,7 @@ function PartList(props) {
                     <Divider sx={{ my: 0.5 }} />
                     <MenuItem
                       className="custommenu ml-2 mr-5"
-                      data-toggle="modal"
-                      data-target="#quotecreat"
+                      onClick={() => setOpenQuotePopup(true)}
                     >
                       Quote
                     </MenuItem>
@@ -1637,10 +1665,7 @@ function PartList(props) {
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
               <div className="" style={{ display: "contents" }}>
-                <span
-                  className="mr-3 ml-2 text-white"
-                  style={{ fontSize: "20px" }}
-                >
+                <span className="mr-3 ml-2 text-white" style={{ fontSize: 18 }}>
                   Part List Header
                 </span>
                 <div className="btn-sm cursor text-white">
@@ -3207,148 +3232,15 @@ function PartList(props) {
             </div>
           </div>
         </div>
-        <div
-          className="modal fade"
-          id="quotecreat"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content bg-white border-none">
-              <div className="modal-header border-none">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Quote Create
-                </h5>
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <p className="d-block px-3">
-                It is a long established fact that a reader will be distracted
-                by the readable content of a page when looking at its layout.
-              </p>
-              <hr className="my-1" />
-              <div className="modal-body">
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Quote Type
-                      </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={QUOTE_OPTIONS}
-                        placeholder="Cyclical"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Quote ID
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Description
-                      </label>
-                      <textarea
-                        className="form-control"
-                        id="exampleFormControlTextarea1"
-                        rows="3"
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        Reference
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        QUOTE TYPE{" "}
-                      </p>
-                      <h6 className="font-weight-500">
-                        Repair Quote with Spare Parts
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        Quote ID{" "}
-                      </p>
-                      <h6 className="font-weight-500">SB12345</h6>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        QUOTE DESCRIPTION
-                      </p>
-                      <h6 className="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group mt-3">
-                      <p className="font-size-12 font-weight-500 mb-2">
-                        REFERENCE
-                      </p>
-                      <h6 className="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer" style={{ display: "unset" }}>
-                <div className="mb-2">
-                  <button
-                    onClick={() => handleCreate()}
-                    data-dismiss="modal"
-                    className="btn bg-primary d-block text-white"
-                  >
-                    Done
-                  </button>
-                </div>
-                <div>
-                  <button className="btn  btn-primary">Create</button>
-                  <button
-                    type="button"
-                    className="btn pull-right border"
-                    data-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <QuoteModal
+          setOpenQuotePopup={setOpenQuotePopup}
+          openQuotePopup={openQuotePopup}
+          setQuoteDescription={setQuoteDescription}
+          quoteDescription={quoteDescription}
+          quoteReference={quoteReference}
+          setQuoteReference={setQuoteReference}
+          handleCreateQuote={handleCreateQuote}
+        />
         <Modal
           show={searchResultOpen}
           onHide={handleSearchResClose}

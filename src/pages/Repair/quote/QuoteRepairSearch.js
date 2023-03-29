@@ -1,30 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
-import Checkbox from "@mui/material/Checkbox";
-import {
-  getSearchCoverageForFamily,
-} from "../../../services/index";
-import SelectFilter from "react-select";
-import AddIcon from "@mui/icons-material/Add";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import DataTable from "react-data-table-component";
 import SearchIcon from "@mui/icons-material/Search";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link } from "react-router-dom";
-import { Modal, ModalFooter } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import $ from "jquery";
 import { QUOTE_REPAIR_CREATE, QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
+import SearchComponent from "../components/SearchComponent";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { quoteRepairSearch } from "services/repairQuoteServices";
+import { QUOTE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
 
 const QuoteRepairSearch = () => {
-  const [age, setAge] = React.useState("5");
-  const [age1, setAge1] = React.useState("5");
-  const [age2, setAge2] = React.useState("5");
+
   const [show, setShow] = React.useState(false);
-  const handleOpen = () => setShow(true);
   const handleClose = () => setShow(false);
 
   const customStyles = {
@@ -73,68 +65,101 @@ const QuoteRepairSearch = () => {
     {
       name: (
         <>
-          <div>Group Number</div>
+          <div>Quote Id</div>
         </>
       ),
-      selector: (row) => row.GroupNumber,
+      selector: (row) => row.quoteId,
       wrap: true,
       sortable: true,
-      format: (row) => row.GroupNumber,
+      format: (row) => row.quoteId,
     },
     {
       name: (
         <>
-          <div>Type</div>
+          <div>Description</div>
         </>
       ),
-      selector: (row) => row.Type,
+      selector: (row) => row.description,
       wrap: true,
       sortable: true,
-      format: (row) => row.Type,
+      format: (row) => row.description,
     },
     {
       name: (
         <>
-          <div>Part number</div>
+          <div>Version</div>
         </>
       ),
-      selector: (row) => row.Partnumber,
+      selector: (row) => row.version,
       wrap: true,
       sortable: true,
-      format: (row) => row.Partnumber,
+      format: (row) => row.version,
     },
     {
       name: (
         <>
-          <div>Price Extended</div>
+          <div>Status</div>
         </>
       ),
-      selector: (row) => row.PriceExtended,
+      selector: (row) => row.status,
       wrap: true,
       sortable: true,
-      format: (row) => row.PriceExtended,
+      format: (row) => row.status,
     },
     {
       name: (
         <>
-          <div>Price currency</div>
+          <div>Created On</div>
         </>
       ),
-      selector: (row) => row.Pricecurrency,
+      selector: (row) => row.createdOn,
       wrap: true,
       sortable: true,
-      format: (row) => row.Pricecurrency,
+      format: (row) => row.createdOn,
     },
     {
       name: (
         <>
-          <div>Usage</div>
+          <div>Validity</div>
         </>
       ),
-      selector: (row) => row.Usage,
+      selector: (row) => row.validity,
       wrap: true,
       sortable: true,
-      format: (row) => row.Usage,
+      format: (row) => row.validity,
+    },
+    {
+      name: (
+        <>
+          <div>Serial No</div>
+        </>
+      ),
+      selector: (row) => row.serialNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.serialNumber,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>currency</div>
+        </>
+      ),
+      selector: (row) => row.currency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.currency,
     },
     {
       name: (
@@ -142,203 +167,97 @@ const QuoteRepairSearch = () => {
           <div>Total Price</div>
         </>
       ),
-      selector: (row) => row.TotalPrice,
+      selector: (row) => row.totalPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.TotalPrice,
+      format: (row) => row.totalPrice,
     },
-    {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      selector: (row) => row.Actions,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Actions,
-    },
-  ];
-
-  const handleChangedrop = (event) => {
-    setAge(event.target.value);
-  };
-  const handleChangedrop1 = (event) => {
-    setAge1(event.target.value);
-  };
-  const handleChangedrop2 = (event) => {
-    setAge2(event.target.value);
-  };
-  const [value, setValue] = React.useState("1");
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-  const activityOptions = ["None", "Atria", "Callisto"];
-
-  const columns = [
-    { field: "GroupNumber", headerName: "Group Number", flex: 1, width: 70 },
-    { field: "Type", headerName: "Type", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Part number", flex: 1, width: 130 },
-    {
-      field: "PriceExtended",
-      headerName: "Price Extended",
-      flex: 1,
-      width: 130,
-    },
-    {
-      field: "Pricecurrency",
-      headerName: "Price currency",
-      flex: 1,
-      width: 130,
-    },
-    { field: "Usage", headerName: "Usage", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Total Price", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Comments", flex: 1, width: 130 },
-    { field: "Actions", headerName: "Actions", flex: 1, width: 130 },
-    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-    //   `${params.getValue(params.id, 'firstName') || ''} ${
-    //       params.getValue(params.id, 'DocumentType') || ''
-    //     }`,
-  ];
-
-  const rows = [
-    {
-      id: 1,
-      GroupNumber: "Snow",
-      Type: "Jon",
-      Partnumber: 35,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Inconsistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    {
-      id: 2,
-      GroupNumber: "Lannister",
-      Type: "Cersei",
-      Partnumber: 42,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    {
-      id: 3,
-      GroupNumber: "Lannister",
-      Type: "Jaime",
-      Partnumber: 45,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
-    // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
-    // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
-    // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
-    // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
-    // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
 
   const handleRowClick = (e) => {
     setShow(true);
   };
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
-    setMasterData([]);
-    setFilterMasterData([]);
-    setSelectedMasterData([]);
-  };
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
-  };
+   // Snack Bar State
+   const [severity, setSeverity] = useState("");
+   const [openSnack, setOpenSnack] = useState(false);
+   const [snackMessage, setSnackMessage] = useState("");
+   const handleSnackBarClose = (event, reason) => {
+     if (reason === "clickaway") {
+       return;
+     }
+     setOpenSnack(false);
+   };
+ 
+   const handleSnack = (snackSeverity, snackMessage) => {
+     setSnackMessage(snackMessage);
+     setSeverity(snackSeverity);
+     setOpenSnack(true);
+   };
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
       selectedOption: "",
     },
   ]);
-  const [count, setCount] = useState(1);
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
+  // Once option has been selected clear the search results
+  const clearFilteredData = () => {
+    setMasterData([]);
   };
-  const [selectedMasterData, setSelectedMasterData] = useState([]);
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
-    obj.inputSearch = e.target.value;
-  };
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const [filterMasterData, setFilterMasterData] = useState([]);
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
+
   const [masterData, setMasterData] = useState([]);
+
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    var searchStr = "";
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        const res = await quoteRepairSearch(
+          `quoteType:REPAIR_QUOTE AND saved:true AND ${searchStr}`
+        );
+        setMasterData(res);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching spare parts!");
+    }
+  };
   return (
     <>
-      {/* <CommanComponents /> */}
+      <CustomizedSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid ">
           <div className="card p-4 mt-5">
@@ -358,163 +277,43 @@ const QuoteRepairSearch = () => {
               </div>
             </div>
           </div>
-          <div className="bg-primary px-3 mb-3 overflow-hidden border-radius-6">
-            <div className="row align-items-center height-66">
-              <div className="col-2">
-                <div className="d-flex ">
-                  <h5 className="mb-0 text-white mr-2">
+          <div className="bg-primary px-3 mb-3 border-radius-6">
+            <div className="row align-items-center">
+              <div className="col-11 mx-2">
+                <div className="d-flex align-items-center bg-primary w-100">
+                  <div
+                    className="d-flex mr-3 py-3"
+                    style={{ whiteSpace: "pre" }}
+                  >
+                    <h5 className="mr-2 mb-0 text-white">
                     <span>Quotes</span>
                   </h5>
-                  <p className="mb-0">
+                  </div>
+                  {/* <p className="mb-0">
                     <a href="#" className="ml-2 text-white">
                       <EditOutlinedIcon />
                     </a>
                     <a href="#" className="ml-2 text-white">
                       <ShareOutlinedIcon />
                     </a>
-                  </p>
+                  </p> */}
+                  <SearchComponent
+                    querySearchSelector={querySearchSelector}
+                    setQuerySearchSelector={setQuerySearchSelector}
+                    clearFilteredData={clearFilteredData}
+                    handleSnack={handleSnack}
+                    searchAPI={quoteRepairSearch}
+                    searchClick={handleQuerySearchClick}
+                    options={QUOTE_SEARCH_Q_OPTIONS}
+                    color="white"
+                    quoteType={"REPAIR_QUOTE"}
+                    buttonText="SEARCH"
+                  />
                 </div>
               </div>
-              <div className="col-10">
-                <div className="d-flex justify-content-between align-items-center w-100 ">
-                  <div className="row align-items-center m-0 ">
-                    {querySearchSelector.map((obj, i) => {
-                      return (
-                        <>
-                          <div className="customselect border-white overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
-                            {i > 0 ? (
-                              <SelectFilter
-                                isClearable={true}
-                                defaultValue={{ label: "And", value: "AND" }}
-                                options={[
-                                  { label: "And", value: "AND", id: i },
-                                  { label: "Or", value: "OR", id: i },
-                                ]}
-                                placeholder="Search By.."
-                                onChange={(e) => handleOperator(e, i)}
-                                // value={querySearchOperator[i]}
-                                value={obj.selectOperator}
-                              />
-                            ) : (
-                              <></>
-                            )}
-
-                            <div>
-                              <SelectFilter
-                                // isClearable={true}
-                                options={[
-                                  { label: "Make", value: "make", id: i },
-                                  { label: "Family", value: "family", id: i },
-                                  { label: "Model", value: "model", id: i },
-                                  { label: "Prefix", value: "prefix", id: i },
-                                ]}
-                                placeholder="Search By.."
-                                onChange={(e) => handleFamily(e, i)}
-                                value={obj.selectFamily}
-                              />
-                            </div>
-                            <div className="customselectsearch customize">
-                              <span className="search-icon-postn">
-                                <SearchIcon className="text-primary" />
-                              </span>
-                              <input
-                                className="custom-input-sleact "
-                                style={{ position: "relative" }}
-                                type="text"
-                                placeholder="Search Parts"
-                                value={obj.inputSearch}
-                                onChange={(e) => handleInputSearch(e, i)}
-                                id={"inputSearch-" + i}
-                                autoComplete="off"
-                              />
-                              <div className="bg-primary text-white btn">
-                                <span className="mr-2">
-                                  <AddIcon />
-                                </span>
-                                Add Item
-                              </div>
-
-                              {
-                                <ul
-                                  className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                >
-                                  {obj.selectOptions.map((currentItem, j) => (
-                                    <li
-                                      className="list-group-item"
-                                      key={j}
-                                      onClick={(e) =>
-                                        handleSearchListClick(
-                                          e,
-                                          currentItem,
-                                          obj,
-                                          i
-                                        )
-                                      }
-                                    >
-                                      {currentItem}
-                                    </li>
-                                  ))}
-                                </ul>
-                              }
-                            </div>
-                          </div>
-                        </>
-                      );
-                    })}
-                    <div onClick={(e) => addSearchQuerryHtml(e)}>
-                      <Link
-                        to="#"
-                        className="btn-sm text-white border mr-2"
-                        style={{ border: "1px solid #872FF7" }}
-                      >
-                        +
-                      </Link>
-                    </div>
-                    <div onClick={handleDeletQuerySearch}>
-                      <Link to="#" className="btn-sm border">
-                        <svg
-                          data-name="Layer 41"
-                          id="Layer_41"
-                          fill="#ffffff"
-                          viewBox="0 0 50 50"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <title />
-                          <path
-                            className="cls-1"
-                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                          />
-                          <path
-                            className="cls-1"
-                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                          />
-                          <path
-                            className="cls-1"
-                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                          />
-                        </svg>
-                        {/* <DeleteIcon className="font-size-16" /> */}
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* <div className="col-3">
-            <div className="d-flex align-items-center">
-              <div className="col-8 text-center">
-              <a href="#" className="p-1 more-btn text-white">+ 3 more
-              <span className="c-btn">C</span>
-              <span className="b-btn">B</span>
-              <span className="a-btn">A</span>
-              </a>
-              </div>
-              <div className="col-4 text-center border-left py-3">
-              <Link to="/QuoteRepairOption" className="p-1 text-white">+ Add Part</Link>
-              </div>
-            </div>
-          </div> */}
             </div>
           </div>
+
           <div className="card">
             <div
               className=""
@@ -524,11 +323,11 @@ const QuoteRepairSearch = () => {
                 className=""
                 title=""
                 columns={masterColumns}
-                data={rows}
+                data={masterData}
                 customStyles={customStyles}
                 pagination
                 onRowClicked={(e) => handleRowClick(e)}
-                selectableRows
+                // selectableRows
               />
             </div>
           </div>
