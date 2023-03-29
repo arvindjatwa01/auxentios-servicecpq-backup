@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID } from "./CONSTANTS";
+import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -204,6 +204,28 @@ export const getSearchKitId = (searchStr) => {
         });
     } catch (error) {
       console.error("in Query coverageService > getSearchKitId, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+// Portfolio Service-Bundle Item Prices
+export const getServiceBundleItemPrices = (searchStr) => {
+  console.log("Query coverageService > getServiceBundleItemPrices called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("getServiceBundleItemPrices > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getServiceBundleItemPrices > axios err=", err);
+          reject("Error in getServiceBundleItemPrices axios!");
+        });
+    } catch (error) {
+      console.error("in Query coverageService > getServiceBundleItemPrices, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

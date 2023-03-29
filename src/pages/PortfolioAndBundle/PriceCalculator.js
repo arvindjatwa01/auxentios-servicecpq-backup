@@ -104,7 +104,7 @@ const PriceCalculator = (props) => {
     netPrice: 0,
     totalPrice: 0,
     listPrice: "",
-    calculatedPrice: "",
+    calculatedPrice: 0,
     priceYear: "",
     usageType: "",
     frequency: "",
@@ -150,6 +150,10 @@ const PriceCalculator = (props) => {
         // setPriceCalculator(props.priceCalculator);
         portfolioItemPriceSjIdFun()
       }
+    }
+
+    if (props.serviceOrBundlePrefix === "BUNDLE") {
+      portfolioItemPriceSjIdFun();
     }
 
     if (props.serviceOrBundlePrefix !== "SERVICE") {
@@ -238,9 +242,12 @@ const PriceCalculator = (props) => {
         recommendedValue: res.data.recommendedValue,
         netPrice: res.data.netService,
         totalPrice: res.data.totalPrice,
+        calculatedPrice: res.data.calculatedPrice,
         id: res.data.itemPriceDataId,
         numberOfEvents: res.data.numberOfEvents,
-        portfolioDataId: res.data.portfolio.portfolioId,
+        portfolioDataId: (res.data?.portfolio != undefined ||
+          res.data?.portfolio != null) ?
+          res.data?.portfolio?.portfolioId : null,
 
         flatPrice: res.data.flatPrice ? parseInt(res.data.flatPrice) : 0,
 
@@ -302,6 +309,11 @@ const PriceCalculator = (props) => {
         } : "",
       })
     }
+
+    setExtWorkData({
+      ...extWorkData,
+      flatRateIndicator: res.data.flatPrice || res.data.flatPrice != 0 ? true : false,
+    })
 
 
 
@@ -590,24 +602,30 @@ const PriceCalculator = (props) => {
 
     try {
 
-      console.log("props ---------- ", props)
+      console.log("props ---------- ", props, disable)
+      if (props.bundleOrServiceEditOrNot) {
+        if (disable) {
+          props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, true);
+        }
+      } else {
+        if ((priceCalculator.startUsage == "") ||
+          (priceCalculator.startUsage == undefined)) {
+          throw "Start Usage is a required field, you can’t leave it blank";
+        }
 
-      if ((priceCalculator.startUsage == "") ||
-        (priceCalculator.startUsage == undefined)) {
-        throw "Start Usage is a required field, you can’t leave it blank";
+        if ((priceCalculator.endUsage == "") ||
+          (priceCalculator.endUsage == undefined)) {
+          throw "End Usage is a required field, you can’t leave it blank";
+        }
+
+        if ((priceCalculator.recommendedValue == "") ||
+          (priceCalculator.recommendedValue == undefined)) {
+          throw "Recommended Value is a required field, you can’t leave it blank";
+        }
+        props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, false);
+
       }
 
-      if ((priceCalculator.endUsage == "") ||
-        (priceCalculator.endUsage == undefined)) {
-        throw "End Usage is a required field, you can’t leave it blank";
-      }
-
-      if ((priceCalculator.recommendedValue == "") ||
-        (priceCalculator.recommendedValue == undefined)) {
-        throw "Recommended Value is a required field, you can’t leave it blank";
-      }
-
-      props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs);
 
     } catch (error) {
       toast("😐" + error, {
@@ -676,7 +694,7 @@ const PriceCalculator = (props) => {
         <div className="ligt-greey-bg p-3">
           <div>
             <span className="mr-3 cursor"
-              onClick={() => { props.bundleOrServiceEditOrNot === undefined && setDisable(!disable) }}
+              onClick={() => { setDisable(!disable) }}
             >
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
@@ -1858,7 +1876,7 @@ const PriceCalculator = (props) => {
                 <h6 className="text-light-dark font-size-12 font-weight-500">
                   TOTAL PRICE
                 </h6>
-                ${priceCalculator.totalPrice}
+                ${priceCalculator.calculatedPrice}
               </div>
             </div>
             <div className="my-3 text-right">

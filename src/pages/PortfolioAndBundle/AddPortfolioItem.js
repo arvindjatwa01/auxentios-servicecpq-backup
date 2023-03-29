@@ -85,7 +85,7 @@ const AddPortfolioItem = (props) => {
   }
   const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
-  // console.log("AddPortfolioItem props data is : ", props)
+  console.log("AddPortfolioItem props data is : ", props)
   const [tabs, setTabs] = useState("itemSummary");
   const [subTabs, setSubTabs] = useState("A");
   const [editable, setEditable] = useState(
@@ -1175,8 +1175,12 @@ const AddPortfolioItem = (props) => {
         value: res.data.year,
       },
       noOfYear: res.data.noOfYear,
-
-
+      currency: (props.passItemEditRowData?.itemHeaderModel?.currency ||
+        props.passItemEditRowData?.itemHeaderModel?.currency != "") ?
+        {
+          label: props.passItemEditRowData?.itemHeaderModel?.currency,
+          value: props.passItemEditRowData?.itemHeaderModel?.currency,
+        } : "",
     });
 
 
@@ -1217,6 +1221,12 @@ const AddPortfolioItem = (props) => {
           startUsage: props.createdBundleItems?.startUsage,
           endUsage: props.createdBundleItems?.endUsage,
           usageType: props.createdBundleItems?.usageType,
+          // currency: (props.passItemEditRowData?.itemHeaderModel?.currency ||
+          //   props.passItemEditRowData?.itemHeaderModel?.currency != "") ?
+          //   {
+          //     label: props.passItemEditRowData?.itemHeaderModel?.currency,
+          //     value: props.passItemEditRowData?.itemHeaderModel?.currency,
+          //   } : "",
         })
       }
     }
@@ -1298,7 +1308,7 @@ const AddPortfolioItem = (props) => {
 
   const handleSearchStandardJobListClick = (e, currentItem) => {
 
-    console.log("currentItem : ", currentItem);
+    // console.log("currentItem : ", currentItem);
     // templateDescription
     setAddportFolioItem({
       ...addPortFolioItem,
@@ -1597,7 +1607,8 @@ const AddPortfolioItem = (props) => {
             props.handleItemEditSave(
               addPortFolioItem,
               editAbleItemPrice,
-              bundleFlagType
+              bundleFlagType,
+              editable
             );
           }
 
@@ -1606,7 +1617,8 @@ const AddPortfolioItem = (props) => {
             props.handleItemEditSave(
               addPortFolioItem,
               editAbleItemPrice,
-              bundleFlagType
+              bundleFlagType,
+              editable
             );
           }
 
@@ -1901,10 +1913,10 @@ const AddPortfolioItem = (props) => {
         // props.getAddPortfolioItemDataFun(addPortFolioItem);
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditPort")) {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditBundle")) {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
       } else {
         // const rObj = {
         //   itemPriceDataId: 0,
@@ -2160,7 +2172,7 @@ const AddPortfolioItem = (props) => {
     <>
       <div className="ligt-greey-bg p-3 d-none">
         <div>
-          {props.bundleOrServiceEditOrNot === undefined && props.compoFlag === "itemEdit" && (
+          {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
@@ -2718,7 +2730,7 @@ const AddPortfolioItem = (props) => {
           
         </div> */}
         <div>
-          {props.bundleOrServiceEditOrNot === undefined && props.compoFlag === "itemEdit" && (
+          {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
