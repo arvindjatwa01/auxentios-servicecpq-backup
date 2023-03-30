@@ -11441,7 +11441,7 @@ export function CreatePortfolio(props) {
           id="cell-3-undefined"
           data-column-id="3"
           role="gridcell"
-          className="py-2 justify-content-between m-w-150 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          className="py-2 justify-content-between sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
           data-tag="allowRowEvents"
         >
           <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
@@ -15210,6 +15210,12 @@ export function CreatePortfolio(props) {
                               {/* {stratgyGeographicKeyValue.value} */}
                             </h6>
                           </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                        <p className="font-size-12 font-weight-500 mb-2">
+                              OPTIONALS
+                            </p>
+                            <h6 onClick={PopupOptionalShow} className="cursor font-weight-500 text-uppercase text-primary font-size-17">Click here</h6>
 
                         </div>
                       </div>
@@ -16584,7 +16590,7 @@ export function CreatePortfolio(props) {
                   {bundleItems.length > 0 ? (
                     <div>
                       <div
-                        className="custom-table  card table-child"
+                        className="custom-table portfolio-items-table card table-child"
                         style={{ minHeight: 200, height: "auto", width: "100%" }}
                       >
                         <DataTable
