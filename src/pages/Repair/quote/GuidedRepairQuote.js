@@ -1792,11 +1792,11 @@ export const GuidedRepairQuote = (props) => {
                     </div>
                     <div className="hr"></div>
                   </h5>
-                  <p className="mt-4 ">
+                  {/* <p className="mt-4 ">
                     Amet minim mollit non deserunt ullamco est aliqua dolor do
                     amet sint,Amet minim mollit non deserunt ullamco est aliqua
                     dolor do amet sint
-                  </p>
+                  </p> */}
                   <div className="p-3">
                     <div className="add-new-recod">
                       <div>

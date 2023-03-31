@@ -20,7 +20,7 @@ import Buttonarrow from "../../../assets/icons/svg/Button-arrow.svg";
 
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { quoteRecent } from "services/repairQuoteServices";
-import { QUOTE_REPAIR_SEARCH } from "navigation/CONSTANTS";
+import { QUOTE_REPAIR_SEARCH, REPAIR_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { Typography } from "@mui/material";
 import LoadingProgress from "../components/Loader";
@@ -70,7 +70,7 @@ const RecentRepairQuote = () => {
     };
     quoteDetails.quoteId = quote.quoteId;
     history.push({
-      pathname: "/RepairBuilderRepairOption",
+      pathname: REPAIR_QUOTE_DETAILS,
       state: quoteDetails,
     });
   };

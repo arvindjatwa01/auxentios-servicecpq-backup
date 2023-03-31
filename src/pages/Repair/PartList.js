@@ -984,7 +984,6 @@ function PartList(props) {
           pathname: "/SparePartsPortfolio",
           state: quoteDetails,
         });
-        // history.push("/RepairBuilderRepairOption");
       })
       .catch((e) => {
         handleSnack("error", "Error occurred while creating quote");
@@ -1000,9 +999,9 @@ function PartList(props) {
 
   // Search table column for spareparts
   const columnsPartListSearch = [
-    { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
+    { headerName: "Group Number", field: "groupNumber", flex: 1, width: 70 },
     { headerName: "Type", field: "partType", flex: 1, width: 130 },
-    { headerName: "PartNumber", field: "partNumber", flex: 1, width: 130 },
+    { headerName: "Part Number", field: "partNumber", flex: 1, width: 130 },
     {
       headerName: "Description",
       field: "partDescription",
@@ -1017,10 +1016,10 @@ function PartList(props) {
   //Columns to display spare parts for the partlist
   const columnsPartList = [
     // { headerName: 'Sl#', field: 'rowNum', flex: 1, },
-    { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
+    { headerName: "Group Number", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "Desc", field: "description", flex: 1 },
-    { headerName: "PartNumber", field: "partNumber", flex: 1 },
+    { headerName: "Part Number", field: "partNumber", flex: 1 },
     {
       headerName: "Qty",
       field: "quantity",
@@ -1029,7 +1028,7 @@ function PartList(props) {
       filterable: false,
     },
     {
-      headerName: "Unit Of Measures",
+      headerName: "Sales Unit",
       field: "unitOfMeasure",
       flex: 1,
       filterable: false,

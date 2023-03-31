@@ -94,7 +94,7 @@ const SearchComponent = (props) => {
       if (props.builderType) {
         searchString = `builderType:${props.builderType} AND saved:true AND ${searchString}`;
       } else if(props.quoteType){
-        searchString = `quoteType:${props.quoteType} AND saved:true AND ${searchString}`;
+        searchString = `quoteType:${props.quoteType} AND ${searchString}`;
       }
 
       props

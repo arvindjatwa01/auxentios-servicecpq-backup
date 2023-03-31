@@ -2,21 +2,25 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import SearchIcon from "@mui/icons-material/Search";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import $ from "jquery";
-import { QUOTE_REPAIR_CREATE, QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
+import {
+  QUOTE_REPAIR_CREATE,
+  QUOTE_SPARE_PARTS_TEMPLATE,
+  REPAIR_QUOTE_DETAILS,
+} from "navigation/CONSTANTS";
 import SearchComponent from "../components/SearchComponent";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { quoteRepairSearch } from "services/repairQuoteServices";
 import { QUOTE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
+import { Card, Divider, List, ListItem, ListItemText } from "@mui/material";
 
 const QuoteRepairSearch = () => {
-
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
 
   const customStyles = {
@@ -173,26 +177,40 @@ const QuoteRepairSearch = () => {
       format: (row) => row.totalPrice,
     },
   ];
+  const [clickedQuoteRowData, setClickedQuoteRowData] = useState(null);
 
   const handleRowClick = (e) => {
+    setClickedQuoteRowData(e);
     setShow(true);
   };
-   // Snack Bar State
-   const [severity, setSeverity] = useState("");
-   const [openSnack, setOpenSnack] = useState(false);
-   const [snackMessage, setSnackMessage] = useState("");
-   const handleSnackBarClose = (event, reason) => {
-     if (reason === "clickaway") {
-       return;
-     }
-     setOpenSnack(false);
-   };
- 
-   const handleSnack = (snackSeverity, snackMessage) => {
-     setSnackMessage(snackMessage);
-     setSeverity(snackSeverity);
-     setOpenSnack(true);
-   };
+  // Snack Bar State
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+  const history = useHistory();
+  const handleSelectQuote = (quote) => {
+    let quoteDetails = {
+      quoteId: "",
+      type: "fetch",
+    };
+    quoteDetails.quoteId = quote.quoteId;
+    history.push({
+      pathname: REPAIR_QUOTE_DETAILS,
+      state: quoteDetails,
+    });
+  };
 
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
@@ -286,8 +304,8 @@ const QuoteRepairSearch = () => {
                     style={{ whiteSpace: "pre" }}
                   >
                     <h5 className="mr-2 mb-0 text-white">
-                    <span>Quotes</span>
-                  </h5>
+                      <span>Quotes</span>
+                    </h5>
                   </div>
                   {/* <p className="mb-0">
                     <a href="#" className="ml-2 text-white">
@@ -339,7 +357,7 @@ const QuoteRepairSearch = () => {
           className="tablerowmodal"
           show={show}
           onHide={() => handleClose()}
-          size="md"
+          // size="md"
           aria-labelledby="contained-modal-title-vcenter"
         >
           <Modal.Body className="">
@@ -354,62 +372,73 @@ const QuoteRepairSearch = () => {
               </div>
               <div>
                 <p className="text-light ml-3">
-                  This standard job is created for replacement of engne
-                  belonging to 797,797F & 793 models
+                  This repair quote was created by{" "}
+                  {clickedQuoteRowData?.preparedBy} on{" "}
+                  {clickedQuoteRowData?.preparedOn}
                 </p>
               </div>
             </div>
             <div class="p-3 bg-white">
-              <div>
-                <a href="#" className="btn bg-primary text-white">
-                  Template
-                </a>
+              <div className="d-flex justify-content-between mb-3">
+                <div>
+                  <a href="#" className="btn bg-primary text-white">
+                    Repair Quote
+                  </a>
+                </div>
+                <h4 className="text-light mt-3">
+                  {clickedQuoteRowData?.quoteId}
+                </h4>
               </div>
-              <h4 className="text-light mt-3">SJ671</h4>
-              <p>
-                Your current session will expire in 5 minutes. Please Save your
-                changes to continue your session, otherwise you will lose all
-                unsaved data and your session will time out.
-              </p>
-              <h4 className=" mt-3">INCLUDES</h4>
-              <ul>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  Spare Parts
-                </li>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  Labor Hours
-                </li>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  Miscellaenous
-                </li>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  External Work
-                </li>
-              </ul>
-              <div>
+              <hr />
+              <h5 className=" mt-3">Summary</h5>
+              <Card>
+              <List dense={true}>
+                <ListItem >
+                  <ListItemText >Description </ListItemText>
+                  <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
+                </ListItem>
+                <Divider />
+                <ListItem >
+                  <ListItemText >Service Organisation </ListItemText>
+                  <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
+                </ListItem>
+                <Divider />
+                <ListItem >
+                  <ListItemText >Serial Number</ListItemText>
+                  <span className="font-weight-500">{clickedQuoteRowData?.serialNumber}</span>
+                </ListItem>
+                <Divider />
+                <ListItem >
+                  <ListItemText >Customer</ListItemText>
+                  <span className="font-weight-500">{clickedQuoteRowData?.customerId +
+                    " " +
+                    clickedQuoteRowData?.customerName}</span>
+                </ListItem>
+                <Divider />
+                <ListItem >
+                  <ListItemText >Model</ListItemText>
+                  <span className="font-weight-500">{clickedQuoteRowData?.model}</span>
+                </ListItem>
+                <Divider />
+                <ListItem >
+                  <ListItemText >Manufacturer</ListItemText>
+                  <span className="font-weight-500">{clickedQuoteRowData?.make}</span>
+                </ListItem>
+                </List>
+              </Card>
+              
+              {/* <div>
                 <a href="#" style={{ textDecoration: "underline" }}>
                   View Details
                 </a>
-              </div>
+              </div> */}
             </div>
             <div class="modal-footer justify-content-between bg-primary">
               <div>
-                <b className="text-white">$50,000</b>
+                <b className="text-white">$ {clickedQuoteRowData?.netPrice}</b>
               </div>
               <div>
-                <a href={QUOTE_SPARE_PARTS_TEMPLATE} className="text-white">
+                <a onClick={() => handleSelectQuote(clickedQuoteRowData)} className="text-white">
                   Select <ArrowRightAltOutlinedIcon className="" />
                 </a>
               </div>

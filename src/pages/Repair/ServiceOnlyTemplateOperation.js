@@ -597,7 +597,7 @@ const handleChangeSwitch = (event) => {
             </div>
             {operationData.partlists && Object.entries(operationData.partlists).length > 0 && <><h5 className="d-flex align-items-center  mx-2">
               <div className="" style={{ display: "contents" }}>
-                <span className="mr-3 white-space">Part List</span>
+                <span className="mr-3 white-space">Summary</span>
               </div>
               <div className="hr"></div>
             </h5>

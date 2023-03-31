@@ -68,7 +68,7 @@ import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import WithSparePartsSegments from "./WithSparePartsSegments";
 import WithSparePartsOperation from "./WithSparePartsOperation";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
-import { SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
+import { REPAIR_QUOTE_DETAILS, SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
 import { createRepairQuote } from "services/repairQuoteServices";
 import QuoteModal from "./components/QuoteModal";
 
@@ -295,10 +295,9 @@ function WithSparePartsHeader(props) {
       quoteDetails.quoteId = createdQuote.quoteId;
       // templateDetails.templateDBId = createdQuote.id;
       history.push({
-        pathname: "/RepairBuilderRepairOption",
+        pathname: REPAIR_QUOTE_DETAILS,
         state: quoteDetails,
       });
-      // history.push("/RepairBuilderRepairOption");
     }).catch(e => {
       handleSnack("error", "Error occurred while creating quote");
     })

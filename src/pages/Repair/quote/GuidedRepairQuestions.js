@@ -67,7 +67,7 @@ const InitQuestion = () => {
             <div className="d-flex">
                 <div className="col-12">
                     {/* <p>QUESTION 01/10</p> */}
-                    <h4>I am looking solution for</h4>
+                    <h4>I am looking quote for</h4>
                 </div>
             </div>
             <RadioGroupComponent

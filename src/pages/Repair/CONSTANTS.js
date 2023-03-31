@@ -119,7 +119,7 @@ export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
 export const KIT_SEARCH_Q_OPTIONS = [
   {
     label: "Model",
-    value: "model",
+    value: "coverageModel",
   },
   {
     label: "Status",

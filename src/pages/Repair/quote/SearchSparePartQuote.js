@@ -14,7 +14,7 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import $ from "jquery";
-import { QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
+import { QUOTE_SPARE_PARTS_TEMPLATE, QUOTE_SPARE_PART_CONFIGURATION } from "navigation/CONSTANTS";
 import SearchComponent from "../components/SearchComponent";
 import { QUOTE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
 import { builderSearch } from "services/repairBuilderServices";
@@ -320,7 +320,7 @@ const SearchSparePartQuote = () => {
 
               <div className="ml-2">
                 <Link
-                  to="/QuoteConfiguration"
+                  to={QUOTE_SPARE_PART_CONFIGURATION}
                   className="btn bg-primary text-white"
                 >
                   Create New <ChevronRightIcon className="" />

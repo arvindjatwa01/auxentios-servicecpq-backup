@@ -1,68 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
-import { DataGrid } from "@mui/x-data-grid";
-import FormGroup from "@mui/material/FormGroup";
-import Select from "react-select";
-import Select1 from "@mui/material/Select";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import DataTable from "react-data-table-component";
-import SelectFilter from "react-select";
-import AddIcon from "@mui/icons-material/Add";
+import React, { useEffect, useState } from "react";
+import Select from "react-select";
+
 import {
-  getSearchCoverageForFamily,
-  getSearchQueryCoverage,
-} from "../../../services/index";
-import $ from "jquery";
+  faFileAlt,
+  faFolderPlus,
+  faShareAlt,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { Link, useHistory } from "react-router-dom";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import Checkbox from "@mui/material/Checkbox";
-import { FileUploader } from "react-drag-drop-files";
-import MenuItem from "@mui/material/MenuItem";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import shareIcon from "../../../assets/icons/svg/share.svg";
-import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
-import uploadIcon from "../../../assets/icons/svg/upload.svg";
-import deleteIcon from "../../../assets/icons/svg/delete.svg";
-import copyIcon from "../../../assets/icons/svg/Copy.svg";
+import { useHistory } from "react-router-dom";
 
-import { MuiMenuComponent } from "pages/Operational";
-import VerifiedOutlinedIcon from "@mui/icons-material/VerifiedOutlined";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
-import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import { builderSearch, createBuilder } from "services/repairBuilderServices";
-import { repairActions } from "../dropdowns/repairSlice";
-import { useDispatch } from "react-redux";
-import { WITHOUT_PARTS, WITH_PARTS } from "../CONSTANTS";
-import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import LoadingProgress from "../components/Loader";
-import Moment from "react-moment";
 import { Typography } from "@mui/material";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import Moment from "react-moment";
+import { useDispatch } from "react-redux";
+import { builderSearch, createBuilder } from "services/repairBuilderServices";
+import LoadingProgress from "../components/Loader";
+import { WITHOUT_PARTS, WITH_PARTS } from "../CONSTANTS";
+import { repairActions } from "../dropdowns/repairSlice";
 
 const QuoteWithEvaluation = () => {
   const [value, setValue] = React.useState("1");
 
-  const [open, setOpen] = React.useState(false);
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
-
-  const handleClose = () => setOpen(false);
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const activityOptions = ["None", "Atria", "Callisto"];
   const history = useHistory();
 
   // Snack Bar State
@@ -82,15 +49,16 @@ const QuoteWithEvaluation = () => {
     setOpenSnack(true);
   };
 
-  const [recentWithoutSpareBuilders, setRecentWithoutSpareBuilders] = useState([]);
+  const [recentWithoutSpareBuilders, setRecentWithoutSpareBuilders] = useState(
+    []
+  );
   const [recentWithSpareBuilders, setRecentWithSpareBuilders] = useState([]);
 
   const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
-    fetchRecentBuilders(     
-    );
+    fetchRecentBuilders();
 
     if (JSON.parse(localStorage.getItem("exitingType"))) {
       localStorage.removeItem("exitingType");
@@ -109,7 +77,7 @@ const QuoteWithEvaluation = () => {
       .catch((err) => {
         handleSnack("error", "Error occurred while fetching builders");
       });
-      await builderSearch(searchWithSpareQuery)
+    await builderSearch(searchWithSpareQuery)
       .then((resultWith) => {
         setRecentWithSpareBuilders(resultWith);
       })
@@ -237,7 +205,7 @@ const QuoteWithEvaluation = () => {
                   </TabList>
                 </Box>
                 <TabPanel value="1">
-                  <div className="d-flex align-items-center justify-content-end mt-2" >
+                  <div className="d-flex align-items-center justify-content-end mt-2">
                     <Select
                       className="customselect1"
                       id="custom"
@@ -376,7 +344,9 @@ const QuoteWithEvaluation = () => {
                                           className="fa fa-pencil"
                                           aria-hidden="true"
                                           onClick={() =>
-                                            makeSparePartsBuildEditable(indBuilder)
+                                            makeSparePartsBuildEditable(
+                                              indBuilder
+                                            )
                                           }
                                         ></i>
                                       </a>

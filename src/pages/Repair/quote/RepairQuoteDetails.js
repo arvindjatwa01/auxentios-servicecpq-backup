@@ -63,6 +63,7 @@ import Moment from "react-moment";
 import { Tooltip } from "@mui/material";
 import LoadingProgress from "../components/Loader";
 import Validator from "utils/validator";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 const customStyles = {
   rows: {
     style: {
@@ -87,7 +88,7 @@ const customStyles = {
   },
 };
 
-const RepairBuilderRepairOption = (props) => {
+const RepairQuoteDetails = (props) => {
   const history = useHistory();
   const { state } = props.location;
   const [quoteId, setQuoteId] = useState("");
@@ -375,10 +376,15 @@ const RepairBuilderRepairOption = (props) => {
     }
   };
 
-  const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+  const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
-    setOpenSnack(snackStatus);
+  };
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
   };
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -510,95 +516,6 @@ const RepairBuilderRepairOption = (props) => {
     });
   };
 
-  const handleNextClick = async (e) => {
-    try {
-      if (e.target.id === "customer") {
-        //
-        if (customerData.customerID === "") {
-          throw "Customer ID must not be Empty.";
-        }
-
-        let solutionQuoteObj = {
-          quoteType: "SOLUTION_QUOTE",
-          source: customerData.source,
-          customerId: customerData.customerID,
-          model: machineData.model,
-          serialNumber: machineData.serialNo,
-          smu: machineData.smu,
-          fleetNo: machineData.fleetNo,
-          registrationNo: machineData.registrationNo,
-          chasisNo: machineData.chasisNo,
-          preparedBy: estimateDetails.preparedBy,
-          approvedBy: estimateDetails.approvedBy,
-          preparedOn: estimateDetails.preparedOn,
-          revisedBy: estimateDetails.revisedBy,
-          revisedOn: estimateDetails.revisedOn,
-          salesOffice: estimateDetails.salesOffice,
-          quoteDate: generalDetails.quoteDate,
-          description: generalDetails.description,
-          reference: generalDetails.reference,
-          validity:
-            generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
-          version: generalDetails.version,
-          netPrice: 0,
-          priceDate: "",
-          costPrice: 0,
-          priceMethod: "LIST_PRICE",
-          adjustedPrice: 0,
-          currency: "",
-          status: "PENDING_ACTIVE",
-          tenantId: 74,
-          sbQuoteItems: [],
-          rbQuoteItems: [],
-          plQuoteItems: [],
-        };
-
-        const solutionRes = await solutionQuoteCreation(solutionQuoteObj);
-        if (solutionRes.status === 200) {
-          toast(`👏 Quote Created Successfully`, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setValue("machine");
-          // setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-          //   setGeneralComponentData({
-          //     ...generalComponentData,
-          //     portfolioId: solutionRes.data.portfolioId,
-          //   });
-          setQuoteDataId(solutionRes.data.quoteId);
-          //   setPortfolioId(solutionRes.data.portfolioId);
-          //   setNameIsNotEditAble(true);
-        }
-      } else if (e.target.id === "machine") {
-        setValue("estimation");
-      } else if (e.target.id === "estimation") {
-        setValue("generalDetails");
-      } else if (e.target.id === "generalDetails") {
-        setValue("price");
-      } else if (e.target.id === "price") {
-        setValue("shipping");
-      } else if (e.target.id === "shipping") {
-        console.log("final");
-      }
-      console.log("e.target.id", e.target.id);
-    } catch (error) {
-      toast("😐" + error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-  };
   const rows4 = [
     { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
     { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
@@ -750,7 +667,6 @@ const RepairBuilderRepairOption = (props) => {
       [name]: value,
     });
   };
-  const handleOpen = () => setShow(true);
 
   function getStyles(name, personName, theme) {
     return {
@@ -760,13 +676,6 @@ const RepairBuilderRepairOption = (props) => {
           : theme.typography.fontWeightMedium,
     };
   }
-  const handleClose1 = () => {
-    setShow(false);
-  };
-
-  const handleOpen1 = () => {
-    setOpen1(true);
-  };
 
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
@@ -839,57 +748,6 @@ const RepairBuilderRepairOption = (props) => {
     "Accepted",
   ];
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const StyledMenu = styled((props) => (
-    <Menu
-      elevation={0}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      {...props}
-    />
-  ))(({ theme }) => ({
-    "& .MuiPaper-root": {
-      borderRadius: 6,
-      marginTop: theme.spacing(1),
-      minWidth: 180,
-      color:
-        theme.palette.mode === "light"
-          ? "rgb(55, 65, 81)"
-          : theme.palette.grey[300],
-      boxShadow:
-        "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
-      "& .MuiMenu-list": {
-        padding: "4px 0",
-      },
-      "& .MuiMenuItem-root": {
-        "& .MuiSvgIcon-root": {
-          fontSize: 18,
-          color: theme.palette.text.secondary,
-          marginRight: theme.spacing(1.5),
-        },
-        "&:active": {
-          backgroundColor: alpha(
-            theme.palette.primary.main,
-            theme.palette.action.selectedOpacity
-          ),
-        },
-      },
-    },
-  }));
-  const [open, setOpen] = React.useState(false);
-  const handleClose = () => setOpen(false);
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
-  const fileTypes = ["JPG", "PNG", "GIF"];
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -1046,6 +904,12 @@ const RepairBuilderRepairOption = (props) => {
   };
   return (
     <>
+      <CustomizedSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid mt-4">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -2475,7 +2339,7 @@ const RepairBuilderRepairOption = (props) => {
                               !shippingDetail.deliveryPriority ||
                               !shippingDetail.deliveryType ||
                               !shippingDetail.leadTime ||
-                              !shippingDetail.serviceRecipientAddress 
+                              !shippingDetail.serviceRecipientAddress
                             }
                           >
                             Save
@@ -2504,17 +2368,6 @@ const RepairBuilderRepairOption = (props) => {
                           value={shippingDetail.serviceRecipientAddress}
                           className="col-md-4 col-sm-4"
                         />
-                        <div className="col-md-12 col-sm-12">
-                          <div class="form-group">
-                            <Link
-                              className="btn bg-primary text-white pull-right"
-                              id="shipping"
-                              onClick={handleNextClick}
-                            >
-                              Save & Next
-                            </Link>
-                          </div>
-                        </div>
                       </div>
                     )}
                   </TabPanel>
@@ -2528,4 +2381,4 @@ const RepairBuilderRepairOption = (props) => {
   );
 };
 
-export default RepairBuilderRepairOption;
+export default RepairQuoteDetails;
