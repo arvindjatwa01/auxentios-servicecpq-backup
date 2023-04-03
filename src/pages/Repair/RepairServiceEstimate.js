@@ -1118,7 +1118,6 @@ function RepairServiceEstimate(props) {
           });
           populateLaborItems(resultLabour);
           setLaborViewOnly(true);
-          setValue("labor");
         }
       })
       .catch((e) => {
@@ -1158,7 +1157,6 @@ function RepairServiceEstimate(props) {
           });
           populateConsItems(resultConsumable);
           setConsumableViewOnly(true);
-          setValue("consumables");
         }
       })
       .catch((e) => {
@@ -1197,7 +1195,6 @@ function RepairServiceEstimate(props) {
           });
           populateExtWorkItems(resultExtWork);
           setExtWorkViewOnly(true);
-          setValue("extWork");
         }
       })
       .catch((e) => {
@@ -1640,6 +1637,7 @@ function RepairServiceEstimate(props) {
         // populateLaborData(serviceEstimateData);
         populateServiceEstimation("labor");
         handleSnack("success", "Added labor item successfully");
+        setValue("labor");
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while adding labor item!");
@@ -1672,6 +1670,7 @@ function RepairServiceEstimate(props) {
           // populateConsumableData(serviceEstimateData);
           populateServiceEstimation("consumables");
           handleSnack("success", "Added consumable item successfully");
+          setValue("consumables");
         })
         .catch((err) => {
           handleSnack("error", "Error occurred while adding consumable item!");
@@ -1708,6 +1707,7 @@ function RepairServiceEstimate(props) {
         // populateExtWorkData(serviceEstimateData);
         populateServiceEstimation("extwork");
         handleSnack("success", "Added ext work item successfully");
+        setValue("extWork");
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while adding external work item!");

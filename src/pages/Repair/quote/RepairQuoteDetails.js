@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/EditOutlined";
-
+import penIcon from "../../../assets/images/pen.png";
+import EYEIcon from "@mui/icons-material/VisibilityOutlined";
+import CommentIcon from "@mui/icons-material/Chat";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import {
   ERROR_MAX_VERSIONS,
@@ -64,6 +66,7 @@ import { Tooltip } from "@mui/material";
 import LoadingProgress from "../components/Loader";
 import Validator from "utils/validator";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import RepairQuoteItemModal from "../components/RepairQuoteItem";
 const customStyles = {
   rows: {
     style: {
@@ -92,9 +95,6 @@ const RepairQuoteDetails = (props) => {
   const history = useHistory();
   const { state } = props.location;
   const [quoteId, setQuoteId] = useState("");
-  const [open1, setOpen1] = React.useState(false);
-
-  const [show, setShow] = React.useState(false);
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
     // source: "",
@@ -105,6 +105,7 @@ const RepairQuoteDetails = (props) => {
     contactPhone: "",
     customerGroup: "",
   });
+  const [quoteItems, setQuoteItems] = useState([]);
   useEffect(() => {
     console.log(state);
     if (state) {
@@ -147,6 +148,9 @@ const RepairQuoteDetails = (props) => {
     label: "Version 1",
     value: 1,
   });
+  const [quoteItemOpen, setQuoteItemOpen] = useState(false);
+  const [quoteItemModalTitle, setQuoteItemModalTitle] = useState("");
+  const [quoteItem, setQuoteItem] = useState("");
   const handleVersion = (e) => {
     setSelectedVersion(e);
     // fetchBuilderVersionDet(builderId, e.value).then((result) => {
@@ -166,6 +170,7 @@ const RepairQuoteDetails = (props) => {
         .then((result) => {
           setQuoteId(result.quoteId);
           populateHeader(result);
+          setQuoteItems(result.rbQuoteItems);
         })
         .catch((err) => {
           console.log(err);
@@ -178,6 +183,184 @@ const RepairQuoteDetails = (props) => {
     value: "DRAFT",
     label: "Draft",
   });
+  const quoteItemsColumns = [
+    // {
+    //     name: (
+    //         <>
+    //             <div>Select</div>
+    //         </>
+    //     ),
+    //     // selector: (row) => row.check1,
+    //     wrap: true,
+    //     sortable: true,
+    //     maxWidth: "50px",
+    //     minWidth: "50px",
+    //     cell: (row) => (
+    //         <Checkbox
+    //             className="text-black"
+    //         // checked={row.check1}
+    //         // onChange={(e) => handleCheckboxData(e, row)}
+    //         />
+    //     ),
+    // },
+    {
+      name: (
+        <>
+          <div>Component</div>
+        </>
+      ),
+      selector: (row) => row.componentCode,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.componentCode,
+    },
+    {
+      name: (
+        <>
+          <div>Job Description</div>
+        </>
+      ),
+      selector: (row) => row.operation,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.operation,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.description,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.description,
+    },
+    {
+      name: (
+        <>
+          <div>Part List ID</div>
+        </>
+      ),
+      selector: (row) => row.partListId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partListId,
+    },
+    {
+      name: (
+        <>
+          <div>Total Parts $</div>
+        </>
+      ),
+      selector: (row) => row.partsPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partsPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Labor $</div>
+        </>
+      ),
+      selector: (row) => row.labourPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.labourPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Misc $</div>
+        </>
+      ),
+      selector: (row) => row.miscPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.miscPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Adjusted Price</div>
+        </>
+      ),
+      selector: (row) => row.extendedPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.extendedPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Discount</div>
+        </>
+      ),
+      selector: (row) => row.discount,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.discount,
+    },
+    {
+      name: (
+        <>
+          <div>Margin</div>
+        </>
+      ),
+      selector: (row) => row.margin,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.margin,
+    },
+    {
+      name: (
+        <>
+          <div>Payer Type</div>
+        </>
+      ),
+      selector: (row) => row.payerType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.payerType,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) => (
+        <div>
+          <Tooltip
+            title="Edit"
+            className="mr-2 cursor"
+            // onClick={() => openQuoteItemModal(row)}
+          >
+            <img className="m-1" src={penIcon} alt="Edit" />
+          </Tooltip>
+          <Tooltip title="Comment" className="cursor">
+            <CommentIcon />
+          </Tooltip>
+        </div>
+      ),
+    },
+  ];
   const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
@@ -724,7 +907,24 @@ const RepairQuoteDetails = (props) => {
       },
     },
   };
-
+  const [quoteItemViewOnly, setQuoteItemViewOnly] = useState(false);
+  // Open quote item modal
+  const openQuoteItemModal = (row) => {
+    // console.log(row);
+    setQuoteItem(row);
+    setQuoteItemModalTitle(
+      row?.component + " | " + row?.operation + " | " + row?.description
+    );
+    setQuoteItemViewOnly(true);
+    setQuoteItemOpen(true);
+  };
+  //Close Quote Item modal
+  const handleQuoteItemClose = () => {
+    setQuoteItemOpen(false);
+    // setQuoteItem(initialQuoteItem);
+    setQuoteItemViewOnly(false);
+    setQuoteItemModalTitle("");
+  };
   const names = [
     "Oliver Hansen",
     "Van Henry",
@@ -911,29 +1111,29 @@ const RepairQuoteDetails = (props) => {
         message={snackMessage}
       />
       <div className="content-body" style={{ minHeight: "884px" }}>
-        <div className="container-fluid mt-4">
+        <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>
-              Repair Option
-            </h5>
             <div className="d-flex justify-content-center align-items-center">
-              <div className="ml-3">
-                <Select
-                  className="customselectbtn"
-                  onChange={(e) => handleVersion(e)}
-                  options={quoteVersionOptions}
-                  value={selectedVersion}
-                />
-              </div>
+              <h5 className="font-weight-600 mb-0">Repair Quote</h5>
+              <div className="d-flex justify-content-center align-items-center">
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn"
+                    onChange={(e) => handleVersion(e)}
+                    options={quoteVersionOptions}
+                    value={selectedVersion}
+                  />
+                </div>
 
-              <div className="ml-3">
-                <Select
-                  className="customselectbtn"
-                  onChange={(e) => handleQuoteStatus(e)}
-                  // isOptionDisabled={(e) => disableStatusOptions(e)}
-                  options={STATUS_OPTIONS}
-                  value={selQuoteStatus}
-                />
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn"
+                    onChange={(e) => handleQuoteStatus(e)}
+                    // isOptionDisabled={(e) => disableStatusOptions(e)}
+                    options={STATUS_OPTIONS}
+                    value={selQuoteStatus}
+                  />
+                </div>
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
@@ -2374,6 +2574,35 @@ const RepairQuoteDetails = (props) => {
                 </TabContext>
               )}
             </Box>
+          </div>
+          <RepairQuoteItemModal
+            quoteItem={quoteItem}
+            setQuoteItem={setQuoteItem}
+            // handleIndPartAdd={handleIndPartAdd}
+            // searchAPI={sparePartSearch}
+            quoteItemOpen={quoteItemOpen}
+            handleQuoteItemClose={handleQuoteItemClose}
+            title={quoteItemModalTitle}
+            quoteItemViewOnly={quoteItemViewOnly}
+            setQuoteItemViewOnly={setQuoteItemViewOnly}
+            handleSnack={handleSnack}
+          />
+          <div className="card">
+            <div
+              className=""
+              style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
+            >
+              <DataTable
+                className=""
+                title=""
+                columns={quoteItemsColumns}
+                data={quoteItems}
+                customStyles={customStyles}
+                pagination
+                // onRowClicked={(e) => handleRowClick(e)}
+                // selectableRows
+              />
+            </div>
           </div>
         </div>
       </div>
