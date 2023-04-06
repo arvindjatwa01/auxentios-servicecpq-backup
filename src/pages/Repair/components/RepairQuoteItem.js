@@ -5,94 +5,30 @@ import SearchBox from "./SearchBox";
 import { useState } from "react";
 import { TextareaAutosize } from "@material-ui/core";
 import { ReadOnlyField } from "./ReadOnlyField";
+import { default as Select } from "react-select";
 
 const RepairQuoteItemModal = (props) => {
-  const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
-  const [searchPartNoResults, setSearchPartNoResults] = useState([]);
-console.log(props.quoteItem);
-  // Search Spare part with group number and part number
-  const handleSparePartSearch = async (searchSparePartField, searchText) => {
-    // console.log("cleared the result", searchText);
-    let searchQuerySparePart = "";
-    setSearchGroupNoResults([]);
-    setSearchPartNoResults([]);
-    if (searchSparePartField === "groupNumber") {
-      props.setQuoteItem({ ...props.quoteItem, groupNumber: searchText });
-      searchQuerySparePart = searchText
-        ? searchSparePartField + "~" + searchText
-        : "";
-    } else if (searchSparePartField === "partNumber") {
-      props.setSparePart({ ...props.quoteItem, partNumber: searchText });
-      searchQuerySparePart = searchText
-        ? props.quoteItem.groupNumber
-          ? `groupNumber:${props.quoteItem.groupNumber} AND partNumber~` +
-            searchText
-          : "partNumber~" + searchText
-        : "";
-    }
-    // console.log("search query", searchQuerySparePart);
-    if (searchQuerySparePart && searchText.length > 2) {
-      await props
-        .searchAPI(searchQuerySparePart)
-        .then((result) => {
-          if (result) {
-            if (searchSparePartField === "groupNumber") {
-              setSearchGroupNoResults(result);
-            } else if (searchSparePartField === "partNumber") {
-              setSearchPartNoResults(result);
-            }
-          }
-        })
-        .catch((e) => {
-          props.handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the sparepart!"
-          );
-        });
-    } else {
-      searchSparePartField === "groupNumber"
-        ? setSearchGroupNoResults([])
-        : setSearchPartNoResults([]);
-    }
-  };
-
-  // Select spare part from the search results
-  const handleSparePartSelect = (type, currentItem) => {
-    if (type === "groupNumber") {
-      props.setSparePart({
-        ...props.quoteItem,
-        groupNumber: currentItem.groupNumber,
-      });
-      setSearchGroupNoResults([]);
-    } else if (type === "partNumber") {
-      let quantity = props.quoteItem.quantity;
-      let extendedPrice = currentItem.listPrice * quantity;
-      let totalPrice = calculateTotalPrice(
-        extendedPrice,
-        props.quoteItem.usagePercentage
-      );
-      props.setSparePart({
-        ...props.quoteItem,
-        groupNumber: currentItem.groupNumber,
-        unitPrice: currentItem.listPrice,
-        partNumber: currentItem.partNumber,
-        partType: currentItem.partType,
-        description: currentItem.partDescription,
-        extendedPrice,
-        totalPrice,
-        unitOfMeasure: currentItem.salesUnit,
-      });
-      setSearchPartNoResults([]);
-    }
-  };
-  const calculateTotalPrice = (extendedPrice, usage) => {
-    return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
+  const customStyle = {
+    control: (styles, { isDisabled }) => {
+      return {
+        ...styles,
+        background: isDisabled ? "#e9ecef" : "white",
+        borderRadius: 10,
+        fontSize: 12,
+      };
+    },
+    singleValue: (styles, { isDisabled }) => {
+      return {
+        ...styles,
+        color: "#616161",
+        borderRadius: 10,
+        fontSize: 12,
+        fontWeight: 500,
+      };
+    },
   };
 
   const closeModal = () => {
-    setSearchGroupNoResults([]);
-    setSearchPartNoResults([]);
     props.handleQuoteItemClose();
   };
 
@@ -163,31 +99,33 @@ console.log(props.quoteItem);
                     <label className="text-light-dark font-size-12 font-weight-500">
                       COMPONENT
                     </label>
-                    <SearchBox
-                      value={props.quoteItem.component}
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={props.quoteItem.componentCode}
                       onChange={(e) =>
-                        handleSparePartSearch("component", e.target.value)
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          componentCode: e.target.value,
+                        })
                       }
-                      type="component"
-                      result={searchGroupNoResults}
-                      onSelect={handleSparePartSelect}
-                      disabled={true}
+                      disabled
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      OPERATION
+                      JOB DESCRIPTION
                     </label>
                     <input
                       type="text"
                       className="form-control border-radius-10 text-primary"
                       value={props.quoteItem.operation}
                       onChange={(e) =>
-                        props.setSparePart({
+                        props.setQuoteItem({
                           ...props.quoteItem,
-                          partType: e.target.value,
+                          operation: e.target.value,
                         })
                       }
                       disabled
@@ -200,15 +138,17 @@ console.log(props.quoteItem);
                     <label className="text-light-dark font-size-12 font-weight-500">
                       DESCRIPTION
                     </label>
-                    <SearchBox
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
                       value={props.quoteItem.description}
                       onChange={(e) =>
-                        handleSparePartSearch("partNumber", e.target.value)
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          description: e.target.value,
+                        })
                       }
-                      type="partNumber"
-                      result={searchPartNoResults}
-                      onSelect={handleSparePartSelect}
-                      disabled={true}
+                      disabled
                     />
                   </div>
                 </div>
@@ -218,51 +158,43 @@ console.log(props.quoteItem);
                       PART LIST ID
                     </label>
                     <input
-                      type="Number"
+                      type="text"
+                      disabled
                       className="form-control border-radius-10 text-primary"
-                      onChange={(e) =>
-                        props.setQuoteItem({
-                          ...props.quoteItem,
-                          partListId: e.target.value,
-                          
-                        })
-                      }
-                      value={props.quoteItem.partListId}
+                      value={props.quoteItem.partlistId}
                     />
-                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      UNIT OF MEASURES
+                      TOTAL PARTS
                     </label>
                     <input
                       type="text"
                       disabled
                       className="form-control border-radius-10 text-primary"
-                      value={props.quoteItem.unitOfMeasure}
-                      onChange={(e) =>
-                        props.setSparePart({
-                          ...props.quoteItem,
-                          unitOfMeasure: e.target.value,
-                        })
+                      value={
+                        props.quoteItem.partsPrice
+                          ? parseFloat(props.quoteItem.partsPrice).toFixed(2)
+                          : 0.0
                       }
                     />
+
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      UNIT PRICE
+                      TOTAL LABOR
                     </label>
                     <input
                       type="Number"
                       className="form-control border-radius-10 text-primary"
                       value={
-                        props.quoteItem.unitPrice
-                          ? parseFloat(props.quoteItem.unitPrice).toFixed(2)
+                        props.quoteItem.labourPrice
+                          ? parseFloat(props.quoteItem.labourPrice).toFixed(2)
                           : 0.0
                       }
                       disabled
@@ -273,18 +205,17 @@ console.log(props.quoteItem);
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      EXTENDED PRICE
+                      TOTAL MISC
                     </label>
                     <input
                       type="Number"
                       className="form-control border-radius-10 text-primary"
-                      disabled
-                      // onChange={(e) => props.setSparePart({...props.quoteItem, extendedPrice: e.target.value})}
                       value={
-                        props.quoteItem.extendedPrice
-                          ? parseFloat(props.quoteItem.extendedPrice).toFixed(2)
+                        props.quoteItem.miscPrice
+                          ? parseFloat(props.quoteItem.miscPrice).toFixed(2)
                           : 0.0
                       }
+                      disabled
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -292,56 +223,10 @@ console.log(props.quoteItem);
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      CURRENCY
+                      NET PRICE
                     </label>
                     <input
                       type="text"
-                      className="form-control border-radius-10 text-primary"
-                      onChange={(e) =>
-                        props.setSparePart({
-                          ...props.quoteItem,
-                          currency: e.target.value,
-                        })
-                      }
-                      value={props.quoteItem.currency}
-                      disabled
-                    />
-                    <div className="css-w8dmq8">*Mandatory</div>
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
-                      % USAGE
-                    </label>
-                    <input
-                      type="Number"
-                      className="form-control border-radius-10 text-primary"
-                      onChange={(e) =>
-                        props.setSparePart({
-                          ...props.quoteItem,
-                          usagePercentage: e.target.value,
-                          totalPrice: props.quoteItem.extendedPrice
-                            ? parseFloat(
-                                calculateTotalPrice(
-                                  props.quoteItem.extendedPrice,
-                                  e.target.value
-                                )
-                              ).toFixed(2)
-                            : 0.0,
-                        })
-                      }
-                      value={props.quoteItem.usagePercentage}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="Number"
                       className="form-control border-radius-10 text-primary"
                       value={
                         props.quoteItem.totalPrice
@@ -353,40 +238,89 @@ console.log(props.quoteItem);
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
+
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      COMMENT
+                      NET ADJUSTED PRICE
                     </label>
-                    <TextareaAutosize
+                    <input
                       type="text"
                       className="form-control border-radius-10 text-primary"
-                      value={props.quoteItem.comment}
                       onChange={(e) =>
-                        props.setSparePart({
+                        props.setQuoteItem({
                           ...props.quoteItem,
-                          comment: e.target.value,
+                          netAdjustedPrice: e.target.value,
                         })
                       }
+                      value={
+                        props.quoteItem.totalPrice
+                          ? parseFloat(
+                              props.quoteItem.netAdjustedPrice
+                            ).toFixed(2)
+                          : 0.0
+                      }
                     />
+                    <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      DESCRIPTION
+                      DISCOUNT
                     </label>
                     <input
-                      type="text"
-                      disabled
+                      type="Number"
                       className="form-control border-radius-10 text-primary"
-                      value={props.quoteItem.description}
+                      value={
+                        props.quoteItem.discount
+                          ? parseFloat(props.quoteItem.discount).toFixed(2)
+                          : 0.0
+                      }
+                      disabled
+                    />
+                    <div className="css-w8dmq8">*Mandatory</div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      MARGIN
+                    </label>
+                    <input
+                      type="Number"
+                      className="form-control border-radius-10 text-primary"
+                      value={props.quoteItem.margin}
                       onChange={(e) =>
-                        props.setSparePart({
+                        props.setQuoteItem({
                           ...props.quoteItem,
-                          description: e.target.value,
+                          margin: e.target.value,
                         })
                       }
+                    />
+                    <div className="css-w8dmq8">*Mandatory</div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      PAYER TYPE
+                    </label>
+                    <Select
+                      isDisabled={props.quoteItem.payerType}
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          payerType: e,
+                        })
+                      }
+                      styles={customStyle}
+                      options={[
+                        { label: "Customer", value: "CUSTOMER" },
+                        { label: "Goodwill", value: "GOODWILL" },
+                        { label: "Insurer", value: "INSURER" },
+                      ]}
+                      value={props.quoteItem.payerType}
                     />
                   </div>
                 </div>
@@ -394,7 +328,7 @@ console.log(props.quoteItem);
             </div>
             <div className="m-3 text-right">
               <button
-                onClick={props.handleAddPartClose}
+                onClick={props.handleQuoteItemClose}
                 className="btn border mr-3 "
               >
                 {" "}
@@ -403,16 +337,16 @@ console.log(props.quoteItem);
               <button
                 type="button"
                 className="btn btn-light bg-primary text-white"
-                onClick={props.handleIndPartAdd}
-                disabled={
-                  !props.quoteItem.partType ||
-                  !props.quoteItem.partNumber ||
-                  !props.quoteItem.quantity ||
-                  // !props.quoteItem.unitPrice ||
-                  // !props.quoteItem.extendedPrice ||
-                  !props.quoteItem.currency
-                  // !props.quoteItem.totalPrice
-                }
+                onClick={props.handleQuoteItemUpdate}
+                // disabled={
+                //   !props.quoteItem.partType ||
+                //   !props.quoteItem.partNumber ||
+                //   !props.quoteItem.quantity ||
+                //   // !props.quoteItem.unitPrice ||
+                //   // !props.quoteItem.extendedPrice ||
+                //   !props.quoteItem.currency
+                //   // !props.quoteItem.totalPrice
+                // }
               >
                 Save
               </button>

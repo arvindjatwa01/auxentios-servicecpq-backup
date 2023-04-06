@@ -151,7 +151,7 @@ export const RouterConfig = () => {
         <Route exact path={QUOTE_SPARE_PARTS_TEMPLATE} component={QuoteSparepartsTemplate} />
         <Route exact path={SPARE_PARTS_QUOTE_REVIEWED} component={SparePartsQuoteReviewed} />
         <Route exact path={QUOTE_SPARE_PARTS_REVIEWED} component={QuoteSparepartsReviewed} />
-        <Route exact path={QUOTE_REPAIR_CREATE} component={QuoteRepairConfiguration} />
+        <Route exact path={QUOTE_REPAIR_CREATE} component={GuidedRepairQuote} />
         <Route exact path={TERMS_CONDITIONS} component={TermsConditions} />
         <Route exact path={REPAIR_QUOTE_CONFIGURATION} component={RepairQuoteConfiguration} />
         <Route exact path={SOLUTION_QUOTE} component={SolutionQuote} />

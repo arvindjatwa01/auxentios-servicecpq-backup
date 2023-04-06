@@ -72,6 +72,9 @@ import { ReadOnlyField } from "../components/ReadOnlyField";
 import { updateQuoteHeader } from "services/repairQuoteServices";
 import Validator from "utils/validator";
 import Moment from "react-moment";
+import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { TextField } from "@mui/material";
 const customStyles = {
   rows: {
     style: {
@@ -99,13 +102,11 @@ const customStyles = {
 export function SparePartsPortfolio(props) {
   const history = useHistory();
   const { state } = props.location;
-  console.log("props are : ", props);
+  //   console.log("props are : ", props);
 
   const [age, setAge] = React.useState("5");
-  const [age1, setAge1] = React.useState("5");
-  const [age2, setAge2] = React.useState("5");
+
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const open2 = Boolean(anchorEl);
 
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
@@ -151,6 +152,16 @@ export function SparePartsPortfolio(props) {
     revisedOn: new Date(),
     salesOffice: "",
   });
+  const [billingDetail, setBillingDetail] = useState({
+    priceDate: new Date(),
+    paymentTerm: "",
+    currency: "",
+    billingType: "",
+    billingFrequency: "",
+    netPrice: "",
+    margin: "",
+    discount: "",
+  });
   const [shippingDetail, setShippingDetail] = useState({
     deliveryType: "",
     deliveryPriority: "",
@@ -172,11 +183,6 @@ export function SparePartsPortfolio(props) {
     salesOffice: "",
   });
 
-  const generalValidityOptions = [
-    { label: "Allowed", value: "ALLOWED" },
-    { label: "Denied", value: "DENIED" },
-    { label: "Indeterminate", value: "INDETERMINATE" },
-  ];
   const deliveryTypeOptions = [
     { value: "standard", label: "Standard" },
     { value: "express", label: "Express" },
@@ -259,97 +265,6 @@ export function SparePartsPortfolio(props) {
   };
   const handleClose2 = () => {
     setAnchorEl(null);
-  };
-
-  // Handle Save & Next Click
-  const handleNextClick = async (e) => {
-    try {
-      if (e.target.id === "customer") {
-        //
-        if (customerData.customerID === "") {
-          throw "Customer ID must not be Empty.";
-        }
-
-        let solutionQuoteObj = {
-          quoteType: "SOLUTION_QUOTE",
-          source: customerData.source,
-          customerId: customerData.customerID,
-          model: machineData.model,
-          serialNumber: machineData.serialNo,
-          smu: machineData.smu,
-          fleetNo: machineData.fleetNo,
-          registrationNo: machineData.registrationNo,
-          chasisNo: machineData.chasisNo,
-          preparedBy: estimateDetails.preparedBy,
-          approvedBy: estimateDetails.approvedBy,
-          preparedOn: estimateDetails.preparedOn,
-          revisedBy: estimateDetails.revisedBy,
-          revisedOn: estimateDetails.revisedOn,
-          salesOffice: estimateDetails.salesOffice,
-          quoteDate: generalDetails.quoteDate,
-          description: generalDetails.description,
-          reference: generalDetails.reference,
-          validity:
-            generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
-          version: generalDetails.version,
-          netPrice: 0,
-          priceDate: "",
-          costPrice: 0,
-          priceMethod: "LIST_PRICE",
-          adjustedPrice: 0,
-          currency: "",
-          status: "PENDING_ACTIVE",
-          tenantId: 74,
-          sbQuoteItems: [],
-          rbQuoteItems: [],
-          plQuoteItems: [],
-        };
-
-        const solutionRes = await solutionQuoteCreation(solutionQuoteObj);
-        if (solutionRes.status === 200) {
-          toast(`👏 Quote Created Successfully`, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setValue("machine");
-          // setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-          //   setGeneralComponentData({
-          //     ...generalComponentData,
-          //     portfolioId: solutionRes.data.portfolioId,
-          //   });
-          // setQuoteDataId(solutionRes.data.quoteId);
-          //   setPortfolioId(solutionRes.data.portfolioId);
-          //   setNameIsNotEditAble(true);
-        }
-      } else if (e.target.id === "machine") {
-        setValue("estimationDetails");
-      } else if (e.target.id === "estimationDetails") {
-        setValue("generalDetails");
-      } else if (e.target.id === "generalDetails") {
-        setValue("price");
-      } else if (e.target.id === "price") {
-        setValue("shipping_billing");
-      } else if (e.target.id === "shipping_billing") {
-        console.log("final");
-      }
-      console.log("e.target.id", e.target.id);
-    } catch (error) {
-      toast("😐" + error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
   };
 
   const rows2 = [
@@ -687,7 +602,6 @@ export function SparePartsPortfolio(props) {
   const [open1, setOpen1] = React.useState(false);
   const [openCoverage, setOpenCoveragetable] = React.useState(false);
   const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleClose1 = () => setOpen1(false);
   const handleCoveragetable = () => setOpenCoveragetable(false);
@@ -709,6 +623,7 @@ export function SparePartsPortfolio(props) {
       value === "general" && populateGeneralData(savedQuoteDetails);
       value === "estimation" && populateEstData(savedQuoteDetails);
       value === "price" && populatePricingData(savedQuoteDetails);
+      value === "shipping" && populateShippingData(savedQuoteDetails);
     } else if (action === "CANCEL") {
       populateHeader(savedQuoteDetails);
     }
@@ -838,6 +753,16 @@ export function SparePartsPortfolio(props) {
     });
   };
   const populatePricingData = (result) => {
+    setBillingDetail({
+        priceDate: result.priceDate ? result.priceDate : new Date(),
+        billingFrequency: result.billingFrequency,
+        billingType:result.billingType,
+        currency:result.currency,
+        discount: result.discount,
+        margin: result.margin,
+        netPrice: result.netPrice,
+        paymentTerm: result.paymentTerm,
+      })
     // setPricingData({
     //   priceDate: result.priceDate ? result.priceDate : new Date(),
     //   priceMethod:
@@ -928,78 +853,6 @@ export function SparePartsPortfolio(props) {
     }
   };
 
-  const fileTypes = ["JPG", "PNG", "GIF"];
-  const columns = [
-    { field: "GroupNumber", headerName: "Group Number", flex: 1, width: 70 },
-    { field: "Type", headerName: "Type", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Part number", flex: 1, width: 130 },
-    {
-      field: "PriceExtended",
-      headerName: "Price Extended",
-      flex: 1,
-      width: 130,
-    },
-    {
-      field: "Pricecurrency",
-      headerName: "Price currency",
-      flex: 1,
-      width: 130,
-    },
-    { field: "Usage", headerName: "Usage", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Total Price", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Comments", flex: 1, width: 130 },
-    { field: "Actions", headerName: "Actions", flex: 1, width: 130 },
-    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-    //   `${params.getValue(params.id, 'firstName') || ''} ${
-    //       params.getValue(params.id, 'DocumentType') || ''
-    //     }`,
-  ];
-
-  const rows = [
-    {
-      id: 1,
-      GroupNumber: "Snow",
-      Type: "Jon",
-      Partnumber: 35,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Inconsistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    {
-      id: 2,
-      GroupNumber: "Lannister",
-      Type: "Cersei",
-      Partnumber: 42,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    {
-      id: 3,
-      GroupNumber: "Lannister",
-      Type: "Jaime",
-      Partnumber: 45,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
-    // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
-    // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
-    // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
-    // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
-    // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
-  ];
   // Search Customer with customer ID
   const handleCustSearch = async (searchCustfieldName, searchText) => {
     // console.log("clear data", searchText);
@@ -1097,34 +950,12 @@ export function SparePartsPortfolio(props) {
     });
   };
 
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
-    setMasterData([]);
-    setFilterMasterData([]);
-    setSelectedMasterData([]);
-  };
-
   const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
     setOpenSnack(snackStatus);
   };
 
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
-  };
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -1135,43 +966,7 @@ export function SparePartsPortfolio(props) {
       selectedOption: "",
     },
   ]);
-  const [count, setCount] = useState(1);
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const [selectedMasterData, setSelectedMasterData] = useState([]);
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
-    obj.inputSearch = e.target.value;
-  };
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const [filterMasterData, setFilterMasterData] = useState([]);
 
-  const [masterData, setMasterData] = useState([]);
   const updateCustomerData = () => {
     let data = {
       ...savedQuoteDetails,
@@ -1298,43 +1093,46 @@ export function SparePartsPortfolio(props) {
         );
       });
   };
+    // Update the status of the quote : Active, Revised etc.
+    const handleQuoteStatus = async (e) => {
+        // await updateBuilderStatus(bId, e.value)
+        //   .then((result) => {
+        setSelQuoteStatus(e);
+        handleSnack("success", "Status has been updated!");
+        // })
+        // .catch((err) => {
+        //   handleSnack("error", `Failed to update the status!`);
+        // });
+      };
   return (
     <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: "884px" }}>
-        <div class="container-fluid ">
+        <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0" style={{ fontSize: "20px" }}>
-              Spare Parts Quote
-            </h5>
-            <div className="d-flex">
-              {/*                           
-                            <div>
-                            <Button className="btn bg-primary text-white px-2 py-1 font-size-12"
-                                id="fade-button"
-                                aria-controls={open2 ? 'fade-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open2 ? 'true' : undefined}
-                                onClick={handleClick}
-                            >
-                                Convert to<span><ExpandMoreIcon className="ml-2"/></span>
-                            </Button>
-                            <Menu
-                                id="fade-menu"
-                                MenuListProps={{
-                                'aria-labelledby': 'fade-button',
-                                }}
-                                anchorEl={anchorEl}
-                                open={open2}
-                                onClose={handleClose2}
-                                TransitionComponent={Fade}
-                            >
-                                <MenuItem onClick={handleClose2}> Standard job</MenuItem>
-                                <MenuItem onClick={handleClose2}>Kit</MenuItem>
-                                <MenuItem data-toggle="modal" data-target="#quotecreat" onClick={handleClose2}>Quote</MenuItem>
-                            </Menu>
-                            </div> */}
+            <div className="d-flex justify-content-center align-items-center">
+              <h5 className="font-weight-600 mb-0">Repair Quote</h5>
+              <div className="d-flex justify-content-center align-items-center">
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn"
+                    onChange={(e) => handleVersion(e)}
+                    options={quoteVersionOptions}
+                    value={selectedVersion}
+                  />
+                </div>
 
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn"
+                    onChange={(e) => handleQuoteStatus(e)}
+                    // isOptionDisabled={(e) => disableStatusOptions(e)}
+                    options={STATUS_OPTIONS}
+                    value={selQuoteStatus}
+                  />
+                </div>
+              </div>
+            </div>
               <div className="d-flex justify-content-center align-items-center">
                 {/* <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>GO TO SOLUTION</a> */}
                 <a href="#" className="ml-3 font-size-14">
@@ -1358,7 +1156,7 @@ export function SparePartsPortfolio(props) {
                 {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
               </div>
             </div>
-          </div>
+
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0 bg-primary p-3 border-radius-10">
               <div className="" style={{ display: "contents" }}>
@@ -1380,14 +1178,6 @@ export function SparePartsPortfolio(props) {
                 </a>
                 {/* <a href="#" className="btn-sm text-white"><img style={{ width: '14px' }} src={folderaddIcon}></img></a> */}
               </div>
-              {/* <div className="hr" style={{backgroundColor:"#fff"}}></div> */}
-              {/* <div class="input-group icons border-radius-10 border">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
-                                        <img src={searchLogo} /></span>
-                                </div>
-                                <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
-                            </div> */}
             </h5>
             <Box
               className="mt-4 tab2"
@@ -2062,11 +1852,11 @@ export function SparePartsPortfolio(props) {
                           </label>
                           <div class="form-group w-100">
                             <input
-                              type="email"
+                              type="text"
                               class="form-control border-radius-10 text-primary"
                               id="exampleInputEmail1"
                               name="quote"
-                              value={generalDetails.quote}
+                              value={generalDetails.quoteId}
                               onChange={handleGeneralDetailsDataChange}
                               aria-describedby="emailHelp"
                               placeholder="Placeholder (Optional)"
@@ -2208,425 +1998,318 @@ export function SparePartsPortfolio(props) {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="price">
-                  <div class="row mt-4">
-                    <div class="col-md-3 col-sm-3">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          ACCOUNT NAME
-                        </p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1
-                              className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
+                <TabPanel value="price">                  <TabPanel value="price">
+                    {!viewOnlyTab.priceViewOnly ? (
+                      <div className="row mt-4">
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PAYMENT TERMS
+                            </p>
+                            <div>
+                              <Select
+                                // defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    paymentTerm: e,
+                                  })
                                 }
+                                options={paymentTermOptions}
+                                value={billingDetail.paymentTerm}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CURRENCY
+                            </p>
+                            <div>
+                              <h6 className="font-weight-600">
+                                <input
+                                  className="form-control border-radius-10 text-primary"
+                                  name="reference"
+                                  value={billingDetail.currency}
+                                  onChange={(e) =>
+                                    setBillingDetail({
+                                      ...billingDetail,
+                                      currency: e.target.value,
+                                    })
+                                  }
+                                />
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PRICE DATE
+                            </p>
+                            <div className="align-items-center date-box">
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  // minDate={generalDetails.quoteDate}
+                                  // maxDate={new Date()}
+                                  closeOnSelect
+                                  value={billingDetail.priceDate}
+                                  onChange={(e) =>
+                                    setBillingDetail({
+                                      ...billingDetail,
+                                      priceDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              BILLING TYPE
+                            </p>
+                            <div>
+                              <Select
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    billingType: e,
+                                  })
+                                }
+                                options={paymentTermOptions}
+                                value={billingDetail.billingType}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              BILLING FREQUENCY
+                            </p>
+                            <div>
+                              <Select
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    billingFrequency: e,
+                                  })
+                                }
+                                options={paymentTermOptions}
+                                value={billingDetail.billingFrequency}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                        </div>
 
-                                return selected.join(", ");
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ "aria-label": "Without label" }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              NET PRICE
+                            </p>
+                            <h6 className="font-weight-600">
+                              <input
+                                className="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={billingDetail.netPrice}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    netPrice: e.target.value,
+                                  })
+                                }
+                              />
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              MARGIN
+                            </p>
+                            <h6 className="font-weight-600">
+                              <input
+                                className="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={billingDetail.margin}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    margin: e.target.value,
+                                  })
+                                }
+                              />
+                            </h6>
+                          </div>
+                        </div>
+
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group ">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              DISCOUNT
+                            </p>
+                            <h6 className="font-weight-600">
+                              <input
+                                className="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={billingDetail.discount}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    discount: e.target.value,
+                                  })
+                                }
+                              />
+                            </h6>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          BILLING FREQUENCY
-                        </p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1
-                              className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(", ");
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ "aria-label": "Without label" }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
+                    ) : (
+                      <>
+                        <div className="row mt-4">
+                          <ReadOnlyField
+                            label="PAYMENT TERMS"
+                            value={billingDetail.paymentTerm?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="CURRENCY"
+                            value={billingDetail.currency}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="PRICING DATE"
+                            value={
+                              <Moment format="DD/MM/YYYY">
+                                {billingDetail.priceDate}
+                              </Moment>
+                            }
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="BILLING TYPE"
+                            value={billingDetail.billingType?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="BILLING FREQUENCY"
+                            value={billingDetail.billingFrequency?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="NET PRICE"
+                            value={billingDetail.netPrice}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="MARGIN"
+                            value={billingDetail.margin}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="DISCOUNT"
+                            value={billingDetail.discount}
+                            className="col-md-4 col-sm-4"
+                          />
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          PRICE SEGMENT
-                        </p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1
-                              className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(", ");
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ "aria-label": "Without label" }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
+                        <hr />
+                        <a href="#" className="btn bg-primary text-white">
+                          <AddIcon className="mr-2" />
+                          ADD PAYER
+                        </a>
+                        <div className="mt-3">
+                          <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns2}
+                            data={rows2}
+                            customStyles={customStyles}
+                            pagination
+                            // onRowClicked={(e) => handleRowClick(e)}
+                            selectableRows
+                          />
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          NET PRICE
-                        </p>
-                        <h6 class="font-weight-600">
-                          <MonetizationOnOutlinedIcon className="text-light font-size-36" />
-                        </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          MARGIN (25%)
-                        </p>
-                        <h6 class="font-weight-600">752.740.10</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-3 col-sm-3">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          FLAT RATE(ALL $)
-                        </p>
-                        <h6 class="font-weight-600">No</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          CURRENCY
-                        </p>
-                        <div>
-                          <FormControl className="customseleact">
-                            <Select1
-                              className=""
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(", ");
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ "aria-label": "Without label" }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
+                        <div className="mt-3 d-flex align-items-center justify-content-between">
+                          <h6 className="mb-0 font-size-16 font-weight-600">
+                            PRICE/ESTIMATE SUMMARY
+                          </h6>
+                          <div className="d-flex align-items-center">
+                            <a href="#" className="text-primary mr-3">
+                              <ModeEditOutlineOutlinedIcon />
+                            </a>
+                            <a href="#" className="text-primary mr-3">
+                              <ShareOutlinedIcon />
+                            </a>
+                            <a href="#" className="btn bg-primary text-white">
+                              <AddIcon className="mr-2" />
+                              Add Price Summary Type
+                            </a>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          PRICE DATE
-                        </p>
-                        <h6 class="font-weight-600">21.01.2022</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-3 col-sm-3">
-                      <div class="form-group ">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          DISCOUNT
-                        </p>
-                        <div>
-                          <FormControl className="customseleact position-relative percent-p">
-                            <span
-                              className="percent-div bg-white p-1 text-primary"
-                              style={{ borderRadius: "50%" }}
-                            >
-                              8%
-                            </span>
-                            <Select1
-                              className="btn bg-green text-white"
-                              multiple
-                              displayEmpty
-                              value={personName}
-                              onChange={handleChange1}
-                              input={<OutlinedInput />}
-                              renderValue={(selected) => {
-                                if (selected.length === 0) {
-                                  return <em>30dayes</em>;
-                                }
-
-                                return selected.join(", ");
-                              }}
-                              MenuProps={MenuProps}
-                              inputProps={{ "aria-label": "Without label" }}
-                            >
-                              <MenuItem disabled value="">
-                                <em>30dayes</em>
-                              </MenuItem>
-                              {names.map((name) => (
-                                <MenuItem
-                                  key={name}
-                                  value={name}
-                                  style={getStyles(name, personName, theme)}
-                                >
-                                  {name}
-                                </MenuItem>
-                              ))}
-                            </Select1>
-                          </FormControl>
+                        <div className="mt-3">
+                          <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns3}
+                            data={rows3}
+                            customStyles={customStyles}
+                            pagination
+                            // onRowClicked={(e) => handleRowClick(e)}
+                            selectableRows
+                          />
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                  <a href="#" className="btn bg-primary text-white">
-                    <AddIcon className="mr-2" />
-                    ADD PAYER
-                  </a>
-                  <div className="mt-3">
-                    <DataTable
-                      className=""
-                      title=""
-                      columns={masterColumns2}
-                      data={rows2}
-                      customStyles={customStyles}
-                      pagination
-                      // onRowClicked={(e) => handleRowClick(e)}
-                      selectableRows
-                    />
-                  </div>
-                  <div className="mt-3 d-flex align-items-center justify-content-between">
-                    <h6 className="mb-0 font-size-16 font-weight-600">
-                      PRICE/ESTIMATE SUMMARY
-                    </h6>
-                    <div className="d-flex align-items-center">
-                      <a href="#" className="text-primary mr-3">
-                        <ModeEditOutlineOutlinedIcon />
-                      </a>
-                      <a href="#" className="text-primary mr-3">
-                        <ShareOutlinedIcon />
-                      </a>
-                      <a href="#" className="btn bg-primary text-white">
-                        <AddIcon className="mr-2" />
-                        Add Price Summary Type
-                      </a>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <DataTable
-                      className=""
-                      title=""
-                      columns={masterColumns3}
-                      data={rows3}
-                      customStyles={customStyles}
-                      pagination
-                      // onRowClicked={(e) => handleRowClick(e)}
-                      selectableRows
-                    />
-                  </div>
-                  <div className="mt-3 d-flex align-items-center justify-content-between">
-                    <h6 className="mb-0 font-size-16 font-weight-600">
-                      OTHER MISC ITEMS $
-                    </h6>
-                    <div className="d-flex align-items-center">
-                      <a href="#" className="text-primary mr-3">
-                        <ModeEditOutlineOutlinedIcon />
-                      </a>
-                      <a href="#" className="text-primary mr-3">
-                        <ShareOutlinedIcon />
-                      </a>
-                      <a href="#" className="btn bg-primary text-white">
-                        <AddIcon className="mr-2" />
-                        Add Miscellaenous Type
-                      </a>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <DataTable
-                      className=""
-                      title=""
-                      columns={masterColumns4}
-                      data={rows4}
-                      customStyles={customStyles}
-                      pagination
-                      // onRowClicked={(e) => handleRowClick(e)}
-                      selectableRows
-                    />
-                  </div>
-                  {/* <div class="row mt-4 input-fields">
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COST PRICE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MARGIN</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">COST PRICE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PRICE METHOD</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">ADJUSTED PRICE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MARGIN</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">CURRENCY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div class="form-group">
-                                                <Link className="btn bg-primary text-white pull-right">
-                                                    Save & Next
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div> */}
-                </TabPanel>
+                        <div className="mt-3 d-flex align-items-center justify-content-between">
+                          <h6 className="mb-0 font-size-16 font-weight-600">
+                            OTHER MISC ITEMS $
+                          </h6>
+                          <div className="d-flex align-items-center">
+                            <a href="#" className="text-primary mr-3">
+                              <ModeEditOutlineOutlinedIcon />
+                            </a>
+                            <a href="#" className="text-primary mr-3">
+                              <ShareOutlinedIcon />
+                            </a>
+                            <a href="#" className="btn bg-primary text-white">
+                              <AddIcon className="mr-2" />
+                              Add Miscellaenous Type
+                            </a>
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns4}
+                            data={rows4}
+                            customStyles={customStyles}
+                            pagination
+                            // onRowClicked={(e) => handleRowClick(e)}
+                            selectableRows
+                          />
+                        </div>
+                      </>
+                    )}
+                  </TabPanel></TabPanel>
                 <TabPanel value="shipping">
                   {!viewOnlyTab.shippingViewOnly ? (
                     <>
@@ -2921,510 +2604,9 @@ export function SparePartsPortfolio(props) {
                                 Next</Link>
                         </div>
                     </div> */}
-          <Modal
-            show={open1}
-            onHide={handleClose1}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Body className="">
-              <div className="d-flex align-items-center justify-content-between mt-2">
-                <h5 className="font-weight-600 mb-0">Coverage</h5>
-                <div className="d-flex justify-content-center align-items-center">
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={shareIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={folderaddIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={uploadIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={cpqIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={deleteIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={copyIcon}></img>
-                  </a>
-                </div>
-              </div>
-              <div className="card mt-4">
-                <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
-                  <h6 className="font-weight-600 text-light mb-0 ml-3">
-                    Table Name
-                    <span>
-                      {" "}
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faPen} />
-                      </a>
-                    </span>
-                  </h6>
-                  <div>
-                    <a href="#" className="btn">
-                      +Add
-                    </a>
-                  </div>
-                </div>
-                <div className="p-4  row">
-                  <div className="col-md-6 col-sm-6">
-                    <a href="#" className="add-new-recod">
-                      <div>
-                        <FontAwesomeIcon icon={faPlus} />
-                        <p className="font-weight-600">Add new record</p>
-                      </div>
-                    </a>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="add-new-recod">
-                      <div>
-                        <FontAwesomeIcon
-                          className="cloudupload"
-                          icon={faCloudUploadAlt}
-                        />
-                        <h6 className="font-weight-500 mt-3">
-                          Drag and drop files to upload <br /> or
-                        </h6>
-                        <a
-                          onClick={() => setOpen(true)}
-                          style={{ cursor: "pointer" }}
-                          className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
-                        >
-                          <span className="mr-2">
-                            <FontAwesomeIcon icon={faPlus} />
-                          </span>
-                          Select files to upload
-                        </a>
-                        <p className="mt-3">
-                          Single upload file should not be more than <br />
-                          10MB. Only the .xls, .xlsx file types are allowed
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Modal.Body>
-          </Modal>
-          <Modal
-            show={open}
-            onHide={handleClose}
-            size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>Import Files</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="p-0">
-              <div className="p-3">
-                <div className="add-new-recod">
-                  <div>
-                    <FontAwesomeIcon
-                      className="cloudupload"
-                      icon={faCloudUploadAlt}
-                    />
-                    <h6 className="font-weight-500 mt-3">
-                      Drag and drop files to upload <br /> or
-                    </h6>
-                    <FileUploader
-                      handleChange={handleChange}
-                      name="file"
-                      types={fileTypes}
-                    />
-                  </div>
-                </div>
-                <p className="mt-3">
-                  Single upload file should not be more than 10MB. Only the
-                  .xls, .xlsx file types are allowed
-                </p>
-              </div>
-              <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Checkbox defaultChecked />}
-                            label=""
-                          />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel control={<Checkbox />} label="" />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-              </div>
-            </Modal.Body>
-            <div className="row m-0 p-3">
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn border w-100 bg-white"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </button>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={() => setOpenCoveragetable(true)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
-                  Upload
-                </button>
-              </div>
-            </div>
-          </Modal>
-          <Modal
-            show={openCoverage}
-            onHide={handleCoveragetable}
-            size="xl"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Body className="">
-              <div className="d-flex align-items-center justify-content-between mt-2">
-                <h5 className="font-weight-600 mb-0">Coverage</h5>
-                <div className="d-flex justify-content-center align-items-center">
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={shareIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={folderaddIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={uploadIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={cpqIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={deleteIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={copyIcon}></img>
-                  </a>
-                  {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
-                </div>
-              </div>
-              <div className="card px-4 pb-4 mt-5 pt-0">
-                <div className="row align-items-center">
-                  <div className="col-3">
-                    <div className="d-flex ">
-                      <h5 className=" mb-0">
-                        <span>Coverage123</span>
-                      </h5>
-                      <p className=" mb-0">
-                        <a href="#" className="ml-3 ">
-                          <img src={editIcon}></img>
-                        </a>
-                        <a href="#" className="ml-3 ">
-                          <img src={shareIcon}></img>
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-5">
-                    <div
-                      className="d-flex align-items-center"
-                      style={{
-                        background: "#F9F9F9",
-                        padding: "10px 15px",
-                        borderRadius: "10px",
-                      }}
-                    >
-                      <div
-                        className="search-icon mr-2"
-                        style={{ lineHeight: "24px" }}
-                      >
-                        <img src={searchstatusIcon}></img>
-                      </div>
-                      <div className="w-100 mx-2">
-                        <div className="machine-drop d-flex align-items-center">
-                          <div>
-                            <lable className="label-div">Machine</lable>
-                          </div>
-                          <FormControl className="" sx={{ m: 1 }}>
-                            <Select
-                              id="demo-simple-select-autowidth"
-                              value={age}
-                              onChange={handleChangedrop}
-                              autoWidth
-                            >
-                              <MenuItem value="5">
-                                <em>Engine</em>
-                              </MenuItem>
-                              <MenuItem value={10}>Twenty</MenuItem>
-                              <MenuItem value={21}>Twenty one</MenuItem>
-                              <MenuItem value={22}>
-                                Twenty one and a half
-                              </MenuItem>
-                            </Select>
-                          </FormControl>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-4">
-                    <div className="d-flex align-items-center">
-                      <div className="col-7 text-center">
-                        <a href="#" className="p-1 more-btn">
-                          + 3 more
-                          <span className="c-btn">C</span>
-                          <span className="b-btn">B</span>
-                          <span className="a-btn">A</span>
-                        </a>
-                      </div>
-                      <div className="col-5 text-center border-left py-4">
-                        <a href="#" className=" ">
-                          + Add Part
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className=""
-                  style={{
-                    height: 400,
-                    width: "100%",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <DataGrid
-                    sx={{
-                      "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: "#7380E4",
-                        color: "#fff",
-                      },
-                    }}
-                    rows={rows}
-                    columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    checkboxSelection
-                  />
-                </div>
-              </div>
-            </Modal.Body>
-          </Modal>
-        </div>
-        <div
-          class="modal fade"
-          id="quotecreat"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content bg-white border-none">
-              <div class="modal-header border-none">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Quote Create
-                </h5>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <p className="d-block px-3">
-                It is a long established fact that a reader will be distracted
-                by the readable content of a page when looking at its layout.
-              </p>
-              <hr className="my-1" />
-              <div class="modal-body">
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Quote Type
-                      </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={options}
-                        placeholder="Cyclical"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Quote ID
-                      </label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        class="form-control"
-                        id="exampleFormControlTextarea1"
-                        rows="3"
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Reference
-                      </label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                </div>
 
-                <div className="row">
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-600 mb-2">
-                        QUOTE TYPE{" "}
-                      </p>
-                      <h6 class="font-weight-600">
-                        Repair Quote with Spare Parts
-                      </h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-600 mb-2">Quote ID </p>
-                      <h6 class="font-weight-600">SB12345</h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-600 mb-2">
-                        QUOTE DESCRIPTION
-                      </p>
-                      <h6 class="font-weight-600">Holder text</h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-600 mb-2">REFERENCE</p>
-                      <h6 class="font-weight-600">Holder text</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer" style={{ display: "unset" }}>
-                <div>
-                  <a
-                    href={QUOTE_SPARE_PARTS_TEMPLATE}
-                    className="my-2 btn bg-primary d-block text-white"
-                  >
-                    Done
-                  </a>
-                </div>
-                <div>
-                  <button class="btn  btn-primary">Create</button>
-                  <button
-                    type="button"
-                    class="btn pull-right border"
-                    data-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+
         <div
           class="modal right fade"
           id="myModal12"

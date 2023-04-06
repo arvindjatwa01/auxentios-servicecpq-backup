@@ -33,17 +33,21 @@ import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { bindActionCreators } from "redux";
 import { actionCreator } from "../../../redux/index";
-import {
-  getGuidedSolution,
-} from "../../../services/index";
+import { getGuidedSolution } from "../../../services/index";
 import SearchComponent from "../components/SearchComponent";
-import { GRID_STYLE, TEMPLATE_SEARCH_Q_OPTIONS, TEMPLATE_TYPES } from "../CONSTANTS";
+import {
+  GRID_STYLE,
+  TEMPLATE_SEARCH_Q_OPTIONS,
+  TEMPLATE_TYPES,
+} from "../CONSTANTS";
 import { templateSearch } from "services/templateService";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Tooltip, Typography } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import SearchComponentTemplate from "../components/SearchComponentTemplate";
+import QuoteRepairConfiguration from "./QuoteRepairConfiguration";
+import QuoteWithEvaluation from "./QuoteWithEvaluation";
 
 export const GuidedRepairQuote = (props) => {
   const [guidedSolutions, setGuidedSolutions] = useState([]);
@@ -70,7 +74,7 @@ export const GuidedRepairQuote = (props) => {
   const [q3Dropdown, setQ3Dropdown] = useState(false);
   const [q4Dropdown, setQ4Dropdown] = useState(false);
   const [formControlLbls, setFormControlLbls] = useState([]);
-
+  const [selectedQuoteOption, setSelectedQuoteOption] = useState("");
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -320,9 +324,16 @@ export const GuidedRepairQuote = (props) => {
     var searchStr = "";
     // console.log(querySearchSelector);
     querySearchSelector.map(function (item, i) {
-      if (i === 0 && item.selectCategory.value && item.inputSearch && item.selectType) {
+      if (
+        i === 0 &&
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectType
+      ) {
         searchStr =
-          "templateType:"+item.selectType.value+" AND "+
+          "templateType:" +
+          item.selectType.value +
+          " AND " +
           item.selectCategory.value +
           ":" +
           encodeURI('"' + item.inputSearch + '"');
@@ -1266,7 +1277,7 @@ export const GuidedRepairQuote = (props) => {
 
   return (
     <>
-    <CustomizedSnackbar
+      <CustomizedSnackbar
         handleClose={handleSnackBarClose}
         open={openSnack}
         severity={severity}
@@ -1290,427 +1301,165 @@ export const GuidedRepairQuote = (props) => {
           <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
             <TabContext value={value}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <TabList
-                  className="custom-tabs-div"
-                  onChange={handleChange}
-                  aria-label="lab API tabs example"
-                >
-                  <Tab label="Use Repair Configurator" value="config" />
+                <TabList className="custom-tabs-div" onChange={handleChange}>
+                  <Tab label="Use Repair Builder" value="config" />
                   <Tab label="Use Repair Templates " value="template" />
                   <Tab label="Import From Excel" value="import" />
                 </TabList>
               </Box>
 
               <TabPanel className="p-0" value="config">
-                {questionNoCounter == 0 ? <InitQuestion /> : <></>}
-                {questionNoCounter == 1 ? (
-                  <Question1
-                    formLbls={formControlLbls}
-                    questionHeader={questionThreeHeader}
-                    defaultValue={
-                      questionsData.length > 2 ? questionsData[2] : null
-                    }
-                  />
-                ) : (
-                  <></>
-                )}
-                {questionNoCounter == 2 ? (
-                  <Question2
-                    formLbls={formControlLbls}
-                    questionHeader={questionThreeHeader}
-                    defaultValue={
-                      questionsData.length > 2 ? questionsData[2] : null
-                    }
-                  />
-                ) : (
-                  <></>
-                )}
-                {questionNoCounter == 3 ? (
-                  <Question3
-                    formLbls={formControlLbls}
-                    questionHeader={questionThreeHeader}
-                    defaultValue={
-                      questionsData.length > 2 ? questionsData[2] : null
-                    }
-                  />
-                ) : (
-                  <></>
-                )}
-                {/* {questionNoCounter == 3
+                {selectedQuoteOption === "without_eval" ? (
+                  <>
+                    {questionNoCounter == 0 ? <InitQuestion /> : <></>}
+                    {questionNoCounter == 1 ? (
+                      <Question1
+                        formLbls={formControlLbls}
+                        questionHeader={questionThreeHeader}
+                        defaultValue={
+                          questionsData.length > 2 ? questionsData[2] : null
+                        }
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    {questionNoCounter == 2 ? (
+                      <Question2
+                        formLbls={formControlLbls}
+                        questionHeader={questionThreeHeader}
+                        defaultValue={
+                          questionsData.length > 2 ? questionsData[2] : null
+                        }
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    {questionNoCounter == 3 ? (
+                      <Question3
+                        formLbls={formControlLbls}
+                        questionHeader={questionThreeHeader}
+                        defaultValue={
+                          questionsData.length > 2 ? questionsData[2] : null
+                        }
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    {/* {questionNoCounter == 3
                   ?
                   <Question4 isDropDown={q3Dropdown} formLbls={formControlLbls} questionHeader={questionThreeHeader} defaultValue={questionsData.length > 3 ? questionsData[3] : null} />
                   :
                   <></>} */}
-                {questionNoCounter == 4 ? (
-                  <Question4
-                    isDropDown={q3Dropdown}
-                    formLbls={formControlLbls}
-                    questionHeader={questionThreeHeader}
-                    defaultValue={
-                      questionsData.length > 3 ? questionsData[3] : null
-                    }
-                  />
-                ) : (
-                  <></>
-                )}
-                {questionNoCounter == 5 ? (
-                  <Question4
-                    isDropDown={q4Dropdown}
-                    formLbls={formControlLbls}
-                    questionHeader={questionThreeHeader}
-                    defaultValue={
-                      questionsData.length > 3 ? questionsData[3] : null
-                    }
-                  />
-                ) : (
-                  <></>
-                )}
-                {questionNoCounter == 6 ? (
-                  <Header
-                    isDropDown={q4Dropdown}
-                    formLbls={formControlLbls}
-                    questionHeader={questionThreeHeader}
-                    defaultValue={
-                      questionsData.length > 3 ? questionsData[3] : null
-                    }
-                  />
-                ) : (
-                  <></>
-                )}
-                {state.guidedSolution?.isResultFound &&
-                questionNoCounter == 6 ? (
-                  <div className="d-flex align-items-center justify-content-between mt-5">
-                    <div>
-                      {/* <a className="btn cursor" onClick={handlePreviousPress}><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a> */}
-                    </div>
-                    <div>
-                      <Link
-                        to="/solutionBuilder/new"
-                        className="btn bg-primary text-white cursor"
-                      >
-                        Create <ArrowForwardIcon className=" font-size-16" />
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <>
+                    {questionNoCounter == 4 ? (
+                      <Question4
+                        isDropDown={q3Dropdown}
+                        formLbls={formControlLbls}
+                        questionHeader={questionThreeHeader}
+                        defaultValue={
+                          questionsData.length > 3 ? questionsData[3] : null
+                        }
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    {questionNoCounter == 5 ? (
+                      <Question4
+                        isDropDown={q4Dropdown}
+                        formLbls={formControlLbls}
+                        questionHeader={questionThreeHeader}
+                        defaultValue={
+                          questionsData.length > 3 ? questionsData[3] : null
+                        }
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    {questionNoCounter == 6 ? (
+                      <Header
+                        isDropDown={q4Dropdown}
+                        formLbls={formControlLbls}
+                        questionHeader={questionThreeHeader}
+                        defaultValue={
+                          questionsData.length > 3 ? questionsData[3] : null
+                        }
+                      />
+                    ) : (
+                      <></>
+                    )}
                     {state.guidedSolution?.isResultFound &&
-                    questionNoCounter != 6 ? (
+                    questionNoCounter == 6 ? (
                       <div className="d-flex align-items-center justify-content-between mt-5">
                         <div>
                           {/* <a className="btn cursor" onClick={handlePreviousPress}><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a> */}
                         </div>
                         <div>
-                          {/* <Link to="/solutionBuilder/new" className="btn bg-primary text-white cursor">Finish <ArrowForwardIcon className=" font-size-16" /></Link> */}
-                          <a
+                          <Link
+                            to="/solutionBuilder/new"
                             className="btn bg-primary text-white cursor"
-                            onClick={() => setQuestionNoCounter(6)}
                           >
-                            Finish{" "}
+                            Create{" "}
                             <ArrowForwardIcon className=" font-size-16" />
-                          </a>
-                          {/* <Link to="/solutionBuilder/new" className="btn bg-primary text-white cursor">Finish <ArrowForwardIcon className=" font-size-16" /></Link> */}
-                          {/* <a className="btn bg-primary text-white cursor" onClick={() => setQuestionNoCounter(6)}></a> */}
+                          </Link>
                         </div>
                       </div>
                     ) : (
-                      <div className="d-flex align-items-center justify-content-between mt-5">
-                        <div>
-                          <a className="btn cursor" style={{ display: "none" }}>
-                            <FontAwesomeIcon icon="fa-solid fa-arrow-left" />
-                            <KeyboardBackspaceIcon className=" font-size-16" />{" "}
-                            Previous
-                          </a>
-                          {/* <a className="btn cursor" onClick={handlePreviousPress}><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a> */}
-                        </div>
-                        <div>
-                          <a
-                            className="btn bg-primary text-white cursor"
-                            onClick={() =>
-                              handleContinuePress(questionNoCounter)
-                            }
-                          >
-                            Continue{" "}
-                            <ArrowForwardIcon className=" font-size-16" />
-                          </a>
-                        </div>
-                      </div>
+                      <>
+                        {state.guidedSolution?.isResultFound &&
+                        questionNoCounter != 6 ? (
+                          <div className="d-flex align-items-center justify-content-between mt-5">
+                            <div>
+                              {/* <a className="btn cursor" onClick={handlePreviousPress}><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a> */}
+                            </div>
+                            <div>
+                              {/* <Link to="/solutionBuilder/new" className="btn bg-primary text-white cursor">Finish <ArrowForwardIcon className=" font-size-16" /></Link> */}
+                              <a
+                                className="btn bg-primary text-white cursor"
+                                onClick={() => setQuestionNoCounter(6)}
+                              >
+                                Finish{" "}
+                                <ArrowForwardIcon className=" font-size-16" />
+                              </a>
+                              {/* <Link to="/solutionBuilder/new" className="btn bg-primary text-white cursor">Finish <ArrowForwardIcon className=" font-size-16" /></Link> */}
+                              {/* <a className="btn bg-primary text-white cursor" onClick={() => setQuestionNoCounter(6)}></a> */}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="d-flex align-items-center justify-content-between mt-5">
+                            <div>
+                              <a
+                                className="btn cursor"
+                                style={{ display: "none" }}
+                              >
+                                <FontAwesomeIcon icon="fa-solid fa-arrow-left" />
+                                <KeyboardBackspaceIcon className=" font-size-16" />{" "}
+                                Previous
+                              </a>
+                              {/* <a className="btn cursor" onClick={handlePreviousPress}><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a> */}
+                            </div>
+                            <div>
+                              <a
+                                className="btn bg-primary text-white cursor"
+                                onClick={() =>
+                                  handleContinuePress(questionNoCounter)
+                                }
+                              >
+                                Continue{" "}
+                                <ArrowForwardIcon className=" font-size-16" />
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </>
+                ) : selectedQuoteOption === "with_eval" ? (
+                  <QuoteWithEvaluation />
+                ) : (
+                  <QuoteRepairConfiguration 
+                    setSelectedQuoteOption={setSelectedQuoteOption}
+                    selectedQuoteOption={selectedQuoteOption}
+                  />
                 )}
-
-                {/* <div className=" mt-3 p-3">
-                  <div className="">
-                    <p>QUESTION 01/10</p>
-                    <h4>Select a template to build and price:</h4>
-                  </div>
-                  <div className="row mt-3">
-                    <div className="col-md-6">
-                      <div className="card Selecttemplateitem mb-0 mt-3" style={{ overflow: 'unset' }}>
-                        <div className="tableheader  ">
-                          <div className="maintableheader card mb-0">
-                            <div className="d-flex align-items-center p-3">
-                              <div className="search-icon" style={{ lineHeight: '24px' }}>
-                                <img src={searchstatusIcon}></img>
-                              </div>
-                              <div className="d-flex align-items-center">
-                                <div className="customselect ml-3">
-                                  <span>
-                                    <a href="#" className="btn-sm">+</a>
-                                  </span>
-                                  <select className="selectpicker pmselect" data-show-subtext="true" data-live-search="true">
-                                    <option>Add by</option>
-                                    <option >Bill Gordon</option>
-                                    <option >Elizabeth Warren</option>
-                                    <option >Mario Flores</option>
-                                    <option>Don Young</option>
-                                  </select>
-                                </div>
-                              </div>
-                              <div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="card Selecttemplateitem mb-0 mt-3">
-                        <div className="itemheader">
-                          <h6 className="mb-0"><b className="mr-2">PORTFOLIOS</b><small>2 items</small></h6>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel control={<Checkbox />} label="Label" />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-3">
-                    <div className="col-md-6">
-                      <div className="card Selecttemplateitem mb-0 mt-3">
-                        <div className="itemheader">
-                          <h6 className="mb-0"><b className="mr-2">PORTFOLIOS</b><small>2 items</small></h6>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
-                            <FormControlLabel control={<Checkbox />} label="Label" />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="card Selecttemplateitem mb-0 mt-3">
-                        <div className="itemheader">
-                          <h6 className="mb-0"><b className="mr-2">PORTFOLIOS</b><small>2 items</small></h6>
-                        </div>
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel control={<Checkbox />} label="Label" />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-center mt-5"><b>OR</b></div>
-                  <div className="tableheader  ">
-                    <div className="maintableheader card mt-5">
-                      <div className="d-flex align-items-center p-3">
-                        <div className="search-icon" style={{ lineHeight: '24px' }}>
-                          <img src={searchstatusIcon}></img>
-                        </div>
-                        <div className="d-flex align-items-center">
-                          <div className="customselect ml-3">
-                            <span>
-                              <a href="#" className="btn-sm">+</a>
-                            </span>
-                            <select className="selectpicker pmselect" data-show-subtext="true" data-live-search="true">
-                              <option>Add by</option>
-                              <option >Bill Gordon</option>
-                              <option >Elizabeth Warren</option>
-                              <option >Mario Flores</option>
-                              <option>Don Young</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-                <div>
-                  <button type="button" className="btn btn-demo" data-toggle="modal" data-target="#myModal2">
-                    Right Sidebar Modal
-                  </button>
-                  <div className="modal right fade" id="myModal2" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel2">
-                    <div className="modal-dialog" role="document">
-                      <div className="modal-content">
-                        <div className="modal-header d-block">
-                          <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          <h4 className="modal-title" id="myModalLabel2">Inclusion/Exclusion</h4>
-                        </div>
-                        <div className="modal-body p-0">
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF SPARE PARTS</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <FormGroup>
-                              <FormControlLabel control={<Switch defaultChecked />} label="With Spare Parts" />
-                              <FormControlLabel control={<Switch />} label="I have Spare Parts" />
-                              <FormControlLabel control={<Switch />} label="I need only Spare Parts" />
-                            </FormGroup>
-                          </div>
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF LABOR</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <div className=" d-flex justify-content-between ">
-                              <div>
-                                <FormGroup>
-                                  <FormControlLabel control={<Switch defaultChecked />} label="With Labor" />
-                                  <FormControlLabel control={<Switch />} label="Without Labor" />
-                                </FormGroup>
-                              </div>
-                              <div>
-                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE MISC.</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <FormGroup>
-                              <FormControlLabel control={<Switch />} label=" Lubricants" />
-                              <FormControlLabel control={<Switch />} label="Travel Expenses" />
-                              <FormControlLabel control={<Switch />} label="Tools" />
-                              <FormControlLabel control={<Switch />} label="External Work" />
-                            </FormGroup>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Includes</span></div><div className="hr"></div></h5>
-                          </div>
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">SERVICES</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <div className=" d-flex justify-content-between align-items-center">
-                              <div>
-                                <FormGroup>
-                                  <FormControlLabel control={<Switch />} label=" Changee Oil and Filter" />
-                                </FormGroup>
-                              </div>
-                              <div>
-                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                              </div>
-                            </div>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Optianal services</span></div><div className="hr"></div></h5>
-                            <FormGroup>
-                              <FormControlLabel control={<Switch />} label="Air Filter Replacement" />
-                              <FormControlLabel control={<Switch />} label="Cabin Air Filter" />
-                              <FormControlLabel control={<Switch />} label="Rotete Tires" />
-                            </FormGroup>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Includes</span></div><div className="hr"></div></h5>
-                            <div className="mt-3">
-                              <h6><a href="#" className="btn-sm text-white mr-2" style={{ background: '#79CBA2' }}>Free</a> 50 Point Inspection</h6>
-                              <h6 className="mt-3"><a href="#" className="btn-sm text-white mr-2 " style={{ background: '#79CBA2' }}>Free</a> 50 Point Inspection</h6>
-                            </div>
-                            <div className=" d-flex justify-content-between mt-4">
-                              <div>
-                                <a href="#" className="btn text-violet bg-light-blue"><b><span className="mr-2">+</span>Add more services</b></a>
-                              </div>
-                              <div>
-                                <a href="#" className="btn text-violet"><b>I Have Parts</b></a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className=" mt-3 p-3">
-                  <div className="card border">
-                    <div className="d-flex align-items-center justify-content-between px-3">
-                      <div className="">
-                        <div className="d-flex ">
-                          <h5 className=" mb-0"><span>Price Agreement</span></h5>
-                          <p className=" mb-0">
-                            <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                            <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                          </p>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center ">
-                        <div className=" text-center border-left py-4 pl-3">
-                          <a href="#" className=" ">+ Add</a>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="table-responsive custometable">
-                      <table className="table">
-                        <thead>
-                          <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Item Type</th>
-                            <th scope="col">Item Number</th>
-                            <th scope="col">Special Price</th>
-                            <th scope="col">Discount%</th>
-                            <th scope="col">Absolute discount</th>
-                            <th scope="col">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>
-                              <div className="form-group mb-0">
-                                <Select
-                                  defaultValue={selectedOption}
-                                  onChange={setSelectedOption}
-                                  options={options}
-                                  placeholder="1000-ENGINE"
-                                />
-                              </div>
-                            </td>
-                            <td>
-                              <div className="form-group mb-0">
-                                <Select
-                                  defaultValue={selectedOption}
-                                  onChange={setSelectedOption}
-                                  options={options}
-                                  placeholder="1000-ENGINE"
-                                />
-                              </div>
-                            </td>
-                            <td><input type="text" placeholder="NA" /></td>
-                            <td><input type="text" placeholder="5%" /></td>
-                            <td><input type="text" placeholder="NA" /></td>
-                            <td>
-                              <div>
-                                <a href="#" className="mr-3"><RemoveRedEyeOutlinedIcon className="font-size-16 mr-2" />View detail</a>
-                                <a href="#" className=""><ModeEditIcon className="font-size-16 mr-2" />View detail</a>
-                              </div>
-                            </td>
-
-                          </tr>
-
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex align-items-center justify-content-between mt-5">
-                  <div>
-                    <a href="#" className="btn"><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a>
-                  </div>
-                  <div>
-                    <a href="#" className="btn bg-primary text-white">Continue <ArrowForwardIcon className=" font-size-16" /></a>
-                  </div>
-                </div> */}
               </TabPanel>
               <TabPanel className="p-0" value="template">
                 <div className="bg-primary px-3 my-3 border-radius-6">

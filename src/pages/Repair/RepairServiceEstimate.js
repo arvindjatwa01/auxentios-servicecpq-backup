@@ -792,6 +792,8 @@ function RepairServiceEstimate(props) {
           }
         );
         setPartListId(newPartlist.id);
+        setShowParts(true);
+        setSpareparts([]);
         setPartsViewOnly(true);
         handleSnack("success", `Partlist updated successfully`);
       })
@@ -920,7 +922,7 @@ function RepairServiceEstimate(props) {
     { label: "Days", value: "DAYS" },
   ];
   // Sets the value for the tab (labor, consumable, misc, extWork)
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(activeElement.builderType === WITH_PARTS ? "parts" : "labor");
 
   //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
@@ -932,8 +934,10 @@ function RepairServiceEstimate(props) {
     if (activeElement.oId) {
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
-          if (activeElement.builderType === WITH_PARTS) setValue("parts");
-          else setValue("labor");
+          // console.log("ABCD", activeElement.builderType);
+          // if (activeElement.builderType === WITH_PARTS ) setValue("parts");
+          // else setValue("labor");
+          // console.log(activeElement.builderType === WITH_PARTS);
           setServiceEstimateData({
             ...serviceEstimateData,
             reference: result.reference,
@@ -973,7 +977,7 @@ function RepairServiceEstimate(props) {
               populateConsumableData(result);
             if (fetchType === "all" || fetchType === "extwork")
               populateExtWorkData(result);
-            if (fetchType === "all" || fetchType === "misc")
+            if (fetchType === "all" || fetchType === "othrMisc")
               populateMiscData(result);
           } else {
             setPartsData({
@@ -1134,6 +1138,8 @@ function RepairServiceEstimate(props) {
       .then((resultLabourItems) => {
         if (resultLabourItems && resultLabourItems.result?.length > 0) {
           setLaborItems(resultLabourItems.result);
+        } else {
+          setLaborItems([]);
         }
       })
       .catch((e) => {
@@ -1246,7 +1252,6 @@ function RepairServiceEstimate(props) {
             totalPrice: resultMisc.totalPrice ? resultMisc.totalPrice : 0,
           });
           setMiscViewOnly(true);
-          setValue("misc");
         }
       })
       .catch((e) => {
@@ -1501,7 +1506,7 @@ function RepairServiceEstimate(props) {
     setPartsLoading(false);
   };
 
-  // Open Labor item to view or edit
+  // Open partlist view or edit
   const loadPartlist = (row) => {
     // console.log(row);
     setPartsData({
@@ -1603,7 +1608,7 @@ function RepairServiceEstimate(props) {
           ),
           type: miscTypeList.find((element) => element.value === result.type),
         });
-        populateServiceEstimation("misc");
+        populateServiceEstimation("othrMisc");
         handleSnack("success", "Misc details updated!");
         setMiscViewOnly(true);
       })
@@ -1637,7 +1642,6 @@ function RepairServiceEstimate(props) {
         // populateLaborData(serviceEstimateData);
         populateServiceEstimation("labor");
         handleSnack("success", "Added labor item successfully");
-        setValue("labor");
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while adding labor item!");
@@ -1670,7 +1674,6 @@ function RepairServiceEstimate(props) {
           // populateConsumableData(serviceEstimateData);
           populateServiceEstimation("consumables");
           handleSnack("success", "Added consumable item successfully");
-          setValue("consumables");
         })
         .catch((err) => {
           handleSnack("error", "Error occurred while adding consumable item!");
@@ -1707,7 +1710,6 @@ function RepairServiceEstimate(props) {
         // populateExtWorkData(serviceEstimateData);
         populateServiceEstimation("extwork");
         handleSnack("success", "Added ext work item successfully");
-        setValue("extWork");
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while adding external work item!");
@@ -2632,8 +2634,8 @@ function RepairServiceEstimate(props) {
           {serviceEstimateData.id && (
             <div className="card p-4 mt-5">
               <div className="row align-items-center">
-                <div className="col-9 mx-2">
-                  <div className="d-flex align-items-center w-100">
+                <div className="col-8">
+                  <div className="d-flex align-items-center w-100 ml-2">
                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                       <h5 className="mr-2 mb-0">
                         <span className="mr-3">Header</span>
@@ -2651,23 +2653,25 @@ function RepairServiceEstimate(props) {
                   </div>
                 </div>
                 {value === "parts" && (
-                  <div class=" d-flex align-items-end">
-                    {partLists && partLists.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn btn-light bg-primary text-white mr-2"
-                        onClick={() => setShowParts(false)}
-                      >
-                        Back To Partlists
-                      </button>
-                    )}
+                  <div className="col-4">
+                    <div className="text-right">
+                      {partLists && partLists.length > 1 && showParts && (
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white mr-2"
+                          onClick={() => setShowParts(false)}
+                        >
+                          Back To Partlists
+                        </button>
+                      )}
 
-                    <button
-                      className="btn btn-light bg-primary text-white"
-                      onClick={() => loadNewPartList()}
-                    >
-                      + New Partlist
-                    </button>
+                      <button
+                        className="btn btn-light bg-primary text-white"
+                        onClick={() => loadNewPartList()}
+                      >
+                        + New Partlist
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

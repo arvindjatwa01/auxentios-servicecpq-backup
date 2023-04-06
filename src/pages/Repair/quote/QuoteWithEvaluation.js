@@ -187,212 +187,186 @@ const QuoteWithEvaluation = () => {
         severity={severity}
         message={snackMessage}
       />
-      <div className="content-body" style={{ minHeight: "884px" }}>
-        <div class="container-fluid ">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Quote With Evaluation</h5>
+      {/* <div className="content-body" style={{ minHeight: "884px" }}>
+        <div class="container-fluid "> */}
+      <div className="card p-4 mt-3">
+        <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
+          <div className="d-flex align-items-center justify-content-end mt-2">
+            <Select
+              className="customselect1"
+              id="custom"
+              placeholder=" + Create New"
+              styles={customStyles}
+              options={[
+                { label: "WITH SPAREPARTS", value: "with" },
+                { label: "WITHOUT SPAREPARTS", value: "without" },
+              ]}
+              onChange={createNewBuilder}
+            />
           </div>
-          <div className="card p-4 mt-3">
-            <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList
-                    className="custom-tabs-div"
-                    onChange={handleChange}
-                    aria-label="lab API tabs example"
-                  >
-                    <Tab label="Use Repair Builder " value="1" />
-                  </TabList>
-                </Box>
-                <TabPanel value="1">
-                  <div className="d-flex align-items-center justify-content-end mt-2">
-                    <Select
-                      className="customselect1"
-                      id="custom"
-                      placeholder=" + Create New"
-                      styles={customStyles}
-                      options={[
-                        { label: "WITH SPAREPARTS", value: "with" },
-                        { label: "WITHOUT SPAREPARTS", value: "without" },
-                      ]}
-                      onChange={createNewBuilder}
-                    />
-                  </div>
 
-                  <div className="mt-3">
-                    <div className="mt-1">
-                      <div className="recent-div p-3">
-                        <h6 className="font-weight-600 text-grey mb-0">
-                          RECENT BUILDERS (WITHOUT SPARE PARTS)
-                        </h6>
-                        <div className="row">
-                          {recentBuildersLoading ? (
-                            <LoadingProgress />
-                          ) : recentWithoutSpareBuilders.length > 0 ? (
-                            recentWithoutSpareBuilders.map((indBuilder) => (
-                              <div className="col-md-4">
-                                <div className="recent-items mt-3">
-                                  <div className="d-flex justify-content-between align-items-center ">
-                                    <p className="mb-0 overflow-hidden white-space">
-                                      <FontAwesomeIcon
-                                        className=" font-size-14"
-                                        icon={faFileAlt}
-                                      />
-                                      <span className="font-weight-500 ml-2">
-                                        {indBuilder.builderId}
-                                      </span>
-                                      <span
-                                        className="ml-2"
-                                        style={{ fontSize: 10 }}
-                                      >
-                                        V{" "}
-                                        {parseFloat(
-                                          indBuilder.versionNumber
-                                        ).toFixed(1)}
-                                      </span>
-                                    </p>
-                                    <div className="d-flex align-items-center">
-                                      <a
-                                        href={undefined}
-                                        className="btn-sm"
-                                        style={{ cursor: "pointer" }}
-                                      >
-                                        <i
-                                          className="fa fa-pencil"
-                                          aria-hidden="true"
-                                          onClick={() =>
-                                            makeBuilderEditable(indBuilder)
-                                          }
-                                        ></i>
-                                      </a>
-                                      <a href="#" className="ml-3 font-size-14">
-                                        <FontAwesomeIcon icon={faShareAlt} />
-                                      </a>
-                                      <a href="#" className="ml-3 font-size-14">
-                                        <FontAwesomeIcon icon={faFolderPlus} />
-                                      </a>
-                                      <a href="#" className="ml-3 font-size-14">
-                                        <FontAwesomeIcon icon={faUpload} />
-                                      </a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center mt-2">
-                                  <p className="font-size-12 mb-0">
-                                    <Moment format="HH:MM a">
-                                      {indBuilder.updatedAt}
-                                    </Moment>
-                                    ,{" "}
-                                    <Moment format="DD MMM YY">
-                                      {indBuilder.updatedAt}
-                                    </Moment>
-                                  </p>
-                                  <p className="font-size-12 mb-0">
-                                    Without Spare Parts
-                                  </p>
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="ml-3 mt-4">
-                              <Typography>No Builders Found</Typography>
+          <div className="mt-3">
+            <div className="mt-1">
+              <div className="recent-div p-3">
+                <h6 className="font-weight-600 text-grey mb-0">
+                  RECENT BUILDERS (WITHOUT SPARE PARTS)
+                </h6>
+                <div className="row">
+                  {recentBuildersLoading ? (
+                    <LoadingProgress />
+                  ) : recentWithoutSpareBuilders.length > 0 ? (
+                    recentWithoutSpareBuilders.map((indBuilder) => (
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 overflow-hidden white-space">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                {indBuilder.builderId}
+                              </span>
+                              <span className="ml-2" style={{ fontSize: 10 }}>
+                                V{" "}
+                                {parseFloat(indBuilder.versionNumber).toFixed(
+                                  1
+                                )}
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              <a
+                                href={undefined}
+                                className="btn-sm"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i
+                                  className="fa fa-pencil"
+                                  aria-hidden="true"
+                                  onClick={() =>
+                                    makeBuilderEditable(indBuilder)
+                                  }
+                                ></i>
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
                             </div>
-                          )}
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">
+                            <Moment format="HH:MM a">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                            ,{" "}
+                            <Moment format="DD MMM YY">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                          </p>
+                          <p className="font-size-12 mb-0">
+                            Without Spare Parts
+                          </p>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="ml-3 mt-4">
+                      <Typography>No Builders Found</Typography>
                     </div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="mt-1">
-                      <div className="recent-div p-3">
-                        <h6 className="font-weight-600 text-grey mb-0">
-                          RECENT BUILDERS (WITH SPARE PARTS)
-                        </h6>
-                        <div className="row">
-                          {recentBuildersLoading ? (
-                            <LoadingProgress />
-                          ) : recentWithSpareBuilders.length > 0 ? (
-                            recentWithSpareBuilders.map((indBuilder) => (
-                              <div className="col-md-4">
-                                <div className="recent-items mt-3">
-                                  <div className="d-flex justify-content-between align-items-center ">
-                                    <p className="mb-0 overflow-hidden white-space">
-                                      <FontAwesomeIcon
-                                        className=" font-size-14"
-                                        icon={faFileAlt}
-                                      />
-                                      <span className="font-weight-500 ml-2">
-                                        {indBuilder.builderId}
-                                      </span>
-                                      <span
-                                        className="ml-2"
-                                        style={{ fontSize: 10 }}
-                                      >
-                                        V{" "}
-                                        {parseFloat(
-                                          indBuilder.versionNumber
-                                        ).toFixed(1)}
-                                      </span>
-                                    </p>
-                                    <div className="d-flex align-items-center">
-                                      <a
-                                        href={undefined}
-                                        className="btn-sm"
-                                        style={{ cursor: "pointer" }}
-                                      >
-                                        <i
-                                          className="fa fa-pencil"
-                                          aria-hidden="true"
-                                          onClick={() =>
-                                            makeSparePartsBuildEditable(
-                                              indBuilder
-                                            )
-                                          }
-                                        ></i>
-                                      </a>
-                                      <a href="#" className="ml-3 font-size-14">
-                                        <FontAwesomeIcon icon={faShareAlt} />
-                                      </a>
-                                      <a href="#" className="ml-3 font-size-14">
-                                        <FontAwesomeIcon icon={faFolderPlus} />
-                                      </a>
-                                      <a href="#" className="ml-3 font-size-14">
-                                        <FontAwesomeIcon icon={faUpload} />
-                                      </a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center mt-2">
-                                  <p className="font-size-12 mb-0">
-                                    <Moment format="HH:MM a">
-                                      {indBuilder.updatedAt}
-                                    </Moment>
-                                    ,{" "}
-                                    <Moment format="DD MMM YY">
-                                      {indBuilder.updatedAt}
-                                    </Moment>
-                                  </p>
-                                  <p className="font-size-12 mb-0">
-                                    With Spare Parts
-                                  </p>
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="ml-3 mt-4">
-                              <Typography>No Builders Found</Typography>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-              </TabContext>
-            </Box>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+          <div className="mt-3">
+            <div className="mt-1">
+              <div className="recent-div p-3">
+                <h6 className="font-weight-600 text-grey mb-0">
+                  RECENT BUILDERS (WITH SPARE PARTS)
+                </h6>
+                <div className="row">
+                  {recentBuildersLoading ? (
+                    <LoadingProgress />
+                  ) : recentWithSpareBuilders.length > 0 ? (
+                    recentWithSpareBuilders.map((indBuilder) => (
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 overflow-hidden white-space">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                {indBuilder.builderId}
+                              </span>
+                              <span className="ml-2" style={{ fontSize: 10 }}>
+                                V{" "}
+                                {parseFloat(indBuilder.versionNumber).toFixed(
+                                  1
+                                )}
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              <a
+                                href={undefined}
+                                className="btn-sm"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i
+                                  className="fa fa-pencil"
+                                  aria-hidden="true"
+                                  onClick={() =>
+                                    makeSparePartsBuildEditable(indBuilder)
+                                  }
+                                ></i>
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">
+                            <Moment format="HH:MM a">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                            ,{" "}
+                            <Moment format="DD MMM YY">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                          </p>
+                          <p className="font-size-12 mb-0">With Spare Parts</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="ml-3 mt-4">
+                      <Typography>No Builders Found</Typography>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Box>
       </div>
+      {/* </div>
+      </div> */}
     </>
   );
 };

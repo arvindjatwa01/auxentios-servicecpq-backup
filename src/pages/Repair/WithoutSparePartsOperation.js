@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import {
   AddOperation,
   fetchOperations,
+  FetchServiceHeader,
   RemoveOperation,
 } from "services/repairBuilderServices";
 import {
@@ -19,7 +20,7 @@ import DeleteIcon from "../../assets/icons/svg/delete.svg";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { ReadOnlyField } from "./components/ReadOnlyField";
-import { Tooltip } from "@mui/material";
+import { Radio, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 
 import { RenderConfirmDialog } from "./components/ConfirmationBox";
@@ -54,6 +55,7 @@ function WithoutSparePartsOperation(props) {
     modifier: "",
     id: "",
     description: "",
+    serviceEstimation: "",
   };
   const [operationData, setOperationData] = useState(newOperation);
   useEffect(() => {
@@ -65,7 +67,7 @@ function WithoutSparePartsOperation(props) {
     setOperationLoading(true);
     if (activeElement.sId) {
       await fetchOperations(activeElement.sId)
-        .then((result) => {
+        .then(async (result) => {
           let operationsFetched = result?.operations;
           if (operationsFetched?.length > 0) {
             setOperations(operationsFetched);
@@ -81,9 +83,17 @@ function WithoutSparePartsOperation(props) {
                 return obj.id === opToLoad.id;
               })
             );
-
+            let serviceEstimate = "";
+            await FetchServiceHeader(opToLoad.id)
+              .then((resServiceEstimation) => {
+                serviceEstimate = resServiceEstimation;
+              })
+              .catch((err) => {
+                console.log(err);
+              });
             setOperationData({
               ...opToLoad,
+              serviceEstimation: serviceEstimate,
               header:
                 "Operation " +
                 formatOperationNum(opToLoad.operationNumber) +
@@ -92,10 +102,11 @@ function WithoutSparePartsOperation(props) {
                 " " +
                 opToLoad.componentCodeDescription, //Rename after modifications in UI
             });
+            setOperationLoading(false);
           } else {
             loadNewOperationUI();
+            setOperationLoading(false);
           }
-          setOperationLoading(false);
         })
         .catch((err) => {
           loadNewOperationUI();
@@ -571,6 +582,128 @@ function WithoutSparePartsOperation(props) {
                 className="col-md-4 col-sm-4"
               />
             </div>
+            {operationData.serviceEstimation && (
+              <>
+                <h5 className="d-flex align-items-center  mx-2">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Summary</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="card border" style={{ overflow: "hidden" }}>
+                      <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                        <div className="" style={{ display: "contents" }}>
+                          <span className="mr-3 white-space font-size-14 text-white">
+                            {operationData.serviceEstimation.serviceEstimateId}-
+                            Service Estimation
+                          </span>
+                        </div>
+                        <div className="d-flex"></div>
+                      </div>
+
+                      <div className="bg-white px-3 pt-4 pb-2">
+                        <div className="d-flex align-items-center justify-content-between mb-0">
+                          <div className="">
+                            <span className="mr-2 font-size-12 font-weight-500 mr-2">
+                              {operationData.serviceEstimation.jobOperation}
+                            </span>
+                            <a
+                              href="#"
+                              className="btn-sm text-white bg-primary"
+                            >
+                              Version 1
+                            </a>
+                          </div>
+                          <div style={{ textAlign: "right" }}>
+                            {/* <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a> */}
+                            <Radio
+                              checked={true}
+                              // onChange={() =>
+                              //   handleChange(
+                              //     operationData.serviceEstimation.id
+                              //   )
+                              // }
+                              value="a"
+                              name="radio-buttons"
+                              inputProps={{ "aria-label": "A" }}
+                            />
+                          </div>
+                        </div>
+                        {/* <hr></hr> */}
+                        <div className="row my-4">
+                          <div className="col-6">
+                            <div className="d-flex">
+                              <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                Estimated Hours
+                              </p>
+                              <h6 className=" font-size-14 font-weight-600 text-primary">
+                                {operationData.serviceEstimation.totalParts}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-6">
+                            <div class="d-flex d-flex justify-content-end">
+                              <p class="mr-2 font-size-14 font-weight-500 mr-2">
+                                Total Cost
+                              </p>
+                              <h6 className=" font-size-14 font-weight-600 text-primary">
+                                $ {operationData.serviceEstimation.netPrice}
+                              </h6>
+                            </div>
+                          </div>
+                          </div><div className="row mb-4">
+                          <div className="col-4">
+                            <div class="d-flex">
+                              <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                Labor
+                              </p>
+                              <h6 className="font-size-14 font-weight-600 text-primary">
+                                $ {operationData.serviceEstimation.labourPrice}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-4">
+                            <div class="d-flex">
+                              <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                Consumables
+                              </p>
+                              <h6 className="font-size-14 font-weight-600 text-primary">
+                                ${" "}
+                                {
+                                  operationData.serviceEstimation
+                                    .consumablePrice
+                                }
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-4">
+                            <div class="d-flex justify-content-end">
+                              <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                Misc
+                              </p>
+                              <h6 className="font-size-14 font-weight-600 text-primary ">
+                                ${" "}
+                                {
+                                  operationData.serviceEstimation
+                                    .extraMiscellaneous
+                                }
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
                 className="btn bg-primary text-white"
@@ -591,10 +724,14 @@ function WithoutSparePartsOperation(props) {
                 }
                 className="btn bg-primary text-white ml-2"
               >
-                <span className="mr-2">
-                  <FontAwesomeIcon icon={faPlus} />
-                </span>
-                Add Service Estimate
+                {operationData.serviceEstimation ? (
+                  <span className="mr-1">View</span>
+                ) : (
+                  <span className="mr-2">
+                    <FontAwesomeIcon icon={faPlus} />
+                  </span>
+                )}
+                Service Estimate
               </button>
             </div>
           </React.Fragment>

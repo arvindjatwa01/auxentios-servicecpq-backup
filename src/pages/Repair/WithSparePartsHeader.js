@@ -1036,6 +1036,7 @@ function WithSparePartsHeader(props) {
                     <Divider />
                     <MenuItem
                       data-toggle="modal"
+                      className="custommenu ml-2 mr-4"
                       onClick={() => setOpenQuotePopup(true)}
                     >
                       Quote

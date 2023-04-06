@@ -62,11 +62,13 @@ import {
 } from "services/repairQuoteServices";
 import { ReadOnlyField } from "../components/ReadOnlyField";
 import Moment from "react-moment";
-import { Tooltip } from "@mui/material";
+import { TextareaAutosize, TextField, Tooltip } from "@mui/material";
 import LoadingProgress from "../components/Loader";
 import Validator from "utils/validator";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import RepairQuoteItemModal from "../components/RepairQuoteItem";
+import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 const customStyles = {
   rows: {
     style: {
@@ -123,7 +125,7 @@ const RepairQuoteDetails = (props) => {
   const paymentTermOptions = [
     { value: 0, label: "Immediate" },
     { value: 90, label: "90 Days" },
-    { value: 60, label: "60 days" },
+    { value: 60, label: "60 Days" },
     { value: 30, label: "30 Days" },
   ];
   const salesOfficeOptions = [
@@ -343,6 +345,7 @@ const RepairQuoteDetails = (props) => {
       ),
       selector: (row) => row.action,
       wrap: true,
+      maxWidth: "10px",
       sortable: true,
       format: (row) => row.action,
       cell: (row) => (
@@ -350,7 +353,7 @@ const RepairQuoteDetails = (props) => {
           <Tooltip
             title="Edit"
             className="mr-2 cursor"
-            // onClick={() => openQuoteItemModal(row)}
+            onClick={() => openQuoteItemModal(row)}
           >
             <img className="m-1" src={penIcon} alt="Edit" />
           </Tooltip>
@@ -443,7 +446,7 @@ const RepairQuoteDetails = (props) => {
       description: result.description ? result.description : "",
       reference: result.reference ? result.reference : "",
       quoteDate: result.quoteDate ? result.quoteDate : new Date(),
-      quoteNo: result.quoteId ? result.quoteId : "",
+      quoteId: result.quoteId ? result.quoteId : "",
       validity:
         result.validityDays && result.validityDays !== "EMPTY"
           ? validityOptions.find(
@@ -468,6 +471,16 @@ const RepairQuoteDetails = (props) => {
     });
   };
   const populatePricingData = (result) => {
+    setBillingDetail({
+      priceDate: result.priceDate ? result.priceDate : new Date(),
+      billingFrequency: result.billingFrequency,
+      billingType:result.billingType,
+      currency:result.currency,
+      discount: result.discount,
+      margin: result.margin,
+      netPrice: result.netPrice,
+      paymentTerm: result.paymentTerm,
+    })
     // setPricingData({
     //   priceDate: result.priceDate ? result.priceDate : new Date(),
     //   priceMethod:
@@ -664,7 +677,7 @@ const RepairQuoteDetails = (props) => {
 
   const [generalDetails, setGeneralDetails] = useState({
     quoteDate: new Date(),
-    quoteNo: "",
+    quoteId: "",
     description: "",
     reference: "",
     validity: "",
@@ -1102,6 +1115,10 @@ const RepairQuoteDetails = (props) => {
     //   handleSnack("error", `Failed to update the status!`);
     // });
   };
+
+  const handleQuoteItemUpdate = () => {
+    handleSnack("success", "update quote item");
+  };
   return (
     <>
       <CustomizedSnackbar
@@ -1316,7 +1333,6 @@ const RepairQuoteDetails = (props) => {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="contatEmail"
-                                aria-describedby="emailHelp"
                               />
                               <div className="css-w8dmq8">*Mandatory</div>
                             </div>
@@ -1632,47 +1648,43 @@ const RepairQuoteDetails = (props) => {
                     {!viewOnlyTab.estViewOnly ? (
                       <>
                         <div className="row mt-4 input-fields">
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
-                              PREPARED BY{" "}
+                              PREPARED BY
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <input
-                                type="email"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
                                 name="preparedBy"
                                 value={estimateDetails.preparedBy}
                                 onChange={handleEstimateDetailsDataChange}
-                                aria-describedby="emailHelp"
                                 placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               APPROVED BY
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <input
                                 type="email"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
+                                className="form-control border-radius-10 text-primary"
                                 name="approvedBy"
                                 value={estimateDetails.approvedBy}
                                 onChange={handleEstimateDetailsDataChange}
-                                aria-describedby="emailHelp"
                                 placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
@@ -1680,7 +1692,7 @@ const RepairQuoteDetails = (props) => {
                               PREPARED ON
                             </label>
                             <div className="d-flex align-items-center date-box w-100">
-                              <div class="form-group w-100">
+                              <div className="form-group w-100">
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                   <DatePicker
                                     variant="inline"
@@ -1700,27 +1712,25 @@ const RepairQuoteDetails = (props) => {
                               </div>
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               REVISED BY
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <input
                                 type="email"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
+                                className="form-control border-radius-10 text-primary"
                                 name="revisedBy"
                                 value={estimateDetails.revisedBy}
                                 onChange={handleEstimateDetailsDataChange}
-                                aria-describedby="emailHelp"
                                 placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
@@ -1728,7 +1738,7 @@ const RepairQuoteDetails = (props) => {
                               REVISED ON
                             </label>
                             <div className="d-flex align-items-center date-box w-100">
-                              <div class="form-group w-100">
+                              <div className="form-group w-100">
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                   <DatePicker
                                     variant="inline"
@@ -1748,14 +1758,14 @@ const RepairQuoteDetails = (props) => {
                               </div>
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               SALES OFFICE / BRANCH
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <Select
                                 onChange={(e) =>
                                   setEstimateDetails({
@@ -1843,94 +1853,100 @@ const RepairQuoteDetails = (props) => {
                     {!viewOnlyTab.generalViewOnly ? (
                       <>
                         <div className="row mt-4 input-fields">
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               QUOTE DATE
                             </label>
-                            <div className="d-flex align-items-center date-box w-100">
-                              <div class="form-group w-100">
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                  <DatePicker
-                                    variant="inline"
-                                    format="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    label=""
-                                    name="quoteDate"
-                                    value={generalDetails.quoteDate}
-                                    onChange={(e) =>
-                                      setGeneralDetails({
-                                        ...generalDetails,
-                                        quoteDate: e,
-                                      })
-                                    }
-                                  />
-                                </MuiPickersUtilsProvider>
-                              </div>
+                            <div className="align-items-center date-box">
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  // minDate={generalDetails.quoteDate}
+                                  // maxDate={new Date()}
+                                  closeOnSelect
+                                  value={generalDetails.quoteDate}
+                                  onChange={(e) =>
+                                    setGeneralDetails({
+                                      ...generalDetails,
+                                      quoteDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
                             </div>
-                            {/* <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                            {/* <div className="form-group w-100">
+                                                <input type="email" className="form-control border-radius-10 text-primary" id="exampleInputEmail1"  placeholder="Placeholder (Optional)" />
                                             </div> */}
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               QUOTE #
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <input
-                                type="email"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
                                 name="quote"
-                                value={generalDetails.quote}
+                                value={generalDetails.quoteId}
                                 onChange={handleGeneralDetailsDataChange}
-                                aria-describedby="emailHelp"
                                 placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               QUOTE DESCRIPTION
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <input
-                                type="email"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
                                 name="description"
                                 value={generalDetails.description}
                                 onChange={handleGeneralDetailsDataChange}
-                                aria-describedby="emailHelp"
                                 placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               REFERENCE
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <input
-                                class="form-control border-radius-10 text-primary"
+                                className="form-control border-radius-10 text-primary"
                                 name="reference"
                                 value={generalDetails.reference}
                                 onChange={handleGeneralDetailsDataChange}
                               />
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 VALIDITY
@@ -1950,7 +1966,7 @@ const RepairQuoteDetails = (props) => {
                               <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 VERSION
@@ -1984,7 +2000,7 @@ const RepairQuoteDetails = (props) => {
                             disabled={
                               !generalDetails.quoteDate ||
                               !generalDetails.description ||
-                              !generalDetails.quoteNo ||
+                              !generalDetails.quoteId ||
                               !generalDetails.reference ||
                               !generalDetails.validity
                             }
@@ -2006,7 +2022,7 @@ const RepairQuoteDetails = (props) => {
                         />
                         <ReadOnlyField
                           label="Quote #"
-                          value={generalDetails.quoteNo}
+                          value={generalDetails.quoteId}
                           className="col-md-4 col-sm-4"
                         />
                         <ReadOnlyField
@@ -2033,405 +2049,329 @@ const RepairQuoteDetails = (props) => {
                     )}
                   </TabPanel>
                   <TabPanel value="price">
-                    <div class="row mt-4">
-                      <div class="col-md-3 col-sm-3">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            PAYMENT TERMS
-                          </p>
-                          <div>
-                            <Select
-                              // defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setBillingDetail({
-                                  ...billingDetail,
-                                  paymentTerm: e,
-                                })
-                              }
-                              options={paymentTermOptions}
-                              value={billingDetail.paymentTerm}
-                              styles={FONT_STYLE_SELECT}
-                            />
+                    {!viewOnlyTab.priceViewOnly ? (
+                      <div className="row mt-4">
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PAYMENT TERMS
+                            </p>
+                            <div>
+                              <Select
+                                // defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    paymentTerm: e,
+                                  })
+                                }
+                                options={paymentTermOptions}
+                                value={billingDetail.paymentTerm}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="col-md-2 col-sm-2">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            BILLING FREQUENCY
-                          </p>
-                          <div>
-                            <Select
-                              onChange={(e) =>
-                                setBillingDetail({
-                                  ...billingDetail,
-                                  billingFrequency: e,
-                                })
-                              }
-                              options={paymentTermOptions}
-                              value={billingDetail.billingFrequency}
-                              styles={FONT_STYLE_SELECT}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-2 col-sm-2">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            PRICE SEGMENT
-                          </p>
-                          <div>
-                            <FormControl className="customseleact">
-                              <Select1
-                                className=""
-                                multiple
-                                displayEmpty
-                                value={personName}
-                                onChange={handleChange1}
-                                input={<OutlinedInput />}
-                                renderValue={(selected) => {
-                                  if (selected.length === 0) {
-                                    return <em>30dayes</em>;
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CURRENCY
+                            </p>
+                            <div>
+                              <h6 className="font-weight-600">
+                                <input
+                                  className="form-control border-radius-10 text-primary"
+                                  name="reference"
+                                  value={billingDetail.currency}
+                                  onChange={(e) =>
+                                    setBillingDetail({
+                                      ...billingDetail,
+                                      currency: e.target.value,
+                                    })
                                   }
-
-                                  return selected.join(", ");
-                                }}
-                                MenuProps={MenuProps}
-                                inputProps={{ "aria-label": "Without label" }}
+                                />
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PRICE DATE
+                            </p>
+                            <div className="align-items-center date-box">
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
                               >
-                                <MenuItem disabled value="">
-                                  <em>30dayes</em>
-                                </MenuItem>
-                                {names.map((name) => (
-                                  <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, personName, theme)}
-                                  >
-                                    {name}
-                                  </MenuItem>
-                                ))}
-                              </Select1>
-                            </FormControl>
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  // minDate={generalDetails.quoteDate}
+                                  // maxDate={new Date()}
+                                  closeOnSelect
+                                  value={billingDetail.priceDate}
+                                  onChange={(e) =>
+                                    setBillingDetail({
+                                      ...billingDetail,
+                                      priceDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              BILLING TYPE
+                            </p>
+                            <div>
+                              <Select
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    billingType: e,
+                                  })
+                                }
+                                options={paymentTermOptions}
+                                value={billingDetail.billingType}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              BILLING FREQUENCY
+                            </p>
+                            <div>
+                              <Select
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    billingFrequency: e,
+                                  })
+                                }
+                                options={paymentTermOptions}
+                                value={billingDetail.billingFrequency}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              NET PRICE
+                            </p>
+                            <h6 className="font-weight-600">
+                              <input
+                                className="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={billingDetail.netPrice}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    netPrice: e.target.value,
+                                  })
+                                }
+                              />
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              MARGIN
+                            </p>
+                            <h6 className="font-weight-600">
+                              <input
+                                className="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={billingDetail.margin}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    margin: e.target.value,
+                                  })
+                                }
+                              />
+                            </h6>
+                          </div>
+                        </div>
+
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group ">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              DISCOUNT
+                            </p>
+                            <h6 className="font-weight-600">
+                              <input
+                                className="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={billingDetail.discount}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    discount: e.target.value,
+                                  })
+                                }
+                              />
+                            </h6>
                           </div>
                         </div>
                       </div>
-                      <div class="col-md-2 col-sm-2">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            NET PRICE
-                          </p>
-                          <h6 class="font-weight-600">
-                            <input
-                              class="form-control border-radius-10 text-primary"
-                              name="reference"
-                              value={billingDetail.netPrice}
-                              onChange={(e) =>
-                                setBillingDetail({
-                                  ...billingDetail,
-                                  netPrice: e.target.value,
-                                })
-                              }
-                            />
+                    ) : (
+                      <>
+                        <div className="row mt-4">
+                          <ReadOnlyField
+                            label="PAYMENT TERMS"
+                            value={billingDetail.paymentTerm?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="CURRENCY"
+                            value={billingDetail.currency}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="PRICING DATE"
+                            value={
+                              <Moment format="DD/MM/YYYY">
+                                {billingDetail.priceDate}
+                              </Moment>
+                            }
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="BILLING TYPE"
+                            value={billingDetail.billingType?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="BILLING FREQUENCY"
+                            value={billingDetail.billingFrequency?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="NET PRICE"
+                            value={billingDetail.netPrice}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="MARGIN"
+                            value={billingDetail.margin}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="DISCOUNT"
+                            value={billingDetail.discount}
+                            className="col-md-4 col-sm-4"
+                          />
+                        </div>
+                        <hr />
+                        <a href="#" className="btn bg-primary text-white">
+                          <AddIcon className="mr-2" />
+                          ADD PAYER
+                        </a>
+                        <div className="mt-3">
+                          <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns2}
+                            data={rows2}
+                            customStyles={customStyles}
+                            pagination
+                            // onRowClicked={(e) => handleRowClick(e)}
+                            selectableRows
+                          />
+                        </div>
+                        <div className="mt-3 d-flex align-items-center justify-content-between">
+                          <h6 className="mb-0 font-size-16 font-weight-600">
+                            PRICE/ESTIMATE SUMMARY
                           </h6>
-                        </div>
-                      </div>
-                      <div class="col-md-2 col-sm-2">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            MARGIN (25%)
-                          </p>
-                          <h6 class="font-weight-600">752.740.10</h6>
-                        </div>
-                      </div>
-                      <div class="col-md-3 col-sm-3">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            FLAT RATE(ALL $)
-                          </p>
-                          <h6 class="font-weight-600">No</h6>
-                        </div>
-                      </div>
-                      <div class="col-md-2 col-sm-2">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            CURRENCY
-                          </p>
-                          <div>
-                            <FormControl className="customseleact">
-                              <Select1
-                                className=""
-                                multiple
-                                displayEmpty
-                                value={personName}
-                                onChange={handleChange1}
-                                input={<OutlinedInput />}
-                                renderValue={(selected) => {
-                                  if (selected.length === 0) {
-                                    return <em>30dayes</em>;
-                                  }
-
-                                  return selected.join(", ");
-                                }}
-                                MenuProps={MenuProps}
-                                inputProps={{ "aria-label": "Without label" }}
-                              >
-                                <MenuItem disabled value="">
-                                  <em>30dayes</em>
-                                </MenuItem>
-                                {names.map((name) => (
-                                  <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, personName, theme)}
-                                  >
-                                    {name}
-                                  </MenuItem>
-                                ))}
-                              </Select1>
-                            </FormControl>
+                          <div className="d-flex align-items-center">
+                            <a href="#" className="text-primary mr-3">
+                              <ModeEditOutlineOutlinedIcon />
+                            </a>
+                            <a href="#" className="text-primary mr-3">
+                              <ShareOutlinedIcon />
+                            </a>
+                            <a href="#" className="btn bg-primary text-white">
+                              <AddIcon className="mr-2" />
+                              Add Price Summary Type
+                            </a>
                           </div>
                         </div>
-                      </div>
-                      <div class="col-md-2 col-sm-2">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            PRICE DATE
-                          </p>
-                          <h6 class="font-weight-600">21.01.2022</h6>
+                        <div className="mt-3">
+                          <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns3}
+                            data={rows3}
+                            customStyles={customStyles}
+                            pagination
+                            // onRowClicked={(e) => handleRowClick(e)}
+                            selectableRows
+                          />
                         </div>
-                      </div>
-                      <div class="col-md-3 col-sm-3">
-                        <div class="form-group ">
-                          <p class="font-size-12 font-weight-500 mb-2">
-                            DISCOUNT
-                          </p>
-                          <div>
-                            <FormControl className="customseleact position-relative percent-p">
-                              <span
-                                className="percent-div bg-white p-1 text-primary"
-                                style={{ borderRadius: "50%" }}
-                              >
-                                8%
-                              </span>
-                              <Select1
-                                className="btn bg-green text-white"
-                                multiple
-                                displayEmpty
-                                value={personName}
-                                onChange={handleChange1}
-                                input={<OutlinedInput />}
-                                renderValue={(selected) => {
-                                  if (selected.length === 0) {
-                                    return <em>30dayes</em>;
-                                  }
-
-                                  return selected.join(", ");
-                                }}
-                                MenuProps={MenuProps}
-                                inputProps={{ "aria-label": "Without label" }}
-                              >
-                                <MenuItem disabled value="">
-                                  <em>30dayes</em>
-                                </MenuItem>
-                                {names.map((name) => (
-                                  <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, personName, theme)}
-                                  >
-                                    {name}
-                                  </MenuItem>
-                                ))}
-                              </Select1>
-                            </FormControl>
+                        <div className="mt-3 d-flex align-items-center justify-content-between">
+                          <h6 className="mb-0 font-size-16 font-weight-600">
+                            OTHER MISC ITEMS $
+                          </h6>
+                          <div className="d-flex align-items-center">
+                            <a href="#" className="text-primary mr-3">
+                              <ModeEditOutlineOutlinedIcon />
+                            </a>
+                            <a href="#" className="text-primary mr-3">
+                              <ShareOutlinedIcon />
+                            </a>
+                            <a href="#" className="btn bg-primary text-white">
+                              <AddIcon className="mr-2" />
+                              Add Miscellaenous Type
+                            </a>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <hr />
-                    <a href="#" className="btn bg-primary text-white">
-                      <AddIcon className="mr-2" />
-                      ADD PAYER
-                    </a>
-                    <div className="mt-3">
-                      <DataTable
-                        className=""
-                        title=""
-                        columns={masterColumns2}
-                        data={rows2}
-                        customStyles={customStyles}
-                        pagination
-                        // onRowClicked={(e) => handleRowClick(e)}
-                        selectableRows
-                      />
-                    </div>
-                    <div className="mt-3 d-flex align-items-center justify-content-between">
-                      <h6 className="mb-0 font-size-16 font-weight-600">
-                        PRICE/ESTIMATE SUMMARY
-                      </h6>
-                      <div className="d-flex align-items-center">
-                        <a href="#" className="text-primary mr-3">
-                          <ModeEditOutlineOutlinedIcon />
-                        </a>
-                        <a href="#" className="text-primary mr-3">
-                          <ShareOutlinedIcon />
-                        </a>
-                        <a href="#" className="btn bg-primary text-white">
-                          <AddIcon className="mr-2" />
-                          Add Price Summary Type
-                        </a>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <DataTable
-                        className=""
-                        title=""
-                        columns={masterColumns3}
-                        data={rows3}
-                        customStyles={customStyles}
-                        pagination
-                        // onRowClicked={(e) => handleRowClick(e)}
-                        selectableRows
-                      />
-                    </div>
-                    <div className="mt-3 d-flex align-items-center justify-content-between">
-                      <h6 className="mb-0 font-size-16 font-weight-600">
-                        OTHER MISC ITEMS $
-                      </h6>
-                      <div className="d-flex align-items-center">
-                        <a href="#" className="text-primary mr-3">
-                          <ModeEditOutlineOutlinedIcon />
-                        </a>
-                        <a href="#" className="text-primary mr-3">
-                          <ShareOutlinedIcon />
-                        </a>
-                        <a href="#" className="btn bg-primary text-white">
-                          <AddIcon className="mr-2" />
-                          Add Miscellaenous Type
-                        </a>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <DataTable
-                        className=""
-                        title=""
-                        columns={masterColumns4}
-                        data={rows4}
-                        customStyles={customStyles}
-                        pagination
-                        // onRowClicked={(e) => handleRowClick(e)}
-                        selectableRows
-                      />
-                    </div>
-                    {/* <div class="row mt-4 input-fields">
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COST PRICE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MARGIN</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                                            <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">COST PRICE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PRICE METHOD</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">ADJUSTED PRICE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MARGIN</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">CURRENCY</p>
-                                                <h6 class="font-weight-600">X1234</h6>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div class="form-group">
-                                                <Link className="btn bg-primary text-white pull-right">
-                                                    Save & Next
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div> */}
+                        <div className="mt-3">
+                          <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns4}
+                            data={rows4}
+                            customStyles={customStyles}
+                            pagination
+                            // onRowClicked={(e) => handleRowClick(e)}
+                            selectableRows
+                          />
+                        </div>
+                      </>
+                    )}
                   </TabPanel>
                   <TabPanel value="shipping">
                     {!viewOnlyTab.shippingViewOnly ? (
                       <>
                         <div className="row mt-4 input-fields">
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               DELIVERY TYPE
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <Select
                                 onChange={(e) =>
                                   setShippingDetail({
@@ -2445,14 +2385,14 @@ const RepairQuoteDetails = (props) => {
                               />
                             </div>
                           </div>
-                          <div class="col-md-4 col-sm-4">
+                          <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
                               for="exampleInputEmail1"
                             >
                               DELIVERY PRIORITY
                             </label>
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <Select
                                 onChange={(e) =>
                                   setShippingDetail({
@@ -2507,8 +2447,8 @@ const RepairQuoteDetails = (props) => {
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 SERVICE RECEPIENT ADDRESS
                               </label>
-                              <input
-                                class="form-control border-radius-10 text-primary"
+                              <TextareaAutosize
+                                className="form-control border-radius-10 text-primary"
                                 value={shippingDetail.serviceRecipientAddress}
                                 onChange={(e) =>
                                   setShippingDetail({
@@ -2578,8 +2518,7 @@ const RepairQuoteDetails = (props) => {
           <RepairQuoteItemModal
             quoteItem={quoteItem}
             setQuoteItem={setQuoteItem}
-            // handleIndPartAdd={handleIndPartAdd}
-            // searchAPI={sparePartSearch}
+            handleQuoteItemUpdate={handleQuoteItemUpdate}
             quoteItemOpen={quoteItemOpen}
             handleQuoteItemClose={handleQuoteItemClose}
             title={quoteItemModalTitle}
