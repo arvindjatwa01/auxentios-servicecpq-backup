@@ -604,9 +604,9 @@ const PriceCalculator = (props) => {
 
       console.log("props ---------- ", props, disable)
       if (props.bundleOrServiceEditOrNot) {
-        if (disable) {
-          props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, true);
-        }
+        // if (disable) {
+          props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, disable);
+        // }
       } else {
         if ((priceCalculator.startUsage == "") ||
           (priceCalculator.startUsage == undefined)) {
@@ -1597,7 +1597,7 @@ const PriceCalculator = (props) => {
                         }
                         value={priceCalculator.numberOfEvents}
                         disabled
-                        readonly
+                        readOnly
                       />
                       <div className="css-w8dmq8">*Mandatory</div>
                     </div>

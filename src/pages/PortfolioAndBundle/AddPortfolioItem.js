@@ -85,7 +85,7 @@ const AddPortfolioItem = (props) => {
   }
   const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
-  console.log("AddPortfolioItem props data is : ", props)
+  // console.log("AddPortfolioItem props data is : ", props)
   const [tabs, setTabs] = useState("itemSummary");
   const [subTabs, setSubTabs] = useState("A");
   const [editable, setEditable] = useState(
@@ -1347,9 +1347,9 @@ const AddPortfolioItem = (props) => {
 
     try {
       if (tabs == "itemSummary") {
-        console.log("addPortFolioItem?.kitDescription : ", addPortFolioItem?.kitDescription)
-        console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId)
-        console.log("addPortFolioItem.repairOption : ", addPortFolioItem.repairOption)
+        // console.log("addPortFolioItem?.kitDescription : ", addPortFolioItem?.kitDescription)
+        // console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId)
+        // console.log("addPortFolioItem.repairOption : ", addPortFolioItem.repairOption)
         if ((props.compoFlag === "ITEM")) {
 
           if ((props.portfolioDataId == "") ||
@@ -1583,7 +1583,8 @@ const AddPortfolioItem = (props) => {
               withBundleService: false,
               portfolio: ((props.portfolioDataId == "") ||
                 (props.portfolioDataId == undefined) ||
-                (props.portfolioDataId == null)) ? null : {
+                (props.portfolioDataId == null) ||
+                (props.portfolioDataId == 0)) ? null : {
                 portfolioId: props.portfolioDataId
               },
               tenantId: loginTenantId,
