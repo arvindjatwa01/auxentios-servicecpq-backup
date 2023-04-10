@@ -327,15 +327,18 @@ function WithSparePartsHeader(props) {
     selectDropdownOption(selectPricingMethodList)
   );
   const [segments, setSegments] = useState([]);
+  const [builderType, setBuilderType] = useState("");
 
   useEffect(() => {
     if (state && state.type === "new") {
       setBuilderId(state.builderId);
       setBId(state.bId);
+      setBuilderType(state.builderType);
       setGeneralData({ ...generalData, estimationNo: state.builderId });      
     } else if (state) {
       setBuilderId(state.builderId);
       setBId(state.bId);
+      setBuilderType(state.builderType);
       fetchAllDetails(state.bId);
     }
     setActiveElement({...activeElement, builderType: state.builderType })
@@ -2201,6 +2204,8 @@ function WithSparePartsHeader(props) {
                   <button
                     onClick={() =>
                       setActiveElement({
+                        // ...activeElement,
+                        builderType,
                         name: "segment",
                         bId,
                         builderStatus: selBuilderStatus?.value,
@@ -2240,6 +2245,7 @@ function WithSparePartsHeader(props) {
             />
           )}
         </div>
+        </div>
         <QuoteModal
         setOpenQuotePopup={setOpenQuotePopup}
         openQuotePopup={openQuotePopup}
@@ -2249,7 +2255,7 @@ function WithSparePartsHeader(props) {
         setQuoteReference={setQuoteReference}
         handleCreateQuote={handleCreateQuote}
       />
-      </div>
+      
       <CreateKIT
         kitOpen={templateOpen}
         handleCloseKIT={() => setTemplateOpen(false)}

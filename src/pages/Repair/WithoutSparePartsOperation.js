@@ -582,7 +582,7 @@ function WithoutSparePartsOperation(props) {
                 className="col-md-4 col-sm-4"
               />
             </div>
-            {operationData.serviceEstimation && (
+            {operationData.serviceEstimation?.netPrice && (
               <>
                 <h5 className="d-flex align-items-center  mx-2">
                   <div className="" style={{ display: "contents" }}>
@@ -724,7 +724,7 @@ function WithoutSparePartsOperation(props) {
                 }
                 className="btn bg-primary text-white ml-2"
               >
-                {operationData.serviceEstimation ? (
+                {operationData.serviceEstimation?.netPrice ? (
                   <span className="mr-1">View</span>
                 ) : (
                   <span className="mr-2">

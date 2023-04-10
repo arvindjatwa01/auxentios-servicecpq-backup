@@ -200,15 +200,18 @@ function WithoutSparePartsHeader(props) {
     selectDropdownOption(selectPricingMethodList)
   );
   const [segments, setSegments] = useState([]);
+  const [builderType, setBuilderType] = useState("");
 
   useEffect(() => {
     if (state && state.type === "new") {
       setBuilderId(state.builderId);
       setBId(state.bId);
+      setBuilderType(state.builderType);
       setGeneralData({ ...generalData, estimationNo: state.builderId });
     } else if (state) {
       setBuilderId(state.builderId);
       setBId(state.bId);
+      setBuilderType(state.builderType);
       fetchAllDetails(state.bId);
     }
     setActiveElement({...activeElement, builderType: state.builderType })
@@ -2074,6 +2077,8 @@ function WithoutSparePartsHeader(props) {
                   <button
                     onClick={() =>
                       setActiveElement({
+                        // ...activeElement,
+                        builderType,
                         name: "segment",
                         bId,
                         builderStatus: selBuilderStatus?.value,
