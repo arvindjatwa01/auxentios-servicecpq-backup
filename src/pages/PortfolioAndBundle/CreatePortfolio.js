@@ -6072,10 +6072,10 @@ export function CreatePortfolio(props) {
           }
         }
       } else if (e.target.id == "priceAgreement") {
-        // if ((portfolioId == "") ||
-        //   (portfolioId == null)) {
-        //   throw "Please Create Portfolio first"
-        // }
+        if ((portfolioId == "") ||
+          (portfolioId == null)) {
+          throw "Please Create Portfolio first"
+        }
         var array = [];
         if (priceAgreementRowsData.length > 0) {
           for (let p = 0; p < priceAgreementRowsData.length; p++) {
@@ -7881,7 +7881,7 @@ export function CreatePortfolio(props) {
         alert(err);
       });
 
-    getServiceItemsList()
+    getServiceItemsList("pageNumber=0&pageSize=6")
       .then((res) => {
         setOptionalServiceListLoading(true);
         if (res.status === 200) {
@@ -23313,18 +23313,25 @@ export function CreatePortfolio(props) {
                                     onChange={(e) => handleSelectOptionalService(e, serviceData.itemName)}
                                   />
                                 </div>
-                                <p className="mb-0 font-size-16 text-black">
-                                  {/* <b>AIR FILTER REPLACEMENT</b> */}
-                                  <b>{serviceData.itemName}</b>
-                                </p>
+                                <div className="mt-1">
+                                  <p className="mb-0 font-size-16 text-black">
+                                    {/* <b>AIR FILTER REPLACEMENT</b> */}
+                                    <b>{serviceData.itemName}</b>
+                                  </p>
+                                  <p className=" mt-1 mb-0 font-size-14">
+                                    {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
+                                    {serviceData.itemHeaderDescription}
+                                  </p>
+                                </div>
+
                               </div>
                             </div>
-                            <div className="px-2">
+                            {/* <div className="px-2">
                               <p className="mb-0 font-size-14">
-                                {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
+                                The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service.
                                 {serviceData.itemHeaderDescription}
                               </p>
-                            </div>
+                            </div> */}
                           </div>
                         )}
                         {/* <div className="col-md-6 col-sm-6">

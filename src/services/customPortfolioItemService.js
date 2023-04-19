@@ -7,7 +7,9 @@ import {
   CREATE_CUSTOM_PRICE,
   CUSTOM_PORTFOLIO_SEARCH_QUERY,
   CUSTOM_PORTFOLIO_ITEM_PRICE_SJID,
-  CUSTOM_PORTFOLIO_URL
+  CUSTOM_PORTFOLIO_URL,
+  GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+  CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL
 } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
@@ -313,3 +315,50 @@ export const getSearchCustomPortfolioDropdownList = (searchStr) => {
     }
   });
 };
+
+
+// Portfolio Service-Bundle Item Prices
+export const getCustomServiceBundleItemPrices = (searchStr) => {
+  console.log("Query customPortfolioItemService > getCustomServiceBundleItemPrices called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("getCustomServiceBundleItemPrices > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getCustomServiceBundleItemPrices > axios err=", err);
+          reject("Error in getCustomServiceBundleItemPrices axios!");
+        });
+    } catch (error) {
+      console.error("in Query customPortfolioItemService > getCustomServiceBundleItemPrices, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+// Portfolio Search Dropdown List 
+export const customPortfolioSearchTableDataList = (searchStr) => {
+  console.log("customPortfolioItemService > customPortfolioSearchTableDataList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("customPortfolioSearchTableDataList > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("customPortfolioSearchTableDataList > axios err=", err);
+          reject("Error in customPortfolioSearchTableDataList axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioService > customPortfolioSearchTableDataList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+}

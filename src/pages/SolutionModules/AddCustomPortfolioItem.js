@@ -355,7 +355,7 @@ const AddCustomPortfolioItem = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("props.passItemEditRowData 12345: ", props.passItemEditRowData)
+    // console.log("props.passItemEditRowData 12345: ", props.passItemEditRowData)
     if (props.passItemEditRowData) {
       // setIt accordingly for fields
       const {
@@ -780,9 +780,10 @@ const AddCustomPortfolioItem = (props) => {
               miscEscalation: 0,
               serviceEscalation: 0,
               withBundleService: false,
-              customPortfolio: {
-                portfolioId: 1
-              },
+              // customPortfolio: {
+              //   portfolioId: 1
+              // },
+              customPortfolio: null,
               tenantId: loginTenantId,
               partsRequired: true,
               labourRequired: true,
@@ -1086,9 +1087,10 @@ const AddCustomPortfolioItem = (props) => {
           miscEscalation: 0,
           serviceEscalation: 0,
           withBundleService: addPortFolioItem.withBundleService,
-          customPortfolio: {
-            portfolioId: 1
-          },
+          // customPortfolio: {
+          //   portfolioId: 1
+          // },
+          customPortfolio: null,
           tenantId: loginTenantId,
           partsRequired: true,
           labourRequired: true,
@@ -1847,7 +1849,7 @@ const AddCustomPortfolioItem = (props) => {
                   { value: "per day", label: "per day" },
                   { value: "per quarter", label: "per quarter" },
                 ]}
-                placeholder="HOURS"
+                placeholder="Select unit"
                 onChange={(e) =>
                   setAddPortFolioItem({ ...addPortFolioItem, unit: e })
                 }
@@ -1923,7 +1925,9 @@ const AddCustomPortfolioItem = (props) => {
                   })
                 }
                 value={addPortFolioItem.numberOfEvents}
-                disabled={editable}
+                // disabled={editable}
+                disabled
+                readOnly
               />
             </div>
           </div>
@@ -2690,7 +2694,7 @@ const AddCustomPortfolioItem = (props) => {
                             { value: "per day", label: "per day" },
                             { value: "per quarter", label: "per quarter" },
                           ]}
-                          placeholder="HOURS"
+                          placeholder="Select"
                           onChange={(e) =>
                             setAddPortFolioItem({ ...addPortFolioItem, unit: e })
                           }
@@ -2776,6 +2780,8 @@ const AddCustomPortfolioItem = (props) => {
                             })
                           }
                           value={addPortFolioItem.numberOfEvents}
+                          disabled
+                          readOnly
                         />
                       </div>
                     </div>

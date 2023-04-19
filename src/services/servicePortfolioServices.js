@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, PRICING_COMMON_CONFIG, PORTFOLIO_SEARCH_URL, PORTFOLIO_SEARCH_DROPDOWN_LIST_URL } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, PRICING_COMMON_CONFIG, PORTFOLIO_SEARCH_URL, PORTFOLIO_SEARCH_DROPDOWN_LIST_URL, PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL, PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -245,6 +245,61 @@ export const portfolioSearchList = (searchStr) => {
         });
     } catch (error) {
       console.error("in portfolioService > portfolioSearchList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+
+/**
+ * Function to fetch the Portfolio Search Table List .
+ */
+
+
+// Portfolio Search Dropdown List 
+export const portfolioSearchTableDataList = (searchStr) => {
+  console.log("portfolioService > portfolioSearchTableDataList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("portfolioSearchTableDataList > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("portfolioSearchTableDataList > axios err=", err);
+          reject("Error in portfolioSearchTableDataList axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioService > portfolioSearchTableDataList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+}
+
+
+// Portfolio Price Hierarchy 
+
+export const portfolioItemPriceHierarchySearch = (searchStr) => {
+  console.log("portfolioService > portfolioItemPriceHierarchySearch called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH + searchStr, { headers: headersData })
+        .then((res) => {
+          console.log("portfolioItemPriceHierarchySearch > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("portfolioItemPriceHierarchySearch > axios err=", err);
+          reject("Error in portfolioItemPriceHierarchySearch axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioService > portfolioItemPriceHierarchySearch, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

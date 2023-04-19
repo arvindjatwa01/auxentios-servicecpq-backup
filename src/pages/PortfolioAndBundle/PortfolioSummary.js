@@ -102,6 +102,8 @@ import {
   portfolioSearchList,
   updateItemPriceData,
   createItemPriceData,
+  portfolioSearchTableDataList,
+  getServiceBundleItemPrices,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
@@ -681,22 +683,45 @@ export const PortfolioSummary = () => {
     if (selectedItemType === "PORTFOLIO") {
       var newArr = [];
       var SearchResArr = [];
+      if ((tempArray[id].selectFamily.value === "name") ||
+        (tempArray[id].selectFamily.value === "description")) {
+        portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
+          .then((res) => {
+            if (res.status === 200) {
+              for (let i = 0; i < res.data.length; i++) {
+                // SearchResArr.push(res.data[i].value)
 
-      portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
-        .then((res) => {
-          if (res.status === 200) {
-            for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].value)
+                if (tempArray[id].selectFamily.value === "name" ||
+                  tempArray[id].selectFamily.value === "description") {
+                  SearchResArr.push(res.data[i].key)
+                } else {
+                  SearchResArr.push(res.data[i].value)
+                }
+                // SearchResArr.push(res.data[i].value)
+              }
             }
-          }
-          obj.selectOptions = SearchResArr;
-          tempArray[id] = obj;
-          setQuerySearchSelector([...tempArray]);
-          $(`.scrollbar-${id}`).css("display", "block");
-        })
-        .catch((err) => {
-          console.log("err in api call", err);
-        });
+            obj.selectOptions = SearchResArr;
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+          })
+          .catch((err) => {
+            console.log("err in api call", err);
+          });
+      } else {
+        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+          .then((res) => {
+            console.log("response coverage ", res);
+            obj.selectOptions = res;
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+          })
+          .catch((err) => {
+            console.log("err in api call", err);
+          });
+      }
+
 
       // portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
       //   .then((res) => {
@@ -757,7 +782,8 @@ export const PortfolioSummary = () => {
           console.log("ressss ", res);
           if (res.status === 200) {
             for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].value)
+              // SearchResArr.push(res.data[i].value)
+              SearchResArr.push(res.data[i].key)
             }
           }
           obj.selectOptions = SearchResArr;
@@ -846,28 +872,43 @@ export const PortfolioSummary = () => {
       }
       var searchStr;
       if (selectedItemType === "PORTFOLIO") {
-        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+        var selectedFamily = (querySearchSelector[0]?.selectFamily.value === "name" ||
+          (querySearchSelector[0]?.selectFamily.value === "description") ?
+          `portfolio_id=${querySearchSelector[0]?.selectedKeyValue}` : `${querySearchSelector[0]?.selectFamily.value}=${(querySearchSelector[0]?.inputSearch)}`);
+        // var searchStr = `${selectedFamily}:"${(querySearchSelector[0]?.inputSearch)}"`;
+        var searchStr = selectedFamily;
       } else {
-        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+        // var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${(querySearchSelector[0]?.inputSearch)}"`;
+        var searchStr = `itemIds=${(querySearchSelector[0]?.selectedKeyValue)}`;
       }
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         if (
           querySearchSelector[i]?.selectFamily?.value == "" ||
-          querySearchSelector[i]?.inputSearch == "" ||
-          querySearchSelector[i]?.selectOperator?.value == ""
+          querySearchSelector[i]?.inputSearch == ""
+          // ||
+          // querySearchSelector[i]?.selectOperator?.value == ""
 
         ) {
           throw "Please fill data properly"
         }
         if (selectedItemType === "PORTFOLIO") {
+          var selectedQuerySelectorFamily = (querySearchSelector[i].selectFamily.value === "name" ||
+            (querySearchSelector[i].selectFamily.value === "description") ?
+            `portfolio_id=${querySearchSelector[0]?.selectedKeyValue}` : `${querySearchSelector[i].selectFamily.value}=${(querySearchSelector[i]?.inputSearch)}`);
+
+          // var selectedQuerySelectorValue = (querySearchSelector[i]?.selectFamily.value === "name" ||
+          // (querySearchSelector[i]?.selectFamily.value === "description") ?
+          // `${querySearchSelector[0]?.selectedKeyValue}` : `${(querySearchSelector[i]?.inputSearch)}`);
           searchStr =
-            searchStr +
-            " " +
-            querySearchSelector[i].selectOperator.value + " " +
-            querySearchSelector[i].selectFamily.value +
-            ":\"" +
-            querySearchSelector[i].inputSearch + "\"";
+            searchStr + "&" +
+            // " " +
+            // querySearchSelector[i].selectOperator.value + " " +
+            (querySearchSelector[i].selectFamily.value === "name" ||
+              (querySearchSelector[i].selectFamily.value === "description") ?
+              `portfolio_id=${querySearchSelector[i]?.selectedKeyValue}` : `${querySearchSelector[i].selectFamily.value}=${(querySearchSelector[i]?.inputSearch)}`);
+          // ":\"" +
+          // querySearchSelector[i].inputSearch + "\"";
         } else {
           searchStr =
             searchStr +
@@ -883,20 +924,21 @@ export const PortfolioSummary = () => {
 
       if (selectedItemType === "PORTFOLIO") {
         var newArr = [];
-        const res2 = await portfolioSearch(searchStr)
+        const res2 = await portfolioSearchTableDataList(searchStr)
         if (res2.status === 200) {
-          for (var j = 0; j < res2.data.length; j++) {
-            for (var k = 0; k < res2.data[j].items.length; k++) {
-              newArr.push(res2.data[j].items[k]);
-            }
-          }
-          var result = newArr.reduce((unique, o) => {
-            if (!unique.some(obj => obj.itemId === o.itemId)) {
-              unique.push(o);
-            }
-            return unique;
-          }, []);
-          // setPortfolioItemData(result);
+          console.log("res2 ========= ", res2)
+          // for (var j = 0; j < res2.data.length; j++) {
+          //   for (var k = 0; k < res2.data[j].items.length; k++) {
+          //     newArr.push(res2.data[j].items[k]);
+          //   }
+          // }
+          // var result = newArr.reduce((unique, o) => {
+          //   if (!unique.some(obj => obj.itemId === o.itemId)) {
+          //     unique.push(o);
+          //   }
+          //   return unique;
+          // }, []);
+          // // setPortfolioItemData(result);
           setPortfolioItemData(res2.data);
 
         } else {
@@ -908,26 +950,51 @@ export const PortfolioSummary = () => {
 
         console.log("set PortfolioItemData : ", res2)
       } else if (selectedItemType === "BUNDLE_ITEM") {
-        searchStr = "bundleFlag:BUNDLE_ITEM AND " + searchStr;
-        const res1 = await itemSearch(searchStr);
+        // searchStr = "bundleFlag:BUNDLE_ITEM AND " + searchStr;
+        // searchStr = "bundleFlag:BUNDLE_ITEM AND " + searchStr;
 
+        // const res1 = await itemSearch(searchStr);
+        const res1 = await getServiceBundleItemPrices(searchStr);
+        var bundleItemsArr = [];
         if (res1.status === 200) {
-          setBundleServiceItemData(res1.data)
+          if (res1.data.length > 0) {
+            res1.data.map((data, i) => {
+              for (let c = 0; c < data.bundleItems.length; c++) {
+                bundleItemsArr.push(data.bundleItems[c]);
+              }
+            })
+            setBundleServiceItemData(bundleItemsArr);
+          } else {
+            throw "No information is found for your search, change the search criteria";
+          }
+          // setBundleServiceItemData(res1.data)
         } else {
           throw "No information is found for your search, change the search criteria";
         }
 
-        console.log("res1 is fsfnasjkvna", res1.data);
+        // console.log("res1 is fsfnasjkvna", res1.data);
         // console.log(res1)
 
       }
       else if (selectedItemType === "SERVICE") {
+        // searchStr = "bundleFlag:SERVICE AND " + searchStr;
         searchStr = "bundleFlag:SERVICE AND " + searchStr;
-        const res1 = await itemSearch(searchStr);
+        // const res1 = await itemSearch(searchStr);
+        const res1 = await getServiceBundleItemPrices(searchStr);
 
-
+        var serviceItemsArr = [];
         if (res1.status === 200) {
-          setBundleServiceItemData(res1.data);
+          if (res1.data.length > 0) {
+            res1.data.map((data, i) => {
+              for (let d = 0; d < data.serviceItems.length; d++) {
+                serviceItemsArr.push(data.serviceItems[d]);
+              }
+            })
+            setBundleServiceItemData(bundleItemsArr);
+          } else {
+            throw "No information is found for your search, change the search criteria";
+          }
+          // setBundleServiceItemData(res1.data);
         } else {
           throw "No information is found for your search, change the search criteria";
         }
@@ -1015,10 +1082,45 @@ export const PortfolioSummary = () => {
     let tempArray = [...querySearchSelector];
     console.log("handleFamily e:", tempArray[id]);
     let obj = tempArray[id];
+    obj.inputSearch = "";
+    obj.selectOptions = [];
     obj.selectFamily = e;
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
+
+    // if (selectedItemType === "PORTFOLIO") {
+    //   if (e.value === "name" || e.value === "description"){
+    //     setFamilySelectOption([
+    //       { label: "Make", value: "make", id: id, isdisabled: false },
+    //       { label: "Family", value: "family", id: id, isdisabled: false },
+    //       { label: "Model", value: "modelNo", id: id, isdisabled: false },
+    //       { label: "Prefix", value: "serialNumberPrefix", id: id, isdisabled: false },
+    //       { label: "Name", value: "name", id: id, isdisabled: true },
+    //       { label: "Description", value: "description", id: id, isdisabled: true },
+    //     ])
+    //     // { label: "Name", value: "name", id: i, isdisabled: false },
+    //     // { label: "Description", value: "description", id: i, isdisabled: false },
+    //   }
+    // }
   };
+
+  const checkForDisabled = (option) => {
+    if (querySearchSelector.length > 1) {
+      if ((querySearchSelector[0].selectFamily.value === "name") ||
+        (querySearchSelector[0].selectFamily.value === "description")) {
+        if ((option.value === "name") ||
+          (option.value === "description")) {
+          return true
+        }
+      } else {
+        if (option.value === querySearchSelector[0].selectFamily.value) {
+          return true;
+        }
+      }
+    } else {
+      return false
+    }
+  }
 
   // const [querySearchModelSelector, setQuerySearchModelSelector] = useState([
   //   {
@@ -1039,6 +1141,7 @@ export const PortfolioSummary = () => {
       inputSearch: "",
       selectOptions: [],
       selectedOption: "",
+      selectedKeyValue: "",
     },
   ]);
   const handleDeletQuerySearch = () => {
@@ -1074,10 +1177,14 @@ export const PortfolioSummary = () => {
 
       if (e.value === "PORTFOLIO") {
         setFamilySelectOption([
+          // { label: "Make", value: "make", id: i },
+          // { label: "Family", value: "family", id: i },
+          // { label: "Model", value: "model", id: i },
+          // { label: "Prefix", value: "serialNumberPrefix", id: i },
           { label: "Make", value: "make", id: i },
+          { label: "Model", value: "model", id: i },
+          { label: "Prefix", value: "prefix", id: i },
           { label: "Family", value: "family", id: i },
-          { label: "Model", value: "modelNo", id: i },
-          { label: "Prefix", value: "serialNumberPrefix", id: i },
           { label: "Name", value: "name", id: i },
           { label: "Description", value: "description", id: i },
         ])
@@ -1143,10 +1250,22 @@ export const PortfolioSummary = () => {
   }
 
   const handleSearchListClick = (e, currentItem, obj1, id) => {
+
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
+
+    // obj.inputSearch = currentItem;
+    // obj.selectedOption = currentItem;
+    obj.inputSearch = (selectedItemType === "PORTFOLIO") ? (
+      (obj1.selectFamily.value === "name") ||
+      (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+    obj.selectedOption = (selectedItemType === "PORTFOLIO") ?
+      ((obj1.selectFamily.value === "name") ||
+        (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+    obj.selectedKeyValue = (selectedItemType === "PORTFOLIO") ?
+      ((obj1.selectFamily.value === "name") ||
+        (obj1.selectFamily.value === "description")) ? currentItem.split("#")[0] : currentItem :
+      currentItem.split("#")[0];
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
     $(`.scrollbar-${id}`).css("display", "none");
@@ -4267,10 +4386,10 @@ export const PortfolioSummary = () => {
           <div>Name</div>
         </>
       ),
-      selector: (row) => row.name,
+      selector: (row) => row?.name,
       wrap: true,
       sortable: true,
-      format: (row) => row.name,
+      format: (row) => row?.name,
     },
     {
       name: (
@@ -4278,10 +4397,10 @@ export const PortfolioSummary = () => {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.description,
+      selector: (row) => row?.description,
       wrap: true,
       sortable: true,
-      format: (row) => row.description,
+      format: (row) => row?.description,
     },
     {
       name: (
@@ -4289,20 +4408,20 @@ export const PortfolioSummary = () => {
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.strategyTask,
+      selector: (row) => row?.strategyTask,
       wrap: true,
       sortable: true,
-      format: (row) => row.strategyTask,
+      format: (row) => row?.strategyTask,
     }, {
       name: (
         <>
           <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.taskType,
+      selector: (row) => row?.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.taskType,
+      format: (row) => row?.taskType,
     },
     // {
     //   name: (
@@ -4321,10 +4440,14 @@ export const PortfolioSummary = () => {
           <div>Net Price</div>
         </>
       ),
-      selector: (row) => row?.portfolioPrice?.price,
+      // selector: (row) => row?.portfolioPrice?.price,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row?.portfolioPrice?.price,
+      selector: (row) => row?.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row?.portfolioPrice?.price,
+      format: (row) => row?.netPrice,
     },
     {
       name: (
@@ -4343,10 +4466,14 @@ export const PortfolioSummary = () => {
           <div>Net Parts Price</div>
         </>
       ),
-      selector: (row) => row?.portfolioPrice?.sparePartsPrice,
+      // selector: (row) => row?.portfolioPrice?.sparePartsPrice,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row?.portfolioPrice?.sparePartsPrice,
+      selector: (row) => row?.netPartsPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row?.portfolioPrice?.sparePartsPrice,
+      format: (row) => row?.netPartsPrice,
     },
     {
       name: (
@@ -4354,10 +4481,14 @@ export const PortfolioSummary = () => {
           <div>Net Service Price</div>
         </>
       ),
-      selector: (row) => row?.portfolioPrice?.servicePrice,
+      // selector: (row) => row?.portfolioPrice?.servicePrice,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row?.portfolioPrice?.servicePrice,
+      selector: (row) => row?.netServicePrice,
       wrap: true,
       sortable: true,
-      format: (row) => row?.portfolioPrice?.servicePrice,
+      format: (row) => row?.netServicePrice,
     },
     {
       name: (
@@ -4365,10 +4496,14 @@ export const PortfolioSummary = () => {
           <div>Total Price</div>
         </>
       ),
-      selector: (row) => row.portfolioPrice?.totalPrice,
+      // selector: (row) => row.portfolioPrice?.totalPrice,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.portfolioPrice?.totalPrice,
+      selector: (row) => row?.calculatedPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.portfolioPrice?.totalPrice,
+      format: (row) => row?.calculatedPrice,
     },
     // {
     //   name: (
@@ -4404,9 +4539,7 @@ export const PortfolioSummary = () => {
     },
   ];
 
-
-
-  const PortfolioItemColumn = (showColumnDataOnService ? [
+  const bundleServiceSearchTableColumns = [
     {
       name: (
         <>
@@ -4414,14 +4547,10 @@ export const PortfolioSummary = () => {
           <div>Name</div>
         </>
       ),
-      // selector: (row) => row.itemId,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemId,
-      selector: (row) => row.itemName,
+      selector: (row) => row?.itemName,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemName,
+      format: (row) => row?.itemName,
     },
     {
       name: (
@@ -4429,178 +4558,31 @@ export const PortfolioSummary = () => {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      selector: (row) => row?.itemDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      format: (row) => row?.itemDescription,
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Strategy</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel.itemHeaderStrategy,
-    // }, {
-    //   name: (
-    //     <>
-    //       <div>Task Type</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.taskType,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemBodyModel.taskType,
-    // },
-    {
-      name: (
-        <>
-          <div>Quantity</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Net Price</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel.netPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel.netPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Additional</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel.additional,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel.additional,
-    },
-    {
-      name: (
-        <>
-          <div>Net Parts Price</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.partsprice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.partsprice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Service Price</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.servicePrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.servicePrice,
-    },
-    {
-      name: (
-        <>
-          <div>Total Price</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel?.totalPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel?.totalPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.comments,
-    },
-    {
-      name: (
-        <>
-          <div>Action</div>
-        </>
-      ),
-      selector: (row) => row.action,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.action,
-      cell: (row) => (
-        <div>
-          <a href={undefined} onClick={() =>
-            makeBundleServiceEditable(row)
-          } style={{ cursor: "pointer" }} >
-            <img className="mr-2" src={penIcon} />
-          </a>
-        </div>
-      ),
-    }
-  ] : [
-    {
-      name: (
-        <>
-          {/* <div>Solution Id</div> */}
-          <div>Name</div>
-        </>
-      ),
-      // selector: (row) => row.itemId,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemId,
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Description</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel.itemHeaderDescription,
-    },
-    // {`${row.itemHeaderModel.bundleFlag == "BUNDLE_ITEM"}`}
     {
       name: (
         <>
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      format: (row) => row?.itemHeaderStrategy,
     }, {
       name: (
         <>
           <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.taskType,
+      selector: (row) => row?.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.taskType,
+      format: (row) => row?.taskType,
     },
     {
       name: (
@@ -4608,43 +4590,33 @@ export const PortfolioSummary = () => {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel?.quantity,
+      selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel?.quantity,
+      format: (row) => row?.quantity,
     },
     {
       name: (
         <>
-          <div>Net Price</div>
+          <div>Recommended Value</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.netPrice,
+      selector: (row) => row?.recommendedValue,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.netPrice,
+      format: (row) => row?.recommendedValue,
     },
-    {
-      name: (
-        <>
-          <div>Net Additional</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel?.additional,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel?.additional,
-    },
+
     {
       name: (
         <>
           <div>Net Parts Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.partsprice,
+      selector: (row) => row?.sparePartsPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.partsprice,
+      format: (row) => row?.sparePartsPrice,
     },
     {
       name: (
@@ -4652,10 +4624,10 @@ export const PortfolioSummary = () => {
           <div>Net Service Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.servicePrice,
+      selector: (row) => row?.servicePrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.servicePrice,
+      format: (row) => row?.servicePrice,
     },
     {
       name: (
@@ -4663,10 +4635,10 @@ export const PortfolioSummary = () => {
           <div>Total Price</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel?.totalPrice,
+      selector: (row) => row?.calculatedPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel?.totalPrice,
+      format: (row) => row?.calculatedPrice,
     },
     {
       name: (
@@ -4674,10 +4646,10 @@ export const PortfolioSummary = () => {
           <div>Comments</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.comments,
+      selector: (row) => row?.comments,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.comments,
+      format: (row) => row?.comments,
     },
     {
       name: (
@@ -4699,7 +4671,304 @@ export const PortfolioSummary = () => {
         </div>
       ),
     }
-  ]);
+  ]
+
+
+  const PortfolioItemColumn = (showColumnDataOnService ?
+    [
+      {
+        name: (
+          <>
+            {/* <div>Solution Id</div> */}
+            <div>Name</div>
+          </>
+        ),
+        // selector: (row) => row.itemId,
+        // wrap: true,
+        // sortable: true,
+        // format: (row) => row.itemId,
+        selector: (row) => row.itemName,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemName,
+      },
+      {
+        name: (
+          <>
+            <div>Description</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      },
+      // {
+      //   name: (
+      //     <>
+      //       <div>Strategy</div>
+      //     </>
+      //   ),
+      //   selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      //   wrap: true,
+      //   sortable: true,
+      //   format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      // }, {
+      //   name: (
+      //     <>
+      //       <div>Task Type</div>
+      //     </>
+      //   ),
+      //   selector: (row) => row.itemBodyModel.taskType,
+      //   wrap: true,
+      //   sortable: true,
+      //   format: (row) => row.itemBodyModel.taskType,
+      // },
+      {
+        name: (
+          <>
+            <div>Quantity</div>
+          </>
+        ),
+        selector: (row) => row.itemBodyModel.quantity,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemBodyModel.quantity,
+      },
+      {
+        name: (
+          <>
+            <div>Net Price</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel.netPrice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel.netPrice,
+      },
+      {
+        name: (
+          <>
+            <div>Net Additional</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel.additional,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel.additional,
+      },
+      {
+        name: (
+          <>
+            <div>Net Parts Price</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.partsprice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.partsprice,
+      },
+      {
+        name: (
+          <>
+            <div>Net Service Price</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.servicePrice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.servicePrice,
+      },
+      {
+        name: (
+          <>
+            <div>Total Price</div>
+          </>
+        ),
+        selector: (row) => row.itemBodyModel?.totalPrice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemBodyModel?.totalPrice,
+      },
+      {
+        name: (
+          <>
+            <div>Comments</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.comments,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.comments,
+      },
+      {
+        name: (
+          <>
+            <div>Action</div>
+          </>
+        ),
+        selector: (row) => row.action,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.action,
+        cell: (row) => (
+          <div>
+            <a href={undefined} onClick={() =>
+              makeBundleServiceEditable(row)
+            } style={{ cursor: "pointer" }} >
+              <img className="mr-2" src={penIcon} />
+            </a>
+          </div>
+        ),
+      }
+    ] : [
+      {
+        name: (
+          <>
+            {/* <div>Solution Id</div> */}
+            <div>Name</div>
+          </>
+        ),
+        // selector: (row) => row.itemId,
+        // wrap: true,
+        // sortable: true,
+        // format: (row) => row.itemId,
+        selector: (row) => row.itemName,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemName,
+      },
+      {
+        name: (
+          <>
+            <div>Description</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      },
+      // {`${row.itemHeaderModel.bundleFlag == "BUNDLE_ITEM"}`}
+      {
+        name: (
+          <>
+            <div>Strategy</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      }, {
+        name: (
+          <>
+            <div>Task Type</div>
+          </>
+        ),
+        selector: (row) => row.itemBodyModel.taskType,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemBodyModel.taskType,
+      },
+      {
+        name: (
+          <>
+            <div>Quantity</div>
+          </>
+        ),
+        selector: (row) => row.itemBodyModel?.quantity,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemBodyModel?.quantity,
+      },
+      {
+        name: (
+          <>
+            <div>Net Price</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.netPrice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.netPrice,
+      },
+      {
+        name: (
+          <>
+            <div>Net Additional</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.additional,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.additional,
+      },
+      {
+        name: (
+          <>
+            <div>Net Parts Price</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.partsprice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.partsprice,
+      },
+      {
+        name: (
+          <>
+            <div>Net Service Price</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.servicePrice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.servicePrice,
+      },
+      {
+        name: (
+          <>
+            <div>Total Price</div>
+          </>
+        ),
+        selector: (row) => row.itemBodyModel?.totalPrice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemBodyModel?.totalPrice,
+      },
+      {
+        name: (
+          <>
+            <div>Comments</div>
+          </>
+        ),
+        selector: (row) => row.itemHeaderModel?.comments,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.itemHeaderModel?.comments,
+      },
+      {
+        name: (
+          <>
+            <div>Action</div>
+          </>
+        ),
+        selector: (row) => row.action,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.action,
+        cell: (row) => (
+          <div>
+            <a href={undefined} onClick={() =>
+              makeBundleServiceEditable(row)
+            } style={{ cursor: "pointer" }} >
+              <img className="mr-2" src={penIcon} />
+            </a>
+          </div>
+        ),
+      }
+    ]);
 
   const getFormattedDateTimeByTimeStampForAdministrative = (timeStamp) => {
 
@@ -5862,6 +6131,7 @@ export const PortfolioSummary = () => {
                                   options={familySelectOption}
                                   onChange={(e) => handleFamily(e, i)}
                                   value={obj.selectFamily}
+                                  isOptionDisabled={(option) => checkForDisabled(option)}
                                 />
                               </div>
                               <div className="customselectsearch">
@@ -5893,7 +6163,14 @@ export const PortfolioSummary = () => {
                                           )
                                         }
                                       >
-                                        {currentItem}
+                                        {(selectedItemType === "PORTFOLIO") ? ((obj.selectFamily.value === "name") ||
+                                          (obj.selectFamily.value === "description")) ? currentItem.split("#")[1] :
+                                          currentItem : currentItem.split("#")[1]
+                                        }
+                                        {/* {(obj.selectFamily.value === "name") ||
+                                          (obj.selectFamily.value === "description") ?
+                                          currentItem.split("#")[1] : currentItem
+                                        } */}
                                       </li>
                                     ))}
                                   </ul>
@@ -6025,7 +6302,8 @@ export const PortfolioSummary = () => {
                   <DataTable
                     className=""
                     title=""
-                    columns={PortfolioItemColumn}
+                    // columns={PortfolioItemColumn}
+                    columns={bundleServiceSearchTableColumns}
                     data={bundleServiceItemData}
                     customStyles={customTableStyles}
                     // selectableRows
