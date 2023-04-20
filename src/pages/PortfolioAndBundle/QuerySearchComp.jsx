@@ -5,7 +5,7 @@ import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion, getSearchCustomPortfolio } from "../../services/index"
+import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion, getSearchCustomPortfolio, itemSearchDropdown } from "../../services/index"
 import { useEffect } from 'react';
 
 
@@ -32,6 +32,15 @@ const QuerySearchComp = (props) => {
 
   const handleItemType = (e, id) => {
     let tempArray = [...querySearchSelector];
+
+    // setQuerySearchSelector([{
+    //   id: 0,
+    //   selectFamily: "",
+    //   selectOperator: "",
+    //   inputSearch: "",
+    //   selectOptions: [],
+    //   selectedOption: "",
+    // }]);
     let obj = tempArray[id];
     obj.itemType = e;
     tempArray[id] = obj;
@@ -80,64 +89,89 @@ const QuerySearchComp = (props) => {
     } else if (props.compoFlag === "solutionTempItemSearch") {
       obj.inputSearch = e.target.value;
       setQuerySearchSelector([...tempArray]);
-    }
-    else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
+    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
       if (props.compoFlag === "bundleSearch") {
-        var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}`;
         var SearchResArr = [];
-        itemSearch(bundleServiceSearch)
+        //  var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}`;
+        var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
+        var SearchResArr = [];
+
+        var newSearchStr = `${tempArray[id].selectFamily.value}/${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
+        // itemSearchDropdown(bundleServiceSearch)
+        itemSearchDropdown(newSearchStr)
           .then((res) => {
-            if (res.data.length > 0) {
-              // console.log("bundleServiceSearch  response: ", res.data)
-              // console.log("tempArray[id].selectFamily.value ", tempArray[id].selectFamily.value)
-              if (tempArray[id].selectFamily.value == "itemName") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].itemName)
-                }
-              } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
-                }
-              } else if (tempArray[id].selectFamily.value == "itemHeaderMake") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
-                }
-              } else if (tempArray[id].selectFamily.value == "model") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].itemHeaderModel.model)
-                }
-              } else if (tempArray[id].selectFamily.value == "itemHeaderFamily") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
-                }
-              } else if (tempArray[id].selectFamily.value == "prefix") {
-                for (let i = 0; i < res.data.length; i++) {
-                  SearchResArr.push(res.data[i].itemHeaderModel.prefix)
-                }
+            console.log("ressss ", res);
+            if (res.status === 200) {
+              for (let i = 0; i < res.data.length; i++) {
+                // SearchResArr.push(res.data[i].value)
+                SearchResArr.push(res.data[i].key)
               }
-              // obj.selectOptions = SearchResArr;
-              // tempArray[id] = obj;
-              // setQuerySearchSelector([...tempArray]);
-              // $(`.scrollbar-${id}`).css("display", "block");
             }
-
-            // console.log("SearchResArr DAta is : ", SearchResArr)
-
+            console.log("===== SearchResArr ======== ", SearchResArr);
             obj.selectOptions = SearchResArr;
             tempArray[id] = obj;
             setQuerySearchSelector([...tempArray]);
             $(`.scrollbar-${id}`).css("display", "block");
-            // obj.selectOptions = [...res];
-
-            // tempArray[id] = obj;
-            // setQuerySearchSelector([...tempArray]);
-            // $(`.scrollbar-${id}`).css("display", "block");
           })
           .catch((err) => {
-            alert(err)
+            // alert(err)
             console.log("err in api call", err);
             return
           });
+
+        // itemSearch(bundleServiceSearch)
+        //   .then((res) => {
+        //     if (res.data.length > 0) {
+        //       // console.log("bundleServiceSearch  response: ", res.data)
+        //       // console.log("tempArray[id].selectFamily.value ", tempArray[id].selectFamily.value)
+        //       if (tempArray[id].selectFamily.value == "itemName") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].itemName)
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "itemHeaderMake") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "model") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].itemHeaderModel.model)
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "itemHeaderFamily") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
+        //         }
+        //       } else if (tempArray[id].selectFamily.value == "prefix") {
+        //         for (let i = 0; i < res.data.length; i++) {
+        //           SearchResArr.push(res.data[i].itemHeaderModel.prefix)
+        //         }
+        //       }
+        //       // obj.selectOptions = SearchResArr;
+        //       // tempArray[id] = obj;
+        //       // setQuerySearchSelector([...tempArray]);
+        //       // $(`.scrollbar-${id}`).css("display", "block");
+        //     }
+
+        //     // console.log("SearchResArr DAta is : ", SearchResArr)
+
+        //     obj.selectOptions = SearchResArr;
+        //     tempArray[id] = obj;
+        //     setQuerySearchSelector([...tempArray]);
+        //     $(`.scrollbar-${id}`).css("display", "block");
+        //     // obj.selectOptions = [...res];
+
+        //     // tempArray[id] = obj;
+        //     // setQuerySearchSelector([...tempArray]);
+        //     // $(`.scrollbar-${id}`).css("display", "block");
+        //   })
+        //   .catch((err) => {
+        //     alert(err)
+        //     console.log("err in api call", err);
+        //     return
+        //   });
       }
 
 
@@ -163,8 +197,10 @@ const QuerySearchComp = (props) => {
   const handleSearchListClick = (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
+    // obj.inputSearch = currentItem;
+    // obj.selectedOption = currentItem;
+    obj.inputSearch = (props.compoFlag === "bundleSearch") ? currentItem.split("#")[1] : currentItem;
+    obj.selectedOption = (props.compoFlag === "bundleSearch") ? currentItem.split("#")[1] : currentItem;
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
     $(`.scrollbar-${id}`).css("display", "none");
@@ -536,7 +572,8 @@ const QuerySearchComp = (props) => {
                                 key={j}
                                 onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
                               >
-                                {currentItem}
+                                {props.compoFlag === "bundleSearch" ? currentItem.split("#")[1] : currentItem}
+                                {/* {currentItem} */}
                               </li>
                             )
                           )}

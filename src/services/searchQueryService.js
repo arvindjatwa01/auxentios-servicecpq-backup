@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from "./CONSTANTS";
+import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, GET_SEARCH_FAMILY_CUSTOM_COVERAGE } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -93,6 +93,28 @@ export const getSearchForPortfolio = (family, familyValue) => {
   });
 }
 
+
+export const getSearchCustomCoverageForFamily = (family, familyValue) => {
+  console.log("Query coverageService > getSearchCustomCoverageForFamily called...");
+  return new Promise((resolve, reject) => {
+    console.log("GET_SEARCH_FAMILY_CUSTOM_COVERAGE", `${GET_SEARCH_FAMILY_CUSTOM_COVERAGE}${family}?${family}=${familyValue}`)
+    try {
+      axios
+        .get(GET_SEARCH_FAMILY_CUSTOM_COVERAGE + "?" + family + "=" + familyValue, { headers: headersData })
+        .then((res) => {
+          console.log("getSearchCustomCoverageForFamily > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getSearchCustomCoverageForFamily > axios err=", err);
+          reject("Error in getSearchCustomCoverageForFamily axios!");
+        });
+    } catch (error) {
+      console.error("in Query coverageService > getSearchCustomCoverageForFamily, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 // Recent Portfolio List 
 export const getSearchForRecentPortfolio = () => {

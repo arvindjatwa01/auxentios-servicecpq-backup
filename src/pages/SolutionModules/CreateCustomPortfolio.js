@@ -78,7 +78,13 @@ import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import DataTable from "react-data-table-component";
-import { customerSearch, machineSearch } from "services/searchServices";
+// import { customerSearch, machineSearch } from "services/searchServices";
+
+import {
+  customerSearch,
+  machineSearch,
+  sparePartSearch,
+} from "../../services/searchServices";
 
 import boxicon from "../../assets/icons/png/box.png";
 
@@ -164,6 +170,10 @@ import {
   getSearchCustomPortfolio,
   getSearchCustomPortfolioDropdownList,
   copyMaterToCustomPortfolio,
+  portfolioPriceAgreementCreation,
+  getCustomServiceBundleItemPrices,
+  getServiceBundleItemPrices,
+  portfolioItemPriceHierarchySearch
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -365,6 +375,20 @@ export function CreateCustomPortfolio(props) {
   const [priceAgreementRows, setPriceAgreementRows] = useState([]);
   const [taskItemList, setTaskItemList] = useState(null);
   const [categoryItem, setCategoryItem] = useState(null);
+
+  const [priceAgreementRowsData, setPriceAgreementRowsData] = useState([
+    // {
+    //   id: 0,
+    //   itemType: "",
+    //   itemTypeKeyValue: { label: '', value: '' },
+    //   itemNumber: "",
+    //   specialPrice: 0,
+    //   discount: 0,
+    //   absoluteDiscount: 0
+    // },
+  ]);
+
+  const [createdPriceAgreementData, setCreatedPriceAgreementData] = useState([]);
 
   const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
   const [priceListKeyValue, setPriceListKeyValue] = useState([]);
@@ -868,6 +892,7 @@ export function CreateCustomPortfolio(props) {
         inputSearch: "",
         selectOptions: [],
         selectedOption: "",
+        selectedKeyValue: "",
       }]);
 
       if (e.value === "PORTFOLIO") {
@@ -924,7 +949,8 @@ export function CreateCustomPortfolio(props) {
           .then((res) => {
             if (res.status === 200) {
               for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].value)
+                // SearchResArr.push(res.data[i].value)
+                SearchResArr.push(res.data[i].key)
               }
             }
             obj.selectOptions = SearchResArr;
@@ -987,7 +1013,8 @@ export function CreateCustomPortfolio(props) {
           .then((res) => {
             if (res.status === 200) {
               for (let i = 0; i < res.data.length; i++) {
-                SearchResArr.push(res.data[i].value)
+                // SearchResArr.push(res.data[i].value)
+                SearchResArr.push(res.data[i].key)
               }
             }
             obj.selectOptions = SearchResArr;
@@ -1054,8 +1081,18 @@ export function CreateCustomPortfolio(props) {
   const handleSearchListClick = (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
+    // obj.inputSearch = currentItem;
+    // obj.selectedOption = currentItem;
+    obj.inputSearch = (selectedItemType === "PORTFOLIO") ? (
+      (obj1.selectFamily.value === "name") ||
+      (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+    obj.selectedOption = (selectedItemType === "PORTFOLIO") ?
+      ((obj1.selectFamily.value === "name") ||
+        (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+    obj.selectedKeyValue = (selectedItemType === "PORTFOLIO") ?
+      ((obj1.selectFamily.value === "name") ||
+        (obj1.selectFamily.value === "description")) ? currentItem.split("#")[0] : currentItem :
+      currentItem.split("#")[0];
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
     $(`.scrollbar-${id}`).css("display", "none");
@@ -1320,7 +1357,84 @@ export function CreateCustomPortfolio(props) {
     var temp = priceAgreementRows.slice();
     temp.splice(index, 1);
     setPriceAgreementRows(temp);
+
+    var tempRow = priceAgreementRowsData.slice();
+    tempRow.splice(index, 1);
+    setPriceAgreementRowsData(tempRow)
   };
+
+
+  const handleItemNumberSearch = async (e, itemType, id) => {
+    try {
+      let tempArray = [...priceAgreementRowsData];
+      let obj = tempArray[id];
+      obj.itemNumber = e.target.value;
+      if (itemType === "") {
+        throw "Select Item Type First."
+      }
+      if (itemType === "PARTS") {
+        let searchString = "partNumber~" + e.target.value;
+
+        sparePartSearch(searchString)
+          .then((res) => {
+            console.log("response", res);
+            obj.selectOptions = res;
+            tempArray[id] = obj;
+            setPriceAgreementRowsData([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+          })
+          .catch((err) => {
+            console.log(err)
+          });
+
+        obj.itemNumber = e.target.value;
+      } else {
+        obj.itemNumber = e.target.value;
+        tempArray[id] = obj;
+        setPriceAgreementRowsData([...tempArray]);
+      }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  const handleSearchItemNumberListClick = (e, currentItem, obj1, id) => {
+    let tempArray = [...priceAgreementRowsData];
+    let obj = tempArray[id];
+    obj.itemNumber = currentItem;
+    tempArray[id] = obj;
+    setPriceAgreementRowsData([...tempArray]);
+    $(`.scrollbar-${id}`).css("display", "none");
+  };
+
+  const handlePriceAgreementData = (e, i, type) => {
+    var tempRow = priceAgreementRowsData.slice();
+    if (type === "select") {
+      tempRow = {
+        ...tempRow[i],
+        itemType: e.value,
+        itemTypeKeyValue: e,
+      }
+    }
+    if (type == "text" || type == "number") {
+      tempRow = {
+        ...tempRow[i],
+        [e.target.name]: e.target.value,
+      }
+    }
+
+    let _priceAgreementRowsData = [...priceAgreementRowsData];
+    _priceAgreementRowsData.splice(i, 1, tempRow)
+    setPriceAgreementRowsData(_priceAgreementRowsData)
+  }
 
   const handleModelInputSearch = (e) => {
 
@@ -1401,6 +1515,23 @@ export function CreateCustomPortfolio(props) {
 
   const handleAddNewRowPriceAgreement = () => {
     var temp = [...priceAgreementRows];
+
+    var priceAgreementTableRowData = [...priceAgreementRowsData]
+    setPriceAgreementRowsData([
+      ...priceAgreementRowsData,
+      {
+        id: temp.length + 1,
+        itemType: "",
+        itemTypeKeyValue: { label: "", value: "", },
+        selectOptions: [],
+        itemNumber: "",
+        specialPrice: 0,
+        discount: 0,
+        absoluteDiscount: 0,
+      }
+    ]);
+
+
     var index = temp.length;
     var rowHtml = (
       <>
@@ -1530,13 +1661,16 @@ export function CreateCustomPortfolio(props) {
           itemHeaderFamily: itemData?.family,
           model: itemData.model,
           prefix: itemData.prefix,
-          type: "MACHINE",
+          type: "EMPTY",
           additional: "",
           currency: "",
           netPrice: 0,
-          itemProductHierarchy: "END_PRODUCT",
-          itemHeaderGeographic: "ONSITE",
-          responseTime: "PROACTIVE",
+          // itemProductHierarchy: "END_PRODUCT",
+          // itemHeaderGeographic: "ONSITE",
+          // responseTime: "PROACTIVE",
+          itemProductHierarchy: "EMPTY",
+          itemHeaderGeographic: "EMPTY",
+          responseTime: "EMPTY",
           usage: "",
           validFrom: generalComponentData.validFrom,
           validTo: generalComponentData.validTo,
@@ -1546,9 +1680,9 @@ export function CreateCustomPortfolio(props) {
           componentCode: "",
           componentDescription: "",
           serialNumber: "",
-          itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
+          itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "EMPTY",
           variant: "",
-          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
           jobCode: "",
           preparedBy: administrative.preparedBy,
           approvedBy: administrative.approvedBy,
@@ -1563,17 +1697,17 @@ export function CreateCustomPortfolio(props) {
         customItemBodyModel: {
           customItemBodyId: 0,
           itemBodyDescription: itemData.description,
-          spareParts: ["WITH_SPARE_PARTS"],
-          labours: ["WITH_LABOUR"],
-          miscellaneous: ["LUBRICANTS"],
-          taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["PM1"],
+          spareParts: ["EMPTY"],
+          labours: ["EMPTY"],
+          miscellaneous: ["EMPTY"],
+          taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["EMPTY"],
           solutionCode: "",
-          usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "REPAIR_OR_REPLACE",
+          usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "EMPTY",
           usage: "",
           year: itemData.year?.value,
           avgUsage: 0,
           unit: itemData.unit != "" ? itemData.unit?.value : "",
-          frequency: itemData.frequency != "" ? itemData.frequency?.value : "once",
+          frequency: itemData.frequency != "" ? itemData.frequency?.value : "",
           customItemPrices: [
             {
               customItemPriceDataId: itemPriceData.customItemPriceDataId
@@ -1596,15 +1730,17 @@ export function CreateCustomPortfolio(props) {
         itemPriceDataId: itemPriceData.customItemPriceDataId
       }
 
-      if ((itemPriceData.standardJobId == "") ||
-        (itemPriceData.standardJobId == null) ||
-        (itemPriceData.repairKitId != "")) {
+      if (((itemPriceData.standardJobId == "") ||
+        (itemPriceData.standardJobId == null)) &&
+        ((itemPriceData.repairKitId != "") ||
+          (itemPriceData.repairKitId != null))) {
         const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
       }
 
-      if ((itemPriceData.repairKitId == "") ||
-        (itemPriceData.repairKitId == null) ||
-        (itemPriceData.standardJobId != "")) {
+      if (((itemPriceData.repairKitId == "") ||
+        (itemPriceData.repairKitId == null)) &&
+        ((itemPriceData.standardJobId != "") ||
+          (itemPriceData.standardJobId != null))) {
         const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
       }
 
@@ -1778,21 +1914,24 @@ export function CreateCustomPortfolio(props) {
           customItemHeaderId: 0,
           itemHeaderDescription: itemData.description,
           bundleFlag: "PORTFOLIO",
-          withBundleService: bundleServiceNeed,
+          withBundleService: !bundleServiceNeed,
           portfolioItemId: 0,
           reference: generalComponentData.externalReference,
           itemHeaderMake: itemData?.make,
           itemHeaderFamily: itemData?.family,
           model: itemData.model,
           prefix: itemData.prefix,
-          type: "MACHINE",
+          type: "EMPTY",
           additional: "",
           currency: "",
           netPrice: 0,
-          itemProductHierarchy: "END_PRODUCT",
-          itemHeaderGeographic: "ONSITE",
-          responseTime: "PROACTIVE",
-          usage: "",
+          // itemProductHierarchy: "END_PRODUCT",
+          // itemHeaderGeographic: "ONSITE",
+          // responseTime: "PROACTIVE",
+          itemProductHierarchy: "EMPTY",
+          itemHeaderGeographic: "EMPTY",
+          responseTime: "EMPTY",
+          usage: itemData.usageIn != "" ? ((typeof itemData.usageType === "object") ? itemData.usageIn.value : itemData.usageIn) : "EMPTY",
           validFrom: generalComponentData.validFrom,
           validTo: generalComponentData.validTo,
           estimatedTime: "",
@@ -1801,9 +1940,9 @@ export function CreateCustomPortfolio(props) {
           componentCode: "",
           componentDescription: "",
           serialNumber: "",
-          itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
+          itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "EMPTY",
           variant: "",
-          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
           jobCode: "",
           preparedBy: administrative.preparedBy,
           approvedBy: administrative.approvedBy,
@@ -1818,17 +1957,17 @@ export function CreateCustomPortfolio(props) {
         customItemBodyModel: {
           customItemBodyId: 0,
           itemBodyDescription: itemData.description,
-          spareParts: ["WITH_SPARE_PARTS"],
-          labours: ["WITH_LABOUR"],
-          miscellaneous: ["LUBRICANTS"],
-          taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["PM1"],
+          spareParts: ["EMPTY"],
+          labours: ["EMPTY"],
+          miscellaneous: ["EMPTY"],
+          taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["EMPTY"],
           solutionCode: "",
-          usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "REPAIR_OR_REPLACE",
-          usage: "",
+          usageIn: itemData.usageIn != "" ? ((typeof itemData.usageType === "object") ? itemData.usageIn.value : itemData.usageIn) : "EMPTY",
+          usage: itemData.usageType != "" ? ((typeof itemData.usageType === "object") ? itemData.usageType?.value : itemData.usageType) : "",
           year: itemData.year?.value,
           avgUsage: 0,
           unit: itemData.unit != "" ? itemData.unit?.value : "",
-          frequency: itemData.frequency != "" ? itemData.frequency?.value : "once",
+          frequency: itemData.frequency != "" ? itemData.frequency?.value : "",
           customItemPrices: [
             {
               customItemPriceDataId: itemPriceData.customItemPriceDataId
@@ -1837,30 +1976,33 @@ export function CreateCustomPortfolio(props) {
         }
       }
 
-
       const itemRes = await customItemCreation(reqObj);
 
       if (itemRes.status !== 200) {
         throw "Something went wrong/Item not created"
       }
 
-      let reqObjSJId = {
-        itemId: itemRes.data.customItemId,
-        standardJobId: itemPriceData.standardJobId,
-        repairKitId: itemPriceData.repairKitId,
-        itemPriceDataId: itemPriceData.customItemPriceDataId
-      }
+      if (itemRes.status === 200) {
+        let reqObjSJId = {
+          itemId: itemRes.data.customItemId,
+          standardJobId: itemPriceData.standardJobId,
+          repairKitId: itemPriceData.repairKitId,
+          itemPriceDataId: itemPriceData.customItemPriceDataId
+        }
 
-      if ((itemPriceData.standardJobId == "") ||
-        (itemPriceData.standardJobId == null) ||
-        (itemPriceData.repairKitId != "")) {
-        const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
-      }
+        if (((itemPriceData.standardJobId == "") ||
+          (itemPriceData.standardJobId == null)) &&
+          ((itemPriceData.repairKitId != "") ||
+            (itemPriceData.repairKitId != null))) {
+          const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+        }
 
-      if ((itemPriceData.repairKitId == "") ||
-        (itemPriceData.repairKitId == null) ||
-        (itemPriceData.standardJobId != "")) {
-        const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+        if (((itemPriceData.repairKitId == "") ||
+          (itemPriceData.repairKitId == null)) &&
+          ((itemPriceData.standardJobId != "") ||
+            (itemPriceData.standardJobId != ""))) {
+          const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+        }
       }
 
       const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
@@ -1901,8 +2043,10 @@ export function CreateCustomPortfolio(props) {
         id: resPrice.data.customItemPriceDataId,
       })
 
+
+
       itemRes.data.associatedServiceOrBundle = [];
-      setSearchedPortfolioItemsData([...searchedPortfolioItemsData, itemRes.data]);
+      // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, itemRes.data]);
       setShowAddCustomPortfolioItemModelPopup(false);
 
       setCurrentItemId(itemRes.data.customItemId);
@@ -1910,6 +2054,44 @@ export function CreateCustomPortfolio(props) {
       _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
       var _itemArrData = [...selectedSolutionCustomItems];
       _itemArrData.push({ customItemId: itemRes.data.customItemId })
+
+
+      if (_itemArrData.length > 0) {
+        var tempBundleItemsUrl = _itemArrData.map((data, i) =>
+          `itemIds=${data.customItemId}`
+        ).join('&');
+
+        // if (state && state.type === "fetch") {
+        //   if ((portfolioId !== "" || (portfolioId !== undefined))) {
+        //     tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
+        //   }
+        // }
+
+        const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+        let expandAblePortfolioItems = []
+        let expendedBundleServiceItems = [];
+        if (tempBundleItemsColumnsData.status === 200) {
+          tempBundleItemsColumnsData.data.map((data, i) => {
+
+            for (let c = 0; c < data.bundleItems.length; c++) {
+              expendedBundleServiceItems.push(data.bundleItems[c]);
+            }
+
+            for (let d = 0; d < data.serviceItems.length; d++) {
+              expendedBundleServiceItems.push(data.serviceItems[d]);
+            }
+
+            expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+          })
+
+          // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
+          setSearchedPortfolioItemsData(expandAblePortfolioItems);
+        }
+
+      }
+
+
       setSelectedSolutionCustomItems(_itemArrData);
 
 
@@ -2104,13 +2286,16 @@ export function CreateCustomPortfolio(props) {
           itemHeaderFamily: data?.family,
           model: data?.model,
           prefix: data?.prefix,
-          type: "MACHINE",
+          type: "EMPTY",
           additional: "",
           currency: "",
           netPrice: 0,
-          itemProductHierarchy: "END_PRODUCT",
-          itemHeaderGeographic: "ONSITE",
-          responseTime: "PROACTIVE",
+          // itemProductHierarchy: "END_PRODUCT",
+          // itemHeaderGeographic: "ONSITE",
+          // responseTime: "PROACTIVE",
+          itemProductHierarchy: "EMPTY",
+          itemHeaderGeographic: "EMPTY",
+          responseTime: "EMPTY",
           usage: "",
           validFrom: validityData.fromDate,
           validTo: validityData.toDate,
@@ -2120,9 +2305,9 @@ export function CreateCustomPortfolio(props) {
           componentCode: "",
           componentDescription: "",
           serialNumber: "",
-          itemHeaderStrategy: "PREVENTIVE_MAINTENANCE",
+          itemHeaderStrategy: "EMPTY",
           variant: "",
-          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
           jobCode: "",
           preparedBy: administrative.preparedBy,
           approvedBy: administrative.approvedBy,
@@ -2135,17 +2320,17 @@ export function CreateCustomPortfolio(props) {
         customItemBodyModel: {
           customItemBodyId: 0,
           itemBodyDescription: data.description,
-          spareParts: ['WITH_SPARE_PARTS'],
-          labours: ['WITH_LABOUR'],
-          miscellaneous: ['LUBRICANTS'],
-          taskType: data.taskType != "" ? [data.taskType.value] : ["PM1"],
+          spareParts: ['EMPTY'],
+          labours: ['EMPTY'],
+          miscellaneous: ['EMPTY'],
+          taskType: data.taskType != "" ? [data.taskType.value] : ["EMPTY"],
           solutionCode: "",
-          usageIn: data.usageIn != "" ? data.usageIn.value : "REPAIR_OR_REPLACE",
+          usageIn: data.usageIn != "" ? data.usageIn.value : "EMPTY",
           usage: "",
           year: "",
           avgUsage: 0,
           unit: data.unit != "" ? data.unit?.value : "",
-          frequency: data.frequency != "" ? data.frequency?.value : "once",
+          frequency: data.frequency != "" ? data.frequency?.value : "",
           recommendedValue: parseInt(data.recommendedValue),
           customItemPrices: [
             {
@@ -2360,7 +2545,7 @@ export function CreateCustomPortfolio(props) {
           itemHeaderFamily: "",
           model: createServiceOrBundle.models,
           prefix: createServiceOrBundle.prefix,
-          type: "MACHINE",
+          type: "EMPTY",
           additional: createServiceOrBundle.additional.value,
           currency: "",
           netPrice: 0,
@@ -2372,7 +2557,7 @@ export function CreateCustomPortfolio(props) {
           validTo: generalComponentData.validTo,
           estimatedTime: "",
           servicePrice: 0,
-          status: "NEW",
+          status: "DRAFT",
         },
         itemBodyModel: {
           itemBodyId: parseInt(addPortFolioItem.id),
@@ -2383,9 +2568,9 @@ export function CreateCustomPortfolio(props) {
           standardJobId: "",
           frequency: addPortFolioItem.frequency.value,
           additional: "",
-          spareParts: ["WITH_SPARE_PARTS"],
-          labours: ["WITH_LABOUR"],
-          miscellaneous: ["LUBRICANTS"],
+          spareParts: ["EMPTY"],
+          labours: ["EMPTY"],
+          miscellaneous: ["EMPTY"],
           taskType: [addPortFolioItem.taskType.value],
           solutionCode: "",
           usageIn: addPortFolioItem.usageIn.value,
@@ -2397,7 +2582,7 @@ export function CreateCustomPortfolio(props) {
           serviceEstimateId: "",
           numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
-          priceMethod: "LIST_PRICE",
+          priceMethod: "EMPTY",
           listPrice: parseInt(priceCalculator.listPrice),
           priceEscalation: "",
           calculatedPrice: parseInt(priceCalculator.calculatedPrice),
@@ -2720,9 +2905,11 @@ export function CreateCustomPortfolio(props) {
         miscPriceBreakDownPercentage: editAbleItemPriceData.miscPriceBreakDownPercentage,
         totalPrice: editAbleItemPriceData.totalPrice,
         netService: editAbleItemPriceData.netService,
-        customPortfolio: {
-          // editAbleItemPriceData.customPortfolio,
-          portfolioId: portfolioId != null ? portfolioId : 1
+        customPortfolio: ((portfolioId == 0) ||
+          (portfolioId == null) ||
+          (portfolioId == undefined) ||
+          (portfolioId == "")) ? null : {
+          portfolioId: portfolioId
         },
         // tenantId: editAbleItemPriceData.tenantId,
         tenantId: loginTenantId,
@@ -2978,8 +3165,11 @@ export function CreateCustomPortfolio(props) {
             miscEscalation: 0,
             serviceEscalation: 0,
             withBundleService: bundleServiceNeed,
-            customPortfolio: {
-              portfolioId: portfolioId != null ? portfolioId : 1
+            customPortfolio: ((portfolioId == 0) ||
+              (portfolioId == null) ||
+              (portfolioId == undefined) ||
+              (portfolioId == "")) ? null : {
+              portfolioId: portfolioId
             },
             tenantId: loginTenantId,
             partsRequired: true,
@@ -3132,8 +3322,11 @@ export function CreateCustomPortfolio(props) {
             miscEscalation: 0,
             serviceEscalation: 0,
             withBundleService: bundleServiceNeed,
-            customPortfolio: {
-              portfolioId: portfolioId != null ? portfolioId : 1
+            customPortfolio: ((portfolioId == 0) ||
+              (portfolioId == null) ||
+              (portfolioId == undefined) ||
+              (portfolioId == "")) ? null : {
+              portfolioId: portfolioId
             },
             tenantId: loginTenantId,
             partsRequired: true,
@@ -3376,19 +3569,32 @@ export function CreateCustomPortfolio(props) {
   };
 
   // View custom Portfolio Item
-  const handleEditPortfolioItem = (e, row) => {
+  const handleEditPortfolioItem = async (e, row) => {
 
+    try {
+      if ((row === null) || (row === undefined)) {
+        throw "Something Went Wrong.";
+      } else {
+        const selectedItemData = await getCustomItemDataById(row.itemId);
+
+
+      }
+
+
+    } catch (error) {
+
+    }
 
     console.log("row 1942 : ", row);
     setTempBundleService3(row.associatedServiceOrBundle)
-    setComponentData({
-      ...componentData,
-      componentCode: row.customItemHeaderModel.componentCode,
-      description: row.customItemHeaderModel.componentDescription,
-      model: row.customItemHeaderModel.model,
-      make: row.customItemHeaderModel.itemHeaderMake,
-      serialNo: row.customItemHeaderModel.serialNumber,
-    });
+    // setComponentData({
+    //   ...componentData,
+    //   componentCode: row.customItemHeaderModel.componentCode,
+    //   description: row.customItemHeaderModel.componentDescription,
+    //   model: row.customItemHeaderModel.model,
+    //   make: row.customItemHeaderModel.itemHeaderMake,
+    //   serialNo: row.customItemHeaderModel.serialNumber,
+    // });
     // data.associatedServiceOrBundle?.map((bundleAndService, i)
     setTabs("1");
     // setItemModelShow(true);
@@ -3749,23 +3955,42 @@ export function CreateCustomPortfolio(props) {
               status: value2.value,
               supportLevel: value3.value,
 
-              machineType: "NEW",
+              // machineType: "NEW",
+              // searchTerm: "",
+              // lubricant: true,
+              // strategyTask: "PREVENTIVE_MAINTENANCE",
+              // taskType: "PM1",
+              // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              // availability: "AVAILABILITY_GREATER_95",
+              // type: "MACHINE",
+              // application: "HILL",
+              // contractOrSupport: "LEVEL_I",
+              // lifeStageOfMachine: "NEW_BREAKIN",
+              // numberOfEvents: 0,
+              // rating: "",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "HOURS",
+              // additionals: "",
+
+              machineType: "EMPTY",
               searchTerm: "",
               lubricant: true,
-              strategyTask: "PREVENTIVE_MAINTENANCE",
-              taskType: "PM1",
-              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-              availability: "AVAILABILITY_GREATER_95",
-              type: "MACHINE",
-              application: "HILL",
-              contractOrSupport: "LEVEL_I",
-              lifeStageOfMachine: "NEW_BREAKIN",
+              strategyTask: "EMPTY",
+              taskType: "EMPTY",
+              usageCategory: "EMPTY",
+              availability: "EMPTY",
+              type: "EMPTY",
+              application: "EMPTY",
+              contractOrSupport: "EMPTY",
+              lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
               startUsage: 0,
               endUsage: 0,
-              unit: "HOURS",
+              unit: "EMPTY",
               additionals: "",
+
               customItems: selectedSolutionCustomItems,
             }
 
@@ -3791,9 +4016,6 @@ export function CreateCustomPortfolio(props) {
               throw `${generalSolutionCreate.status}:error in Solution creation`;
             }
           } else {
-
-            console.log("general new state", state)
-            console.log("general new state.type ", state.type)
 
             let newReqObj = {
               name: generalComponentData.name,
@@ -3841,23 +4063,42 @@ export function CreateCustomPortfolio(props) {
               status: value2.value,
               supportLevel: value3.value,
 
-              machineType: "NEW",
+              // machineType: "NEW",
+              // searchTerm: "",
+              // lubricant: true,
+              // strategyTask: "PREVENTIVE_MAINTENANCE",
+              // taskType: "PM1",
+              // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              // availability: "AVAILABILITY_GREATER_95",
+              // type: "MACHINE",
+              // application: "HILL",
+              // contractOrSupport: "LEVEL_I",
+              // lifeStageOfMachine: "NEW_BREAKIN",
+              // numberOfEvents: 0,
+              // rating: "",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "HOURS",
+              // additionals: "",
+
+              machineType: "EMPTY",
               searchTerm: "",
               lubricant: true,
-              strategyTask: "PREVENTIVE_MAINTENANCE",
-              taskType: "PM1",
-              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-              availability: "AVAILABILITY_GREATER_95",
-              type: "MACHINE",
-              application: "HILL",
-              contractOrSupport: "LEVEL_I",
-              lifeStageOfMachine: "NEW_BREAKIN",
+              strategyTask: "EMPTY",
+              taskType: "EMPTY",
+              usageCategory: "EMPTY",
+              availability: "EMPTY",
+              type: "EMPTY",
+              application: "EMPTY",
+              contractOrSupport: "EMPTY",
+              lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
               startUsage: 0,
               endUsage: 0,
-              unit: "HOURS",
+              unit: "EMPTY",
               additionals: "",
+
               customItems: selectedSolutionCustomItems,
             }
 
@@ -3997,9 +4238,6 @@ export function CreateCustomPortfolio(props) {
           //     throw `${portfolioRes.status}:error in portfolio creation`;
           // }
         } else {
-          console.log("general fetch state", state)
-          console.log("general fetch state.type ", state.type)
-
           // Oldest Todo
           // let reqObj = {
           //     customPortfolioId: portfolioId,
@@ -4216,23 +4454,42 @@ export function CreateCustomPortfolio(props) {
             status: value2.value,
             supportLevel: value3.value,
 
-            machineType: "NEW",
+            // machineType: "NEW",
+            // searchTerm: "",
+            // lubricant: true,
+            // strategyTask: "PREVENTIVE_MAINTENANCE",
+            // taskType: "PM1",
+            // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            // availability: "AVAILABILITY_GREATER_95",
+            // type: "MACHINE",
+            // application: "HILL",
+            // contractOrSupport: "LEVEL_I",
+            // lifeStageOfMachine: "NEW_BREAKIN",
+            // numberOfEvents: 0,
+            // rating: "",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "HOURS",
+            // additionals: "",
+
+            machineType: "EMPTY",
             searchTerm: "",
             lubricant: true,
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            availability: "AVAILABILITY_GREATER_95",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
+            strategyTask: "EMPTY",
+            taskType: "EMPTY",
+            usageCategory: "EMPTY",
+            availability: "EMPTY",
+            type: "EMPTY",
+            application: "EMPTY",
+            contractOrSupport: "EMPTY",
+            lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
             startUsage: 0,
             endUsage: 0,
-            unit: "HOURS",
+            unit: "EMPTY",
             additionals: "",
+
             customItems: selectedSolutionCustomItems,
           }
 
@@ -4258,6 +4515,13 @@ export function CreateCustomPortfolio(props) {
 
         }
       } else if (e.target.id == "validity") {
+
+        if ((portfolioId == undefined) ||
+          (portfolioId == null) ||
+          (portfolioId == "")) {
+          throw "Please Create Solution first.";
+        }
+
         let reqData;
         if (!viewOnlyTab.validityViewOnly) {
           if (
@@ -4275,16 +4539,14 @@ export function CreateCustomPortfolio(props) {
             validityData.dateFlag
           ) {
             reqData = {
-              validFrom: validityData.fromDate.toISOString().substring(0, 10),
-              validTo: validityData.toDate.toISOString().substring(0, 10),
+              // validFrom: validityData.fromDate.toISOString().substring(0, 10),
+              // validTo: validityData.toDate.toISOString().substring(0, 10),
+              validFrom: validityData.fromDate,
+              validTo: validityData.toDate,
             };
           } else {
             throw "Please fill date fields";
           }
-        }
-
-        if (portfolioId == "") {
-          throw "Please Create Solution first"
         }
         setValue("strategy");
         setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: true });
@@ -4304,15 +4566,18 @@ export function CreateCustomPortfolio(props) {
         });
       } else if (e.target.id == "strategy") {
 
+        if ((portfolioId == undefined) ||
+          (portfolioId == null) ||
+          (portfolioId == "")) {
+          throw "Please Create Solution first.";
+        }
+
         if ((solutionTypeListKeyValue.value === "") ||
           (solutionTypeListKeyValue.value === undefined)) {
           throw "Solution Type is a required field, you can’t leave it blank";
         }
 
         if (state && state.type === "new") {
-          console.log("strategy new state", state)
-          console.log("strategy new state.type ", state.type)
-
           if (portfolioId == "") {
             throw "Please Create Solution First."
           }
@@ -4450,23 +4715,42 @@ export function CreateCustomPortfolio(props) {
             status: value2.value,
             supportLevel: value3.value,
 
-            machineType: "NEW",
+            // machineType: "NEW",
+            // searchTerm: "",
+            // lubricant: true,
+            // strategyTask: "PREVENTIVE_MAINTENANCE",
+            // taskType: "PM1",
+            // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            // availability: "AVAILABILITY_GREATER_95",
+            // type: "MACHINE",
+            // application: "HILL",
+            // contractOrSupport: "LEVEL_I",
+            // lifeStageOfMachine: "NEW_BREAKIN",
+            // numberOfEvents: 0,
+            // rating: "",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "HOURS",
+            // additionals: "",
+
+            machineType: "EMPTY",
             searchTerm: "",
             lubricant: true,
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            availability: "AVAILABILITY_GREATER_95",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
+            strategyTask: "EMPTY",
+            taskType: "EMPTY",
+            usageCategory: "EMPTY",
+            availability: "EMPTY",
+            type: "EMPTY",
+            application: "EMPTY",
+            contractOrSupport: "EMPTY",
+            lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
             startUsage: 0,
             endUsage: 0,
-            unit: "HOURS",
+            unit: "EMPTY",
             additionals: "",
+
             customItems: selectedSolutionCustomItems,
           }
 
@@ -4475,7 +4759,6 @@ export function CreateCustomPortfolio(props) {
             portfolioId,
             newReqObj
           );
-
 
           if (strategySolutionUpdate.status === 200) {
             toast(`👏 Solution ${generalComponentData.name} Updated Successfully`, {
@@ -4494,9 +4777,6 @@ export function CreateCustomPortfolio(props) {
             throw `${strategySolutionUpdate.status}:error in Solution Update`;
           }
         } else {
-          console.log("strategy fetch state", state)
-          console.log("strategy fetch state.type ", state.type)
-
           // Oldest Todo
           // let reqObj = {
           //     customPortfolioId: portfolioId,
@@ -4715,23 +4995,42 @@ export function CreateCustomPortfolio(props) {
             status: value2.value,
             supportLevel: value3.value,
 
-            machineType: "NEW",
+            // machineType: "NEW",
+            // searchTerm: "",
+            // lubricant: true,
+            // strategyTask: "PREVENTIVE_MAINTENANCE",
+            // taskType: "PM1",
+            // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            // availability: "AVAILABILITY_GREATER_95",
+            // type: "MACHINE",
+            // application: "HILL",
+            // contractOrSupport: "LEVEL_I",
+            // lifeStageOfMachine: "NEW_BREAKIN",
+            // numberOfEvents: 0,
+            // rating: "",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "HOURS",
+            // additionals: "",
+
+            machineType: "EMPTY",
             searchTerm: "",
             lubricant: true,
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            availability: "AVAILABILITY_GREATER_95",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
+            strategyTask: "EMPTY",
+            taskType: "EMPTY",
+            usageCategory: "EMPTY",
+            availability: "EMPTY",
+            type: "EMPTY",
+            application: "EMPTY",
+            contractOrSupport: "EMPTY",
+            lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
             startUsage: 0,
             endUsage: 0,
-            unit: "HOURS",
+            unit: "EMPTY",
             additionals: "",
+
             customItems: selectedSolutionCustomItems,
           }
 
@@ -4758,6 +5057,12 @@ export function CreateCustomPortfolio(props) {
         }
 
       } else if (e.target.id == "price") {
+
+        if ((portfolioId == undefined) ||
+          (portfolioId == null) ||
+          (portfolioId == "")) {
+          throw "Please Create Solution first.";
+        }
 
         if ((priceMethodKeyValue1.length === 0 ||
           priceMethodKeyValue1?.value === "" ||
@@ -4957,23 +5262,42 @@ export function CreateCustomPortfolio(props) {
               status: value2.value,
               supportLevel: value3.value,
 
-              machineType: "NEW",
+              // machineType: "NEW",
+              // searchTerm: "",
+              // lubricant: true,
+              // strategyTask: "PREVENTIVE_MAINTENANCE",
+              // taskType: "PM1",
+              // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              // availability: "AVAILABILITY_GREATER_95",
+              // type: "MACHINE",
+              // application: "HILL",
+              // contractOrSupport: "LEVEL_I",
+              // lifeStageOfMachine: "NEW_BREAKIN",
+              // numberOfEvents: 0,
+              // rating: "",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "HOURS",
+              // additionals: "",
+
+              machineType: "EMPTY",
               searchTerm: "",
               lubricant: true,
-              strategyTask: "PREVENTIVE_MAINTENANCE",
-              taskType: "PM1",
-              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-              availability: "AVAILABILITY_GREATER_95",
-              type: "MACHINE",
-              application: "HILL",
-              contractOrSupport: "LEVEL_I",
-              lifeStageOfMachine: "NEW_BREAKIN",
+              strategyTask: "EMPTY",
+              taskType: "EMPTY",
+              usageCategory: "EMPTY",
+              availability: "EMPTY",
+              type: "EMPTY",
+              application: "EMPTY",
+              contractOrSupport: "EMPTY",
+              lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
               startUsage: 0,
               endUsage: 0,
-              unit: "HOURS",
+              unit: "EMPTY",
               additionals: "",
+
               customItems: selectedSolutionCustomItems,
             }
 
@@ -5302,23 +5626,42 @@ export function CreateCustomPortfolio(props) {
               status: value2.value,
               supportLevel: value3.value,
 
-              machineType: "NEW",
+              // machineType: "NEW",
+              // searchTerm: "",
+              // lubricant: true,
+              // strategyTask: "PREVENTIVE_MAINTENANCE",
+              // taskType: "PM1",
+              // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              // availability: "AVAILABILITY_GREATER_95",
+              // type: "MACHINE",
+              // application: "HILL",
+              // contractOrSupport: "LEVEL_I",
+              // lifeStageOfMachine: "NEW_BREAKIN",
+              // numberOfEvents: 0,
+              // rating: "",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "HOURS",
+              // additionals: "",
+
+              machineType: "EMPTY",
               searchTerm: "",
               lubricant: true,
-              strategyTask: "PREVENTIVE_MAINTENANCE",
-              taskType: "PM1",
-              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-              availability: "AVAILABILITY_GREATER_95",
-              type: "MACHINE",
-              application: "HILL",
-              contractOrSupport: "LEVEL_I",
-              lifeStageOfMachine: "NEW_BREAKIN",
+              strategyTask: "EMPTY",
+              taskType: "EMPTY",
+              usageCategory: "EMPTY",
+              availability: "EMPTY",
+              type: "EMPTY",
+              application: "EMPTY",
+              contractOrSupport: "EMPTY",
+              lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
               startUsage: 0,
               endUsage: 0,
-              unit: "HOURS",
+              unit: "EMPTY",
               additionals: "",
+
               customItems: selectedSolutionCustomItems,
             }
 
@@ -5524,23 +5867,42 @@ export function CreateCustomPortfolio(props) {
               status: value2.value,
               supportLevel: value3.value,
 
-              machineType: "NEW",
+              // machineType: "NEW",
+              // searchTerm: "",
+              // lubricant: true,
+              // strategyTask: "PREVENTIVE_MAINTENANCE",
+              // taskType: "PM1",
+              // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              // availability: "AVAILABILITY_GREATER_95",
+              // type: "MACHINE",
+              // application: "HILL",
+              // contractOrSupport: "LEVEL_I",
+              // lifeStageOfMachine: "NEW_BREAKIN",
+              // numberOfEvents: 0,
+              // rating: "",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "HOURS",
+              // additionals: "",
+
+              machineType: "EMPTY",
               searchTerm: "",
               lubricant: true,
-              strategyTask: "PREVENTIVE_MAINTENANCE",
-              taskType: "PM1",
-              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-              availability: "AVAILABILITY_GREATER_95",
-              type: "MACHINE",
-              application: "HILL",
-              contractOrSupport: "LEVEL_I",
-              lifeStageOfMachine: "NEW_BREAKIN",
+              strategyTask: "EMPTY",
+              taskType: "EMPTY",
+              usageCategory: "EMPTY",
+              availability: "EMPTY",
+              type: "EMPTY",
+              application: "EMPTY",
+              contractOrSupport: "EMPTY",
+              lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
               startUsage: 0,
               endUsage: 0,
-              unit: "HOURS",
+              unit: "EMPTY",
               additionals: "",
+
               customItems: selectedSolutionCustomItems,
             }
 
@@ -5869,23 +6231,42 @@ export function CreateCustomPortfolio(props) {
               status: value2.value,
               supportLevel: value3.value,
 
-              machineType: "NEW",
+              // machineType: "NEW",
+              // searchTerm: "",
+              // lubricant: true,
+              // strategyTask: "PREVENTIVE_MAINTENANCE",
+              // taskType: "PM1",
+              // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              // availability: "AVAILABILITY_GREATER_95",
+              // type: "MACHINE",
+              // application: "HILL",
+              // contractOrSupport: "LEVEL_I",
+              // lifeStageOfMachine: "NEW_BREAKIN",
+              // numberOfEvents: 0,
+              // rating: "",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "HOURS",
+              // additionals: "",
+
+              machineType: "EMPTY",
               searchTerm: "",
               lubricant: true,
-              strategyTask: "PREVENTIVE_MAINTENANCE",
-              taskType: "PM1",
-              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-              availability: "AVAILABILITY_GREATER_95",
-              type: "MACHINE",
-              application: "HILL",
-              contractOrSupport: "LEVEL_I",
-              lifeStageOfMachine: "NEW_BREAKIN",
+              strategyTask: "EMPTY",
+              taskType: "EMPTY",
+              usageCategory: "EMPTY",
+              availability: "EMPTY",
+              type: "EMPTY",
+              application: "EMPTY",
+              contractOrSupport: "EMPTY",
+              lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
               startUsage: 0,
               endUsage: 0,
-              unit: "HOURS",
+              unit: "EMPTY",
               additionals: "",
+
               customItems: selectedSolutionCustomItems,
             }
 
@@ -5911,10 +6292,37 @@ export function CreateCustomPortfolio(props) {
           }
         }
 
-
       } else if (e.target.id == "priceAgreement") {
+        if ((portfolioId == undefined) ||
+          (portfolioId == null) ||
+          (portfolioId == "")) {
+          throw "Please Create Solution first.";
+        }
+        var array = [];
+        if (priceAgreementRowsData.length > 0) {
+          for (let p = 0; p < priceAgreementRowsData.length; p++) {
+            var newObj = {
+              itemType: priceAgreementRowsData[p].itemType !== "" ? priceAgreementRowsData[p].itemType : "EMPTY ",
+              itemNumber: priceAgreementRowsData[p].itemNumber,
+              specialPrice: parseFloat(priceAgreementRowsData[p].specialPrice),
+              discount: parseFloat(priceAgreementRowsData[p].discount),
+              absoluteDiscount: parseFloat(priceAgreementRowsData[p].absoluteDiscount)
+            }
+
+            const priceAgreementRes = await portfolioPriceAgreementCreation(newObj)
+            if (priceAgreementRes.status === 200) {
+              array.push({ priceAgreementId: priceAgreementRes.data.priceAgreementId })
+            }
+          }
+        }
+        setCreatedPriceAgreementData(array);
         setValue("coverage");
       } else if (e.target.id == "coverage") {
+        if ((portfolioId == undefined) ||
+          (portfolioId == null) ||
+          (portfolioId == "")) {
+          throw "Please Create Solution first.";
+        }
         let cvgIds = [];
         for (let i = 0; i < selectedMasterData.length; i++) {
           if (
@@ -5948,7 +6356,6 @@ export function CreateCustomPortfolio(props) {
         console.log("cvgIds : ", cvgIds);
         // setPortfolioCoverage(cvgIds);
         setSelectedSolutionCustomCoverages(cvgIds);
-
 
         setGeneralComponentData({
           ...generalComponentData,
@@ -6111,7 +6518,6 @@ export function CreateCustomPortfolio(props) {
 
         // =================== unComment this Old Todo Code ================== // 
 
-
         let reqObj = {
           name: generalComponentData.name,
           description: generalComponentData.description,
@@ -6158,22 +6564,40 @@ export function CreateCustomPortfolio(props) {
           status: value2.value,
           supportLevel: value3.value,
 
-          machineType: "NEW",
+          // machineType: "NEW",
+          // searchTerm: "",
+          // lubricant: true,
+          // strategyTask: "PREVENTIVE_MAINTENANCE",
+          // taskType: "PM1",
+          // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+          // availability: "AVAILABILITY_GREATER_95",
+          // type: "MACHINE",
+          // application: "HILL",
+          // contractOrSupport: "LEVEL_I",
+          // lifeStageOfMachine: "NEW_BREAKIN",
+          // numberOfEvents: 0,
+          // rating: "",
+          // startUsage: 0,
+          // endUsage: 0,
+          // unit: "HOURS",
+          // additionals: "",
+
+          machineType: "EMPTY",
           searchTerm: "",
           lubricant: true,
-          strategyTask: "PREVENTIVE_MAINTENANCE",
-          taskType: "PM1",
-          usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-          availability: "AVAILABILITY_GREATER_95",
-          type: "MACHINE",
-          application: "HILL",
-          contractOrSupport: "LEVEL_I",
-          lifeStageOfMachine: "NEW_BREAKIN",
+          strategyTask: "EMPTY",
+          taskType: "EMPTY",
+          usageCategory: "EMPTY",
+          availability: "EMPTY",
+          type: "EMPTY",
+          application: "EMPTY",
+          contractOrSupport: "EMPTY",
+          lifeStageOfMachine: "EMPTY",
           numberOfEvents: 0,
           rating: "",
           startUsage: 0,
           endUsage: 0,
-          unit: "HOURS",
+          unit: "EMPTY",
           additionals: "",
 
           customItems: selectedSolutionCustomItems,
@@ -6207,6 +6631,12 @@ export function CreateCustomPortfolio(props) {
       } else if (e.target.id == "administrative") {
         const validator = new Validator();
 
+        if ((portfolioId == undefined) ||
+          (portfolioId == null) ||
+          (portfolioId == "")) {
+          throw "Please Create Solution first.";
+        }
+
         if ((administrative.preparedBy == "") ||
           (administrative.preparedBy == undefined)) {
           throw "Prepared By is a required field, you can’t leave it blank";
@@ -6221,7 +6651,6 @@ export function CreateCustomPortfolio(props) {
           (administrative.offerValidity == undefined)) {
           throw "Offer Validity is a required field, you can’t leave it blank";
         }
-
 
         // if ((!validator.emailValidation(administrative.preparedBy) ||
         //     administrative.preparedBy == "" ||
@@ -6245,7 +6674,6 @@ export function CreateCustomPortfolio(props) {
 
         if (state && state.type === "new") {
           if (portfolioId != "") {
-
             setGeneralComponentData({
               ...generalComponentData,
               preparedBy: administrative.preparedBy,
@@ -6420,7 +6848,6 @@ export function CreateCustomPortfolio(props) {
             // };
             // ================= Uncomment this Todo Code End ================= //
 
-
             let administrativeObj = {
               name: generalComponentData.name,
               description: generalComponentData.description,
@@ -6467,23 +6894,42 @@ export function CreateCustomPortfolio(props) {
               status: value2.value,
               supportLevel: value3.value,
 
-              machineType: "NEW",
+              // machineType: "NEW",
+              // searchTerm: "",
+              // lubricant: true,
+              // strategyTask: "PREVENTIVE_MAINTENANCE",
+              // taskType: "PM1",
+              // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+              // availability: "AVAILABILITY_GREATER_95",
+              // type: "MACHINE",
+              // application: "HILL",
+              // contractOrSupport: "LEVEL_I",
+              // lifeStageOfMachine: "NEW_BREAKIN",
+              // numberOfEvents: 0,
+              // rating: "",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "HOURS",
+              // additionals: "",
+
+              machineType: "EMPTY",
               searchTerm: "",
               lubricant: true,
-              strategyTask: "PREVENTIVE_MAINTENANCE",
-              taskType: "PM1",
-              usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-              availability: "AVAILABILITY_GREATER_95",
-              type: "MACHINE",
-              application: "HILL",
-              contractOrSupport: "LEVEL_I",
-              lifeStageOfMachine: "NEW_BREAKIN",
+              strategyTask: "EMPTY",
+              taskType: "EMPTY",
+              usageCategory: "EMPTY",
+              availability: "EMPTY",
+              type: "EMPTY",
+              application: "EMPTY",
+              contractOrSupport: "EMPTY",
+              lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
               startUsage: 0,
               endUsage: 0,
-              unit: "HOURS",
+              unit: "EMPTY",
               additionals: "",
+
               customItems: selectedSolutionCustomItems,
             }
             const administrativeRes = await updateCustomPortfolio(
@@ -6509,16 +6955,10 @@ export function CreateCustomPortfolio(props) {
               // throw `${administrativeRes.status}:already exist or something else`;
               throw `${administrativeRes.status}: Error in Solution update`;
             };
-
-            // console.log("administrative", administrative);
-            // // setValue("price");
-
           } else {
             throw "Please create Solution First."
           }
-
         } else {
-
           // Old Todo
           // let reqObj = {
           //     customPortfolioId: portfolioId,
@@ -6718,23 +7158,42 @@ export function CreateCustomPortfolio(props) {
             status: value2.value,
             supportLevel: value3.value,
 
-            machineType: "NEW",
+            // machineType: "NEW",
+            // searchTerm: "",
+            // lubricant: true,
+            // strategyTask: "PREVENTIVE_MAINTENANCE",
+            // taskType: "PM1",
+            // usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            // availability: "AVAILABILITY_GREATER_95",
+            // type: "MACHINE",
+            // application: "HILL",
+            // contractOrSupport: "LEVEL_I",
+            // lifeStageOfMachine: "NEW_BREAKIN",
+            // numberOfEvents: 0,
+            // rating: "",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "HOURS",
+            // additionals: "",
+
+            machineType: "EMPTY",
             searchTerm: "",
             lubricant: true,
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            availability: "AVAILABILITY_GREATER_95",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
+            strategyTask: "EMPTY",
+            taskType: "EMPTY",
+            usageCategory: "EMPTY",
+            availability: "EMPTY",
+            type: "EMPTY",
+            application: "EMPTY",
+            contractOrSupport: "EMPTY",
+            lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
             startUsage: 0,
             endUsage: 0,
-            unit: "HOURS",
+            unit: "EMPTY",
             additionals: "",
+
             customItems: selectedSolutionCustomItems,
           }
           const exitsPortfolioUpdate = await updateCustomPortfolio(
@@ -8161,6 +8620,13 @@ export function CreateCustomPortfolio(props) {
     { value: "Location4", label: "Location4" },
   ];
 
+  const priceAgreementItemTypeOptions = [
+    { value: "PARTS", label: "Spare Parts" },
+    { value: "LABOUR", label: "Labor" },
+    { value: "SERVICE", label: "Service" },
+    { value: "MISC", label: "Miscellaneous" },
+  ]
+
 
   const [versionOption, setVersionOption] = useState([]);
   const [statusOption, setStatusOption] = useState([]);
@@ -8336,77 +8802,115 @@ export function CreateCustomPortfolio(props) {
           copyMaterToCustomPortfolio(dataIs)
             .then((res) => {
               var myArr = [];
+              var _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
               var customItemArr = [];
               if (res.status === 200) {
                 var result = res.data;
+                // console.log("result is ----- ", result)
+                if (res.data.customItems.length > 0) {
+                  res.data.customItems.map((data, i) => {
+                    customItemArr.push({ customItemId: data.customItemId })
+                  });
 
-                console.log("result is ----- ", result)
+                  setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemArr])
+
+                }
+
+                if (customItemArr.length > 0) {
+
+                  customItemArr.sort((a, b) => {
+                    return a.customItemId - b.customItemId;
+                  });
+
+                  var tempBundleItemsUrl = customItemArr.map((data, i) =>
+                    `itemIds=${data.customItemId}`
+                  ).join('&');
+
+                  showSelectedItemsInTable(tempBundleItemsUrl)
+
+                }
+
                 let itemsArrData = [];
-                if (result.customItems.length > 0) {
-                  for (let i = 0; i < result.customItems.length; i++) {
-                    if (result.customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
-                      let myObj = result.customItems[i];
-                      let expendedArrObj = [];
-                      if (result.itemRelations != null) {
-                        if (result.itemRelations.length > 0) {
-                          for (let b = 0; b < result.itemRelations.length; b++) {
-                            if (result.customItems[i].customItemId == result.itemRelations[b].portfolioItemId) {
+                // if (result.customItems.length > 0) {
+                //   for (let i = 0; i < result.customItems.length; i++) {
+                //     if (result.customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
+                //       let myObj = result.customItems[i];
+                //       let expendedArrObj = [];
+                //       if (result.itemRelations != null) {
+                //         if (result.itemRelations.length > 0) {
+                //           for (let b = 0; b < result.itemRelations.length; b++) {
+                //             if (result.customItems[i].customItemId == result.itemRelations[b].portfolioItemId) {
 
-                              for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+                //               for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
 
-                                let bundleObj = result.customItems.find((objBundle, i) => {
-                                  if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
+                //                 let bundleObj = result.customItems.find((objBundle, i) => {
+                //                   if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
 
-                                    return objBundle; // stop searching
-                                  }
-                                });
-                                expendedArrObj.push(bundleObj);
-                              }
+                //                     return objBundle; // stop searching
+                //                   }
+                //                 });
+                //                 expendedArrObj.push(bundleObj);
+                //               }
 
-                              for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+                //               for (let d = 0; d < result.itemRelations[b].services.length; d++) {
 
-                                let serviceObj = result.customItems.find((objService, i) => {
-                                  if (objService.customItemId == result.itemRelations[b].services[d]) {
+                //                 let serviceObj = result.customItems.find((objService, i) => {
+                //                   if (objService.customItemId == result.itemRelations[b].services[d]) {
 
-                                    return objService; // stop searching
-                                  }
-                                });
-                                expendedArrObj.push(serviceObj);
-                              }
+                //                     return objService; // stop searching
+                //                   }
+                //                 });
+                //                 expendedArrObj.push(serviceObj);
+                //               }
 
-                            }
-                            myObj.associatedServiceOrBundle = expendedArrObj;
-                            itemsArrData.push(myObj);
-                          }
-                        } else {
-                          myObj.associatedServiceOrBundle = expendedArrObj;
-                          itemsArrData.push(myObj);
-                        }
-                      } else {
-                        myObj.associatedServiceOrBundle = expendedArrObj;
-                        itemsArrData.push(myObj);
-                      }
-                    }
-                  }
-                  myArr.push(...itemsArrData)
-                }
+                //             }
+                //             myObj.associatedServiceOrBundle = expendedArrObj;
+                //             itemsArrData.push(myObj);
+                //           }
+                //         } else {
+                //           myObj.associatedServiceOrBundle = expendedArrObj;
+                //           itemsArrData.push(myObj);
+                //         }
+                //       } else {
+                //         myObj.associatedServiceOrBundle = expendedArrObj;
+                //         itemsArrData.push(myObj);
+                //       }
+                //     }
+                //   }
+                //   myArr.push(...itemsArrData)
+                // }
 
-                for (let k = 0; k < result.customItems.length; k++) {
-                  customItemArr.push({ customItemId: result.customItems[k].customItemId })
-                }
-                setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemArr])
+                // for (let k = 0; k < result.customItems.length; k++) {
+                //   customItemArr.push({ customItemId: result.customItems[k].customItemId })
+                // }
+
                 let cloneArr = []
-                console.log("my arrr issssssssssss ", myArr);
-                myArr.map((data, i) => {
-                  console.log("data: ", data)
-                  const exist = selectedSearchMasterData.some(item =>
-                    item.customItemId === data.customItemId)
-                  console.log("exist: ", exist)
-                  if (!exist) {
-                    cloneArr.push(data)
-                  }
-                })
-                setSelectedSearchMasterData([...selectedSearchMasterData, ...cloneArr])
+                // console.log("my arrr issssssssssss ", myArr);
+                // myArr.map((data, i) => {
+                //   console.log("data: ", data)
+                //   const exist = selectedSearchMasterData.some(item =>
+                //     item.customItemId === data.customItemId)
+                //   console.log("exist: ", exist)
+                //   if (!exist) {
+                //     cloneArr.push(data)
+                //   }
+                // })
+
+                console.log("my arrr newOne ", myArr);
+                var _selectedSearchMasterData = [...selectedSearchMasterData, ...myArr];
+                // if (myArr.length > 0) {
+                //   var newOne = myArr.filter((item, index) => myArr.indexOf(item) === index);
+                //   myArr.map((data, i) => {
+                //     // console.log("data: ", data)
+                //     const exist = selectedSearchMasterData.some(item =>
+                //       item.itemId === data.itemId)
+                //     if (!exist) {
+                //       _selectedSearchMasterData.push()
+                //       cloneArr.push(data)
+                //     }
+                //   })
+                //   setSelectedSearchMasterData([...selectedSearchMasterData, ...cloneArr])
+                // }
               }
             })
         }
@@ -8419,8 +8923,7 @@ export function CreateCustomPortfolio(props) {
       selectedSearchRowsData.map((data, i) => {
         console.log("data: ", data)
         const exist = selectedSearchMasterData.some(item =>
-          item.customItemId === data.customItemId)
-        console.log("exist: ", exist)
+          item.itemId === data.itemId)
         if (!exist) {
           cloneArr.push(data)
         }
@@ -8429,15 +8932,18 @@ export function CreateCustomPortfolio(props) {
       var customItemArr = [];
       var customItemIds = [];
       for (let k = 0; k < _selectedSearchRowsData.length; k++) {
-        customItemArr.push({ customItemId: _selectedSearchRowsData[k].customItemId })
+        // customItemArr.push({ customItemId: _selectedSearchRowsData[k].customItemId })
+        customItemArr.push({ customItemId: _selectedSearchRowsData[k].itemId })
         if (_selectedSearchRowsData[k].associatedServiceOrBundle.length > 0) {
           for (let l = 0; l < _selectedSearchRowsData[k].associatedServiceOrBundle.length; l++) {
-            customItemArr.push({ customItemId: _selectedSearchRowsData[k].associatedServiceOrBundle[l].customItemId })
+            // customItemArr.push({ customItemId: _selectedSearchRowsData[k].associatedServiceOrBundle[l].customItemId })
+            customItemArr.push({ customItemId: _selectedSearchRowsData[k].associatedServiceOrBundle[l].itemId })
           }
         }
       }
       customItemArr.map((data, index) => {
-        const customIdExits = selectedSolutionCustomItems.some(item => item.customItemId === data.customItemId);
+        // const customIdExits = selectedSolutionCustomItems.some(item => item.customItemId === data.customItemId);
+        const customIdExits = selectedSolutionCustomItems.some(item => item.customItemId === data.itemId);
         if (!customIdExits) {
           customItemIds.push(data);
         }
@@ -8447,11 +8953,53 @@ export function CreateCustomPortfolio(props) {
       setSelectedSearchMasterData([...selectedSearchMasterData, ...cloneArr])
       setSearchedPortfolioItemsData([])
     }
-
-
   }
 
-  console.log("selectedSearchMasterData ------------ ", selectedSearchMasterData)
+
+  const showSelectedItemsInTable = async (tempBundleItemsUrl) => {
+    var myArr = [];
+    let cloneArr = []
+    const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+    let expandAblePortfolioItems = []
+    let expendedBundleServiceItems = [];
+
+
+    if (tempBundleItemsColumnsData.status === 200) {
+      tempBundleItemsColumnsData.data.map((data, i) => {
+
+        for (let c = 0; c < data.bundleItems.length; c++) {
+          expendedBundleServiceItems.push(data.bundleItems[c]);
+        }
+
+        for (let d = 0; d < data.serviceItems.length; d++) {
+          expendedBundleServiceItems.push(data.serviceItems[d]);
+        }
+
+        expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+      })
+      myArr.push(...expandAblePortfolioItems);
+      console.log("expandAblePortfolioItems ----------- ======= ", expandAblePortfolioItems, myArr);
+      if (expandAblePortfolioItems.length > 0) {
+        var newOne = expandAblePortfolioItems.filter((item, index) => expandAblePortfolioItems.indexOf(item) === index);
+        expandAblePortfolioItems.map((data, i) => {
+          // console.log("data: ", data)
+          const exist = selectedSearchMasterData.some(item =>
+            item.itemId === data.itemId)
+          if (!exist) {
+            // _selectedSearchMasterData.push()
+            cloneArr.push(data)
+          }
+        })
+        // setSearchedPortfolioItemsData([...selectedSearchMasterData, ...cloneArr])
+        setSelectedSearchMasterData([...selectedSearchMasterData, ...cloneArr])
+      }
+    }
+  }
+
+
+
+  console.log("======  selectedSearchRowsData  ===== ", selectedSearchMasterData, selectedSearchRowsData)
 
   useEffect(() => {
     if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
@@ -8993,8 +9541,11 @@ export function CreateCustomPortfolio(props) {
               miscEscalation: itemsPrice.miscEscalation,
               serviceEscalation: itemsPrice.serviceEscalation,
               withBundleService: itemsPrice.withBundleService,
-              customPortfolio: {
-                portfolioId: portfolioId != null ? portfolioId : 1
+              customPortfolio: ((portfolioId == 0) ||
+                (portfolioId == null) ||
+                (portfolioId == undefined) ||
+                (portfolioId == "")) ? null : {
+                portfolioId: portfolioId
               },
               // tenantId: itemsPrice.tenantId,
               tenantId: loginTenantId,
@@ -9151,30 +9702,34 @@ export function CreateCustomPortfolio(props) {
               repairKitId: repairKitIdIs,
               itemPriceDataId: customPriceIdIs
             }
-            if ((standardJobIdIs == "") ||
-              (standardJobIdIs == null) ||
-              (repairKitIdIs != "")) {
+            if (((standardJobIdIs == "") ||
+              (standardJobIdIs == null)) &&
+              ((repairKitIdIs != "") ||
+                (repairKitIdIs != null))) {
               const price_RkIdUpdate = await customPortfolioItemPriceRkId(newreqObj)
             }
 
-            if ((repairKitIdIs == "") ||
-              (repairKitIdIs == null) ||
-              (standardJobIdIs != "")) {
+            if (((repairKitIdIs == "") ||
+              (repairKitIdIs == null)) &&
+              ((standardJobIdIs != "") ||
+                (standardJobIdIs != null))) {
               const price_SjIdUpdate = await customPortfolioItemPriceSJID(newreqObj)
             }
           }
         }
       }
 
-      if ((itemPriceData.standardJobId == "") ||
-        (itemPriceData.standardJobId == null) ||
-        (itemPriceData.repairKitId != "")) {
+      if (((itemPriceData.standardJobId == "") ||
+        (itemPriceData.standardJobId == null)) &&
+        ((itemPriceData.repairKitId != "") ||
+          (itemPriceData.repairKitId != null))) {
         const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
       }
 
-      if ((itemPriceData.repairKitId == "") ||
-        (itemPriceData.repairKitId == null) ||
-        (itemPriceData.standardJobId != "")) {
+      if (((itemPriceData.repairKitId == "") ||
+        (itemPriceData.repairKitId == null)) &&
+        ((itemPriceData.standardJobId != "") ||
+          (itemPriceData.standardJobId != null))) {
         const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
       }
 
@@ -9216,6 +9771,8 @@ export function CreateCustomPortfolio(props) {
         totalPrice: resPrice.data.totalPrice,
         id: resPrice.data.customItemPriceDataId,
       })
+
+
 
       setTempBundleService3([...tempBundleService3, ...createdNewCustomItems]);
       // setTempBundleService3(createdNewCustomItems);
@@ -9353,8 +9910,11 @@ export function CreateCustomPortfolio(props) {
             miscEscalation: itemsPrice.miscEscalation,
             serviceEscalation: itemsPrice.serviceEscalation,
             withBundleService: itemsPrice.withBundleService,
-            customPortfolio: {
-              portfolioId: portfolioId != null ? portfolioId : 1
+            customPortfolio: ((portfolioId == 0) ||
+              (portfolioId == null) ||
+              (portfolioId == undefined) ||
+              (portfolioId == "")) ? null : {
+              portfolioId: portfolioId
             },
             // tenantId: itemsPrice.tenantId,
             tenantId: loginTenantId,
@@ -9558,8 +10118,11 @@ export function CreateCustomPortfolio(props) {
                   miscEscalation: itemsPrice.miscEscalation,
                   serviceEscalation: itemsPrice.serviceEscalation,
                   withBundleService: itemsPrice.withBundleService,
-                  customPortfolio: {
-                    portfolioId: portfolioId != null ? portfolioId : 1
+                  customPortfolio: ((portfolioId == 0) ||
+                    (portfolioId == null) ||
+                    (portfolioId == undefined) ||
+                    (portfolioId == "")) ? null : {
+                    portfolioId: portfolioId
                   },
                   // tenantId: itemsPrice.tenantId,
                   tenantId: loginTenantId,
@@ -10616,10 +11179,14 @@ export function CreateCustomPortfolio(props) {
           </div>
         </>
       ),
-      selector: (row) => row.customItemId,
+      // selector: (row) => row.customItemId,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemId,
+      selector: (row) => row?.itemId,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemId,
+      format: (row) => row?.itemId,
     },
     {
       name: (
@@ -10627,10 +11194,10 @@ export function CreateCustomPortfolio(props) {
           <div>Solution ID</div>
         </>
       ),
-      selector: (row) => row.itemName,
+      selector: (row) => row?.itemName,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemName,
+      format: (row) => row?.itemName,
     },
     {
       name: (
@@ -10638,10 +11205,16 @@ export function CreateCustomPortfolio(props) {
           <div>Solution Description</div>
         </>
       ),
-      selector: (row) => row.customItemHeaderModel?.itemHeaderDescription,
+      // selector: (row) => row.customItemHeaderModel?.itemHeaderDescription,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemHeaderModel?.itemHeaderDescription,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+      selector: (row) => row?.itemDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemHeaderModel?.itemHeaderDescription,
+      format: (row) => row?.itemDescription,
       minWidth: "150px",
       maxWidth: "150px",
     },
@@ -10651,10 +11224,14 @@ export function CreateCustomPortfolio(props) {
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+      // selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+      selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+      format: (row) => row?.itemHeaderStrategy,
     },
     {
       name: (
@@ -10662,10 +11239,14 @@ export function CreateCustomPortfolio(props) {
           <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.customItemBodyModel.taskType,
+      // selector: (row) => row.customItemBodyModel.taskType,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemBodyModel.taskType,
+      selector: (row) => row?.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemBodyModel.taskType,
+      format: (row) => row?.taskType,
     },
     {
       name: (
@@ -10673,54 +11254,85 @@ export function CreateCustomPortfolio(props) {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.customItemBodyModel?.quantity,
+      // selector: (row) => row.customItemBodyModel?.quantity,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemBodyModel?.quantity,
+      selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemBodyModel?.quantity,
+      format: (row) => row?.quantity,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Unit Price (per one)</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.customItemHeaderModel?.netPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.customItemHeaderModel?.netPrice,
+    // },
+    {
+      name: (
+        <>
+          <div>Recommended Value</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
     },
     {
       name: (
         <>
-          <div>Unit Price (per one)</div>
+          {/* <div>Net Service</div> */}
+          <div>Service Price</div>
         </>
       ),
-      selector: (row) => row.customItemHeaderModel?.netPrice,
+      // selector: (row) => row.customItemBodyModel?.partsprice,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemBodyModel?.partsprice,
+      selector: (row) => row?.servicePrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemHeaderModel?.netPrice,
+      format: (row) => row?.servicePrice,
     },
     {
       name: (
         <>
-          <div>Net Parts</div>
+          {/* <div>Net Parts</div> */}
+          <div>Parts Price</div>
         </>
       ),
-      selector: (row) => row.customItemHeaderModel?.additional,
+      // selector: (row) => row.customItemHeaderModel?.additional,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemHeaderModel?.additional,
+      selector: (row) => row?.sparePartsPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemHeaderModel?.additional,
+      format: (row) => row?.sparePartsPrice,
     },
+
     {
       name: (
         <>
-          <div>Net Service</div>
+          {/* <div>Net Price</div> */}
+          <div>Total $</div>
         </>
       ),
-      selector: (row) => row.customItemBodyModel?.partsprice,
+      // selector: (row) => row.customItemHeaderModel?.netPrice,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemHeaderModel?.netPrice,
+      selector: (row) => row?.calculatedPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemBodyModel?.partsprice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Price</div>
-        </>
-      ),
-      selector: (row) => row.customItemHeaderModel?.netPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.customItemHeaderModel?.netPrice,
+      format: (row) => row?.calculatedPrice,
     },
     {
       name: (
@@ -10728,10 +11340,14 @@ export function CreateCustomPortfolio(props) {
           <div>Comments</div>
         </>
       ),
-      selector: (row) => row.customItemHeaderModel?.comments,
+      // selector: (row) => row.customItemHeaderModel?.comments,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemHeaderModel?.comments,
+      selector: (row) => row?.comments,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemHeaderModel?.comments,
+      format: (row) => row?.comments,
     },
     {
       name: (
@@ -10739,10 +11355,14 @@ export function CreateCustomPortfolio(props) {
           <div>Actions</div>
         </>
       ),
-      selector: (row) => row.customItemBodyModel?.type,
+      // selector: (row) => row.customItemBodyModel?.type,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.customItemBodyModel?.type,
+      selector: (row) => row?.type,
       wrap: true,
       sortable: true,
-      format: (row) => row.customItemBodyModel?.type,
+      format: (row) => row?.type,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -10822,10 +11442,14 @@ export function CreateCustomPortfolio(props) {
           </div>
         </>
       ),
-      selector: (row) => row.itemId == undefined ? row.customItemId : row.itemId,
+      // selector: (row) => row.itemId == undefined ? row.customItemId : row.itemId,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemId == undefined ? row.customItemId : row.itemId,
+      selector: (row) => row?.itemId,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemId == undefined ? row.customItemId : row.itemId,
+      format: (row) => row?.itemId,
     },
     {
       name: (
@@ -10833,10 +11457,10 @@ export function CreateCustomPortfolio(props) {
           <div>Solution ID</div>
         </>
       ),
-      selector: (row) => row.itemName,
+      selector: (row) => row?.itemName,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemName,
+      format: (row) => row?.itemName,
     },
     {
       name: (
@@ -10844,10 +11468,14 @@ export function CreateCustomPortfolio(props) {
           <div>Solution Description</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      // selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      selector: (row) => row?.itemDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      format: (row) => row?.itemDescription,
       minWidth: "150px",
       maxWidth: "150px",
     },
@@ -10857,10 +11485,14 @@ export function CreateCustomPortfolio(props) {
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
+      // selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
+      selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderStrategy : row.itemHeaderModel?.itemHeaderStrategy,
+      format: (row) => row?.itemHeaderStrategy,
     },
     {
       name: (
@@ -10868,10 +11500,14 @@ export function CreateCustomPortfolio(props) {
           <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel.taskType,
+      // selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel.taskType,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel.taskType,
+      selector: (row) => row?.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel.taskType : row.itemBodyModel.taskType,
+      format: (row) => row?.taskType,
     },
     {
       name: (
@@ -10879,54 +11515,90 @@ export function CreateCustomPortfolio(props) {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      // selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      format: (row) => row?.quantity,
     },
     {
       name: (
         <>
-          <div>Unit Price (per one)</div>
+          <div>Recommended Value</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      selector: (row) => row?.recommendedValue,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      format: (row) => row?.recommendedValue,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Unit Price (per one)</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    // },
+    {
+      name: (
+        <>
+          {/* <div>Net Service</div> */}
+          <div>Service Price</div>
+        </>
+      ),
+      // selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
+      selector: (row) => row?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.servicePrice,
     },
     {
       name: (
         <>
-          <div>Net Parts</div>
+          {/* <div>Net Parts</div> */}
+          <div>Parts Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+      // selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+      selector: (row) => row?.sparePartsPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.additional : row.itemHeaderModel?.additional,
+      format: (row) => row?.sparePartsPrice,
     },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    // },
     {
       name: (
         <>
-          <div>Net Service</div>
+          <div>Total $</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
+      selector: (row) => row?.calculatedPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.partsprice : row.itemBodyModel?.partsprice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Price</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      format: (row) => row?.calculatedPrice,
     },
     {
       name: (
@@ -10934,10 +11606,14 @@ export function CreateCustomPortfolio(props) {
           <div>Comments</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+      // selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+      selector: (row) => row?.comments,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.comments : row.itemHeaderModel?.comments,
+      format: (row) => row?.comments,
     },
 
     // {
@@ -11014,10 +11690,16 @@ export function CreateCustomPortfolio(props) {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      // selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+      selector: (row) => row?.itemDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.itemHeaderDescription : row.itemHeaderModel.itemHeaderDescription,
+      format: (row) => row?.itemDescription,
       minWidth: "150px",
       maxWidth: "150px",
     },
@@ -11027,32 +11709,48 @@ export function CreateCustomPortfolio(props) {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      // selector: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel === undefined ? row.customItemBodyModel?.quantity : row.itemBodyModel?.quantity,
+      format: (row) => row?.quantity,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Unit Price (per one)</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+    // },
+    {
+      name: (
+        <>
+          <div>Service Price</div>
+        </>
+      ),
+      selector: (row) => row?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.servicePrice,
     },
     {
       name: (
         <>
-          <div>Unit Price (per one)</div>
+          {/* <div>Net Price</div> */}
+          <div>Total $</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      selector: (row) => row?.calculatedPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Price</div>
-        </>
-      ),
-      selector: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemHeaderModel === undefined ? row.customItemHeaderModel?.netPrice : row.itemHeaderModel?.netPrice,
+      format: (row) => row?.calculatedPrice,
     },
 
   ];
@@ -12490,8 +13188,11 @@ export function CreateCustomPortfolio(props) {
       miscEscalation: 0,
       serviceEscalation: 0,
       withBundleService: bundleServiceNeed,
-      customPortfolio: {
-        portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+      customPortfolio: ((portfolioId == 0) ||
+        (portfolioId == null) ||
+        (portfolioId == undefined) ||
+        (portfolioId == "")) ? null : {
+        portfolioId: portfolioId
       },
       tenantId: loginTenantId,
       partsRequired: true,
@@ -14406,15 +15107,17 @@ export function CreateCustomPortfolio(props) {
         });
       } else {
 
-        if ((itemPriceData.standardJobId == "") ||
-          (itemPriceData.standardJobId == null) ||
-          (itemPriceData.repairKitId != "")) {
+        if (((itemPriceData.standardJobId == "") ||
+          (itemPriceData.standardJobId == null)) ||
+          ((itemPriceData.repairKitId != "") ||
+            (itemPriceData.repairKitId != null))) {
           const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
         }
 
-        if ((itemPriceData.repairKitId == "") ||
-          (itemPriceData.repairKitId == null) ||
-          (itemPriceData.standardJobId != "")) {
+        if (((itemPriceData.repairKitId == "") ||
+          (itemPriceData.repairKitId == null)) &&
+          (itemPriceData.standardJobId != "") ||
+          (itemPriceData.standardJobId != null)) {
           const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
         }
 
@@ -14568,8 +15271,11 @@ export function CreateCustomPortfolio(props) {
       miscEscalation: 0,
       serviceEscalation: 0,
       withBundleService: true,
-      customPortfolio: {
-        portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+      customPortfolio: ((portfolioId == 0) ||
+        (portfolioId == null) ||
+        (portfolioId == undefined) ||
+        (portfolioId == "")) ? null : {
+        portfolioId: portfolioId
       },
       tenantId: loginTenantId,
       partsRequired: true,
@@ -14591,15 +15297,17 @@ export function CreateCustomPortfolio(props) {
       itemPriceDataId: priceCalculator.id,
     }
 
-    if ((addPortFolioItem.templateId == "") ||
-      (addPortFolioItem.templateId == null) ||
-      (addPortFolioItem.repairOption != "")) {
+    if (((addPortFolioItem.templateId == "") ||
+      (addPortFolioItem.templateId == null)) &&
+      ((addPortFolioItem.repairOption != "") ||
+        (addPortFolioItem.repairOption != null))) {
       const price_RkIdUpdate = await customPortfolioItemPriceRkId(newReqObjSJId)
     }
 
-    if ((addPortFolioItem.repairOption == "") ||
-      (addPortFolioItem.repairOption == null) ||
-      (addPortFolioItem.templateId != "")) {
+    if (((addPortFolioItem.repairOption == "") ||
+      (addPortFolioItem.repairOption == null)) &&
+      ((addPortFolioItem.templateId != "") ||
+        (addPortFolioItem.templateId != null))) {
       const price_SjIdUpdate = await customPortfolioItemPriceSJID(newReqObjSJId)
     }
 
@@ -14708,161 +15416,259 @@ export function CreateCustomPortfolio(props) {
       var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
 
       if (selectedItemType === "PORTFOLIO") {
-        // var newArr = [];
-        // const res2 = await portfolioSearch(searchStr)
-        // if (res2.status === 200) {
-        //   for (var j = 0; j < res2.data.length; j++) {
-        //     for (var k = 0; k < res2.data[j].items.length; k++) {
-        //       newArr.push(res2.data[j].items[k]);
-        //     }
-        //   }
-        //   var result = newArr.reduce((unique, o) => {
-        //     if (!unique.some(obj => obj.itemId === o.itemId)) {
-        //       unique.push(o);
-        //     }
-        //     return unique;
-        //   }, []);
-        //   setPortfolioItemData(res2.data);
 
+        // New 13-04-2023
+
+        var myArr = [];
+        var searchArray = [];
+
+
+        const portfolioItemHierarchy = await portfolioItemPriceHierarchySearch(querySearchSelector[0]?.selectedKeyValue);
+        if (portfolioItemHierarchy.status === 200) {
+          if (portfolioItemHierarchy.data.itemRelations.length > 0) {
+            console.log("length ========== ", portfolioItemHierarchy.data.portfolioId + "&")
+            var portfolioItemSearchUrl = portfolioItemHierarchy.data.portfolioId + "&";
+            var itemDataArr = [];
+            portfolioItemHierarchy.data.itemRelations.map((data, i) => {
+              itemDataArr.push(data.portfolioItemId)
+              for (let c = 0; c < data.bundles.length; c++) {
+                itemDataArr.push(data.bundles[c]);
+              }
+              
+              for (let d = 0; d < data.services.length; d++) {
+                itemDataArr.push(data.services[d]);
+              }
+            })
+            
+            var portfolioItemSearchUrl = portfolioItemSearchUrl + itemDataArr.map((data, i) =>
+            `itemIds=${data}`
+            ).join('&');
+            
+            console.log("portfolioItemSearchUrl ========== ", portfolioItemSearchUrl);
+            
+            
+            const tempBundleItemsColumnsData = await getServiceBundleItemPrices(portfolioItemSearchUrl);
+            let expandAblePortfolioItems = []
+            let expendedBundleServiceItems = [];
+            if (tempBundleItemsColumnsData.status === 200) {
+              tempBundleItemsColumnsData.data.map((data, i) => {
+
+                for (let c = 0; c < data.bundleItems.length; c++) {
+                  expendedBundleServiceItems.push(data.bundleItems[c]);
+                }
+
+                for (let d = 0; d < data.serviceItems.length; d++) {
+                  expendedBundleServiceItems.push(data.serviceItems[d]);
+                }
+
+                expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems, portfolioId: portfolioItemHierarchy.data.portfolioId })
+              })
+
+              setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...expandAblePortfolioItems])
+
+              // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
+              // setSearchedPortfolioItemsData(expandAblePortfolioItems);
+              myArr.push(...expandAblePortfolioItems);
+            }
+
+          } else {
+            throw "Search Portfolio have not any Item realtion, change the Search criteria";
+          }
+        }
+
+        // // var newArr = [];
+        // // const res2 = await portfolioSearch(searchStr)
+        // // if (res2.status === 200) {
+        // //   for (var j = 0; j < res2.data.length; j++) {
+        // //     for (var k = 0; k < res2.data[j].items.length; k++) {
+        // //       newArr.push(res2.data[j].items[k]);
+        // //     }
+        // //   }
+        // //   var result = newArr.reduce((unique, o) => {
+        // //     if (!unique.some(obj => obj.itemId === o.itemId)) {
+        // //       unique.push(o);
+        // //     }
+        // //     return unique;
+        // //   }, []);
+        // //   setPortfolioItemData(res2.data);
+
+        // // } else {
+        // //   throw "No information is found for your search, change the search criteria";
+        // // }
+        // const portfolioItemsRes = await portfolioSearch(searchStr);
+        // if (portfolioItemsRes.status === 200) {
+        //   var myArr = [];
+        //   var searchArray = [];
+        //   var result = portfolioItemsRes.data;
+        //   for (let p = 0; p < portfolioItemsRes.data.length; p++) {
+
+        //     if (portfolioItemsRes.data[p].items.length > 0) {
+        //       var tempBundleItemsUrl = portfolioItemsRes.data[p].items.map((data, i) =>
+        //         `itemIds=${data.itemId}`
+        //       ).join('&');
+
+        //       tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioItemsRes.data[p].portfolioId;
+
+        //       const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+
+        //       let expandAblePortfolioItems = []
+        //       let expendedBundleServiceItems = [];
+        //       if (tempBundleItemsColumnsData.status === 200) {
+        //         tempBundleItemsColumnsData.data.map((data, i) => {
+
+        //           for (let c = 0; c < data.bundleItems.length; c++) {
+        //             expendedBundleServiceItems.push(data.bundleItems[c]);
+        //           }
+
+        //           for (let d = 0; d < data.serviceItems.length; d++) {
+        //             expendedBundleServiceItems.push(data.serviceItems[d]);
+        //           }
+
+        //           expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems, portfolioId: portfolioItemsRes.data[p].portfolioId })
+        //         })
+
+        //         // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
+        //         // setSearchedPortfolioItemsData(expandAblePortfolioItems);
+        //         myArr.push(...expandAblePortfolioItems);
+        //       } else {
+        //         throw "No information is found for your search, change the search criteria";
+        //       }
+
+        //     }
+
+
+        //     // if (portfolioItemsRes.data[p].items.length > 0) {
+        //     //   var portfolioObjIs = { portfolioId: portfolioItemsRes.data[p].portfolioId };
+        //     //   for (let q = 0; q < portfolioItemsRes.data[p].items.length; q++) {
+        //     //     if (portfolioItemsRes.data[p].items[q].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+        //     //       let myObj = portfolioItemsRes.data[p].items[q];
+        //     //       portfolioObjIs = { ...portfolioObjIs, ...myObj, associatedServiceOrBundle: [] }
+        //     //       if (portfolioItemsRes.data[p].itemRelations != null) {
+        //     //         if (portfolioItemsRes.data[p].itemRelations.length > 0) {
+        //     //           for (let r = 0; r < portfolioItemsRes.data[p].itemRelations.length; r++) {
+        //     //             if (portfolioItemsRes.data[p].items[q].itemId === portfolioItemsRes.data[p].itemRelations[r].portfolioItemId) {
+
+        //     //               // For Bundle Items 
+        //     //               for (let s = 0; s < portfolioItemsRes.data[p].itemRelations[r].bundles.length; s++) {
+        //     //                 let bundleObj = portfolioItemsRes.data[p].items.find((objBundle, i) => {
+        //     //                   if (objBundle.itemId == portfolioItemsRes.data[p].itemRelations[r].bundles[s]) {
+        //     //                     return objBundle; // stop searching
+        //     //                   }
+        //     //                 });
+        //     //                 portfolioObjIs.associatedServiceOrBundle.push(bundleObj);
+        //     //               }
+
+        //     //               // For Service Items 
+        //     //               for (let t = 0; t < portfolioItemsRes.data[p].itemRelations[r].services.length; t++) {
+        //     //                 let serviceObj = portfolioItemsRes.data[p].items.find((objService, i) => {
+        //     //                   if (objService.itemId == portfolioItemsRes.data[p].itemRelations[r].services[t]) {
+        //     //                     return objService; // stop searching
+        //     //                   }
+        //     //                 });
+        //     //                 portfolioObjIs.associatedServiceOrBundle.push(serviceObj);
+        //     //               }
+        //     //             }
+        //     //           }
+        //     //         }
+        //     //       }
+        //     //     }
+        //     //   }
+        //     // }
+
+        //     // console.log("portfolioObjIs ------ ", portfolioObjIs);
+
+        //     // const existsInArr = myArr.some(item => item.itemId === portfolioObjIs.itemId)
+        //     // if (!existsInArr) {
+        //     //   myArr.push(portfolioObjIs)
+        //     // }
+        //     // myArr.push(portfolioObjIs);
+        //   }
+
+        //   let cloneArr = []
+        //   console.log("my arrr issssssssssss ", myArr);
+        //   if (myArr.length > 0) {
+        //     var newOne = myArr.filter((item, index) => myArr.indexOf(item) === index);
+        //     console.log("my arrr newOne ", newOne);
+        //     myArr.map((data, i) => {
+        //       console.log("data: ", data)
+        //       const exist = searchedPortfolioItemsData.some(item =>
+        //         item.itemId === data.itemId)
+        //       console.log("exist: ", exist)
+        //       if (!exist) {
+        //         cloneArr.push(data)
+        //       }
+        //     })
+        //     setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+        //   } else {
+        //     throw "No information is found for your search, change the search criteria";
+        //   }
+        //   // for (let a = 0; a < result.length; a++) {
+        //   //   let itemsArrData = [];
+
+        //   //   if (result[a].items.length > 0) {
+        //   //     for (let i = 0; i < result[a].items.length; i++) {
+        //   //       if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+        //   //         let myObj = result[a].items[i];
+        //   //         let expendedArrObj = [];
+        //   //         if (result[a].itemRelations != null) {
+        //   //           if (result[a].itemRelations.length > 0) {
+        //   //             for (let b = 0; b < result[a].itemRelations.length; b++) {
+        //   //               if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
+
+        //   //                 for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+
+        //   //                   let bundleObj = result[a].items.find((objBundle, i) => {
+        //   //                     if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
+
+        //   //                       return objBundle; // stop searching
+        //   //                     }
+        //   //                   });
+        //   //                   expendedArrObj.push(bundleObj);
+        //   //                 }
+
+        //   //                 for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+        //   //                   let serviceObj = result[a].items.find((objService, i) => {
+        //   //                     if (objService.itemId == result[a].itemRelations[b].services[d]) {
+
+        //   //                       return objService; // stop searching
+        //   //                     }
+        //   //                   });
+        //   //                   expendedArrObj.push(serviceObj);
+        //   //                 }
+
+        //   //               }
+        //   //               myObj.associatedServiceOrBundle = expendedArrObj;
+        //   //               itemsArrData.push(myObj);
+        //   //             }
+        //   //           } else {
+        //   //             myObj.associatedServiceOrBundle = expendedArrObj;
+        //   //             itemsArrData.push(myObj);
+        //   //           }
+        //   //         } else {
+        //   //           myObj.associatedServiceOrBundle = expendedArrObj;
+        //   //           itemsArrData.push(myObj);
+        //   //         }
+        //   //       }
+        //   //     }
+        //   //     myArr.push(...itemsArrData)
+        //   //   }
+        //   // }
+        //   // let cloneArr = []
+        //   // console.log("my arrr issssssssssss ", myArr);
+        //   // myArr.map((data, i) => {
+        //   //   console.log("data: ", data)
+        //   //   const exist = searchedPortfolioItemsData.some(item =>
+        //   //     item.itemId === data.itemId)
+        //   //   console.log("exist: ", exist)
+        //   //   if (!exist) {
+        //   //     cloneArr.push(data)
+        //   //   }
+        //   // })
+        //   // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
         // } else {
         //   throw "No information is found for your search, change the search criteria";
         // }
-        const portfolioItemsRes = await portfolioSearch(searchStr);
-        if (portfolioItemsRes.status === 200) {
-          var myArr = [];
-          var searchArray = [];
-          var result = portfolioItemsRes.data;
-          for (let p = 0; p < portfolioItemsRes.data.length; p++) {
-
-            if (portfolioItemsRes.data[p].items.length > 0) {
-              var portfolioObjIs = { portfolioId: portfolioItemsRes.data[p].portfolioId };
-              for (let q = 0; q < portfolioItemsRes.data[p].items.length; q++) {
-                if (portfolioItemsRes.data[p].items[q].itemHeaderModel.bundleFlag === "PORTFOLIO") {
-                  let myObj = portfolioItemsRes.data[p].items[q];
-                  portfolioObjIs = { ...portfolioObjIs, ...myObj, associatedServiceOrBundle: [] }
-                  if (portfolioItemsRes.data[p].itemRelations != null) {
-                    if (portfolioItemsRes.data[p].itemRelations.length > 0) {
-                      for (let r = 0; r < portfolioItemsRes.data[p].itemRelations.length; r++) {
-                        if (portfolioItemsRes.data[p].items[q].itemId === portfolioItemsRes.data[p].itemRelations[r].portfolioItemId) {
-
-                          // For Bundle Items 
-                          for (let s = 0; s < portfolioItemsRes.data[p].itemRelations[r].bundles.length; s++) {
-                            let bundleObj = portfolioItemsRes.data[p].items.find((objBundle, i) => {
-                              if (objBundle.itemId == portfolioItemsRes.data[p].itemRelations[r].bundles[s]) {
-                                return objBundle; // stop searching
-                              }
-                            });
-                            portfolioObjIs.associatedServiceOrBundle.push(bundleObj);
-                          }
-
-                          // For Service Items 
-                          for (let t = 0; t < portfolioItemsRes.data[p].itemRelations[r].services.length; t++) {
-                            let serviceObj = portfolioItemsRes.data[p].items.find((objService, i) => {
-                              if (objService.itemId == portfolioItemsRes.data[p].itemRelations[r].services[t]) {
-                                return objService; // stop searching
-                              }
-                            });
-                            portfolioObjIs.associatedServiceOrBundle.push(serviceObj);
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            console.log("portfolioObjIs ------ ", portfolioObjIs);
-
-            const existsInArr = myArr.some(item => item.itemId === portfolioObjIs.itemId)
-            if (!existsInArr) {
-              myArr.push(portfolioObjIs)
-            }
-            // myArr.push(portfolioObjIs);
-          }
-
-          let cloneArr = []
-          console.log("my arrr issssssssssss ", myArr);
-          var newOne = myArr.filter((item, index) => myArr.indexOf(item) === index);
-          console.log("my arrr newOne ", newOne);
-          myArr.map((data, i) => {
-            console.log("data: ", data)
-            const exist = searchedPortfolioItemsData.some(item =>
-              item.itemId === data.itemId)
-            console.log("exist: ", exist)
-            if (!exist) {
-              cloneArr.push(data)
-            }
-          })
-          setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
-
-          // for (let a = 0; a < result.length; a++) {
-          //   let itemsArrData = [];
-
-          //   if (result[a].items.length > 0) {
-          //     for (let i = 0; i < result[a].items.length; i++) {
-          //       if (result[a].items[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
-          //         let myObj = result[a].items[i];
-          //         let expendedArrObj = [];
-          //         if (result[a].itemRelations != null) {
-          //           if (result[a].itemRelations.length > 0) {
-          //             for (let b = 0; b < result[a].itemRelations.length; b++) {
-          //               if (result[a].items[i].itemId == result[a].itemRelations[b].portfolioItemId) {
-
-          //                 for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
-
-          //                   let bundleObj = result[a].items.find((objBundle, i) => {
-          //                     if (objBundle.itemId == result[a].itemRelations[b].bundles[c]) {
-
-          //                       return objBundle; // stop searching
-          //                     }
-          //                   });
-          //                   expendedArrObj.push(bundleObj);
-          //                 }
-
-          //                 for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
-
-          //                   let serviceObj = result[a].items.find((objService, i) => {
-          //                     if (objService.itemId == result[a].itemRelations[b].services[d]) {
-
-          //                       return objService; // stop searching
-          //                     }
-          //                   });
-          //                   expendedArrObj.push(serviceObj);
-          //                 }
-
-          //               }
-          //               myObj.associatedServiceOrBundle = expendedArrObj;
-          //               itemsArrData.push(myObj);
-          //             }
-          //           } else {
-          //             myObj.associatedServiceOrBundle = expendedArrObj;
-          //             itemsArrData.push(myObj);
-          //           }
-          //         } else {
-          //           myObj.associatedServiceOrBundle = expendedArrObj;
-          //           itemsArrData.push(myObj);
-          //         }
-          //       }
-          //     }
-          //     myArr.push(...itemsArrData)
-          //   }
-          // }
-          // let cloneArr = []
-          // console.log("my arrr issssssssssss ", myArr);
-          // myArr.map((data, i) => {
-          //   console.log("data: ", data)
-          //   const exist = searchedPortfolioItemsData.some(item =>
-          //     item.itemId === data.itemId)
-          //   console.log("exist: ", exist)
-          //   if (!exist) {
-          //     cloneArr.push(data)
-          //   }
-          // })
-          // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
-        } else {
-          throw "No information is found for your search, change the search criteria";
-        }
       } else if (selectedItemType === "SOLUTION") {
 
         const portfolioItemsRes = await getSearchCustomPortfolio(searchStr);
@@ -14873,61 +15679,101 @@ export function CreateCustomPortfolio(props) {
           for (let a = 0; a < result.length; a++) {
             let itemsArrData = [];
 
+
             if (result[a].customItems.length > 0) {
-              for (let i = 0; i < result[a].customItems.length; i++) {
-                if (result[a].customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
-                  let myObj = result[a].customItems[i];
-                  let expendedArrObj = [];
-                  if (result[a].itemRelations != null) {
-                    if (result[a].itemRelations.length > 0) {
-                      for (let b = 0; b < result[a].itemRelations.length; b++) {
-                        if (result[a].customItems[i].customItemId == result[a].itemRelations[b].portfolioItemId) {
+              var tempBundleItemsUrl = result[a].customItems.map((data, i) =>
+                `itemIds=${data.customItemId}`
+              ).join('&');
 
-                          for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+              tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + result[a].customPortfolioId;
+              // if (state && state.type === "fetch") {
+              //   if ((portfolioId !== "" || (portfolioId !== undefined))) {
+              //   }
+              // }
 
-                            let bundleObj = result[a].customItems.find((objBundle, i) => {
-                              if (objBundle.customItemId == result[a].itemRelations[b].bundles[c]) {
+              const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
 
-                                return objBundle; // stop searching
-                              }
-                            });
-                            expendedArrObj.push(bundleObj);
-                          }
+              let expandAblePortfolioItems = []
+              let expendedBundleServiceItems = [];
+              if (tempBundleItemsColumnsData.status === 200) {
+                tempBundleItemsColumnsData.data.map((data, i) => {
 
-                          for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
-
-                            let serviceObj = result[a].customItems.find((objService, i) => {
-                              if (objService.customItemId == result[a].itemRelations[b].services[d]) {
-
-                                return objService; // stop searching
-                              }
-                            });
-                            expendedArrObj.push(serviceObj);
-                          }
-
-                        }
-                        myObj.associatedServiceOrBundle = expendedArrObj;
-                        itemsArrData.push(myObj);
-                      }
-                    } else {
-                      myObj.associatedServiceOrBundle = expendedArrObj;
-                      itemsArrData.push(myObj);
-                    }
-                  } else {
-                    myObj.associatedServiceOrBundle = expendedArrObj;
-                    itemsArrData.push(myObj);
+                  for (let c = 0; c < data.bundleItems.length; c++) {
+                    expendedBundleServiceItems.push(data.bundleItems[c]);
                   }
-                }
+
+                  for (let d = 0; d < data.serviceItems.length; d++) {
+                    expendedBundleServiceItems.push(data.serviceItems[d]);
+                  }
+
+                  expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+                })
+
+                // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
+                // setSearchedPortfolioItemsData(expandAblePortfolioItems);
+                myArr.push(...expandAblePortfolioItems);
               }
-              myArr.push(...itemsArrData)
+
             }
+
+            // if (result[a].customItems.length > 0) {
+
+            //   for (let i = 0; i < result[a].customItems.length; i++) {
+            //     if (result[a].customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
+            //       let myObj = result[a].customItems[i];
+            //       let expendedArrObj = [];
+            //       if (result[a].itemRelations != null) {
+            //         if (result[a].itemRelations.length > 0) {
+            //           for (let b = 0; b < result[a].itemRelations.length; b++) {
+            //             if (result[a].customItems[i].customItemId == result[a].itemRelations[b].portfolioItemId) {
+
+            //               for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+
+            //                 let bundleObj = result[a].customItems.find((objBundle, i) => {
+            //                   if (objBundle.customItemId == result[a].itemRelations[b].bundles[c]) {
+
+            //                     return objBundle; // stop searching
+            //                   }
+            //                 });
+            //                 expendedArrObj.push(bundleObj);
+            //               }
+
+            //               for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+            //                 let serviceObj = result[a].customItems.find((objService, i) => {
+            //                   if (objService.customItemId == result[a].itemRelations[b].services[d]) {
+
+            //                     return objService; // stop searching
+            //                   }
+            //                 });
+            //                 expendedArrObj.push(serviceObj);
+            //               }
+
+            //             }
+            //             myObj.associatedServiceOrBundle = expendedArrObj;
+            //             itemsArrData.push(myObj);
+            //           }
+            //         } else {
+            //           myObj.associatedServiceOrBundle = expendedArrObj;
+            //           itemsArrData.push(myObj);
+            //         }
+            //       } else {
+            //         myObj.associatedServiceOrBundle = expendedArrObj;
+            //         itemsArrData.push(myObj);
+            //       }
+            //     }
+            //   }
+            //   myArr.push(...itemsArrData)
+            // }
           }
           let cloneArr = []
           console.log("my arrr issssssssssss ", myArr);
           myArr.map((data, i) => {
             console.log("data: ", data)
+            // const exist = searchedPortfolioItemsData.some(item =>
+            //   item.customItemId === data.customItemId)
             const exist = searchedPortfolioItemsData.some(item =>
-              item.customItemId === data.customItemId)
+              item.itemId === data.itemId)
             console.log("exist: ", exist)
             if (!exist) {
               cloneArr.push(data)
@@ -15055,6 +15901,11 @@ export function CreateCustomPortfolio(props) {
   }
 
   const showAddBundleServiceItemPopup = () => {
+    let tempArray = [...querySearchSelector];
+    let obj = tempArray[0];
+    obj.selectOptions = [];
+    tempArray[0] = obj;
+    setQuerySearchSelector(tempArray)
     setShowAddBundleServiceItemsModelPopup(true);
     // console.log("13044");
     console.log("currentSearchExpendPortfolioItemRow : ", currentSearchExpendPortfolioItemRow)
@@ -16685,7 +17536,103 @@ export function CreateCustomPortfolio(props) {
                               <th scope="col">Actions</th>
                             </tr>
                           </thead>
-                          <tbody>{priceAgreementRows}</tbody>
+                          {/* <tbody>{priceAgreementRows}</tbody> */}
+                          <tbody>
+                            {priceAgreementRowsData.length > 0 && priceAgreementRowsData.map((data, i) => {
+                              return (
+                                <tr>
+                                  <th scope="row">{i + 1}</th>
+                                  <td>
+                                    <div className="form-group mb-0">
+                                      <Select
+                                        // defaultValue={selectedOption}
+                                        // onChange={setSelectedOption}
+                                        value={data.itemTypeKeyValue}
+                                        onChange={(e) => handlePriceAgreementData(e, i, "select")}
+                                        options={priceAgreementItemTypeOptions}
+                                        placeholder="Select..."
+                                      />
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="form-group mb-0">
+                                      {/* <a
+                href={undefined}
+                className="input-search cursor"
+              onClick={() => setModelShowForTemplate(true)}
+              ><SearchIcon style={{ fontSize: "30px", paddingTop: "5px" }} /></a> */}
+                                      <input
+                                        type="text"
+                                        className="form-control text-primary border-radius-10 position-relative"
+                                        name="itemNumber"
+                                        placeholder="Search..."
+                                        value={data.itemNumber}
+                                        // value={addPortFolioItem.templateId}
+                                        // onChange={handleAddServiceBundleChange}
+                                        onChange={(e) => handleItemNumberSearch(e, data.itemType, i)}
+                                      />
+                                      {
+                                        <ul
+                                          className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                        >
+                                          {data.selectOptions.map(
+                                            (currentItem, j) => (
+                                              <li
+                                                className="list-group-item"
+                                                key={j}
+                                                onClick={(e) => handleSearchItemNumberListClick(e, currentItem["partNumber"], data, i)}
+                                              >
+                                                {currentItem["partNumber"]}
+                                              </li>
+                                            )
+                                          )}
+                                        </ul>
+                                      }
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      placeholder="NA"
+                                      name="specialPrice"
+                                      value={data.specialPrice}
+                                      onChange={(e) => handlePriceAgreementData(e, i, e.target.type)}
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      placeholder="5%"
+                                      name="discount"
+                                      value={data.discount}
+                                      onChange={(e) => handlePriceAgreementData(e, i, e.target.type)}
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      placeholder="NA"
+                                      name="absoluteDiscount"
+                                      value={data.absoluteDiscount}
+                                      onChange={(e) => handlePriceAgreementData(e, i, e.target.type)}
+                                    />
+                                  </td>
+                                  <td>
+                                    <div>
+                                      <a href="#" className="mr-3">
+                                        <RemoveRedEyeOutlinedIcon className="font-size-16 mr-2" />
+                                        View detail
+                                      </a>
+                                      <a href="#" onClick={() => handleRemove(i)} className="">
+                                        <ModeEditIcon className="font-size-16 mr-2" />
+                                        View detail
+                                      </a>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )
+                            })}
+                          </tbody>
                         </table>
                       </div>
                     </div>
@@ -17449,6 +18396,7 @@ onChange={handleAdministrativreChange}
                                       className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
                                       id="style"
                                     >
+                                      {/* !showAddBundleServiceItemsModelPopup &&  */}
                                       {obj.selectOptions.map((currentItem, j) => (
                                         <li
                                           className="list-group-item"
@@ -17462,7 +18410,11 @@ onChange={handleAdministrativreChange}
                                             )
                                           }
                                         >
-                                          {currentItem}
+                                          {(selectedItemType === "PORTFOLIO") ? ((obj.selectFamily.value === "name") ||
+                                            (obj.selectFamily.value === "description")) ? currentItem.split("#")[1] :
+                                            currentItem : currentItem.split("#")[1]
+                                          }
+                                          {/* {currentItem} */}
                                         </li>
                                       ))}
                                     </ul>
@@ -17690,7 +18642,6 @@ onChange={handleAdministrativreChange}
                       </div>
                     </>
                   }
-
                   {
                     selectedSearchMasterData.length > 0 &&
                     <DataTable

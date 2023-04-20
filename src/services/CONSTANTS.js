@@ -34,6 +34,7 @@ const REPAIR_BUILDER_URI = "http://35.200.157.237/repair-builder-svc/v1/";
 
 export const GET_SEARCH_COVERAGE = SEARCH_COVERAGE + "search?search="
 export const GET_SEARCH_FAMILY_COVERAGE = SEARCH_COVERAGE
+export const GET_SEARCH_FAMILY_CUSTOM_COVERAGE = SEARCH_COVERAGE + "custom/"
 // Local endpoints. Uncomment below section to use dummy local data.
 export const GET_ALL_USERS = () => `/data/users`;
 export const GET_USER_DETAILS = (id) => `/data/user`;
@@ -73,7 +74,8 @@ export const RECENT_PORTFOLIO_URL = SOLUTION_BUILDER_URI + "portfolio";
 export const PORTFOLIO_PRICE_CREATE = () => SOLUTION_BUILDER_URI + "portfolio/price";
 export const PORTFOLIO_SEARCH_URL = SOLUTION_BUILDER_URI + "portfolio/search?search=";
 export const PORTFOLIO_SEARCH_DROPDOWN_LIST_URL = SOLUTION_BUILDER_URI + "portfolio/";
-
+export const PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL = SOLUTION_BUILDER_URI + "portfolio/consolidated-portfolio-details?";
+export const PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH = SOLUTION_BUILDER_URI + "portfolio/portfolio-item-price-hierarchy?portfolio_id=";
 
 //Service Portfolio PRice Agreement
 export const PORTFOLIO_PRICE_AGREEMENT_URL = () => SOLUTION_BUILDER_URI + "price-agreement";
@@ -117,12 +119,16 @@ export const PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = CREATE_PORTFOLIO_ITEM() + "/p
 
 export const CUSTOM_PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio/custom";
 export const CUSTOM_PORTFOLIO_SEARCH_QUERY = SOLUTION_BUILDER_URI + "portfolio/custom/search?search=";
+export const CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL = SOLUTION_BUILDER_URI + "portfolio/custom/consolidated-portfolio-details?";
+
 export const GET_RECENT_SOLUTION_PORTFOLIO_LIST = SOLUTION_BUILDER_URI + "portfolio/custom";
 
 // Custom Portfolio Item
 export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/custom";
 export const DELETE_CUSTOM_PORTFOLIO_ITEM = SOLUTION_BUILDER_URI + "item/custom/price/";
 export const GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA = SOLUTION_BUILDER_URI + "item/custom/price/";
+export const GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = SOLUTION_BUILDER_URI + "item/custom/portfolio-service-bundle-item-prices?";
+
 
 export const COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-portfolios-items-to-custom-portfolio?"
 export const COPY_MATER_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-mater-to-custom-portfolio?"
@@ -235,12 +241,16 @@ export const SJ_SEGMENT = (templateId) => REPAIR_BUILDER_URI + `standard-job/${t
 export const UPDATE_SJ_VERSION = (templateId, version) => REPAIR_BUILDER_URI + `standard-job/${templateId}/version/${version}`;
 
 /* ===================== Repair Quote Service ============================= */
+
+// export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
+// export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/repair-builder/search?search=${searchStr}`;
 export const RECENT_QUOTES =(quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
 export const SEARCH_REPAIR_QUOTES =(searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
 export const CREATE_REPAIR_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const CREATE_SPARE_PART_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
+
 /* ===================== Quote Service ============================= */
 
 export const QUOTE_CREATION = () => SOLUTION_BUILDER_URI + "/quote";

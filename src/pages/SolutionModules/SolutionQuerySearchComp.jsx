@@ -13,7 +13,10 @@ import {
     getSearchCustomPortfolio,
     getSearchCustomPortfolioDropdownList,
     portfolioSearch,
-    portfolioSearchDropdownList
+    portfolioSearchDropdownList,
+    portfolioSearchTableDataList,
+    getSearchCustomCoverageForFamily,
+    customPortfolioSearchTableDataList
 } from "../../services/index"
 import { useEffect } from 'react';
 
@@ -30,7 +33,8 @@ const SolutionQuerySearchComp = (props) => {
             selectOptions: [],
             selectedOption: "",
             itemType: { label: '', value: '' },
-            itemTypeOperator: ""
+            itemTypeOperator: "",
+            selectedKeyValue: "",
         },
     ]);
 
@@ -72,6 +76,25 @@ const SolutionQuerySearchComp = (props) => {
         tempArray[id] = obj;
         setQuerySearchSelector([...tempArray]);
     };
+
+    const checkForDisabled = (option) => {
+        if (querySearchSelector.length > 1) {
+            if ((querySearchSelector[0].selectFamily.value === "name") ||
+                (querySearchSelector[0].selectFamily.value === "description")) {
+                if ((option.value === "name") ||
+                    (option.value === "description")) {
+                    return true
+                }
+            } else {
+                if (option.value === querySearchSelector[0].selectFamily.value) {
+                    return true;
+                }
+            }
+        } else {
+            return false
+        }
+    }
+
     const handleInputSearch = (e, id) => {
         let tempArray = [...querySearchSelector];
         let obj = tempArray[id];
@@ -91,21 +114,44 @@ const SolutionQuerySearchComp = (props) => {
         } else if (props.compoFlag === "solutionTempItemSearch") {
             var SearchResArr = [];
 
-            getSearchCustomPortfolioDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
-                .then((res) => {
-                    if (res.status === 200) {
-                        for (let i = 0; i < res.data.length; i++) {
-                            SearchResArr.push(res.data[i].value)
+            if ((tempArray[id].selectFamily.value === "name") ||
+                (tempArray[id].selectFamily.value === "description")) {
+                getSearchCustomPortfolioDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
+                    .then((res) => {
+                        if (res.status === 200) {
+                            for (let i = 0; i < res.data.length; i++) {
+                                if (tempArray[id].selectFamily.value === "name" ||
+                                    tempArray[id].selectFamily.value === "description") {
+                                    SearchResArr.push(res.data[i].key)
+                                } else {
+                                    SearchResArr.push(res.data[i].value)
+                                }
+                                // SearchResArr.push(res.data[i].value)
+                            }
                         }
-                    }
-                    obj.selectOptions = SearchResArr;
-                    tempArray[id] = obj;
-                    setQuerySearchSelector([...tempArray]);
-                    $(`.scrollbar-${id}`).css("display", "block");
-                })
-                .catch((err) => {
-                    console.log("err in api call", err);
-                });
+                        obj.selectOptions = SearchResArr;
+                        tempArray[id] = obj;
+                        setQuerySearchSelector([...tempArray]);
+                        $(`.scrollbar-${id}`).css("display", "block");
+                    })
+                    .catch((err) => {
+                        console.log("err in api call", err);
+                    });
+            } else {
+                getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+                    .then((res) => {
+                        console.log("response coverage ", res);
+                        obj.selectOptions = res;
+                        tempArray[id] = obj;
+                        setQuerySearchSelector([...tempArray]);
+                        $(`.scrollbar-${id}`).css("display", "block");
+                    })
+                    .catch((err) => {
+                        console.log("err in api call", err);
+                    });
+            }
+
+
 
             // getSearchCustomPortfolio(`${tempArray[id].selectFamily.value}~${e.target.value}`)
             //     .then((res) => {
@@ -155,26 +201,48 @@ const SolutionQuerySearchComp = (props) => {
             //     })
             obj.inputSearch = e.target.value;
             setQuerySearchSelector([...tempArray]);
-        }
-        else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
+        } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
 
             if (props.compoFlag === "portfolioTempItemSearch") {
+
                 var SearchResArr = [];
-                portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
-                    .then((res) => {
-                        if (res.status === 200) {
-                            for (let i = 0; i < res.data.length; i++) {
-                                SearchResArr.push(res.data[i].value)
+                if ((tempArray[id].selectFamily.value === "name") ||
+                    (tempArray[id].selectFamily.value === "description")) {
+                    portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
+                        .then((res) => {
+                            if (res.status === 200) {
+                                for (let i = 0; i < res.data.length; i++) {
+                                    if (tempArray[id].selectFamily.value === "name" ||
+                                        tempArray[id].selectFamily.value === "description") {
+                                        SearchResArr.push(res.data[i].key)
+                                    } else {
+                                        SearchResArr.push(res.data[i].value)
+                                    }
+                                    // SearchResArr.push(res.data[i].value)
+                                }
                             }
-                        }
-                        obj.selectOptions = SearchResArr;
-                        tempArray[id] = obj;
-                        setQuerySearchSelector([...tempArray]);
-                        $(`.scrollbar-${id}`).css("display", "block");
-                    })
-                    .catch((err) => {
-                        console.log("err in api call", err);
-                    });
+                            obj.selectOptions = SearchResArr;
+                            tempArray[id] = obj;
+                            setQuerySearchSelector([...tempArray]);
+                            $(`.scrollbar-${id}`).css("display", "block");
+                        })
+                        .catch((err) => {
+                            console.log("err in api call", err);
+                        });
+                } else {
+                    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+                        .then((res) => {
+                            console.log("response coverage ", res);
+                            obj.selectOptions = res;
+                            tempArray[id] = obj;
+                            setQuerySearchSelector([...tempArray]);
+                            $(`.scrollbar-${id}`).css("display", "block");
+                        })
+                        .catch((err) => {
+                            console.log("err in api call", err);
+                        });
+                }
+
 
                 // portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
                 //     .then((res) => {
@@ -243,8 +311,23 @@ const SolutionQuerySearchComp = (props) => {
     const handleSearchListClick = (e, currentItem, obj1, id) => {
         let tempArray = [...querySearchSelector];
         let obj = tempArray[id];
-        obj.inputSearch = currentItem;
-        obj.selectedOption = currentItem;
+        // obj.inputSearch = currentItem;
+        // obj.selectedOption = currentItem;
+
+        obj.inputSearch = ((props.compoFlag === "portfolioTempItemSearch") ||
+            (props.compoFlag === "solutionTempItemSearch")) ? (
+                (obj1.selectFamily.value === "name") ||
+                (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+        obj.selectedOption = ((props.compoFlag === "portfolioTempItemSearch") ||
+            (props.compoFlag === "solutionTempItemSearch")) ?
+            ((obj1.selectFamily.value === "name") ||
+                (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+        obj.selectedKeyValue = ((props.compoFlag === "portfolioTempItemSearch") ||
+            (props.compoFlag === "solutionTempItemSearch")) ?
+            ((obj1.selectFamily.value === "name") ||
+                (obj1.selectFamily.value === "description")) ? currentItem.split("#")[0] : currentItem :
+            currentItem.split("#")[0];
+
         tempArray[id] = obj;
         setQuerySearchSelector([...tempArray]);
         $(`.scrollbar-${id}`).css("display", "none");
@@ -319,10 +402,18 @@ const SolutionQuerySearchComp = (props) => {
             console.log("props.compoFlag 276: ", props.compoFlag)
 
             if (props.compoFlag === "solutionTempItemSearch") {
-                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+                var selectedFamily = (querySearchSelector[0]?.selectFamily.value === "name" ||
+                    (querySearchSelector[0]?.selectFamily.value === "description") ?
+                    `portfolio_id=${querySearchSelector[0]?.selectedKeyValue}` : `${querySearchSelector[0]?.selectFamily.value}=${(querySearchSelector[0]?.inputSearch)}`);
+                // var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+                var searchStr = selectedFamily;
                 console.log("solutionTempItemSearch search Str ", searchStr)
             } else if (props.compoFlag === "portfolioTempItemSearch") {
-                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+                var selectedFamily = (querySearchSelector[0]?.selectFamily.value === "name" ||
+                    (querySearchSelector[0]?.selectFamily.value === "description") ?
+                    `portfolio_id=${querySearchSelector[0]?.selectedKeyValue}` : `${querySearchSelector[0]?.selectFamily.value}=${(querySearchSelector[0]?.inputSearch)}`);
+                // var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
+                var searchStr = selectedFamily;
             }
             else {
                 var searchStr = `bundleFlag:PORTFOLIO AND ${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
@@ -338,14 +429,28 @@ const SolutionQuerySearchComp = (props) => {
                 ) {
                     throw "Please fill data properly"
                 }
-                searchStr =
-                    searchStr +
-                    " " +
-                    querySearchSelector[i].selectOperator.value +
-                    " " +
-                    querySearchSelector[i].selectFamily.value +
-                    ":" +
-                    querySearchSelector[i].inputSearch + "";
+                if (props.compoFlag === "solutionTempItemSearch") {
+                    searchStr =
+                        searchStr + "&" +
+                        (querySearchSelector[i].selectFamily.value === "name" ||
+                            (querySearchSelector[i].selectFamily.value === "description") ?
+                            `portfolio_id=${querySearchSelector[i]?.selectedKeyValue}` : `${querySearchSelector[i].selectFamily.value}=${(querySearchSelector[i]?.inputSearch)}`);
+                } else if (props.compoFlag === "portfolioTempItemSearch") {
+                    searchStr =
+                        searchStr + "&" +
+                        (querySearchSelector[i].selectFamily.value === "name" ||
+                            (querySearchSelector[i].selectFamily.value === "description") ?
+                            `portfolio_id=${querySearchSelector[i]?.selectedKeyValue}` : `${querySearchSelector[i].selectFamily.value}=${(querySearchSelector[i]?.inputSearch)}`);
+                } else {
+                    searchStr =
+                        searchStr +
+                        " " +
+                        querySearchSelector[i].selectOperator.value +
+                        " " +
+                        querySearchSelector[i].selectFamily.value +
+                        ":" +
+                        querySearchSelector[i].inputSearch + "";
+                }
             }
             console.log("searchStr 307 try : ", searchStr);
             // searchStr is ready call API 
@@ -370,19 +475,24 @@ const SolutionQuerySearchComp = (props) => {
                 props.setLoadingItem(false)
             } else if (props.compoFlag === "portfolioTempItemSearch") {
 
-                const res3 = await portfolioSearch(searchStr)
-                console.log("res3 is  : ", res3)
-                if (!res3.data.length > 0) {
-                    props.setLoadingStatus("")
-                    props.setPortfolioTempMasterData([])
-                    // props.ItemSearchResponseFun([], querySearchSelector)
-                    // throw "No record found"
-                    throw "No information is found for your search, change the search criteria";
+                // const res3 = await portfolioSearch(searchStr)
+                const res3 = await portfolioSearchTableDataList(searchStr)
+                if (res3.status === 200) {
+                    console.log("res3 is  : ", res3)
+                    if (res3.data.length === 0) {
+                        props.setLoadingStatus("")
+                        props.setPortfolioTempMasterData([])
+                        // props.ItemSearchResponseFun([], querySearchSelector)
+                        // throw "No record found"
+                        throw "No information is found for your search, change the search criteria";
+                    } else {
+                        props.setPortfolioTempMasterData(res3.data)
+                        // props.ItemSearchResponseFun(res3, querySearchSelector)
+                        props.setLoadingStatus("")
+                    }
                 } else {
-                    props.setPortfolioTempMasterData(res3.data)
-                    // props.ItemSearchResponseFun(res3, querySearchSelector)
-                    props.setLoadingStatus("")
-
+                    props.setLoadingStatus("");
+                    throw "No information is found for your search, change the search criteria";
                 }
                 let temArray = []
                 // for (let i = 0; i <= res2.length; i++) {
@@ -407,24 +517,41 @@ const SolutionQuerySearchComp = (props) => {
                 //         console.log("err in api call", err);
                 //     });
 
-                const res4 = await getSearchCustomPortfolio(searchStr)
+                // const res4 = await getSearchCustomPortfolio(searchStr)
+                const res4 = await customPortfolioSearchTableDataList(searchStr)
                 console.log("getSearchCustomPortfolio res is : ", res4)
 
-                if (res4.status !== 200) {
-                    throw "No information is found for your search, change the search criteria";
+                if (res4.status === 200) {
+                    if (res4.data.length === 0) {
+                        props.setLoadingStatus("")
+                        props.setPortfolioTempMasterData([])
+                        // props.ItemSearchResponseFun([], querySearchSelector)
+                        // throw "No record found"
+                        throw "No information is found for your search, change the search criteria";
+                    } else {
+                        var searchArrData = [];
+                        searchArrData.push(res4.data);
+                        // props.setSolutionTempMasterData(res4.data)
+                        props.setSolutionTempMasterData(searchArrData)
+                        props.setSolutionLoadingStatus("")
+                    }
                 } else {
-                    // if (!res4.length > 0) {
-
-                    //     props.setSolutionLoadingStatus("")
-                    //     props.setSolutionTempMasterData([])
-                    //     // throw "No record found"
-                    //     throw "No information is found for your search, change the search criteria";
-                    // } else {
-                    props.setSolutionTempMasterData(res4.data)
-                    props.setSolutionLoadingStatus("")
-
-                    // }
+                    throw "No information is found for your search, change the search criteria";
                 }
+
+                // if (res4.status !== 200) {
+                // } else {
+                //     // if (!res4.length > 0) {
+
+                //     //     props.setSolutionLoadingStatus("")
+                //     //     props.setSolutionTempMasterData([])
+                //     //     // throw "No record found"
+                //     //     throw "No information is found for your search, change the search criteria";
+                //     // } else {
+
+
+                //     // }
+                // }
 
 
             } else {
@@ -633,10 +760,11 @@ const SolutionQuerySearchComp = (props) => {
                                         <div>
                                             {(props.compoFlag === "itemSearch" && querySearchSelector[i].itemType?.value === "portfolioItem") || (props.compoFlag !== "itemSearch") ? (
                                                 <Select
-                                                    isClearable={true}
+                                                    // isClearable={true}
                                                     options={props.options ? props.options : options}
                                                     onChange={(e) => handleFamily(e, i)}
                                                     value={obj.selectFamily}
+                                                    isOptionDisabled={(option) => checkForDisabled(option)}
                                                 />) : ('')}
 
                                         </div>
@@ -667,7 +795,13 @@ const SolutionQuerySearchComp = (props) => {
                                                                 key={j}
                                                                 onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
                                                             >
-                                                                {currentItem}
+                                                                {((props.compoFlag === "portfolioTempItemSearch") ||
+                                                                    (props.compoFlag === "solutionTempItemSearch")) ?
+                                                                    ((obj.selectFamily.value === "name") ||
+                                                                        (obj.selectFamily.value === "description")) ? currentItem.split("#")[1] :
+                                                                        currentItem : currentItem.split("#")[1]
+                                                                }
+                                                                {/* {currentItem} */}
                                                             </li>
                                                         )
                                                     )}

@@ -1719,6 +1719,7 @@ export const Analytics = () => {
 
    const PopupModelBoxShow = () => {
       setShowPopup(true)
+      setSolutionValue(3)
    }
    const PopupExoploreSolutionShow = () => {
       setExploreSolutionPopup(true);
@@ -4069,9 +4070,9 @@ export const Analytics = () => {
             centered>
             <Modal.Header className="align-items-center" style={{ background: "#F0F0F0" }}>
                <Modal.Title><b>Choose the option to create solutions</b></Modal.Title>
-               <button 
-               // onClick={PopupExoploreSolutionShow} 
-               className="btn text-white bg-primary" 
+               <button
+                  // onClick={PopupExoploreSolutionShow} 
+                  className="btn text-white bg-primary"
                >Explore available solution</button>
             </Modal.Header>
             <Modal.Body>
@@ -4253,7 +4254,7 @@ export const Analytics = () => {
                                     <FormControlLabel
                                        className=""
                                        value="1"
-                                       control={<Radio className="mx-1" />}
+                                       control={<Radio className="mx-1" checked={solutionValue == 1} />}
                                        label="Solution"
                                        labelPlacement="bottom"
                                     />
@@ -4438,10 +4439,14 @@ export const Analytics = () => {
                      <SolutionQuerySearchComp
                         compoFlag="portfolioTempItemSearch"
                         options={[
+                           // { label: "Make", value: "make" },
+                           // { label: "Family", value: "family" },
+                           // { label: "Model", value: "modelNo" },
+                           // { label: "Prefix", value: "serialNumberPrefix" },
                            { label: "Make", value: "make" },
                            { label: "Family", value: "family" },
-                           { label: "Model", value: "modelNo" },
-                           { label: "Prefix", value: "serialNumberPrefix" },
+                           { label: "Model", value: "model" },
+                           { label: "Prefix", value: "prefix" },
                            { label: "Name", value: "name" },
                            // { label: "Portfolio Id", value: "portfolioId" },
                            { label: "Description", value: "description" },
@@ -4459,8 +4464,8 @@ export const Analytics = () => {
                               options={[
                                  { label: "Make", value: "make" },
                                  { label: "Family", value: "family" },
-                                 { label: "Model", value: "modelNo" },
-                                 { label: "Prefix", value: "serialNumberPrefix" },
+                                 { label: "Model", value: "model" },
+                                 { label: "Prefix", value: "prefix" },
                                  { label: "Name", value: "name" },
                                  { label: "Description", value: "description" },
                               ]}
@@ -4474,7 +4479,7 @@ export const Analytics = () => {
                   }
 
                   {/* Portfolio Templates Search Result Master & Selected Data Starting */}
-                  {console.log("222222222222222222221: ", portfolioTempMasterData)}
+                  {/* {console.log("222222222222222222221: ", portfolioTempMasterData)} */}
                   {solutionValue == 0 ? <>
 
                      {loadingStatus === "01" ? ("loading") :
@@ -4497,16 +4502,22 @@ export const Analytics = () => {
                                                    <p className="mb-0 font-size-14"><b>{row.name}</b></p>
                                                    {/* <p className="mb-0 font-size-12">{row.description}</p> */}
                                                 </div>
-                                                <div className={`px-3 py-1 mr-4 text-white 
+                                                {/* <div className={`px-3 py-1 mr-4 text-white 
                                                       ${row.supportLevel == "STANDARD" ? "bg-green" :
                                                       row.supportLevel == "PREMIUM" ? "bg-yellow" :
                                                          row.supportLevel == "SUPERIOR" ? "bg-gray" : ""} font-size-12 border-radius-5`}>{row.supportLevel}
+                                                </div> */}
+                                                <div className={`px-3 py-1 mr-4 text-white 
+                                                      ${row.version == "STANDARD" ? "bg-green" :
+                                                      row.version == "PREMIUM" ? "bg-yellow" :
+                                                         row.version == "SUPERIOR" ? "bg-gray" : "text-dark"} font-size-12 border-radius-5`}>{row.version}
                                                 </div>
                                                 <div className="d-flex mr-4">
                                                    <p className="mb-0 font-size-14">PRICE</p>
                                                 </div>
                                                 <div className="d-flex">
-                                                   <p className="mb-0 font-size-14 ">$2,000</p>
+                                                   {/* <p className="mb-0 font-size-14 ">$2,000</p> */}
+                                                   <p className="mb-0 font-size-14 ">${row.calculatedPrice}</p>
                                                 </div>
 
                                              </div>
@@ -4701,21 +4712,28 @@ export const Analytics = () => {
                                              <div className="result py-4 px-3 font-size-14"><b>RESULTS</b></div>
                                           </li>
                                           {solutionTempMasterData.map((row, i) =>
-                                             <li key={i} className="border-bottom cursor " onClick={() => handleOnSolutionPortfolioResultRow(row.customPortfolioId)}>
+                                             // <li key={i} className="border-bottom cursor " onClick={() => handleOnSolutionPortfolioResultRow(row.customPortfolioId)}>
+                                             <li key={i} className="border-bottom cursor " onClick={() => handleOnSolutionPortfolioResultRow(row.portfolioId)}>
                                                 <div className="d-flex align-items-center p-3">
                                                    <div className="d-flex mr-4">
                                                       <p className="mb-0 font-size-14"><b>{row.name}</b></p>
                                                    </div>
-                                                   <div className={`px-3 py-1 mr-4 text-white 
+                                                   {/* <div className={`px-3 py-1 mr-4 text-white 
                                                       ${row.supportLevel == "STANDARD" ? "bg-green" :
                                                          row.supportLevel == "PREMIUM" ? "bg-yellow" :
-                                                            row.supportLevel == "SUPERIOR" ? "bg-gray" : ""} font-size-12 border-radius-5`}>{row.supportLevel}
+                                                            row.supportLevel == "SUPERIOR" ? "bg-gray" : "text-bold"} font-size-12 border-radius-5`}>{row.supportLevel}
+                                                   </div> */}
+                                                   <div className={`px-3 py-1 mr-4 text-white 
+                                                      ${row.version == "STANDARD" ? "bg-green" :
+                                                         row.version == "PREMIUM" ? "bg-yellow" :
+                                                            row.version == "SUPERIOR" ? "bg-gray" : "text-dark"} font-size-12 border-radius-5`}>{row.version}
                                                    </div>
                                                    <div className="d-flex mr-4">
                                                       <p className="mb-0 font-size-14">PRICE</p>
                                                    </div>
                                                    <div className="d-flex">
-                                                      <p className="mb-0 font-size-14 ">$2,000</p>
+                                                      {/* <p className="mb-0 font-size-14 ">$2,000</p> */}
+                                                      <p className="mb-0 font-size-14 ">${row.calculatedPrice}</p>
                                                    </div>
                                                 </div>
                                              </li>

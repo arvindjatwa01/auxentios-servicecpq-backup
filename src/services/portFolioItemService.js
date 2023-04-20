@@ -92,12 +92,12 @@ export const getAllItems = () => {
   });
 };
 
-export const getServiceItemsList = () => {
+export const getServiceItemsList = (payLoad) => {
   console.log("portfolioItemService > getServiceItemsList called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(CREATE_PORTFOLIO_ITEM() + "/services", { headers: headersData })
+        .get(CREATE_PORTFOLIO_ITEM() + "/services?" + payLoad, { headers: headersData })
         .then((res) => {
           console.log("getServiceItemsList > axios res=", res);
           resolve(res);
