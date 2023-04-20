@@ -87,7 +87,9 @@ function WithSparePartsSegments(props) {
     if (activeElement.bId) {
       await fetchSegments(activeElement.bId)
         .then((result) => {
+          // console.log(result);
           let segmentsFetched = result?.segments;
+          // console.log("fetchSegments",segmentsFetched);
           if (result?.segments?.length > 0) {
             setSegments(segmentsFetched);
             setSegmentViewOnly(true);
@@ -108,7 +110,10 @@ function WithSparePartsSegments(props) {
             });
             if (segmentToLoad) setOperations(segmentToLoad.operations);
           } else {
+            setSegments([]);
             loadNewSegmentUI();
+            // setActiveElement({ ...activeElement, name: "header" });
+            // fetchAllDetails(activeElement.bId);
           }
           setSegmentLoading(false);
         })
@@ -287,6 +292,7 @@ function WithSparePartsSegments(props) {
         });
         // fetchSegmentsOfBuilder();
         segments[segIndex] = result;
+        setOperations(result.operations);
         setShowAddNewButton(true);
         setSegmentViewOnly(true);
         handleSnack(
@@ -308,6 +314,8 @@ function WithSparePartsSegments(props) {
   };
 
   const handleCancelSegment = () => {
+
+    // console.log(segmentData, segments);
     if (segments.length > 1) {
       if (segmentData.header === NEW_SEGMENT) {
         segments.splice(
@@ -327,6 +335,7 @@ function WithSparePartsSegments(props) {
     } else {
       if (segmentData.header === NEW_SEGMENT) {
         setActiveElement({ ...activeElement, name: "header" });
+        fetchAllDetails(activeElement.bId);
       } else {
         setSegmentData({
           ...segments[0],
@@ -537,14 +546,14 @@ function WithSparePartsSegments(props) {
               </div>
             </div>
             <div className=" text-right">
-              {segments.length > 0 && (
+              
                 <button
                   className="btn border bg-primary text-white mr-2"
                   onClick={handleCancelSegment}
                 >
                   Cancel
                 </button>
-              )}
+            
               <button
                 className="btn border bg-primary text-white"
                 onClick={handleCreateSegment}

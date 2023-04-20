@@ -233,6 +233,7 @@ export const UPDATE_SJ_ESTIMATION = (templateId) => REPAIR_BUILDER_URI + `standa
 export const UPDATE_SJ_GENERAL_DETAIL = (templateId) => REPAIR_BUILDER_URI + `standard-job/${templateId}/estimate`
 export const UPDATE_SJ_PRICE = (templateId) => REPAIR_BUILDER_URI + `standard-job/${templateId}/pricing`
 export const UPDATE_SJ_COVERAGE = (templateId) => REPAIR_BUILDER_URI + `standard-job/${templateId}/coverage`
+export const REMOVE_SJ_COVERAGE = (templateId, coverageId) => REPAIR_BUILDER_URI + `standard-job/${templateId}/coverage/${coverageId}`
 export const UPDATE_SJ_STATUS = (templateId, status) => REPAIR_BUILDER_URI + `standard-job/${templateId}/status/${status}`;
 export const UPDATE_SJ_USAGE = (templateId) => REPAIR_BUILDER_URI + `standard-job/${templateId}/usage`
 export const UPDATE_SJ_RATING = (templateId, rating) => REPAIR_BUILDER_URI + `standard-job/${templateId}/rating/${rating}`;
@@ -240,8 +241,15 @@ export const SJ_SEGMENT = (templateId) => REPAIR_BUILDER_URI + `standard-job/${t
 export const UPDATE_SJ_VERSION = (templateId, version) => REPAIR_BUILDER_URI + `standard-job/${templateId}/version/${version}`;
 
 /* ===================== Repair Quote Service ============================= */
-export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
-export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/repair-builder/search?search=${searchStr}`;
+
+// export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
+// export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/repair-builder/search?search=${searchStr}`;
+export const RECENT_QUOTES =(quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
+export const SEARCH_REPAIR_QUOTES =(searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
+export const CREATE_REPAIR_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const CREATE_SPARE_PART_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
+export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 
 /* ===================== Quote Service ============================= */
 

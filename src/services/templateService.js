@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_SJ_COVERAGE, UPDATE_SJ_GENERAL_DETAIL, UPDATE_SJ_PRICE, UPDATE_SJ_STATUS, UPDATE_SJ_ESTIMATION, UPDATE_SJ_USAGE, UPDATE_SJ_RATING, SJ_SEGMENT, UPDATE_SJ_VERSION } from "./CONSTANTS";
+import { FETCH_TEMPLATE, SEARCH_TEMPLATE, UPDATE_SJ_COVERAGE, UPDATE_SJ_GENERAL_DETAIL, UPDATE_SJ_PRICE, UPDATE_SJ_STATUS, UPDATE_SJ_ESTIMATION, UPDATE_SJ_USAGE, UPDATE_SJ_RATING, SJ_SEGMENT, UPDATE_SJ_VERSION, REMOVE_SJ_COVERAGE } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -331,6 +331,33 @@ export const fetchSegmentsStandardJob = (templateId) => {
         });
     } catch (error) {
       console.error("fetchSegmentsStandardJob general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Remove coverage item
+export const removeCoverageItem = (standardJobId, coverageId) => {
+  console.log("service template > RemoveCoverageItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(REMOVE_SJ_COVERAGE(standardJobId,coverageId), config)
+        .then((res) => {
+          console.log("Template Service -> RemoveCoverageItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveCoverageItem > axios err=", err);
+          reject("Error in RemoveCoverageItem axios!");
+        });
+    } catch (error) {
+      console.error("removeLaborItem general exception", error);
       reject(SYSTEM_ERROR);
     }
   });

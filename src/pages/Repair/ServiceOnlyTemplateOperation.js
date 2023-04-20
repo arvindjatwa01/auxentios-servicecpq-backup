@@ -5,7 +5,13 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import React, { useEffect, useState } from "react";
-import { AddOperation, fetchOperations, fetchPartlistFromOperation, updatePartlistActive } from "services/repairBuilderServices";
+import {
+  AddOperation,
+  fetchOperations,
+  fetchPartlistFromOperation,
+  FetchServiceHeader,
+  updatePartlistActive,
+} from "services/repairBuilderServices";
 import {
   getComponentCodeSuggetions,
   jobCodeSearch,
@@ -13,7 +19,13 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
-import { FormControlLabel, FormGroup, Radio, Switch, Tooltip } from "@mui/material";
+import {
+  FormControlLabel,
+  FormGroup,
+  Radio,
+  Switch,
+  Tooltip,
+} from "@mui/material";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import EditIcon from "@mui/icons-material/EditOutlined";
 
@@ -47,7 +59,8 @@ function ServiceOnlyTemplateOperation(props) {
     id: "",
     description: "",
     required: true,
-    partlists: []
+    partlists: [],
+    serviceEstimation: "",
   };
   const [operationData, setOperationData] = useState(newOperation);
   useEffect(() => {
@@ -59,7 +72,7 @@ function ServiceOnlyTemplateOperation(props) {
     setOperationLoading(true);
     if (activeElement.sId) {
       await fetchOperations(activeElement.sId)
-        .then((result) => {
+        .then(async (result) => {
           let operationsFetched = result?.operations;
           if (operationsFetched?.length > 0) {
             setOperations(operationsFetched);
@@ -75,25 +88,38 @@ function ServiceOnlyTemplateOperation(props) {
                 return obj.id === opToLoad.id;
               })
             );
-            fetchPartlistFromOperation(opToLoad.id).then(resultPartlists => {
-            let groupedPartList = groupBy(resultPartlists, "partlistId");
-            // console.log(groupedPartList);
-            setOperationData({
-              ...opToLoad,
-              partlists: groupedPartList,
-              header:
-                "Operation " +
-                formatOperationNum(opToLoad.operationNumber) +
-                " - " +
-                opToLoad.jobCodeDescription +
-                " " +
-                opToLoad.componentCodeDescription, //Rename after modifications in UI
-            });
-            });
+            let groupedPartList = "";
+            let serviceEstimate = "";
+            await fetchPartlistFromOperation(opToLoad.id).then(
+              (resultPartlists) => {
+                groupedPartList = groupBy(resultPartlists, "partlistId");
+              // console.log(groupedPartList);
+              }
+            );
+            await FetchServiceHeader(opToLoad.id)
+              .then((resServiceEstimation) => {
+                serviceEstimate = resServiceEstimation;
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+              setOperationData({
+                ...opToLoad,
+                partlists: groupedPartList,
+              serviceEstimation: serviceEstimate,
+                header:
+                  "Operation " +
+                  formatOperationNum(opToLoad.operationNumber) +
+                  " - " +
+                  opToLoad.jobCodeDescription +
+                  " " +
+                  opToLoad.componentCodeDescription, //Rename after modifications in UI
+              });
+            setOperationLoading(false);
           } else {
             loadNewOperationUI();
-          }
           setOperationLoading(false);
+          }
         })
         .catch((err) => {
           loadNewOperationUI();
@@ -121,21 +147,21 @@ function ServiceOnlyTemplateOperation(props) {
     }
     return hash;
   }
-// To indicate whether segment price will be included in total price
-const handleChangeSwitch = (event) => {
-  let sid = activeElement?.sId;
-  AddOperation(sid,  {
-    id: operationData.id,
-    required: event.target.checked,
-  })
-    .then((result) => {
-      setOperationData({ ...operationData, required: result.required });
-      handleSnack("success", "Operation updated successfully!");
+  // To indicate whether segment price will be included in total price
+  const handleChangeSwitch = (event) => {
+    let sid = activeElement?.sId;
+    AddOperation(sid, {
+      id: operationData.id,
+      required: event.target.checked,
     })
-    .catch((e) => {
-      handleSnack("error", "Error occured while updating the details!");
-    });
-};
+      .then((result) => {
+        setOperationData({ ...operationData, required: result.required });
+        handleSnack("success", "Operation updated successfully!");
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occured while updating the details!");
+      });
+  };
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
     setSearchJobCodeResults([]);
@@ -161,37 +187,50 @@ const handleChangeSwitch = (event) => {
       ...operationData,
       jobCode: currentItem.jobCode,
       jobCodeDescription: currentItem.description,
-      description: currentItem.description && operationData.componentCodeDescription
-        ? currentItem.description + " " + operationData.componentCodeDescription
-        : "",
+      description:
+        currentItem.description && operationData.componentCodeDescription
+          ? currentItem.description +
+            " " +
+            operationData.componentCodeDescription
+          : "",
     });
     setSearchJobCodeResults([]);
   };
   const handleChange = async (id) => {
-    await updatePartlistActive(id).then(result => {
-      if(result){
-        fetchPartlistFromOperation(operationData.id).then(resultPartlists => {
-          let groupedPartList = groupBy(resultPartlists, "partlistId");
-          // console.log(groupedPartList);
-          setOperationData({
-            ...operationData,
-            partlists: groupedPartList,
-            header:
-              "Operation " +
-              formatOperationNum(operationData.operationNumber) +
-              " - " +
-              operationData.jobCodeDescription +
-              " " +
-              operationData.componentCodeDescription, //Rename after modifications in UI
-          });
-        });
-        handleSnack("success","This partlist has been activated for the builder!");
-      }
-    }).catch(e => {
-      // console.log(e);
-      handleSnack("error", "Error occurred while making the partlist version active!")
-    })
-  }
+    await updatePartlistActive(id)
+      .then((result) => {
+        if (result) {
+          fetchPartlistFromOperation(operationData.id).then(
+            (resultPartlists) => {
+              let groupedPartList = groupBy(resultPartlists, "partlistId");
+              // console.log(groupedPartList);
+              setOperationData({
+                ...operationData,
+                partlists: groupedPartList,
+                header:
+                  "Operation " +
+                  formatOperationNum(operationData.operationNumber) +
+                  " - " +
+                  operationData.jobCodeDescription +
+                  " " +
+                  operationData.componentCodeDescription, //Rename after modifications in UI
+              });
+            }
+          );
+          handleSnack(
+            "success",
+            "This partlist has been activated for the builder!"
+          );
+        }
+      })
+      .catch((e) => {
+        // console.log(e);
+        handleSnack(
+          "error",
+          "Error occurred while making the partlist version active!"
+        );
+      });
+  };
 
   // Search component code
   const handleComponentCodeSearch = async (searchText) => {
@@ -219,9 +258,10 @@ const handleChangeSwitch = (event) => {
       componentCode: currentItem.componentCode,
       componentCodeDescription: currentItem.description,
       // description: currentItem.componentCode + " - " + currentItem.description,
-      description: operationData.jobCodeDescription && currentItem.description
-        ? operationData.jobCodeDescription + " " + currentItem.description
-        : "",
+      description:
+        operationData.jobCodeDescription && currentItem.description
+          ? operationData.jobCodeDescription + " " + currentItem.description
+          : "",
     });
     setSearchCompCodeResults([]);
   };
@@ -336,8 +376,8 @@ const handleChangeSwitch = (event) => {
       setShowAddNewButton(true);
       setOperationViewOnly(true);
     } else {
-      if(operationData.header === NEW_OPERATION){
-      setActiveElement({ ...activeElement, name: "segment" });
+      if (operationData.header === NEW_OPERATION) {
+        setActiveElement({ ...activeElement, name: "segment" });
       } else {
         setOperationViewOnly(true);
         setShowAddNewButton(true);
@@ -376,53 +416,52 @@ const handleChangeSwitch = (event) => {
                     }
                   />
                 </Tooltip>
-                
               </span>
             )}
           </div>
           <div className="col-md-6 col-sm-6 align-items-center mb-0 ">
             <div className="justify-content-end text-right">
-            <button
+              <button
                 onClick={() => handleAnchors("backward", opIndex - 1)}
-              className="btn-no-border"
-              disabled={
-                !(
+                className="btn-no-border"
+                disabled={
+                  !(
                     opIndex > 0 ||
-                  (operationData.header === NEW_OPERATION &&
-                    operations.length > 1)
-                )
-              }
-            >
-              <KeyboardArrowLeftIcon />
-            </button>
-            <span className="text-primary">{operationData.header}</span>
-            <button
+                    (operationData.header === NEW_OPERATION &&
+                      operations.length > 1)
+                  )
+                }
+              >
+                <KeyboardArrowLeftIcon />
+              </button>
+              <span className="text-primary">{operationData.header}</span>
+              <button
                 onClick={() => handleAnchors("forward", opIndex + 1)}
-              className="btn-no-border"
-              disabled={
+                className="btn-no-border"
+                disabled={
                   opIndex === operations.length - 1 ||
-                operationData.header === NEW_OPERATION
-              }
-            >
-              <KeyboardArrowRightIcon />
-            </button>
-            {showAddNewButton &&
-              ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                -1 && (
-                <button
-                  className="btn-no-border ml-2"
-                  onClick={loadNewOperationUI}
-                >
-                  <span className="ml-2">
-                    <AddIcon />
-                  </span>
-                  Add New Operation
-                </button>
-              )}
+                  operationData.header === NEW_OPERATION
+                }
+              >
+                <KeyboardArrowRightIcon />
+              </button>
+              {showAddNewButton &&
+                ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                  -1 && (
+                  <button
+                    className="btn-no-border ml-2"
+                    onClick={loadNewOperationUI}
+                  >
+                    <span className="ml-2">
+                      <AddIcon />
+                    </span>
+                    Add New Operation
+                  </button>
+                )}
+            </div>
           </div>
         </div>
-          </div>
-          <div className="hr"></div>
+        <div className="hr"></div>
 
         {operationLoading ? (
           <LoadingProgress />
@@ -546,24 +585,24 @@ const handleChangeSwitch = (event) => {
         ) : (
           <React.Fragment>
             <div className="row mt-4">
-            <div className="col-md-12 col-sm-12 mb-4">
-                    <div className=" d-flex justify-content-between align-items-center">
-                      <div>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={operationData.required}
-                                onChange={handleChangeSwitch}
-                                name="operationRequired"
-                              />
-                            }
-                            label="REQUIRED"
+              <div className="col-md-12 col-sm-12 mb-4">
+                <div className=" d-flex justify-content-between align-items-center">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={operationData.required}
+                            onChange={handleChangeSwitch}
+                            name="operationRequired"
                           />
-                        </FormGroup>
-                      </div>
-                    </div>
+                        }
+                        label="REQUIRED"
+                      />
+                    </FormGroup>
                   </div>
+                </div>
+              </div>
               <ReadOnlyField
                 label="OPERATION #"
                 value={String(operationData.operationNumber).padStart(3, "0")}
@@ -595,122 +634,258 @@ const handleChangeSwitch = (event) => {
                 className="col-md-4 col-sm-4"
               />
             </div>
-            {operationData.partlists && Object.entries(operationData.partlists).length > 0 && <><h5 className="d-flex align-items-center  mx-2">
-              <div className="" style={{ display: "contents" }}>
-                <span className="mr-3 white-space">Part List</span>
-              </div>
-              <div className="hr"></div>
-            </h5>
-            <div className="row">
-              {console.log(Object.entries(operationData.partlists))}
-              {Object.entries(operationData.partlists).map(partList => {
-              return <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+            {((operationData.partlists &&
+              Object.entries(operationData.partlists).length > 0) ||
+              operationData.serviceEstimation) && (
+                <>
+                  <h5 className="d-flex align-items-center  mx-2">
                     <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-14 text-white">
-                        {partList[1][0].description} partlist
-                      </span>
+                      <span className="mr-3 white-space">Summary</span>
                     </div>
-                    <div className="d-flex">
-                      {/* <div>
-                        <Checkbox className="p-0 text-white" />
+                    <div className="hr"></div>
+                  </h5>
+                  <div className="row">
+                  {operationData.partlists &&
+                    Object.entries(operationData.partlists).length > 0 &&
+                    Object.entries(operationData.partlists)?.map((partList) => {
+                      return (
+                        <div className="col-md-6">
+                          <div
+                            className="card border"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                              <div className="" style={{ display: "contents" }}>
+                                <span className="mr-3 white-space font-size-14 text-white">
+                                  {partList[1][0].partlistId} - Part list
+                                </span>
+                              </div>
+                              <div className="d-flex"></div>
                       </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a> */}
-                    </div>
-                  </div>
-                  {partList[1].map(partlistVersion => <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version {partlistVersion.versionNumber}
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        {/* <a href="#" class="text-light-black font-size-12">
+                            {partList[1].map(
+                              (partlistVersion, indexPartList) => (
+                              <div className="bg-white px-3 pt-4 pb-2">
+                                <div className="d-flex align-items-center justify-content-between mb-0">
+                                    <div className="">
+                                      <span className="mr-2 font-size-14 font-weight-500 mr-2">
+                                        {partlistVersion.description}
+                                      </span>
+                                    <a
+                                      href="#"
+                                        className="btn-sm text-white bg-primary"
+                                    >
+                                      Version {partlistVersion.versionNumber}
+                                    </a>
+                                  </div>
+                                  <div style={{ textAlign: "right" }}>
+                                    {/* <a href="#" class="text-light-black font-size-12">
                           Go to Version{" "}
                           <span className="text-light-black">
                             <ArrowForwardIosOutlinedIcon />
                           </span>
                         </a> */}
-                        <Radio
-                          checked={partlistVersion.activeVersion}
-                          onChange={() => handleChange(partlistVersion.id)}
-                          value="a"
-                          name="radio-buttons"
-                          inputProps={{ 'aria-label': 'A' }}
-                        />
+                                    <Radio
+                                      checked={partlistVersion.activeVersion}
+                                      onChange={() =>
+                                        handleChange(partlistVersion.id)
+                                      }
+                                      value="a"
+                                      name="radio-buttons"
+                                      inputProps={{ "aria-label": "A" }}
+                                    />
+                                  </div>
+                                </div>
+                                {/* <hr></hr> */}
+                                <div className="row my-4">
+                                  <div className="col-7">
+                                    <div className="d-flex">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Total Parts
+                                      </p>
+                                        <h6 className=" font-size-14 font-weight-600 text-primary">
+                                        {partlistVersion.totalParts}
+                                      </h6>
+                                    </div>
+                                  </div>
+                                  <div className="col-5">
+                                      <div class="d-flex justify-content-end">
+                                        <p class="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Total Cost
+                                      </p>
+                                        <h6 className=" font-size-14 font-weight-600 text-primary">
+                                        $ {partlistVersion.totalPrice}
+                                      </h6>
+                                    </div>
+                                  </div>
+                                    </div><div className="row mb-4">
+                                  <div className="col-4">
+                                    <div class="d-flex">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          New
+                                      </p>
+                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                        {partlistVersion.totalNewParts}
+                                      </h6>
+                                    </div>
+                                  </div>
+                                    <div className="col-4">
+                                    <div class="d-flex">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Refurbished
+                                      </p>
+                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                          {
+                                            partlistVersion.totalRefurbishedParts
+                                          }
+                                      </h6>
+                                    </div>
+                                  </div>
+                                    <div className="col-4">
+                                      <div class="d-flex justify-content-end">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Reman
+                                      </p>
+                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                        {partlistVersion.totalRemanParts}
+                                      </h6>
+                                    </div>
+                                  </div>
+                                </div>
+                                  {partList[1].length - 1 > indexPartList && (
+                                <div className="hr"></div>
+                                  )}
+                              </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {/* </div>
+                <div className="row"> */}
+                  {operationData.serviceEstimation && (
+                    <div className="col-md-6">
+                      <div
+                        className="card border"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                          <div className="" style={{ display: "contents" }}>
+                            <span className="mr-3 white-space font-size-14 text-white">
+                              {
+                                operationData.serviceEstimation
+                                  .serviceEstimateId
+                              }
+                              - Service Estimation
+                            </span>
+                          </div>
+                          <div className="d-flex"></div>
+                        </div>
+
+                        <div className="bg-white px-3 pt-4 pb-2">
+                          <div className="d-flex align-items-center justify-content-between mb-0">
+                            <div className="">
+                              <span className="mr-2 font-size-14 font-weight-500 mr-2">
+                                {operationData.serviceEstimation.jobOperation}
+                              </span>
+                              <a
+                                href="#"
+                                className="btn-sm text-white bg-primary"
+                              >
+                                Version 1
+                              </a>
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                              {/* <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a> */}
+                              <Radio
+                                checked={true}
+                                // onChange={() =>
+                                //   handleChange(
+                                //     operationData.serviceEstimation.id
+                                //   )
+                                // }
+                                value="a"
+                                name="radio-buttons"
+                                inputProps={{ "aria-label": "A" }}
+                              />
+                            </div>
+                          </div>
+                          {/* <hr></hr> */}
+                          <div className="row my-4">
+                            <div className="col-6">
+                              <div className="d-flex">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Estimated Hours
+                                </p>
+                                <h6 className=" font-size-14 font-weight-600 text-primary">
+                                  {operationData.serviceEstimation.totalParts}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-6">
+                              <div class="d-flex d-flex justify-content-end">
+                                <p class="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Total Cost
+                                </p>
+                                <h6 className=" font-size-14 font-weight-600 text-primary">
+                                  $ {operationData.serviceEstimation.netPrice}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row my-4">
+                            <div className="col-4">
+                              <div class="d-flex">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Labor
+                                </p>
+                                <h6 className="font-size-14 font-weight-600 text-primary">
+                                  ${" "}
+                                  {operationData.serviceEstimation.labourPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-4">
+                              <div class="d-flex">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Consumables
+                                </p>
+                                <h6 className="font-size-14 font-weight-600 text-primary">
+                                  ${" "}
+                                  {
+                                    operationData.serviceEstimation
+                                      .consumablePrice
+                                  }
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-4">
+                              <div class="d-flex justify-content-end">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Misc
+                                </p>
+                                <h6 className="font-size-14 font-weight-600 text-primary ">
+                                  ${" "}
+                                  {
+                                    operationData.serviceEstimation
+                                      .extraMiscellaneous
+                                  }
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    {/* <hr></hr> */}
-                    <div className="row my-4">
-                      <div className="col-7">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">{partlistVersion.totalParts}</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COST
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$ {partlistVersion.totalPrice}</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalNewParts}</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRefurbishedParts}</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REMAN
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRemanParts}</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>)}
-                </div>
-              </div>})}
-            </div>
-            </>}            
+                  )}
+                  </div>
+                </>
+              )}
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
                 className="btn bg-primary text-white"
@@ -731,10 +906,14 @@ const handleChangeSwitch = (event) => {
                 }
                 className="btn bg-primary text-white ml-2"
               >
+                {operationData.serviceEstimation ? (
+                  <span className="mr-1">View</span>
+                ) : (
                 <span className="mr-2">
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
-                Add Service Estimate
+                )}
+                Service Estimate
               </button>
             </div>
           </React.Fragment>

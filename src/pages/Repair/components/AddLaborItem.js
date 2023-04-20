@@ -335,7 +335,7 @@ const AddLaborItemModal = (props) => {
                 {!props.labourItemData.travelIncluded && (
                   <div class="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      TRAVEL CHARGE
+                      TRAVEL CHARGES
                     </label>
                     <input
                       type="text"
@@ -356,7 +356,7 @@ const AddLaborItemModal = (props) => {
                 {!props.labourItemData.inspectionIncluded && (
                   <div class="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      INSPECTION
+                      INSPECTION CHARGES
                     </label>
                     <input
                       type="text"

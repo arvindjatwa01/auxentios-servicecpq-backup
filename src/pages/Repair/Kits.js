@@ -461,10 +461,10 @@ function Kits(props) {
     let data = [];
     filterMasterData.map((coverage) =>
       data.push({
-        model: coverage.model,
-        make: coverage.make,
-        family: coverage.family,
-        prefix: coverage.prefix,
+        coverageModel: coverage.model,
+        coverageMake: coverage.make,
+        coverageFamily: coverage.family,
+        coveragePrefix: coverage.prefix,
       })
     );
     updateKITCoverage(kitDBId, data)
@@ -1045,31 +1045,31 @@ function Kits(props) {
   const selectedMasterColumns = [
     {
       name: "Make",
-      selector: (row) => row.make,
+      selector: (row) => row.coverageMake,
       wrap: true,
       sortable: true,
-      format: (row) => row.make,
+      format: (row) => row.coverageMake,
     },
     {
       name: "Family",
-      selector: (row) => row.family,
+      selector: (row) => row.coverageFamily,
       wrap: true,
       sortable: true,
-      format: (row) => row.family,
+      format: (row) => row.coverageFamily,
     },
     {
       name: "Model",
-      selector: (row) => row.model,
+      selector: (row) => row.coverageModel,
       wrap: true,
       sortable: true,
-      format: (row) => row.model,
+      format: (row) => row.coverageModel,
     },
     {
       name: "Prefix",
-      selector: (row) => row.prefix,
+      selector: (row) => row.coveragePrefix,
       wrap: true,
       sortable: true,
-      format: (row) => row.prefix,
+      format: (row) => row.coveragePrefix,
     },
     {
       name: "Action",
@@ -1135,10 +1135,10 @@ function Kits(props) {
   };
   const initialCoverageRowData = {
     id: "",
-    make: "",
-    family: "",
-    model: "",
-    prefix: "",
+    coverageMake: "",
+    coverageFamily: "",
+    coverageModel: "",
+    coveragePrefix: "",
     startSerialNumber: "",
     endSerialNumber: "",
     fleet: "",
@@ -1153,10 +1153,10 @@ function Kits(props) {
     setCoverageRowData(initialCoverageRowData);
     let obj = {
       id: row.id,
-      make: row.make,
-      family: row.family,
-      model: row.model,
-      prefix: row.prefix,
+      coverageMake: row.coverageMake,
+      coverageFamily: row.coverageFamily,
+      coverageModel: row.coverageModel,
+      coveragePrefix: row.coveragePrefix,
       startSerialNumber: row.startSerialNumber ? row.startSerialNumber : "",
       endSerialNumber: row.endSerialNumber ? row.endSerialNumber : "",
       fleet: row.fleet ? row.fleet : "",

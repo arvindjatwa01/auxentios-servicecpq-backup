@@ -416,9 +416,9 @@ function RepairServiceEstimate(props) {
 
   // Search table column for spareparts
   const columnsPartListSearch = [
-    { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
+    { headerName: "Group Number", field: "groupNumber", flex: 1, width: 70 },
     { headerName: "Type", field: "partType", flex: 1, width: 130 },
-    { headerName: "PartNumber", field: "partNumber", flex: 1, width: 130 },
+    { headerName: "Part Number", field: "partNumber", flex: 1, width: 130 },
     {
       headerName: "Description",
       field: "partDescription",
@@ -432,13 +432,12 @@ function RepairServiceEstimate(props) {
 
   const partlistColumns = [
     {
+      flex: 1,
       field: "partlistId",
       headerName: "Partlist Id",
-      flex: 1,
-      width: 40,
       renderCell: (params) => (
         <div>
-          <span style={{fontSize: 12}}>{params.value}{" "}</span>
+          <span style={{ fontSize: 12 }}>{params.value} </span>
           <span style={{ fontSize: 9 }}>
             {"  " + params.row.versionNumber + ".0"}
           </span>{" "}
@@ -448,21 +447,22 @@ function RepairServiceEstimate(props) {
     {
       field: "jobCode",
       headerName: "Job Code",
-      flex: 1,
-      width: 130,
-      renderCell: params => <span style={{fontSize: 12}}>{params.value+" - "+params.row.jobOperation}</span>
+      flex: 3,
+      renderCell: (params) => (
+        <span style={{ fontSize: 12 }}>
+          {params.value + " - " + params.row.jobOperation}
+        </span>
+      ),
     },
     {
       field: "description",
       headerName: "Description",
-      flex: 1,
-      minWidth: 300,
+      flex: 3,
     },
     {
       field: "activeVersion",
       headerName: "Status",
       flex: 1,
-      width: 50,
       renderCell: (params) => (
         <div>
           {params.value && (
@@ -485,6 +485,7 @@ function RepairServiceEstimate(props) {
       field: "Actions",
       headerName: "Actions",
       type: "actions",
+      flex: 2,
       cellClassName: "actions",
       getActions: (params) => {
         return [
@@ -524,10 +525,10 @@ function RepairServiceEstimate(props) {
   //Columns to display spare parts for the partlist
   const columnsPartListSpareParts = [
     // { headerName: 'Sl#', field: 'rowNum', flex: 1, },
-    { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
+    { headerName: "Group Number", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "Desc", field: "description", flex: 1 },
-    { headerName: "PartNumber", field: "partNumber", flex: 1 },
+    { headerName: "Part Number", field: "partNumber", flex: 1 },
     {
       headerName: "Qty",
       field: "quantity",
@@ -536,7 +537,7 @@ function RepairServiceEstimate(props) {
       filterable: false,
     },
     {
-      headerName: "Unit Of Measures",
+      headerName: "Sales Unit",
       field: "unitOfMeasure",
       flex: 1,
       filterable: false,
@@ -791,6 +792,8 @@ function RepairServiceEstimate(props) {
           }
         );
         setPartListId(newPartlist.id);
+        setShowParts(true);
+        setSpareparts([]);
         setPartsViewOnly(true);
         handleSnack("success", `Partlist updated successfully`);
       })
@@ -919,7 +922,7 @@ function RepairServiceEstimate(props) {
     { label: "Days", value: "DAYS" },
   ];
   // Sets the value for the tab (labor, consumable, misc, extWork)
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(activeElement.builderType === WITH_PARTS ? "parts" : "labor");
 
   //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
@@ -931,8 +934,10 @@ function RepairServiceEstimate(props) {
     if (activeElement.oId) {
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
-          if (activeElement.builderType === WITH_PARTS) setValue("parts");
-          else setValue("labor");
+          // console.log("ABCD", activeElement.builderType);
+          // if (activeElement.builderType === WITH_PARTS ) setValue("parts");
+          // else setValue("labor");
+          // console.log(activeElement.builderType === WITH_PARTS);
           setServiceEstimateData({
             ...serviceEstimateData,
             reference: result.reference,
@@ -968,11 +973,11 @@ function RepairServiceEstimate(props) {
               populatePartsData(result, false);
             if (fetchType === "all" || fetchType === "labor")
               populateLaborData(result);
-            if (fetchType === "all" || fetchType === "consumable")
+            if (fetchType === "all" || fetchType === "consumables")
               populateConsumableData(result);
             if (fetchType === "all" || fetchType === "extwork")
               populateExtWorkData(result);
-            if (fetchType === "all" || fetchType === "misc")
+            if (fetchType === "all" || fetchType === "othrMisc")
               populateMiscData(result);
           } else {
             setPartsData({
@@ -1049,30 +1054,32 @@ function RepairServiceEstimate(props) {
       );
       setPartsViewOnly(true);
     } else {
-      
       fetchPartlistFromOperation(activeElement.oId)
         .then((resultPartLists) => {
           if (resultPartLists && resultPartLists.length > 0) {
             // let groupedPartList = groupBy(resultPartLists, "partlistId")
             //   console.log(groupedPartList);
             setPartLists(resultPartLists);
-            console.log(priceMethodOptions.find(
-              (element) => element.value === resultPartLists[0].pricingMethod
-            ),)
-            if(resultPartLists.length === 1){
-            setPartsData({
-              ...resultPartLists[0],
-              id: resultPartLists[0].id,
-              pricingMethod: priceMethodOptions.find(
-                (element) => element.value === resultPartLists[0].pricingMethod
-              ),
-            });
-            setPartListId(resultPartLists[0].id);
-            fetchPartsOfPartlist(
-              resultPartLists[0].id,
-              INITIAL_PAGE_NO,
-              INITIAL_PAGE_SIZE
-            );
+            // console.log(
+            //   priceMethodOptions.find(
+            //     (element) => element.value === resultPartLists[0].pricingMethod
+            //   )
+            // );
+            if (resultPartLists.length === 1) {
+              setPartsData({
+                ...resultPartLists[0],
+                id: resultPartLists[0].id,
+                pricingMethod: priceMethodOptions.find(
+                  (element) =>
+                    element.value === resultPartLists[0].pricingMethod
+                ),
+              });
+              setPartListId(resultPartLists[0].id);
+              fetchPartsOfPartlist(
+                resultPartLists[0].id,
+                INITIAL_PAGE_NO,
+                INITIAL_PAGE_SIZE
+              );
             }
             setPartsViewOnly(true);
           } else {
@@ -1131,6 +1138,8 @@ function RepairServiceEstimate(props) {
       .then((resultLabourItems) => {
         if (resultLabourItems && resultLabourItems.result?.length > 0) {
           setLaborItems(resultLabourItems.result);
+        } else {
+          setLaborItems([]);
         }
       })
       .catch((e) => {
@@ -1497,9 +1506,9 @@ function RepairServiceEstimate(props) {
     setPartsLoading(false);
   };
 
-  // Open Labor item to view or edit
+  // Open partlist view or edit
   const loadPartlist = (row) => {
-    console.log(row);
+    // console.log(row);
     setPartsData({
       ...row,
       pricingMethod: priceMethodOptions.find(
@@ -1599,7 +1608,7 @@ function RepairServiceEstimate(props) {
           ),
           type: miscTypeList.find((element) => element.value === result.type),
         });
-        populateServiceEstimation("misc");
+        populateServiceEstimation("othrMisc");
         handleSnack("success", "Misc details updated!");
         setMiscViewOnly(true);
       })
@@ -1663,7 +1672,7 @@ function RepairServiceEstimate(props) {
           setConsumableItemData(initialConsumableItemData);
           // populateConsItems(consumableData);
           // populateConsumableData(serviceEstimateData);
-          populateServiceEstimation("consumable");
+          populateServiceEstimation("consumables");
           handleSnack("success", "Added consumable item successfully");
         })
         .catch((err) => {
@@ -1778,7 +1787,7 @@ function RepairServiceEstimate(props) {
       .then((res) => {
         handleSnack("success", res);
         // populateConsItems(consumableData);
-        populateServiceEstimation("consumable");
+        populateServiceEstimation("consumables");
       })
       .catch((e) => {
         console.log(e);
@@ -1791,7 +1800,7 @@ function RepairServiceEstimate(props) {
 
   // Open ext work item to view or edit
   const openExtWorkRow = (row) => {
-    console.log(row.activityId);
+    // console.log(row.activityId);
     setExtWorkItemData({
       ...row,
       activityId: activityIdList.find(
@@ -2625,8 +2634,8 @@ function RepairServiceEstimate(props) {
           {serviceEstimateData.id && (
             <div className="card p-4 mt-5">
               <div className="row align-items-center">
-                <div className="col-10 mx-2">
-                  <div className="d-flex align-items-center w-100">
+                <div className="col-8">
+                  <div className="d-flex align-items-center w-100 ml-2">
                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                       <h5 className="mr-2 mb-0">
                         <span className="mr-3">Header</span>
@@ -2644,13 +2653,25 @@ function RepairServiceEstimate(props) {
                   </div>
                 </div>
                 {value === "parts" && (
-                  <div class="">
-                    <button
-                      className="btn text-violet border"
-                      onClick={() => loadNewPartList()}
-                    >
-                      Create New Partlist
-                    </button>
+                  <div className="col-4">
+                    <div className="text-right">
+                      {partLists && partLists.length > 1 && showParts && (
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white mr-2"
+                          onClick={() => setShowParts(false)}
+                        >
+                          Back To Partlists
+                        </button>
+                      )}
+
+                      <button
+                        className="btn btn-light bg-primary text-white"
+                        onClick={() => loadNewPartList()}
+                      >
+                        + New Partlist
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -2672,7 +2693,9 @@ function RepairServiceEstimate(props) {
                     </TabList>
                   </Box>
                   <TabPanel value="parts">
-                    {partsLoading ?   <LoadingProgress />: !partsViewOnly ? (
+                    {partsLoading ? (
+                      <LoadingProgress />
+                    ) : !partsViewOnly ? (
                       <div className="row mt-2 input-fields">
                         <div className="col-md-4 col-sm-4">
                           <div class="form-group mt-3">
@@ -2791,7 +2814,7 @@ function RepairServiceEstimate(props) {
                             <DataGrid
                               sx={{
                                 ...GRID_STYLE,
-                                width: "80%",
+                                // width: "80%",
                                 marginInline: "auto",
                               }}
                               paginationMode="client"
@@ -2817,9 +2840,6 @@ function RepairServiceEstimate(props) {
                                     }
                                   >
                                     New Version
-                                  </Dropdown.Item>
-                                  <Dropdown.Item as="button">
-                                    New Partlist
                                   </Dropdown.Item>
                                 </DropdownButton>
                               </div>
@@ -2856,19 +2876,6 @@ function RepairServiceEstimate(props) {
                                 className="col-md-4 col-sm-4"
                               />
                             </div>
-                            {partLists && partLists.length > 1 && (
-                              <div className="col-md-12">
-                                <div class="form-group mt-3 mb-0 text-right">
-                                  <button
-                                    type="button"
-                                    className="btn btn-light bg-primary text-white"
-                                    onClick={() => setShowParts(false)}
-                                  >
-                                    Back To Partlists
-                                  </button>
-                                </div>
-                              </div>
-                            )}
                             <RenderConfirmDialog
                               confimationOpen={confirmationVersionOpen}
                               message={`Pressing 'Yes' will create another version of this partlist`}
@@ -3620,6 +3627,9 @@ function RepairServiceEstimate(props) {
                                           class="form-control border-radius-10 text-primary"
                                           value={consumableData.basePrice}
                                         />
+                                        <div className="css-w8dmq8">
+                                          *Mandatory
+                                        </div>
                                       </div>
                                     </div>
                                   </>
@@ -4022,6 +4032,9 @@ function RepairServiceEstimate(props) {
                                           class="form-control border-radius-10 text-primary"
                                           value={extWorkData.basePrice}
                                         />
+                                        <div className="css-w8dmq8">
+                                          *Mandatory
+                                        </div>
                                       </div>
                                     </div>
                                   </>
@@ -4393,6 +4406,7 @@ function RepairServiceEstimate(props) {
                                       class="form-control border-radius-10 text-primary"
                                       value={miscData.basePrice}
                                     />
+                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
                                 </div>
                               </>

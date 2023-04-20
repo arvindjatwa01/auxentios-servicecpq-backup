@@ -63,6 +63,32 @@ export const BUILDER_SEARCH_Q_OPTIONS = [
   { label: "SerialNo", value: "serialNo" },
   { label: "Status", value: "status" },
 ];
+
+export const QUOTE_SEARCH_Q_OPTIONS = [
+  {
+    label: "Created By",
+    value: "createdBy",
+  },
+  {
+    label: "Created Between",
+    value: "createdAt",
+  },
+  {
+    label: "Customer ID",
+    value: "customerId",
+  },
+  { label: "Model", value: "model" },
+  {
+    label: "Name",
+    value: "quoteId",
+  },
+  {
+    label: "Description",
+    value: "description",
+  },
+  { label: "SerialNo", value: "serialNo" }
+];
+
 export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
   {
     label: "ID",
@@ -93,7 +119,7 @@ export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
 export const KIT_SEARCH_Q_OPTIONS = [
   {
     label: "Model",
-    value: "model",
+    value: "coverageModel",
   },
   {
     label: "Status",
@@ -161,6 +187,11 @@ export const OPTIONS_USAGE = [
   { value: "KM", label: "Kms" },
   { value: "MILE", label: "Miles" },
   { value: "TONS", label: "Tons" },
+];
+
+export const OPTIONS_LEADTIME_UNIT = [
+  { value: "DAY", label: "Day" },
+  { value: "HOUR", label: "Hour" }
 ];
 
 export const CONSUMABLE_SEARCH_Q_OPTIONS = [

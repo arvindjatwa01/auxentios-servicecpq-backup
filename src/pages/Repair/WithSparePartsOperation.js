@@ -9,6 +9,7 @@ import {
   AddOperation,
   fetchOperations,
   fetchPartlistFromOperation,
+  FetchServiceHeader,
   RemoveOperation,
   updatePartlistActive,
 } from "services/repairBuilderServices";
@@ -55,7 +56,8 @@ function WithSparePartsOperation(props) {
     modifier: "",
     id: "",
     description: "",
-    partlists: []
+    partlists: [],
+    serviceEstimation: "",
   };
   const [operationData, setOperationData] = useState(newOperation);
   useEffect(() => {
@@ -67,7 +69,7 @@ function WithSparePartsOperation(props) {
     setOperationLoading(true);
     if (activeElement.sId) {
       await fetchOperations(activeElement.sId)
-        .then((result) => {
+        .then(async (result) => {
           let operationsFetched = result?.operations;
           if (operationsFetched?.length > 0) {
             setOperations(operationsFetched);
@@ -83,12 +85,25 @@ function WithSparePartsOperation(props) {
                 return obj.id === opToLoad.id;
               })
             );
-            fetchPartlistFromOperation(opToLoad.id).then(resultPartlists => {
-            let groupedPartList = groupBy(resultPartlists, "partlistId");
-            console.log(groupedPartList);
+            let groupedPartList = "";
+            let serviceEstimate = "";
+            await fetchPartlistFromOperation(opToLoad.id).then(
+              (resultPartlists) => {
+                groupedPartList = groupBy(resultPartlists, "partlistId");
+                // console.log(groupedPartList);
+              }
+            );
+            await FetchServiceHeader(opToLoad.id)
+              .then((resServiceEstimation) => {
+                serviceEstimate = resServiceEstimation;
+              })
+              .catch((err) => {
+                console.log(err);
+              });
             setOperationData({
               ...opToLoad,
               partlists: groupedPartList,
+              serviceEstimation: serviceEstimate,
               header:
                 "Operation " +
                 formatOperationNum(opToLoad.operationNumber) +
@@ -97,11 +112,11 @@ function WithSparePartsOperation(props) {
                 " " +
                 opToLoad.componentCodeDescription, //Rename after modifications in UI
             });
-          });
+            setOperationLoading(false);
           } else {
             loadNewOperationUI();
+            setOperationLoading(false);
           }
-          setOperationLoading(false);
         })
         .catch((err) => {
           loadNewOperationUI();
@@ -183,29 +198,40 @@ function WithSparePartsOperation(props) {
   };
 
   const handleChange = async (id) => {
-    await updatePartlistActive(id).then(result => {
-      if(result){
-        fetchPartlistFromOperation(operationData.id).then(resultPartlists => {
-          let groupedPartList = groupBy(resultPartlists, "partlistId");
-          // console.log(groupedPartList);
-          setOperationData({
-            ...operationData,
-            partlists: groupedPartList,
-            header:
-              "Operation " +
-              formatOperationNum(operationData.operationNumber) +
-              " - " +
-              operationData.jobCodeDescription +
-              " " +
-              operationData.componentCodeDescription, //Rename after modifications in UI
-          });
-        });
-        handleSnack("success","This partlist has been activated for the builder!");
-      }
-    }).catch(e => {
-      handleSnack("error", "Error occurred while making the partlist version active!")
-    })
-  }
+    await updatePartlistActive(id)
+      .then((result) => {
+        if (result) {
+          fetchPartlistFromOperation(operationData.id).then(
+            (resultPartlists) => {
+              let groupedPartList = groupBy(resultPartlists, "partlistId");
+              // console.log(groupedPartList);
+              setOperationData({
+                ...operationData,
+                partlists: groupedPartList,
+                header:
+                  "Operation " +
+                  formatOperationNum(operationData.operationNumber) +
+                  " - " +
+                  operationData.jobCodeDescription +
+                  " " +
+                  operationData.componentCodeDescription, //Rename after modifications in UI
+              });
+            }
+          );
+          handleSnack(
+            "success",
+            "This partlist has been activated for the builder!"
+          );
+        }
+      })
+      .catch((e) => {
+        // console.log(e);
+        handleSnack(
+          "error",
+          "Error occurred while making the partlist version active!"
+        );
+      });
+  };
 
   // Search component code
   const handleComponentCodeSearch = async (searchText) => {
@@ -614,122 +640,258 @@ function WithSparePartsOperation(props) {
                 className="col-md-4 col-sm-4"
               />
             </div>
-            {operationData.partlists && Object.entries(operationData.partlists).length > 0 && <><h5 className="d-flex align-items-center  mx-2">
-              <div className="" style={{ display: "contents" }}>
-                <span className="mr-3 white-space">Part List</span>
-              </div>
-              <div className="hr"></div>
-            </h5>
-            <div className="row">
-              {console.log(Object.entries(operationData.partlists))}
-              {Object.entries(operationData.partlists).map(partList => {
-              return <div className="col-md-4">
-                <div className="card border" style={{ overflow: "hidden" }}>
-                  <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space font-size-14 text-white">
-                        {partList[1][0].description} partlist
-                      </span>
-                    </div>
-                    <div className="d-flex">
-                      {/* <div>
-                        <Checkbox className="p-0 text-white" />
-                      </div>
-                      <a href="#">
-                        <FileUploadOutlinedIcon
-                          className="ml-3 font-size-21 text-white"
-                          titleAccess="Upload"
-                        />
-                      </a>
-                      <a href="#">
-                        <ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white" />
-                      </a>
-                      <a href="#">
-                        <ContentCopyIcon className="ml-3 font-size-21 text-white" />
-                      </a> */}
-                    </div>
+            {((operationData.partlists &&
+              Object.entries(operationData.partlists).length > 0) ||
+              operationData.serviceEstimation?.netPrice) && (
+              <>
+                <h5 className="d-flex align-items-center  mx-2">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Summary</span>
                   </div>
-                  {partList[1].map(partlistVersion => <div className="bg-white px-3 pt-4 pb-2">
-                    <div className="d-flex align-items-center justify-content-between mb-0">
-                      <div className="" style={{ display: "contents" }}>
-                        <a
-                          href="#"
-                          className="btn-sm text-white bg-primary mr-3"
-                        >
-                          Version {partlistVersion.versionNumber}
-                        </a>
-                      </div>
-                      <div style={{ textAlign: "right" }}>
-                        {/* <a href="#" class="text-light-black font-size-12">
+                  <div className="hr"></div>
+                </h5>
+                <div className="row">
+                  {operationData.partlists &&
+                    Object.entries(operationData.partlists).length > 0 &&
+                    Object.entries(operationData.partlists)?.map((partList) => {
+                      return (
+                        <div className="col-md-6">
+                          <div
+                            className="card border"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                              <div className="" style={{ display: "contents" }}>
+                                <span className="mr-3 white-space font-size-14 text-white">
+                                  {partList[1][0].partlistId} - Part list
+                                </span>
+                              </div>
+                              <div className="d-flex"></div>
+                            </div>
+                            {partList[1].map(
+                              (partlistVersion, indexPartList) => (
+                                <div className="bg-white px-3 pt-4 pb-2">
+                                  <div className="d-flex align-items-center justify-content-between mb-0">
+                                    <div className="">
+                                      <span className="mr-2 font-size-14 font-weight-500 mr-2">
+                                        {partlistVersion.description}
+                                      </span>
+                                      <a
+                                        href="#"
+                                        className="btn-sm text-white bg-primary"
+                                      >
+                                        Version {partlistVersion.versionNumber}
+                                      </a>
+                                    </div>
+                                    <div style={{ textAlign: "right" }}>
+                                      {/* <a href="#" class="text-light-black font-size-12">
                           Go to Version{" "}
                           <span className="text-light-black">
                             <ArrowForwardIosOutlinedIcon />
                           </span>
                         </a> */}
-                        <Radio
-                          checked={partlistVersion.activeVersion}
-                          onChange={() => handleChange(partlistVersion.id)}
-                          value="a"
-                          name="radio-buttons"
-                          inputProps={{ 'aria-label': 'A' }}
-                        />
+                                      <Radio
+                                        checked={partlistVersion.activeVersion}
+                                        onChange={() =>
+                                          handleChange(partlistVersion.id)
+                                        }
+                                        value="a"
+                                        name="radio-buttons"
+                                        inputProps={{ "aria-label": "A" }}
+                                      />
+                                    </div>
+                                  </div>
+                                  {/* <hr></hr> */}
+                                  <div className="row my-4">
+                                    <div className="col-7">
+                                      <div className="d-flex">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Total Parts
+                                        </p>
+                                        <h6 className=" font-size-14 font-weight-600 text-primary">
+                                          {partlistVersion.totalParts}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div className="col-5">
+                                      <div class="d-flex justify-content-end">
+                                        <p class="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Total Cost
+                                        </p>
+                                        <h6 className=" font-size-14 font-weight-600 text-primary">
+                                          $ {partlistVersion.totalPrice}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    </div><div className="row mb-4">
+                                    <div className="col-4">
+                                      <div class="d-flex">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          New
+                                        </p>
+                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                          {partlistVersion.totalNewParts}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div className="col-4">
+                                      <div class="d-flex">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Refurbished
+                                        </p>
+                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                          {
+                                            partlistVersion.totalRefurbishedParts
+                                          }
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div className="col-4">
+                                      <div class="d-flex justify-content-end">
+                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                          Reman
+                                        </p>
+                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                          {partlistVersion.totalRemanParts}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {partList[1].length - 1 > indexPartList && (
+                                    <div className="hr"></div>
+                                  )}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {/* </div>
+                <div className="row"> */}
+                  {operationData.serviceEstimation?.netPrice && (
+                    <div className="col-md-6">
+                      <div
+                        className="card border"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+                          <div className="" style={{ display: "contents" }}>
+                            <span className="mr-3 white-space font-size-14 text-white">
+                              {
+                                operationData.serviceEstimation
+                                  .serviceEstimateId
+                              }
+                              - Service Estimation
+                            </span>
+                          </div>
+                          <div className="d-flex"></div>
+                        </div>
+
+                        <div className="bg-white px-3 pt-4 pb-2">
+                          <div className="d-flex align-items-center justify-content-between mb-0">
+                            <div className="">
+                              <span className="mr-2 font-size-14 font-weight-500 mr-2">
+                                {operationData.serviceEstimation.jobOperation}
+                              </span>
+                              <a
+                                href="#"
+                                className="btn-sm text-white bg-primary"
+                              >
+                                Version 1
+                              </a>
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                              {/* <a href="#" class="text-light-black font-size-12">
+                          Go to Version{" "}
+                          <span className="text-light-black">
+                            <ArrowForwardIosOutlinedIcon />
+                          </span>
+                        </a> */}
+                              <Radio
+                                checked={true}
+                                // onChange={() =>
+                                //   handleChange(
+                                //     operationData.serviceEstimation.id
+                                //   )
+                                // }
+                                value="a"
+                                name="radio-buttons"
+                                inputProps={{ "aria-label": "A" }}
+                              />
+                            </div>
+                          </div>
+                          {/* <hr></hr> */}
+                          <div className="row my-4">
+                            <div className="col-6">
+                              <div className="d-flex">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Estimated Hours
+                                </p>
+                                <h6 className=" font-size-14 font-weight-600 text-primary">
+                                  {operationData.serviceEstimation.totalParts}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-6">
+                              <div class="d-flex d-flex justify-content-end">
+                                <p class="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Total Cost
+                                </p>
+                                <h6 className=" font-size-14 font-weight-600 text-primary">
+                                  $ {operationData.serviceEstimation.netPrice}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="row my-4">
+                            <div className="col-4">
+                              <div class="d-flex">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Labor
+                                </p>
+                                <h6 className="font-size-14 font-weight-600 text-primary">
+                                  ${" "}
+                                  {operationData.serviceEstimation.labourPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-4">
+                              <div class="d-flex">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Consumables
+                                </p>
+                                <h6 className="font-size-14 font-weight-600 text-primary">
+                                  ${" "}
+                                  {
+                                    operationData.serviceEstimation
+                                      .consumablePrice
+                                  }
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-4">
+                              <div class="d-flex justify-content-end">
+                                <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                  Misc
+                                </p>
+                                <h6 className="font-size-14 font-weight-600 text-primary ">
+                                  ${" "}
+                                  {
+                                    operationData.serviceEstimation
+                                      .extraMiscellaneous
+                                  }
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    {/* <hr></hr> */}
-                    <div className="row my-4">
-                      <div className="col-7">
-                        <div className="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL PARTS
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">{partlistVersion.totalParts}</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex justify-content-center">
-                          <p class="mr-2 font-size-12 font-weight-500 mr-2">
-                            TOTAL COST
-                          </p>
-                          <h6 className=" font-size-14 font-weight-600">$ {partlistVersion.totalPrice}</h6>
-                        </div>
-                      </div>
-                      <div className="col-4">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            NEW
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalNewParts}</h6>
-                        </div>
-                      </div>
-                      <div className="col-5">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REFURBISHED
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRefurbishedParts}</h6>
-                        </div>
-                      </div>
-                      <div className="col-3">
-                        <div class="d-flex">
-                          <p className="mr-2 font-size-12 font-weight-500 mr-2">
-                            REMAN
-                          </p>
-                          <h6 className="font-size-14 font-weight-600">{partlistVersion.totalRemanParts}</h6>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="hr"></div>
-                  </div>)}
+                  )}
                 </div>
-              </div>})}
-            </div>
-            </>}            
+              </>
+            )}
             <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               <button
                 className="btn bg-primary text-white"
@@ -765,10 +927,14 @@ function WithSparePartsOperation(props) {
                 }
                 className="btn bg-primary text-white ml-2"
               >
-                <span className="mr-2">
-                  <FontAwesomeIcon icon={faPlus} />
-                </span>
-                Add Service Estimate
+                {operationData.serviceEstimation?.netPrice ? (
+                  <span className="mr-1">View</span>
+                ) : (
+                  <span className="mr-2">
+                    <FontAwesomeIcon icon={faPlus} />
+                  </span>
+                )}
+                Service Estimate
               </button>
             </div>
           </React.Fragment>

@@ -1,28 +1,149 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
+import SelectFilter from "react-select";
+import AddIcon from "@mui/icons-material/Add";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import $ from "jquery";
-import {
-  QUOTE_REPAIR_CREATE,
-  QUOTE_SPARE_PARTS_TEMPLATE,
-  REPAIR_QUOTE_DETAILS,
-} from "navigation/CONSTANTS";
+import { QUOTE_SPARE_PARTS_TEMPLATE, QUOTE_SPARE_PART_CONFIGURATION } from "navigation/CONSTANTS";
 import SearchComponent from "../components/SearchComponent";
-import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { quoteRepairSearch } from "services/repairQuoteServices";
 import { QUOTE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
-import { Card, Divider, List, ListItem, ListItemText } from "@mui/material";
+import { builderSearch } from "services/repairBuilderServices";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 
-const QuoteRepairSearch = () => {
-  const [show, setShow] = useState(false);
+const SearchSparePartQuote = () => {
+  const [show, setShow] = React.useState(false);
   const handleClose = () => setShow(false);
 
+  const rows = [
+    {
+      id: 1,
+      GroupNumber: "Snow",
+      Type: "Jon",
+      Partnumber: 35,
+      PriceExtended: "pending",
+      Pricecurrency: "Open",
+      Usage: "Inconsistent",
+      TotalPrice: "Inconsistent",
+      Comments: "Inconsistent",
+      Actions: "Inconsistent",
+    },
+    {
+      id: 2,
+      GroupNumber: "Lannister",
+      Type: "Cersei",
+      Partnumber: 42,
+      PriceExtended: "pending",
+      Pricecurrency: "Open",
+      Usage: "Consistent",
+      TotalPrice: "Inconsistent",
+      Comments: "Inconsistent",
+      Actions: "Inconsistent",
+    },
+    {
+      id: 3,
+      GroupNumber: "Lannister",
+      Type: "Jaime",
+      Partnumber: 45,
+      PriceExtended: "pending",
+      Pricecurrency: "Open",
+      Usage: "Consistent",
+      TotalPrice: "Inconsistent",
+      Comments: "Inconsistent",
+      Actions: "Inconsistent",
+    },
+    // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
+    // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
+    // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
+    // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
+    // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
+    // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
+  ];
+  // Snack Bar State
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+  const handleRowClick = (e) => {
+    setShow(true);
+  };
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    var searchStr = "";
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        const res = await builderSearch(
+          `quoteType:PARTS_QUOTE AND saved:true AND ${searchStr}`
+        );
+        setMasterData(res);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching spare parts!");
+    }
+  };
+
+  // Once option has been selected clear the search results
+  const clearFilteredData = () => {
+    setMasterData([]);
+  };
+
+  const [querySearchSelector, setQuerySearchSelector] = useState([
+    {
+      id: 0,
+      selectCategory: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    },
+  ]);
+
+  const [masterData, setMasterData] = useState([]);
   const customStyles = {
     rows: {
       style: {
@@ -177,97 +298,7 @@ const QuoteRepairSearch = () => {
       format: (row) => row.totalPrice,
     },
   ];
-  const [clickedQuoteRowData, setClickedQuoteRowData] = useState(null);
 
-  const handleRowClick = (e) => {
-    setClickedQuoteRowData(e);
-    setShow(true);
-  };
-  // Snack Bar State
-  const [severity, setSeverity] = useState("");
-  const [openSnack, setOpenSnack] = useState(false);
-  const [snackMessage, setSnackMessage] = useState("");
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnack(false);
-  };
-
-  const handleSnack = (snackSeverity, snackMessage) => {
-    setSnackMessage(snackMessage);
-    setSeverity(snackSeverity);
-    setOpenSnack(true);
-  };
-  const history = useHistory();
-  const handleSelectQuote = (quote) => {
-    let quoteDetails = {
-      quoteId: "",
-      type: "fetch",
-    };
-    quoteDetails.quoteId = quote.quoteId;
-    history.push({
-      pathname: REPAIR_QUOTE_DETAILS,
-      state: quoteDetails,
-    });
-  };
-
-  const [querySearchSelector, setQuerySearchSelector] = useState([
-    {
-      id: 0,
-      selectCategory: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    },
-  ]);
-  // Once option has been selected clear the search results
-  const clearFilteredData = () => {
-    setMasterData([]);
-  };
-
-  const [masterData, setMasterData] = useState([]);
-
-  const handleQuerySearchClick = async () => {
-    $(".scrollbar").css("display", "none");
-    var searchStr = "";
-    querySearchSelector.map(function (item, i) {
-      if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr =
-          item.selectCategory.value +
-          ":" +
-          encodeURI('"' + item.inputSearch + '"');
-      } else if (
-        item.selectCategory.value &&
-        item.inputSearch &&
-        item.selectOperator.value
-      ) {
-        searchStr =
-          searchStr +
-          " " +
-          item.selectOperator.value +
-          " " +
-          item.selectCategory.value +
-          ":" +
-          encodeURI('"' + item.inputSearch + '"');
-      }
-      return searchStr;
-    });
-
-    try {
-      if (searchStr) {
-        const res = await quoteRepairSearch(
-          `quoteType:REPAIR_QUOTE AND saved:true AND ${searchStr}`
-        );
-        setMasterData(res);
-      } else {
-        handleSnack("info", "Please fill the search criteria!");
-      }
-    } catch (err) {
-      handleSnack("error", "Error occurred while fetching spare parts!");
-    }
-  };
   return (
     <>
       <CustomizedSnackbar
@@ -279,15 +310,17 @@ const QuoteRepairSearch = () => {
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid ">
           <div className="card p-4 mt-5">
-            <div className="row d-flex align-items-center mb-0">
+            <div className="d-flex align-items-center mb-0">
               <div className="" style={{ display: "contents" }}>
-                <h5 className="col-10 mr-3 mb-0" style={{ whiteSpace: "pre" }}>
-                  Search Quotes
+              <h5 className="col-10 mr-3 mb-0" style={{ whiteSpace: "pre" }}>
+                  Search Quote
                 </h5>
               </div>
+
+
               <div className="ml-2">
                 <Link
-                  to={QUOTE_REPAIR_CREATE}
+                  to={QUOTE_SPARE_PART_CONFIGURATION}
                   className="btn bg-primary text-white"
                 >
                   Create New <ChevronRightIcon className="" />
@@ -304,34 +337,33 @@ const QuoteRepairSearch = () => {
                     style={{ whiteSpace: "pre" }}
                   >
                     <h5 className="mr-2 mb-0 text-white">
-                      <span>Quotes</span>
+                      <span>Spare Parts Quotes</span>
                     </h5>
                   </div>
-                  {/* <p className="mb-0">
+                  <p className=" mb-0">
                     <a href="#" className="ml-2 text-white">
                       <EditOutlinedIcon />
                     </a>
                     <a href="#" className="ml-2 text-white">
                       <ShareOutlinedIcon />
                     </a>
-                  </p> */}
+                  </p>
                   <SearchComponent
                     querySearchSelector={querySearchSelector}
                     setQuerySearchSelector={setQuerySearchSelector}
                     clearFilteredData={clearFilteredData}
                     handleSnack={handleSnack}
-                    searchAPI={quoteRepairSearch}
+                    searchAPI={builderSearch}
                     searchClick={handleQuerySearchClick}
                     options={QUOTE_SEARCH_Q_OPTIONS}
                     color="white"
-                    quoteType={"REPAIR_QUOTE"}
+                    quoteType={"PARTS_QUOTE"}
                     buttonText="SEARCH"
                   />
                 </div>
               </div>
             </div>
           </div>
-
           <div className="card">
             <div
               className=""
@@ -344,6 +376,7 @@ const QuoteRepairSearch = () => {
                 data={masterData}
                 customStyles={customStyles}
                 pagination
+                selectableRows
                 onRowClicked={(e) => handleRowClick(e)}
                 // selectableRows
               />
@@ -357,7 +390,7 @@ const QuoteRepairSearch = () => {
           className="tablerowmodal"
           show={show}
           onHide={() => handleClose()}
-          // size="md"
+          size="md"
           aria-labelledby="contained-modal-title-vcenter"
         >
           <Modal.Body className="">
@@ -372,73 +405,59 @@ const QuoteRepairSearch = () => {
               </div>
               <div>
                 <p className="text-light ml-3">
-                  This repair quote was created by{" "}
-                  {clickedQuoteRowData?.preparedBy} on{" "}
-                  {clickedQuoteRowData?.preparedOn}
+                  This standard job is created for replacement of engne
+                  belonging to 797,797F & 793 models
                 </p>
               </div>
             </div>
             <div class="p-3 bg-white">
-              <div className="d-flex justify-content-between mb-3">
-                <div>
-                  <a href="#" className="btn bg-primary text-white">
-                    Repair Quote
-                  </a>
-                </div>
-                <h4 className="text-light mt-3">
-                  {clickedQuoteRowData?.quoteId}
-                </h4>
+              <div>
+                <a href="#" className="btn bg-primary text-white">
+                  Template
+                </a>
               </div>
-              <hr />
-              <h5 className=" mt-3">Summary</h5>
-              <Card>
-              <List dense={true}>
-                <ListItem >
-                  <ListItemText >Description </ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Service Organisation </ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Serial Number</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.serialNumber}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Customer</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.customerId +
-                    " " +
-                    clickedQuoteRowData?.customerName}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Model</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.model}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Manufacturer</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.make}</span>
-                </ListItem>
-                </List>
-              </Card>
-              
-              {/* <div>
+              <h4 className="text-light mt-3">SJ671</h4>
+              {/* <p>Your current session will expire in 5 minutes. Please Save your changes to continue your session, otherwise you
+             will lose all unsaved data and your session will time out.</p> */}
+              <h4 className=" mt-3">SUMMARY</h4>
+              <ul>
+                <li className="my-2">
+                  <span className="mr-3 ">
+                    <FormatListBulletedOutlinedIcon />
+                  </span>
+                  Spare Parts New (# 31)
+                </li>
+                <li className="my-2">
+                  <span className="mr-3 ">
+                    <FormatListBulletedOutlinedIcon />
+                  </span>
+                  Spare Parts Remain (# 7)
+                </li>
+                <li className="my-2">
+                  <span className="mr-3 ">
+                    <FormatListBulletedOutlinedIcon />
+                  </span>
+                  Number of Parts #38.
+                </li>
+                <li className="my-2">
+                  <span className="mr-3 ">
+                    <FormatListBulletedOutlinedIcon />
+                  </span>
+                  Total Price $4,100.00
+                </li>
+              </ul>
+              <div>
                 <a href="#" style={{ textDecoration: "underline" }}>
                   View Details
                 </a>
-              </div> */}
+              </div>
             </div>
             <div class="modal-footer justify-content-between bg-primary">
               <div>
-                <b className="text-white">$ {clickedQuoteRowData?.netPrice}</b>
+                <b className="text-white">$50,000</b>
               </div>
               <div>
-                <a onClick={() => handleSelectQuote(clickedQuoteRowData)} className="text-white">
+                <a href={QUOTE_SPARE_PARTS_TEMPLATE} className="text-white">
                   Select <ArrowRightAltOutlinedIcon className="" />
                 </a>
               </div>
@@ -450,4 +469,4 @@ const QuoteRepairSearch = () => {
   );
 };
 
-export default QuoteRepairSearch;
+export default SearchSparePartQuote;

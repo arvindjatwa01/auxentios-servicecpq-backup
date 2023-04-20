@@ -19,7 +19,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Modal } from "react-bootstrap";
 import Radio from "@material-ui/core/Radio";
 import { Link, NavLink, exact } from "react-router-dom";
-import { QUOTE_RECENT_REPAIR, REPAIR_SERVICE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
+import { QUOTE_RECENT_REPAIR, QUOTE_SPARE_PARTS, REPAIR_SERVICE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
 
 export function SideBarComponent(props) {
   const [solutionBuilderShow, setSolutionBuilderShow] = useState(false);
@@ -1338,7 +1338,7 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/QuoteSpareParts" className="border-radius-50">
+                <NavLink to={QUOTE_SPARE_PARTS} className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-fff7022f-e3d4-42a4-9d61-a33e4511768e"

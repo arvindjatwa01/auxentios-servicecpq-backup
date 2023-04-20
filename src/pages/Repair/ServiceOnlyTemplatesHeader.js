@@ -45,6 +45,7 @@ import {
   updateTemplateRating,
   fetchSegmentsStandardJob,
   updateTemplateVersion,
+  removeCoverageItem,
 } from "services/templateService";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { useAppSelector } from "app/hooks";
@@ -669,7 +670,10 @@ function ServiceOnlyTemplates(props) {
       ),
     },
   ];
-  const handleDeleteCoverageRow = (e, row) => {
+  const handleDeleteCoverageRow = async (e, row) => {
+    await removeCoverageItem(templateDBId, row.id).then(removeResult => {
+      console.log(removeResult);
+    })
     const updated = selectedCoverageData.filter((obj) => {
       if (obj.id !== row.id) return obj;
     });
