@@ -46,11 +46,11 @@ const RepairQuoteItemModal = (props) => {
       <Modal.Body className="p-0 bg-white">
         <div className="ligt-greey-bg p-3">
           <div>
-            {props.partFieldViewonly ? (
+            {props.quoteItemViewOnly ? (
               <div>
                 <a
                   className="mr-3"
-                  onClick={() => props.setPartFieldViewonly(false)}
+                  onClick={() => props.setQuoteItemViewOnly(false)}
                   style={{ cursor: "pointer" }}
                 >
                   <i
@@ -62,7 +62,7 @@ const RepairQuoteItemModal = (props) => {
               </div>
             ) : (
               <div>
-                <span className="mr-3">
+                {/* <span className="mr-3">
                   <FormatListBulletedOutlinedIcon className=" font-size-16" />
                   <span
                     className="ml-2 cursor"
@@ -85,16 +85,16 @@ const RepairQuoteItemModal = (props) => {
                 <span className="mr-3">
                   <MonetizationOnOutlinedIcon className=" font-size-16" />
                   <span className="ml-2"> Adjust price</span>
-                </span>
+                </span> */}
               </div>
             )}
           </div>
         </div>
-        {!props.partFieldViewonly ? (
+        {!props.quoteItemViewOnly ? (
           <div>
             <div className="p-3">
-              <div className="row mt-4">
-                <div className="col-md-6 col-sm-6">
+            <div className="row mt-4 input-fields">                
+            <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
                       COMPONENT
@@ -109,15 +109,16 @@ const RepairQuoteItemModal = (props) => {
                           componentCode: e.target.value,
                         })
                       }
-                      disabled
+                      // disabled
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
+                  
                     <label className="text-light-dark font-size-12 font-weight-500">
                       JOB DESCRIPTION
                     </label>
+                    <div className="form-group w-100">
                     <input
                       type="text"
                       className="form-control border-radius-10 text-primary"
@@ -128,7 +129,7 @@ const RepairQuoteItemModal = (props) => {
                           operation: e.target.value,
                         })
                       }
-                      disabled
+                      // disabled
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -148,7 +149,7 @@ const RepairQuoteItemModal = (props) => {
                           description: e.target.value,
                         })
                       }
-                      disabled
+                      // disabled
                     />
                   </div>
                 </div>
@@ -168,7 +169,7 @@ const RepairQuoteItemModal = (props) => {
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      TOTAL PARTS
+                      TOTAL PARTS $
                     </label>
                     <input
                       type="text"
@@ -187,7 +188,7 @@ const RepairQuoteItemModal = (props) => {
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      TOTAL LABOR
+                      TOTAL LABOR $
                     </label>
                     <input
                       type="Number"
@@ -205,7 +206,7 @@ const RepairQuoteItemModal = (props) => {
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
-                      TOTAL MISC
+                      TOTAL MISC $
                     </label>
                     <input
                       type="Number"
@@ -245,7 +246,7 @@ const RepairQuoteItemModal = (props) => {
                       NET ADJUSTED PRICE
                     </label>
                     <input
-                      type="text"
+                      type="number"
                       className="form-control border-radius-10 text-primary"
                       onChange={(e) =>
                         props.setQuoteItem({
@@ -253,13 +254,7 @@ const RepairQuoteItemModal = (props) => {
                           netAdjustedPrice: e.target.value,
                         })
                       }
-                      value={
-                        props.quoteItem.totalPrice
-                          ? parseFloat(
-                              props.quoteItem.netAdjustedPrice
-                            ).toFixed(2)
-                          : 0.0
-                      }
+                      value={props.quoteItem.netAdjustedPrice}
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -307,7 +302,7 @@ const RepairQuoteItemModal = (props) => {
                       PAYER TYPE
                     </label>
                     <Select
-                      isDisabled={props.quoteItem.payerType}
+                      // isDisabled={props.quoteItem.payerType}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
@@ -337,7 +332,7 @@ const RepairQuoteItemModal = (props) => {
               <button
                 type="button"
                 className="btn btn-light bg-primary text-white"
-                onClick={props.handleQuoteItemUpdate}
+                onClick={() => props.handleQuoteItemUpdate(props.quoteItem)}
                 // disabled={
                 //   !props.quoteItem.partType ||
                 //   !props.quoteItem.partNumber ||
@@ -353,76 +348,86 @@ const RepairQuoteItemModal = (props) => {
             </div>
           </div>
         ) : (
-          <div className="p-3">
+          <div className="border border-radius-10 py-2 px-3 m-2">
             <div className="row mt-4">
               <ReadOnlyField
-                label="GROUP NUMBER"
-                value={props.quoteItem.groupNumber}
-                className="col-md-6 col-sm-6"
+                label="COMPONENT"
+                value={props.quoteItem.componentCode}
+                className="col-md-6 col-sm-6 mb-2"
               />
               <ReadOnlyField
-                label="TYPE"
-                value={props.quoteItem.partType}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="PART NUMBER"
-                value={props.quoteItem.partNumber}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="QTY"
-                value={props.quoteItem.quantity}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="UNIT OF MESASURES"
-                value={props.quoteItem.unitOfMeasure}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="UNIT PRICE"
-                value={
-                  props.quoteItem.unitPrice
-                    ? parseFloat(props.quoteItem.unitPrice).toFixed(2)
-                    : 0.0
-                }
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="EXTENDED PRICE"
-                value={
-                  props.quoteItem.extendedPrice
-                    ? parseFloat(props.quoteItem.extendedPrice).toFixed(2)
-                    : 0.0
-                }
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="CURRENCY"
-                value={props.quoteItem.currency}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="% USAGE"
-                value={props.quoteItem.usagePercentage}
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="TOTAL PRICE"
-                value={
-                  props.quoteItem.totalPrice ? props.quoteItem.totalPrice : 0.0
-                }
-                className="col-md-6 col-sm-6"
-              />
-              <ReadOnlyField
-                label="COMMENT"
-                value={props.quoteItem.comment}
+                label="JOB DESCRIPTION"
+                value={props.quoteItem.operation}
                 className="col-md-6 col-sm-6"
               />
               <ReadOnlyField
                 label="DESCRIPTION"
                 value={props.quoteItem.description}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="PART LIST ID"
+                value={props.quoteItem.partlistId}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="TOTAL PARTS $"
+                value={props.quoteItem.partsPrice
+                  ? parseFloat(props.quoteItem.partsPrice).toFixed(2)
+                  : 0.0}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="TOTAL LABOR $"
+                value={
+                  props.quoteItem.labourPrice
+                          ? parseFloat(props.quoteItem.labourPrice).toFixed(2)
+                          : 0.0
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="TOTAL MISC $"
+                value={
+                  props.quoteItem.miscPrice
+                  ? parseFloat(props.quoteItem.miscPrice).toFixed(2)
+                  : 0.0
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="NET PRICE"
+                value={props.quoteItem.totalPrice
+                  ? parseFloat(props.quoteItem.totalPrice).toFixed(2)
+                  : 0.0}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="NET ADJUSTED PRICE"
+                value={props.quoteItem.netAdjustedPrice
+                  ? parseFloat(
+                      props.quoteItem.netAdjustedPrice
+                    ).toFixed(2)
+                  : 0.0}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="DISCOUNT"
+                value={
+                  props.quoteItem.discount
+                          ? parseFloat(props.quoteItem.discount).toFixed(2)
+                          : 0.0
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="MARGIN"
+                value={props.quoteItem.margin}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="PAYER TYPE"
+                value={props.quoteItem.payerType?.label}
                 className="col-md-6 col-sm-6"
               />
             </div>

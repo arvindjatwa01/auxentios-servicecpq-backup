@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/EditOutlined";
@@ -12,15 +12,13 @@ import {
   FONT_STYLE_SELECT,
   FONT_STYLE_UNIT_SELECT,
   OPTIONS_LEADTIME_UNIT,
-  STATUS_OPTIONS,
 } from "../CONSTANTS";
 import Tab from "@mui/material/Tab";
 import { customerSearch, machineSearch } from "services/searchServices";
 import { toast } from "react-toastify";
 import { solutionQuoteCreation } from "../../../services/index";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import Select1 from "@mui/material/Select";
-import Divider from "@mui/material/Divider";
+
 import DateFnsUtils from "@date-io/date-fns";
 import Menu from "@mui/material/Menu";
 import SearchBox from "pages/Repair/components/SearchBox";
@@ -28,9 +26,6 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import AddIcon from "@mui/icons-material/Add";
 import { styled, alpha } from "@mui/material/styles";
 import TabContext from "@mui/lab/TabContext";
-import Button from "@mui/material/Button";
-import boxicon from "../../../assets/icons/png/box.png";
-import { FileUploader } from "react-drag-drop-files";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import InputLabel from "@mui/material/InputLabel";
@@ -55,10 +50,23 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import {
+  selectQuoteDropdownOption,
+  selectBillingFreqList,
+  selectBillingTypeList,
+  selectDelPriorityList,
+  selectDelTypeList,
+  selectPaymentTermList,
+  selectQuoteStatusList,
+  selectQuoteValidityList,
+} from "pages/Repair/dropdowns/quoteRepairSlice";
 import { Link, useHistory } from "react-router-dom";
 import {
+  addQuoteItem,
   fetchQuoteDetails,
+  fetchQuoteVersions,
   updateQuoteHeader,
+  updateQuoteItem,
 } from "services/repairQuoteServices";
 import { ReadOnlyField } from "../components/ReadOnlyField";
 import Moment from "react-moment";
@@ -69,6 +77,7 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import RepairQuoteItemModal from "../components/RepairQuoteItem";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useAppSelector } from "app/hooks";
 const customStyles = {
   rows: {
     style: {
@@ -89,6 +98,7 @@ const customStyles = {
       paddingLeft: "8px", // override the cell padding for data cells
       paddingRight: "8px",
       borderRight: "1px solid rgba(0,0,0,.12)",
+      fontSize: '12px'
     },
   },
 };
@@ -108,6 +118,35 @@ const RepairQuoteDetails = (props) => {
     customerGroup: "",
   });
   const [quoteItems, setQuoteItems] = useState([]);
+  // Retrieve delivery types
+  const deliveryTypeOptions = useAppSelector(
+    selectQuoteDropdownOption(selectDelTypeList)
+  );
+  // Retrieve delivery priorities
+  const deliveryPriorityOptions = useAppSelector(
+    selectQuoteDropdownOption(selectDelPriorityList)
+  );
+  // Retrieve billing types
+  const billingTypeOptions = useAppSelector(
+    selectQuoteDropdownOption(selectBillingTypeList)
+  );
+  // Retrieve billing Frequencies
+  const billingFreqOptions = useAppSelector(
+    selectQuoteDropdownOption(selectBillingFreqList)
+  );
+  // Retrieve payment terms
+  const paymentTermOptions = useAppSelector(
+    selectQuoteDropdownOption(selectPaymentTermList)
+  );
+
+  //Fetch Status List
+  const statusOptions = useAppSelector(
+    selectQuoteDropdownOption(selectQuoteStatusList)
+  );
+  const validityOptions = useAppSelector(
+    selectQuoteDropdownOption(selectQuoteValidityList)
+  );
+
   useEffect(() => {
     console.log(state);
     if (state) {
@@ -116,33 +155,15 @@ const RepairQuoteDetails = (props) => {
     }
     // setActiveElement({...activeElement, builderType: state.builderType })
   }, []);
-  const validityOptions = [
-    { value: 15, label: "15 days" },
-    { value: 30, label: "1 month" },
-    { value: 45, label: "45 days" },
-    { value: 60, label: "2 months" },
-  ];
-  const paymentTermOptions = [
-    { value: 0, label: "Immediate" },
-    { value: 90, label: "90 Days" },
-    { value: 60, label: "60 Days" },
-    { value: 30, label: "30 Days" },
-  ];
+
   const salesOfficeOptions = [
     { value: "Location1", label: "Location1" },
     { value: "Location2", label: "Location2" },
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
-  const deliveryTypeOptions = [
-    { value: "standard", label: "Standard" },
-    { value: "express", label: "Express" },
-  ];
-  const deliveryPriorityOptions = [
-    { value: "urgent", label: "Urgent" },
-    { value: "normal", label: "Normal" },
-    { value: "very_urgent", label: "Very Urgent" },
-  ];
+  // const [deliveryTypeOptions, setDelTypeOptions] = useState([]);
+  // const [deliveryPriorityOptions, setDelPriorityOptions] = useState([]);
   const [quoteVersionOptions, setQuoteVersionOptions] = useState([
     { label: "Version 1", value: 1 },
   ]);
@@ -150,9 +171,25 @@ const RepairQuoteDetails = (props) => {
     label: "Version 1",
     value: 1,
   });
+  const initialQuoteItem = {
+    componentCode: '',
+description: '',
+discount: 0,
+extendedPrice: 0,
+itemNo: '',
+labourPrice: 0,
+miscPrice: 0,
+operation: '',
+partListId: '',
+partsPrice: '',
+payerType: '',
+totalPrice: 0,
+// type: '',
+// unit: ''
+};
   const [quoteItemOpen, setQuoteItemOpen] = useState(false);
-  const [quoteItemModalTitle, setQuoteItemModalTitle] = useState("");
-  const [quoteItem, setQuoteItem] = useState("");
+  const [quoteItemModalTitle, setQuoteItemModalTitle] = useState("Add New Quote Item");
+  const [quoteItem, setQuoteItem] = useState(initialQuoteItem);
   const handleVersion = (e) => {
     setSelectedVersion(e);
     // fetchBuilderVersionDet(builderId, e.value).then((result) => {
@@ -219,7 +256,7 @@ const RepairQuoteDetails = (props) => {
     {
       name: (
         <>
-          <div>Job Description</div>
+          <div>Job Desc.</div>
         </>
       ),
       selector: (row) => row.operation,
@@ -343,9 +380,8 @@ const RepairQuoteDetails = (props) => {
           <div>Actions</div>
         </>
       ),
-      selector: (row) => row.action,
       wrap: true,
-      maxWidth: "10px",
+      width: "30px",
       sortable: true,
       format: (row) => row.action,
       cell: (row) => (
@@ -353,7 +389,7 @@ const RepairQuoteDetails = (props) => {
           <Tooltip
             title="Edit"
             className="mr-2 cursor"
-            onClick={() => openQuoteItemModal(row)}
+            onClick={() => openQuoteItemModal(row, 'existing')}
           >
             <img className="m-1" src={penIcon} alt="Edit" />
           </Tooltip>
@@ -382,25 +418,35 @@ const RepairQuoteDetails = (props) => {
       generalViewOnly: result.quoteDate ? true : false,
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
-        result.priceMethod !== "EMPTY" &&
-        result.priceMethod !== null &&
-        result.priceMethod !== ""
+        result.billingType !== "EMPTY" &&
+        result.billingType !== null &&
+        result.billingType !== ""
           ? true
           : false,
       shippingViewOnly: result.leadTime ? true : false,
     });
     setQuoteId(result.quoteId);
     setSelQuoteStatus(
-      STATUS_OPTIONS.filter((x) => x.value === result.status)[0]
+      statusOptions.filter((x) => x.value === result.status)[0]
     );
-    let versions = result.versionList?.map((versionNo) => ({
-      value: versionNo,
-      label: "Version " + versionNo,
-    }));
-    if (versions) setQuoteVersionOptions(versions);
+    fetchQuoteVersions(result.quoteName).then((versions) => {
+      let versionResult = versions.map((versionInd) => ({
+        value: versionInd.version,
+        label: "Version " + versionInd.version?.substring(8),
+        quoteId: versionInd.quoteId,
+        quoteName: versionInd.quoteName,
+      }));
+      console.log("versions", versionResult);
+      if (versionResult) setQuoteVersionOptions(versionResult);
+    });
+    // let versions = result.versionList?.map((versionNo) => ({
+    //   value: versionNo,
+    //   label: "Version " + versionNo,
+    // }));
+
     setSelectedVersion({
-      label: "Version " + result.versionNumber,
-      value: result.versionNumber,
+      label: "Version " + result.version?.substring(8),
+      value: result.version,
     });
 
     populateCustomerData(result);
@@ -446,12 +492,10 @@ const RepairQuoteDetails = (props) => {
       description: result.description ? result.description : "",
       reference: result.reference ? result.reference : "",
       quoteDate: result.quoteDate ? result.quoteDate : new Date(),
-      quoteId: result.quoteId ? result.quoteId : "",
+      quoteName: result.quoteName ? result.quoteName : "",
       validity:
-        result.validityDays && result.validityDays !== "EMPTY"
-          ? validityOptions.find(
-              (element) => element.value === result.validityDays
-            )
+        result.validity && result.validity !== "EMPTY"
+          ? validityOptions.find((element) => element.value === result.validity)
           : { label: "", value: "" },
       version: result.version ? result.version : "",
     });
@@ -473,14 +517,29 @@ const RepairQuoteDetails = (props) => {
   const populatePricingData = (result) => {
     setBillingDetail({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      billingFrequency: result.billingFrequency,
-      billingType:result.billingType,
-      currency:result.currency,
+      billingFrequency:
+        result.billingFrequency && result.billingFrequency !== "EMPTY"
+          ? billingFreqOptions.find(
+              (element) => element.value === result.billingFrequency
+            )
+          : { label: "", value: "" },
+      billingType:
+        result.billingType && result.billingType !== "EMPTY"
+          ? billingTypeOptions.find(
+              (element) => element.value === result.billingType
+            )
+          : { label: "", value: "" },
+      currency: result.currency,
       discount: result.discount,
       margin: result.margin,
       netPrice: result.netPrice,
-      paymentTerm: result.paymentTerm,
-    })
+      paymentTerms:
+        result.paymentTerms && result.paymentTerms !== "EMPTY"
+          ? paymentTermOptions.find(
+              (element) => element.value === result.paymentTerms
+            )
+          : { label: "", value: "" },
+    });
     // setPricingData({
     //   priceDate: result.priceDate ? result.priceDate : new Date(),
     //   priceMethod:
@@ -511,10 +570,28 @@ const RepairQuoteDetails = (props) => {
           serviceRecipientAddress = "";
         });
     }
+    let leadTimeandUnit = result.leadTime && result.leadTime.split(" ");
     setShippingDetail({
-      deliveryPriority: result.deliveryPriority ? result.deliveryPriority : "",
-      deliveryType: result.deliveryType ? result.deliveryType : "",
-      leadTime: result.leadTime ? result.leadTime : "",
+      deliveryPriority: result.deliveryPriority
+        ? deliveryPriorityOptions.find(
+            (element) => element.value === result.deliveryPriority
+          )
+        : { label: "", value: "" },
+      deliveryType: result.deliveryType
+        ? deliveryTypeOptions.find(
+            (element) => element.value === result.deliveryType
+          )
+        : { label: "", value: "" },
+      leadTime:
+        leadTimeandUnit && leadTimeandUnit.length === 2
+          ? leadTimeandUnit[0]
+          : "",
+      unit:
+        leadTimeandUnit && leadTimeandUnit.length === 2
+          ? OPTIONS_LEADTIME_UNIT.find(
+              (element) => element.value === leadTimeandUnit[1]
+            )
+          : { label: "Day", value: "DAY" },
       serviceRecipientAddress: result.serviceRecipientAddress
         ? result.serviceRecipientAddress
         : serviceRecipientAddress,
@@ -575,6 +652,7 @@ const RepairQuoteDetails = (props) => {
   const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
+    setOpenSnack(true);
   };
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -677,7 +755,7 @@ const RepairQuoteDetails = (props) => {
 
   const [generalDetails, setGeneralDetails] = useState({
     quoteDate: new Date(),
-    quoteId: "",
+    quoteName: "",
     description: "",
     reference: "",
     validity: "",
@@ -685,7 +763,7 @@ const RepairQuoteDetails = (props) => {
   });
   const [billingDetail, setBillingDetail] = useState({
     priceDate: new Date(),
-    paymentTerm: "",
+    paymentTerms: "",
     currency: "",
     billingType: "",
     billingFrequency: "",
@@ -698,7 +776,7 @@ const RepairQuoteDetails = (props) => {
     deliveryPriority: "",
     leadTime: "",
     serviceRecipientAddress: "",
-    unit: "",
+    unit: { label: "Day", value: "DAY" },
   });
   const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [noOptionsModel, setNoOptionsModel] = useState(false);
@@ -712,17 +790,17 @@ const RepairQuoteDetails = (props) => {
     });
   };
 
-  const rows4 = [
+  const miscItemRows = [
     { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
     { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
     { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
-  const rows3 = [
+  const priceSummaryRows = [
     { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
     { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
     { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
-  const masterColumns3 = [
+  const priceSummaryColumns = [
     {
       name: (
         <>
@@ -779,7 +857,7 @@ const RepairQuoteDetails = (props) => {
       format: (row) => row.sbQuoteId,
     },
   ];
-  const masterColumns4 = [
+  const miscItemColumns = [
     {
       name: (
         <>
@@ -814,12 +892,12 @@ const RepairQuoteDetails = (props) => {
       format: (row) => row.sbQuoteId,
     },
   ];
-  const rows2 = [
+  const payerRows = [
     { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
     { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
     { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
-  const masterColumns2 = [
+  const payerColumns = [
     {
       name: (
         <>
@@ -908,6 +986,11 @@ const RepairQuoteDetails = (props) => {
         ...viewOnlyTab,
         priceViewOnly: false,
       });
+    else if (value === "shipping" && viewOnlyTab.shippingViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        shippingViewOnly: false,
+      });
   };
 
   const ITEM_HEIGHT = 48;
@@ -922,21 +1005,23 @@ const RepairQuoteDetails = (props) => {
   };
   const [quoteItemViewOnly, setQuoteItemViewOnly] = useState(false);
   // Open quote item modal
-  const openQuoteItemModal = (row) => {
+  const openQuoteItemModal = (row, operation) => {
     // console.log(row);
     setQuoteItem(row);
-    setQuoteItemModalTitle(
-      row?.component + " | " + row?.operation + " | " + row?.description
-    );
-    setQuoteItemViewOnly(true);
+    if(operation === 'existing'){
+      setQuoteItemModalTitle(
+        row?.component + " | " + row?.operation + " | " + row?.description
+      );
+      setQuoteItemViewOnly(true);
+    }
     setQuoteItemOpen(true);
   };
   //Close Quote Item modal
   const handleQuoteItemClose = () => {
     setQuoteItemOpen(false);
-    // setQuoteItem(initialQuoteItem);
+    setQuoteItem(initialQuoteItem);
     setQuoteItemViewOnly(false);
-    setQuoteItemModalTitle("");
+    setQuoteItemModalTitle('Add New Quote Item');
   };
   const names = [
     "Oliver Hansen",
@@ -1043,7 +1128,7 @@ const RepairQuoteDetails = (props) => {
       quoteDate: generalDetails.quoteDate,
       description: generalDetails.description,
       reference: generalDetails.reference,
-      validityDays: generalDetails.validity?.value,
+      validity: generalDetails.validity?.value,
     };
     updateQuoteHeader(quoteId, data)
       .then((result) => {
@@ -1074,7 +1159,7 @@ const RepairQuoteDetails = (props) => {
         setSavedQuoteDetails(result);
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
-        handleSnack("success", "General details updated!");
+        handleSnack("success", "Estimation details updated!");
       })
       .catch((err) => {
         handleSnack(
@@ -1088,7 +1173,7 @@ const RepairQuoteDetails = (props) => {
       ...savedQuoteDetails,
       deliveryType: shippingDetail.deliveryType?.value,
       deliveryPriority: shippingDetail.deliveryPriority?.value,
-      leadTime: shippingDetail.leadTime + shippingDetail.unit?.value,
+      leadTime: shippingDetail.leadTime + " " + shippingDetail.unit?.value,
       serviceRecipientAddress: shippingDetail.serviceRecipientAddress,
     };
     updateQuoteHeader(quoteId, data)
@@ -1096,6 +1181,31 @@ const RepairQuoteDetails = (props) => {
         setSavedQuoteDetails(result);
         setViewOnlyTab({ ...viewOnlyTab, shippingViewOnly: true });
         handleSnack("success", "Shipping details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the shipping details!"
+        );
+      });
+  };
+  const updateBillingData = () => {
+    let data = {
+      ...savedQuoteDetails,
+      billingFrequency: billingDetail.billingFrequency?.value,
+      billingType: billingDetail.billingType?.value,
+      priceDate: billingDetail.priceDate,
+      paymentTerms: billingDetail.paymentTerms?.value,
+      currency: billingDetail.currency,
+      netPrice: billingDetail.netPrice,
+      margin: billingDetail.margin,
+      discount: billingDetail.discount,
+    };
+    updateQuoteHeader(quoteId, data)
+      .then((result) => {
+        setSavedQuoteDetails(result);
+        setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+        handleSnack("success", "Billing details updated!");
       })
       .catch((err) => {
         handleSnack(
@@ -1116,8 +1226,28 @@ const RepairQuoteDetails = (props) => {
     // });
   };
 
-  const handleQuoteItemUpdate = () => {
-    handleSnack("success", "update quote item");
+  const handleQuoteItemUpdate = async () => {
+    if(quoteItemModalTitle !== 'Add New Quote Item'){
+      await updateQuoteItem(quoteItem.rbQuoteId, {...quoteItem, payerType: quoteItem.payerType?.value})
+        .then((quoteItem) => {
+          fetchAllDetails(quoteId);
+          handleSnack("success", "Quote item has been updated successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          handleSnack("error", "Item update failed!");
+        });
+      } else {
+        await addQuoteItem({...quoteItem, payerType: quoteItem.payerType?.value})
+          .then(quoteItem => {
+            fetchAllDetails(quoteId);
+          handleSnack("success", "Quote item has been added successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          handleSnack("error", "Add item failed!");
+        });
+      }
   };
   return (
     <>
@@ -1147,7 +1277,7 @@ const RepairQuoteDetails = (props) => {
                     className="customselectbtn"
                     onChange={(e) => handleQuoteStatus(e)}
                     // isOptionDisabled={(e) => disableStatusOptions(e)}
-                    options={STATUS_OPTIONS}
+                    options={statusOptions}
                     value={selQuoteStatus}
                   />
                 </div>
@@ -1662,25 +1792,20 @@ const RepairQuoteDetails = (props) => {
                                 name="preparedBy"
                                 value={estimateDetails.preparedBy}
                                 onChange={handleEstimateDetailsDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               APPROVED BY
                             </label>
                             <div className="form-group w-100">
                               <input
-                                type="email"
+                                type="text"
                                 className="form-control border-radius-10 text-primary"
                                 name="approvedBy"
                                 value={estimateDetails.approvedBy}
                                 onChange={handleEstimateDetailsDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -1721,12 +1846,11 @@ const RepairQuoteDetails = (props) => {
                             </label>
                             <div className="form-group w-100">
                               <input
-                                type="email"
+                                type="text"
                                 className="form-control border-radius-10 text-primary"
                                 name="revisedBy"
                                 value={estimateDetails.revisedBy}
                                 onChange={handleEstimateDetailsDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -1891,24 +2015,20 @@ const RepairQuoteDetails = (props) => {
                               </LocalizationProvider>
                             </div>
                             {/* <div className="form-group w-100">
-                                                <input type="email" className="form-control border-radius-10 text-primary" id="exampleInputEmail1"  placeholder="Placeholder (Optional)" />
+                                                <input type="email" className="form-control border-radius-10 text-primary" id="exampleInputEmail1"   />
                                             </div> */}
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               QUOTE #
                             </label>
                             <div className="form-group w-100">
                               <input
                                 type="text"
+                                disabled
                                 className="form-control border-radius-10 text-primary"
                                 name="quote"
-                                value={generalDetails.quoteId}
-                                onChange={handleGeneralDetailsDataChange}
-                                placeholder="Placeholder (Optional)"
+                                value={generalDetails.quoteName}
                               />
                             </div>
                           </div>
@@ -1926,7 +2046,6 @@ const RepairQuoteDetails = (props) => {
                                 name="description"
                                 value={generalDetails.description}
                                 onChange={handleGeneralDetailsDataChange}
-                                placeholder="Placeholder (Optional)"
                               />
                             </div>
                           </div>
@@ -2000,7 +2119,7 @@ const RepairQuoteDetails = (props) => {
                             disabled={
                               !generalDetails.quoteDate ||
                               !generalDetails.description ||
-                              !generalDetails.quoteId ||
+                              !generalDetails.quoteName ||
                               !generalDetails.reference ||
                               !generalDetails.validity
                             }
@@ -2022,7 +2141,7 @@ const RepairQuoteDetails = (props) => {
                         />
                         <ReadOnlyField
                           label="Quote #"
-                          value={generalDetails.quoteId}
+                          value={generalDetails.quoteName}
                           className="col-md-4 col-sm-4"
                         />
                         <ReadOnlyField
@@ -2042,7 +2161,7 @@ const RepairQuoteDetails = (props) => {
                         />
                         <ReadOnlyField
                           label="VERSION"
-                          value={generalDetails.version?.label}
+                          value={generalDetails.version}
                           className="col-md-4 col-sm-4"
                         />
                       </div>
@@ -2050,134 +2169,130 @@ const RepairQuoteDetails = (props) => {
                   </TabPanel>
                   <TabPanel value="price">
                     {!viewOnlyTab.priceViewOnly ? (
-                      <div className="row mt-4">
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PAYMENT TERMS
-                            </p>
-                            <div>
-                              <Select
-                                // defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setBillingDetail({
-                                    ...billingDetail,
-                                    paymentTerm: e,
-                                  })
-                                }
-                                options={paymentTermOptions}
-                                value={billingDetail.paymentTerm}
-                                styles={FONT_STYLE_SELECT}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CURRENCY
-                            </p>
-                            <div>
-                              <h6 className="font-weight-600">
-                                <input
-                                  className="form-control border-radius-10 text-primary"
-                                  name="reference"
-                                  value={billingDetail.currency}
+                      <>
+                        <div className="row mt-4 input-fields">
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PAYMENT TERMS
+                              </p>
+                              <div>
+                                <Select
+                                  // defaultValue={selectedOption}
                                   onChange={(e) =>
                                     setBillingDetail({
                                       ...billingDetail,
-                                      currency: e.target.value,
+                                      paymentTerms: e,
                                     })
                                   }
+                                  options={paymentTermOptions}
+                                  value={billingDetail.paymentTerms}
+                                  styles={FONT_STYLE_SELECT}
                                 />
-                              </h6>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PRICE DATE
-                            </p>
-                            <div className="align-items-center date-box">
-                              <LocalizationProvider
-                                dateAdapter={AdapterDateFns}
-                              >
-                                <MobileDatePicker
-                                  inputFormat="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  // minDate={generalDetails.quoteDate}
-                                  // maxDate={new Date()}
-                                  closeOnSelect
-                                  value={billingDetail.priceDate}
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group">
+                              <label className="font-size-12 font-weight-500 mb-2">
+                                CURRENCY
+                              </label>
+                              <input
+                                className="form-control border-radius-10 text-primary"
+                                name="reference"
+                                value={billingDetail.currency}
+                                onChange={(e) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    currency: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE DATE
+                              </p>
+                              <div className="align-items-center date-box">
+                                <LocalizationProvider
+                                  dateAdapter={AdapterDateFns}
+                                >
+                                  <MobileDatePicker
+                                    inputFormat="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    // minDate={generalDetails.quoteDate}
+                                    // maxDate={new Date()}
+                                    closeOnSelect
+                                    value={billingDetail.priceDate}
+                                    onChange={(e) =>
+                                      setBillingDetail({
+                                        ...billingDetail,
+                                        priceDate: e,
+                                      })
+                                    }
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        variant="standard"
+                                        inputProps={{
+                                          ...params.inputProps,
+                                          style: FONT_STYLE,
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                </LocalizationProvider>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                BILLING TYPE
+                              </p>
+                              <div>
+                                <Select
                                   onChange={(e) =>
                                     setBillingDetail({
                                       ...billingDetail,
-                                      priceDate: e,
+                                      billingType: e,
                                     })
                                   }
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      variant="standard"
-                                      inputProps={{
-                                        ...params.inputProps,
-                                        style: FONT_STYLE,
-                                      }}
-                                    />
-                                  )}
+                                  options={billingTypeOptions}
+                                  value={billingDetail.billingType}
+                                  styles={FONT_STYLE_SELECT}
                                 />
-                              </LocalizationProvider>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              BILLING TYPE
-                            </p>
-                            <div>
-                              <Select
-                                onChange={(e) =>
-                                  setBillingDetail({
-                                    ...billingDetail,
-                                    billingType: e,
-                                  })
-                                }
-                                options={paymentTermOptions}
-                                value={billingDetail.billingType}
-                                styles={FONT_STYLE_SELECT}
-                              />
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                BILLING FREQUENCY
+                              </p>
+                              <div>
+                                <Select
+                                  onChange={(e) =>
+                                    setBillingDetail({
+                                      ...billingDetail,
+                                      billingFrequency: e,
+                                    })
+                                  }
+                                  options={billingFreqOptions}
+                                  value={billingDetail.billingFrequency}
+                                  styles={FONT_STYLE_SELECT}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              BILLING FREQUENCY
-                            </p>
-                            <div>
-                              <Select
-                                onChange={(e) =>
-                                  setBillingDetail({
-                                    ...billingDetail,
-                                    billingFrequency: e,
-                                  })
-                                }
-                                options={paymentTermOptions}
-                                value={billingDetail.billingFrequency}
-                                styles={FONT_STYLE_SELECT}
-                              />
-                            </div>
-                          </div>
-                        </div>
 
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              NET PRICE
-                            </p>
-                            <h6 className="font-weight-600">
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                NET PRICE
+                              </p>
                               <input
                                 className="form-control border-radius-10 text-primary"
                                 name="reference"
@@ -2189,15 +2304,14 @@ const RepairQuoteDetails = (props) => {
                                   })
                                 }
                               />
-                            </h6>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MARGIN
-                            </p>
-                            <h6 className="font-weight-600">
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                MARGIN
+                              </p>
+                              {/* <h6 className="font-weight-600"> */}
                               <input
                                 className="form-control border-radius-10 text-primary"
                                 name="reference"
@@ -2209,16 +2323,16 @@ const RepairQuoteDetails = (props) => {
                                   })
                                 }
                               />
-                            </h6>
+                              {/* </h6> */}
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="col-md-3 col-sm-3">
-                          <div className="form-group ">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              DISCOUNT
-                            </p>
-                            <h6 className="font-weight-600">
+                          <div className="col-md-3 col-sm-3">
+                            <div className="form-group ">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                DISCOUNT
+                              </p>
+                              {/* <h6 className="font-weight-600"> */}
                               <input
                                 className="form-control border-radius-10 text-primary"
                                 name="reference"
@@ -2230,16 +2344,41 @@ const RepairQuoteDetails = (props) => {
                                   })
                                 }
                               />
-                            </h6>
+                              {/* </h6> */}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white mr-1"
+                            onClick={() => handleResetData("CANCEL")}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updateBillingData}
+                            disabled={
+                              !billingDetail.paymentTerms ||
+                              !billingDetail.billingFrequency ||
+                              !billingDetail.billingType
+                            }
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </>
                     ) : (
                       <>
                         <div className="row mt-4">
                           <ReadOnlyField
                             label="PAYMENT TERMS"
-                            value={billingDetail.paymentTerm?.label}
+                            value={billingDetail.paymentTerms?.label}
                             className="col-md-4 col-sm-4"
                           />
                           <ReadOnlyField
@@ -2291,8 +2430,8 @@ const RepairQuoteDetails = (props) => {
                           <DataTable
                             className=""
                             title=""
-                            columns={masterColumns2}
-                            data={rows2}
+                            columns={payerColumns}
+                            data={payerRows}
                             customStyles={customStyles}
                             pagination
                             // onRowClicked={(e) => handleRowClick(e)}
@@ -2320,8 +2459,8 @@ const RepairQuoteDetails = (props) => {
                           <DataTable
                             className=""
                             title=""
-                            columns={masterColumns3}
-                            data={rows3}
+                            columns={priceSummaryColumns}
+                            data={priceSummaryRows}
                             customStyles={customStyles}
                             pagination
                             // onRowClicked={(e) => handleRowClick(e)}
@@ -2349,8 +2488,8 @@ const RepairQuoteDetails = (props) => {
                           <DataTable
                             className=""
                             title=""
-                            columns={masterColumns4}
-                            data={rows4}
+                            columns={miscItemColumns}
+                            data={miscItemRows}
                             customStyles={customStyles}
                             pagination
                             // onRowClicked={(e) => handleRowClick(e)}
@@ -2500,7 +2639,12 @@ const RepairQuoteDetails = (props) => {
                         />
                         <ReadOnlyField
                           label="LEAD TIME"
-                          value={shippingDetail.leadTime}
+                          value={
+                            shippingDetail.leadTime &&
+                            shippingDetail.leadTime +
+                              " " +
+                              shippingDetail.unit?.label
+                          }
                           className="col-md-4 col-sm-4"
                         />
                         <ReadOnlyField
@@ -2526,7 +2670,18 @@ const RepairQuoteDetails = (props) => {
             setQuoteItemViewOnly={setQuoteItemViewOnly}
             handleSnack={handleSnack}
           />
-          <div className="card">
+       
+          <div className="card px-4 pb-4 mt-5 pt-4">
+          <div
+                          className="row mb-3 pr-3"
+                          style={{ justifyContent: "right" }}
+                        ><button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={() => openQuoteItemModal("","new")}
+                          >
+                            + Quote Item
+                          </button></div>
             <div
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}

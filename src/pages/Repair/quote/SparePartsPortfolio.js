@@ -1,80 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
-import { DataGrid } from "@mui/x-data-grid";
-import FormGroup from "@mui/material/FormGroup";
-import Select from "react-select";
-import Select1 from "@mui/material/Select";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import ClearIcon from "@mui/icons-material/Clear";
-import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import AddIcon from "@mui/icons-material/Add";
+import CommentIcon from "@mui/icons-material/Chat";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import Tab from "@mui/material/Tab";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import TabContext from "@mui/lab/TabContext";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import Fade from "@mui/material/Fade";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import SearchIcon from "@mui/icons-material/Search";
-import { Link, useHistory } from "react-router-dom";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import AddIcon from "@mui/icons-material/Add";
-import FormControl from "@mui/material/FormControl";
-import Checkbox from "@mui/material/Checkbox";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
+import Tab from "@mui/material/Tab";
+import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { FileUploader } from "react-drag-drop-files";
+import { useHistory } from "react-router-dom";
+import Select from "react-select";
+import penIcon from "../../../assets/images/pen.png";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
-import MenuItem from "@mui/material/MenuItem";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import shareIcon from "../../../assets/icons/svg/share.svg";
-import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
-import uploadIcon from "../../../assets/icons/svg/upload.svg";
+import copyIcon from "../../../assets/icons/svg/Copy.svg";
 import cpqIcon from "../../../assets/icons/svg/CPQ.svg";
 import deleteIcon from "../../../assets/icons/svg/delete.svg";
-import copyIcon from "../../../assets/icons/svg/Copy.svg";
-import editIcon from "../../../assets/icons/svg/edit.svg";
+import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
+import shareIcon from "../../../assets/icons/svg/share.svg";
+import uploadIcon from "../../../assets/icons/svg/upload.svg";
 import {
-  ERROR_MAX_VERSIONS,
-  FONT_STYLE,
-  FONT_STYLE_SELECT,
-  FONT_STYLE_UNIT_SELECT,
-  OPTIONS_LEADTIME_UNIT,
-  STATUS_OPTIONS,
+    FONT_STYLE,
+    FONT_STYLE_SELECT,
+    FONT_STYLE_UNIT_SELECT,
+    OPTIONS_LEADTIME_UNIT,
+    STATUS_OPTIONS
 } from "../CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
 import { customerSearch, machineSearch } from "services/searchServices";
 
-import searchstatusIcon from "../../../assets/icons/svg/search-status.svg";
-import $ from "jquery";
-import {
-  getSearchCoverageForFamily,
-  getSearchQueryCoverage,
-  getConvertQuoteData,
-  solutionQuoteCreation,
-} from "../../../services/index";
-import SelectFilter from "react-select";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { toast } from "react-toastify";
-import { QUOTE_SPARE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
-import { ReadOnlyField } from "../components/ReadOnlyField";
-import { updateQuoteHeader } from "services/repairQuoteServices";
-import Validator from "utils/validator";
-import Moment from "react-moment";
+import { TextField, Tooltip } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { TextField } from "@mui/material";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import Moment from "react-moment";
+import {
+    fetchQuoteDetails,
+    updateQuoteHeader
+} from "services/repairQuoteServices";
+import Validator from "utils/validator";
+import { ReadOnlyField } from "../components/ReadOnlyField";
 const customStyles = {
   rows: {
     style: {
@@ -103,11 +72,8 @@ export function SparePartsPortfolio(props) {
   const history = useHistory();
   const { state } = props.location;
   //   console.log("props are : ", props);
-
-  const [age, setAge] = React.useState("5");
-
   const [anchorEl, setAnchorEl] = React.useState(null);
-
+  const [quoteItems, setQuoteItems] = useState([]);
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
 
@@ -116,7 +82,12 @@ export function SparePartsPortfolio(props) {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
   const [searchCustResults, setSearchCustResults] = useState([]);
 
   const [headerLoading, setHeaderLoading] = useState(false);
@@ -567,10 +538,6 @@ export function SparePartsPortfolio(props) {
     // },
   ];
 
-  const handleChangedrop = (event) => {
-    setAge(event.target.value);
-  };
-
   const [quoteVersionOptions, setQuoteVersionOptions] = useState([
     { label: "Version 1", value: 1 },
   ]);
@@ -633,14 +600,17 @@ export function SparePartsPortfolio(props) {
     setValue(newValue);
   };
 
-  const fetchAllDetails = async (quoteDataId) => {
-    console.log("quoteDataId --- ", quoteDataId);
-    if (quoteDataId) {
+  const fetchAllDetails = async (quoteId) => {
+    console.log("quoteDataId --- ", quoteId);
+    if (quoteId) {
       setHeaderLoading(true);
-      await getConvertQuoteData(quoteDataId)
+      await fetchQuoteDetails(quoteId)
         .then((result) => {
+          setQuoteId(result.quoteId);
           populateHeader(result);
+          setQuoteItems(result.plQuoteItems);
         })
+
         .catch((err) => {
           handleSnack("error", "Error occured while fetching header details");
         });
@@ -707,6 +677,7 @@ export function SparePartsPortfolio(props) {
     });
     setSearchCustResults([]);
   };
+
   const populateMachineData = (result) => {
     setMachineData({
       make: result.make ? result.make : "",
@@ -754,15 +725,15 @@ export function SparePartsPortfolio(props) {
   };
   const populatePricingData = (result) => {
     setBillingDetail({
-        priceDate: result.priceDate ? result.priceDate : new Date(),
-        billingFrequency: result.billingFrequency,
-        billingType:result.billingType,
-        currency:result.currency,
-        discount: result.discount,
-        margin: result.margin,
-        netPrice: result.netPrice,
-        paymentTerm: result.paymentTerm,
-      })
+      priceDate: result.priceDate ? result.priceDate : new Date(),
+      billingFrequency: result.billingFrequency,
+      billingType: result.billingType,
+      currency: result.currency,
+      discount: result.discount,
+      margin: result.margin,
+      netPrice: result.netPrice,
+      paymentTerm: result.paymentTerm,
+    });
     // setPricingData({
     //   priceDate: result.priceDate ? result.priceDate : new Date(),
     //   priceMethod:
@@ -1093,20 +1064,208 @@ export function SparePartsPortfolio(props) {
         );
       });
   };
-    // Update the status of the quote : Active, Revised etc.
-    const handleQuoteStatus = async (e) => {
-        // await updateBuilderStatus(bId, e.value)
-        //   .then((result) => {
-        setSelQuoteStatus(e);
-        handleSnack("success", "Status has been updated!");
-        // })
-        // .catch((err) => {
-        //   handleSnack("error", `Failed to update the status!`);
-        // });
-      };
+  // Update the status of the quote : Active, Revised etc.
+  const handleQuoteStatus = async (e) => {
+    // await updateBuilderStatus(bId, e.value)
+    //   .then((result) => {
+    setSelQuoteStatus(e);
+    handleSnack("success", "Status has been updated!");
+    // })
+    // .catch((err) => {
+    //   handleSnack("error", `Failed to update the status!`);
+    // });
+  };
+  const quoteItemsColumns = [
+   
+    {
+      name: (
+        <>
+          <div>Group Number</div>
+        </>
+      ),
+      selector: (row) => row.groupNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.groupNumber,
+    },
+    {
+      name: (
+        <>
+          <div>Type</div>
+        </>
+      ),
+      selector: (row) => row.partType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partType,
+    },
+    {
+      name: (
+        <>
+          <div>Desc</div>
+        </>
+      ),
+      selector: (row) => row.partDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Part Number</div>
+        </>
+      ),
+      selector: (row) => row.partNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partNumber,
+    },
+    {
+      name: (
+        <>
+          <div>Qty</div>
+        </>
+      ),
+      selector: (row) => row.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Sales Unit</div>
+        </>
+      ),
+      selector: (row) => row.salesUnit,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.salesUnit,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price</div>
+        </>
+      ),
+      selector: (row) => row.listPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.listPrice,
+    },
+    {
+        name: (
+            <>
+            <div>Extended Price</div>
+            </>
+        ),
+        selector: (row) => row.extendedPrice,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.extendedPrice,
+    },
+    {
+        name: (
+            <>
+            <div>Currency</div>
+            </>
+        ),
+        selector: (row) => row.currency,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.currency,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Adjusted Price</div>
+        </>
+      ),
+      selector: (row) => row.extendedPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.extendedPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Discount</div>
+        </>
+      ),
+      selector: (row) => row.discount,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.discount,
+    },
+    {
+      name: (
+        <>
+          <div>Margin</div>
+        </>
+      ),
+      selector: (row) => row.margin,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.margin,
+    },
+    {
+      name: (
+        <>
+          <div>Payer Type</div>
+        </>
+      ),
+      selector: (row) => row.payerType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.payerType,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      maxWidth: "10px",
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) => (
+        <div>
+          <Tooltip
+            title="Edit"
+            className="mr-2 cursor"
+            // onClick={() => openQuoteItemModal(row)}
+          >
+            <img className="m-1" src={penIcon} alt="Edit" />
+          </Tooltip>
+          <Tooltip title="Comment" className="cursor">
+            <CommentIcon />
+          </Tooltip>
+        </div>
+      ),
+    },
+  ];
   return (
     <>
-      {/* <CommanComponents /> */}
+      <CustomizedSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -1133,29 +1292,29 @@ export function SparePartsPortfolio(props) {
                 </div>
               </div>
             </div>
-              <div className="d-flex justify-content-center align-items-center">
-                {/* <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>GO TO SOLUTION</a> */}
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={shareIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={folderaddIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={uploadIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={cpqIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={deleteIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={copyIcon}></img>
-                </a>
-                {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
-              </div>
+            <div className="d-flex justify-content-center align-items-center">
+              {/* <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>GO TO SOLUTION</a> */}
+              <a href="#" className="ml-3 font-size-14">
+                <img src={shareIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={folderaddIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={uploadIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={cpqIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={deleteIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={copyIcon}></img>
+              </a>
+              {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
             </div>
+          </div>
 
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0 bg-primary p-3 border-radius-10">
@@ -1998,7 +2157,9 @@ export function SparePartsPortfolio(props) {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="price">                  <TabPanel value="price">
+                <TabPanel value="price">
+                  {" "}
+                  <TabPanel value="price">
                     {!viewOnlyTab.priceViewOnly ? (
                       <div className="row mt-4">
                         <div className="col-md-3 col-sm-3">
@@ -2309,7 +2470,8 @@ export function SparePartsPortfolio(props) {
                         </div>
                       </>
                     )}
-                  </TabPanel></TabPanel>
+                  </TabPanel>
+                </TabPanel>
                 <TabPanel value="shipping">
                   {!viewOnlyTab.shippingViewOnly ? (
                     <>
@@ -2604,9 +2766,24 @@ export function SparePartsPortfolio(props) {
                                 Next</Link>
                         </div>
                     </div> */}
-
         </div>
-
+        <div className="card">
+          <div
+            className=""
+            style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
+          >
+            <DataTable
+              className=""
+              title=""
+              columns={quoteItemsColumns}
+              data={quoteItems}
+              customStyles={customStyles}
+              pagination
+              // onRowClicked={(e) => handleRowClick(e)}
+              // selectableRows
+            />
+          </div>
+        </div>
         <div
           class="modal right fade"
           id="myModal12"

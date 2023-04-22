@@ -636,7 +636,7 @@ function ServiceOnlyTemplateOperation(props) {
             </div>
             {((operationData.partlists &&
               Object.entries(operationData.partlists).length > 0) ||
-              operationData.serviceEstimation) && (
+              operationData.serviceEstimation?.netPrice) && (
                 <>
                   <h5 className="d-flex align-items-center  mx-2">
                     <div className="" style={{ display: "contents" }}>
@@ -763,7 +763,7 @@ function ServiceOnlyTemplateOperation(props) {
                     })}
                   {/* </div>
                 <div className="row"> */}
-                  {operationData.serviceEstimation && (
+                  {operationData.serviceEstimation?.netPrice && (
                     <div className="col-md-6">
                       <div
                         className="card border"
@@ -906,7 +906,7 @@ function ServiceOnlyTemplateOperation(props) {
                 }
                 className="btn bg-primary text-white ml-2"
               >
-                {operationData.serviceEstimation ? (
+                {operationData.serviceEstimation?.netPrice ? (
                   <span className="mr-1">View</span>
                 ) : (
                 <span className="mr-2">

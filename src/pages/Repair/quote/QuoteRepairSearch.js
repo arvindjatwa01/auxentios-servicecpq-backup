@@ -400,7 +400,7 @@ const QuoteRepairSearch = () => {
                 <Divider />
                 <ListItem >
                   <ListItemText >Service Organisation </ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
+                  <span className="font-weight-500">{clickedQuoteRowData?.salesOffice}</span>
                 </ListItem>
                 <Divider />
                 <ListItem >
@@ -438,8 +438,8 @@ const QuoteRepairSearch = () => {
                 <b className="text-white">$ {clickedQuoteRowData?.netPrice}</b>
               </div>
               <div>
-                <a onClick={() => handleSelectQuote(clickedQuoteRowData)} className="text-white">
-                  Select <ArrowRightAltOutlinedIcon className="" />
+                <a onClick={() => handleSelectQuote(clickedQuoteRowData)} className="text-white" style={{cursor: 'pointer'}}>
+                  View <ArrowRightAltOutlinedIcon className="" />
                 </a>
               </div>
             </div>

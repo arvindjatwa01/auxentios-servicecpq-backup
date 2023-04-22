@@ -25,6 +25,8 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { Typography } from "@mui/material";
 import LoadingProgress from "../components/Loader";
 import Moment from "react-moment";
+import { repairQuoteActions } from "../dropdowns/quoteRepairSlice";
+import { useDispatch } from "react-redux";
 
 const RecentRepairQuote = () => {
   const [modalComponent, setModalComponent] = useState(null);
@@ -46,7 +48,9 @@ const RecentRepairQuote = () => {
     setSeverity(snackSeverity);
     setOpenSnack(true);
   };
+  let dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairQuoteActions.fetchQuoteDropdowns())
     fetchRecentQuotes();
   }, []);
 
@@ -100,7 +104,7 @@ const RecentRepairQuote = () => {
             </div>
           </div>
           <div className="card p-4 mt-5">
-            <div className="mt-5">
+            <div className="">
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">
@@ -120,7 +124,7 @@ const RecentRepairQuote = () => {
                                 icon={faFileAlt}
                               />
                               <span className="font-weight-500 ml-2">
-                                Repair Quote {indQuote.quoteId}
+                                Repair Quote {indQuote.quoteName}
                               </span>
                             </p>
                             <div className="d-flex align-items-center">

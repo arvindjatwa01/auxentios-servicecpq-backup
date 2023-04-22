@@ -23,7 +23,8 @@ const QUOTE_SERVICE_BASE_URL = "http://35.200.157.237/";
 const PRICING_URI = PRICING_BASE_URL + "pricing-svc/v1/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
 
-const QUOTE_REST_SERVICE = SOLUTION_BASE_URL + "quote-svc/v1/quote"
+const QUOTE_REST_SERVICE = SOLUTION_BASE_URL + "quote-svc/v1/quote";
+const QUOTE_COMMON_REST_SERVICE = QUOTE_SERVICE_BASE_URL + "quote-svc/v1";
 
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
 const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/"
@@ -241,15 +242,22 @@ export const SJ_SEGMENT = (templateId) => REPAIR_BUILDER_URI + `standard-job/${t
 export const UPDATE_SJ_VERSION = (templateId, version) => REPAIR_BUILDER_URI + `standard-job/${templateId}/version/${version}`;
 
 /* ===================== Repair Quote Service ============================= */
-
-// export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
-// export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/repair-builder/search?search=${searchStr}`;
 export const RECENT_QUOTES =(quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
 export const SEARCH_REPAIR_QUOTES =(searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
 export const CREATE_REPAIR_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const CREATE_SPARE_PART_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
+export const FETCH_REPAIR_QUOTE_VERSIONS = (quoteName) => QUOTE_REST_SERVICE + `/versions?quote_name=${quoteName}`;
 export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
+export const UPDATE_REPAIR_QUOTE_ITEM = (quoteItemId) => QUOTE_REST_SERVICE + `/repair-buider/${quoteItemId}`;
+export const ADD_REPAIR_QUOTE_ITEM = () => QUOTE_REST_SERVICE + `/repair-buider`;
+export const FETCH_BILLING_TYPE = () => QUOTE_COMMON_REST_SERVICE + `/common-config/billing-type`;
+export const FETCH_BILLING_FREQ = () => QUOTE_COMMON_REST_SERVICE + `/common-config/billing-frequency`;
+export const FETCH_DEL_TYPE = () => QUOTE_COMMON_REST_SERVICE + `/common-config/delivery-type`;
+export const FETCH_DEL_PRIORITY = () => QUOTE_COMMON_REST_SERVICE + `/common-config/delivery-priority`;
+export const FETCH_PAYMENT_TERMS = () => QUOTE_COMMON_REST_SERVICE + `/common-config/payment-term`;
+export const FETCH_QUOTE_STATUS = () => QUOTE_COMMON_REST_SERVICE + `/common-config/quote-status`;
+export const FETCH_QUOTE_VALIDITY = () => QUOTE_COMMON_REST_SERVICE + `/common-config/quote-validity`;
 
 /* ===================== Quote Service ============================= */
 

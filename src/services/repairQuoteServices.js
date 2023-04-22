@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_REPAIR_QUOTE_DETAILS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_REPAIR_QUOTE } from "./CONSTANTS";
+import { ADD_REPAIR_QUOTE_ITEM, CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -111,6 +111,61 @@ export const updateQuoteHeader = (quoteId, data) => {
   });
 };
 
+//Update Quote Item data
+export const updateQuoteItem = (quoteItemId, data) => {
+  console.log("service Repair > updateQuoteItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_REPAIR_QUOTE_ITEM(quoteItemId), data, config)
+        .then((res) => {
+          console.log("updateQuoteItem > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in updateQuoteItem axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("updateQuoteItem axios err :", err);
+          reject("Error in updateQuoteItem axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception updateQuoteItem : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Add Quote Item data
+export const addQuoteItem = (data) => {
+  console.log("service Repair > addQuoteItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(ADD_REPAIR_QUOTE_ITEM(), data, config)
+        .then((res) => {
+          console.log("addQuoteItem > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in addQuoteItem axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("addQuoteItem axios err :", err);
+          reject("Error in addQuoteItem axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception addQuoteItem : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //Fetch Quote Details
 export const fetchQuoteDetails = (quoteId) => {
   console.log("RepairBuilder > fetchQuoteDetails called...");
@@ -133,6 +188,146 @@ export const fetchQuoteDetails = (quoteId) => {
     }
   });
 };
+
+
+//Fetch Quote Versions
+export const fetchQuoteVersions = (quoteName) => {
+  console.log("RepairBuilder > fetchQuoteVersions called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_REPAIR_QUOTE_VERSIONS(quoteName), config)
+        .then((res) => {
+          console.log("fetchQuoteVersions > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchQuoteVersions");
+        })
+        .catch((err) => {
+          console.log("fetchQuoteVersions > axios err=", err);
+          reject("Error in fetchQuoteVersions axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchQuoteVersions, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch Billing Type
+export const fetchBillingType = () => {
+  console.log("Quote > fetchBillingType called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_BILLING_TYPE(), config)
+        .then((res) => {
+          console.log("fetchBillingType > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchBillingType");
+        })
+        .catch((err) => {
+          console.log("fetchBillingType > axios err=", err);
+          reject("Error in fetchBillingType axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchBillingType, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch Billing Frequency
+export const fetchBillingFreq = () => {
+  console.log("Quote > fetchBillingFreq called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_BILLING_FREQ(), config)
+        .then((res) => {
+          console.log("fetchBillingFreq > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchBillingFreq");
+        })
+        .catch((err) => {
+          console.log("fetchBillingFreq > axios err=", err);
+          reject("Error in fetchBillingFreq axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchBillingFreq, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch Delivery Type
+export const fetchDeliveryType = () => {
+  console.log("Quote > fetchDeliveryType called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_DEL_TYPE(), config)
+        .then((res) => {
+          console.log("fetchDeliveryType > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchDeliveryType");
+        })
+        .catch((err) => {
+          console.log("fetchDeliveryType > axios err=", err);
+          reject("Error in fetchDeliveryType axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchDeliveryType, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch Delivery Priority
+export const fetchDeliveryPriority = () => {
+  console.log("Quote > fetchDeliveryPriority called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_DEL_PRIORITY(), config)
+        .then((res) => {
+          console.log("fetchDeliveryPriority > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchDeliveryPriority");
+        })
+        .catch((err) => {
+          console.log("fetchDeliveryPriority > axios err=", err);
+          reject("Error in fetchDeliveryPriority axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchDeliveryPriority, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch Payment Terms
+export const fetchPaymentTerms = () => {
+  console.log("Quote > fetchPaymentTerms called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_PAYMENT_TERMS(), config)
+        .then((res) => {
+          console.log("fetchPaymentTerms > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchPaymentTerms");
+        })
+        .catch((err) => {
+          console.log("fetchPaymentTerms > axios err=", err);
+          reject("Error in fetchPaymentTerms axios!");
+        });
+    } catch (error) {
+      console.error("in Quote > fetchPaymentTerms, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 
 
 //Create Spare Part Quote
