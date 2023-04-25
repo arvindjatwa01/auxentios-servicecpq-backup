@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG, CUSTOM_PORTFOLIO_SEARCH_QUERY, GET_RECENT_SOLUTION_PORTFOLIO_LIST, GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL, COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO, COPY_MATER_TO_CUSTOM_PORTFOLIO } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG, CUSTOM_PORTFOLIO_SEARCH_QUERY, GET_RECENT_SOLUTION_PORTFOLIO_LIST, GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL, COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO, COPY_MATER_TO_CUSTOM_PORTFOLIO, SOLUTION_PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -303,3 +303,27 @@ export const copyMaterToCustomPortfolio = (data) => {
         }
     });
 };
+
+// Custom Portfolio Price Hierarchy 
+
+export const customPortfolioItemPriceHierarchySearch = (searchStr) => {
+    console.log("customPortfolioSolutions > customPortfolioItemPriceHierarchySearch called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .get(SOLUTION_PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH + searchStr, { headers: headersData })
+          .then((res) => {
+            console.log("customPortfolioItemPriceHierarchySearch > axios res=", res);
+            // resolve(res.data);
+            resolve(res);
+          })
+          .catch((err) => {
+            console.log("customPortfolioItemPriceHierarchySearch > axios err=", err);
+            reject("Error in customPortfolioItemPriceHierarchySearch axios!");
+          });
+      } catch (error) {
+        console.error("in customPortfolioSolutions > customPortfolioItemPriceHierarchySearch, Err===", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };

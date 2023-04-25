@@ -4711,9 +4711,11 @@ export const Analytics = () => {
                                           <li className="border-bottom">
                                              <div className="result py-4 px-3 font-size-14"><b>RESULTS</b></div>
                                           </li>
+                                          {console.log("solutionTempMasterData =========== ", solutionTempMasterData)}
                                           {solutionTempMasterData.map((row, i) =>
                                              // <li key={i} className="border-bottom cursor " onClick={() => handleOnSolutionPortfolioResultRow(row.customPortfolioId)}>
                                              <li key={i} className="border-bottom cursor " onClick={() => handleOnSolutionPortfolioResultRow(row.portfolioId)}>
+                                                {console.log("row ============ ", row)}
                                                 <div className="d-flex align-items-center p-3">
                                                    <div className="d-flex mr-4">
                                                       <p className="mb-0 font-size-14"><b>{row.name}</b></p>

@@ -120,8 +120,10 @@ export const PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = CREATE_PORTFOLIO_ITEM() + "/p
 export const CUSTOM_PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio/custom";
 export const CUSTOM_PORTFOLIO_SEARCH_QUERY = SOLUTION_BUILDER_URI + "portfolio/custom/search?search=";
 export const CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL = SOLUTION_BUILDER_URI + "portfolio/custom/consolidated-portfolio-details?";
-
 export const GET_RECENT_SOLUTION_PORTFOLIO_LIST = SOLUTION_BUILDER_URI + "portfolio/custom";
+export const SOLUTION_PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH = SOLUTION_BUILDER_URI + "portfolio/custom/portfolio-item-price-hierarchy?portfolio_id=";
+
+
 
 // Custom Portfolio Item
 export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/custom";
@@ -273,3 +275,9 @@ export const RECENT_QUOTES_COMMON_PATH = () => QUOTE_REST_SERVICE + "/recent?quo
 
 export const SEARCH_SOLUTION_QUOTE = () => QUOTE_REST_SERVICE + "/solution-builder/search?search=";
 
+// Coverage Search - use case 3
+export const PORTFOLIO_COVERAGE_SEARCH_DROPDOWN = SOLUTION_BUILDER_URI + "coverage";
+
+
+// Coverage Search - use case 3
+export const SOLUTION_COVERAGE_SEARCH_DROPDOWN = SOLUTION_BUILDER_URI + "coverage/custom";

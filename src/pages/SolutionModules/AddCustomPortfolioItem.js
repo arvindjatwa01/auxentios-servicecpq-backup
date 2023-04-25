@@ -364,6 +364,7 @@ const AddCustomPortfolioItem = (props) => {
         endusage,
         frequency,
         usageIn,
+        usage,
         taskType,
         unit,
         recommendedValue,
@@ -376,8 +377,8 @@ const AddCustomPortfolioItem = (props) => {
         ...addPortFolioItem,
         id: props.passItemEditRowData.customItemId,
         name: props.passItemEditRowData.itemName,
-        // description: itemBodyDescription,
-        description: props.passItemEditRowData.customItemHeaderModel.itemHeaderDescription,
+        description: itemBodyDescription,
+        // description: props.passItemEditRowData.customItemHeaderModel.itemHeaderDescription,
         usageIn: {
           label: props.passItemEditRowData.customItemBodyModel.usageIn,
           value: props.passItemEditRowData.customItemBodyModel.usageIn
@@ -392,6 +393,8 @@ const AddCustomPortfolioItem = (props) => {
           value: props.passItemEditRowData.customItemBodyModel.unit
         },
         recommendedValue: props.passItemEditRowData.customItemBodyModel.recommendedValue,
+        usageType: { label: usage, value: usage },
+        numberOfEvents: numberOfEvents,
         // quantity: 0,
         // numberOfEvents: numberOfEvents,
         // templateDescription: {
@@ -417,9 +420,9 @@ const AddCustomPortfolioItem = (props) => {
         }
       }
 
-      console.log("2132546576786787 : ", props.passItemEditRowData)
-      console.log("props.passItemEditRowData.customItemBodyModel.customItemPrices != null : ", props.passItemEditRowData.customItemBodyModel.customItemPrices != null)
-      console.log("props.passItemEditRowData.customItemBodyModel.customItemPrices.length : ", props.passItemEditRowData.customItemBodyModel.customItemPrices.length)
+      // console.log("2132546576786787 : ", props.passItemEditRowData)
+      // console.log("props.passItemEditRowData.customItemBodyModel.customItemPrices != null : ", props.passItemEditRowData.customItemBodyModel.customItemPrices != null)
+      // console.log("props.passItemEditRowData.customItemBodyModel.customItemPrices.length : ", props.passItemEditRowData.customItemBodyModel.customItemPrices.length)
 
       setBundleFlagType(props.passItemEditRowData.customItemHeaderModel.bundleFlag);
       if ((props.passItemEditRowData.customItemBodyModel.customItemPrices != null)) {
@@ -462,6 +465,7 @@ const AddCustomPortfolioItem = (props) => {
       endusage,
       frequency,
       usageIn,
+      usage,
       taskType,
       unit,
       recommendedValue,
@@ -477,6 +481,7 @@ const AddCustomPortfolioItem = (props) => {
       name: props.passItemEditRowData.itemName,
       description: itemBodyDescription,
       usageIn: { label: usageIn, value: usageIn },
+      usageType: { label: usage, value: usage },
       taskType: { label: taskType[0], value: taskType[0] },
       frequency: { label: frequency, value: frequency },
       unit: { label: unit, value: unit },
@@ -501,7 +506,12 @@ const AddCustomPortfolioItem = (props) => {
         value: res.data.year,
       },
       noOfYear: res.data.noOfYear,
-
+      currency: (props.passItemEditRowData?.customItemHeaderModel?.currency ||
+        props.passItemEditRowData?.customItemHeaderModel?.currency != "") ?
+        {
+          label: props.passItemEditRowData?.customItemHeaderModel?.currency,
+          value: props.passItemEditRowData?.customItemHeaderModel?.currency,
+        } : "",
     });
 
     // console.log("price Result fetch Data : ", res);
@@ -644,9 +654,11 @@ const AddCustomPortfolioItem = (props) => {
           if ((addPortFolioItem.templateId == "") &&
             (addPortFolioItem.repairOption == "")) {
             setTabs("relatedTemplate")
-          } else if ((addPortFolioItem.templateId != "")) {
+          } else if ((addPortFolioItem.templateId != "") &&
+            (addPortFolioItem.repairOption == "" || addPortFolioItem.repairOption == null)) {
             setTabs("relatedTemplate")
-          } else if ((addPortFolioItem.repairOption != "")) {
+          } else if ((addPortFolioItem.repairOption != "") &&
+            (addPortFolioItem.templateId == "" || addPortFolioItem.templateId == null)) {
             setTabs("relatedKit")
           }
         } else {

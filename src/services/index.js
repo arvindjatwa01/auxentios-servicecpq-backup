@@ -10,8 +10,8 @@ export { getPortfolioSchema } from './schemaConfigServices';
 export { getGuidedSolution } from './guidedSolutionServices';
 export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios, getSolutionPortfolioById } from './solutionBuilderServices'
-export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch, portfolioSearchDropdownList, portfolioSearchList, portfolioSearchTableDataList, portfolioItemPriceHierarchySearch} from './servicePortfolioServices'
-export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio, solutionPortfolioSearch, getSearchForRecentSolutionPortfolio, getSearchForRecentSolutionBundleService, copyPortfolioICustomPortfolio, copyMaterToCustomPortfolio } from './customPortfolioSolutions'
+export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch, portfolioSearchDropdownList, portfolioSearchList, portfolioSearchTableDataList, portfolioItemPriceHierarchySearch } from './servicePortfolioServices'
+export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio, solutionPortfolioSearch, getSearchForRecentSolutionPortfolio, getSearchForRecentSolutionBundleService, copyPortfolioICustomPortfolio, copyMaterToCustomPortfolio, customPortfolioItemPriceHierarchySearch } from './customPortfolioSolutions'
 export { getPortfolioCommonConfig, getPortfolioPriceTypeCommonConfig, getPortfolioPriceHeadTypeCommonConfig, getSolutionPriceCommonConfig, additionalPriceCreation, escalationPriceCreation, portfolioPriceCreation, portfolioItemPriceSjid, getItemPriceData, getCustomItemPriceData, updatePortfolioPrice, updateEscalationPriceById, updateAdditionalPriceById, getPortfolioPriceById, portfolioPriceAgreementCreation } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue, createCoverage, updateCoverage, updateCustomCoverage, createCustomCoverage } from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getLifeStageKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue, getSolutionTypeKeyValue, getSolutionLevelKeyValue, getAuditRestServiceData } from './commonSolutionBuilderServices'
@@ -22,3 +22,5 @@ export { customItemCreation, updateCustomItemData, deleteCustomItem, customPrice
 export { quoteCreation, getQuoteMasterData, getSearchQuoteData, updateMasterQuoteData, deleteMasterQuote, convertPortfolioToQuoteData, getConvertQuoteData, getQuoteSearchDropdown } from "./quoteService";
 
 export { getRecentSolutionQuotes, solutionQuoteCreation, updateSolutionQuoteData, getRecentQuotes, searchSolutionQuotes } from "./solutionQuoteServices";
+
+export { portfolioCoverageDropdownList, solutionCoverageDropdownList } from "./portfolioSolutionCoverageService";

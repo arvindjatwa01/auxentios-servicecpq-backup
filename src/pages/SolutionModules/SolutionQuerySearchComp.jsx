@@ -16,7 +16,9 @@ import {
     portfolioSearchDropdownList,
     portfolioSearchTableDataList,
     getSearchCustomCoverageForFamily,
-    customPortfolioSearchTableDataList
+    customPortfolioSearchTableDataList,
+    solutionCoverageDropdownList,
+    portfolioCoverageDropdownList
 } from "../../services/index"
 import { useEffect } from 'react';
 
@@ -113,6 +115,7 @@ const SolutionQuerySearchComp = (props) => {
             obj.inputSearch = e.target.value;
         } else if (props.compoFlag === "solutionTempItemSearch") {
             var SearchResArr = [];
+            var coverageSearchArr = [];
 
             if ((tempArray[id].selectFamily.value === "name") ||
                 (tempArray[id].selectFamily.value === "description")) {
@@ -138,10 +141,20 @@ const SolutionQuerySearchComp = (props) => {
                         console.log("err in api call", err);
                     });
             } else {
-                getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+                var familyNameIs = tempArray[id].selectFamily.value === "model" ? "modelNo"
+                    : tempArray[id].selectFamily.value === "prefix" ? "serialNumberPrefix"
+                        : tempArray[id].selectFamily.value;
+                solutionCoverageDropdownList(`${familyNameIs}/${e.target.value}`)
+                    // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
                     .then((res) => {
+                        if (res.status === 200) {
+                            for (let i = 0; i < res.data.length; i++) {
+                                coverageSearchArr.push(res.data[i].value)
+                                // coverageSearchArr.push(res.data[i].key)
+                            }
+                        }
                         console.log("response coverage ", res);
-                        obj.selectOptions = res;
+                        obj.selectOptions = coverageSearchArr;
                         tempArray[id] = obj;
                         setQuerySearchSelector([...tempArray]);
                         $(`.scrollbar-${id}`).css("display", "block");
@@ -205,6 +218,7 @@ const SolutionQuerySearchComp = (props) => {
 
             if (props.compoFlag === "portfolioTempItemSearch") {
 
+                var coverageSearchArr = [];
                 var SearchResArr = [];
                 if ((tempArray[id].selectFamily.value === "name") ||
                     (tempArray[id].selectFamily.value === "description")) {
@@ -230,10 +244,21 @@ const SolutionQuerySearchComp = (props) => {
                             console.log("err in api call", err);
                         });
                 } else {
-                    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+                    var familyNameIs = tempArray[id].selectFamily.value === "model" ? "modelNo"
+                        : tempArray[id].selectFamily.value === "prefix" ? "serialNumberPrefix"
+                            : tempArray[id].selectFamily.value;
+                    portfolioCoverageDropdownList(`${familyNameIs}/${e.target.value}`)
+                        // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
                         .then((res) => {
+                            if (res.status === 200) {
+                                for (let i = 0; i < res.data.length; i++) {
+                                    coverageSearchArr.push(res.data[i].value)
+                                    // coverageSearchArr.push(res.data[i].key)
+                                }
+                            }
                             console.log("response coverage ", res);
-                            obj.selectOptions = res;
+                            // obj.selectOptions = res;
+                            obj.selectOptions = coverageSearchArr;
                             tempArray[id] = obj;
                             setQuerySearchSelector([...tempArray]);
                             $(`.scrollbar-${id}`).css("display", "block");
@@ -531,8 +556,8 @@ const SolutionQuerySearchComp = (props) => {
                     } else {
                         var searchArrData = [];
                         searchArrData.push(res4.data);
-                        // props.setSolutionTempMasterData(res4.data)
-                        props.setSolutionTempMasterData(searchArrData)
+                        props.setSolutionTempMasterData([...res4.data])
+                        // props.setSolutionTempMasterData(searchArrData)
                         props.setSolutionLoadingStatus("")
                     }
                 } else {
