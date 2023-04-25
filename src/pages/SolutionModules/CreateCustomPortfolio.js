@@ -66,7 +66,7 @@ import editIcon from "../../assets/icons/svg/edit.svg";
 import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import { CommanComponents } from "../../components/index";
 import DateFnsUtils from "@date-io/date-fns";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { DatePicker, MuiPickersUtilsProvider, useStaticState } from "@material-ui/pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
@@ -173,7 +173,12 @@ import {
   portfolioPriceAgreementCreation,
   getCustomServiceBundleItemPrices,
   getServiceBundleItemPrices,
-  portfolioItemPriceHierarchySearch
+  portfolioItemPriceHierarchySearch,
+  portfolioSearchTableDataList,
+  getSearchCustomCoverageForFamily,
+  solutionCoverageDropdownList,
+  customPortfolioSearchTableDataList,
+  customPortfolioItemPriceHierarchySearch
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -565,6 +570,7 @@ export function CreateCustomPortfolio(props) {
   const [searchCustomerResults, setSearchCustomerResults] = useState([]);
 
   const [headerLoading, setHeaderLoading] = useState(false);
+  const [itemListShowLoading, setItemListShowLoading] = useState(false);
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     generalViewOnly: false,
@@ -806,6 +812,9 @@ export function CreateCustomPortfolio(props) {
       inputSearch: "",
       selectOptions: [],
       selectedOption: "",
+      disableNameSelect: true,
+      selectedName: "",
+      portfolioSelectionOptions: [],
     },
   ]);
 
@@ -899,8 +908,10 @@ export function CreateCustomPortfolio(props) {
         setFamilySelectOption([
           { label: "Make", value: "make", id: i },
           { label: "Family", value: "family", id: i },
-          { label: "Model", value: "modelNo", id: i },
-          { label: "Prefix", value: "serialNumberPrefix", id: i },
+          // { label: "Model", value: "modelNo", id: i },
+          // { label: "Prefix", value: "serialNumberPrefix", id: i },
+          { label: "Model", value: "model", id: i },
+          { label: "Prefix", value: "prefix", id: i },
           { label: "Name", value: "name", id: i },
           { label: "Description", value: "description", id: i },
         ])
@@ -909,8 +920,10 @@ export function CreateCustomPortfolio(props) {
         setFamilySelectOption([
           { label: "Make", value: "make", id: i },
           { label: "Family", value: "family", id: i },
-          { label: "Model", value: "modelNo", id: i },
-          { label: "Prefix", value: "serialNumberPrefix", id: i },
+          // { label: "Model", value: "modelNo", id: i },
+          // { label: "Prefix", value: "serialNumberPrefix", id: i },
+          { label: "Model", value: "model", id: i },
+          { label: "Prefix", value: "prefix", id: i },
           { label: "Name", value: "name", id: i },
           { label: "Description", value: "description", id: i },
         ])
@@ -920,16 +933,34 @@ export function CreateCustomPortfolio(props) {
     [],
   );
 
-  const handleFamily = (e, id) => {
+  const handleFamily = async (e, id) => {
     let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", tempArray[id]);
+    // console.log("handleFamily e:", tempArray[id]);
     let obj = tempArray[id];
     obj.selectFamily = e;
+    obj.inputSearch = "";
+    obj.selectOptions = [];
+    obj.selectedName = "";
+    obj.portfolioSelectionOptions = [];
+    obj.disableNameSelect = true;
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
+
+    setBundleServiceItemData([]);
+    setSelectedSearchRowsData([]);
+    setPortfolioItemData([]);
+    setSearchedPortfolioItemsData([]);
   };
 
-  const handleInputSearch = (e, id) => {
+  const handleSelectPortfolioName = (e, id) => {
+    let tempArray = [...querySearchSelector];
+    let obj = tempArray[id];
+    obj.selectedName = e;
+    tempArray[id] = obj;
+    setQuerySearchSelector([...tempArray]);
+  }
+
+  const handleInputSearch = async (e, id) => {
 
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -937,6 +968,9 @@ export function CreateCustomPortfolio(props) {
       obj.selectOptions = [];
       tempArray[id] = obj;
       obj.inputSearch = e.target.value;
+      obj.selectedName = "";
+      obj.portfolioSelectionOptions = [];
+      obj.disableNameSelect = true;
       setQuerySearchSelector([...tempArray]);
       $(`.scrollbar-${id}`).css("display", "none");
     } else {
@@ -945,23 +979,42 @@ export function CreateCustomPortfolio(props) {
         var newArr = [];
         var SearchResArr = [];
 
-        portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
-          .then((res) => {
-            if (res.status === 200) {
-              for (let i = 0; i < res.data.length; i++) {
-                // SearchResArr.push(res.data[i].value)
-                SearchResArr.push(res.data[i].key)
+        if ((tempArray[id].selectFamily.value === "name") || (tempArray[id].selectFamily.value === "description")) {
+          portfolioSearchDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
+            .then((res) => {
+              if (res.status === 200) {
+                for (let i = 0; i < res.data.length; i++) {
+                  // SearchResArr.push(res.data[i].value)
+                  SearchResArr.push(res.data[i].key)
+                }
               }
-            }
-            obj.selectOptions = SearchResArr;
-            tempArray[id] = obj;
-            setQuerySearchSelector([...tempArray]);
-            $(`.scrollbar-${id}`).css("display", "block");
-          })
-          .catch((err) => {
-            console.log("err in api call", err);
-          });
-
+              obj.selectOptions = SearchResArr;
+              obj.selectedName = "";
+              obj.portfolioSelectionOptions = [];
+              obj.disableNameSelect = true;
+              tempArray[id] = obj;
+              setQuerySearchSelector([...tempArray]);
+              $(`.scrollbar-${id}`).css("display", "block");
+            })
+            .catch((err) => {
+              console.log("err in api call", err);
+            });
+        } else {
+          getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+            .then((res) => {
+              console.log("response coverage ", res);
+              obj.selectOptions = res;
+              obj.selectedName = "";
+              obj.portfolioSelectionOptions = [];
+              obj.disableNameSelect = true;
+              tempArray[id] = obj;
+              setQuerySearchSelector([...tempArray]);
+              $(`.scrollbar-${id}`).css("display", "block");
+            })
+            .catch((err) => {
+              console.log("err in api call", err);
+            });
+        }
         // portfolioSearch(`${tempArray[id].selectFamily.value}~${e.target.value}`)
         //   .then((res) => {
         //     if (tempArray[id].selectFamily.value === "make") {
@@ -1007,24 +1060,54 @@ export function CreateCustomPortfolio(props) {
         //     console.log("err in api call", err);
         //   });
       } else if (selectedItemType === "SOLUTION") {
-        var newArr = [];
+        var coverageSearchArr = [];
         var SearchResArr = [];
-        getSearchCustomPortfolioDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
-          .then((res) => {
-            if (res.status === 200) {
-              for (let i = 0; i < res.data.length; i++) {
-                // SearchResArr.push(res.data[i].value)
-                SearchResArr.push(res.data[i].key)
+        if ((tempArray[id].selectFamily.value === "name") || (tempArray[id].selectFamily.value === "description")) {
+          getSearchCustomPortfolioDropdownList(`${tempArray[id].selectFamily.value}/${e.target.value}`)
+            .then((res) => {
+              if (res.status === 200) {
+                for (let i = 0; i < res.data.length; i++) {
+                  // SearchResArr.push(res.data[i].value)
+                  SearchResArr.push(res.data[i].key)
+                }
               }
-            }
-            obj.selectOptions = SearchResArr;
-            tempArray[id] = obj;
-            setQuerySearchSelector([...tempArray]);
-            $(`.scrollbar-${id}`).css("display", "block");
-          })
-          .catch((err) => {
-            console.log("err in api call", err);
-          });
+              obj.selectOptions = SearchResArr;
+              obj.selectedName = "";
+              obj.portfolioSelectionOptions = [];
+              obj.disableNameSelect = true;
+              tempArray[id] = obj;
+              setQuerySearchSelector([...tempArray]);
+              $(`.scrollbar-${id}`).css("display", "block");
+            })
+            .catch((err) => {
+              console.log("err in api call", err);
+            });
+        } else {
+          var familyNameIs = tempArray[id].selectFamily.value === "model" ? "modelNo"
+            : tempArray[id].selectFamily.value === "prefix" ? "serialNumberPrefix"
+              : tempArray[id].selectFamily.value;
+          solutionCoverageDropdownList(`${familyNameIs}/${e.target.value}`)
+            .then((res) => {
+              console.log("response of custom coverage search ========== ", res)
+              if (res.status === 200) {
+                for (let i = 0; i < res.data.length; i++) {
+                  coverageSearchArr.push(res.data[i].value)
+                  // coverageSearchArr.push(res.data[i].key)
+                }
+              }
+              // obj.selectOptions = res;
+              obj.selectOptions = coverageSearchArr;
+              obj.selectedName = "";
+              obj.portfolioSelectionOptions = [];
+              obj.disableNameSelect = true;
+              tempArray[id] = obj;
+              setQuerySearchSelector([...tempArray]);
+              $(`.scrollbar-${id}`).css("display", "block");
+            })
+            .catch((err) => {
+              console.log("err in api call", err);
+            });
+        }
 
         // getSearchCustomPortfolio(`${tempArray[id].selectFamily.value}~${e.target.value}`)
         //   .then((res) => {
@@ -1074,25 +1157,90 @@ export function CreateCustomPortfolio(props) {
         //   });
       }
       obj.inputSearch = e.target.value;
+      obj.selectedName = "";
+      obj.portfolioSelectionOptions = [];
+      obj.disableNameSelect = true;
       setQuerySearchSelector([...tempArray]);
     }
   };
 
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
+  const handleSearchListClick = async (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
     // obj.inputSearch = currentItem;
     // obj.selectedOption = currentItem;
-    obj.inputSearch = (selectedItemType === "PORTFOLIO") ? (
-      (obj1.selectFamily.value === "name") ||
-      (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
-    obj.selectedOption = (selectedItemType === "PORTFOLIO") ?
-      ((obj1.selectFamily.value === "name") ||
-        (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
-    obj.selectedKeyValue = (selectedItemType === "PORTFOLIO") ?
-      ((obj1.selectFamily.value === "name") ||
-        (obj1.selectFamily.value === "description")) ? currentItem.split("#")[0] : currentItem :
-      currentItem.split("#")[0];
+
+    var portfolioNamesDataArray = [];
+    if (selectedItemType === "PORTFOLIO") {
+      if (obj1.selectFamily.value === "name" || obj1.selectFamily.value === "description") {
+        console.log("============ currentItem.split", currentItem);
+        obj.inputSearch = currentItem.split("#")[1];
+        obj.selectedOption = currentItem.split("#")[1];
+        obj.selectedKeyValue = currentItem.split("#")[0];
+        obj.selectedName = "";
+        obj.disableNameSelect = false;
+      } else {
+        obj.inputSearch = currentItem;
+        obj.selectedOption = currentItem;
+        obj.selectedKeyValue = currentItem;
+        obj.selectedName = "";
+        obj.disableNameSelect = false;
+
+        var searchStr = `${obj1.selectFamily.value}=${(currentItem)}`;
+        const portfolioSearchRes = await portfolioSearchTableDataList(searchStr);
+        if (portfolioSearchRes.status === 200) {
+          if (portfolioSearchRes.data.length > 0) {
+            for (let i = 0; i < portfolioSearchRes.data.length; i++) {
+              portfolioNamesDataArray.push({
+                // label: portfolioSearchRes.data[i].name, value: `${portfolioSearchRes.data[i].name}#${portfolioSearchRes.data[i].name}`
+                label: portfolioSearchRes.data[i].name, value: portfolioSearchRes.data[i].portfolioId
+              })
+            }
+          }
+        }
+        obj.portfolioSelectionOptions = portfolioNamesDataArray;
+      }
+    }
+    if (selectedItemType === "SOLUTION") {
+      if (obj1.selectFamily.value === "name" || obj1.selectFamily.value === "description") {
+        obj.inputSearch = currentItem.split("#")[1];
+        obj.selectedOption = currentItem.split("#")[1];
+        obj.selectedKeyValue = currentItem.split("#")[0];
+        obj.selectedName = "";
+        obj.disableNameSelect = false;
+      } else {
+        obj.inputSearch = currentItem;
+        obj.selectedOption = currentItem;
+        obj.selectedKeyValue = currentItem;
+        obj.selectedName = "";
+        obj.disableNameSelect = false;
+
+        var searchStr = `${obj1.selectFamily.value}=${(currentItem)}`;
+        const portfolioSearchRes = await customPortfolioSearchTableDataList(searchStr);
+        if (portfolioSearchRes.status === 200) {
+          if (portfolioSearchRes.data.length > 0) {
+            for (let i = 0; i < portfolioSearchRes.data.length; i++) {
+              portfolioNamesDataArray.push({
+                // label: portfolioSearchRes.data[i].name, value: `${portfolioSearchRes.data[i].name}#${portfolioSearchRes.data[i].name}`
+                label: portfolioSearchRes.data[i].name, value: portfolioSearchRes.data[i].portfolioId
+              })
+            }
+          }
+        }
+        obj.portfolioSelectionOptions = portfolioNamesDataArray;
+      }
+    }
+
+    // obj.inputSearch = (selectedItemType === "PORTFOLIO") ? (
+    //   (obj1.selectFamily.value === "name") ||
+    //   (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+    // obj.selectedOption = (selectedItemType === "PORTFOLIO") ?
+    //   ((obj1.selectFamily.value === "name") ||
+    //     (obj1.selectFamily.value === "description")) ? currentItem.split("#")[1] : currentItem : currentItem.split("#")[1];
+    // obj.selectedKeyValue = (selectedItemType === "PORTFOLIO") ?
+    //   ((obj1.selectFamily.value === "name") ||
+    //     (obj1.selectFamily.value === "description")) ? currentItem.split("#")[0] : currentItem :
+    //   currentItem.split("#")[0];
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
     $(`.scrollbar-${id}`).css("display", "none");
@@ -2071,22 +2219,43 @@ export function CreateCustomPortfolio(props) {
 
         let expandAblePortfolioItems = []
         let expendedBundleServiceItems = [];
+
         if (tempBundleItemsColumnsData.status === 200) {
+
+          // for (let l = 0; l < tempBundleItemsColumnsData.data.length; l++) {
+
+          //   for (let c = 0; c < tempBundleItemsColumnsData.data[l].bundleItems.length; c++) {
+          //     expendedBundleServiceItems.push({ l: tempBundleItemsColumnsData.data[l].bundleItems[c] });
+          //   }
+
+          //   for (let d = 0; d < tempBundleItemsColumnsData.data[l].length; d++) {
+          //     expendedBundleServiceItems.push({ l: tempBundleItemsColumnsData.data[l].serviceItems[d] });
+          //   }
+
+
+          //   expandAblePortfolioItems.push({ ...tempBundleItemsColumnsData.data[l].portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems[l] })
+
+          // }
+
           tempBundleItemsColumnsData.data.map((data, i) => {
+            var newBundleServiceItemsArr = [];
 
             for (let c = 0; c < data.bundleItems.length; c++) {
+              newBundleServiceItemsArr.push(data.bundleItems[c]);
               expendedBundleServiceItems.push(data.bundleItems[c]);
             }
 
             for (let d = 0; d < data.serviceItems.length; d++) {
+              newBundleServiceItemsArr.push(data.serviceItems[d]);
               expendedBundleServiceItems.push(data.serviceItems[d]);
             }
 
-            expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+            // expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+            expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: newBundleServiceItemsArr })
           })
 
           // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
-          setSearchedPortfolioItemsData(expandAblePortfolioItems);
+          setSelectedSearchMasterData(expandAblePortfolioItems)
         }
 
       }
@@ -3358,26 +3527,29 @@ export function CreateCustomPortfolio(props) {
             itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
             model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
             prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
-            type: "MACHINE",
+            type: passItemEditRowData?.customItemHeaderModel?.type,
             additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
-            currency: "",
-            netPrice: "",
-            itemProductHierarchy: "END_PRODUCT",
-            itemHeaderGeographic: "ONSITE",
-            responseTime: "PROACTIVE",
-            usage: "",
+            currency: passItemEditRowData?.customItemHeaderModel?.currency,
+            netPrice: passItemEditRowData?.customItemHeaderModel?.netPrice,
+            itemProductHierarchy: passItemEditRowData?.customItemHeaderModel?.itemProductHierarchy,
+            itemHeaderGeographic: passItemEditRowData?.customItemHeaderModel?.itemHeaderGeographic,
+            responseTime: passItemEditRowData?.customItemHeaderModel?.responseTime,
+            usage: addPortFolioItem.usageType != "" ? addPortFolioItem.usageType?.value : "",
             validFrom: validityData?.fromDate ? validityData?.fromDate : "",
             validTo: validityData?.toDate ? validityData?.toDate : "",
-            estimatedTime: "",
-            servicePrice: 0,
+            estimatedTime: passItemEditRowData?.customItemHeaderModel?.estimatedTime,
+            servicePrice: passItemEditRowData?.customItemHeaderModel?.servicePrice,
             status: "DRAFT",
             componentCode: componentData.componentCode != "" ? componentData.componentCode : "",
             componentDescription: componentData.description != "" ? componentData.description : "",
             serialNumber: componentData.serialNo != "" ? componentData.serialNo : "",
-            itemHeaderStrategy: (addPortFolioItem.strategyTask != "") ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
-            variant: "",
+            itemHeaderStrategy: (addPortFolioItem.strategyTask != "") ?
+              typeof addPortFolioItem?.strategyTask === "object" ?
+                addPortFolioItem.strategyTask?.value : addPortFolioItem?.strategyTask :
+              "EMPTY",
+            variant: passItemEditRowData?.customItemHeaderModel?.variant,
             itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
-              ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+              ? createServiceOrBundle.customerSegment?.value : "",
             jobCode: "",
             preparedBy: bundleOrServiceAdministrative.preparedBy,
             approvedBy: bundleOrServiceAdministrative.approvedBy,
@@ -3390,17 +3562,17 @@ export function CreateCustomPortfolio(props) {
             serviceOptional: false
           },
           customItemBodyModel: {
-            customItemBodyId: 0,
+            customItemBodyId: passItemEditRowData?.customItemBodyModel?.customItemBodyId,
             itemBodyDescription: addPortFolioItem.description,
-            spareParts: ["WITH_SPARE_PARTS"],
-            labours: ["WITH_LABOUR"],
-            miscellaneous: ["LUBRICANTS"],
+            spareParts: passItemEditRowData?.customItemBodyModel?.spareParts,
+            labours: passItemEditRowData?.customItemBodyModel?.labours,
+            miscellaneous: passItemEditRowData?.customItemBodyModel?.miscellaneous,
             taskType: (addPortFolioItem.taskType != "") ? [addPortFolioItem.taskType.value] : ["EMPTY"],
-            solutionCode: "",
-            usageIn: (addPortFolioItem.usageIn != "") ? addPortFolioItem.usageIn.value : "",
-            usage: "",
+            solutionCode: passItemEditRowData?.customItemBodyModel?.solutionCode,
+            usageIn: (addPortFolioItem.usageIn != "") ? addPortFolioItem.usageIn.value : "EMPTY",
+            usage: addPortFolioItem.usageType != "" ? addPortFolioItem.usageType?.value : "",
             year: addPortFolioItem.year != "" ? addPortFolioItem.year?.value : "",
-            avgUsage: 0,
+            avgUsage: passItemEditRowData?.customItemBodyModel?.avgUsage,
             unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
             frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
             customItemPrices: (editAbleItemPriceData?.customItemPriceDataId == "" ||
@@ -3425,7 +3597,8 @@ export function CreateCustomPortfolio(props) {
         const _tempBundleItems = [...tempBundleItems]
         console.log("_tempBundleItems 2574 : ", _tempBundleItems)
         for (let i = 0; i < _tempBundleItems.length; i++) {
-          if (itemUpdateRes.data.customItemId === _tempBundleItems[i].customItemId) {
+          // if (itemUpdateRes.data.customItemId === _tempBundleItems[i].customItemId) {
+          if (itemUpdateRes.data.customItemId === _tempBundleItems[i].itemId) {
             // if (_tempBundleItems[i].associatedServiceOrBundle) {
             //   for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
             //     console.log("tempBundleService2", tempBundleService2)
@@ -3438,7 +3611,13 @@ export function CreateCustomPortfolio(props) {
             //   }
             //   _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService3]
             // } else {
-            _tempBundleItems[i] = { ...itemUpdateRes.data, associatedServiceOrBundle: [...tempBundleService3] }
+            let obj = {
+              ..._tempBundleItems[i],
+              associatedServiceOrBundle:
+                _tempBundleItems[i].associatedServiceOrBundle,
+            };
+            _tempBundleItems[i] = obj;
+            // _tempBundleItems[i] = { ...itemUpdateRes.data, associatedServiceOrBundle: [...tempBundleService3] }
             // }
           }
           setTempBundleItems(_tempBundleItems)
@@ -3466,44 +3645,44 @@ export function CreateCustomPortfolio(props) {
           setCurrentItemId(addPortFolioItem.id)
         }
 
-        if (!bundleServiceNeed) {
-          const _bundleItems = [...bundleItems];
-          // to check if itemEdit or bundle/service edit
-          if (!(editItemShow && passItemEditRowData._bundleId)) {
-            for (let i = 0; i < _bundleItems.length; i++) {
-              if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
-                let obj = {
-                  ...data,
-                  associatedServiceOrBundle:
-                    _bundleItems[i].associatedServiceOrBundle,
-                };
-                _bundleItems[i] = obj;
-                break;
-              }
-            }
-            setBundleItems(_bundleItems);
-          } else {
-            for (let i = 0; i < _bundleItems.length; i++) {
-              if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
-                for (
-                  let j = 0;
-                  j < _bundleItems[i].associatedServiceOrBundle.length;
-                  j++
-                ) {
-                  if (
-                    _bundleItems[i].associatedServiceOrBundle[j].customItemId ==
-                    passItemEditRowData._bundleId
-                  ) {
-                    _bundleItems[i].associatedServiceOrBundle[j] = data;
-                    break;
-                  }
-                }
-                break;
-              }
-            }
-            setBundleItems(_bundleItems);
-          }
-        }
+        // if (!bundleServiceNeed) {
+        //   const _bundleItems = [...bundleItems];
+        //   // to check if itemEdit or bundle/service edit
+        //   if (!(editItemShow && passItemEditRowData._bundleId)) {
+        //     for (let i = 0; i < _bundleItems.length; i++) {
+        //       if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
+        //         let obj = {
+        //           ...data,
+        //           associatedServiceOrBundle:
+        //             _bundleItems[i].associatedServiceOrBundle,
+        //         };
+        //         _bundleItems[i] = obj;
+        //         break;
+        //       }
+        //     }
+        //     setBundleItems(_bundleItems);
+        //   } else {
+        //     for (let i = 0; i < _bundleItems.length; i++) {
+        //       if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
+        //         for (
+        //           let j = 0;
+        //           j < _bundleItems[i].associatedServiceOrBundle.length;
+        //           j++
+        //         ) {
+        //           if (
+        //             _bundleItems[i].associatedServiceOrBundle[j].customItemId ==
+        //             passItemEditRowData._bundleId
+        //           ) {
+        //             _bundleItems[i].associatedServiceOrBundle[j] = data;
+        //             break;
+        //           }
+        //         }
+        //         break;
+        //       }
+        //     }
+        //     setBundleItems(_bundleItems);
+        //   }
+        // }
       }
       if (showAddCustomPortfolioItemModelPopup) {
         setShowAddCustomPortfolioItemModelPopup(false)
@@ -3575,36 +3754,64 @@ export function CreateCustomPortfolio(props) {
       if ((row === null) || (row === undefined)) {
         throw "Something Went Wrong.";
       } else {
+        console.log("selected row =========== ", row);
         const selectedItemData = await getCustomItemDataById(row.itemId);
 
+        console.log("selectedItemData : ============ ", selectedItemData);
+        setTempBundleService3(row.associatedServiceOrBundle)
+        setComponentData({
+          ...componentData,
+          componentCode: selectedItemData.customItemHeaderModel.componentCode,
+          description: selectedItemData.customItemHeaderModel.componentDescription,
+          model: selectedItemData.customItemHeaderModel.model,
+          make: selectedItemData.customItemHeaderModel.itemHeaderMake,
+          serialNo: selectedItemData.customItemHeaderModel.serialNumber,
+        });
+        // data.associatedServiceOrBundle?.map((bundleAndService, i)
+        // setItemModelShow(true);
+        setPassItemEditRowData({ ...selectedItemData, _customItemId: selectedItemData.customItemId });
+
+        setTabs("1");
+        setOpenSearchSolution(false);
+        setCreateNewBundle(false);
+        setShowAddCustomPortfolioItemModelPopup(true)
+        setPortfolioItemDataEditable(true);
+        setOpenAddBundleItemHeader("Add New Portfolio Item");
 
       }
-
-
     } catch (error) {
-
+      // console.log(error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
 
-    console.log("row 1942 : ", row);
-    setTempBundleService3(row.associatedServiceOrBundle)
-    // setComponentData({
-    //   ...componentData,
-    //   componentCode: row.customItemHeaderModel.componentCode,
-    //   description: row.customItemHeaderModel.componentDescription,
-    //   model: row.customItemHeaderModel.model,
-    //   make: row.customItemHeaderModel.itemHeaderMake,
-    //   serialNo: row.customItemHeaderModel.serialNumber,
-    // });
-    // data.associatedServiceOrBundle?.map((bundleAndService, i)
-    setTabs("1");
-    // setItemModelShow(true);
-    setShowAddCustomPortfolioItemModelPopup(true)
-    setPortfolioItemDataEditable(true);
-    setPassItemEditRowData({ ...row, _customItemId: row.customItemId });
+    // console.log("row 1942 : ", row);
+    // setTempBundleService3(row.associatedServiceOrBundle)
+    // // setComponentData({
+    // //   ...componentData,
+    // //   componentCode: row.customItemHeaderModel.componentCode,
+    // //   description: row.customItemHeaderModel.componentDescription,
+    // //   model: row.customItemHeaderModel.model,
+    // //   make: row.customItemHeaderModel.itemHeaderMake,
+    // //   serialNo: row.customItemHeaderModel.serialNumber,
+    // // });
+    // // data.associatedServiceOrBundle?.map((bundleAndService, i)
+    // setTabs("1");
+    // // setItemModelShow(true);
+    // setShowAddCustomPortfolioItemModelPopup(true)
+    // setPortfolioItemDataEditable(true);
+    // setPassItemEditRowData({ ...row, _customItemId: row.customItemId });
 
-    setOpenSearchSolution(false);
-    setCreateNewBundle(false);
-    setOpenAddBundleItemHeader("Add New Portfolio Item");
+    // setOpenSearchSolution(false);
+    // setCreateNewBundle(false);
+    // setOpenAddBundleItemHeader("Add New Portfolio Item");
   }
 
 
@@ -8418,6 +8625,10 @@ export function CreateCustomPortfolio(props) {
     }
     setSelectedSolutionCustomItems(customItemArr)
 
+    if (customItemArr.length > 0) {
+      getCustomBundleServiceItemPriceList(customItemArr, result.customItems, result.customPortfolioId);
+    }
+
     // for Update custom-Coverage in Portfolio Coverage Data BY Id
     for (let k = 0; k < result.customCoverages.length; k++) {
       createdCustomCoverages.push({ coverageId: result.customCoverages[k].customCoverageId })
@@ -8426,16 +8637,76 @@ export function CreateCustomPortfolio(props) {
 
     setSelectedMasterData(result.customCoverages)
     // setCreateCustomCoverageData(result.customCoverages)
-
-
-
-
     // setSelectedCustomItems(result.customItems)
-
     // // setSelectedMasterData(result.coverages);
-
     // setBundleItems(result.customItems)
 
+  }
+
+  const getCustomBundleServiceItemPriceList = async (_itemArrData, itemsArr, portfolioId) => {
+    setItemListShowLoading(true)
+    if (_itemArrData.length > 0) {
+      var tempBundleItemsUrl = _itemArrData.map((data, i) =>
+        `itemIds=${data.customItemId}`
+      ).join('&');
+
+      if ((portfolioId !== "" || (portfolioId !== undefined))) {
+        tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
+      }
+
+      const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+      let expandAblePortfolioItems = []
+      let expendedBundleServiceItems = [];
+      if (tempBundleItemsColumnsData.status === 200) {
+        tempBundleItemsColumnsData.data.map((data, i) => {
+
+          for (let c = 0; c < data.bundleItems.length; c++) {
+            expendedBundleServiceItems.push(data.bundleItems[c]);
+          }
+
+          for (let d = 0; d < data.serviceItems.length; d++) {
+            expendedBundleServiceItems.push(data.serviceItems[d]);
+          }
+
+          expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+        })
+      }
+      setSelectedSearchMasterData(expandAblePortfolioItems);
+
+    }
+
+    // if (itemsArr.length > 0) {
+    //   var tempItemsUrl = itemsArr.map((data, i) =>
+    //     `itemIds=${data.customItemId}`
+    //   ).join('&');
+
+    //   if ((portfolioId !== "" || (portfolioId !== undefined))) {
+    //     tempItemsUrl = tempItemsUrl + "&portfolio_id=" + portfolioId;
+    //   }
+
+    //   const tempItemsColumnsData = await getCustomServiceBundleItemPrices(tempItemsUrl);
+
+    //   let portfolioItemsArr = []
+    //   let bundleServiceItemsExpendedArr = [];
+    //   if (tempItemsColumnsData.status === 200) {
+    //     tempItemsColumnsData.data.map((data, i) => {
+
+    //       for (let c = 0; c < data.bundleItems.length; c++) {
+    //         bundleServiceItemsExpendedArr.push(data.bundleItems[c]);
+    //       }
+
+    //       for (let d = 0; d < data.serviceItems.length; d++) {
+    //         bundleServiceItemsExpendedArr.push(data.serviceItems[d]);
+    //       }
+
+    //       portfolioItemsArr.push({ ...data.portfolioItem, associatedServiceOrBundle: bundleServiceItemsExpendedArr })
+    //     })
+    //   }
+    //   setBundleItems([...portfolioItemsArr]);
+
+    // }
+    setItemListShowLoading(false)
   }
 
   const FunctionForFetchExitingCustomerDetails = async (searchText) => {
@@ -8999,7 +9270,7 @@ export function CreateCustomPortfolio(props) {
 
 
 
-  console.log("======  selectedSearchRowsData  ===== ", selectedSearchMasterData, selectedSearchRowsData)
+  // console.log("======  selectedSearchRowsData  ===== ", selectedSearchMasterData, selectedSearchRowsData)
 
   useEffect(() => {
     if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
@@ -10001,6 +10272,7 @@ export function CreateCustomPortfolio(props) {
         }
       }
 
+      var _selectedSolutionCustomItemsArray = [...selectedSolutionCustomItems];
       const itemRes = await customItemCreation(customItemObj)
       var customItemIds = []
       if (itemRes.status === 200) {
@@ -10009,8 +10281,44 @@ export function CreateCustomPortfolio(props) {
         var arrIndex = _selectedSearchMasterData.findIndex(data => data.itemId === currentExpendableItemRow.itemId)
         _selectedSearchMasterData[arrIndex].associatedServiceOrBundle.push(itemRes.data)
         customItemIds.push({ customItemId: itemRes.data.customItemId })
+        _selectedSolutionCustomItemsArray.push({ customItemId: itemRes.data.customItemId })
       }
     }
+
+    setItemListShowLoading(true);
+
+    if (_selectedSolutionCustomItemsArray.length > 0) {
+      var tempBundleItemsUrl = _selectedSolutionCustomItemsArray.map((data, i) =>
+        `itemIds=${data.customItemId}`
+      ).join('&');
+
+      const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+      let expandAblePortfolioItems = []
+      let expendedBundleServiceItems = [];
+
+      if (tempBundleItemsColumnsData.status === 200) {
+        tempBundleItemsColumnsData.data.map((data, i) => {
+          var newBundleServiceItemsArr = [];
+
+          for (let c = 0; c < data.bundleItems.length; c++) {
+            newBundleServiceItemsArr.push(data.bundleItems[c]);
+            expendedBundleServiceItems.push(data.bundleItems[c]);
+          }
+
+          for (let d = 0; d < data.serviceItems.length; d++) {
+            newBundleServiceItemsArr.push(data.serviceItems[d]);
+            expendedBundleServiceItems.push(data.serviceItems[d]);
+          }
+          expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: newBundleServiceItemsArr })
+        })
+
+        setSelectedSearchMasterData(expandAblePortfolioItems)
+      }
+
+    }
+
+    setItemListShowLoading(false);
     setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemIds]);
     setAddBundleServiceItem3([...addBundleServiceItem3, ...createdNewCustomItems]);
     setAddBundleServiceItem1([])
@@ -11261,7 +11569,7 @@ export function CreateCustomPortfolio(props) {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity ? row?.quantity : 1,
     },
     // {
     //   name: (
@@ -11522,7 +11830,7 @@ export function CreateCustomPortfolio(props) {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity ? row?.quantity : 1,
     },
     {
       name: (
@@ -11716,7 +12024,7 @@ export function CreateCustomPortfolio(props) {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity ? row?.quantity : 1,
     },
     // {
     //   name: (
@@ -15372,6 +15680,41 @@ export function CreateCustomPortfolio(props) {
   }
   const handleContinueOfServiceOrBundle = async () => {
     if (showAddBundleServiceItemsModelPopup) {
+      setItemListShowLoading(true);
+      var _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
+
+      if (_selectedSolutionCustomItems.length > 0) {
+        var tempBundleItemsUrl = _selectedSolutionCustomItems.map((data, i) =>
+          `itemIds=${data.customItemId}`
+        ).join('&');
+
+        const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+        let expandAblePortfolioItems = []
+        let expendedBundleServiceItems = [];
+
+        if (tempBundleItemsColumnsData.status === 200) {
+          tempBundleItemsColumnsData.data.map((data, i) => {
+            var newBundleServiceItemsArr = [];
+
+            for (let c = 0; c < data.bundleItems.length; c++) {
+              newBundleServiceItemsArr.push(data.bundleItems[c]);
+              expendedBundleServiceItems.push(data.bundleItems[c]);
+            }
+
+            for (let d = 0; d < data.serviceItems.length; d++) {
+              newBundleServiceItemsArr.push(data.serviceItems[d]);
+              expendedBundleServiceItems.push(data.serviceItems[d]);
+            }
+            expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: newBundleServiceItemsArr })
+          })
+
+          setSelectedSearchMasterData(expandAblePortfolioItems)
+        }
+
+      }
+
+      setItemListShowLoading(false);
       setShowAddBundleServiceItemsModelPopup(false)
     }
     setTabs("4")
@@ -15412,41 +15755,72 @@ export function CreateCustomPortfolio(props) {
         querySearchSelector[0]?.selectFamily?.value === undefined) {
         throw "Please fill data properly"
       }
-
       var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`;
 
       if (selectedItemType === "PORTFOLIO") {
+
+        var portfolioItemSearchUrl = "";
+
+        // if ((querySearchSelector[0]?.selectFamily?.value !== "name") ||
+        //   (querySearchSelector[0]?.selectFamily?.value !== "description")) {
+        //   if ((querySearchSelector[0]?.selectedName == "" ||
+        //     querySearchSelector[0]?.selectedName?.value == "")) {
+        //     throw "Please fill data properly";
+        //   }
+        // }
+
+        // if (
+        //   ((querySearchSelector[0]?.selectFamily?.value !== "name") ||
+        //     (querySearchSelector[0]?.selectFamily?.value !== "description")) &&
+        //   (querySearchSelector[0]?.selectedName == "" ||
+        //     querySearchSelector[0]?.selectedName?.value == "")) {
+        //   throw "Please fill data properly"
+        // }
 
         // New 13-04-2023
 
         var myArr = [];
         var searchArray = [];
 
+        console.log("querySearchSelector[0] ====== querySearchSelector[0] ===== ", querySearchSelector[0]);
 
-        const portfolioItemHierarchy = await portfolioItemPriceHierarchySearch(querySearchSelector[0]?.selectedKeyValue);
+        if ((querySearchSelector[0]?.selectFamily?.value === "name") ||
+          (querySearchSelector[0]?.selectFamily?.value === "description")) {
+          portfolioItemSearchUrl = querySearchSelector[0]?.selectedKeyValue;
+        } else {
+          if ((querySearchSelector[0]?.selectedName == "" ||
+            querySearchSelector[0]?.selectedName?.value == "")) {
+            throw "Please fill data properly";
+          }
+          portfolioItemSearchUrl = querySearchSelector[0]?.selectedName?.value;
+        }
+
+
+        // const portfolioItemHierarchy = await portfolioItemPriceHierarchySearch(querySearchSelector[0]?.selectedKeyValue);
+        const portfolioItemHierarchy = await portfolioItemPriceHierarchySearch(portfolioItemSearchUrl);
         if (portfolioItemHierarchy.status === 200) {
-          if (portfolioItemHierarchy.data.itemRelations.length > 0) {
+          if ((portfolioItemHierarchy.data.itemRelations !== null) && (portfolioItemHierarchy.data.itemRelations.length > 0)) {
             console.log("length ========== ", portfolioItemHierarchy.data.portfolioId + "&")
-            var portfolioItemSearchUrl = portfolioItemHierarchy.data.portfolioId + "&";
+            var portfolioItemSearchUrl = "portfolio_id=" + portfolioItemHierarchy.data.portfolioId + "&";
             var itemDataArr = [];
             portfolioItemHierarchy.data.itemRelations.map((data, i) => {
               itemDataArr.push(data.portfolioItemId)
               for (let c = 0; c < data.bundles.length; c++) {
                 itemDataArr.push(data.bundles[c]);
               }
-              
+
               for (let d = 0; d < data.services.length; d++) {
                 itemDataArr.push(data.services[d]);
               }
             })
-            
+
             var portfolioItemSearchUrl = portfolioItemSearchUrl + itemDataArr.map((data, i) =>
-            `itemIds=${data}`
+              `itemIds=${data}`
             ).join('&');
-            
+
             console.log("portfolioItemSearchUrl ========== ", portfolioItemSearchUrl);
-            
-            
+
+
             const tempBundleItemsColumnsData = await getServiceBundleItemPrices(portfolioItemSearchUrl);
             let expandAblePortfolioItems = []
             let expendedBundleServiceItems = [];
@@ -15464,7 +15838,8 @@ export function CreateCustomPortfolio(props) {
                 expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems, portfolioId: portfolioItemHierarchy.data.portfolioId })
               })
 
-              setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...expandAblePortfolioItems])
+              // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...expandAblePortfolioItems])
+              setSearchedPortfolioItemsData([...expandAblePortfolioItems])
 
               // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
               // setSearchedPortfolioItemsData(expandAblePortfolioItems);
@@ -15671,119 +16046,178 @@ export function CreateCustomPortfolio(props) {
         // }
       } else if (selectedItemType === "SOLUTION") {
 
-        const portfolioItemsRes = await getSearchCustomPortfolio(searchStr);
+        var portfolioItemSearchUrl = "";
+
+        if ((querySearchSelector[0]?.selectFamily?.value === "name") ||
+          (querySearchSelector[0]?.selectFamily?.value === "description")) {
+          portfolioItemSearchUrl = querySearchSelector[0]?.selectedKeyValue;
+        } else {
+          if ((querySearchSelector[0]?.selectedName == "" ||
+            querySearchSelector[0]?.selectedName?.value == "")) {
+            throw "Please fill data properly";
+          }
+          portfolioItemSearchUrl = querySearchSelector[0]?.selectedName?.value;
+        }
+
+        // const portfolioItemsRes = await getSearchCustomPortfolio(searchStr);
+        const portfolioItemsRes = await customPortfolioItemPriceHierarchySearch(portfolioItemSearchUrl);
         if (portfolioItemsRes.status === 200) {
-          var myArr = [];
-          var result = portfolioItemsRes.data;
-
-          for (let a = 0; a < result.length; a++) {
-            let itemsArrData = [];
-
-
-            if (result[a].customItems.length > 0) {
-              var tempBundleItemsUrl = result[a].customItems.map((data, i) =>
-                `itemIds=${data.customItemId}`
-              ).join('&');
-
-              tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + result[a].customPortfolioId;
-              // if (state && state.type === "fetch") {
-              //   if ((portfolioId !== "" || (portfolioId !== undefined))) {
-              //   }
-              // }
-
-              const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
-
-              let expandAblePortfolioItems = []
-              let expendedBundleServiceItems = [];
-              if (tempBundleItemsColumnsData.status === 200) {
-                tempBundleItemsColumnsData.data.map((data, i) => {
-
-                  for (let c = 0; c < data.bundleItems.length; c++) {
-                    expendedBundleServiceItems.push(data.bundleItems[c]);
-                  }
-
-                  for (let d = 0; d < data.serviceItems.length; d++) {
-                    expendedBundleServiceItems.push(data.serviceItems[d]);
-                  }
-
-                  expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
-                })
-
-                // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
-                // setSearchedPortfolioItemsData(expandAblePortfolioItems);
-                myArr.push(...expandAblePortfolioItems);
+          if ((portfolioItemsRes.data.itemRelations !== null) && (portfolioItemsRes.data.itemRelations.length > 0)) {
+            console.log("length ========== ", portfolioItemsRes.data.portfolioId + "&")
+            var portfolioItemSearchUrl = "portfolio_id=" + portfolioItemsRes.data.portfolioId + "&";
+            var itemDataArr = [];
+            portfolioItemsRes.data.itemRelations.map((data, i) => {
+              itemDataArr.push(data.portfolioItemId)
+              for (let c = 0; c < data.bundles.length; c++) {
+                itemDataArr.push(data.bundles[c]);
               }
 
+              for (let d = 0; d < data.services.length; d++) {
+                itemDataArr.push(data.services[d]);
+              }
+            })
+
+            var portfolioItemSearchUrl = portfolioItemSearchUrl + itemDataArr.map((data, i) =>
+              `itemIds=${data}`
+            ).join('&');
+
+            // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(portfolioItemSearchUrl);
+            const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(portfolioItemSearchUrl);
+            let expandAblePortfolioItems = []
+            let expendedBundleServiceItems = [];
+            if (tempBundleItemsColumnsData.status === 200) {
+              tempBundleItemsColumnsData.data.map((data, i) => {
+
+                for (let c = 0; c < data.bundleItems.length; c++) {
+                  expendedBundleServiceItems.push(data.bundleItems[c]);
+                }
+
+                for (let d = 0; d < data.serviceItems.length; d++) {
+                  expendedBundleServiceItems.push(data.serviceItems[d]);
+                }
+
+                expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems, portfolioId: portfolioItemsRes.data.portfolioId })
+              })
+
+              // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...expandAblePortfolioItems])
+              setSearchedPortfolioItemsData([...expandAblePortfolioItems])
+
+              // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
+              // setSearchedPortfolioItemsData(expandAblePortfolioItems);
+              myArr.push(...expandAblePortfolioItems);
             }
 
-            // if (result[a].customItems.length > 0) {
-
-            //   for (let i = 0; i < result[a].customItems.length; i++) {
-            //     if (result[a].customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
-            //       let myObj = result[a].customItems[i];
-            //       let expendedArrObj = [];
-            //       if (result[a].itemRelations != null) {
-            //         if (result[a].itemRelations.length > 0) {
-            //           for (let b = 0; b < result[a].itemRelations.length; b++) {
-            //             if (result[a].customItems[i].customItemId == result[a].itemRelations[b].portfolioItemId) {
-
-            //               for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
-
-            //                 let bundleObj = result[a].customItems.find((objBundle, i) => {
-            //                   if (objBundle.customItemId == result[a].itemRelations[b].bundles[c]) {
-
-            //                     return objBundle; // stop searching
-            //                   }
-            //                 });
-            //                 expendedArrObj.push(bundleObj);
-            //               }
-
-            //               for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
-
-            //                 let serviceObj = result[a].customItems.find((objService, i) => {
-            //                   if (objService.customItemId == result[a].itemRelations[b].services[d]) {
-
-            //                     return objService; // stop searching
-            //                   }
-            //                 });
-            //                 expendedArrObj.push(serviceObj);
-            //               }
-
-            //             }
-            //             myObj.associatedServiceOrBundle = expendedArrObj;
-            //             itemsArrData.push(myObj);
-            //           }
-            //         } else {
-            //           myObj.associatedServiceOrBundle = expendedArrObj;
-            //           itemsArrData.push(myObj);
-            //         }
-            //       } else {
-            //         myObj.associatedServiceOrBundle = expendedArrObj;
-            //         itemsArrData.push(myObj);
-            //       }
-            //     }
-            //   }
-            //   myArr.push(...itemsArrData)
-            // }
+          } else {
+            throw "Search Solution have not any Item realtion, change the Search criteria";
           }
-          let cloneArr = []
-          console.log("my arrr issssssssssss ", myArr);
-          myArr.map((data, i) => {
-            console.log("data: ", data)
-            // const exist = searchedPortfolioItemsData.some(item =>
-            //   item.customItemId === data.customItemId)
-            const exist = searchedPortfolioItemsData.some(item =>
-              item.itemId === data.itemId)
-            console.log("exist: ", exist)
-            if (!exist) {
-              cloneArr.push(data)
-            }
-          })
-          // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
-          setSearchedPortfolioItemsData(cloneArr)
-        } else {
-          throw "No information is found for your search, change the search criteria";
         }
+        // if (portfolioItemsRes.status === 200) {
+        //   var myArr = [];
+        //   var result = portfolioItemsRes.data;
+
+        //   for (let a = 0; a < result.length; a++) {
+        //     let itemsArrData = [];
+
+
+        //     if (result[a].customItems.length > 0) {
+        //       var tempBundleItemsUrl = result[a].customItems.map((data, i) =>
+        //         `itemIds=${data.customItemId}`
+        //       ).join('&');
+
+        //       tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + result[a].customPortfolioId;
+        //       const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+        //       let expandAblePortfolioItems = []
+        //       let expendedBundleServiceItems = [];
+        //       if (tempBundleItemsColumnsData.status === 200) {
+        //         tempBundleItemsColumnsData.data.map((data, i) => {
+
+        //           for (let c = 0; c < data.bundleItems.length; c++) {
+        //             expendedBundleServiceItems.push(data.bundleItems[c]);
+        //           }
+
+        //           for (let d = 0; d < data.serviceItems.length; d++) {
+        //             expendedBundleServiceItems.push(data.serviceItems[d]);
+        //           }
+
+        //           expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+        //         })
+
+        //         // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
+        //         // setSearchedPortfolioItemsData(expandAblePortfolioItems);
+        //         myArr.push(...expandAblePortfolioItems);
+        //       }
+
+        //     }
+
+        //     // if (result[a].customItems.length > 0) {
+
+        //     //   for (let i = 0; i < result[a].customItems.length; i++) {
+        //     //     if (result[a].customItems[i].customItemHeaderModel.bundleFlag === "PORTFOLIO") {
+        //     //       let myObj = result[a].customItems[i];
+        //     //       let expendedArrObj = [];
+        //     //       if (result[a].itemRelations != null) {
+        //     //         if (result[a].itemRelations.length > 0) {
+        //     //           for (let b = 0; b < result[a].itemRelations.length; b++) {
+        //     //             if (result[a].customItems[i].customItemId == result[a].itemRelations[b].portfolioItemId) {
+
+        //     //               for (let c = 0; c < result[a].itemRelations[b].bundles.length; c++) {
+
+        //     //                 let bundleObj = result[a].customItems.find((objBundle, i) => {
+        //     //                   if (objBundle.customItemId == result[a].itemRelations[b].bundles[c]) {
+
+        //     //                     return objBundle; // stop searching
+        //     //                   }
+        //     //                 });
+        //     //                 expendedArrObj.push(bundleObj);
+        //     //               }
+
+        //     //               for (let d = 0; d < result[a].itemRelations[b].services.length; d++) {
+
+        //     //                 let serviceObj = result[a].customItems.find((objService, i) => {
+        //     //                   if (objService.customItemId == result[a].itemRelations[b].services[d]) {
+
+        //     //                     return objService; // stop searching
+        //     //                   }
+        //     //                 });
+        //     //                 expendedArrObj.push(serviceObj);
+        //     //               }
+
+        //     //             }
+        //     //             myObj.associatedServiceOrBundle = expendedArrObj;
+        //     //             itemsArrData.push(myObj);
+        //     //           }
+        //     //         } else {
+        //     //           myObj.associatedServiceOrBundle = expendedArrObj;
+        //     //           itemsArrData.push(myObj);
+        //     //         }
+        //     //       } else {
+        //     //         myObj.associatedServiceOrBundle = expendedArrObj;
+        //     //         itemsArrData.push(myObj);
+        //     //       }
+        //     //     }
+        //     //   }
+        //     //   myArr.push(...itemsArrData)
+        //     // }
+        //   }
+        //   let cloneArr = []
+        //   console.log("my arrr issssssssssss ", myArr);
+        //   myArr.map((data, i) => {
+        //     console.log("data: ", data)
+        //     // const exist = searchedPortfolioItemsData.some(item =>
+        //     //   item.customItemId === data.customItemId)
+        //     const exist = searchedPortfolioItemsData.some(item =>
+        //       item.itemId === data.itemId)
+        //     console.log("exist: ", exist)
+        //     if (!exist) {
+        //       cloneArr.push(data)
+        //     }
+        //   })
+        //   // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, ...cloneArr])
+        //   setSearchedPortfolioItemsData(cloneArr)
+        // } else {
+        //   throw "No information is found for your search, change the search criteria";
+        // }
 
       }
 
@@ -18314,7 +18748,9 @@ onChange={handleAdministrativreChange}
           {headerLoading ? <></> : <>
             <div className="card mt-4 px-4">
               {headerLoading ? <></> :
-                <>
+                itemListShowLoading ? (
+                  <LoadingProgress />
+                ) : <>
                   <div className="d-flex align-items-center mt-3">
                     <div className="d-flex align-items-center mr-4">
                       <h5 className="mb-0 mr-3 text-black">
@@ -18329,8 +18765,8 @@ onChange={handleAdministrativreChange}
                         </a>
                       </div>
                     </div>
-                    <div class="mr-3 input-group icons border-radius-10 border">
-                      <div class="input-group-prepend bg-white border-radius-10">
+                    <div class="mr-3 input-group icons border" style={{ borderRadius: '5px' }}>
+                      <div class="input-group-prepend bg-white" style={{ borderRadius: '5px' }}>
                         <span class=" bg-white input-group-text border-0 pr-0 " id="basic-addon1">
                           <SearchIcon /></span>
                       </div>
@@ -18380,7 +18816,9 @@ onChange={handleAdministrativreChange}
                                     value={obj.selectFamily}
                                   />
                                 </div>
-                                <div className="customselectsearch">
+                                <div className={`customselectsearch  ${obj.selectFamily !== "" ?
+                                  ((obj.selectFamily.value === "name") ||
+                                    (obj.selectFamily.value === "description")) ? "family-search" : "family-search-add" : "family-search"}`} >
                                   <input
                                     className="custom-input-sleact pr-1"
                                     type="text"
@@ -18410,10 +18848,14 @@ onChange={handleAdministrativreChange}
                                             )
                                           }
                                         >
-                                          {(selectedItemType === "PORTFOLIO") ? ((obj.selectFamily.value === "name") ||
+                                          {((obj.selectFamily.value === "name") ||
+                                            (obj.selectFamily.value === "description")) ? currentItem.split("#")[1] :
+                                            currentItem
+                                          }
+                                          {/* {(selectedItemType === "PORTFOLIO") ? ((obj.selectFamily.value === "name") ||
                                             (obj.selectFamily.value === "description")) ? currentItem.split("#")[1] :
                                             currentItem : currentItem.split("#")[1]
-                                          }
+                                          } */}
                                           {/* {currentItem} */}
                                         </li>
                                       ))}
@@ -18421,6 +18863,26 @@ onChange={handleAdministrativreChange}
                                   }
 
                                 </div>
+
+                                {obj.selectFamily !== "" ?
+                                  ((obj.selectFamily.value === "name") ||
+                                    (obj.selectFamily.value === "description")) ? <></>
+                                    : <>
+                                      <div className="name-select-portfolio" >
+                                        <Select
+                                          // isClearable={true}
+                                          options={obj.portfolioSelectionOptions}
+                                          onChange={(e) => handleSelectPortfolioName(e, i)}
+                                          className="color-dropdown"
+                                          placeholder="Select name"
+                                          value={obj.selectedName}
+                                          disabled={obj.disableNameSelect}
+                                          isDisabled={obj.disableNameSelect}
+                                        />
+                                      </div>
+                                    </> :
+                                  <></>
+                                }
                                 {(querySearchSelector.length - 1) === i ? <>
                                   <Link
                                     to={undefined}
@@ -20188,7 +20650,7 @@ onChange={handleAdministrativreChange}
                   pagination
                 />
                 {/* {addBundleServiceItem2.length > 0 && ( */}
-                <div className="row mt-5" style={{ justifyContent: "right" }}>
+                <div className="row mt-5 mb-3" style={{ justifyContent: "right" }}>
                   <button
                     type="button"
                     // className="btn btn-light"
@@ -25486,6 +25948,6 @@ onChange={handleAdministrativreChange}
           </div>
         </div>
       </div>
-    </PortfolioContext.Provider>
+    </PortfolioContext.Provider >
   );
 }

@@ -4021,7 +4021,7 @@ export function CreatePortfolio(props) {
               spareParts: passItemEditRowData?.itemBodyModel?.spareParts,
               labours: passItemEditRowData?.itemBodyModel?.labours,
               miscellaneous: passItemEditRowData?.itemBodyModel?.miscellaneous,
-              taskType: addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["PM1"],
+              taskType: addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["EMPTY"],
               solutionCode: passItemEditRowData?.itemBodyModel?.solutionCode,
               usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "EMPTY",
               usage: addPortFolioItem.usageType != "" ? addPortFolioItem.usageType?.value : "",
