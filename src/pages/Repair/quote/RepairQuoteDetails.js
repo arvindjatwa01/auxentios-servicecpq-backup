@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Modal } from "react-bootstrap";
+import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import penIcon from "../../../assets/images/pen.png";
@@ -11,6 +11,7 @@ import {
   FONT_STYLE,
   FONT_STYLE_SELECT,
   FONT_STYLE_UNIT_SELECT,
+  GRID_STYLE,
   OPTIONS_LEADTIME_UNIT,
 } from "../CONSTANTS";
 import Tab from "@mui/material/Tab";
@@ -63,8 +64,12 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import {
   addQuoteItem,
+  addQuotePayer,
+  createQuoteVersion,
   fetchQuoteDetails,
+  fetchQuoteSummary,
   fetchQuoteVersions,
+  updatePayerData,
   updateQuoteHeader,
   updateQuoteItem,
 } from "services/repairQuoteServices";
@@ -77,7 +82,12 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import RepairQuoteItemModal from "../components/RepairQuoteItem";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import { useAppSelector } from "app/hooks";
+import ModalCreateVersion from "../components/ModalCreateVersion";
+import QuoteSummary from "../components/QuoteSummary";
+import { DataGrid } from "@mui/x-data-grid";
+import FullFeaturedCrudGrid from "../components/DataGridNew";
 const customStyles = {
   rows: {
     style: {
@@ -98,7 +108,7 @@ const customStyles = {
       paddingLeft: "8px", // override the cell padding for data cells
       paddingRight: "8px",
       borderRight: "1px solid rgba(0,0,0,.12)",
-      fontSize: '12px'
+      fontSize: "12px",
     },
   },
 };
@@ -107,6 +117,7 @@ const RepairQuoteDetails = (props) => {
   const history = useHistory();
   const { state } = props.location;
   const [quoteId, setQuoteId] = useState("");
+  const [versionOpen, setVersionOpen] = useState(false);
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
     // source: "",
@@ -152,6 +163,7 @@ const RepairQuoteDetails = (props) => {
     if (state) {
       setQuoteId(state.quoteId);
       fetchAllDetails(state.quoteId);
+      fetchSummaryDetails(state.quoteId);
     }
     // setActiveElement({...activeElement, builderType: state.builderType })
   }, []);
@@ -172,29 +184,28 @@ const RepairQuoteDetails = (props) => {
     value: 1,
   });
   const initialQuoteItem = {
-    componentCode: '',
-description: '',
-discount: 0,
-extendedPrice: 0,
-itemNo: '',
-labourPrice: 0,
-miscPrice: 0,
-operation: '',
-partListId: '',
-partsPrice: '',
-payerType: '',
-totalPrice: 0,
-// type: '',
-// unit: ''
-};
+    componentCode: "",
+    description: "",
+    discount: 0,
+    extendedPrice: 0,
+    itemNo: "",
+    labourPrice: 0,
+    miscPrice: 0,
+    operation: "",
+    partListId: "",
+    partsPrice: "",
+    payerType: "",
+    totalPrice: 0,
+    // type: '',
+    // unit: ''
+  };
   const [quoteItemOpen, setQuoteItemOpen] = useState(false);
-  const [quoteItemModalTitle, setQuoteItemModalTitle] = useState("Add New Quote Item");
+  const [quoteItemModalTitle, setQuoteItemModalTitle] =
+    useState("Add New Quote Item");
   const [quoteItem, setQuoteItem] = useState(initialQuoteItem);
   const handleVersion = (e) => {
     setSelectedVersion(e);
-    // fetchBuilderVersionDet(builderId, e.value).then((result) => {
-    //   populateHeader(result);
-    // });
+    fetchAllDetails(e.quoteId);
   };
   const fetchAllDetails = async (quoteId) => {
     // var versionHistoryData = {
@@ -223,25 +234,6 @@ totalPrice: 0,
     label: "Draft",
   });
   const quoteItemsColumns = [
-    // {
-    //     name: (
-    //         <>
-    //             <div>Select</div>
-    //         </>
-    //     ),
-    //     // selector: (row) => row.check1,
-    //     wrap: true,
-    //     sortable: true,
-    //     maxWidth: "50px",
-    //     minWidth: "50px",
-    //     cell: (row) => (
-    //         <Checkbox
-    //             className="text-black"
-    //         // checked={row.check1}
-    //         // onChange={(e) => handleCheckboxData(e, row)}
-    //         />
-    //     ),
-    // },
     {
       name: (
         <>
@@ -389,7 +381,7 @@ totalPrice: 0,
           <Tooltip
             title="Edit"
             className="mr-2 cursor"
-            onClick={() => openQuoteItemModal(row, 'existing')}
+            onClick={() => openQuoteItemModal(row, "existing")}
           >
             <img className="m-1" src={penIcon} alt="Edit" />
           </Tooltip>
@@ -411,7 +403,7 @@ totalPrice: 0,
   });
   const populateHeader = (result) => {
     setSavedQuoteDetails(result);
-    console.log("Header Details", result);
+    // console.log("Header Details", result);
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
       machineViewOnly: result.serialNumber ? true : false,
@@ -426,6 +418,7 @@ totalPrice: 0,
       shippingViewOnly: result.leadTime ? true : false,
     });
     setQuoteId(result.quoteId);
+    setPayers(result.payers);
     setSelQuoteStatus(
       statusOptions.filter((x) => x.value === result.status)[0]
     );
@@ -436,13 +429,9 @@ totalPrice: 0,
         quoteId: versionInd.quoteId,
         quoteName: versionInd.quoteName,
       }));
-      console.log("versions", versionResult);
+      // console.log("versions", versionResult);
       if (versionResult) setQuoteVersionOptions(versionResult);
     });
-    // let versions = result.versionList?.map((versionNo) => ({
-    //   value: versionNo,
-    //   label: "Version " + versionNo,
-    // }));
 
     setSelectedVersion({
       label: "Version " + result.version?.substring(8),
@@ -892,55 +881,6 @@ totalPrice: 0,
       format: (row) => row.sbQuoteId,
     },
   ];
-  const payerRows = [
-    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
-    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
-    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
-  ];
-  const payerColumns = [
-    {
-      name: (
-        <>
-          <div>Payers</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Billing Split %</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Price $</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-  ];
-
-  const handleGeneralDetailsDataChange = (e) => {
-    var value = e.target.value;
-    var name = e.target.name;
-    setGeneralDetails({
-      ...machineData,
-      [name]: value,
-    });
-  };
 
   function getStyles(name, personName, theme) {
     return {
@@ -951,21 +891,22 @@ totalPrice: 0,
     };
   }
 
-  const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
+const createQuotePayer = async(data) => {
+  await addQuotePayer(quoteId, {...data, payerId: undefined, isNew: undefined}).then(payer => {
+    handleSnack('success', 'Payer has been added!')
+  }).catch(e => {
+    handleSnack('error', 'Payer details could not be added');
+  })
+}
+const updateQuotePayer = async (payerQuoteId, data) => {
 
-  const handleChange1 = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-
-  const makeHeaderEditable = () => {
-    console.log(value);
+    await updatePayerData(payerQuoteId, data).then(savedPayer => {
+      handleSnack('success', 'Payer has been updated!')
+    }).catch(e => {
+      handleSnack('error', 'Payer details could not be updated');
+    })
+}
+   const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
       setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
     else if (value === "machine" && viewOnlyTab.machineViewOnly)
@@ -1008,7 +949,7 @@ totalPrice: 0,
   const openQuoteItemModal = (row, operation) => {
     // console.log(row);
     setQuoteItem(row);
-    if(operation === 'existing'){
+    if (operation === "existing") {
       setQuoteItemModalTitle(
         row?.component + " | " + row?.operation + " | " + row?.description
       );
@@ -1021,20 +962,9 @@ totalPrice: 0,
     setQuoteItemOpen(false);
     setQuoteItem(initialQuoteItem);
     setQuoteItemViewOnly(false);
-    setQuoteItemModalTitle('Add New Quote Item');
+    setQuoteItemModalTitle("Add New Quote Item");
   };
-  const names = [
-    "Oliver Hansen",
-    "Van Henry",
-    "April Tucker",
-    "Ralph Hubbard",
-    "Omar Alexander",
-    "Carlos Abbott",
-    "Miriam Wagner",
-    "Bradley Wilkerson",
-    "Virginia Andrews",
-    "Kelly Snyder",
-  ];
+
 
   const [value, setValue] = React.useState("customer");
   const steps = [
@@ -1083,8 +1013,7 @@ totalPrice: 0,
         });
     }
   };
-  const activityOptions = ["None", "Atria", "Callisto"];
-
+  const [payers, setPayers] = useState([]);
   const handleResetData = (action) => {
     if (action === "RESET") {
       value === "customer" && populateCustomerData(savedQuoteDetails);
@@ -1227,8 +1156,11 @@ totalPrice: 0,
   };
 
   const handleQuoteItemUpdate = async () => {
-    if(quoteItemModalTitle !== 'Add New Quote Item'){
-      await updateQuoteItem(quoteItem.rbQuoteId, {...quoteItem, payerType: quoteItem.payerType?.value})
+    if (quoteItemModalTitle !== "Add New Quote Item") {
+      await updateQuoteItem(quoteItem.rbQuoteId, {
+        ...quoteItem,
+        payerType: quoteItem.payerType?.value,
+      })
         .then((quoteItem) => {
           fetchAllDetails(quoteId);
           handleSnack("success", "Quote item has been updated successfully!");
@@ -1237,18 +1169,63 @@ totalPrice: 0,
           console.log(err);
           handleSnack("error", "Item update failed!");
         });
-      } else {
-        await addQuoteItem({...quoteItem, payerType: quoteItem.payerType?.value})
-          .then(quoteItem => {
-            fetchAllDetails(quoteId);
+    } else {
+      console.log(quoteItem);
+      await addQuoteItem(quoteId, {
+        ...quoteItem,
+        itemType:"RB_ITEM",
+        payerType: quoteItem.payerType?.value,
+      })
+        .then((quoteItem) => {
+          fetchAllDetails(quoteId);
           handleSnack("success", "Quote item has been added successfully!");
         })
         .catch((err) => {
           console.log(err);
           handleSnack("error", "Add item failed!");
         });
-      }
+    }
   };
+  const createVersion = async () => {
+    await createQuoteVersion(
+      savedQuoteDetails.quoteName,
+      savedQuoteDetails.version,
+      savedQuoteDetails.version === "VERSION_1"
+        ? "VERSION_2"
+        : savedQuoteDetails.version === "VERSION_2"
+        ? "VERSION_3"
+        : ""
+    )
+      .then((result) => {
+        setVersionOpen(false);
+        setQuoteId(result.quoteId);
+        fetchAllDetails(result.id);
+        // setVersionDescription("");
+        handleSnack(
+          "success",
+          `Version ${result.version} created successfully`
+        );
+      })
+      .catch((err) => {
+        setVersionOpen(false);
+
+        if (err.message === "Not Allowed")
+          handleSnack("warning", ERROR_MAX_VERSIONS);
+        else
+          handleSnack("error", "Error occurred while creating builder version");
+        // setVersionDescription("");
+      });
+  };
+  const [quoteSummary, setQuoteSummary] = useState("");
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const fetchSummaryDetails = async (selectedQuoteId) => {
+    console.log("ABCD",selectedQuoteId);
+    await fetchQuoteSummary(selectedQuoteId).then(summary => {
+      setQuoteSummary(summary);
+    }).catch(e => {
+      console.log(e);
+    })
+  }
   return (
     <>
       <CustomizedSnackbar
@@ -1256,6 +1233,19 @@ totalPrice: 0,
         open={openSnack}
         severity={severity}
         message={snackMessage}
+      />
+      <ModalCreateVersion
+        versionOpen={versionOpen}
+        handleCloseVersion={() => setVersionOpen(false)}
+        message="Another version of this quote will be created."
+        handleCreateVersion={createVersion}
+        type={"quote"}
+        existingVersion={savedQuoteDetails.version}
+      />
+      <QuoteSummary
+        summaryOpen={summaryOpen}
+        handleSummaryClose={()=>setSummaryOpen(false)}
+        summary={quoteSummary}
       />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
@@ -1300,14 +1290,21 @@ totalPrice: 0,
               <a href="#" className="ml-3 font-size-14" title="Copy">
                 <img src={copyIcon}></img>
               </a>
-              <a href="#" className="ml-2">
-                <MuiMenuComponent options={activityOptions} />
-              </a>
+              <DropdownButton
+                className="customDropdown ml-2"
+                id="dropdown-item-button"
+              >
+                <Dropdown.Item as="button" onClick={() => setVersionOpen(true)}>
+                  New Versions
+                </Dropdown.Item>
+                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                <Dropdown.Item as="button">Review</Dropdown.Item>
+              </DropdownButton>
             </div>
           </div>
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
-              <div className="" style={{ display: "contents" }}>
+              <div className="row col-md-11">
                 <span
                   className="mr-3 ml-2 text-white"
                   style={{ fontSize: "20px" }}
@@ -1335,6 +1332,13 @@ totalPrice: 0,
                         <ReviewAddIcon />
                       </Tooltip>
                     </div> */}
+              </div>
+              <div className="col-md-1 text-right">
+              <div className="btn-sm cursor text-white">
+                  <Tooltip title="Summary">
+                    <TextSnippetIcon onClick={() => setSummaryOpen(true)} />
+                  </Tooltip>
+                </div>
               </div>
               {/* <div className="hr"></div> */}
             </h5>
@@ -1781,7 +1785,6 @@ totalPrice: 0,
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               PREPARED BY
                             </label>
@@ -1791,7 +1794,8 @@ totalPrice: 0,
                                 className="form-control border-radius-10 text-primary"
                                 name="preparedBy"
                                 value={estimateDetails.preparedBy}
-                                onChange={handleEstimateDetailsDataChange}
+                                onChange={e => setEstimateDetails({
+                                  ...estimateDetails, preparedBy: e.target.value})}
                               />
                             </div>
                           </div>
@@ -1805,14 +1809,14 @@ totalPrice: 0,
                                 className="form-control border-radius-10 text-primary"
                                 name="approvedBy"
                                 value={estimateDetails.approvedBy}
-                                onChange={handleEstimateDetailsDataChange}
+                                onChange={e => setEstimateDetails({
+                                  ...estimateDetails, approvedBy: e.target.value})}
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               PREPARED ON
                             </label>
@@ -1840,7 +1844,6 @@ totalPrice: 0,
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               REVISED BY
                             </label>
@@ -1850,14 +1853,14 @@ totalPrice: 0,
                                 className="form-control border-radius-10 text-primary"
                                 name="revisedBy"
                                 value={estimateDetails.revisedBy}
-                                onChange={handleEstimateDetailsDataChange}
+                                onChange={e => setEstimateDetails({
+                                  ...estimateDetails, revisedBy: e.target.value})}
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               REVISED ON
                             </label>
@@ -1885,7 +1888,6 @@ totalPrice: 0,
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               SALES OFFICE / BRANCH
                             </label>
@@ -1980,7 +1982,6 @@ totalPrice: 0,
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               QUOTE DATE
                             </label>
@@ -2014,9 +2015,6 @@ totalPrice: 0,
                                 />
                               </LocalizationProvider>
                             </div>
-                            {/* <div className="form-group w-100">
-                                                <input type="email" className="form-control border-radius-10 text-primary" id="exampleInputEmail1"   />
-                                            </div> */}
                           </div>
                           <div className="col-md-4 col-sm-4">
                             <label className="text-light-dark font-size-12 font-weight-500">
@@ -2035,7 +2033,6 @@ totalPrice: 0,
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               QUOTE DESCRIPTION
                             </label>
@@ -2045,14 +2042,13 @@ totalPrice: 0,
                                 className="form-control border-radius-10 text-primary"
                                 name="description"
                                 value={generalDetails.description}
-                                onChange={handleGeneralDetailsDataChange}
+                                onChange={(e)=> setGeneralDetails({...generalDetails, description: e.target.value})}
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               REFERENCE
                             </label>
@@ -2061,7 +2057,7 @@ totalPrice: 0,
                                 className="form-control border-radius-10 text-primary"
                                 name="reference"
                                 value={generalDetails.reference}
-                                onChange={handleGeneralDetailsDataChange}
+                                onChange={(e)=> setGeneralDetails({...generalDetails, reference: e.target.value})}
                               />
                             </div>
                           </div>
@@ -2094,9 +2090,7 @@ totalPrice: 0,
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
                                 disabled
-                                value={parseFloat(
-                                  selectedVersion.value
-                                ).toFixed(1)}
+                                value={generalDetails.version}
                               />
                             </div>
                           </div>
@@ -2422,21 +2416,12 @@ totalPrice: 0,
                           />
                         </div>
                         <hr />
-                        <a href="#" className="btn bg-primary text-white">
+                        {/* <a href="#" className="btn bg-primary text-white">
                           <AddIcon className="mr-2" />
                           ADD PAYER
-                        </a>
-                        <div className="mt-3">
-                          <DataTable
-                            className=""
-                            title=""
-                            columns={payerColumns}
-                            data={payerRows}
-                            customStyles={customStyles}
-                            pagination
-                            // onRowClicked={(e) => handleRowClick(e)}
-                            selectableRows
-                          />
+                        </a> */}
+                        <div className="mt-3">                         
+                          <FullFeaturedCrudGrid dataRows={payers} updateQuotePayer={updateQuotePayer} createQuotePayer={createQuotePayer}/>    
                         </div>
                         <div className="mt-3 d-flex align-items-center justify-content-between">
                           <h6 className="mb-0 font-size-16 font-weight-600">
@@ -2506,8 +2491,7 @@ totalPrice: 0,
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                           >
                               DELIVERY TYPE
                             </label>
                             <div className="form-group w-100">
@@ -2527,7 +2511,6 @@ totalPrice: 0,
                           <div className="col-md-4 col-sm-4">
                             <label
                               className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
                             >
                               DELIVERY PRIORITY
                             </label>
@@ -2670,18 +2653,22 @@ totalPrice: 0,
             setQuoteItemViewOnly={setQuoteItemViewOnly}
             handleSnack={handleSnack}
           />
-       
+
           <div className="card px-4 pb-4 mt-5 pt-4">
-          <div
-                          className="row mb-3 pr-3"
-                          style={{ justifyContent: "right" }}
-                        ><button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            onClick={() => openQuoteItemModal("","new")}
-                          >
-                            + Quote Item
-                          </button></div>
+            <div className="row mb-3">
+              <div className="col-md-10 text-black">Quote Items</div>
+              <div className="col-md-2">
+                <div className="text-right" style={{ justifyContent: "right" }}>
+                  <button
+                    type="button"
+                    className="btn btn-light bg-primary text-white"
+                    onClick={() => openQuoteItemModal("", "new")}
+                  >
+                    + Quote Item
+                  </button>
+                </div>
+              </div>
+            </div>
             <div
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}

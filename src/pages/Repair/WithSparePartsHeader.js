@@ -936,6 +936,7 @@ function WithSparePartsHeader(props) {
       <ModalCreateVersion
         versionOpen={versionOpen}
         handleCloseVersion={() => setVersionOpen(false)}
+        message="Another version of this builder will be created."
         handleCreateVersion={createVersion}
         description={versionDescription}
         setDescription={setVersionDescription}

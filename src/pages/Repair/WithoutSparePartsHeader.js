@@ -826,6 +826,7 @@ function WithoutSparePartsHeader(props) {
         versionOpen={versionOpen}
         handleCloseVersion={() => setVersionOpen(false)}
         handleCreateVersion={createVersion}
+        message="Another version of this builder will be created."
         description={versionDescription}
         setDescription={setVersionDescription}
       />

@@ -160,9 +160,15 @@ const RepairQuoteItemModal = (props) => {
                     </label>
                     <input
                       type="text"
-                      disabled
+                      // disabled
                       className="form-control border-radius-10 text-primary"
                       value={props.quoteItem.partlistId}
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          partlistId: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -173,12 +179,18 @@ const RepairQuoteItemModal = (props) => {
                     </label>
                     <input
                       type="text"
-                      disabled
+                      // disabled
                       className="form-control border-radius-10 text-primary"
                       value={
                         props.quoteItem.partsPrice
                           ? parseFloat(props.quoteItem.partsPrice).toFixed(2)
                           : 0.0
+                      }
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          partsPrice: e.target.value,
+                        })
                       }
                     />
 
@@ -198,7 +210,12 @@ const RepairQuoteItemModal = (props) => {
                           ? parseFloat(props.quoteItem.labourPrice).toFixed(2)
                           : 0.0
                       }
-                      disabled
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          labourPrice: e.target.value,
+                        })
+                      }
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -216,7 +233,12 @@ const RepairQuoteItemModal = (props) => {
                           ? parseFloat(props.quoteItem.miscPrice).toFixed(2)
                           : 0.0
                       }
-                      disabled
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          miscPrice: e.target.value,
+                        })
+                      }
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -234,7 +256,12 @@ const RepairQuoteItemModal = (props) => {
                           ? parseFloat(props.quoteItem.totalPrice).toFixed(2)
                           : 0.0
                       }
-                      disabled
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          netPrice: e.target.value,
+                        })
+                      }
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -272,7 +299,12 @@ const RepairQuoteItemModal = (props) => {
                           ? parseFloat(props.quoteItem.discount).toFixed(2)
                           : 0.0
                       }
-                      disabled
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          discount: e.target.value,
+                        })
+                      }
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -332,7 +364,7 @@ const RepairQuoteItemModal = (props) => {
               <button
                 type="button"
                 className="btn btn-light bg-primary text-white"
-                onClick={() => props.handleQuoteItemUpdate(props.quoteItem)}
+                onClick={() => props.handleQuoteItemUpdate()}
                 // disabled={
                 //   !props.quoteItem.partType ||
                 //   !props.quoteItem.partNumber ||

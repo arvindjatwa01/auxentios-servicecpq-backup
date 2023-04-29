@@ -62,7 +62,9 @@ const RecentRepairQuote = () => {
         setRecentQuotesLoading(false);
       })
       .catch((e) => {
-        handleSnack("error", "Error occurred while fetching repair quotes!");
+        // console.log(e);
+        if(e.message !== "Quote(s) is/are not found")
+          handleSnack("error", "Error occurred while fetching repair quotes!");
         setRecentQuotesLoading(false);
       });
   };

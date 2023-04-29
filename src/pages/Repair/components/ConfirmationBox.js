@@ -1,5 +1,5 @@
-const { Dialog, DialogTitle, DialogContent, DialogActions } = require("@material-ui/core");
-const { Button } = require("react-bootstrap");
+import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Button } from "react-bootstrap";
 
 export const RenderConfirmDialog = (props) => {
 

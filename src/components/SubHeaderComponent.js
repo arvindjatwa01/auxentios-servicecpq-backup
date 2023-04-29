@@ -29,6 +29,7 @@ import Clock from "react-live-clock";
 
 import { useLocation } from "react-router-dom";
 import { getAuditRestServiceData } from "./../services/index";
+import { Tooltip } from "@mui/material";
 
 export function SubHeaderComponent(props) {
   // const dispatch = useDispatch();
@@ -933,71 +934,38 @@ export function SubHeaderComponent(props) {
       <div>
         {["right"].map((anchor) => (
           <React.Fragment key={anchor}>
-            <div className="headerbottom">
+            <div className="headerbottom" style={{width: "100%", marginLeft: 0}}>
               <div className="header-content clearfix">
                 <div className="row h-100">
                   <div className="col-6 h-100">
-                    <ul className=" ">
-                      {/* <li className="cursor"><a href="#" data-toggle="modal" data-target="#Versionhistory"><img src={repeateIcon}></img></a></li> */}
-                      {/* <li className="cursor"><a href="#" onClick={toggleDrawer(anchor, true, false)}><img src={repeateIcon}></img></a></li>
-                      <li className="cursor"><a href="#" data-original-title="" title="" onClick={toggleDrawer(anchor, true, true)}><img src={peopleIcon}></img></a></li> */}
-                      <li className="cursor mr-2 ">
-                        <a href="#" onClick={toggleDrawer(anchor, true, false)}>
-                          <span className="mr-2 version-history">
+                    <ul className="justify-content-start">
+                      <li className="cursor mr-2">
+                        <a
+                          href="#"
+                          data-original-title=""
+                          title=""
+                        >                        
+                          <span className="mr-2 collab">
                             <svg
-                              style={{ width: "20px" }}
-                              id="Layer_1"
+                              style={{width: '27px'}}
+                              viewBox="0 0 350 280"
+                              fill="none"
                               xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 176.44455 158.21163"
                             >
-                              <defs></defs>
-                              <g>
-                                <path
-                                  class="cls-2"
-                                  d="M50.15975,122.41183H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
-                                />
-                                <path
-                                  class="cls-2"
-                                  d="M50.15975,97.40093H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
-                                />
-                                <path
-                                  class="cls-2"
-                                  d="M50.15975,72.39003H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
-                                />
-                                <path
-                                  class="cls-2"
-                                  d="M50.15975,47.378H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
-                                />
-                              </g>
                               <path
-                                class="cls-2"
-                                d="M114.15138,158.21163H12.99734c-7.16697,0-12.99734-5.8315-12.99734-12.99848V12.99848C0,5.8315,5.83037,0,12.99734,0H114.15138c7.16697,0,12.99734,5.8315,12.99734,12.99848V145.21315c0,7.16697-5.83037,12.99848-12.99734,12.99848ZM12.99734,11.57933c-.78251,0-1.41802,.63664-1.41802,1.41915V145.21315c0,.78251,.63551,1.41915,1.41802,1.41915H114.15138c.78251,0,1.41802-.63664,1.41802-1.41915V12.99848c0-.78251-.63551-1.41915-1.41802-1.41915H12.99734Z"
+                                d="M277 133C277 204.041 216.096 262 140.5 262C64.9035 262 4 204.041 4 133C4 61.9592 64.9035 4 140.5 4C216.096 4 277 61.9592 277 133Z"
+                                stroke="#872FF7"
+                                stroke-width="16"
                               />
-                              <g>
-                                <circle
-                                  class="cls-1"
-                                  cx="121.35872"
-                                  cy="79.10553"
-                                  r="49.296"
-                                />
-                                <path
-                                  class="cls-2"
-                                  d="M121.35906,134.19131c-30.37312,0-55.08549-24.71124-55.08549-55.08549s24.71237-55.08549,55.08549-55.08549,55.08549,24.71124,55.08549,55.08549-24.71237,55.08549-55.08549,55.08549Zm0-98.59165c-23.98866,0-43.50616,19.51637-43.50616,43.50616s19.5175,43.50616,43.50616,43.50616,43.50616-19.51637,43.50616-43.50616-19.5175-43.50616-43.50616-43.50616Z"
-                                />
-                              </g>
-                              <g>
-                                <polyline
-                                  class="cls-1"
-                                  points="121.35872 58.0879 121.35872 79.10553 147.3426 79.10553"
-                                />
-                                <path
-                                  class="cls-2"
-                                  d="M147.34244,84.89548h-25.98338c-3.19789,0-5.78966-2.59178-5.78966-5.78966v-21.01807c0-3.19789,2.59178-5.78966,5.78966-5.78966s5.78966,2.59178,5.78966,5.78966v15.2284h20.19372c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
-                                />
-                              </g>
+                              <path
+                                d="M170.033 110.74C162.26 117.791 151.642 121.81 140.499 121.81C129.356 121.81 118.738 117.791 110.966 110.74C103.206 103.701 98.9315 94.2425 98.9315 84.4726C98.9315 74.7027 103.206 65.244 110.966 58.2049C118.738 51.1541 129.356 47.1348 140.499 47.1348C151.642 47.1348 162.26 51.1541 170.033 58.2049C177.792 65.244 182.067 74.7027 182.067 84.4726C182.067 94.2425 177.792 103.701 170.033 110.74ZM64.7559 198.894C64.7559 169.651 90.998 145.312 124.23 145.312H156.768C190 145.312 216.242 169.651 216.242 198.894C216.242 201.624 213.674 204.486 209.669 204.486H71.329C67.3242 204.486 64.7559 201.624 64.7559 198.894Z"
+                                stroke="#872FF7"
+                                stroke-width="16"
+                              />
                             </svg>
                           </span>
-                          Version history
+                          
+                          Profile
                         </a>
                       </li>
                       <li className="cursor mr-2">
@@ -1068,6 +1036,73 @@ export function SubHeaderComponent(props) {
                           Collaborators
                         </a>
                       </li>
+                    </ul>
+                  </div>
+                  <div className="col-6 h-100">
+                    <ul className="justify-content-end">
+                      {/* <li className="cursor"><a href="#" data-toggle="modal" data-target="#Versionhistory"><img src={repeateIcon}></img></a></li> */}
+                      {/* <li className="cursor"><a href="#" onClick={toggleDrawer(anchor, true, false)}><img src={repeateIcon}></img></a></li>
+                      <li className="cursor"><a href="#" data-original-title="" title="" onClick={toggleDrawer(anchor, true, true)}><img src={peopleIcon}></img></a></li> */}
+                      <li className="cursor mr-2 ">
+                        <a href="#" onClick={toggleDrawer(anchor, true, false)}>
+                          <span className="mr-2 version-history">
+                            <svg
+                              style={{ width: "20px" }}
+                              id="Layer_1"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 176.44455 158.21163"
+                            >
+                              <defs></defs>
+                              <g>
+                                <path
+                                  class="cls-2"
+                                  d="M50.15975,122.41183H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M50.15975,97.40093H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M50.15975,72.39003H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M50.15975,47.378H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
+                                />
+                              </g>
+                              <path
+                                class="cls-2"
+                                d="M114.15138,158.21163H12.99734c-7.16697,0-12.99734-5.8315-12.99734-12.99848V12.99848C0,5.8315,5.83037,0,12.99734,0H114.15138c7.16697,0,12.99734,5.8315,12.99734,12.99848V145.21315c0,7.16697-5.83037,12.99848-12.99734,12.99848ZM12.99734,11.57933c-.78251,0-1.41802,.63664-1.41802,1.41915V145.21315c0,.78251,.63551,1.41915,1.41802,1.41915H114.15138c.78251,0,1.41802-.63664,1.41802-1.41915V12.99848c0-.78251-.63551-1.41915-1.41802-1.41915H12.99734Z"
+                              />
+                              <g>
+                                <circle
+                                  class="cls-1"
+                                  cx="121.35872"
+                                  cy="79.10553"
+                                  r="49.296"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M121.35906,134.19131c-30.37312,0-55.08549-24.71124-55.08549-55.08549s24.71237-55.08549,55.08549-55.08549,55.08549,24.71124,55.08549,55.08549-24.71237,55.08549-55.08549,55.08549Zm0-98.59165c-23.98866,0-43.50616,19.51637-43.50616,43.50616s19.5175,43.50616,43.50616,43.50616,43.50616-19.51637,43.50616-43.50616-19.5175-43.50616-43.50616-43.50616Z"
+                                />
+                              </g>
+                              <g>
+                                <polyline
+                                  class="cls-1"
+                                  points="121.35872 58.0879 121.35872 79.10553 147.3426 79.10553"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M147.34244,84.89548h-25.98338c-3.19789,0-5.78966-2.59178-5.78966-5.78966v-21.01807c0-3.19789,2.59178-5.78966,5.78966-5.78966s5.78966,2.59178,5.78966,5.78966v15.2284h20.19372c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"
+                                />
+                              </g>
+                            </svg>
+                          </span>
+                          Version history
+                        </a>
+                      </li>
+
                       <li className="cursor mr-2">
                         <a href="#" data-original-title="" title="">
                           <span className="mr-2 insight">
@@ -1148,7 +1183,7 @@ export function SubHeaderComponent(props) {
                       {/* <li className="cursor"><a href="#" data-toggle="modal" data-target="#myModal2"><WarningAmberIcon className="mr-2" style={{ fontSize: '21px', color: '#000' }} />Errors</a></li> */}
                     </ul>
                   </div>
-                  <div className="col-6 h-100 ">
+                  {/* <div className="col-6 h-100 ">
                     <ul className="   justify-content-end">
                       <li>
                         Date:{dateObj.day}-{dateObj.month}-{dateObj.year}
@@ -1157,16 +1192,15 @@ export function SubHeaderComponent(props) {
                         Time:
                         <Clock format={"h:mm:ssa"} ticking={true} />
                       </li>
-                      {/* {LoginStatus ? <></>} */}
                       <li>
                         {loginStatus ? <>User ID: {loginUserId}</> : <>Login</>}
                       </li>
-                      {/* <li>User ID:{"loginData?.userId"}</li> */}
+                    </ul>
+                  </div> */}
+                   {/* <li>User ID:{"loginData?.userId"}</li> */}
                       {/* <li>User ID:{loginUserId}</li> */}
                       {/* <li>User ROLE:{"loginData?.role"}</li>
                       <li>User SUB-ROLE:{"loginData?.userSubRole"}</li> */}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { ADD_REPAIR_QUOTE_ITEM, CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
+import { ADD_REPAIR_QUOTE_ITEM, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_QUOTE_PAYER, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -25,7 +25,7 @@ export const quoteRecent = (quoteType) => {
         .then((res) => {
           console.log("RepairQuote Recent > axios res=", res);
           if (res.status === 200) resolve(res.data);
-          else reject("Error occurred while fetching quotes");
+          else reject(res.data);
         })
         .catch((err) => {
           console.log("RepairQuote > axios err=", err);
@@ -138,14 +138,36 @@ export const updateQuoteItem = (quoteItemId, data) => {
   });
 };
 
+//Create a new quote version
+export const createQuoteVersion = (quoteName, existingVersion, newVersion) => {
+  console.log("QuoteService > createQuoteVersion called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_QUOTE_VERSION(quoteName, existingVersion, newVersion), config)
+        .then((res) => {
+          console.log("createQuoteVersion > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("createQuoteVersion > axios err=", err);
+          reject("Error in createQuoteVersion axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > createQuoteVersion, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 //Add Quote Item data
-export const addQuoteItem = (data) => {
+export const addQuoteItem = (quoteId, data) => {
   console.log("service Repair > addQuoteItem called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(ADD_REPAIR_QUOTE_ITEM(), data, config)
+        .post(ADD_REPAIR_QUOTE_ITEM(quoteId), data, config)
         .then((res) => {
           console.log("addQuoteItem > axios res=", res);
           if (res.status === 200) {
@@ -166,6 +188,59 @@ export const addQuoteItem = (data) => {
   });
 };
 
+//Add Quote payer
+export const addQuotePayer = (quoteId, payerData) => {
+  console.log("Quote > addPayerData called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CREATE_QUOTE_PAYER(quoteId), payerData, config)
+        .then((res) => {
+          console.log("addPayerData > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in addPayerData axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("addQuoteItem axios err :", err);
+          reject("Error in addPayerData axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception addPayerData : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Update Quote payer
+export const updatePayerData = (quotePayerId, payerData) => {
+  console.log("Quote > updatePayerData called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_QUOTE_PAYER(quotePayerId), payerData, config)
+        .then((res) => {
+          console.log("updatePayerData > axios res=", res);
+          if (res.status === 200) {
+            resolve(res);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in updatePayerData axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("addQuoteItem axios err :", err);
+          reject("Error in addPayerData axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception addPayerData : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 //Fetch Quote Details
 export const fetchQuoteDetails = (quoteId) => {
   console.log("RepairBuilder > fetchQuoteDetails called...");
@@ -328,7 +403,28 @@ export const fetchPaymentTerms = () => {
   });
 };
 
-
+//Fetch Quote Summary
+export const fetchQuoteSummary = (quoteId) => {
+  console.log("Quote > fetchQuoteSummary called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_QUOTE_SUMMARY(quoteId), config)
+        .then((res) => {
+          console.log("fetchQuoteSummary > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while calling fetchQuoteSummary");
+        })
+        .catch((err) => {
+          console.log("fetchQuoteSummary > axios err=", err);
+          reject("Error in fetchQuoteSummary axios!");
+        });
+    } catch (error) {
+      console.error("in Quote > fetchQuoteSummary, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 //Create Spare Part Quote
 export const createSparePartQuote = (builderId, quoteDescription, quoteReference) => {
