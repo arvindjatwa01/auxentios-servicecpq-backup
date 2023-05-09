@@ -5204,7 +5204,7 @@ export function CreatedCustomPortfolioTemplate(props) {
     const usageTypeOption = [
         { value: "Planned Usage", label: "Planned Usage" },
         { value: "Recommended usage", label: "Recommended usage" },
-      ];
+    ];
 
     const discountTypeOptions = [
         { value: "PROGRAM_DISCOUNT", label: "Program" },
@@ -5299,71 +5299,76 @@ export function CreatedCustomPortfolioTemplate(props) {
         setBundleAndServiceEditAble(true)
         setBundleTabs("bundleServiceHeader");
 
-        const newData = await getCustomItemDataById(data.customItemId)
+        const getCustomItemData = await getCustomItemDataById(data.customItemId);
 
-        console.log("my newData : ", newData)
+        if (getCustomItemData.status === 200) {
 
-        if (newData.customItemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
-            setServiceOrBundlePrefix("BUNDLE");
-        } else if (newData.customItemHeaderModel.bundleFlag === "SERVICE") {
-            setServiceOrBundlePrefix("SERVICE");
+            const newData = getCustomItemData.data;
+
+            console.log("my newData : ", newData)
+
+            if (newData.customItemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+                setServiceOrBundlePrefix("BUNDLE");
+            } else if (newData.customItemHeaderModel.bundleFlag === "SERVICE") {
+                setServiceOrBundlePrefix("SERVICE");
+            }
+
+
+            setCreateServiceOrBundle({
+                id: newData.customItemId,
+                name: newData.itemName,
+                description: newData.customItemHeaderModel.itemHeaderDescription,
+                bundleFlag: newData.customItemHeaderModel.bundleFlag,
+                reference: newData.customItemHeaderModel.itemHeaderDescription,
+                customerSegment: "",
+                make: newData.customItemHeaderModel.itemHeaderMake,
+                model: newData.customItemHeaderModel.model,
+                family: newData.customItemHeaderModel.itemHeaderFamily,
+                prefix: { label: newData.customItemHeaderModel.prefix, value: newData.customItemHeaderModel.prefix },
+                machine: { label: newData.customItemHeaderModel.type, value: newData.customItemHeaderModel.type },
+                additional: "",
+                machineComponent: { label: newData.customItemHeaderModel.type, value: newData.customItemHeaderModel.type },
+            });
+
+            setSelectedPrefixOption({ label: newData.customItemHeaderModel.prefix, value: newData.customItemHeaderModel.prefix });
+
+            setPassItemEditRowData(newData);
+            setBundleServicePortfolioItemId(newData.customItemHeaderModel.portfolioItemId);
+
+            setBundleServiceItemPriceData(newData.customItemBodyModel.itemPrices)
+
+
+            var offerValidityLabel;
+            if (newData.customItemHeaderModel.offerValidity == "15") {
+                offerValidityLabel = "15 days";
+            } else if (newData.customItemHeaderModel.offerValidity == "30") {
+                offerValidityLabel = "1 month";
+            } else if (newData.customItemHeaderModel.offerValidity == "45") {
+                offerValidityLabel = "45 days";
+            } else if (newData.customItemHeaderModel.offerValidity == "60") {
+                offerValidityLabel = "2 month";
+            } else {
+                offerValidityLabel = newData.customItemHeaderModel.offerValidity;
+            }
+
+            setBundleOrServiceAdministrative({
+                preparedBy: newData.customItemHeaderModel.preparedBy,
+                approvedBy: newData.customItemHeaderModel.approvedBy,
+                preparedOn: newData.customItemHeaderModel.preparedOn,
+                revisedBy: newData.customItemHeaderModel.revisedBy,
+                revisedOn: newData.customItemHeaderModel.revisedOn,
+                salesOffice: {
+                    value: newData.customItemHeaderModel.salesOffice,
+                    label: newData.customItemHeaderModel.salesOffice,
+                },
+                offerValidity: {
+                    value: newData.customItemHeaderModel.offerValidity,
+                    label: offerValidityLabel,
+                },
+            })
+
+            setBundleServiceShow(true);
         }
-
-
-        setCreateServiceOrBundle({
-            id: newData.customItemId,
-            name: newData.itemName,
-            description: newData.customItemHeaderModel.itemHeaderDescription,
-            bundleFlag: newData.customItemHeaderModel.bundleFlag,
-            reference: newData.customItemHeaderModel.itemHeaderDescription,
-            customerSegment: "",
-            make: newData.customItemHeaderModel.itemHeaderMake,
-            model: newData.customItemHeaderModel.model,
-            family: newData.customItemHeaderModel.itemHeaderFamily,
-            prefix: { label: newData.customItemHeaderModel.prefix, value: newData.customItemHeaderModel.prefix },
-            machine: { label: newData.customItemHeaderModel.type, value: newData.customItemHeaderModel.type },
-            additional: "",
-            machineComponent: { label: newData.customItemHeaderModel.type, value: newData.customItemHeaderModel.type },
-        });
-
-        setSelectedPrefixOption({ label: newData.customItemHeaderModel.prefix, value: newData.customItemHeaderModel.prefix });
-
-        setPassItemEditRowData(newData);
-        setBundleServicePortfolioItemId(newData.customItemHeaderModel.portfolioItemId);
-
-        setBundleServiceItemPriceData(newData.customItemBodyModel.itemPrices)
-
-
-        var offerValidityLabel;
-        if (newData.customItemHeaderModel.offerValidity == "15") {
-            offerValidityLabel = "15 days";
-        } else if (newData.customItemHeaderModel.offerValidity == "30") {
-            offerValidityLabel = "1 month";
-        } else if (newData.customItemHeaderModel.offerValidity == "45") {
-            offerValidityLabel = "45 days";
-        } else if (newData.customItemHeaderModel.offerValidity == "60") {
-            offerValidityLabel = "2 month";
-        } else {
-            offerValidityLabel = newData.customItemHeaderModel.offerValidity;
-        }
-
-        setBundleOrServiceAdministrative({
-            preparedBy: newData.customItemHeaderModel.preparedBy,
-            approvedBy: newData.customItemHeaderModel.approvedBy,
-            preparedOn: newData.customItemHeaderModel.preparedOn,
-            revisedBy: newData.customItemHeaderModel.revisedBy,
-            revisedOn: newData.customItemHeaderModel.revisedOn,
-            salesOffice: {
-                value: newData.customItemHeaderModel.salesOffice,
-                label: newData.customItemHeaderModel.salesOffice,
-            },
-            offerValidity: {
-                value: newData.customItemHeaderModel.offerValidity,
-                label: offerValidityLabel,
-            },
-        })
-
-        setBundleServiceShow(true);
     }
 
     const [editBundleService, setEditBundleService] = useState(false);

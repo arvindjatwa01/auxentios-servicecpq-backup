@@ -9,7 +9,8 @@ import {
   CUSTOM_PORTFOLIO_ITEM_PRICE_SJID,
   CUSTOM_PORTFOLIO_URL,
   GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
-  CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL
+  CUSTOM_PORTFOLIO_SEARCH_TABLE_DATA_LIST_URL,
+  LINK_CUSTOM_ITEM_TO_PORTFOLIO
 } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
@@ -125,7 +126,8 @@ export const getCustomItemDataById = (id) => {
         .get(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`, { headers: headersData })
         .then((res) => {
           console.log("getCustomItemDataById > axios res=", res);
-          resolve(res.data);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getCustomItemDataById > axios err=", err);
@@ -358,6 +360,53 @@ export const customPortfolioSearchTableDataList = (searchStr) => {
         });
     } catch (error) {
       console.error("in portfolioService > customPortfolioSearchTableDataList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+}
+
+/**
+ * Function to Search the Custom Portfolio's Dropdown List.
+ */
+
+export const getCustomServiceItemsList = (payLoad) => {
+  console.log("customPortfolioItemService > getCustomServiceItemsList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_CUSTOM_PORTFOLIO_ITEM() + "/services?" + payLoad, { headers: headersData })
+        .then((res) => {
+          console.log("getCustomServiceItemsList > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getCustomServiceItemsList > axios err=", err);
+          reject("Error in getCustomServiceItemsList axios!");
+        });
+    } catch (error) {
+      console.error("in customPortfolioItemService > getCustomServiceItemsList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+// Link Custom Item to Portfolio
+export const linkCustomItemToPortfolio = (payLoadUrl) => {
+  console.log("customPortfolioItemService > linkCustomItemToPortfolio called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(LINK_CUSTOM_ITEM_TO_PORTFOLIO + payLoadUrl, { headers: headersData })
+        .then((res) => {
+          console.log("linkCustomItemToPortfolio > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("linkCustomItemToPortfolio > axios err=", err);
+          reject("Error in linkCustomItemToPortfolio axios!");
+        });
+    } catch (error) {
+      console.error("in customPortfolioItemService > linkCustomItemToPortfolio, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

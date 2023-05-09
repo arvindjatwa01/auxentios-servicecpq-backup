@@ -133,6 +133,7 @@ import {
   getServiceItemsList,
   portfolioPriceAgreementCreation,
   getServiceBundleItemPrices,
+  linkItemToPortfolio,
 } from "../../services/index";
 
 import {
@@ -434,12 +435,15 @@ export function CreatePortfolio(props) {
 
   const [editAblePriceData, setEditAblePriceData] = useState([]);
   const [optionalServicesData, setOptionalServicesData] = useState([])
+  const [inclusionExclusionService, setInclusionExclusionService] = useState([])
+  const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false)
 
   const [partsRequired, setPartsRequired] = useState(true);
   const [labourRequired, setlabourRequired] = useState(true);
   const [serviceRequired, setServiceRequired] = useState(false);
   const [miscRequired, setMiscRequired] = useState(true);
   const [needOnlyParts, setNeedOnlyParts] = useState(false)
+  const [portfolioItemIdIs, setPortfolioItemIdIs] = useState("");
 
   //  Set Quotes Data State 
   const [quoteData, setQuoteData] = useState({
@@ -468,21 +472,34 @@ export function CreatePortfolio(props) {
     setOptionalPopup(true)
   }
 
-  const handleSelectOptionalService = (event, serviceName) => {
+  const handleSelectOptionalService = (event, serviceName, serviceData) => {
+    // console.log("======== serviceData ", serviceData);
 
-    let a = ['SRV_752A540', 'NEW_SERVICE_NAME_24', '126'];
+    const _inclusionExclusionService = [...inclusionExclusionService];
+    // let a = ['SRV_752A540', 'NEW_SERVICE_NAME_24', '126'];
 
-    console.log("============= ", a.toString())
+    // console.log("============ a to = ", a.toString())
 
     if (event.target.checked) {
       setOptionalServicesData([...optionalServicesData, serviceName]);
+      // setInclusionExclusionService()
+      _inclusionExclusionService.push(serviceData);
+
+      _inclusionExclusionService.forEach(object => {
+        object.checked = false;
+      });
+      setInclusionExclusionService(_inclusionExclusionService);
 
     } else {
       const _optionalServicesData = [...optionalServicesData];
       const x = _optionalServicesData.splice(_optionalServicesData.indexOf(serviceName), 1);
       setOptionalServicesData(_optionalServicesData);
+
+      _inclusionExclusionService.splice(_inclusionExclusionService.indexOf(serviceData.itemId), 1)
+      setInclusionExclusionService(_inclusionExclusionService);
     }
 
+    console.log("============= ", _inclusionExclusionService);
   }
 
   const [strategyData, setStrategyData] = useState({
@@ -6994,8 +7011,31 @@ export function CreatePortfolio(props) {
   }
 
   const Inclusion_Exclusion = async (e, data) => {
-    console.log("event is : ", e);
-    console.log("itemData : ", data);
+    try {
+      console.log("event is : ", e);
+      console.log("itemData : ", data);
+      setPortfolioItemIdIs(data.itemId)
+      const itemDetailsById = await getItemDataById(data.itemId)
+      // console.log("itemDetailsById.data ", itemDetailsById);
+      if (itemDetailsById.status === 200) {
+        if (itemDetailsById.data.itemBodyModel.itemPrices.length > 0) {
+          setEditAblePriceData(itemDetailsById.data.itemBodyModel.itemPrices)
+
+          var getPriceData = await getItemPriceData(itemDetailsById.data.itemBodyModel.itemPrices[0].itemPriceDataId);
+
+          setPartsRequired(getPriceData.partsRequired)
+          setlabourRequired(getPriceData.labourRequired)
+          setServiceRequired(getPriceData.serviceRequired)
+          setMiscRequired(getPriceData.miscRequired)
+        }
+      }
+
+      setShowInclusionExclusionModal(true)
+    } catch (error) {
+
+    }
+
+
     if (data.itemBodyModel.itemPrices.length > 0) {
       setEditAblePriceData(data.itemBodyModel.itemPrices)
 
@@ -7484,27 +7524,81 @@ export function CreatePortfolio(props) {
     setMiscRequired(e.target.checked)
   }
 
+  const handleSelectExclusionItemData = (e, data) => {
+    const _inclusionExclusionService = [...inclusionExclusionService];
+
+    const selectItemId = _inclusionExclusionService.findIndex((obj => obj.itemId === data.itemId));
+    _inclusionExclusionService[selectItemId]["checked"] = e.target.checked
+    setInclusionExclusionService(_inclusionExclusionService)
+  }
+
   const UpdatePriceInclusionExclusion = async () => {
-    console.log("hello");
-    if (editAblePriceData.length > 0) {
-      // console.log("hello")
-      for (let y = 0; y < editAblePriceData.length; y++) {
-        var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
-        console.log("y is : ", getCustomPriceData);
-
-        getCustomPriceData.partsRequired = partsRequired;
-        getCustomPriceData.labourRequired = labourRequired;
-        getCustomPriceData.serviceRequired = serviceRequired;
-        getCustomPriceData.miscRequired = miscRequired;
-
-        // console.log("updated y is : ", getCustomPriceData)
-
-        var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
-
+    try {
+      var payloadUrl = `portfolio_id=${portfolioId}&portfolio_item_id=${portfolioItemIdIs}&`
+      // item_id=1&portfolio_item_id=1&portfolio_id=1
+      // portfolioItemIdIs
+      const _inclusionExclusionService = [...inclusionExclusionService];
+      if (_inclusionExclusionService.length === 0) {
+        throw "Please Select optional Service Items First"
       }
-    } else {
-      console.log("empty");
+
+      if (_inclusionExclusionService.length > 0) {
+        const checkedData = _inclusionExclusionService.filter(person => person.checked === true);
+        if (checkedData.length === 0) {
+          throw "Please toggle at least one Item";
+        }
+
+        if (checkedData.length > 0) {
+          var tempBundleItemsUrl = checkedData.map((data, i) =>
+            `item_id=${data.itemId}`
+          ).join('&');
+
+          payloadUrl = payloadUrl + tempBundleItemsUrl;
+          const linkPortfolioItems = await linkItemToPortfolio(payloadUrl)
+        }
+      }
+      setShowInclusionExclusionModal(false)
+      // if (editAblePriceData.length > 0) {
+      //   for (let y = 0; y < editAblePriceData.length; y++) {
+      //     var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
+      //     console.log("y is : ", getCustomPriceData);
+
+      //     getCustomPriceData.partsRequired = partsRequired;
+      //     getCustomPriceData.labourRequired = labourRequired;
+      //     getCustomPriceData.serviceRequired = serviceRequired;
+      //     getCustomPriceData.miscRequired = miscRequired;
+
+      //     // console.log("updated y is : ", getCustomPriceData)
+
+      //     var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
+
+      //   }
+
+      //   console.log("editAblePriceData ============== ", editAblePriceData);
+      // }
+
+    } catch (error) {
+
     }
+    // if (editAblePriceData.length > 0) {
+    //   // console.log("hello")
+    //   for (let y = 0; y < editAblePriceData.length; y++) {
+    //     var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
+    //     console.log("y is : ", getCustomPriceData);
+
+    //     getCustomPriceData.partsRequired = partsRequired;
+    //     getCustomPriceData.labourRequired = labourRequired;
+    //     getCustomPriceData.serviceRequired = serviceRequired;
+    //     getCustomPriceData.miscRequired = miscRequired;
+
+    //     // console.log("updated y is : ", getCustomPriceData)
+
+    //     var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
+
+    //   }
+    // } else {
+    //   console.log("empty");
+    // }
   }
 
   const getPortfolioDetails = (portfolioId) => {
@@ -9287,7 +9381,7 @@ export function CreatePortfolio(props) {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity !== undefined ? row?.quantity :1,
     },
     {
       name: (
@@ -9507,7 +9601,8 @@ export function CreatePortfolio(props) {
               className="customDropdown ml-2 width-p"
               id="dropdown-item-button"
             >
-              <Dropdown.Item className=" cursor" data-toggle="modal" data-target="#myModal12">
+              {/* <Dropdown.Item className=" cursor" data-toggle="modal" data-target="#myModal12"> */}
+              <Dropdown.Item className=" cursor">
                 <Tooltip title="Inclusion">
                   <Link to="#" className="px-1" onClick={(e) => Inclusion_Exclusion(e, row)} >
                     <img src={cpqIcon}></img><span className="ml-2">Inclusion / Exclusion</span>
@@ -9694,7 +9789,7 @@ export function CreatePortfolio(props) {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity !== undefined ? row?.quantity : 1,
     },
     {
       name: (
@@ -9934,32 +10029,40 @@ export function CreatePortfolio(props) {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      selector: (row) => row?.itemDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      format: (row) => row?.itemDescription,
+      // selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemHeaderModel.itemHeaderDescription,
     },
-    {
-      name: (
-        <>
-          <div>Usage In</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.usageIn,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel.usageIn,
-    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Usage In</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.usageIn,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.usageIn,
+    // },
     {
       name: (
         <>
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      format: (row) => row?.itemHeaderStrategy,
+      // selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemHeaderModel.itemHeaderStrategy,
     },
     {
       name: (
@@ -9967,10 +10070,14 @@ export function CreatePortfolio(props) {
           <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.taskType,
+      selector: (row) => row?.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.taskType,
+      format: (row) => row?.taskType,
+      // selector: (row) => row.itemBodyModel.taskType,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemBodyModel.taskType,
     },
     {
       name: (
@@ -9978,10 +10085,14 @@ export function CreatePortfolio(props) {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.quantity,
+      selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.quantity,
+      format: (row) => row?.quantity !== undefined ? row?.quantity : 1,
+      // selector: (row) => row.itemBodyModel.quantity,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemBodyModel.quantity,
     },
     {
       name: (
@@ -9989,10 +10100,14 @@ export function CreatePortfolio(props) {
           <div>Recommended Value</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.recommendedValue,
+      selector: (row) => row?.recommendedValue,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.recommendedValue,
+      format: (row) => row?.recommendedValue,
+      // selector: (row) => row.itemBodyModel.recommendedValue,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemBodyModel.recommendedValue,
     },
     {
       name: (
@@ -10000,10 +10115,10 @@ export function CreatePortfolio(props) {
           <div>Template/Kit ID</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.repairKitId,
+      selector: (row) => row?.standardJobId !== null ? row?.standardJobId : row?.repairKitId,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.repairKitId,
+      format: (row) => row?.standardJobId !== null ? row?.standardJobId : row?.repairKitId,
     },
     // ---------------------- To do Portfolio Items --------------------//
 
@@ -10253,7 +10368,7 @@ export function CreatePortfolio(props) {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity !== undefined ? row?.quantity : 1,
     },
     {
       name: (
@@ -13768,7 +13883,7 @@ export function CreatePortfolio(props) {
   }
 
 
-  console.log("itemPriceData ++++++++++++++++++++ ", itemPriceData);
+  // console.log("itemPriceData ++++++++++++++++++++ ", itemPriceData);
 
   // function for Click on selected Bundle or Service
   const handleContinueOfAddedServiceOrBundle = async () => {
@@ -19915,7 +20030,220 @@ export function CreatePortfolio(props) {
         </Modal.Body>
       </Modal> */}
 
-      <div
+      <Modal
+        className="right fade"
+        id="myModal12"
+        show={showInclusionExclusionModal} onHide={() => setShowInclusionExclusionModal(false)}
+      >
+        <Modal.Header className="d-block" closeButton>
+          <h4 className="modal-title" id="myModalLabel2">
+            Inclusion/Exclusion
+          </h4>
+        </Modal.Header>
+
+        <Modal.Body className="p-0">
+          <div className="bg-light-blue p-3">
+            <h5 className="font-weight-normal text-violet mb-0">
+              CHOICE OF SPARE PARTS
+            </h5>
+          </div>
+          <div className="bg-white p-3">
+            <FormGroup>
+              <FormControlLabel
+                control={<Switch disabled={needOnlyParts} />}
+                label="With Spare Parts"
+                onChange={(e) => handleWithSparePartsCheckBox(e, "with")}
+                checked={partsRequired}
+              />
+              <FormControlLabel
+                control={<Switch disabled={needOnlyParts} />}
+                onChange={(e) => handleWithSparePartsCheckBox(e, "without")}
+                label="I have Spare Parts"
+                checked={!partsRequired && !needOnlyParts}
+              />
+              <FormControlLabel
+                control={<Switch />}
+                label="I need only Spare Parts"
+                onChange={(e) => handleNeedOnlySparePartsCheckBox(e)}
+                checked={needOnlyParts}
+              />
+            </FormGroup>
+          </div>
+          <div className="bg-light-blue p-3">
+            <h5 className="font-weight-normal text-violet mb-0">
+              CHOICE OF LABOR
+            </h5>
+          </div>
+          <div className="bg-white p-3">
+            <div className=" d-flex justify-content-between ">
+              <div>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch disabled={needOnlyParts} />}
+                    label="With Labor"
+                    onChange={(e) => handleWithLabourCheckBox(e)}
+                    checked={labourRequired}
+
+                  />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Without Labor"
+                  />
+                </FormGroup>
+              </div>
+              <div>
+                <a href="#" className="ml-3 font-size-14">
+                  <img src={deleteIcon}></img>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="bg-light-blue p-3">
+            <h5 className="font-weight-normal text-violet mb-0">
+              CHOICE MISC.
+            </h5>
+          </div>
+          <div className="bg-white p-3">
+            <FormGroup>
+              <FormControlLabel
+                control={<Switch disabled />}
+                label=" Lubricants" />
+              <FormControlLabel
+                control={<Switch disabled />}
+                label="Travel Expenses"
+              />
+              <FormControlLabel
+                control={<Switch disabled />}
+                label="Tools" />
+              <FormControlLabel
+                control={<Switch disabled={needOnlyParts} />}
+                label="External Work"
+                onChange={(e) => handleWithMiscCheckBox(e)}
+                checked={miscRequired}
+              />
+            </FormGroup>
+            <h5 className="d-flex align-items-center mb-0">
+              <div className="" style={{ display: "contents" }}>
+                <span className="mr-3 white-space">Includes</span>
+              </div>
+              <div className="hr"></div>
+            </h5>
+          </div>
+          <div className="bg-light-blue p-3">
+            <h5 className="font-weight-normal text-violet mb-0">
+              SERVICES
+            </h5>
+          </div>
+          <div className="bg-white p-3">
+            <div className=" d-flex justify-content-between align-items-center">
+              <div>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch disabled={needOnlyParts} />}
+                    label=" Changee Oil and Filter"
+                    onChange={(e) => handleWithServiceCheckBox(e)}
+                    checked={serviceRequired}
+                  />
+                </FormGroup>
+              </div>
+              <div>
+                <a href="#" className="ml-3 font-size-14">
+                  <img src={deleteIcon}></img>
+                </a>
+              </div>
+            </div>
+            <h5 className="d-flex align-items-center mb-0">
+              <div className="" style={{ display: "contents" }}>
+                <span className="mr-3 white-space">Optianal services</span>
+              </div>
+              <div className="hr"></div>
+            </h5>
+            <FormGroup>
+              {/* {console.log("optionalServicesData ========   = ", optionalServicesData)} */}
+
+              {inclusionExclusionService.length > 0 &&
+                inclusionExclusionService.map((data, i) => {
+                  return (
+                    <FormControlLabel
+                      control={<Switch />}
+                      checked={data?.checked}
+                      onChange={(e) => handleSelectExclusionItemData(e, data)}
+                      label={data.itemName}
+                    />
+                  )
+                })}
+              {/* {optionalServicesData.length > 0 &&
+                    optionalServicesData.map((data, i) => {
+                      return (
+                        <FormControlLabel
+                          control={<Switch />}
+                          label={data}
+                        />
+                      )
+                    })} */}
+              {/* <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Air Filter Replacement"
+                  />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Cabin Air Filter"
+                  />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Rotete Tires" /> */}
+            </FormGroup>
+            <h5 className="d-flex align-items-center mb-0">
+              <div className="" style={{ display: "contents" }}>
+                <span className="mr-3 white-space">Includes</span>
+              </div>
+              <div className="hr"></div>
+            </h5>
+            <div className="mt-3">
+              <h6>
+                <a
+                  href="#"
+                  className="btn-sm text-white mr-2"
+                  style={{ background: "#79CBA2" }}
+                >
+                  Free
+                </a>{" "}
+                50 Point Inspection
+              </h6>
+              <h6 className="mt-3">
+                <a
+                  href="#"
+                  className="btn-sm text-white mr-2 "
+                  style={{ background: "#79CBA2" }}
+                >
+                  Free
+                </a>{" "}
+                50 Point Inspection
+              </h6>
+            </div>
+            <div className=" d-flex justify-content-between mt-4">
+              <div>
+                <a href={undefined} className="btn text-violet bg-light-blue" onClick={PopupOptionalShow}>
+                  <b>
+                    <span className="mr-2">+</span>Add more services
+                  </b>
+                </a>
+              </div>
+              {/* <div>
+                    <a href="#" className="btn text-violet">
+                      <b>I Have Parts</b>
+                    </a>
+                  </div> */}
+            </div>
+            <div>
+              <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} ><b>Save Changes</b></button>
+            </div>
+          </div>
+        </Modal.Body>
+
+      </Modal>
+
+      {/* <div
         className="modal right fade"
         id="myModal12"
         tabIndex="-1"
@@ -20055,26 +20383,18 @@ export function CreatePortfolio(props) {
                   <div className="hr"></div>
                 </h5>
                 <FormGroup>
-                  {optionalServicesData.length > 0 &&
-                    optionalServicesData.map((data, i) => {
+                {inclusionExclusionService.length > 0 &&
+                    inclusionExclusionService.map((data, i) => {
                       return (
                         <FormControlLabel
                           control={<Switch />}
-                          label={data}
+                          checked={data?.checked}
+                          onChange={(e) => handleSelectExclusionItemData(e, data)}
+                          label={data.itemName}
                         />
                       )
                     })}
-                  {/* <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Air Filter Replacement"
-                  />
-                  <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Cabin Air Filter"
-                  />
-                  <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Rotete Tires" /> */}
+                 
                 </FormGroup>
                 <h5 className="d-flex align-items-center mb-0">
                   <div className="" style={{ display: "contents" }}>
@@ -20112,20 +20432,15 @@ export function CreatePortfolio(props) {
                       </b>
                     </a>
                   </div>
-                  {/* <div>
-                    <a href="#" className="btn text-violet">
-                      <b>I Have Parts</b>
-                    </a>
-                  </div> */}
                 </div>
                 <div>
-                  <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} data-dismiss="modal" ><b>Save Changes</b></button>
+                  <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} ><b>Save Changes</b></button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <Modal
         size="xl"
@@ -23310,7 +23625,7 @@ export function CreatePortfolio(props) {
                                     type="checkbox"
                                     value=""
                                     checked={optionalServicesData.includes(serviceData.itemName)}
-                                    onChange={(e) => handleSelectOptionalService(e, serviceData.itemName)}
+                                    onChange={(e) => handleSelectOptionalService(e, serviceData.itemName, serviceData)}
                                   />
                                 </div>
                                 <div className="mt-1">
