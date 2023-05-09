@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { ADD_REPAIR_QUOTE_ITEM, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_QUOTE_PAYER, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
+import { ADD_PL_QUOTE_ITEM, ADD_REPAIR_QUOTE_ITEM, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_PL_QUOTE_ITEM, UPDATE_QUOTE_PAYER, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -138,6 +138,34 @@ export const updateQuoteItem = (quoteItemId, data) => {
   });
 };
 
+
+//Update PL Quote Item data
+export const updatePLQuoteItem = (quoteItemId, data) => {
+  console.log("service Quote > updatePLQuoteItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_PL_QUOTE_ITEM(quoteItemId), data, config)
+        .then((res) => {
+          console.log("updatePLQuoteItem > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in updatePLQuoteItem axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("updatePLQuoteItem axios err :", err);
+          reject("Error in updatePLQuoteItem axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception updatePLQuoteItem : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //Create a new quote version
 export const createQuoteVersion = (quoteName, existingVersion, newVersion) => {
   console.log("QuoteService > createQuoteVersion called...");
@@ -183,6 +211,34 @@ export const addQuoteItem = (quoteId, data) => {
         });
     } catch (error) {
       console.error("Genreal Exception addQuoteItem : ", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Add PL Quote Item data
+export const addPLQuoteItem = (quoteId, data) => {
+  console.log("service PLQuote > addPLQuoteItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(ADD_PL_QUOTE_ITEM(quoteId), data, config)
+        .then((res) => {
+          console.log("addPLQuoteItem > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in addPLQuoteItem axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("addPLQuoteItem axios err :", err);
+          reject("Error in addPLQuoteItem axios!");
+        });
+    } catch (error) {
+      console.error("Genreal Exception addPLQuoteItem : ", error);
       reject(SYSTEM_ERROR);
     }
   });
@@ -241,6 +297,33 @@ export const updatePayerData = (quotePayerId, payerData) => {
     }
   });
 };
+
+//Remove payer
+export const removePayer = (payerId) => {
+  console.log("service repairQuote > removePayer called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(UPDATE_QUOTE_PAYER(payerId), config)
+        .then((res) => {
+          console.log("repairQuote -> removePayer response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the payer!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("removePayer > axios err=", err);
+          reject("Error in removePayer axios!");
+        });
+    } catch (error) {
+      console.error("removePayer general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //Fetch Quote Details
 export const fetchQuoteDetails = (quoteId) => {
   console.log("RepairBuilder > fetchQuoteDetails called...");

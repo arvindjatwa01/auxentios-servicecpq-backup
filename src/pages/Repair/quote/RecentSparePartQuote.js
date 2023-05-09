@@ -30,7 +30,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Moment from "react-moment";
 import { Typography } from "@mui/material";
 import LoadingProgress from "../components/Loader";
-import { QUOTE_SPARE_PARTS_SEARCH } from "navigation/CONSTANTS";
+import { QUOTE_SPARE_PARTS_SEARCH, SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { quoteRecent } from "services/repairQuoteServices";
 
@@ -78,7 +78,7 @@ const RecentSparePartQuote = () => {
     };
     quoteDetails.quoteId = quote.quoteId;
     history.push({
-      pathname: "/SparePartsPortfolio",
+      pathname: SPARE_PARTS_QUOTE_DETAILS,
       state: quoteDetails,
     });
   };
@@ -128,7 +128,16 @@ const RecentSparePartQuote = () => {
                                 icon={faFileAlt}
                               />
                               <span className="font-weight-500 ml-2">
-                                Spare Part Quote {indQuote.quoteId}
+                                {indQuote.quoteName}
+                              </span>
+                              <span
+                                className="ml-2"
+                                style={{
+                                  fontSize: 9,
+                                  fontWeight: 800,
+                                }}
+                              >
+                                {indQuote.version ? parseFloat(indQuote.version.substring(8)).toFixed(1) : ""}
                               </span>
                             </p>
                             <div className="d-flex align-items-center">

@@ -34,7 +34,7 @@ return (
               <span>Service Organisation</span>
             </p>
             <h6 className="mb-0 ">
-              <b>ESPERENCE (SV71)</b>
+              <b>{summary.salesOffice}</b>
             </h6>
           </div>
           <div className="hr"></div>
@@ -70,7 +70,7 @@ return (
               <span>Manufacturer</span>
             </p>
             <h6 className="mb-0 ">
-              <b>{"Add make"}</b>
+              <b>{summary.make}</b>
             </h6>
           </div>
           <div className="hr"></div>
@@ -88,21 +88,21 @@ return (
               <span>Net Price</span>
             </p>
             <h6 className="mb-0 ">
-              <b>${summary.netPrice}</b>
+              <b>${summary.totalPrice}</b>
             </h6>
           </div>
           <div className="hr"></div>
           <div className="d-flex align-items-center justify-content-between">
             <p className="mb-0 ">
-              <span>Estimated External Service Purchase $</span>
+              <span>Estimated Misc </span>
             </p>
             <h6 className="mb-0 ">
-              <b>$5000</b>
+              <b>${summary.miscPrice}</b>
             </h6>
           </div>
           <div className="hr"></div>
-          <div className="d-flex align-items-center justify-content-between">
-            <p className="mb-0 ">
+          <div className="d-flex align-items-center justify-content-between" >
+            <p className="mb-0 " >
               <span>Estimated Labour</span>
             </p>
             <h6 className="mb-0 ">

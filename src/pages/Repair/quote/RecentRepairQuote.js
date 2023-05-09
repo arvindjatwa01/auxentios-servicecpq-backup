@@ -126,7 +126,16 @@ const RecentRepairQuote = () => {
                                 icon={faFileAlt}
                               />
                               <span className="font-weight-500 ml-2">
-                                Repair Quote {indQuote.quoteName}
+                                {indQuote.quoteName}
+                              </span>
+                              <span
+                                className="ml-2"
+                                style={{
+                                  fontSize: 9,
+                                  fontWeight: 800,
+                                }}
+                              >
+                                {indQuote.version ? parseFloat(indQuote.version.substring(8)).toFixed(1) : ""}
                               </span>
                             </p>
                             <div className="d-flex align-items-center">

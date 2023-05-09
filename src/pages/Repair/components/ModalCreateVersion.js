@@ -1,4 +1,6 @@
 import { Modal } from "@mui/material";
+import { useEffect, useState } from "react";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 const ModalCreateVersion = (props) => {
   return (
@@ -17,9 +19,27 @@ const ModalCreateVersion = (props) => {
           </div>
 
           <p className="mx-3 mt-0">
-            Another version of this builder will be created.
+            {props.message}
           </p>
           <div className="hr"></div>
+          {props.type === "quote" ? 
+          <>
+          <ReadOnlyField 
+            label="Quote"
+            value={props.quoteName}
+            className={"col-md-6"}
+          />
+          <ReadOnlyField 
+            label="Existing Version"
+            value={ props.existingVersion? "Version " + props.existingVersion?.substring(8): ""}
+            className={"col-md-6"}
+          />
+          <ReadOnlyField 
+            label="New Version"
+            value={props.newVersion? "Version " + props.newVersion?.substring(8) : ""}
+            className={"col-md-6"}
+          />
+          </> :
           <div class="modal-body" style={{ marginBottom: 10 }}>
             <input
               type="text"
@@ -28,12 +48,12 @@ const ModalCreateVersion = (props) => {
               value={props.description}
               onChange={(e) => props.setDescription(e.target.value)}
             />
-          </div>
+          </div>}
           <div class="modal-footer">
             <button
               className="btn  btn-primary w-100"
-              onClick={() => props.handleCreateVersion(props.description)}
-              disabled={!props.description}
+              onClick={() => props.type !== "quote"? props.handleCreateVersion(props.description) : props.handleCreateVersion()}
+              disabled={props.type === "quote" ? false : !props.description}
             >
               Create
             </button>

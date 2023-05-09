@@ -1,5 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
 import CommentIcon from "@mui/icons-material/Chat";
+import EditIcon from "@mui/icons-material/EditOutlined";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import TabContext from "@mui/lab/TabContext";
@@ -21,11 +22,12 @@ import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../../assets/icons/svg/share.svg";
 import uploadIcon from "../../../assets/icons/svg/upload.svg";
 import {
-    FONT_STYLE,
-    FONT_STYLE_SELECT,
-    FONT_STYLE_UNIT_SELECT,
-    OPTIONS_LEADTIME_UNIT,
-    STATUS_OPTIONS
+  ERROR_MAX_VERSIONS,
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
+  FONT_STYLE_UNIT_SELECT,
+  OPTIONS_LEADTIME_UNIT,
+  STATUS_OPTIONS,
 } from "../CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
@@ -33,17 +35,43 @@ import { customerSearch, machineSearch } from "services/searchServices";
 
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import { TextField, Tooltip } from "@mui/material";
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+import { TextareaAutosize, TextField, Tooltip } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useAppSelector } from "app/hooks";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
 import {
-    fetchQuoteDetails,
-    updateQuoteHeader
+  addPLQuoteItem,
+  addQuotePayer,
+  createQuoteVersion,
+  fetchQuoteDetails,
+  fetchQuoteSummary,
+  fetchQuoteVersions,
+  removePayer,
+  updatePayerData,
+  updatePLQuoteItem,
+  updateQuoteHeader,
 } from "services/repairQuoteServices";
 import Validator from "utils/validator";
+import ModalCreateVersion from "../components/ModalCreateVersion";
+import PayerGridTable from "../components/PayerGridTable";
+import QuoteSummary from "../components/QuoteSummary";
 import { ReadOnlyField } from "../components/ReadOnlyField";
+import SparepartQuoteItemModal from "../components/SparePartQuoteItem";
+import {
+  selectBillingFreqList,
+  selectBillingTypeList,
+  selectDelPriorityList,
+  selectDelTypeList,
+  selectPaymentTermList,
+  selectQuoteDropdownOption,
+  selectQuoteStatusList,
+  selectQuoteValidityList,
+} from "../dropdowns/quoteRepairSlice";
+import { Dropdown, DropdownButton } from "react-bootstrap";
+
 const customStyles = {
   rows: {
     style: {
@@ -153,138 +181,100 @@ export function SparePartsPortfolio(props) {
     version: "",
     salesOffice: "",
   });
+  const deliveryTypeOptions = useAppSelector(
+    selectQuoteDropdownOption(selectDelTypeList)
+  );
+  // Retrieve delivery priorities
+  const deliveryPriorityOptions = useAppSelector(
+    selectQuoteDropdownOption(selectDelPriorityList)
+  );
+  // Retrieve billing types
+  const billingTypeOptions = useAppSelector(
+    selectQuoteDropdownOption(selectBillingTypeList)
+  );
+  // Retrieve billing Frequencies
+  const billingFreqOptions = useAppSelector(
+    selectQuoteDropdownOption(selectBillingFreqList)
+  );
+  // Retrieve payment terms
+  const paymentTermOptions = useAppSelector(
+    selectQuoteDropdownOption(selectPaymentTermList)
+  );
 
-  const deliveryTypeOptions = [
-    { value: "standard", label: "Standard" },
-    { value: "express", label: "Express" },
-  ];
-  const deliveryPriorityOptions = [
-    { value: "urgent", label: "Urgent" },
-    { value: "normal", label: "Normal" },
-    { value: "very_urgent", label: "Very Urgent" },
-  ];
+  //Fetch Status List
+  const statusOptions = useAppSelector(
+    selectQuoteDropdownOption(selectQuoteStatusList)
+  );
+  const validityOptions = useAppSelector(
+    selectQuoteDropdownOption(selectQuoteValidityList)
+  );
   useEffect(() => {
     console.log(state);
     if (state) {
       setQuoteId(state.quoteId);
       fetchAllDetails(state.quoteId);
+      fetchSummaryDetails(state.quoteId);
     }
     // setActiveElement({...activeElement, builderType: state.builderType })
   }, []);
-  const validityOptions = [
-    { value: 15, label: "15 days" },
-    { value: 30, label: "1 month" },
-    { value: 45, label: "45 days" },
-    { value: 60, label: "2 months" },
-  ];
-  const paymentTermOptions = [
-    { value: 0, label: "Immediate" },
-    { value: 90, label: "90 Days" },
-    { value: 60, label: "60 days" },
-    { value: 30, label: "30 Days" },
-  ];
+
   const salesOfficeOptions = [
     { value: "Location1", label: "Location1" },
     { value: "Location2", label: "Location2" },
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
-  const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
-  const handleChange1 = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-  const names = [
-    "Oliver Hansen",
-    "Van Henry",
-    "April Tucker",
-    "Ralph Hubbard",
-    "Omar Alexander",
-    "Carlos Abbott",
-    "Miriam Wagner",
-    "Bradley Wilkerson",
-    "Virginia Andrews",
-    "Kelly Snyder",
-  ];
-  function getStyles(name, personName, theme) {
-    return {
-      fontWeight:
-        personName.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
-    };
+  const [payers, setPayers] = useState([]);
+  const [quoteSummary, setQuoteSummary] = useState("");
+
+  async function createQuotePayer(data) {
+    await addQuotePayer(quoteId, {
+      ...data,
+      payerId: undefined,
+      isNew: undefined,
+    })
+      .then((payer) => {
+        handleSnack("success", `Payer has been added!${JSON.stringify(payer)}`);
+        return payer;
+      })
+      .catch((e) => {
+        handleSnack("error", "Payer details could not be added");
+        throw e;
+      });
   }
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const updateQuotePayer = async (payerQuoteId, data) => {
+    await updatePayerData(payerQuoteId, data)
+      .then((savedPayer) => {
+        handleSnack("success", "Payer has been updated!");
+      })
+      .catch((e) => {
+        handleSnack("error", "Payer details could not be updated");
+      });
   };
-  const handleClose2 = () => {
-    setAnchorEl(null);
-  };
 
-  const rows2 = [
+  const [quoteVersionOptions, setQuoteVersionOptions] = useState([
+    { label: "Version 1", value: 1 },
+  ]);
+  const [selectedVersion, setSelectedVersion] = useState({
+    label: "Version 1",
+    value: 1,
+  });
+  const [selQuoteStatus, setSelQuoteStatus] = useState({
+    value: "DRAFT",
+    label: "Draft",
+  });
+  const handleVersion = (e) => {
+    setSelectedVersion(e);
+    fetchAllDetails(e.quoteId);
+  };
+  const [value, setValue] = React.useState("customer");
+  const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
+  const priceSummaryRows = [
     { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
     { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
     { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
-  const masterColumns2 = [
-    {
-      name: (
-        <>
-          <div>Payers</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Billing Split %</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Price $</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-  ];
-
-  const rows3 = [
-    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
-    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
-    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
-  ];
-  const masterColumns3 = [
+  const priceSummaryColumns = [
     {
       name: (
         <>
@@ -341,248 +331,6 @@ export function SparePartsPortfolio(props) {
       format: (row) => row.sbQuoteId,
     },
   ];
-  const rows4 = [
-    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
-    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
-    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
-  ];
-  const masterColumns4 = [
-    {
-      name: (
-        <>
-          <div>Other Misc Type $</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Price</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-  ];
-  const masterColumns = [
-    {
-      name: (
-        <>
-          <div>Id</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Description</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Version</div>
-        </>
-      ),
-      selector: (row) => row.description,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.description,
-    },
-    {
-      name: (
-        <>
-          <div>Task type</div>
-        </>
-      ),
-      selector: (row) => row.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Qty</div>
-        </>
-      ),
-      selector: (row) => row.noOfEvents,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.noOfEvents,
-    },
-    {
-      name: (
-        <>
-          <div>Model</div>
-        </>
-      ),
-      selector: (row) => row.Usage,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Usage,
-    },
-    {
-      name: (
-        <>
-          <div>Serial No.</div>
-        </>
-      ),
-      selector: (row) => row.totalPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.totalPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Valid From</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Valid To</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Unit Price</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Extended Price</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Discount</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Total Price</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    // {
-    //     name: (
-    //         <>
-    //             <div>Actions</div>
-    //         </>
-    //     ),
-    //     selector: (row) => row.Actions,
-    //     wrap: true,
-    //     sortable: true,
-    //     format: (row) => row.Actions,
-    // },
-  ];
-
-  const [quoteVersionOptions, setQuoteVersionOptions] = useState([
-    { label: "Version 1", value: 1 },
-  ]);
-  const [selectedVersion, setSelectedVersion] = useState({
-    label: "Version 1",
-    value: 1,
-  });
-  const [selQuoteStatus, setSelQuoteStatus] = useState({
-    value: "DRAFT",
-    label: "Draft",
-  });
-  const handleVersion = (e) => {
-    setSelectedVersion(e);
-    // fetchBuilderVersionDet(builderId, e.value).then((result) => {
-    //   populateHeader(result);
-    // });
-  };
-  const options = [
-    { value: "chocolate", label: "Construction-Heavy" },
-    { value: "strawberry", label: "Construction-Low" },
-    { value: "vanilla", label: "Construction-Medium" },
-    { value: "Construction", label: "Construction" },
-  ];
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  const [value, setValue] = React.useState("customer");
-
-  const [open, setOpen] = React.useState(false);
-  const [open1, setOpen1] = React.useState(false);
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
-  const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
-  const handleClose = () => setOpen(false);
-  const handleClose1 = () => setOpen1(false);
-  const handleCoveragetable = () => setOpenCoveragetable(false);
-  const [subQuoteItems, setSubQuoteItems] = useState([]);
-
-  useEffect(() => {
-    if (state && state.type === "new") {
-      // setPortfolioId(state.portfolioId);
-      // setGeneralData({ ...generalData, estimationNo: state.builderId });
-    } else if (state) {
-      setQuoteId(state.quoteId);
-      fetchAllDetails(state.quoteId);
-    }
-  }, []);
   const handleResetData = (action) => {
     if (action === "RESET") {
       value === "customer" && populateCustomerData(savedQuoteDetails);
@@ -601,13 +349,14 @@ export function SparePartsPortfolio(props) {
   };
 
   const fetchAllDetails = async (quoteId) => {
-    console.log("quoteDataId --- ", quoteId);
+    // console.log("quoteId --- ", quoteId);
     if (quoteId) {
       setHeaderLoading(true);
       await fetchQuoteDetails(quoteId)
         .then((result) => {
           setQuoteId(result.quoteId);
           populateHeader(result);
+          console.log(result.plQuoteItems);
           setQuoteItems(result.plQuoteItems);
         })
 
@@ -626,35 +375,71 @@ export function SparePartsPortfolio(props) {
     priceViewOnly: false,
     shippingViewOnly: false,
   });
+  const makeHeaderEditable = () => {
+    if (value === "customer" && viewOnlyTab.custViewOnly)
+      setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+    else if (value === "machine" && viewOnlyTab.machineViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        machineViewOnly: false,
+      });
+    else if (value === "estimation" && viewOnlyTab.estViewOnly) {
+      console.log(value);
+      setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
+    } else if (value === "general" && viewOnlyTab.generalViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        generalViewOnly: false,
+      });
+    else if (value === "price" && viewOnlyTab.priceViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        priceViewOnly: false,
+      });
+    else if (value === "shipping" && viewOnlyTab.shippingViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        shippingViewOnly: false,
+      });
+  };
+
   const populateHeader = (result) => {
     setSavedQuoteDetails(result);
-    console.log("Header Details", result);
+    // console.log("Header Details", result);
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
       machineViewOnly: result.serialNumber ? true : false,
       generalViewOnly: result.quoteDate ? true : false,
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
-        result.priceMethod !== "EMPTY" &&
-        result.priceMethod !== null &&
-        result.priceMethod !== ""
+        result.billingType !== "EMPTY" &&
+        result.billingType !== null &&
+        result.billingType !== ""
           ? true
           : false,
       shippingViewOnly: result.leadTime ? true : false,
     });
     setQuoteId(result.quoteId);
+    setPayers(result.payers);
     setSelQuoteStatus(
-      STATUS_OPTIONS.filter((x) => x.value === result.status)[0]
+      statusOptions.filter((x) => x.value === result.status)[0]
     );
-    let versions = result.versionList?.map((versionNo) => ({
-      value: versionNo,
-      label: "Version " + versionNo,
-    }));
-    if (versions) setQuoteVersionOptions(versions);
-    setSelectedVersion({
-      label: "Version " + result.versionNumber,
-      value: result.versionNumber,
+    fetchQuoteVersions(result.quoteName).then((versions) => {
+      let versionResult = versions.map((versionInd) => ({
+        value: versionInd.version,
+        label: "Version " + versionInd.version?.substring(8),
+        quoteId: versionInd.quoteId,
+        quoteName: versionInd.quoteName,
+      }));
+      // console.log("versions", versionResult);
+      if (versionResult) setQuoteVersionOptions(versionResult);
     });
+
+    setSelectedVersion({
+      label: "Version " + result.version?.substring(8),
+      value: result.version,
+    });
+
     populateCustomerData(result);
     populateMachineData(result);
     populateGeneralData(result);
@@ -677,7 +462,6 @@ export function SparePartsPortfolio(props) {
     });
     setSearchCustResults([]);
   };
-
   const populateMachineData = (result) => {
     setMachineData({
       make: result.make ? result.make : "",
@@ -699,12 +483,10 @@ export function SparePartsPortfolio(props) {
       description: result.description ? result.description : "",
       reference: result.reference ? result.reference : "",
       quoteDate: result.quoteDate ? result.quoteDate : new Date(),
-      quoteNo: result.quoteId ? result.quoteId : "",
+      quoteName: result.quoteName ? result.quoteName : "",
       validity:
-        result.validityDays && result.validityDays !== "EMPTY"
-          ? validityOptions.find(
-              (element) => element.value === result.validityDays
-            )
+        result.validity && result.validity !== "EMPTY"
+          ? validityOptions.find((element) => element.value === result.validity)
           : { label: "", value: "" },
       version: result.version ? result.version : "",
     });
@@ -726,13 +508,28 @@ export function SparePartsPortfolio(props) {
   const populatePricingData = (result) => {
     setBillingDetail({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      billingFrequency: result.billingFrequency,
-      billingType: result.billingType,
+      billingFrequency:
+        result.billingFrequency && result.billingFrequency !== "EMPTY"
+          ? billingFreqOptions.find(
+              (element) => element.value === result.billingFrequency
+            )
+          : { label: "", value: "" },
+      billingType:
+        result.billingType && result.billingType !== "EMPTY"
+          ? billingTypeOptions.find(
+              (element) => element.value === result.billingType
+            )
+          : { label: "", value: "" },
       currency: result.currency,
       discount: result.discount,
       margin: result.margin,
       netPrice: result.netPrice,
-      paymentTerm: result.paymentTerm,
+      paymentTerms:
+        result.paymentTerms && result.paymentTerms !== "EMPTY"
+          ? paymentTermOptions.find(
+              (element) => element.value === result.paymentTerms
+            )
+          : { label: "", value: "" },
     });
     // setPricingData({
     //   priceDate: result.priceDate ? result.priceDate : new Date(),
@@ -764,16 +561,33 @@ export function SparePartsPortfolio(props) {
           serviceRecipientAddress = "";
         });
     }
+    let leadTimeandUnit = result.leadTime && result.leadTime.split(" ");
     setShippingDetail({
-      deliveryPriority: result.deliveryPriority ? result.deliveryPriority : "",
-      deliveryType: result.deliveryType ? result.deliveryType : "",
-      leadTime: result.leadTime ? result.leadTime : "",
+      deliveryPriority: result.deliveryPriority
+        ? deliveryPriorityOptions.find(
+            (element) => element.value === result.deliveryPriority
+          )
+        : { label: "", value: "" },
+      deliveryType: result.deliveryType
+        ? deliveryTypeOptions.find(
+            (element) => element.value === result.deliveryType
+          )
+        : { label: "", value: "" },
+      leadTime:
+        leadTimeandUnit && leadTimeandUnit.length === 2
+          ? leadTimeandUnit[0]
+          : "",
+      unit:
+        leadTimeandUnit && leadTimeandUnit.length === 2
+          ? OPTIONS_LEADTIME_UNIT.find(
+              (element) => element.value === leadTimeandUnit[1]
+            )
+          : { label: "Day", value: "DAY" },
       serviceRecipientAddress: result.serviceRecipientAddress
         ? result.serviceRecipientAddress
         : serviceRecipientAddress,
     });
   };
-
   // Machine search based on model and serial number
   const handleMachineSearch = async (searchMachinefieldName, searchText) => {
     let searchQueryMachine = "";
@@ -901,44 +715,39 @@ export function SparePartsPortfolio(props) {
     });
   };
 
-  //Individual Estimate Details field value change
-  const handleEstimateDetailsDataChange = (e) => {
-    var value = e.target.value;
-    var name = e.target.name;
-    setEstimateDetails({
-      ...machineData,
-      [name]: value,
-    });
-  };
-
-  //Individual General Details field value change
-  const handleGeneralDetailsDataChange = (e) => {
-    var value = e.target.value;
-    var name = e.target.name;
-    setGeneralDetails({
-      ...machineData,
-      [name]: value,
-    });
-  };
-
-  const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+  const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
-    setOpenSnack(snackStatus);
+    setOpenSnack(true);
+  };
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const fetchSummaryDetails = async (selectedQuoteId) => {
+    console.log("ABCD", selectedQuoteId);
+    await fetchQuoteSummary(selectedQuoteId)
+      .then((summary) => {
+        setQuoteSummary(summary);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
-  const [querySearchSelector, setQuerySearchSelector] = useState([
-    {
-      id: 0,
-      selectFamily: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    },
-  ]);
-
-  const updateCustomerData = () => {
+  const updateCustomerData = async () => {
+    let existingCustName = savedQuoteDetails.customerName;
+    // populate service recipient address
+    let serviceRecipientAddress = "";
+    if (customerData.customerID) {
+      await customerSearch("customerId:" + customerData.customerID)
+        .then((searchRes) => {
+          if (searchRes) {
+            serviceRecipientAddress =
+              searchRes[0].serviceRecipent + " " + searchRes[0].contactAddress;
+          }
+        })
+        .catch((e) => {
+          serviceRecipientAddress = "";
+        });
+    }
     let data = {
       ...savedQuoteDetails,
       source: customerData.source,
@@ -953,6 +762,7 @@ export function SparePartsPortfolio(props) {
       country: customerData.country,
     };
     console.log(data);
+    setShippingDetail({ ...shippingDetail, serviceRecipientAddress });
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
       alert("Please enter the email address in correct format");
@@ -1048,7 +858,7 @@ export function SparePartsPortfolio(props) {
       ...savedQuoteDetails,
       deliveryType: shippingDetail.deliveryType?.value,
       deliveryPriority: shippingDetail.deliveryPriority?.value,
-      leadTime: shippingDetail.leadTime + shippingDetail.unit?.value,
+      leadTime: shippingDetail.leadTime + " " + shippingDetail.unit?.value,
       serviceRecipientAddress: shippingDetail.serviceRecipientAddress,
     };
     updateQuoteHeader(quoteId, data)
@@ -1056,6 +866,31 @@ export function SparePartsPortfolio(props) {
         setSavedQuoteDetails(result);
         setViewOnlyTab({ ...viewOnlyTab, shippingViewOnly: true });
         handleSnack("success", "Shipping details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the shipping details!"
+        );
+      });
+  };
+  const updateBillingData = () => {
+    let data = {
+      ...savedQuoteDetails,
+      billingFrequency: billingDetail.billingFrequency?.value,
+      billingType: billingDetail.billingType?.value,
+      priceDate: billingDetail.priceDate,
+      paymentTerms: billingDetail.paymentTerms?.value,
+      currency: billingDetail.currency,
+      netPrice: billingDetail.netPrice,
+      margin: billingDetail.margin,
+      discount: billingDetail.discount,
+    };
+    updateQuoteHeader(quoteId, data)
+      .then((result) => {
+        setSavedQuoteDetails(result);
+        setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+        handleSnack("success", "Billing details updated!");
       })
       .catch((err) => {
         handleSnack(
@@ -1076,7 +911,6 @@ export function SparePartsPortfolio(props) {
     // });
   };
   const quoteItemsColumns = [
-   
     {
       name: (
         <>
@@ -1155,26 +989,26 @@ export function SparePartsPortfolio(props) {
       format: (row) => row.listPrice,
     },
     {
-        name: (
-            <>
-            <div>Extended Price</div>
-            </>
-        ),
-        selector: (row) => row.extendedPrice,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.extendedPrice,
+      name: (
+        <>
+          <div>Extended Price</div>
+        </>
+      ),
+      selector: (row) => row.extendedPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.extendedPrice,
     },
     {
-        name: (
-            <>
-            <div>Currency</div>
-            </>
-        ),
-        selector: (row) => row.currency,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.currency,
+      name: (
+        <>
+          <div>Currency</div>
+        </>
+      ),
+      selector: (row) => row.currency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.currency,
     },
     {
       name: (
@@ -1193,10 +1027,10 @@ export function SparePartsPortfolio(props) {
           <div>Net Adjusted Price</div>
         </>
       ),
-      selector: (row) => row.extendedPrice,
+      selector: (row) => row.adjustedPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.extendedPrice,
+      format: (row) => row.adjustedPrice,
     },
     {
       name: (
@@ -1232,6 +1066,17 @@ export function SparePartsPortfolio(props) {
       format: (row) => row.payerType,
     },
     {
+        name: (
+          <>
+            <div>Delivery Date</div>
+          </>
+        ),
+        selector: (row) => row.deliveryDate,
+        wrap: true,
+        sortable: true,
+        format: (row) => row.deliveryDate,
+      },
+    {
       name: (
         <>
           <div>Actions</div>
@@ -1247,7 +1092,7 @@ export function SparePartsPortfolio(props) {
           <Tooltip
             title="Edit"
             className="mr-2 cursor"
-            // onClick={() => openQuoteItemModal(row)}
+            onClick={() => openQuoteItemModal(row)}
           >
             <img className="m-1" src={penIcon} alt="Edit" />
           </Tooltip>
@@ -1258,6 +1103,129 @@ export function SparePartsPortfolio(props) {
       ),
     },
   ];
+
+  const initialQuoteItem = {
+    groupNumber: "",
+    partType: "",
+    partNumber: "",
+    quantity: "",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    salesUnit: "",
+    currency: "USD",
+    usagePercentage: 0,
+    totalPrice: 0.0,
+    comment: "",
+    description: "",
+    netAdjustedPrice: "",
+    discount: 0,
+    margin: 0,
+    payerType: "",
+  };
+
+  const [quoteItem, setQuoteItem] = useState(initialQuoteItem);
+  const [quoteItemViewOnly, setQuoteItemViewOnly] = useState(false);
+
+  const [quoteItemModalTitle, setQuoteItemModalTitle] =
+    useState("Add New Quote Item");
+  const [quoteItemOpen, setQuoteItemOpen] = useState(false);
+
+  // Open quote item modal
+  const openQuoteItemModal = (row, operation) => {
+    // console.log(row);
+    setQuoteItem(row);
+    if (operation === "existing") {
+      setQuoteItemModalTitle(
+        row?.component + " | " + row?.operation + " | " + row?.description
+      );
+      setQuoteItemViewOnly(true);
+    }
+    setQuoteItemOpen(true);
+  };
+  //Close Quote Item modal
+  const handleQuoteItemClose = () => {
+    setQuoteItemOpen(false);
+    setQuoteItem(initialQuoteItem);
+    setQuoteItemViewOnly(false);
+    setQuoteItemModalTitle("Add New Quote Item");
+  };
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [newVersion, setNewVersion] = useState("");
+  const handleVersionOpen = () => {
+    if (quoteVersionOptions.length === 3)
+      handleSnack("warning", ERROR_MAX_VERSIONS);
+    else {
+      if (savedQuoteDetails.version === "VERSION_1") {
+        if (quoteVersionOptions.length === 1) setNewVersion("VERSION_2");
+        else if (quoteVersionOptions.length === 2) setNewVersion("VERSION_3");
+      } else if (savedQuoteDetails.version === "VERSION_2") {
+        if (quoteVersionOptions.length === 1) setNewVersion("VERSION_1");
+        else if (quoteVersionOptions.length === 2) setNewVersion("VERSION_3");
+      }
+      setVersionOpen(true);
+    }
+  };
+  const handleQuoteItemUpdate = async () => {
+    if (quoteItemModalTitle !== "Add New Quote Item") {
+      await updatePLQuoteItem(quoteItem.plQuoteId, {
+        ...quoteItem,
+        itemType: quoteItem.itemType ? quoteItem.itemType : "PL_ITEM",
+        payerType: quoteItem.payerType?.value,
+      })
+        .then((quoteItem) => {
+          fetchAllDetails(quoteId);
+          handleSnack("success", "Quote item has been updated successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          handleSnack("error", "Item update failed!");
+        });
+    } else {
+      console.log(quoteItem);
+      await addPLQuoteItem(quoteId, {
+        ...quoteItem,
+        itemType: "PL_ITEM",
+        payerType: quoteItem.payerType?.value,
+      })
+        .then((quoteItem) => {
+          fetchAllDetails(quoteId);
+          handleSnack("success", "Quote item has been added successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          handleSnack("error", "Add item failed!");
+        });
+    }
+    setQuoteItemOpen(false);
+  };
+  // Create new version of the quote
+  const createVersion = async () => {
+    await createQuoteVersion(
+      savedQuoteDetails.quoteName,
+      savedQuoteDetails.version,
+      newVersion
+    )
+      .then((result) => {
+        setVersionOpen(false);
+        setQuoteId(result.quoteId);
+        fetchAllDetails(result.quoteId);
+        // setVersionDescription("");
+        handleSnack(
+          "success",
+          `Version ${result.version} created successfully`
+        );
+      })
+      .catch((err) => {
+        setVersionOpen(false);
+
+        if (err.message === "Not Allowed")
+          handleSnack("warning", ERROR_MAX_VERSIONS);
+        else
+          handleSnack("error", "Error occurred while creating builder version");
+        // setVersionDescription("");
+      });
+  };
+
   return (
     <>
       <CustomizedSnackbar
@@ -1266,11 +1234,27 @@ export function SparePartsPortfolio(props) {
         severity={severity}
         message={snackMessage}
       />
+      <ModalCreateVersion
+        versionOpen={versionOpen}
+        handleCloseVersion={() => setVersionOpen(false)}
+        message="Another version of this quote will be created."
+        handleCreateVersion={createVersion}
+        type={"quote"}
+        quoteVersionOptions={quoteVersionOptions}
+        existingVersion={savedQuoteDetails.version}
+        newVersion={newVersion}
+        quoteName={savedQuoteDetails.quoteName}
+      />
+      <QuoteSummary
+        summaryOpen={summaryOpen}
+        handleSummaryClose={() => setSummaryOpen(false)}
+        summary={quoteSummary}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
-              <h5 className="font-weight-600 mb-0">Repair Quote</h5>
+              <h5 className="font-weight-600 mb-0">Spare Part Quote</h5>
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select
@@ -1312,31 +1296,58 @@ export function SparePartsPortfolio(props) {
               <a href="#" className="ml-3 font-size-14">
                 <img src={copyIcon}></img>
               </a>
-              {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+              <DropdownButton
+                className="customDropdown ml-2"
+                id="dropdown-item-button"
+              >
+                <Dropdown.Item as="button" onClick={handleVersionOpen}>
+                  New Versions
+                </Dropdown.Item>
+                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                <Dropdown.Item as="button">Review</Dropdown.Item>
+              </DropdownButton>
             </div>
           </div>
 
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0 bg-primary p-3 border-radius-10">
-              <div className="" style={{ display: "contents" }}>
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+              <div className="row col-md-11">
                 <span
-                  className="mr-3 text-white"
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "500",
-                    whiteSpace: "pre",
-                  }}
+                  className="mr-3 ml-2 text-white"
+                  style={{ fontSize: "20px" }}
                 >
                   Quote Header
                 </span>
-                <a href="#" className="btn-sm text-white">
-                  <i class="fa fa-pencil" aria-hidden="true"></i>
-                </a>
-                <a href="#" className="btn-sm text-white">
-                  <i class="fa fa-bookmark-o" aria-hidden="true"></i>
-                </a>
-                {/* <a href="#" className="btn-sm text-white"><img style={{ width: '14px' }} src={folderaddIcon}></img></a> */}
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Edit">
+                    <EditIcon onClick={() => makeHeaderEditable()} />
+                  </Tooltip>
+                </div>
+                {/* <div className="btn-sm cursor text-white">
+                      <Tooltip title="Reset">
+                        <ReplayIcon onClick={() => handleResetData("RESET")} />
+                      </Tooltip>
+                    </div>
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Share">
+                        <ShareOutlinedIcon />
+                      </Tooltip>
+                    </div>
+
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Add to Review">
+                        <ReviewAddIcon />
+                      </Tooltip>
+                    </div> */}
               </div>
+              <div className="col-md-1 text-right">
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Summary">
+                    <TextSnippetIcon onClick={() => setSummaryOpen(true)} />
+                  </Tooltip>
+                </div>
+              </div>
+              {/* <div className="hr"></div> */}
             </h5>
             <Box
               className="mt-4 tab2"
@@ -1347,7 +1358,6 @@ export function SparePartsPortfolio(props) {
                   <TabList
                     className=""
                     onChange={handleChange}
-                    aria-label="lab API tabs example"
                   >
                     <Tab
                       label="Customer"
@@ -1456,7 +1466,6 @@ export function SparePartsPortfolio(props) {
                               onChange={handleCustomerDataChange}
                               className="form-control border-radius-10 text-primary"
                               id="contatEmail"
-                              aria-describedby="emailHelp"
                             />
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
@@ -1763,55 +1772,50 @@ export function SparePartsPortfolio(props) {
                   {!viewOnlyTab.estViewOnly ? (
                     <>
                       <div className="row mt-4 input-fields">
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            PREPARED BY{" "}
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PREPARED BY
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <input
-                              type="email"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
                               name="preparedBy"
                               value={estimateDetails.preparedBy}
-                              onChange={handleEstimateDetailsDataChange}
-                              aria-describedby="emailHelp"
-                              placeholder="Placeholder (Optional)"
+                              onChange={(e) =>
+                                setEstimateDetails({
+                                  ...estimateDetails,
+                                  preparedBy: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             APPROVED BY
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <input
-                              type="email"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
                               name="approvedBy"
                               value={estimateDetails.approvedBy}
-                              onChange={handleEstimateDetailsDataChange}
-                              aria-describedby="emailHelp"
-                              placeholder="Placeholder (Optional)"
+                              onChange={(e) =>
+                                setEstimateDetails({
+                                  ...estimateDetails,
+                                  approvedBy: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             PREPARED ON
                           </label>
                           <div className="d-flex align-items-center date-box w-100">
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DatePicker
                                   variant="inline"
@@ -1831,35 +1835,31 @@ export function SparePartsPortfolio(props) {
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             REVISED BY
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <input
-                              type="email"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
                               name="revisedBy"
                               value={estimateDetails.revisedBy}
-                              onChange={handleEstimateDetailsDataChange}
-                              aria-describedby="emailHelp"
-                              placeholder="Placeholder (Optional)"
+                              onChange={(e) =>
+                                setEstimateDetails({
+                                  ...estimateDetails,
+                                  revisedBy: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             REVISED ON
                           </label>
                           <div className="d-flex align-items-center date-box w-100">
-                            <div class="form-group w-100">
+                            <div className="form-group w-100">
                               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DatePicker
                                   variant="inline"
@@ -1879,14 +1879,11 @@ export function SparePartsPortfolio(props) {
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             SALES OFFICE / BRANCH
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <Select
                               onChange={(e) =>
                                 setEstimateDetails({
@@ -1971,94 +1968,91 @@ export function SparePartsPortfolio(props) {
                   {!viewOnlyTab.generalViewOnly ? (
                     <>
                       <div className="row mt-4 input-fields">
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             QUOTE DATE
                           </label>
-                          <div className="d-flex align-items-center date-box w-100">
-                            <div class="form-group w-100">
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  label=""
-                                  name="quoteDate"
-                                  value={generalDetails.quoteDate}
-                                  onChange={(e) =>
-                                    setGeneralDetails({
-                                      ...generalDetails,
-                                      quoteDate: e,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
-                            </div>
+                          <div className="align-items-center date-box">
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                              <MobileDatePicker
+                                inputFormat="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                // minDate={generalDetails.quoteDate}
+                                // maxDate={new Date()}
+                                closeOnSelect
+                                value={generalDetails.quoteDate}
+                                onChange={(e) =>
+                                  setGeneralDetails({
+                                    ...generalDetails,
+                                    quoteDate: e,
+                                  })
+                                }
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    variant="standard"
+                                    inputProps={{
+                                      ...params.inputProps,
+                                      style: FONT_STYLE,
+                                    }}
+                                  />
+                                )}
+                              />
+                            </LocalizationProvider>
                           </div>
-                          {/* <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                            </div> */}
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             QUOTE #
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <input
                               type="text"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
+                              disabled
+                              className="form-control border-radius-10 text-primary"
                               name="quote"
-                              value={generalDetails.quoteId}
-                              onChange={handleGeneralDetailsDataChange}
-                              aria-describedby="emailHelp"
-                              placeholder="Placeholder (Optional)"
+                              value={generalDetails.quoteName}
                             />
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             QUOTE DESCRIPTION
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <input
-                              type="email"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
+                              type="text"
+                              className="form-control border-radius-10 text-primary"
                               name="description"
                               value={generalDetails.description}
-                              onChange={handleGeneralDetailsDataChange}
-                              aria-describedby="emailHelp"
-                              placeholder="Placeholder (Optional)"
+                              onChange={(e) =>
+                                setGeneralDetails({
+                                  ...generalDetails,
+                                  description: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             REFERENCE
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <input
-                              class="form-control border-radius-10 text-primary"
+                              className="form-control border-radius-10 text-primary"
                               name="reference"
                               value={generalDetails.reference}
-                              onChange={handleGeneralDetailsDataChange}
+                              onChange={(e) =>
+                                setGeneralDetails({
+                                  ...generalDetails,
+                                  reference: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               VALIDITY
@@ -2078,7 +2072,7 @@ export function SparePartsPortfolio(props) {
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               VERSION
@@ -2087,9 +2081,7 @@ export function SparePartsPortfolio(props) {
                               type="text"
                               className="form-control border-radius-10 text-primary"
                               disabled
-                              value={parseFloat(selectedVersion.value).toFixed(
-                                1
-                              )}
+                              value={generalDetails.version}
                             />
                           </div>
                         </div>
@@ -2109,7 +2101,7 @@ export function SparePartsPortfolio(props) {
                           disabled={
                             !generalDetails.quoteDate ||
                             !generalDetails.description ||
-                            !generalDetails.quoteNo ||
+                            !generalDetails.quoteName ||
                             !generalDetails.reference ||
                             !generalDetails.validity
                           }
@@ -2131,7 +2123,7 @@ export function SparePartsPortfolio(props) {
                       />
                       <ReadOnlyField
                         label="Quote #"
-                        value={generalDetails.quoteNo}
+                        value={generalDetails.quoteName}
                         className="col-md-4 col-sm-4"
                       />
                       <ReadOnlyField
@@ -2151,17 +2143,16 @@ export function SparePartsPortfolio(props) {
                       />
                       <ReadOnlyField
                         label="VERSION"
-                        value={generalDetails.version?.label}
+                        value={generalDetails.version}
                         className="col-md-4 col-sm-4"
                       />
                     </div>
                   )}
                 </TabPanel>
                 <TabPanel value="price">
-                  {" "}
-                  <TabPanel value="price">
-                    {!viewOnlyTab.priceViewOnly ? (
-                      <div className="row mt-4">
+                  {!viewOnlyTab.priceViewOnly ? (
+                    <>
+                      <div className="row mt-4 input-fields">
                         <div className="col-md-3 col-sm-3">
                           <div className="form-group">
                             <p className="font-size-12 font-weight-500 mb-2">
@@ -2173,11 +2164,11 @@ export function SparePartsPortfolio(props) {
                                 onChange={(e) =>
                                   setBillingDetail({
                                     ...billingDetail,
-                                    paymentTerm: e,
+                                    paymentTerms: e,
                                   })
                                 }
                                 options={paymentTermOptions}
-                                value={billingDetail.paymentTerm}
+                                value={billingDetail.paymentTerms}
                                 styles={FONT_STYLE_SELECT}
                               />
                             </div>
@@ -2185,24 +2176,20 @@ export function SparePartsPortfolio(props) {
                         </div>
                         <div className="col-md-3 col-sm-3">
                           <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
+                            <label className="font-size-12 font-weight-500 mb-2">
                               CURRENCY
-                            </p>
-                            <div>
-                              <h6 className="font-weight-600">
-                                <input
-                                  className="form-control border-radius-10 text-primary"
-                                  name="reference"
-                                  value={billingDetail.currency}
-                                  onChange={(e) =>
-                                    setBillingDetail({
-                                      ...billingDetail,
-                                      currency: e.target.value,
-                                    })
-                                  }
-                                />
-                              </h6>
-                            </div>
+                            </label>
+                            <input
+                              className="form-control border-radius-10 text-primary"
+                              name="reference"
+                              value={billingDetail.currency}
+                              onChange={(e) =>
+                                setBillingDetail({
+                                  ...billingDetail,
+                                  currency: e.target.value,
+                                })
+                              }
+                            />
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3">
@@ -2255,7 +2242,7 @@ export function SparePartsPortfolio(props) {
                                     billingType: e,
                                   })
                                 }
-                                options={paymentTermOptions}
+                                options={billingTypeOptions}
                                 value={billingDetail.billingType}
                                 styles={FONT_STYLE_SELECT}
                               />
@@ -2275,7 +2262,7 @@ export function SparePartsPortfolio(props) {
                                     billingFrequency: e,
                                   })
                                 }
-                                options={paymentTermOptions}
+                                options={billingFreqOptions}
                                 value={billingDetail.billingFrequency}
                                 styles={FONT_STYLE_SELECT}
                               />
@@ -2288,19 +2275,17 @@ export function SparePartsPortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               NET PRICE
                             </p>
-                            <h6 className="font-weight-600">
-                              <input
-                                className="form-control border-radius-10 text-primary"
-                                name="reference"
-                                value={billingDetail.netPrice}
-                                onChange={(e) =>
-                                  setBillingDetail({
-                                    ...billingDetail,
-                                    netPrice: e.target.value,
-                                  })
-                                }
-                              />
-                            </h6>
+                            <input
+                              className="form-control border-radius-10 text-primary"
+                              name="reference"
+                              value={billingDetail.netPrice}
+                              onChange={(e) =>
+                                setBillingDetail({
+                                  ...billingDetail,
+                                  netPrice: e.target.value,
+                                })
+                              }
+                            />
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3">
@@ -2308,19 +2293,19 @@ export function SparePartsPortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               MARGIN
                             </p>
-                            <h6 className="font-weight-600">
-                              <input
-                                className="form-control border-radius-10 text-primary"
-                                name="reference"
-                                value={billingDetail.margin}
-                                onChange={(e) =>
-                                  setBillingDetail({
-                                    ...billingDetail,
-                                    margin: e.target.value,
-                                  })
-                                }
-                              />
-                            </h6>
+                            {/* <h6 className="font-weight-600"> */}
+                            <input
+                              className="form-control border-radius-10 text-primary"
+                              name="reference"
+                              value={billingDetail.margin}
+                              onChange={(e) =>
+                                setBillingDetail({
+                                  ...billingDetail,
+                                  margin: e.target.value,
+                                })
+                              }
+                            />
+                            {/* </h6> */}
                           </div>
                         </div>
 
@@ -2329,117 +2314,134 @@ export function SparePartsPortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               DISCOUNT
                             </p>
-                            <h6 className="font-weight-600">
-                              <input
-                                className="form-control border-radius-10 text-primary"
-                                name="reference"
-                                value={billingDetail.discount}
-                                onChange={(e) =>
-                                  setBillingDetail({
-                                    ...billingDetail,
-                                    discount: e.target.value,
-                                  })
-                                }
-                              />
-                            </h6>
+                            {/* <h6 className="font-weight-600"> */}
+                            <input
+                              className="form-control border-radius-10 text-primary"
+                              name="reference"
+                              value={billingDetail.discount}
+                              onChange={(e) =>
+                                setBillingDetail({
+                                  ...billingDetail,
+                                  discount: e.target.value,
+                                })
+                              }
+                            />
+                            {/* </h6> */}
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <>
-                        <div className="row mt-4">
-                          <ReadOnlyField
-                            label="PAYMENT TERMS"
-                            value={billingDetail.paymentTerm?.label}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="CURRENCY"
-                            value={billingDetail.currency}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="PRICING DATE"
-                            value={
-                              <Moment format="DD/MM/YYYY">
-                                {billingDetail.priceDate}
-                              </Moment>
-                            }
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="BILLING TYPE"
-                            value={billingDetail.billingType?.label}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="BILLING FREQUENCY"
-                            value={billingDetail.billingFrequency?.label}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="NET PRICE"
-                            value={billingDetail.netPrice}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="MARGIN"
-                            value={billingDetail.margin}
-                            className="col-md-4 col-sm-4"
-                          />
-                          <ReadOnlyField
-                            label="DISCOUNT"
-                            value={billingDetail.discount}
-                            className="col-md-4 col-sm-4"
-                          />
-                        </div>
-                        <hr />
-                        <a href="#" className="btn bg-primary text-white">
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white mr-1"
+                          onClick={() => handleResetData("CANCEL")}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          onClick={updateBillingData}
+                          disabled={
+                            !billingDetail.paymentTerms ||
+                            !billingDetail.billingFrequency ||
+                            !billingDetail.billingType
+                          }
+                        >
+                          Save & Next
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="row mt-4">
+                        <ReadOnlyField
+                          label="PAYMENT TERMS"
+                          value={billingDetail.paymentTerms?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CURRENCY"
+                          value={billingDetail.currency}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="PRICING DATE"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {billingDetail.priceDate}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="BILLING TYPE"
+                          value={billingDetail.billingType?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="BILLING FREQUENCY"
+                          value={billingDetail.billingFrequency?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="NET PRICE"
+                          value={billingDetail.netPrice}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="MARGIN"
+                          value={billingDetail.margin}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="DISCOUNT"
+                          value={billingDetail.discount}
+                          className="col-md-4 col-sm-4"
+                        />
+                      </div>
+                      <hr />
+                      {/* <a href="#" className="btn bg-primary text-white">
                           <AddIcon className="mr-2" />
                           ADD PAYER
-                        </a>
-                        <div className="mt-3">
-                          <DataTable
-                            className=""
-                            title=""
-                            columns={masterColumns2}
-                            data={rows2}
-                            customStyles={customStyles}
-                            pagination
-                            // onRowClicked={(e) => handleRowClick(e)}
-                            selectableRows
-                          />
+                        </a> */}
+                      <div className="mt-3">
+                        <PayerGridTable
+                          handleSnack={handleSnack}
+                          dataRows={payers}
+                          quoteId={quoteId}
+                        />
+                      </div>
+                      <div className="mt-3 d-flex align-items-center justify-content-between">
+                        <h6 className="mb-0 font-size-16 font-weight-600">
+                          PRICE/ESTIMATE SUMMARY
+                        </h6>
+                        <div className="d-flex align-items-center">
+                          <a href="#" className="text-primary mr-3">
+                            <ModeEditOutlineOutlinedIcon />
+                          </a>
+                          <a href="#" className="text-primary mr-3">
+                            <ShareOutlinedIcon />
+                          </a>
+                          <a href="#" className="btn bg-primary text-white">
+                            <AddIcon className="mr-2" />
+                            Add Price Summary Type
+                          </a>
                         </div>
-                        <div className="mt-3 d-flex align-items-center justify-content-between">
-                          <h6 className="mb-0 font-size-16 font-weight-600">
-                            PRICE/ESTIMATE SUMMARY
-                          </h6>
-                          <div className="d-flex align-items-center">
-                            <a href="#" className="text-primary mr-3">
-                              <ModeEditOutlineOutlinedIcon />
-                            </a>
-                            <a href="#" className="text-primary mr-3">
-                              <ShareOutlinedIcon />
-                            </a>
-                            <a href="#" className="btn bg-primary text-white">
-                              <AddIcon className="mr-2" />
-                              Add Price Summary Type
-                            </a>
-                          </div>
-                        </div>
-                        <div className="mt-3">
-                          <DataTable
-                            className=""
-                            title=""
-                            columns={masterColumns3}
-                            data={rows3}
-                            customStyles={customStyles}
-                            pagination
-                            // onRowClicked={(e) => handleRowClick(e)}
-                            selectableRows
-                          />
-                        </div>
-                        <div className="mt-3 d-flex align-items-center justify-content-between">
+                      </div>
+                      <div className="mt-3">
+                        <DataTable
+                          className=""
+                          title=""
+                          columns={priceSummaryColumns}
+                          data={priceSummaryRows}
+                          customStyles={customStyles}
+                          pagination
+                          // onRowClicked={(e) => handleRowClick(e)}
+                          selectableRows
+                        />
+                      </div>
+                      {/* <div className="mt-3 d-flex align-items-center justify-content-between">
                           <h6 className="mb-0 font-size-16 font-weight-600">
                             OTHER MISC ITEMS $
                           </h6>
@@ -2460,30 +2462,26 @@ export function SparePartsPortfolio(props) {
                           <DataTable
                             className=""
                             title=""
-                            columns={masterColumns4}
-                            data={rows4}
+                            columns={miscItemColumns}
+                            data={miscItemRows}
                             customStyles={customStyles}
                             pagination
                             // onRowClicked={(e) => handleRowClick(e)}
                             selectableRows
                           />
-                        </div>
-                      </>
-                    )}
-                  </TabPanel>
+                        </div> */}
+                    </>
+                  )}
                 </TabPanel>
                 <TabPanel value="shipping">
                   {!viewOnlyTab.shippingViewOnly ? (
                     <>
                       <div className="row mt-4 input-fields">
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             DELIVERY TYPE
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <Select
                               onChange={(e) =>
                                 setShippingDetail({
@@ -2497,14 +2495,11 @@ export function SparePartsPortfolio(props) {
                             />
                           </div>
                         </div>
-                        <div class="col-md-4 col-sm-4">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
+                        <div className="col-md-4 col-sm-4">
+                          <label className="text-light-dark font-size-12 font-weight-500">
                             DELIVERY PRIORITY
                           </label>
-                          <div class="form-group w-100">
+                          <div className="form-group w-100">
                             <Select
                               onChange={(e) =>
                                 setShippingDetail({
@@ -2559,8 +2554,8 @@ export function SparePartsPortfolio(props) {
                             <label className="text-light-dark font-size-12 font-weight-500">
                               SERVICE RECEPIENT ADDRESS
                             </label>
-                            <input
-                              class="form-control border-radius-10 text-primary"
+                            <TextareaAutosize
+                              className="form-control border-radius-10 text-primary"
                               value={shippingDetail.serviceRecipientAddress}
                               onChange={(e) =>
                                 setShippingDetail({
@@ -2609,7 +2604,12 @@ export function SparePartsPortfolio(props) {
                       />
                       <ReadOnlyField
                         label="LEAD TIME"
-                        value={shippingDetail.leadTime}
+                        value={
+                          shippingDetail.leadTime &&
+                          shippingDetail.leadTime +
+                            " " +
+                            shippingDetail.unit?.label
+                        }
                         className="col-md-4 col-sm-4"
                       />
                       <ReadOnlyField
@@ -2623,333 +2623,47 @@ export function SparePartsPortfolio(props) {
               </TabContext>
             </Box>
           </div>
-          {/* <div className="card px-4 pb-4 mt-5 pt-0">
-                        <div className="row align-items-center p-3">
-                            <div className="col-1">
-                                <div className="d-flex ">
-                                    <h5 className="mr-4 mb-0"><span style={{ fontSize: "18px", whiteSpace: "pre" }}>Quote Item</span></h5>
-                                </div>
-                            </div>
-                            <div className="col-9">
-                                <div className="d-flex justify-content-between align-items-center w-100 ml-4">
-                                    <div className="row align-items-center m-0 ">
-                                        {querySearchSelector.map((obj, i) => {
-                                            return (
-                                                <>
-                                                    <div className="customselect border-primary d-flex align-items-center mr-3 my-2 border-radius-10">
-                                                        {i > 0 ? (
-                                                            <SelectFilter
-                                                                isClearable={true}
-                                                                defaultValue={{ label: "And", value: "AND" }}
-                                                                options={[
-                                                                    { label: "And", value: "AND", id: i },
-                                                                    { label: "Or", value: "OR", id: i },
-                                                                ]}
-                                                                placeholder="Search By.."
-                                                                onChange={(e) => handleOperator(e, i)}
-                                                               
-                                                                value={obj.selectOperator}
-                                                            />
-                                                        ) : (
-                                                            <></>
-                                                        )}
+          <SparepartQuoteItemModal
+            quoteItem={quoteItem}
+            setQuoteItem={setQuoteItem}
+            handleQuoteItemUpdate={handleQuoteItemUpdate}
+            quoteItemOpen={quoteItemOpen}
+            handleQuoteItemClose={handleQuoteItemClose}
+            title={quoteItemModalTitle}
+            quoteItemViewOnly={quoteItemViewOnly}
+            setQuoteItemViewOnly={setQuoteItemViewOnly}
+            handleSnack={handleSnack}
+          />
 
-                                                        <div>
-                                                            <SelectFilter
-                                                                options={[
-                                                                    { label: "Make", value: "make", id: i },
-                                                                    { label: "Family", value: "family", id: i },
-                                                                    { label: "Model", value: "model", id: i },
-                                                                    { label: "Prefix", value: "prefix", id: i },
-                                                                ]}
-                                                                placeholder="Search By.."
-                                                                onChange={(e) => handleFamily(e, i)}
-                                                                value={obj.selectFamily}
-                                                            />
-                                                        </div>
-                                                        <div className="customselectsearch customize">
-                                                            <span className="search-icon-postn"><SearchIcon className="text-primary" /></span>
-                                                            <input
-                                                                className="custom-input-sleact "
-                                                                style={{ position: "relative" }}
-                                                                type="text"
-                                                                placeholder="Search Parts"
-                                                                value={obj.inputSearch}
-                                                                onChange={(e) => handleInputSearch(e, i)}
-                                                                id={"inputSearch-" + i}
-                                                                autoComplete="off"
-                                                            />
-                                                            <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Item</div>
-
-                                                            {
-                                                                <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
-                                                                    {obj.selectOptions.map((currentItem, j) => (
-                                                                        <li
-                                                                            className="list-group-item"
-                                                                            key={j}
-                                                                            onClick={(e) =>
-                                                                                handleSearchListClick(
-                                                                                    e,
-                                                                                    currentItem,
-                                                                                    obj,
-                                                                                    i
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            {currentItem}
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                </>
-                                            );
-                                        })}
-                                        <div onClick={(e) => addSearchQuerryHtml(e)}>
-                                            <Link
-                                                to="#"
-                                                className="btn-sm text-primary border mr-2"
-                                                style={{ border: "1px solid #872FF7" }}
-                                            >
-                                                +
-                                            </Link>
-                                        </div>
-                                        <div onClick={handleDeletQuerySearch}>
-                                            <Link to="#" className="btn-sm border">
-                                                <svg
-                                                    data-name="Layer 41"
-                                                    id="Layer_41"
-                                                    fill="#872ff7"
-                                                    viewBox="0 0 50 50"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <title />
-                                                    <path
-                                                        className="cls-1"
-                                                        d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                                    />
-                                                    <path
-                                                        className="cls-1"
-                                                        d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                                    />
-                                                    <path
-                                                        className="cls-1"
-                                                        d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                                    />
-                                                </svg>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div className="col-2">
-                                <div className="d-flex align-items-center justify-content-end">
-                                  
-                                    <a href="#" data-toggle="modal" data-target="#myModal12" className=" btn bg-primary text-white">+ Upload</a>
-
-                                </div>
-                            </div>
-                        </div>
-                        <DataTable
-                            className=""
-                            title=""
-                            columns={masterColumns}
-                            data={rows}
-                            customStyles={customStyles}
-                            pagination
-                            selectableRows
-                        />
-                        <div className="my-2">
-                            <Link to="/QuoteSolutionBuilder" style={{ cursor: 'pointer' }} className=" pull-right btn bg-primary text-white">
-                                Next</Link>
-                        </div>
-                    </div> */}
-        </div>
-        <div className="card">
-          <div
-            className=""
-            style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
-          >
-            <DataTable
-              className=""
-              title=""
-              columns={quoteItemsColumns}
-              data={quoteItems}
-              customStyles={customStyles}
-              pagination
-              // onRowClicked={(e) => handleRowClick(e)}
-              // selectableRows
-            />
-          </div>
-        </div>
-        <div
-          class="modal right fade"
-          id="myModal12"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="myModal12"
-        >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div
-                class="modal-header"
-                style={{ borderBottom: "1px solid #872ff7" }}
-              >
-                <h4 class="modal-title text-primary" id="myModal12">
-                  Order Details
-                </h4>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true" className="text-primary">
-                    &times;
-                  </span>
-                </button>
-              </div>
-
-              <div class="modal-body">
-                <div className="p-2">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Description</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>REPLACE ENGINE 797</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Service Organisation</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>ESPERENCE (SV71)</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>SERIAL NUMBER#</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>LAJ00632</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Customer</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>207039 CHINALCO BEJING</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Model</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>797</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Manufacturer</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>Caterpillar</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Price Method</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>Sale Price</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Price Type</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>List Price</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Net Price</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>$50000</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Estimated External Service Purchase $</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>$5000</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Estimated Labour</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>$10000</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Estimated Parts</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>$35000</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Adjusted Price</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>$48000</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Discounts</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>$2000</b>
-                    </h6>
-                  </div>
-                  <div className="hr"></div>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 ">
-                      <span>Margin</span>
-                    </p>
-                    <h6 className="mb-0 ">
-                      <b>32%</b>
-                    </h6>
-                  </div>
+          <div className="card px-4 pb-4 mt-5 pt-4">
+            <div className="row mb-3">
+              <div className="col-md-10 text-black">Quote Items</div>
+              <div className="col-md-2">
+                <div className="text-right" style={{ justifyContent: "right" }}>
+                  <button
+                    type="button"
+                    className="btn btn-light bg-primary text-white"
+                    onClick={() => openQuoteItemModal("", "new")}
+                  >
+                    + Quote Item
+                  </button>
                 </div>
               </div>
+            </div>
+            <div
+              className=""
+              style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
+            >
+              <DataTable
+                className=""
+                title=""
+                columns={quoteItemsColumns}
+                data={quoteItems}
+                customStyles={customStyles}
+                pagination
+                // onRowClicked={(e) => handleRowClick(e)}
+                // selectableRows
+              />
             </div>
           </div>
         </div>

@@ -18,6 +18,7 @@ import FormGroup from "@mui/material/FormGroup";
 import Tab from "@mui/material/Tab";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import $ from "jquery";
+import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { MuiMenuComponent } from "pages/Operational";
 import React, { useEffect, useState } from "react";
@@ -287,7 +288,7 @@ const SparePartQuoteConfiguration = () => {
                 <TabPanel value="partlist">
                   <div className="d-flex justify-content-end">
                     <Link
-                      to="/SparePartsPortfolio"
+                      to={SPARE_PARTS_QUOTE_DETAILS}
                       style={{ cursor: "pointer" }}
                       className="btn bg-primary text-white"
                     >
