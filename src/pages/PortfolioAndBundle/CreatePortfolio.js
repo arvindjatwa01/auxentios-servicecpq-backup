@@ -11635,11 +11635,12 @@ export function CreatePortfolio(props) {
 
         setBundleOrServiceItemPriceData(updatePriceId.data);
 
+        console.log("createServiceOrBundle ", createServiceOrBundle);
 
         const rObj = {
           standardJobId: bundleServiceAddPortfolioItem.templateId,
           repairKitId: bundleServiceAddPortfolioItem.repairOption,
-          itemId: bundleServiceAddPortfolioItem.id,
+          itemId: createdServiceData.itemId,
           itemPriceDataId: data.id
         }
         if (((bundleServiceAddPortfolioItem.templateId == "") ||
