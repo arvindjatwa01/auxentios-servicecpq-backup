@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, GET_SEARCH_FAMILY_CUSTOM_COVERAGE } from "./CONSTANTS";
+import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, GET_SEARCH_FAMILY_CUSTOM_COVERAGE, LINK_ITEM_TO_PORTFOLIO } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -48,6 +48,8 @@ export const getSearchQueryCoverage = (searchStr) => {
     }
   });
 };
+
+
 export const getSearchCoverageForFamily = (family, familyValue) => {
   console.log("Query coverageService > getSearchCoverageForFamily called...");
   return new Promise((resolve, reject) => {
@@ -69,6 +71,8 @@ export const getSearchCoverageForFamily = (family, familyValue) => {
     }
   });
 };
+
+
 export const getSearchForPortfolio = (family, familyValue) => {
   console.log("Query coverageService > getSearchForPortfolio called...");
   return new Promise((resolve, reject) => {
@@ -252,3 +256,25 @@ export const getServiceBundleItemPrices = (searchStr) => {
     }
   });
 };
+
+// Link Item to Portfolio
+export const linkItemToPortfolio = (payLoadUrl) => {
+  console.log("searchQueryService > linkItemToPortfolio called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(LINK_ITEM_TO_PORTFOLIO + payLoadUrl, { headers: headersData })
+        .then((res) => {
+          console.log("linkItemToPortfolio > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("linkItemToPortfolio > axios err=", err);
+          reject("Error in linkItemToPortfolio axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > linkItemToPortfolio, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+}

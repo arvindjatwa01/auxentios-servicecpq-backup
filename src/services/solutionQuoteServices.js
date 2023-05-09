@@ -115,7 +115,11 @@ export const getRecentQuotes = (quoteType) => {
                 .get(RECENT_QUOTES_COMMON_PATH() + quoteType, { headers: headersData })
                 .then((res) => {
                     console.log("getRecentQuotes > axios res=", res);
-                    resolve(res.data);
+                    if(res.status === 200){
+                        resolve(res.data);
+                    }else {
+                        resolve([]);
+                    }
                 })
                 .catch((err) => {
                     console.log("getRecentQuotes > axios err=", err);

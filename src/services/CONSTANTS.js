@@ -115,6 +115,7 @@ export const PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_PORTFOLIO_ITEM() + "/get-R
 export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM() + "/search?search=";
 export const PORTFOLIO_ITEM_PRICE_BY_ITEM_ID = () => CREATE_PORTFOLIO_ITEM() + "/price";
 export const PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = CREATE_PORTFOLIO_ITEM() + "/portfolio-service-bundle-item-prices?";
+export const LINK_ITEM_TO_PORTFOLIO = CREATE_PORTFOLIO_ITEM() + "/link-item-to-portfolio?";
 
 // Custom Portfolio 
 
@@ -131,7 +132,7 @@ export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/c
 export const DELETE_CUSTOM_PORTFOLIO_ITEM = SOLUTION_BUILDER_URI + "item/custom/price/";
 export const GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA = SOLUTION_BUILDER_URI + "item/custom/price/";
 export const GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = SOLUTION_BUILDER_URI + "item/custom/portfolio-service-bundle-item-prices?";
-
+export const LINK_CUSTOM_ITEM_TO_PORTFOLIO = CREATE_CUSTOM_PORTFOLIO_ITEM() + "/link-item-to-portfolio?";
 
 export const COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-portfolios-items-to-custom-portfolio?"
 export const COPY_MATER_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-mater-to-custom-portfolio?"

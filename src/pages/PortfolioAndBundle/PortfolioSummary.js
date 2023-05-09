@@ -3867,7 +3867,8 @@ export const PortfolioSummary = () => {
     }
   }
   const getPriceCalculatorDataFun = async (data, editAbleOrNot, priceDataEditOrNot) => {
-    console.log("my data is : ", data)
+    // console.log("my data is : ", data)
+    console.log("addPortFolioItem : ", addPortFolioItem)
     setPriceCalculatorTabEditAble(priceDataEditOrNot);
     setAddportFolioItem({
       ...addPortFolioItem,
@@ -3979,15 +3980,17 @@ export const PortfolioSummary = () => {
                 itemPriceDataId: data.id
               }
 
-              if ((addPortFolioItem.templateId == "") ||
-                (addPortFolioItem.templateId == null) ||
-                addPortFolioItem.repairOption != "") {
+              if (((addPortFolioItem.templateId == "") ||
+                (addPortFolioItem.templateId == null)) &&
+                (addPortFolioItem.repairOption != "") ||
+                (addPortFolioItem.repairOption != null)) {
                 const updateRkId = portfolioItemPriceRkId(rObj);
               }
 
-              if ((addPortFolioItem.repairOption == "") ||
-                (addPortFolioItem.repairOption == null) ||
-                addPortFolioItem.templateId != "") {
+              if (((addPortFolioItem.repairOption == "") ||
+                (addPortFolioItem.repairOption == null)) &&
+                ((addPortFolioItem.templateId != "") ||
+                  (addPortFolioItem.templateId != null))) {
                 const updateSjId = portfolioItemPriceSjid(rObj);
               }
             }
@@ -4003,17 +4006,25 @@ export const PortfolioSummary = () => {
                 itemPriceDataId: itemPriceData.data.itemPriceDataId,
               }
 
-              if ((addPortFolioItem.templateId == "") ||
-                (addPortFolioItem.templateId == null) ||
-                addPortFolioItem.repairOption != "") {
-                const updateRkId = portfolioItemPriceRkId(rObj);
-              }
+              // if(((addPortFolioItem.templateId == "") || 
+              // (addPortFolioItem.templateId == null) || 
+              // (addPortFolioItem.templateId == undefined))){
 
-              if ((addPortFolioItem.repairOption == "") ||
-                (addPortFolioItem.repairOption == null) ||
-                addPortFolioItem.templateId != "") {
-                const updateSjId = portfolioItemPriceSjid(rObj);
-              }
+              // }
+
+              // if (((addPortFolioItem.templateId == "") ||
+              //   (addPortFolioItem.templateId == null)) &&
+              //   ((addPortFolioItem.repairOption != "") ||
+              //     (addPortFolioItem.repairOption != null))) {
+              //   const updateRkId = portfolioItemPriceRkId(rObj);
+              // }
+
+              // if (((addPortFolioItem.repairOption == "") ||
+              //   (addPortFolioItem.repairOption == null)) &&
+              //   ((addPortFolioItem.templateId != "") ||
+              //     (addPortFolioItem.templateId != null))) {
+              //   const updateSjId = portfolioItemPriceSjid(rObj);
+              // }
             }
             setBundleTabs("bundleServiceAdministrative")
           }
@@ -4249,19 +4260,21 @@ export const PortfolioSummary = () => {
           const rObj = {
             standardJobId: addPortFolioItem.templateId,
             repairKitId: addPortFolioItem.repairOption,
-            itemId: addPortFolioItem.id,
+            itemId: createdServiceData.itemId,
             itemPriceDataId: data.id
           }
 
-          if ((addPortFolioItem.templateId == "") ||
-            (addPortFolioItem.templateId == null) ||
-            addPortFolioItem.repairOption != "") {
+          if (((addPortFolioItem.templateId == "") ||
+            (addPortFolioItem.templateId == null)) &&
+            ((addPortFolioItem.repairOption != "") ||
+              (addPortFolioItem.repairOption != null))) {
             const updateRkId = portfolioItemPriceRkId(rObj);
           }
 
-          if ((addPortFolioItem.repairOption == "") ||
-            (addPortFolioItem.repairOption == null) ||
-            addPortFolioItem.templateId != "") {
+          if (((addPortFolioItem.repairOption == "") ||
+            (addPortFolioItem.repairOption == null)) &&
+            (addPortFolioItem.templateId != "" ||
+              (addPortFolioItem.templateId != null))) {
             const updateSjId = portfolioItemPriceSjid(rObj);
           }
 
@@ -4593,7 +4606,7 @@ export const PortfolioSummary = () => {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity,
+      format: (row) => row?.quantity ? row?.quantity : 1,
     },
     {
       name: (

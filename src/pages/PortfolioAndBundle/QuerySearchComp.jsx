@@ -5,7 +5,7 @@ import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion, getSearchCustomPortfolio, itemSearchDropdown } from "../../services/index"
+import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion, getSearchCustomPortfolio, itemSearchDropdown, getServiceBundleItemPrices, portfolioCoverageDropdownList } from "../../services/index"
 import { useEffect } from 'react';
 
 
@@ -41,11 +41,21 @@ const QuerySearchComp = (props) => {
     //   selectOptions: [],
     //   selectedOption: "",
     // }]);
-    let obj = tempArray[id];
-    obj.itemType = e;
-    tempArray[id] = obj;
-    console.log("tempArray : ", tempArray)
-    setQuerySearchSelector(tempArray);
+    // let obj = tempArray[id];
+    // obj.itemType = e;
+    // tempArray[id] = obj;
+    // console.log("tempArray : ", tempArray)
+    // setQuerySearchSelector(tempArray);
+    setQuerySearchSelector([{
+      id: 0,
+      selectFamily: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+      itemType: e,
+      itemTypeOperator: ""
+    }]);
   }
   const handleitemTypeOperator = (e, id) => {
     let tempArray = [...querySearchSelector];
@@ -96,8 +106,16 @@ const QuerySearchComp = (props) => {
         var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
         var SearchResArr = [];
 
+        var coverageSearchArr = [];
+
         var newSearchStr = `${tempArray[id].selectFamily.value}/${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
         // itemSearchDropdown(bundleServiceSearch)
+
+        console.log("tempArray[id].selectFamily ", tempArray[id].selectFamily);
+
+       
+
+
         itemSearchDropdown(newSearchStr)
           .then((res) => {
             console.log("ressss ", res);
@@ -107,7 +125,7 @@ const QuerySearchComp = (props) => {
                 SearchResArr.push(res.data[i].key)
               }
             }
-            console.log("===== SearchResArr ======== ", SearchResArr);
+            // console.log("===== SearchResArr ======== ", SearchResArr);
             obj.selectOptions = SearchResArr;
             tempArray[id] = obj;
             setQuerySearchSelector([...tempArray]);
@@ -199,8 +217,13 @@ const QuerySearchComp = (props) => {
     let obj = tempArray[id];
     // obj.inputSearch = currentItem;
     // obj.selectedOption = currentItem;
-    obj.inputSearch = (props.compoFlag === "bundleSearch") ? currentItem.split("#")[1] : currentItem;
-    obj.selectedOption = (props.compoFlag === "bundleSearch") ? currentItem.split("#")[1] : currentItem;
+    // obj.inputSearch = (props.compoFlag === "bundleSearch") ? currentItem.split("#")[1] : currentItem;
+    // obj.selectedOption = (props.compoFlag === "bundleSearch") ? currentItem.split("#")[1] : currentItem;
+
+    obj.inputSearch = currentItem;
+    obj.selectedOption = currentItem;
+
+    
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
     $(`.scrollbar-${id}`).css("display", "none");
@@ -387,7 +410,9 @@ const QuerySearchComp = (props) => {
       ) {
         throw "Please fill data properly"
       }
-      var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`
+      // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}:"${querySearchSelector[0]?.inputSearch}"`
+
+      var searchStr = `itemIds=${(querySearchSelector[0]?.selectedOption.split("#")[0])}`;
 
       console.log("querySearchSelector : ", querySearchSelector)
       for (let i = 1; i < querySearchSelector.length; i++) {
@@ -410,12 +435,15 @@ const QuerySearchComp = (props) => {
         //   ":\"" +
         //   querySearchSelector[i].inputSearch + "\"";
 
+        // searchStr =
+        //   searchStr +
+        //   " " + querySearchSelector[i].selectOperator.value +
+        //   " " + querySearchSelector[i].selectFamily.value +
+        //   ":\"" +
+        //   querySearchSelector[i].inputSearch + "\"";
         searchStr =
           searchStr +
-          " " + querySearchSelector[i].selectOperator.value +
-          " " + querySearchSelector[i].selectFamily.value +
-          ":\"" +
-          querySearchSelector[i].inputSearch + "\"";
+          "&itemsIds=" + (querySearchSelector[i]?.selectedOption.split("#")[0]);
         console.log("final searchStr : ", searchStr)
         // searchStr =
         //   searchStr +
@@ -425,18 +453,43 @@ const QuerySearchComp = (props) => {
         //   ":\"" +
         //   querySearchSelector[i].inputSearch + "\"";
       }
-      const res = await itemSearch(searchStr)
-      if (!res.data.length > 0) {
-        props.setLoadingItem("11")
-        props.setTempBundleService1([])
-        // throw "No record found"
-        throw "No information is found for your search, change the search criteria";
+      // const res = await itemSearch(searchStr)
+      const res = await getServiceBundleItemPrices(searchStr)
+      var bundleItemsArr = [];
+      if (res.status === 200) {
+        if (res.data.length > 0) {
+          res.data.map((data, i) => {
+            if (querySearchSelector[0]?.itemType?.value === "BUNDLE_ITEM") {
+              for (let c = 0; c < data.bundleItems.length; c++) {
+                bundleItemsArr.push(data.bundleItems[c]);
+              }
+            }
 
-      } else {
-        props.setTempBundleService1(res.data)
-        props.setLoadingItem("11")
-
+            if (querySearchSelector[0]?.itemType?.value === "SERVICE") {
+              for (let d = 0; d < data.serviceItems.length; d++) {
+                bundleItemsArr.push(data.serviceItems[d]);
+              }
+            }
+          })
+          props.setTempBundleService1(bundleItemsArr)
+          props.setLoadingItem("11")
+        } else {
+          props.setLoadingItem("11")
+          props.setTempBundleService1([])
+          throw "No information is found for your search, change the search criteria";
+        }
       }
+      // if (!res.data.length > 0) {
+      //   props.setLoadingItem("11")
+      //   props.setTempBundleService1([])
+      //   // throw "No record found"
+      //   throw "No information is found for your search, change the search criteria";
+
+      // } else {
+      //   props.setTempBundleService1(res.data)
+      //   props.setLoadingItem("11")
+
+      // }
 
     } catch (error) {
       toast("😐" + error, {
@@ -553,7 +606,7 @@ const QuerySearchComp = (props) => {
                         className="custom-input-sleact"
                         type="text"
                         placeholder="Search string"
-                        value={obj.inputSearch}
+                        value={(props.compoFlag === "bundleSearch") ? obj.inputSearch === "" ? "" : obj.inputSearch.split("#")[1] : obj.inputSearch}
                         onChange={(e) =>
                           handleInputSearch(e, i)
                         }
@@ -572,6 +625,11 @@ const QuerySearchComp = (props) => {
                                 key={j}
                                 onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
                               >
+                                {/* {(props.compoFlag === "bundleSearch") ?
+                                  ((obj.selectFamily.value === "itemName") ||
+                                    (obj.selectFamily.value === "itemHeaderDescription")) ? currentItem.split("#")[1] :
+                                    currentItem : currentItem.split("#")[1]
+                                } */}
                                 {props.compoFlag === "bundleSearch" ? currentItem.split("#")[1] : currentItem}
                                 {/* {currentItem} */}
                               </li>
