@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL, CONVERT_PORTFOLIO_TO_QUOTE, GET_COVERT_QUOTE_DETAILS, SEARCH_QUOTE_BY_FIELDS } from "./CONSTANTS";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL, CONVERT_PORTFOLIO_TO_QUOTE, GET_COVERT_QUOTE_DETAILS, SEARCH_QUOTE_BY_FIELDS, QUOTE_COMMON_CONFIG_URL } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -27,6 +27,31 @@ const headersData = {
 
 /* ------------------------------------------------------------ */
 
+
+/**
+ * Function to fetch the Portfolio Price Select Option List.
+ */
+
+export const getQuoteCommonConfig = (endPath) => {
+    console.log("QuoteService > getQuoteCommonConfig called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(QUOTE_COMMON_CONFIG_URL + endPath, { headers: headersData })
+                .then((res) => {
+                    console.log("getQuoteCommonConfig > axios res=", res);
+                    resolve(res.data);
+                })
+                .catch((err) => {
+                    console.log("getQuoteCommonConfig > axios err=", err);
+                    reject("Error in getQuoteCommonConfig axios!");
+                });
+        } catch (error) {
+            console.error("in QuoteService.js > getQuoteCommonConfig, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
 
 export const quoteCreation = (payLoad) => {
     console.log("QuoteService > quoteCreation called...");
@@ -197,6 +222,30 @@ export const getConvertQuoteData = (id) => {
                 });
         } catch (error) {
             console.error("in QuoteService > getConvertQuoteData, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+
+// ================== Quote Payer Controller ===================== //
+
+export const quotePayerCreation = (url, payLoad) => {
+    console.log("QuoteService > quotePayerCreation called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .post(QUOTE_CREATION() + "/payer?" + url, payLoad, { headers: headersData })
+                .then((res) => {
+                    console.log("quotePayerCreation > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("quotePayerCreation > axios err=", err);
+                    reject("Error in quotePayerCreation axios!");
+                });
+        } catch (error) {
+            console.error("in QuoteService > quotePayerCreation, Err===", error);
             reject(SYSTEM_ERROR);
         }
     });

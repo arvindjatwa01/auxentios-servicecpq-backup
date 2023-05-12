@@ -3939,10 +3939,26 @@ input[type="checkbox"]:checked:after {
   max-width: 140px !important;
   width: 140px !important;
 }
-.family-search{border-radius: 0px 0px 0px 0 !important;
+
+.family-search {
+  border-radius: 0px 0px 0px 0 !important;
   /* border-right: 1px solid #6f6f6f !important; */
   border-right: none !important;
 }
 
-  .family-search-add{border-radius: 0px 0px 0px 0 !important;
-    border-right: 1px solid #6f6f6f !important;}
+.family-search-add {
+  border-radius: 0px 0px 0px 0 !important;
+  border-right: 1px solid #6f6f6f !important;
+}
+
+.quote-payer-input {
+  width: 100%;
+  border: none;
+  /* border-bottom: 1px solid #bbb4b4; */
+  padding-bottom: 5px;
+}
+
+[data-column-id="payerName"].rdt_TableCell div{ width: 100%;}
+[data-column-id="price-summary-type"].rdt_TableCell div{ overflow: visible !important; border: none;}
+[data-column-id="price-summary-type"] div:first-child{width: 100% !important;}
+[data-column-id="price-summary-type"] { padding: 5px 8px !important;}
