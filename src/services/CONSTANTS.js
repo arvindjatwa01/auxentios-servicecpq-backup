@@ -253,8 +253,11 @@ export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${
 export const FETCH_REPAIR_QUOTE_VERSIONS = (quoteName) => QUOTE_REST_SERVICE + `/versions?quote_name=${quoteName}`;
 export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const UPDATE_REPAIR_QUOTE_ITEM = (quoteItemId) => QUOTE_REST_SERVICE + `/repair-buider/${quoteItemId}`;
-export const CREATE_QUOTE_VERSION = (existingQuote, existingVersion, newVersion) => QUOTE_REST_SERVICE + `/copy-quote?existing_quote_name=${existingQuote}&existing_version=${existingVersion}&new_version=${newVersion}`
+export const UPDATE_PL_QUOTE_ITEM = (quoteItemId) => QUOTE_REST_SERVICE + `/part-list/${quoteItemId}`;
+export const CREATE_QUOTE_VERSION = (existingQuote, existingVersion, newVersion) =>QUOTE_REST_SERVICE +`/copy-quote?existing_quote_name=${existingQuote}&existing_version=${existingVersion}&new_version=${newVersion}`
+
 export const ADD_REPAIR_QUOTE_ITEM = (quoteId) => QUOTE_REST_SERVICE + `/repair-buider?quote_id=${quoteId}`;
+export const ADD_PL_QUOTE_ITEM = (quoteId) => QUOTE_REST_SERVICE + `/part-list?quote_id=${quoteId}`;
 export const FETCH_QUOTE_SUMMARY = (quoteId) => QUOTE_REST_SERVICE + `/summary?quote_id=${quoteId}`;
 export const CREATE_QUOTE_PAYER = (quoteId) => QUOTE_REST_SERVICE + `/payer?quote_id=${quoteId}`;
 export const UPDATE_QUOTE_PAYER = (quotePayerId) => QUOTE_REST_SERVICE + `/payer/${quotePayerId}`;

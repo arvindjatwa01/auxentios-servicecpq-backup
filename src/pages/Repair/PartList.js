@@ -109,6 +109,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { ReadOnlyField } from "./components/ReadOnlyField";
 import QuoteModal from "./components/QuoteModal";
 import { createSparePartQuote } from "services/repairQuoteServices";
+import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -981,7 +982,7 @@ function PartList(props) {
         quoteDetails.quoteId = createdQuote.quoteId;
         // templateDetails.templateDBId = createdQuote.id;
         history.push({
-          pathname: "/SparePartsPortfolio",
+          pathname: SPARE_PARTS_QUOTE_DETAILS,
           state: quoteDetails,
         });
       })

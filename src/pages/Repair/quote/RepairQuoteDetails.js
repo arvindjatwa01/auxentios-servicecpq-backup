@@ -69,6 +69,7 @@ import {
   fetchQuoteDetails,
   fetchQuoteSummary,
   fetchQuoteVersions,
+  removePayer,
   updatePayerData,
   updateQuoteHeader,
   updateQuoteItem,
@@ -82,12 +83,12 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import RepairQuoteItemModal from "../components/RepairQuoteItem";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import TextSnippetIcon from '@mui/icons-material/TextSnippet';
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import { useAppSelector } from "app/hooks";
 import ModalCreateVersion from "../components/ModalCreateVersion";
 import QuoteSummary from "../components/QuoteSummary";
 import { DataGrid } from "@mui/x-data-grid";
-import FullFeaturedCrudGrid from "../components/DataGridNew";
+import PayerGridTable from "../components/PayerGridTable";
 const customStyles = {
   rows: {
     style: {
@@ -118,6 +119,7 @@ const RepairQuoteDetails = (props) => {
   const { state } = props.location;
   const [quoteId, setQuoteId] = useState("");
   const [versionOpen, setVersionOpen] = useState(false);
+  const [headerLoading, setHeaderLoading] = useState(false);
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
     // source: "",
@@ -199,6 +201,7 @@ const RepairQuoteDetails = (props) => {
     // type: '',
     // unit: ''
   };
+  const [payers, setPayers] = useState([]);
   const [quoteItemOpen, setQuoteItemOpen] = useState(false);
   const [quoteItemModalTitle, setQuoteItemModalTitle] =
     useState("Add New Quote Item");
@@ -458,6 +461,9 @@ const RepairQuoteDetails = (props) => {
       country: result.country ? result.country : "",
       regionOrState: result.regionOrState ? result.regionOrState : "",
     });
+    if(result.customerName && result.payers.length === 0){
+      addPayerDetails(result.quoteId, result.customerName, 100);
+    }
     setSearchCustResults([]);
   };
   const populateMachineData = (result) => {
@@ -586,8 +592,32 @@ const RepairQuoteDetails = (props) => {
         : serviceRecipientAddress,
     });
   };
-  const [headerLoading, setHeaderLoading] = useState(false);
-  const [quoteDataId, setQuoteDataId] = useState(0);
+  const addPayerDetails = (id, payerName, billingSplit) => {
+    addQuotePayer(id, {payerName, billingSplit}).then(addedPayer => {
+      setPayers([addedPayer]);
+    }).catch(e => {
+      handleSnack("warning", "please check the payer data!")
+    })
+  }
+
+  const updatePayerDetails = React.useCallback((existingPayerName, payerName) => 
+  new Promise((resolve, reject) => {
+    console.log(payerName);
+    setHeaderLoading(true);
+    setPayers(payers.map(indPayer => {
+      if(indPayer.payerName === existingPayerName){
+        console.log(payerName);
+         updatePayerData(indPayer.payerId, {payerName}).then(updatedPayer => {
+          resolve(updatedPayer);         
+        }).catch(e => {
+          handleSnack("warning", "please check the payer data!")
+          resolve(indPayer)
+        })             
+      }      
+    }))
+    setHeaderLoading(false);
+  }),[payers])
+
   // Machine search based on model and serial number
   const handleMachineSearch = async (searchMachinefieldName, searchText) => {
     let searchQueryMachine = "";
@@ -770,14 +800,6 @@ const RepairQuoteDetails = (props) => {
   const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
-  const handleEstimateDetailsDataChange = (e) => {
-    var value = e.target.value;
-    var name = e.target.name;
-    setEstimateDetails({
-      ...machineData,
-      [name]: value,
-    });
-  };
 
   const miscItemRows = [
     { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
@@ -891,22 +913,9 @@ const RepairQuoteDetails = (props) => {
     };
   }
 
-const createQuotePayer = async(data) => {
-  await addQuotePayer(quoteId, {...data, payerId: undefined, isNew: undefined}).then(payer => {
-    handleSnack('success', 'Payer has been added!')
-  }).catch(e => {
-    handleSnack('error', 'Payer details could not be added');
-  })
-}
-const updateQuotePayer = async (payerQuoteId, data) => {
 
-    await updatePayerData(payerQuoteId, data).then(savedPayer => {
-      handleSnack('success', 'Payer has been updated!')
-    }).catch(e => {
-      handleSnack('error', 'Payer details could not be updated');
-    })
-}
-   const makeHeaderEditable = () => {
+  
+  const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
       setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
     else if (value === "machine" && viewOnlyTab.machineViewOnly)
@@ -965,7 +974,6 @@ const updateQuotePayer = async (payerQuoteId, data) => {
     setQuoteItemModalTitle("Add New Quote Item");
   };
 
-
   const [value, setValue] = React.useState("customer");
   const steps = [
     "Draft",
@@ -979,7 +987,22 @@ const updateQuotePayer = async (payerQuoteId, data) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const updateCustomerData = () => {
+  const updateCustomerData = async () => {
+    let existingCustName = savedQuoteDetails.customerName;
+    // populate service recipient address
+    let serviceRecipientAddress = "";
+    if (customerData.customerID) {
+      await customerSearch("customerId:" + customerData.customerID)
+        .then((searchRes) => {
+          if (searchRes) {
+            serviceRecipientAddress =
+              searchRes[0].serviceRecipent + " " + searchRes[0].contactAddress;
+          }
+        })
+        .catch((e) => {
+          serviceRecipientAddress = "";
+        });
+    }
     let data = {
       ...savedQuoteDetails,
       source: customerData.source,
@@ -992,8 +1015,9 @@ const updateQuotePayer = async (payerQuoteId, data) => {
       customerSegment: customerData.customerSegment,
       regionOrState: customerData.regionOrState,
       country: customerData.country,
+      serviceRecipientAddress,
     };
-    console.log(data);
+    setShippingDetail({ ...shippingDetail, serviceRecipientAddress });
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
       alert("Please enter the email address in correct format");
@@ -1001,6 +1025,15 @@ const updateQuotePayer = async (payerQuoteId, data) => {
       updateQuoteHeader(quoteId, data)
         .then((result) => {
           setSavedQuoteDetails(result);
+          // To update the first payer name whenever customer name changes
+          // payers.map(indPayer => {
+          //   if(indPayer.payerName === existingCustName){
+              // updatePayerDetails(existingCustName, customerData.customerName);
+          //     return {...indPayer, payerName: customerData.customerName}              
+          //   } 
+            
+          // })
+          console.log(payers);
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
           handleSnack("success", "Customer details updated!");
@@ -1013,7 +1046,6 @@ const updateQuotePayer = async (payerQuoteId, data) => {
         });
     }
   };
-  const [payers, setPayers] = useState([]);
   const handleResetData = (action) => {
     if (action === "RESET") {
       value === "customer" && populateCustomerData(savedQuoteDetails);
@@ -1159,9 +1191,9 @@ const updateQuotePayer = async (payerQuoteId, data) => {
     if (quoteItemModalTitle !== "Add New Quote Item") {
       await updateQuoteItem(quoteItem.rbQuoteId, {
         ...quoteItem,
+        itemType: quoteItem.itemType? quoteItem.itemType : "RB_ITEM",
         payerType: quoteItem.payerType?.value,
-      })
-        .then((quoteItem) => {
+      }).then((quoteItem) => {
           fetchAllDetails(quoteId);
           handleSnack("success", "Quote item has been updated successfully!");
         })
@@ -1173,7 +1205,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
       console.log(quoteItem);
       await addQuoteItem(quoteId, {
         ...quoteItem,
-        itemType:"RB_ITEM",
+        itemType: "RB_ITEM",
         payerType: quoteItem.payerType?.value,
       })
         .then((quoteItem) => {
@@ -1185,16 +1217,13 @@ const updateQuotePayer = async (payerQuoteId, data) => {
           handleSnack("error", "Add item failed!");
         });
     }
+    setQuoteItemOpen(false)
   };
   const createVersion = async () => {
     await createQuoteVersion(
       savedQuoteDetails.quoteName,
       savedQuoteDetails.version,
-      savedQuoteDetails.version === "VERSION_1"
-        ? "VERSION_2"
-        : savedQuoteDetails.version === "VERSION_2"
-        ? "VERSION_3"
-        : ""
+      newVersion
     )
       .then((result) => {
         setVersionOpen(false);
@@ -1219,13 +1248,30 @@ const updateQuotePayer = async (payerQuoteId, data) => {
   const [quoteSummary, setQuoteSummary] = useState("");
   const [summaryOpen, setSummaryOpen] = useState(false);
   const fetchSummaryDetails = async (selectedQuoteId) => {
-    console.log("ABCD",selectedQuoteId);
-    await fetchQuoteSummary(selectedQuoteId).then(summary => {
-      setQuoteSummary(summary);
-    }).catch(e => {
-      console.log(e);
-    })
-  }
+    console.log("ABCD", selectedQuoteId);
+    await fetchQuoteSummary(selectedQuoteId)
+      .then((summary) => {
+        setQuoteSummary(summary);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+  const [newVersion, setNewVersion] = useState('');
+  const handleVersionOpen = () => {
+    if (quoteVersionOptions.length === 3)
+      handleSnack("warning", ERROR_MAX_VERSIONS);
+    else {
+      if (savedQuoteDetails.version === "VERSION_1") {
+        if (quoteVersionOptions.length === 1) setNewVersion("VERSION_2");
+        else if (quoteVersionOptions.length === 2) setNewVersion("VERSION_3");
+      } else if (savedQuoteDetails.version === "VERSION_2") {
+        if (quoteVersionOptions.length === 1) setNewVersion ("VERSION_1");
+        else if (quoteVersionOptions.length === 2) setNewVersion ("VERSION_3");
+      }
+      setVersionOpen(true);
+    }
+  };
   return (
     <>
       <CustomizedSnackbar
@@ -1240,11 +1286,14 @@ const updateQuotePayer = async (payerQuoteId, data) => {
         message="Another version of this quote will be created."
         handleCreateVersion={createVersion}
         type={"quote"}
+        quoteVersionOptions={quoteVersionOptions}
         existingVersion={savedQuoteDetails.version}
+        quoteName={savedQuoteDetails.quoteName}
+        newVersion={newVersion}
       />
       <QuoteSummary
         summaryOpen={summaryOpen}
-        handleSummaryClose={()=>setSummaryOpen(false)}
+        handleSummaryClose={() => setSummaryOpen(false)}
         summary={quoteSummary}
       />
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -1294,7 +1343,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                 className="customDropdown ml-2"
                 id="dropdown-item-button"
               >
-                <Dropdown.Item as="button" onClick={() => setVersionOpen(true)}>
+                <Dropdown.Item as="button" onClick={handleVersionOpen}>
                   New Versions
                 </Dropdown.Item>
                 <Dropdown.Item as="button">Show Errors</Dropdown.Item>
@@ -1334,7 +1383,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                     </div> */}
               </div>
               <div className="col-md-1 text-right">
-              <div className="btn-sm cursor text-white">
+                <div className="btn-sm cursor text-white">
                   <Tooltip title="Summary">
                     <TextSnippetIcon onClick={() => setSummaryOpen(true)} />
                   </Tooltip>
@@ -1354,7 +1403,6 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                     <TabList
                       className=""
                       onChange={handleChange}
-                      aria-label="lab API tabs example"
                     >
                       <Tab
                         label="Customer"
@@ -1783,9 +1831,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                       <>
                         <div className="row mt-4 input-fields">
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               PREPARED BY
                             </label>
                             <div className="form-group w-100">
@@ -1794,8 +1840,12 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                                 className="form-control border-radius-10 text-primary"
                                 name="preparedBy"
                                 value={estimateDetails.preparedBy}
-                                onChange={e => setEstimateDetails({
-                                  ...estimateDetails, preparedBy: e.target.value})}
+                                onChange={(e) =>
+                                  setEstimateDetails({
+                                    ...estimateDetails,
+                                    preparedBy: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
@@ -1809,15 +1859,17 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                                 className="form-control border-radius-10 text-primary"
                                 name="approvedBy"
                                 value={estimateDetails.approvedBy}
-                                onChange={e => setEstimateDetails({
-                                  ...estimateDetails, approvedBy: e.target.value})}
+                                onChange={(e) =>
+                                  setEstimateDetails({
+                                    ...estimateDetails,
+                                    approvedBy: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               PREPARED ON
                             </label>
                             <div className="d-flex align-items-center date-box w-100">
@@ -1842,9 +1894,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               REVISED BY
                             </label>
                             <div className="form-group w-100">
@@ -1853,15 +1903,17 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                                 className="form-control border-radius-10 text-primary"
                                 name="revisedBy"
                                 value={estimateDetails.revisedBy}
-                                onChange={e => setEstimateDetails({
-                                  ...estimateDetails, revisedBy: e.target.value})}
+                                onChange={(e) =>
+                                  setEstimateDetails({
+                                    ...estimateDetails,
+                                    revisedBy: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               REVISED ON
                             </label>
                             <div className="d-flex align-items-center date-box w-100">
@@ -1886,9 +1938,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               SALES OFFICE / BRANCH
                             </label>
                             <div className="form-group w-100">
@@ -1980,9 +2030,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                       <>
                         <div className="row mt-4 input-fields">
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               QUOTE DATE
                             </label>
                             <div className="align-items-center date-box">
@@ -2031,9 +2079,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               QUOTE DESCRIPTION
                             </label>
                             <div className="form-group w-100">
@@ -2042,14 +2088,17 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                                 className="form-control border-radius-10 text-primary"
                                 name="description"
                                 value={generalDetails.description}
-                                onChange={(e)=> setGeneralDetails({...generalDetails, description: e.target.value})}
+                                onChange={(e) =>
+                                  setGeneralDetails({
+                                    ...generalDetails,
+                                    description: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               REFERENCE
                             </label>
                             <div className="form-group w-100">
@@ -2057,7 +2106,12 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                                 className="form-control border-radius-10 text-primary"
                                 name="reference"
                                 value={generalDetails.reference}
-                                onChange={(e)=> setGeneralDetails({...generalDetails, reference: e.target.value})}
+                                onChange={(e) =>
+                                  setGeneralDetails({
+                                    ...generalDetails,
+                                    reference: e.target.value,
+                                  })
+                                }
                               />
                             </div>
                           </div>
@@ -2420,8 +2474,12 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                           <AddIcon className="mr-2" />
                           ADD PAYER
                         </a> */}
-                        <div className="mt-3">                         
-                          <FullFeaturedCrudGrid dataRows={payers} updateQuotePayer={updateQuotePayer} createQuotePayer={createQuotePayer}/>    
+                        <div className="mt-3">
+                          <PayerGridTable
+                            handleSnack={handleSnack}
+                            dataRows={payers}
+                            quoteId={quoteId}
+                          />
                         </div>
                         <div className="mt-3 d-flex align-items-center justify-content-between">
                           <h6 className="mb-0 font-size-16 font-weight-600">
@@ -2452,7 +2510,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                             selectableRows
                           />
                         </div>
-                        <div className="mt-3 d-flex align-items-center justify-content-between">
+                        {/* <div className="mt-3 d-flex align-items-center justify-content-between">
                           <h6 className="mb-0 font-size-16 font-weight-600">
                             OTHER MISC ITEMS $
                           </h6>
@@ -2480,7 +2538,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                             // onRowClicked={(e) => handleRowClick(e)}
                             selectableRows
                           />
-                        </div>
+                        </div> */}
                       </>
                     )}
                   </TabPanel>
@@ -2489,9 +2547,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                       <>
                         <div className="row mt-4 input-fields">
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                           >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               DELIVERY TYPE
                             </label>
                             <div className="form-group w-100">
@@ -2509,9 +2565,7 @@ const updateQuotePayer = async (payerQuoteId, data) => {
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               DELIVERY PRIORITY
                             </label>
                             <div className="form-group w-100">
