@@ -61,13 +61,16 @@ import {
     getConvertQuoteData,
     solutionQuoteCreation,
     updateSolutionQuoteData,
-    searchSolutionQuotes
+    searchSolutionQuotes,
+    getQuoteCommonConfig,
+    quotePayerCreation,
 } from "../../services/index";
 import SelectFilter from "react-select";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { toast } from "react-toastify";
 import LoadingProgress from "pages/Repair/components/Loader";
+import { useDispatch } from "react-redux";
 const customStyles = {
     rows: {
         style: {
@@ -95,6 +98,7 @@ const customStyles = {
 export function SolutionServicePortfolio(props) {
 
     const history = useHistory()
+    const dispatch = useDispatch();
     const { state } = props.location;
     console.log("props are : ", props)
 
@@ -139,6 +143,8 @@ export function SolutionServicePortfolio(props) {
         shippingOrBillingViewOnly: false,
     });
 
+    const [payerListArray, setPayerListArray] = useState([]);
+
     // Customer Tab Data 
     const [customerData, setCustomerData] = useState({
         source: "User Generated",
@@ -149,7 +155,10 @@ export function SolutionServicePortfolio(props) {
         contactName: "",
         contactPhone: "",
         customerGroup: "",
+        customerAddress: "",
     });
+
+    const [customerAddressIs, setCustomerAddressIs] = useState("")
 
     // Machine Tab Data 
     const [machineData, setMachineData] = useState({
@@ -159,6 +168,8 @@ export function SolutionServicePortfolio(props) {
         fleetNo: "",
         registrationNo: "",
         chasisNo: "",
+        make: "",
+        family: "",
     });
 
     // Estimate Details Tab Data 
@@ -174,7 +185,7 @@ export function SolutionServicePortfolio(props) {
     // General Details Tab Data 
     const [generalDetails, setGeneralDetails] = useState({
         quoteDate: new Date(),
-        quote: "",
+        quoteName: "",
         description: "",
         reference: "",
         validity: "",
@@ -192,9 +203,54 @@ export function SolutionServicePortfolio(props) {
         payer: "",
         split: "",
         netPayAble: "",
-    })
+        leadTime: "",
+        serviceRecipentAddress: customerData.customerAddress,
+    });
+
+    const shippingLeadCountUnit = [
+        { value: "per Hr", label: "per Hr" },
+        { value: "per Km", label: "per Km" },
+        { value: "per Miles", label: "per Miles" },
+        { value: "per year", label: "per year" },
+        { value: "per month", label: "per month" },
+        { value: "per day", label: "per day" },
+        { value: "per quarter", label: "per quarter" },
+    ]
 
     const [generalValidityOptionKeyValue, setGeneralValidityOptionKeyValue] = useState("");
+
+    // Price Tab >> Billing
+    const paymentTermsOptions = [
+        { label: "Immediate", value: "IMMEDIATE" },
+        { label: "90 Days", value: "NINTY_DAYS" },
+        { label: "60 Days", value: "SIXTY_DAYS" },
+        { label: "30 Days", value: "THIRTY_DAYS" },
+    ]
+
+    // Price / Billing Tab Data 
+    const [quoteBillingData, setQuoteBillingData] = useState({
+        paymentTerms: "",
+        currency: "",
+        priceDate: new Date(),
+        billingType: "",
+        billingFrequency: "",
+        netPrice: 0,
+        margin: "",
+        discount: "",
+    })
+
+    const [billingPaymentTermsKeyValue, setBillingPaymentTermsKeyValue] = useState("");
+    const [billingCurrencyKeyValue, setBillingCurrencyKeyValue] = useState("");
+    const [billingBillingTypeKeyValue, setBillingBillingTypeKeyValue] = useState("");
+    const [billingBillingFrequencyKeyValue, setBillingBillingFrequencyKeyValue] = useState("");
+
+    // Quote common-config States data
+
+    const [billingTypeOptions, setBillingTypeOptions] = useState([])
+    const [billingFrequencyOptions, setBillingFrequencyOptions] = useState([])
+    const [quoteCurrencyOptions, setQuoteCurrencyOptions] = useState([])
+
+
 
     const salesOfficeOptions = [
         { value: "Location1", label: "Location1" },
@@ -204,9 +260,19 @@ export function SolutionServicePortfolio(props) {
     ];
 
     const generalValidityOptions = [
-        { label: "Allowed", value: "ALLOWED" },
-        { label: "Denied", value: "DENIED" },
-        { label: "Indeterminate", value: "INDETERMINATE" },
+        // { label: "Allowed", value: "ALLOWED" },
+        // { label: "Denied", value: "DENIED" },
+        // { label: "Indeterminate", value: "INDETERMINATE" },
+        { label: "15 days", value: "FIFTEEN_DAYS" },
+        { label: "1 month", value: "ONE_MONTH" },
+        { label: "2 month", value: "TWO_MONTHS" },
+        { label: "3 month", value: "THREE_MONTHS" },
+    ]
+
+    const generalVersionOptions = [
+        { label: "Version 1", value: "VERSION_1" },
+        { label: "Version 2", value: "VERSION_2" },
+        { label: "Version 3", value: "VERSION_3" },
     ]
 
     const theme = useTheme();
@@ -251,14 +317,60 @@ export function SolutionServicePortfolio(props) {
         };
     }
 
-
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose2 = () => {
         setAnchorEl(null);
     };
+
+    useEffect(() => {
+        quoteCommonConfigApiCaller();
+    }, [dispatch]);
+
+
+    const quoteCommonConfigApiCaller = () => {
+
+        // Billing-Type
+        getQuoteCommonConfig("billing-type")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setBillingTypeOptions(options);
+
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        // Billing-Frequency
+        getQuoteCommonConfig("billing-frequency")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setBillingFrequencyOptions(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        // quote-Currency
+        getQuoteCommonConfig("currency")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d,
+                    label: d,
+                }));
+                setQuoteCurrencyOptions(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+    }
 
 
     // Handle Save & Next Click
@@ -271,12 +383,82 @@ export function SolutionServicePortfolio(props) {
                 }
 
                 if (state && state.type === "fetch") {
-                    let solutionQuoteObj = {
+                    // let solutionQuoteObj = {
+                    //     quoteType: "SOLUTION_QUOTE",
+                    //     source: customerData.source,
+                    //     customerId: customerData.customerID,
+                    //     model: machineData.model,
+                    //     serialNumber: machineData.serialNo,
+                    //     smu: machineData.smu,
+                    //     fleetNo: machineData.fleetNo,
+                    //     registrationNo: machineData.registrationNo,
+                    //     chasisNo: machineData.chasisNo,
+                    //     preparedBy: estimateDetails.preparedBy,
+                    //     approvedBy: estimateDetails.approvedBy,
+                    //     preparedOn: estimateDetails.preparedOn,
+                    //     revisedBy: estimateDetails.revisedBy,
+                    //     revisedOn: estimateDetails.revisedOn,
+                    //     salesOffice: estimateDetails.salesOffice != ""
+                    //         ? estimateDetails.salesOffice?.value : "",
+                    //     quoteDate: generalDetails.quoteDate,
+                    //     description: generalDetails.description,
+                    //     reference: generalDetails.reference,
+                    //     validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                    //     version: generalDetails.version,
+                    //     netPrice: 0,
+                    //     priceDate: "",
+                    //     costPrice: 0,
+                    //     priceMethod: "LIST_PRICE",
+                    //     adjustedPrice: 0,
+                    //     currency: "",
+                    //     status: "PENDING_ACTIVE",
+                    //     tenantId: loginTenantId,
+                    //     sbQuoteItems: subQuotesIds,
+                    //     rbQuoteItems: [],
+                    //     plQuoteItems: []
+                    // }
+
+                    var flatAdjustPrice = 0;
+                    var environmentalPrice = 0;
+                    var taxTaxPrice = 0;
+                    if (priceSummaryData > 0) {
+                        const flatAdjustPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "FLAT_RATE");
+                        if (flatAdjustPriceObj) {
+                            flatAdjustPrice = flatAdjustPriceObj?.netPrice;
+                        } else {
+                            flatAdjustPrice = 0;
+                        }
+
+                        const environmentalPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "ENVIRONMENTAL");
+                        if (environmentalPriceObj) {
+                            environmentalPrice = environmentalPriceObj?.netPrice;
+                        } else {
+                            environmentalPrice = 0;
+                        }
+
+                        const taxTaxPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "TAX");
+                        if (flatAdjustPriceObj) {
+                            taxTaxPrice = taxTaxPriceObj?.netPrice;
+                        } else {
+                            taxTaxPrice = 0;
+                        }
+
+                    }
+
+                    const solutionQuoteObj = {
+                        quoteName: generalDetails.quoteName,
                         quoteType: "SOLUTION_QUOTE",
                         source: customerData.source,
                         customerId: customerData.customerID,
+                        customerName: customerData.customerName,
+                        contactEmail: customerData.contactEmail,
+                        contactPhone: customerData.contactPhone,
+                        requester: "",
+                        customerGroup: customerData.customerGroup,
+                        make: machineData.make,
                         model: machineData.model,
                         serialNumber: machineData.serialNo,
+                        family: machineData.family,
                         smu: machineData.smu,
                         fleetNo: machineData.fleetNo,
                         registrationNo: machineData.registrationNo,
@@ -292,18 +474,38 @@ export function SolutionServicePortfolio(props) {
                         description: generalDetails.description,
                         reference: generalDetails.reference,
                         validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                        version: generalDetails.version,
-                        netPrice: 0,
-                        priceDate: "",
-                        costPrice: 0,
+                        version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
+                        paymentTerms: quoteBillingData.paymentTerms,
+                        billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
+                        billingType: quoteBillingData.billingType,
+                        deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
+                        deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                        leadTime: shippingBillingDetails.leadTime,
+                        serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
+                        priceDate: quoteBillingData.priceDate,
                         priceMethod: "LIST_PRICE",
-                        adjustedPrice: 0,
-                        currency: "",
+                        currency: quoteBillingData.currency,
+                        partsPrice: 0,
+                        servicePrice: 0,
+                        laborPrice: 0,
+                        miscPrice: 0,
+                        environmentalPrice: environmentalPrice,
+                        tax: taxTaxPrice,
+                        costPrice: 0,
+                        totalPrice: 0,
+                        margin: quoteBillingData.margin,
+                        discount: quoteBillingData.discount,
+                        netPrice: 0,
+                        adjustedPrice: flatAdjustPrice,
                         status: "PENDING_ACTIVE",
                         tenantId: loginTenantId,
                         sbQuoteItems: subQuotesIds,
                         rbQuoteItems: [],
-                        plQuoteItems: []
+                        plQuoteItems: [],
+                        payers: payerListArray,
+                        priceEstimates: [],
+                        sbPriceEstimates: [],
+                        otherItemPrice: 0,
                     }
 
                     const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -317,16 +519,86 @@ export function SolutionServicePortfolio(props) {
                             draggable: true,
                             progress: undefined,
                         });
-                        setValue("estimationDetails");
+                        setValue("machine");
                         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
                     }
                 } else {
-                    let solutionQuoteObj = {
+                    // let solutionQuoteObj = {
+                    //     quoteType: "SOLUTION_QUOTE",
+                    //     source: customerData.source,
+                    //     customerId: customerData.customerID,
+                    //     model: machineData.model,
+                    //     serialNumber: machineData.serialNo,
+                    //     smu: machineData.smu,
+                    //     fleetNo: machineData.fleetNo,
+                    //     registrationNo: machineData.registrationNo,
+                    //     chasisNo: machineData.chasisNo,
+                    //     preparedBy: estimateDetails.preparedBy,
+                    //     approvedBy: estimateDetails.approvedBy,
+                    //     preparedOn: estimateDetails.preparedOn,
+                    //     revisedBy: estimateDetails.revisedBy,
+                    //     revisedOn: estimateDetails.revisedOn,
+                    //     salesOffice: estimateDetails.salesOffice != ""
+                    //         ? estimateDetails.salesOffice?.value : "",
+                    //     quoteDate: generalDetails.quoteDate,
+                    //     description: generalDetails.description,
+                    //     reference: generalDetails.reference,
+                    //     validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                    //     version: generalDetails.version,
+                    //     netPrice: 0,
+                    //     priceDate: "",
+                    //     costPrice: 0,
+                    //     priceMethod: "LIST_PRICE",
+                    //     adjustedPrice: 0,
+                    //     currency: "",
+                    //     status: "PENDING_ACTIVE",
+                    //     tenantId: loginTenantId,
+                    //     sbQuoteItems: subQuotesIds,
+                    //     rbQuoteItems: [],
+                    //     plQuoteItems: []
+                    // }
+
+                    var flatAdjustPrice = 0;
+                    var environmentalPrice = 0;
+                    var taxTaxPrice = 0;
+                    if (priceSummaryData > 0) {
+                        const flatAdjustPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "FLAT_RATE");
+                        if (flatAdjustPriceObj) {
+                            flatAdjustPrice = flatAdjustPriceObj?.netPrice;
+                        } else {
+                            flatAdjustPrice = 0;
+                        }
+
+                        const environmentalPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "ENVIRONMENTAL");
+                        if (environmentalPriceObj) {
+                            environmentalPrice = environmentalPriceObj?.netPrice;
+                        } else {
+                            environmentalPrice = 0;
+                        }
+
+                        const taxTaxPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "TAX");
+                        if (flatAdjustPriceObj) {
+                            taxTaxPrice = taxTaxPriceObj?.netPrice;
+                        } else {
+                            taxTaxPrice = 0;
+                        }
+
+                    }
+
+                    const solutionQuoteObj = {
+                        quoteName: generalDetails.quoteName,
                         quoteType: "SOLUTION_QUOTE",
                         source: customerData.source,
                         customerId: customerData.customerID,
+                        customerName: customerData.customerName,
+                        contactEmail: customerData.contactEmail,
+                        contactPhone: customerData.contactPhone,
+                        requester: "",
+                        customerGroup: customerData.customerGroup,
+                        make: machineData.make,
                         model: machineData.model,
                         serialNumber: machineData.serialNo,
+                        family: machineData.family,
                         smu: machineData.smu,
                         fleetNo: machineData.fleetNo,
                         registrationNo: machineData.registrationNo,
@@ -341,19 +613,39 @@ export function SolutionServicePortfolio(props) {
                         quoteDate: generalDetails.quoteDate,
                         description: generalDetails.description,
                         reference: generalDetails.reference,
-                        validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
-                        version: generalDetails.version,
-                        netPrice: 0,
-                        priceDate: "",
-                        costPrice: 0,
+                        validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                        version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
+                        paymentTerms: quoteBillingData.paymentTerms,
+                        billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
+                        billingType: quoteBillingData.billingType,
+                        deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
+                        deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                        leadTime: shippingBillingDetails.leadTime,
+                        serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
+                        priceDate: quoteBillingData.priceDate,
                         priceMethod: "LIST_PRICE",
-                        adjustedPrice: 0,
-                        currency: "",
+                        currency: quoteBillingData.currency,
+                        partsPrice: 0,
+                        servicePrice: 0,
+                        laborPrice: 0,
+                        miscPrice: 0,
+                        environmentalPrice: environmentalPrice,
+                        tax: taxTaxPrice,
+                        costPrice: 0,
+                        totalPrice: 0,
+                        margin: quoteBillingData.margin,
+                        discount: quoteBillingData.discount,
+                        netPrice: 0,
+                        adjustedPrice: flatAdjustPrice,
                         status: "PENDING_ACTIVE",
                         tenantId: loginTenantId,
                         sbQuoteItems: subQuotesIds,
                         rbQuoteItems: [],
-                        plQuoteItems: []
+                        plQuoteItems: [],
+                        payers: payerListArray,
+                        priceEstimates: [],
+                        sbPriceEstimates: [],
+                        otherItemPrice: 0,
                     }
 
                     const solutionRes = await solutionQuoteCreation(solutionQuoteObj);
@@ -384,12 +676,82 @@ export function SolutionServicePortfolio(props) {
                     throw "Serial No is a required field, you can’t leave it blank";
                 }
 
-                let solutionQuoteObj = {
+                // let solutionQuoteObj = {
+                //     quoteType: "SOLUTION_QUOTE",
+                //     source: customerData.source,
+                //     customerId: customerData.customerID,
+                //     model: machineData.model,
+                //     serialNumber: machineData.serialNo,
+                //     smu: machineData.smu,
+                //     fleetNo: machineData.fleetNo,
+                //     registrationNo: machineData.registrationNo,
+                //     chasisNo: machineData.chasisNo,
+                //     preparedBy: estimateDetails.preparedBy,
+                //     approvedBy: estimateDetails.approvedBy,
+                //     preparedOn: estimateDetails.preparedOn,
+                //     revisedBy: estimateDetails.revisedBy,
+                //     revisedOn: estimateDetails.revisedOn,
+                //     salesOffice: estimateDetails.salesOffice != ""
+                //         ? estimateDetails.salesOffice?.value : "",
+                //     quoteDate: generalDetails.quoteDate,
+                //     description: generalDetails.description,
+                //     reference: generalDetails.reference,
+                //     validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                //     version: generalDetails.version,
+                //     netPrice: 0,
+                //     priceDate: "",
+                //     costPrice: 0,
+                //     priceMethod: "LIST_PRICE",
+                //     adjustedPrice: 0,
+                //     currency: "",
+                //     status: "PENDING_ACTIVE",
+                //     tenantId: loginTenantId,
+                //     sbQuoteItems: subQuotesIds,
+                //     rbQuoteItems: [],
+                //     plQuoteItems: []
+                // }
+
+                var flatAdjustPrice = 0;
+                var environmentalPrice = 0;
+                var taxTaxPrice = 0;
+                if (priceSummaryData > 0) {
+                    const flatAdjustPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "FLAT_RATE");
+                    if (flatAdjustPriceObj) {
+                        flatAdjustPrice = flatAdjustPriceObj?.netPrice;
+                    } else {
+                        flatAdjustPrice = 0;
+                    }
+
+                    const environmentalPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "ENVIRONMENTAL");
+                    if (environmentalPriceObj) {
+                        environmentalPrice = environmentalPriceObj?.netPrice;
+                    } else {
+                        environmentalPrice = 0;
+                    }
+
+                    const taxTaxPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "TAX");
+                    if (flatAdjustPriceObj) {
+                        taxTaxPrice = taxTaxPriceObj?.netPrice;
+                    } else {
+                        taxTaxPrice = 0;
+                    }
+
+                }
+
+                const solutionQuoteObj = {
+                    quoteName: generalDetails.quoteName,
                     quoteType: "SOLUTION_QUOTE",
                     source: customerData.source,
                     customerId: customerData.customerID,
+                    customerName: customerData.customerName,
+                    contactEmail: customerData.contactEmail,
+                    contactPhone: customerData.contactPhone,
+                    requester: "",
+                    customerGroup: customerData.customerGroup,
+                    make: machineData.make,
                     model: machineData.model,
                     serialNumber: machineData.serialNo,
+                    family: machineData.family,
                     smu: machineData.smu,
                     fleetNo: machineData.fleetNo,
                     registrationNo: machineData.registrationNo,
@@ -405,18 +767,38 @@ export function SolutionServicePortfolio(props) {
                     description: generalDetails.description,
                     reference: generalDetails.reference,
                     validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                    version: generalDetails.version,
-                    netPrice: 0,
-                    priceDate: "",
-                    costPrice: 0,
+                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
+                    paymentTerms: quoteBillingData.paymentTerms,
+                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
+                    billingType: quoteBillingData.billingType,
+                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
+                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    leadTime: shippingBillingDetails.leadTime,
+                    serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
+                    priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    adjustedPrice: 0,
-                    currency: "",
+                    currency: quoteBillingData.currency,
+                    partsPrice: 0,
+                    servicePrice: 0,
+                    laborPrice: 0,
+                    miscPrice: 0,
+                    environmentalPrice: environmentalPrice,
+                    tax: taxTaxPrice,
+                    costPrice: 0,
+                    totalPrice: 0,
+                    margin: quoteBillingData.margin,
+                    discount: quoteBillingData.discount,
+                    netPrice: 0,
+                    adjustedPrice: flatAdjustPrice,
                     status: "PENDING_ACTIVE",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
-                    plQuoteItems: []
+                    plQuoteItems: [],
+                    payers: payerListArray,
+                    priceEstimates: [],
+                    sbPriceEstimates: [],
+                    otherItemPrice: 0,
                 }
 
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -446,12 +828,81 @@ export function SolutionServicePortfolio(props) {
                     throw "Sales Office / Branch is a required field, you can’t leave it blank";
                 }
 
-                let solutionQuoteObj = {
+                // let solutionQuoteObj = {
+                //     quoteType: "SOLUTION_QUOTE",
+                //     source: customerData.source,
+                //     customerId: customerData.customerID,
+                //     model: machineData.model,
+                //     serialNumber: machineData.serialNo,
+                //     smu: machineData.smu,
+                //     fleetNo: machineData.fleetNo,
+                //     registrationNo: machineData.registrationNo,
+                //     chasisNo: machineData.chasisNo,
+                //     preparedBy: estimateDetails.preparedBy,
+                //     approvedBy: estimateDetails.approvedBy,
+                //     preparedOn: estimateDetails.preparedOn,
+                //     revisedBy: estimateDetails.revisedBy,
+                //     revisedOn: estimateDetails.revisedOn,
+                //     salesOffice: estimateDetails.salesOffice != ""
+                //         ? estimateDetails.salesOffice?.value : "",
+                //     quoteDate: generalDetails.quoteDate,
+                //     description: generalDetails.description,
+                //     reference: generalDetails.reference,
+                //     validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                //     version: generalDetails.version,
+                //     netPrice: 0,
+                //     priceDate: "",
+                //     costPrice: 0,
+                //     priceMethod: "LIST_PRICE",
+                //     adjustedPrice: 0,
+                //     currency: "",
+                //     status: "PENDING_ACTIVE",
+                //     tenantId: loginTenantId,
+                //     sbQuoteItems: subQuotesIds,
+                //     rbQuoteItems: [],
+                //     plQuoteItems: []
+                // }
+                var flatAdjustPrice = 0;
+                var environmentalPrice = 0;
+                var taxTaxPrice = 0;
+                if (priceSummaryData > 0) {
+                    const flatAdjustPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "FLAT_RATE");
+                    if (flatAdjustPriceObj) {
+                        flatAdjustPrice = flatAdjustPriceObj?.netPrice;
+                    } else {
+                        flatAdjustPrice = 0;
+                    }
+
+                    const environmentalPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "ENVIRONMENTAL");
+                    if (environmentalPriceObj) {
+                        environmentalPrice = environmentalPriceObj?.netPrice;
+                    } else {
+                        environmentalPrice = 0;
+                    }
+
+                    const taxTaxPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "TAX");
+                    if (flatAdjustPriceObj) {
+                        taxTaxPrice = taxTaxPriceObj?.netPrice;
+                    } else {
+                        taxTaxPrice = 0;
+                    }
+
+                }
+
+                const solutionQuoteObj = {
+                    quoteName: generalDetails.quoteName,
                     quoteType: "SOLUTION_QUOTE",
                     source: customerData.source,
                     customerId: customerData.customerID,
+                    customerName: customerData.customerName,
+                    contactEmail: customerData.contactEmail,
+                    contactPhone: customerData.contactPhone,
+                    requester: "",
+                    customerGroup: customerData.customerGroup,
+                    make: machineData.make,
                     model: machineData.model,
                     serialNumber: machineData.serialNo,
+                    family: machineData.family,
                     smu: machineData.smu,
                     fleetNo: machineData.fleetNo,
                     registrationNo: machineData.registrationNo,
@@ -466,19 +917,39 @@ export function SolutionServicePortfolio(props) {
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
-                    validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
-                    version: generalDetails.version,
-                    netPrice: 0,
-                    priceDate: "",
-                    costPrice: 0,
+                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
+                    paymentTerms: quoteBillingData.paymentTerms,
+                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
+                    billingType: quoteBillingData.billingType,
+                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
+                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    leadTime: shippingBillingDetails.leadTime,
+                    serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
+                    priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    adjustedPrice: 0,
-                    currency: "",
+                    currency: quoteBillingData.currency,
+                    partsPrice: 0,
+                    servicePrice: 0,
+                    laborPrice: 0,
+                    miscPrice: 0,
+                    environmentalPrice: environmentalPrice,
+                    tax: taxTaxPrice,
+                    costPrice: 0,
+                    totalPrice: 0,
+                    margin: quoteBillingData.margin,
+                    discount: quoteBillingData.discount,
+                    netPrice: 0,
+                    adjustedPrice: flatAdjustPrice,
                     status: "PENDING_ACTIVE",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
-                    plQuoteItems: []
+                    plQuoteItems: [],
+                    payers: payerListArray,
+                    priceEstimates: [],
+                    sbPriceEstimates: [],
+                    otherItemPrice: 0,
                 }
 
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -506,12 +977,83 @@ export function SolutionServicePortfolio(props) {
                 if (generalDetails.validity === "") {
                     throw "Validity is a required field, you can’t leave it blank";
                 }
-                let solutionQuoteObj = {
+
+                // let solutionQuoteObj = {
+                //     quoteType: "SOLUTION_QUOTE",
+                //     source: customerData.source,
+                //     customerId: customerData.customerID,
+                //     model: machineData.model,
+                //     serialNumber: machineData.serialNo,
+                //     smu: machineData.smu,
+                //     fleetNo: machineData.fleetNo,
+                //     registrationNo: machineData.registrationNo,
+                //     chasisNo: machineData.chasisNo,
+                //     preparedBy: estimateDetails.preparedBy,
+                //     approvedBy: estimateDetails.approvedBy,
+                //     preparedOn: estimateDetails.preparedOn,
+                //     revisedBy: estimateDetails.revisedBy,
+                //     revisedOn: estimateDetails.revisedOn,
+                //     salesOffice: estimateDetails.salesOffice != ""
+                //         ? estimateDetails.salesOffice?.value : "",
+                //     quoteDate: generalDetails.quoteDate,
+                //     description: generalDetails.description,
+                //     reference: generalDetails.reference,
+                //     validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                //     version: generalDetails.version,
+                //     netPrice: 0,
+                //     priceDate: "",
+                //     costPrice: 0,
+                //     priceMethod: "LIST_PRICE",
+                //     adjustedPrice: 0,
+                //     currency: "",
+                //     status: "PENDING_ACTIVE",
+                //     tenantId: loginTenantId,
+                //     sbQuoteItems: subQuotesIds,
+                //     rbQuoteItems: [],
+                //     plQuoteItems: []
+                // }
+
+                var flatAdjustPrice = 0;
+                var environmentalPrice = 0;
+                var taxTaxPrice = 0;
+                if (priceSummaryData > 0) {
+                    const flatAdjustPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "FLAT_RATE");
+                    if (flatAdjustPriceObj) {
+                        flatAdjustPrice = flatAdjustPriceObj?.netPrice;
+                    } else {
+                        flatAdjustPrice = 0;
+                    }
+
+                    const environmentalPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "ENVIRONMENTAL");
+                    if (environmentalPriceObj) {
+                        environmentalPrice = environmentalPriceObj?.netPrice;
+                    } else {
+                        environmentalPrice = 0;
+                    }
+
+                    const taxTaxPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "TAX");
+                    if (flatAdjustPriceObj) {
+                        taxTaxPrice = taxTaxPriceObj?.netPrice;
+                    } else {
+                        taxTaxPrice = 0;
+                    }
+
+                }
+
+                const solutionQuoteObj = {
+                    quoteName: generalDetails.quoteName,
                     quoteType: "SOLUTION_QUOTE",
                     source: customerData.source,
                     customerId: customerData.customerID,
+                    customerName: customerData.customerName,
+                    contactEmail: customerData.contactEmail,
+                    contactPhone: customerData.contactPhone,
+                    requester: "",
+                    customerGroup: customerData.customerGroup,
+                    make: machineData.make,
                     model: machineData.model,
                     serialNumber: machineData.serialNo,
+                    family: machineData.family,
                     smu: machineData.smu,
                     fleetNo: machineData.fleetNo,
                     registrationNo: machineData.registrationNo,
@@ -526,19 +1068,39 @@ export function SolutionServicePortfolio(props) {
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
-                    validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
-                    version: generalDetails.version,
-                    netPrice: 0,
-                    priceDate: "",
-                    costPrice: 0,
+                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
+                    paymentTerms: quoteBillingData.paymentTerms,
+                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
+                    billingType: quoteBillingData.billingType,
+                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
+                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    leadTime: shippingBillingDetails.leadTime,
+                    serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
+                    priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    adjustedPrice: 0,
-                    currency: "",
+                    currency: quoteBillingData.currency,
+                    partsPrice: 0,
+                    servicePrice: 0,
+                    laborPrice: 0,
+                    miscPrice: 0,
+                    environmentalPrice: environmentalPrice,
+                    tax: taxTaxPrice,
+                    costPrice: 0,
+                    totalPrice: 0,
+                    margin: quoteBillingData.margin,
+                    discount: quoteBillingData.discount,
+                    netPrice: 0,
+                    adjustedPrice: flatAdjustPrice,
                     status: "PENDING_ACTIVE",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
-                    plQuoteItems: []
+                    plQuoteItems: [],
+                    payers: payerListArray,
+                    priceEstimates: [],
+                    sbPriceEstimates: [],
+                    otherItemPrice: 0,
                 }
 
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -556,16 +1118,218 @@ export function SolutionServicePortfolio(props) {
                     setViewOnlyTab({ ...viewOnlyTab, generalDetailsViewOnly: true });
                 }
 
-
             } else if (e.target.id === "price") {
                 if (quoteIdIs == 0) {
                     throw "Please Create Quote First."
                 }
-                setValue("shipping_billing");
+
+                const createdPayersArray = [];
+                const _payerListArray = [...payerListArray];
+                if (addPayerData.length > 0) {
+                    for (let p = 0; p < addPayerData.length; p++) {
+                        var reqObj = {
+                            payerName: addPayerData[p].payerName,
+                            billingSplit: addPayerData[p].billingSplit,
+                            price: addPayerData[p].price,
+                        }
+                        const payerCreateResult = await quotePayerCreation(`quote_id=${quoteIdIs}`, reqObj)
+                        if (payerCreateResult.status === 200) {
+                            createdPayersArray.push({
+                                payerId: payerCreateResult.data.payerId
+                            });
+                            _payerListArray.push({
+                                payerId: payerCreateResult.data.payerId
+                            })
+                        }
+                    }
+                }
+                setPayerListArray(_payerListArray);
+                const solutionQuoteObj = {
+                    quoteName: generalDetails.quoteName,
+                    quoteType: "SOLUTION_QUOTE",
+                    source: customerData.source,
+                    customerId: customerData.customerID,
+                    customerName: customerData.customerName,
+                    contactEmail: customerData.contactEmail,
+                    contactPhone: customerData.contactPhone,
+                    requester: "",
+                    customerGroup: customerData.customerGroup,
+                    make: machineData.make,
+                    model: machineData.model,
+                    serialNumber: machineData.serialNo,
+                    family: machineData.family,
+                    smu: machineData.smu,
+                    fleetNo: machineData.fleetNo,
+                    registrationNo: machineData.registrationNo,
+                    chasisNo: machineData.chasisNo,
+                    preparedBy: estimateDetails.preparedBy,
+                    approvedBy: estimateDetails.approvedBy,
+                    preparedOn: estimateDetails.preparedOn,
+                    revisedBy: estimateDetails.revisedBy,
+                    revisedOn: estimateDetails.revisedOn,
+                    salesOffice: estimateDetails.salesOffice != ""
+                        ? estimateDetails.salesOffice?.value : "",
+                    quoteDate: generalDetails.quoteDate,
+                    description: generalDetails.description,
+                    reference: generalDetails.reference,
+                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
+                    paymentTerms: quoteBillingData.paymentTerms,
+                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
+                    billingType: quoteBillingData.billingType,
+                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
+                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    leadTime: shippingBillingDetails.leadTime,
+                    serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
+                    priceDate: quoteBillingData.priceDate,
+                    priceMethod: "LIST_PRICE",
+                    currency: quoteBillingData.currency,
+                    partsPrice: 0,
+                    servicePrice: 0,
+                    laborPrice: 0,
+                    miscPrice: 0,
+                    environmentalPrice: environmentalPrice,
+                    tax: taxTaxPrice,
+                    costPrice: 0,
+                    totalPrice: 0,
+                    margin: quoteBillingData.margin,
+                    discount: quoteBillingData.discount,
+                    netPrice: 0,
+                    adjustedPrice: flatAdjustPrice,
+                    status: "PENDING_ACTIVE",
+                    tenantId: loginTenantId,
+                    sbQuoteItems: subQuotesIds,
+                    rbQuoteItems: [],
+                    plQuoteItems: [],
+                    payers: _payerListArray,
+                    priceEstimates: [],
+                    sbPriceEstimates: [],
+                    otherItemPrice: 0,
+                }
+
+                const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
+                if (solutionRes.status === 200) {
+                    toast(`👏 Quote Updated Successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("shipping_billing");
+                    setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+                }
+
             } else if (e.target.id === "shipping_billing") {
 
                 if (quoteIdIs == 0) {
                     throw "Please Create Quote First."
+                }
+
+                var flatAdjustPrice = 0;
+                var environmentalPrice = 0;
+                var taxTaxPrice = 0;
+                if (priceSummaryData > 0) {
+                    const flatAdjustPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "FLAT_RATE");
+                    if (flatAdjustPriceObj) {
+                        flatAdjustPrice = flatAdjustPriceObj?.netPrice;
+                    } else {
+                        flatAdjustPrice = 0;
+                    }
+
+                    const environmentalPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "ENVIRONMENTAL");
+                    if (environmentalPriceObj) {
+                        environmentalPrice = environmentalPriceObj?.netPrice;
+                    } else {
+                        environmentalPrice = 0;
+                    }
+
+                    const taxTaxPriceObj = priceSummaryData.find(obj => obj.priceSummaryType?.value === "TAX");
+                    if (flatAdjustPriceObj) {
+                        taxTaxPrice = taxTaxPriceObj?.netPrice;
+                    } else {
+                        taxTaxPrice = 0;
+                    }
+
+                }
+
+                const solutionQuoteObj = {
+                    quoteName: generalDetails.quoteName,
+                    quoteType: "SOLUTION_QUOTE",
+                    source: customerData.source,
+                    customerId: customerData.customerID,
+                    customerName: customerData.customerName,
+                    contactEmail: customerData.contactEmail,
+                    contactPhone: customerData.contactPhone,
+                    requester: "",
+                    customerGroup: customerData.customerGroup,
+                    make: machineData.make,
+                    model: machineData.model,
+                    serialNumber: machineData.serialNo,
+                    family: machineData.family,
+                    smu: machineData.smu,
+                    fleetNo: machineData.fleetNo,
+                    registrationNo: machineData.registrationNo,
+                    chasisNo: machineData.chasisNo,
+                    preparedBy: estimateDetails.preparedBy,
+                    approvedBy: estimateDetails.approvedBy,
+                    preparedOn: estimateDetails.preparedOn,
+                    revisedBy: estimateDetails.revisedBy,
+                    revisedOn: estimateDetails.revisedOn,
+                    salesOffice: estimateDetails.salesOffice != ""
+                        ? estimateDetails.salesOffice?.value : "",
+                    quoteDate: generalDetails.quoteDate,
+                    description: generalDetails.description,
+                    reference: generalDetails.reference,
+                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
+                    paymentTerms: quoteBillingData.paymentTerms,
+                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
+                    billingType: quoteBillingData.billingType,
+                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
+                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    leadTime: shippingBillingDetails.leadTime,
+                    serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
+                    priceDate: quoteBillingData.priceDate,
+                    priceMethod: "LIST_PRICE",
+                    currency: quoteBillingData.currency,
+                    partsPrice: 0,
+                    servicePrice: 0,
+                    laborPrice: 0,
+                    miscPrice: 0,
+                    environmentalPrice: environmentalPrice,
+                    tax: taxTaxPrice,
+                    costPrice: 0,
+                    totalPrice: 0,
+                    margin: quoteBillingData.margin,
+                    discount: quoteBillingData.discount,
+                    netPrice: 0,
+                    adjustedPrice: flatAdjustPrice,
+                    status: "PENDING_ACTIVE",
+                    tenantId: loginTenantId,
+                    sbQuoteItems: subQuotesIds,
+                    rbQuoteItems: [],
+                    plQuoteItems: [],
+                    payers: payerListArray,
+                    priceEstimates: [],
+                    sbPriceEstimates: [],
+                    otherItemPrice: 0,
+                }
+                const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
+                if (solutionRes.status === 200) {
+                    toast(`👏 Quote Updated Successfully`, {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    // setValue("estimationDetails");
+                    setViewOnlyTab({ ...viewOnlyTab, shippingOrBillingViewOnly: true });
                 }
                 console.log("final")
             }
@@ -588,6 +1352,121 @@ export function SolutionServicePortfolio(props) {
         { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, },
         { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, },
     ];
+
+    const summeryTypeOptions = [
+        { label: "Total Solution Price", value: "TOTAL_SOLUTION_PRICE" },
+        { label: "Total Additional Price", value: "TOTAL_ADDITIONAL_PRICE" },
+        { label: "Flat Rate All", value: "FLAT_RATE" },
+        { label: "Environmental", value: "ENVIRONMENTAL" },
+        { label: "Tax", value: "TAX" },
+    ]
+
+    const [addPayerData, setAddPayerData] = useState([{
+        id: 1,
+        payerName: customerData.customerName,
+        billingSplit: 100,
+        price: "",
+    }])
+
+    const addPayerColumns = [
+        {
+            name: (
+                <>
+                    <div>Payers</div>
+                </>
+            ),
+            selector: (row, i) => row.payerName,
+            wrap: true,
+            sortable: true,
+            id: "payerName",
+            format: (row, i) => {
+                return (
+                    <input
+                        type="text"
+                        className="quote-payer-input"
+                        // placeholder="NA"
+                        name="payerName"
+                        value={row.payerName}
+                        onChange={(e) => handleAddedPayerRowData(e, i)}
+                    />
+                )
+            },
+            class: "new-table-row",
+        },
+        {
+            name: (
+                <>
+                    <div>Billing Split %</div>
+                </>
+            ),
+            selector: (row, i) => row.billingSplit,
+            wrap: true,
+            sortable: true,
+            format: (row, i) => {
+                return (
+                    <input
+                        type="number"
+                        className="quote-payer-input"
+                        name="billingSplit"
+                        value={row.billingSplit}
+                        onChange={(e) => handleAddedPayerRowData(e, i)}
+                    />
+                )
+            },
+        },
+        {
+            name: (
+                <>
+                    <div>Price $</div>
+                </>
+            ),
+            selector: (row) => row.price,
+            wrap: true,
+            sortable: true,
+            // format: (row) => ((quoteBillingData.netPrice * row.billingSplit) / 100),
+            format: (row) => row.price,
+        },
+    ]
+
+    const addNewPayer = () => {
+        const _addPayerData = [...addPayerData];
+        _addPayerData.push({
+            id: (_addPayerData.length + 1),
+            payerName: "",
+            billingSplit: 0,
+            price: "",
+        })
+        setAddPayerData(_addPayerData);
+        // console.log("addPayerData -------- ", _addPayerData);
+    }
+
+    const handleAddedPayerRowData = (e, i) => {
+        var tempRow = addPayerData.slice();
+        if (e.target.name === "billingSplit") {
+            if (e.target.value <= 100) {
+                tempRow = {
+                    ...tempRow[i],
+                    [e.target.name]: e.target.value,
+                    price: ((quoteBillingData.netPrice * e.target.value) / 100)
+                }
+            } else {
+                tempRow = {
+                    ...tempRow[i],
+                    [e.target.name]: 100,
+                    price: ((quoteBillingData.netPrice * 100) / 100)
+                }
+            }
+        } else {
+            tempRow = {
+                ...tempRow[i],
+                [e.target.name]: e.target.value,
+            }
+        }
+        let _addPayerData = [...addPayerData];
+        _addPayerData.splice(i, 1, tempRow)
+        setAddPayerData(_addPayerData);
+    }
+
     const masterColumns2 = [
         {
             name: (
@@ -623,6 +1502,187 @@ export function SolutionServicePortfolio(props) {
             format: (row) => row.sbQuoteId,
         },
     ]
+
+
+    /* Price Estimate Summary */
+
+    const [priceSummaryData, setPriceSummaryData] = useState([
+        {
+            priceBreakup: 1,
+            priceSummaryType: "",
+            estimated: 0,
+            discount: 0,
+            netPrice: 100,
+        }
+    ])
+
+    const priceSummaryColumns = [
+        {
+            name: (
+                <>
+                    <div>Price Breakup</div>
+                </>
+            ),
+            selector: (row) => row.priceBreakup,
+            wrap: true,
+            sortable: true,
+            format: (row) => {
+                return (
+                    ((row.priceBreakup) + 9).toString(36).toUpperCase()
+                )
+            },
+        },
+        {
+            name: (
+                <>
+                    <div>Price Summary Type</div>
+                </>
+            ),
+            id: "price-summary-type",
+            selector: (row) => row.priceSummaryType,
+            wrap: true,
+            sortable: true,
+            format: (row, i) => {
+                return (
+                    <Select
+                        // defaultValue={selectedOption}
+                        onChange={(e) => handlePriceSummaryRowData(e, i, true)}
+                        options={summeryTypeOptions}
+                        placeholder="Select..."
+                        className="price-summary-select"
+                        isOptionDisabled={(option) => checkPriceSummaryOptionForDisabled(option)}
+                    />
+                )
+            },
+        },
+        {
+            name: (
+                <>
+                    <div>Estimated $</div>
+                </>
+            ),
+            selector: (row) => row.estimated,
+            wrap: true,
+            sortable: true,
+            format: (row, i) => {
+                return (
+                    <input
+                        type="number"
+                        className="quote-payer-input"
+                        name="estimated"
+                        value={row.estimated}
+                        onChange={(e) => handlePriceSummaryRowData(e, i)}
+                    />
+                )
+            },
+        },
+        {
+            name: (
+                <>
+                    <div>Discounts %</div>
+                </>
+            ),
+            selector: (row) => row.discount,
+            wrap: true,
+            sortable: true,
+            format: (row, i) => {
+                return (
+                    <input
+                        type="number"
+                        className="quote-payer-input"
+                        name="discount"
+                        value={row.discount}
+                        onChange={(e) => handlePriceSummaryRowData(e, i, false, true)}
+                    />
+                )
+            },
+        },
+        {
+            name: (
+                <>
+                    <div>Net Price</div>
+                </>
+            ),
+            selector: (row) => row?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Actions</div>
+                </>
+            ),
+            selector: (row) => row?.actions,
+            wrap: true,
+            sortable: true,
+            format: (row) => row?.actions,
+        },
+    ]
+
+    const addNewPriceSummaryData = () => {
+        const _priceSummaryData = [...priceSummaryData];
+        if (_priceSummaryData.length < 5) {
+            _priceSummaryData.push({
+                priceBreakup: (_priceSummaryData.length + 1),
+                priceSummaryType: "",
+                estimated: 0,
+                discount: 0,
+                netPrice: 0,
+            })
+            setPriceSummaryData(_priceSummaryData);
+            console.log("_priceSummaryData : ", _priceSummaryData);
+        }
+    }
+
+    const handlePriceSummaryRowData = (e, i, selectType = false, isDiscount = false) => {
+        var tempRow = priceSummaryData.slice();
+        if (selectType) {
+            tempRow = {
+                ...tempRow[i],
+                priceSummaryType: e,
+            }
+        } else {
+            if (isDiscount) {
+                if (e.target.value <= 100) {
+                    tempRow = {
+                        ...tempRow[i],
+                        [e.target.name]: e.target.value,
+                        netPrice: ((tempRow[i].estimated * e.target.value) / 100),
+                    }
+                } else {
+                    tempRow = {
+                        ...tempRow[i],
+                        [e.target.name]: 100,
+                        netPrice: ((tempRow[i].estimated * 100) / 100),
+                    }
+                }
+            } else {
+                tempRow = {
+                    ...tempRow[i],
+                    [e.target.name]: e.target.value,
+                    netPrice: ((tempRow[i].discount * e.target.value) / 100)
+                }
+            }
+        }
+
+
+        let _priceSummaryData = [...priceSummaryData];
+        _priceSummaryData.splice(i, 1, tempRow)
+        setPriceSummaryData(_priceSummaryData);
+    }
+
+    const checkPriceSummaryOptionForDisabled = (option) => {
+        if (priceSummaryData.length > 1) {
+            const found = priceSummaryData.some(obj => obj.priceSummaryType?.value === option.value);
+            if (found) {
+                return true;
+            }
+        } else {
+            return false
+        }
+    }
 
     const rows3 = [
         { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, },
@@ -997,6 +2057,7 @@ export function SolutionServicePortfolio(props) {
             shippingOrBillingViewOnly: true,
         });
 
+        var customerAddressAre = "";
         // Set Customer Tab Data
         await customerSearch("customerId" + ":" + result.customerId)
             .then((resultData) => {
@@ -1008,7 +2069,16 @@ export function SolutionServicePortfolio(props) {
                     contactEmail: resultData[0].email,
                     customerGroup: resultData[0].customerGroup,
                     customerName: resultData[0].fullName,
+                    customerAddress: resultData[0].contactAddress,
+                    contactPhone: result.contactPhone
                 });
+                customerAddressAre = resultData[0].contactAddress;
+                setAddPayerData([{
+                    id: 1,
+                    payerName: resultData[0].fullName,
+                    billingSplit: 100,
+                    price: "",
+                }]);
             })
             .catch((e) => {
                 handleSnack(
@@ -1026,6 +2096,8 @@ export function SolutionServicePortfolio(props) {
             fleetNo: result.fleetNo,
             registrationNo: result.registrationNo,
             chasisNo: result.chasisNo,
+            make: result.make,
+            family: result.family,
         });
 
         // Estimate Details Tab Data 
@@ -1035,33 +2107,93 @@ export function SolutionServicePortfolio(props) {
             preparedOn: result.preparedOn,
             revisedBy: result.revisedBy,
             revisedOn: result.revisedOn,
-            salesOffice: result.salesOffice != null || result.salesOffice != "" ?
-                { label: result.salesOffice, value: result.salesOffice } : "",
+            salesOffice: result.salesOffice === null || result.salesOffice === "" ? "" :
+                { label: result.salesOffice, value: result.salesOffice },
         });
 
         // General Details Tab Data 
         setGeneralDetails({
             quoteDate: result.quoteDate,
-            quote: "",
+            quoteName: result.quoteName,
             description: result.description,
             reference: result.reference,
-            validity: result.validity != "" || result.validity != null ? {
+            validity: result.validity === "" || result.validity === null ? "" : {
                 label: result.validity, value: result.validity
-            } : "",
-            version: result.version,
+            },
+            version: result.version === "" || result.version === null ? "" : {
+                label: result.version, value: result.version
+            },
             // salesOffice: result.,
         });
 
         // General Details Tab Data 
         setShippingBillingDetails({
-            deliveryType: result.deliveryType,
-            deliveryPriority: result.deliveryPriority,
+            deliveryType: result.deliveryType === "" || result.deliveryType === null ? "" : {
+                label: result.deliveryType, value: result.deliveryType
+            },
+            deliveryPriority: result.deliveryPriority === "" || result.deliveryPriority === null ? "" : {
+                label: result.deliveryPriority, value: result.deliveryPriority
+            },
             paymentTerms: result.paymentTerms,
             billingFrequency: result.billingFrequency,
             payer: result.payers,
             split: result.split,
             netPayAble: result.netPayable,
+            leadTime: result.leadTime,
+            serviceRecipentAddress: ((result.serviceRecipentAddress === "") || 
+            (result.serviceRecipentAddress === null)) ? customerAddressAre : result.serviceRecipentAddress,
         });
+
+        // Price as Billing Tab Data
+        setQuoteBillingData({
+            paymentTerms: result.paymentTerms,
+            currency: result.currency,
+            priceDate: result.priceDate == "" ||
+                result.priceDate == null ||
+                result.priceDate == undefined ||
+                result.priceDate == "string" ?
+                new Date() : result.priceDate,
+            billingType: result.billingType,
+            billingFrequency: result.billingFrequency,
+            netPrice: result.netPrice,
+            margin: result.margin,
+            discount: result.discount,
+        })
+
+        if (result.paymentTerms == "" ||
+            result.paymentTerms == null ||
+            result.paymentTerms == undefined ||
+            result.paymentTerms == "string") {
+        } else {
+            setBillingPaymentTermsKeyValue({ label: result.paymentTerms, value: result.paymentTerms })
+
+        }
+
+        if (result.currency == "" ||
+            result.currency == null ||
+            result.currency == undefined ||
+            result.currency == "string") {
+        } else {
+            setBillingCurrencyKeyValue({ label: result.currency, value: result.currency })
+        }
+
+        if (result.billingType == "" ||
+            result.billingType == null ||
+            result.billingType == undefined ||
+            result.billingType == "string") {
+        } else {
+            setBillingBillingTypeKeyValue({ label: result.billingType, value: result.billingType })
+
+        }
+
+        if (result.billingFrequency == "" ||
+            result.billingFrequency == null ||
+            result.billingFrequency == undefined ||
+            result.billingFrequency == "string") {
+        } else {
+            setBillingBillingFrequencyKeyValue({ label: result.billingFrequency, value: result.billingFrequency })
+
+        }
 
         let subQuotesData = [];
         if (result.sbQuoteItems.length > 0) {
@@ -1072,6 +2204,23 @@ export function SolutionServicePortfolio(props) {
         setSubQuotesIds(subQuotesData)
         setQuoteItemsMaster(result.sbQuoteItems);
         setSubQuoteItems(result.sbQuoteItems)
+
+        const addPayerTableData = [];
+        const addPayerSaveData = []
+        if (result.payers.length > 0) {
+            for (let i = 0; i < result.payers.length; i++) {
+                addPayerTableData.push({
+                    id: i,
+                    payerName: result.payers.payerName,
+                    billingSplit: result.payers.billingSplit,
+                    price: result.payers.price,
+                })
+                addPayerSaveData.push({ "payerId": result.payers[i].payerId })
+            }
+            setAddPayerData(addPayerTableData)
+            setPayerListArray(addPayerSaveData)
+        }
+
     }
 
 
@@ -1147,7 +2296,7 @@ export function SolutionServicePortfolio(props) {
     };
 
     // Select the customer from search result
-    const handleCustSelect = (type, currentItem) => {
+    const handleCustomerSelect = (type, currentItem) => {
         setCustomerData({
             ...customerData,
             customerID: currentItem.customerId,
@@ -1156,7 +2305,20 @@ export function SolutionServicePortfolio(props) {
             // customerGroup: currentItem.priceGroup,
             customerGroup: currentItem.customerGroup,
             customerName: currentItem.fullName,
+            customerAddress: currentItem.contactAddress,
         });
+        const _addPayerData = [...addPayerData];
+        if (customerData.customerName === _addPayerData[0].payerName) {
+            _addPayerData[0].payerName = currentItem.fullName;
+            // _addPayerData.push({
+            //     id: (_addPayerData.length + 1),
+            //     payerName: "",
+            //     billingSplit: 100,
+            //     price: "",
+            // })
+            console.log("_addPayerData handleCustomerSelect ", _addPayerData);
+            // setAddPayerData(_addPayerData);
+        }
         setSearchCustResults([]);
     };
 
@@ -1228,7 +2390,8 @@ export function SolutionServicePortfolio(props) {
                 model: currentItem.model,
                 fleetNo: currentItem.stockNumber,
                 smu: currentItem.sensorId,
-
+                make: currentItem.makerSerialNumber,
+                family: currentItem?.family,
             });
             setSearchModelResults([]);
         } else if (type === "equipmentNumber") {
@@ -1258,28 +2421,32 @@ export function SolutionServicePortfolio(props) {
         var value = e.target.value;
         var name = e.target.name;
         setEstimateDetails({
-            ...machineData,
-            [name]: value,
+            ...estimateDetails,
+            [e.target.name]: e.target.value,
         });
     };
 
     //Individual General Details field value change
     const handleGeneralDetailsDataChange = (e) => {
-        var value = e.target.value;
-        var name = e.target.name;
+        // var value = e.target.value;
+        // var name = e.target.name;
         setGeneralDetails({
-            ...machineData,
-            [name]: value,
+            ...generalDetails,
+            [e.target.name]: e.target.value,
         });
     };
 
     const handleShippingDetails = (e) => {
-        var value = e.target.value;
-        var name = e.target.name;
+        // var value = e.target.value;
+        // var name = e.target.name;
         setShippingBillingDetails({
             ...shippingBillingDetails,
-            [name]: value,
+            [e.target.name]: e.target.value,
         });
+    }
+
+    const handleQuoteBillingTextChange = (value, fieldName) => {
+        setQuoteBillingData({ ...quoteBillingData, [fieldName]: value })
     }
 
 
@@ -1590,8 +2757,10 @@ export function SolutionServicePortfolio(props) {
                                             <Tab label="Machine " value="machine" className="heading-tabs" />
                                             <Tab label="Estimation Details" value="estimationDetails" className="heading-tabs" />
                                             <Tab label="General Details" value="generalDetails" className="heading-tabs" />
-                                            <Tab label="Price" value="price" className="heading-tabs" />
-                                            <Tab label="Shipping / Billing" value="shipping_billing" className="heading-tabs" />
+                                            <Tab label="Billing" value="price" className="heading-tabs" />
+                                            {/* <Tab label="Price" value="price" className="heading-tabs" />
+                                            <Tab label="Shipping / Billing" value="shipping_billing" className="heading-tabs" /> */}
+                                            <Tab label="Shipping" value="shipping_billing" className="heading-tabs" />
                                         </TabList>
                                     </Box>
                                     <TabPanel value="customer">
@@ -1625,7 +2794,7 @@ export function SolutionServicePortfolio(props) {
                                                                 }
                                                                 type="customerId"
                                                                 result={searchCustResults}
-                                                                onSelect={handleCustSelect}
+                                                                onSelect={handleCustomerSelect}
                                                             />
                                                             {/* <span className="search-absolute"><SearchIcon /></span> */}
                                                         </div>
@@ -2003,7 +3172,7 @@ export function SolutionServicePortfolio(props) {
                                                             <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
-                                                                id="exampleInputEmail1"
+                                                                id="preparedBy"
                                                                 name="preparedBy"
                                                                 value={estimateDetails.preparedBy}
                                                                 onChange={handleEstimateDetailsDataChange}
@@ -2018,7 +3187,7 @@ export function SolutionServicePortfolio(props) {
                                                             <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
-                                                                id="exampleInputEmail1"
+                                                                id="approvedBy"
                                                                 name="approvedBy"
                                                                 value={estimateDetails.approvedBy}
                                                                 onChange={handleEstimateDetailsDataChange}
@@ -2037,6 +3206,7 @@ export function SolutionServicePortfolio(props) {
                                                                         format="dd/MM/yyyy"
                                                                         className="form-controldate border-radius-10"
                                                                         label=""
+                                                                        id="preparedOn"
                                                                         name="preparedOn"
                                                                         value={estimateDetails.preparedOn}
                                                                         onChange={(e) =>
@@ -2056,7 +3226,7 @@ export function SolutionServicePortfolio(props) {
                                                             <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
-                                                                id="exampleInputEmail1"
+                                                                id="revisedBy"
                                                                 name="revisedBy"
                                                                 value={estimateDetails.revisedBy}
                                                                 onChange={handleEstimateDetailsDataChange}
@@ -2075,6 +3245,7 @@ export function SolutionServicePortfolio(props) {
                                                                         format="dd/MM/yyyy"
                                                                         className="form-controldate border-radius-10"
                                                                         label=""
+                                                                        id="revisedOn"
                                                                         name="revisedOn"
                                                                         value={estimateDetails.revisedOn}
                                                                         onChange={(e) =>
@@ -2198,8 +3369,11 @@ export function SolutionServicePortfolio(props) {
                                                                 {estimateDetails.salesOffice == "" ||
                                                                     estimateDetails.salesOffice == null ||
                                                                     estimateDetails.salesOffice == "string" ||
-                                                                    estimateDetails.salesOffice == undefined ?
-                                                                    "NA" : estimateDetails.salesOffice?.value}
+                                                                    estimateDetails.salesOffice == undefined ||
+                                                                    estimateDetails.salesOffice?.value === null ||
+                                                                    estimateDetails.salesOffice?.value === "" ||
+                                                                    estimateDetails.salesOffice?.value === undefined ?
+                                                                    "NA" : typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -2244,8 +3418,8 @@ export function SolutionServicePortfolio(props) {
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
                                                                 id="exampleInputEmail1"
-                                                                name="quote"
-                                                                value={generalDetails.quote}
+                                                                name="quoteName"
+                                                                value={generalDetails.quoteName}
                                                                 onChange={handleGeneralDetailsDataChange}
                                                                 aria-describedby="emailHelp"
                                                                 placeholder="Placeholder (Optional)"
@@ -2258,7 +3432,7 @@ export function SolutionServicePortfolio(props) {
                                                             <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
-                                                                id="exampleInputEmail1"
+                                                                id="description"
                                                                 name="description"
                                                                 value={generalDetails.description}
                                                                 onChange={handleGeneralDetailsDataChange}
@@ -2273,7 +3447,7 @@ export function SolutionServicePortfolio(props) {
                                                             <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
-                                                                id="exampleInputEmail1"
+                                                                id="reference"
                                                                 name="reference"
                                                                 value={generalDetails.reference}
                                                                 onChange={handleGeneralDetailsDataChange}
@@ -2298,7 +3472,7 @@ export function SolutionServicePortfolio(props) {
                                                             <Select
                                                                 onChange={(e) =>
                                                                     setGeneralDetails({
-                                                                        ...machineData,
+                                                                        ...generalDetails,
                                                                         validity: e,
                                                                     })
                                                                 }
@@ -2313,7 +3487,20 @@ export function SolutionServicePortfolio(props) {
                                                     <div className="col-md-4 col-sm-4">
                                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
                                                         <div className="form-group w-100">
-                                                            <input
+                                                            <Select
+                                                                onChange={(e) =>
+                                                                    setGeneralDetails({
+                                                                        ...generalDetails,
+                                                                        version: e,
+                                                                    })
+                                                                }
+                                                                className="text-primary"
+                                                                options={generalVersionOptions}
+                                                                placeholder="Required"
+                                                                value={generalDetails.version}
+                                                                styles={FONT_STYLE_SELECT}
+                                                            />
+                                                            {/* <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
                                                                 id="exampleInputEmail1"
@@ -2321,7 +3508,7 @@ export function SolutionServicePortfolio(props) {
                                                                 value={generalDetails.version}
                                                                 onChange={handleGeneralDetailsDataChange}
                                                                 aria-describedby="emailHelp"
-                                                                placeholder="Placeholder (Optional)" />
+                                                                placeholder="Placeholder (Optional)" /> */}
                                                         </div>
                                                     </div>
                                                     <div className="col-md-12 col-sm-12">
@@ -2355,11 +3542,11 @@ export function SolutionServicePortfolio(props) {
                                                         <div className="form-group">
                                                             <p className="font-size-12 font-weight-500 mb-2">QUOTE #</p>
                                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                                                {generalDetails.quote == "" ||
-                                                                    generalDetails.quote == null ||
-                                                                    generalDetails.quote == "string" ||
-                                                                    generalDetails.quote == undefined ?
-                                                                    "NA" : generalDetails.quote}
+                                                                {generalDetails.quoteName == "" ||
+                                                                    generalDetails.quoteName == null ||
+                                                                    generalDetails.quoteName == "string" ||
+                                                                    generalDetails.quoteName == undefined ?
+                                                                    "NA" : generalDetails.quoteName}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -2394,8 +3581,11 @@ export function SolutionServicePortfolio(props) {
                                                                 {generalDetails.validity == "" ||
                                                                     generalDetails.validity == null ||
                                                                     generalDetails.validity == "string" ||
-                                                                    generalDetails.validity == undefined ?
-                                                                    "NA" : generalDetails.validity?.value}
+                                                                    generalDetails.validity == undefined ||
+                                                                    generalDetails.validity?.value === null ||
+                                                                    generalDetails.validity?.value === "" ||
+                                                                    generalDetails.validity?.value === undefined ?
+                                                                    "NA" : (typeof generalDetails.validity === "object") ? generalDetails.validity?.value : generalDetails.validity}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -2406,8 +3596,11 @@ export function SolutionServicePortfolio(props) {
                                                                 {generalDetails.version == "" ||
                                                                     generalDetails.version == null ||
                                                                     generalDetails.version == "string" ||
-                                                                    generalDetails.version == undefined ?
-                                                                    "NA" : generalDetails.version}
+                                                                    generalDetails.version == undefined ||
+                                                                    generalDetails.version?.value === null ||
+                                                                    generalDetails.version?.value === "" ||
+                                                                    generalDetails.version?.value === undefined ?
+                                                                    "NA" : typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -2416,8 +3609,168 @@ export function SolutionServicePortfolio(props) {
                                         }
                                     </TabPanel>
                                     <TabPanel value="price">
-                                        <div className="row mt-4">
-                                            <div className="col-md-3 col-sm-3">
+                                        {!viewOnlyTab.priceViewOnly ?
+                                            <>
+                                                <div className="row mt-4 input-fields">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Payment Terms
+                                                            </label>
+                                                            {/* <p className="font-size-12 font-weight-500 mb-2">Payment Terms</p> */}
+                                                            <div>
+                                                                <Select
+                                                                    // defaultValue={selectedOption}
+                                                                    onChange={(e) => {
+                                                                        handleQuoteBillingTextChange(e.value, "paymentTerms")
+                                                                        setBillingPaymentTermsKeyValue(e)
+                                                                    }}
+                                                                    value={billingPaymentTermsKeyValue}
+                                                                    options={paymentTermsOptions}
+                                                                    placeholder="Select..."
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Currency
+                                                            </label>
+                                                            <div>
+                                                                <Select
+                                                                    onChange={(e) => {
+                                                                        handleQuoteBillingTextChange(e.value, "currency")
+                                                                        setBillingCurrencyKeyValue(e)
+                                                                    }}
+                                                                    value={billingCurrencyKeyValue}
+                                                                    options={quoteCurrencyOptions}
+                                                                    placeholder="Select..."
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Price Date
+                                                            </label>
+                                                            <div className="d-flex align-items-center date-box w-100">
+                                                                <div className="form-group w-100">
+                                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                        <DatePicker
+                                                                            variant="inline"
+                                                                            format="dd/MM/yyyy"
+                                                                            className="form-controldate border-radius-10"
+                                                                            label=""
+                                                                            name="priceDate"
+                                                                            onChange={(e) => {
+                                                                                handleQuoteBillingTextChange(e, "priceDate")
+                                                                            }}
+                                                                            value={quoteBillingData.priceDate}
+
+                                                                        />
+                                                                    </MuiPickersUtilsProvider>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Billing Type
+                                                            </label>
+                                                            <div>
+                                                                <Select
+                                                                    onChange={(e) => {
+                                                                        handleQuoteBillingTextChange(e.value, "billingType")
+                                                                        setBillingBillingTypeKeyValue(e)
+                                                                    }}
+                                                                    value={billingBillingTypeKeyValue}
+                                                                    options={billingTypeOptions}
+                                                                    placeholder="Select..."
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Billing Frequency
+                                                            </label>
+                                                            {/* <p className="font-size-12 font-weight-500 mb-2">Payment Terms</p> */}
+                                                            <div>
+                                                                <Select
+                                                                    onChange={(e) => {
+                                                                        handleQuoteBillingTextChange(e, "billingFrequency")
+                                                                        setBillingBillingFrequencyKeyValue(e)
+                                                                    }}
+                                                                    value={billingBillingFrequencyKeyValue}
+                                                                    options={billingFrequencyOptions}
+                                                                    placeholder="Select..."
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Net Price
+                                                            </label>
+                                                            <div>
+                                                                <input
+                                                                    type="number"
+                                                                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                                    name="netPrice"
+                                                                    onChange={(e) => {
+                                                                        handleQuoteBillingTextChange(e.target.value, "netPrice")
+                                                                    }}
+                                                                    value={quoteBillingData.netPrice}
+                                                                    placeholder="10%"
+                                                                    disabled
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Margin
+                                                            </label>
+                                                            <div>
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                                    name="number"
+                                                                    onChange={(e) => {
+                                                                        handleQuoteBillingTextChange(e.target.value, "margin")
+                                                                    }}
+                                                                    value={quoteBillingData.margin}
+                                                                    placeholder="10%"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-uppercase text-light-dark font-size-12 font-weight-500" >
+                                                                Discount
+                                                            </label>
+                                                            <div>
+                                                                <input
+                                                                    type="number"
+                                                                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                                    name="discount"
+                                                                    onChange={(e) => {
+                                                                        handleQuoteBillingTextChange(e.target.value, "discount")
+                                                                    }}
+                                                                    value={quoteBillingData.discount}
+                                                                    placeholder="10%"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {/* <div className="col-md-3 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">ACCOUNT NAME</p>
                                                     <div>
@@ -2633,16 +3986,131 @@ export function SolutionServicePortfolio(props) {
                                                         </FormControl>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
+                                            </div> */}
+                                                    <div className="col-md-12 col-sm-12">
+                                                        <div className="form-group">
+                                                            <Link
+                                                                className="btn bg-primary text-white pull-right"
+                                                                id="price"
+                                                                onClick={handleNextClick}
+                                                            >
+                                                                Save & Next
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </> :
+                                            <>
+                                                <div className="row mt-4">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">PAYMENT TERMS</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.paymentTerms == "" ||
+                                                                    quoteBillingData.paymentTerms == null ||
+                                                                    quoteBillingData.paymentTerms == undefined ||
+                                                                    quoteBillingData.paymentTerms == "string" ?
+                                                                    "NA" : quoteBillingData.paymentTerms}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">CURRENCY</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.currency == "" ||
+                                                                    quoteBillingData.currency == null ||
+                                                                    quoteBillingData.currency == undefined ||
+                                                                    quoteBillingData.currency == "string" ?
+                                                                    "NA" : quoteBillingData.currency}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.priceDate == "" ||
+                                                                    quoteBillingData.priceDate == null ||
+                                                                    quoteBillingData.priceDate == "string" ||
+                                                                    quoteBillingData.priceDate == undefined ?
+                                                                    "NA" : getFormattedDateTimeByTimeStamp(quoteBillingData.priceDate)}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">BILLING TYPE</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.billingType == "" ||
+                                                                    quoteBillingData.billingType == null ||
+                                                                    quoteBillingData.billingType == undefined ||
+                                                                    quoteBillingData.billingType == "string" ?
+                                                                    "NA" : quoteBillingData.billingType}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">BILLING FREQUENCY</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.billingFrequency == "" ||
+                                                                    quoteBillingData.billingFrequency == null ||
+                                                                    quoteBillingData.billingFrequency == undefined ||
+                                                                    quoteBillingData.billingFrequency == "string" ?
+                                                                    "NA" : quoteBillingData.billingFrequency}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">NET PRICE</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.netPrice == "" ||
+                                                                    quoteBillingData.netPrice == null ||
+                                                                    quoteBillingData.netPrice == undefined ||
+                                                                    quoteBillingData.netPrice == "string" ?
+                                                                    "NA" : quoteBillingData.netPrice}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">MARGIN</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.margin == "" ||
+                                                                    quoteBillingData.margin == null ||
+                                                                    quoteBillingData.margin == undefined ||
+                                                                    quoteBillingData.margin == "string" ?
+                                                                    "NA" : quoteBillingData.margin}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">DISCOUNT</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {quoteBillingData.discount == "" ||
+                                                                    quoteBillingData.discount == null ||
+                                                                    quoteBillingData.discount == undefined ||
+                                                                    quoteBillingData.discount == "string" ?
+                                                                    "NA" : quoteBillingData.discount}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>}
+
                                         <hr />
-                                        <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />ADD PAYER</a>
+                                        <a onClick={addNewPayer} className="btn bg-primary text-white"><AddIcon className="mr-2" />ADD PAYER</a>
                                         <div className="mt-3">
                                             <DataTable
                                                 className=""
                                                 title=""
-                                                columns={masterColumns2}
-                                                data={rows2}
+                                                columns={addPayerColumns}
+                                                data={addPayerData}
+                                                // columns={masterColumns2}
+                                                // data={rows2}
                                                 customStyles={customStyles}
                                                 pagination
                                                 // onRowClicked={(e) => handleRowClick(e)}
@@ -2654,21 +4122,26 @@ export function SolutionServicePortfolio(props) {
                                             <div className="d-flex align-items-center">
                                                 <a href="#" className="text-primary mr-3"><ModeEditOutlineOutlinedIcon /></a>
                                                 <a href="#" className="text-primary mr-3"><ShareOutlinedIcon /></a>
-                                                <a href="#" className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Price Summary Type</a>
+                                                <a onClick={addNewPriceSummaryData} className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Price Summary Type</a>
                                             </div>
                                         </div>
                                         <div className="mt-3">
                                             <DataTable
                                                 className=""
                                                 title=""
-                                                columns={masterColumns3}
-                                                data={rows3}
+                                                columns={priceSummaryColumns}
+                                                data={priceSummaryData}
+                                                // columns={masterColumns3}
+                                                // data={rows3}
                                                 customStyles={customStyles}
                                                 pagination
                                                 // onRowClicked={(e) => handleRowClick(e)}
                                                 selectableRows
                                             />
                                         </div>
+
+                                        {/* OTHER MISC ITEMS $ Comment  */}
+                                        {/*                                         
                                         <div className="mt-3 d-flex align-items-center justify-content-between">
                                             <h6 className="mb-0 font-size-16 font-weight-600">OTHER MISC ITEMS $</h6>
                                             <div className="d-flex align-items-center">
@@ -2688,7 +4161,9 @@ export function SolutionServicePortfolio(props) {
                                                 // onRowClicked={(e) => handleRowClick(e)}
                                                 selectableRows
                                             />
-                                        </div>
+                                        </div> */}
+                                        {/* OTHER MISC ITEMS $ Comment  */}
+
                                         {/* <div className="row mt-4 input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
@@ -2792,7 +4267,21 @@ export function SolutionServicePortfolio(props) {
                                                     <div className="col-md-4 col-sm-4">
                                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
                                                         <div className="form-group w-100">
-                                                            <input
+                                                            <Select
+                                                                onChange={(e) => {
+                                                                    setShippingBillingDetails({
+                                                                        ...shippingBillingDetails,
+                                                                        deliveryType: e
+                                                                    })
+                                                                }}
+                                                                value={shippingBillingDetails.deliveryType}
+                                                                options={[
+                                                                    { label: "Standard", value: "STANDARD" },
+                                                                    { label: "Express", value: "EXPRESS" },
+                                                                ]}
+                                                                placeholder="Select..."
+                                                            />
+                                                            {/* <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
                                                                 aria-describedby="emailHelp"
@@ -2801,13 +4290,28 @@ export function SolutionServicePortfolio(props) {
                                                                 value={shippingBillingDetails.deliveryType}
                                                                 onChange={(e) => handleShippingDetails(e)}
                                                                 placeholder="Placeholder (Optional)"
-                                                            />
+                                                            /> */}
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
                                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY PRIORITY</label>
                                                         <div className="form-group w-100">
-                                                            <input
+                                                            <Select
+                                                                onChange={(e) => {
+                                                                    setShippingBillingDetails({
+                                                                        ...shippingBillingDetails,
+                                                                        deliveryPriority: e
+                                                                    })
+                                                                }}
+                                                                value={shippingBillingDetails.deliveryPriority}
+                                                                options={[
+                                                                    { label: "Normal", value: "NORMAL" },
+                                                                    { label: "Urgent", value: "URGENT" },
+                                                                    { label: "Very Urgent", value: "VERY_URGENT" },
+                                                                ]}
+                                                                placeholder="Select..."
+                                                            />
+                                                            {/* <input
                                                                 type="email"
                                                                 className="form-control border-radius-10 text-primary"
                                                                 id="deliveryPriority"
@@ -2815,10 +4319,61 @@ export function SolutionServicePortfolio(props) {
                                                                 value={shippingBillingDetails.deliveryPriority}
                                                                 onChange={(e) => handleShippingDetails(e)}
                                                                 aria-describedby="emailHelp"
-                                                                placeholder="Placeholder (Optional)" />
+                                                                placeholder="Placeholder (Optional)" /> */}
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group date-box">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                for="exampleInputEmail1"
+                                                            >
+                                                                LEAD TIME
+                                                            </label>
+                                                            <div className=" d-flex align-items-center form-control-date">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                                    placeholder="20%"
+                                                                    id="leadTime"
+                                                                    name="leadTime"
+                                                                    value={shippingBillingDetails.leadTime}
+                                                                    onChange={(e) => handleShippingDetails(e)}
+
+                                                                />
+                                                                <Select
+                                                                    className="select-input text-primary"
+                                                                    id="priceEscalationSelect"
+                                                                    options={shippingLeadCountUnit}
+                                                                    placeholder="placeholder "
+                                                                // value={priceCalculator.escalationPriceOptionsValue1}
+                                                                // onChange={(e) =>
+                                                                //     handleEscalationPriceValue(e)
+                                                                // }
+
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <label className="text-uppercase text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Service Recipient Address</label>
+                                                        <div className="form-group w-100">
+                                                            <input
+                                                                type="email"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                id="serviceRecipentAddress"
+                                                                name="serviceRecipentAddress"
+                                                                // value={shippingBillingDetails.deliveryPriority}
+                                                                // onChange={(e) => handleShippingDetails(e)}
+                                                                value={shippingBillingDetails.serviceRecipentAddress}
+                                                                onChange={(e) => handleShippingDetails(e)}
+                                                                // value={customerData.customerAddress}
+                                                                aria-describedby="emailHelp"
+                                                                // disabled
+                                                                placeholder="Placeholder (Optional)" />
+                                                        </div>
+                                                    </div>
+                                                    {/* <div className="col-md-4 col-sm-4">
                                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYMENT TERMS</label>
                                                         <div className="form-group w-100">
                                                             <input
@@ -2892,7 +4447,7 @@ export function SolutionServicePortfolio(props) {
                                                                 placeholder="Placeholder (Optional)"
                                                             />
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                     <div className="col-md-12 col-sm-12">
                                                         <div className="form-group">
                                                             <Link
@@ -2915,8 +4470,11 @@ export function SolutionServicePortfolio(props) {
                                                                 {shippingBillingDetails.deliveryType == "" ||
                                                                     shippingBillingDetails.deliveryType == null ||
                                                                     shippingBillingDetails.deliveryType == undefined ||
-                                                                    shippingBillingDetails.deliveryType == "string" ?
-                                                                    "NA" : shippingBillingDetails.deliveryType}
+                                                                    shippingBillingDetails.deliveryType == "string" ||
+                                                                    shippingBillingDetails.deliveryType?.value === "" ||
+                                                                    shippingBillingDetails.deliveryType?.value === null ||
+                                                                    shippingBillingDetails.deliveryType?.value === undefined ?
+                                                                    "NA" : typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -2927,12 +4485,39 @@ export function SolutionServicePortfolio(props) {
                                                                 {shippingBillingDetails.deliveryPriority == "" ||
                                                                     shippingBillingDetails.deliveryPriority == null ||
                                                                     shippingBillingDetails.deliveryPriority == undefined ||
-                                                                    shippingBillingDetails.deliveryPriority == "string" ?
-                                                                    "NA" : shippingBillingDetails.deliveryPriority}
+                                                                    shippingBillingDetails.deliveryPriority == "string" ||
+                                                                    shippingBillingDetails.deliveryPriority?.value === "" ||
+                                                                    shippingBillingDetails.deliveryPriority?.value === null ||
+                                                                    shippingBillingDetails.deliveryPriority?.value === undefined ?
+                                                                    "NA" : typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority}
                                                             </h6>
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">LEAD TIME</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {shippingBillingDetails.leadTime == "" ||
+                                                                    shippingBillingDetails.leadTime == null ||
+                                                                    shippingBillingDetails.leadTime == undefined ||
+                                                                    shippingBillingDetails.leadTime == "string" ?
+                                                                    "NA" : shippingBillingDetails.leadTime}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">SERVICE RECIPIENT ADDRESS</p>
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                                                {shippingBillingDetails.serviceRecipentAddress == "" ||
+                                                                    shippingBillingDetails.serviceRecipentAddress == null ||
+                                                                    shippingBillingDetails.serviceRecipentAddress == undefined ||
+                                                                    shippingBillingDetails.serviceRecipentAddress == "string" ?
+                                                                    "NA" : shippingBillingDetails.serviceRecipentAddress}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    {/* <div className="col-md-4 col-sm-4">
                                                         <div className="form-group">
                                                             <p className="font-size-12 font-weight-500 mb-2">PAYMENT TERMS</p>
                                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
@@ -2991,7 +4576,7 @@ export function SolutionServicePortfolio(props) {
                                                                     "NA" : shippingBillingDetails.netPayAble}
                                                             </h6>
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </>
                                         }

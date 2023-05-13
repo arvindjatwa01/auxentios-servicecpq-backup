@@ -19,7 +19,7 @@ export { getSearchQueryCoverage, getSearchCoverageForFamily, getSearchCustomCove
 export { itemCreation, getItemDataById, itemSearchSuggestion, itemSearch, itemSearchDropdown, recentItemsList, getItemPrice, updateItemData, deleteItem, portfolioItemPriceRkId, itemPriceDataId, updateItemPriceData, createItemPriceData, getServiceItemsList } from './portFolioItemService';
 export { getComponentCodeSuggetions } from './masterComponentCode';
 export { customItemCreation, updateCustomItemData, deleteCustomItem, customPriceCreation, getSearchCustomPortfolio, getSearchCustomPortfolioDropdownList, getCustomItemDataById, getCustomItemPriceById, updateCustomPriceData, customPortfolioItemPriceSJID, customPortfolioItemPriceRkId, getCustomServiceBundleItemPrices, customPortfolioSearchTableDataList, getCustomServiceItemsList, linkCustomItemToPortfolio } from './customPortfolioItemService'
-export { quoteCreation, getQuoteMasterData, getSearchQuoteData, updateMasterQuoteData, deleteMasterQuote, convertPortfolioToQuoteData, getConvertQuoteData, getQuoteSearchDropdown } from "./quoteService";
+export { getQuoteCommonConfig, quoteCreation, getQuoteMasterData, getSearchQuoteData, updateMasterQuoteData, deleteMasterQuote, convertPortfolioToQuoteData, getConvertQuoteData, getQuoteSearchDropdown, quotePayerCreation } from "./quoteService";
 
 export { getRecentSolutionQuotes, solutionQuoteCreation, updateSolutionQuoteData, getRecentQuotes, searchSolutionQuotes } from "./solutionQuoteServices";
 

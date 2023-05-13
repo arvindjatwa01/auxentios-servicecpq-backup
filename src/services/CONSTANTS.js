@@ -245,16 +245,17 @@ export const SJ_SEGMENT = (templateId) => REPAIR_BUILDER_URI + `standard-job/${t
 export const UPDATE_SJ_VERSION = (templateId, version) => REPAIR_BUILDER_URI + `standard-job/${templateId}/version/${version}`;
 
 /* ===================== Repair Quote Service ============================= */
-export const RECENT_QUOTES =(quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
-export const SEARCH_REPAIR_QUOTES =(searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
-export const CREATE_REPAIR_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
-export const CREATE_SPARE_PART_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
+export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
+export const CREATE_REPAIR_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const CREATE_SPARE_PART_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const FETCH_REPAIR_QUOTE_VERSIONS = (quoteName) => QUOTE_REST_SERVICE + `/versions?quote_name=${quoteName}`;
 export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const UPDATE_REPAIR_QUOTE_ITEM = (quoteItemId) => QUOTE_REST_SERVICE + `/repair-buider/${quoteItemId}`;
 export const UPDATE_PL_QUOTE_ITEM = (quoteItemId) => QUOTE_REST_SERVICE + `/part-list/${quoteItemId}`;
 export const CREATE_QUOTE_VERSION = (existingQuote, existingVersion, newVersion) =>QUOTE_REST_SERVICE +`/copy-quote?existing_quote_name=${existingQuote}&existing_version=${existingVersion}&new_version=${newVersion}`
+
 export const ADD_REPAIR_QUOTE_ITEM = (quoteId) => QUOTE_REST_SERVICE + `/repair-buider?quote_id=${quoteId}`;
 export const ADD_PL_QUOTE_ITEM = (quoteId) => QUOTE_REST_SERVICE + `/part-list?quote_id=${quoteId}`;
 export const FETCH_QUOTE_SUMMARY = (quoteId) => QUOTE_REST_SERVICE + `/summary?quote_id=${quoteId}`;
@@ -270,8 +271,8 @@ export const FETCH_QUOTE_VALIDITY = () => QUOTE_COMMON_REST_SERVICE + `/common-c
 
 /* ===================== Quote Service ============================= */
 
-export const QUOTE_CREATION = () => SOLUTION_BUILDER_URI + "/quote";
-export const CONVERT_PORTFOLIO_TO_QUOTE = QUOTE_REST_SERVICE + "convert-potfolio-to-quote?portfolioId=";
+export const QUOTE_CREATION = () => QUOTE_REST_SERVICE;
+export const CONVERT_PORTFOLIO_TO_QUOTE = QUOTE_REST_SERVICE + "/convert-potfolio-to-quote?portfolioId=";
 export const GET_COVERT_QUOTE_DETAILS = QUOTE_REST_SERVICE;
 
 /* ===================== Solution Quote Service ============================= */
@@ -296,3 +297,8 @@ export const PORTFOLIO_COVERAGE_SEARCH_DROPDOWN = SOLUTION_BUILDER_URI + "covera
 
 // Coverage Search - use case 3
 export const SOLUTION_COVERAGE_SEARCH_DROPDOWN = SOLUTION_BUILDER_URI + "coverage/custom";
+
+// Quote Common config
+
+export const QUOTE_COMMON_CONFIG_URL = QUOTE_COMMON_REST_SERVICE + "/common-config/";
+

@@ -15288,7 +15288,74 @@ export function CreateCustomPortfolio(props) {
   };
 
   const handleCreateQuote = async () => {
-    // alert("hello");
+
+    try {
+      if ((portfolioId == "") ||
+        (portfolioId == null) ||
+        (portfolioId == "string") ||
+        (portfolioId == undefined)) {
+        throw "Please Create Solution First";
+      } else {
+        let quoteObj = {
+          quoteType: "SOLUTION",
+          customerId: 0,
+          equipmentId: 0,
+          netValue: 0,
+          currency: "string",
+          grossValue: 0,
+          discount: 0,
+          margin: 0,
+          tax: 0,
+          status: "string",
+          validFrom: "2022-10-18",
+          validTo: "2022-10-18",
+          quantity: 0,
+          customPortfolioModels: portfolioId ? [
+            { customPortfolioId: portfolioId }
+          ] : [],
+          quoteBodyModel: {
+            quoteBodyId: 0,
+            quoteBodyDescription: "string",
+            payerId: 0,
+            shortText: "string",
+            longText: "string",
+            terms: "string",
+            conditions: "string",
+            contact: "string",
+            serialNumber: "string",
+            statusNumber: "string",
+            billingType: "PAY_SUPPORT",
+            promisedDeliveryDate: "2022-10-18",
+            salesOpportunity: "string",
+            componentSerialNumber: "string",
+            versionNumber: "string",
+            serviceRecipientModel: {
+              serviceRecipientId: 0,
+              serviceRecipientName: "string",
+              serviceRecipientemail: "string",
+              serviceRecipientaddress: "string"
+            }
+          }
+        }
+
+        const quoteRes = await convertPortfolioToQuoteData(portfolioId);
+        console.log("quoteRes data is : ", quoteRes)
+        setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
+        setQuoteDataShow(true);
+      }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setConvertToPopup(false);
+      return;
+    }
     let quoteObj = {
       quoteType: "SOLUTION",
       customerId: 0,
@@ -15331,41 +15398,30 @@ export function CreateCustomPortfolio(props) {
       }
     }
 
-    // console.log("Quote Object is : ", quoteObj)
-
-    // const quoteRes = await quoteCreation(quoteObj);
-    // console.log("quoteRes : ", quoteRes);
-
-    // console.log("quote Response data is : ", quoteRes.data)
-    // setQuoteData({ ...quoteData, contact: quoteRes.data.quoteMasterId })
-
-    // console.log("quoteData : ", quoteData);
-    // setQuoteDataShow(true);
-
     // =================== Convert to Quote ================== //
-    if ((portfolioId == "" ||
-      portfolioId == null ||
-      portfolioId == "string" ||
-      portfolioId == undefined)) {
-      toast("😐" + "Create Portfolio first", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      setConvertToPopup(false);
-    } else {
+    // if ((portfolioId == "" ||
+    //   portfolioId == null ||
+    //   portfolioId == "string" ||
+    //   portfolioId == undefined)) {
+    //   toast("😐" + "Create Portfolio first", {
+    //     position: "top-right",
+    //     autoClose: 3000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //   });
+    //   setConvertToPopup(false);
+    // } else {
 
-      console.log("Quote Object is : ", portfolioId)
+    //   console.log("Quote Object is : ", portfolioId)
 
-      const quoteRes = await convertPortfolioToQuoteData(portfolioId);
-      console.log("quoteRes data is : ", quoteRes)
-      setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
-      setQuoteDataShow(true);
-    }
+    //   const quoteRes = await convertPortfolioToQuoteData(portfolioId);
+    //   console.log("quoteRes data is : ", quoteRes)
+    //   setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
+    //   setQuoteDataShow(true);
+    // }
   }
 
   const handleComponentChange = async (e) => {
@@ -16835,9 +16891,9 @@ export function CreateCustomPortfolio(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem className="custommenu">Templates</MenuItem>
+                    {/* <MenuItem className="custommenu">Templates</MenuItem>
                     <MenuItem className="custommenu">Standard Job</MenuItem>
-                    <MenuItem className="custommenu">Kit</MenuItem>
+                    <MenuItem className="custommenu">Kit</MenuItem> */}
                     <MenuItem
                       className="custommenu"
                       onClick={() => setConvertToPopup(true)}
@@ -26001,84 +26057,6 @@ onChange={handleAdministrativreChange}
         </p>
         <hr className="my-1" />
         <Modal.Body>
-          <div className="row">
-            <div className="col-md-12 col-sm-12">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  htmlFor="exampleInputEmail1"
-                >
-                  Quote Type
-                </label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="Cyclical"
-                />
-              </div>
-            </div>
-            <div className="col-md-12 col-sm-12">
-              <div class="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  htmlFor="exampleInputEmail1"
-                >
-                  Quote ID
-                </label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="exampleInputEmail1"
-                  aria-describedby="emailHelp"
-                  // placeholder="Enter email"
-                  name="contact"
-                  value={quoteData.contact}
-                  // onChange={handleQuoteInputChange}
-                  placeholder="(Auto-generated)"
-                  disabled={true}
-                />
-              </div>
-            </div>
-            <div className="col-md-12 col-sm-12">
-              <div class="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  htmlFor="exampleInputEmail1"
-                >
-                  Description
-                </label>
-                <textarea
-                  class="form-control"
-                  id="exampleFormControlTextarea1"
-                  rows="3"
-                  name="description"
-                  value={quoteData.description}
-                  onChange={handleQuoteInputChange}
-                ></textarea>
-              </div>
-            </div>
-            <div className="col-md-12 col-sm-12">
-              <div class="form-group">
-                <label
-                  className="text-light-dark font-size-12 font-weight-500"
-                  htmlFor="exampleInputEmail1"
-                >
-                  Reference
-                </label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="exampleInputEmail1"
-                  aria-describedby="emailHelp"
-                  placeholder="Enter email"
-                  name="reference"
-                  value={quoteData.reference}
-                  onChange={handleQuoteInputChange}
-                />
-              </div>
-            </div>
-          </div>
           {quoteDataShow ? <>
             <div className="row">
               <div class="col-md-12 col-sm-12">
@@ -26112,7 +26090,87 @@ onChange={handleAdministrativreChange}
                   <h6 class="font-weight-500">{quoteData.reference}</h6>
                 </div>
               </div>
-            </div></> : <></>}
+            </div></> :
+            <>
+              <div className="row">
+                <div className="col-md-12 col-sm-12">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Quote Type
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="Cyclical"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Quote ID
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      // placeholder="Enter email"
+                      name="contact"
+                      value={quoteData.contact}
+                      // onChange={handleQuoteInputChange}
+                      placeholder="(Auto-generated)"
+                    // disabled={true}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      class="form-control"
+                      id="exampleFormControlTextarea1"
+                      rows="3"
+                      name="description"
+                      value={quoteData.description}
+                      onChange={handleQuoteInputChange}
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Reference
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter email"
+                      name="reference"
+                      value={quoteData.reference}
+                      onChange={handleQuoteInputChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            </>}
         </Modal.Body>
         <Modal.Footer style={{ display: "unset" }}>
           {quoteDataShow ? <>
