@@ -78,6 +78,8 @@ import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import DataTable from "react-data-table-component";
+
+import Pagination from '@mui/material/Pagination';
 // import { customerSearch, machineSearch } from "services/searchServices";
 
 import {
@@ -839,11 +841,19 @@ export function CreateCustomPortfolio(props) {
 
 
   const [optionalPopup, setOptionalPopup] = useState(false)
-  const [optionalServiceListData, setOptionalServiceListData] = useState([]);
+  const [optionalServiceListData, setOptionalServiceListData] = useState({
+    totalPages: 0,
+    totalRecords: 0,
+    currentPage: 1,
+    data: [],
+  });
 
   const [optionalServicesData, setOptionalServicesData] = useState([])
   const [inclusionExclusionService, setInclusionExclusionService] = useState([])
   const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false)
+
+  const [optionalServicesTotalPages, setOptionalServiceTotalPages] = useState(0);
+  const [optionalServicesTotalRecords, setOptionalServiceTotalRecords] = useState(0);
   const [optionalServiceListLoading, setOptionalServiceListLoading] = useState(false);
   const [portfolioItemIdIs, setPortfolioItemIdIs] = useState("");
 
@@ -1703,6 +1713,28 @@ export function CreateCustomPortfolio(props) {
     })
     $(`.scrollbar-model`).css("display", "none");
   }
+
+  // handle Optional Service Page Click
+  const handleOptionalServicePageClick = (event, value) => {
+    // const newOffset = (event.selected * 6) % optionalServiceListData.totalRecords;
+    console.log("new page ", value, event)
+    getCustomServiceItemsList(`pageNumber=${value}&pageSize=6`)
+      .then((res) => {
+        setOptionalServiceListLoading(true);
+        if (res.status === 200) {
+          setOptionalServiceListData({ ...res.data, currentPage: value, })
+        }
+        setOptionalServiceListLoading(false);
+
+      })
+      .catch((err) => {
+        toast.error(err);
+      });
+    // console.log(
+    //   `User requested page number ${event.selected}, which is offset ${newOffset}`
+    // );
+    // setItemOffset(newOffset);
+  };
 
   const selectPrefixOption = (e) => {
     console.log(e);
@@ -7743,6 +7775,8 @@ export function CreateCustomPortfolio(props) {
     setMiscRequired(e.target.checked)
   }
 
+
+
   const UpdatePriceInclusionExclusion = async () => {
 
     var payloadUrl = `portfolio_id=${portfolioId}&portfolio_item_id=${portfolioItemIdIs}&`
@@ -8339,11 +8373,12 @@ export function CreateCustomPortfolio(props) {
       });
 
     // getCustomServiceItemsList("pageNumber=0&pageSize=6")
-    getCustomServiceItemsList()
+    getCustomServiceItemsList("pageNumber=0&pageSize=6")
       .then((res) => {
         setOptionalServiceListLoading(true);
         if (res.status === 200) {
-          setOptionalServiceListData(res.data)
+          setOptionalServiceListData({ ...res.data, currentPage: 1, })
+          setOptionalServiceTotalPages(res.data?.totalPages)
         }
         setOptionalServiceListLoading(false);
         const options = []
@@ -26273,6 +26308,17 @@ onChange={handleAdministrativreChange}
                             </div>
                           </div>
                         )}
+                        <Pagination
+                          count={optionalServiceListData.totalPages}
+                          page={optionalServiceListData.currentPage}
+                          onChange={handleOptionalServicePageClick}
+                          shape="rounded"
+                          hidePrevButton
+                          hideNextButton
+                          size="large"
+                          color="#872ff7"
+                          className="optional-services-pagination"
+                        />
                       </>
                       :
                       <>

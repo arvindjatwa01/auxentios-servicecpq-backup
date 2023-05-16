@@ -3962,3 +3962,40 @@ input[type="checkbox"]:checked:after {
 [data-column-id="price-summary-type"].rdt_TableCell div{ overflow: visible !important; border: none;}
 [data-column-id="price-summary-type"] div:first-child{width: 100% !important;}
 [data-column-id="price-summary-type"] { padding: 5px 8px !important;}
+.optional-services-pagination{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+/* .optional-services-pagination-active {
+  
+} */
+.optional-services-pagination-active a{
+  color: #ffffff;
+  background: #872ff7;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid #872ff7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.optional-services-pagination li > a {
+  /* background: #872ff7; */
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid #872ff7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.optional-service-previous-button, .optional-service-next-button{
+  border: none !important;
+  height: auto !important;
+  width: auto !important;
+} 
