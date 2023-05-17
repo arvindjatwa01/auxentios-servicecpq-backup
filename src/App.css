@@ -3967,15 +3967,16 @@ input[type="checkbox"]:checked:after {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  color: #872ff7;
 }
 /* .optional-services-pagination-active {
   
 } */
-.optional-services-pagination-active a{
-  color: #ffffff;
+.optional-services-pagination  ul li button.Mui-selected {
+  color: #ffffff !important;
   background: #872ff7;
-  width: 25px;
-  height: 25px;
+  /* width: 25px; */
+  height: 35px;
   border-radius: 50%;
   border: 1px solid #872ff7;
   display: flex;
@@ -3983,10 +3984,10 @@ input[type="checkbox"]:checked:after {
   justify-content: center;
 }
 
-.optional-services-pagination li > a {
+.optional-services-pagination ul li > button {
   /* background: #872ff7; */
-  width: 25px;
-  height: 25px;
+  /* width: 25px; */
+  height: 35px;
   border-radius: 50%;
   border: 1px solid #872ff7;
   display: flex;

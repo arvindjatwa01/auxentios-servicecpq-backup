@@ -291,6 +291,7 @@ export function CreatePortfolio(props) {
 
   const [optionalServicesTotalPages, setOptionalServiceTotalPages] = useState(0);
   const [optionalServicesTotalRecords, setOptionalServiceTotalRecords] = useState(0);
+  const [optionalServiceCurrentPage, setOptionalServiceCurrentPage] = useState(1)
   const [optionalServiceListData, setOptionalServiceListData] = useState({
     totalPages: 0,
     totalRecords: 0,
@@ -478,6 +479,7 @@ export function CreatePortfolio(props) {
     // const optionalServicesList = await getServiceItemsList();
     // console.log("optionalServicesList ", optionalServicesList)
     setOptionalPopup(true)
+    setOptionalServiceCurrentPage(1)
   }
 
   const handleSelectOptionalService = (event, serviceName, serviceData) => {
@@ -1024,6 +1026,8 @@ export function CreatePortfolio(props) {
         setOptionalServiceListLoading(true);
         if (res.status === 200) {
           setOptionalServiceListData({ ...res.data, currentPage: value, })
+          setOptionalServiceCurrentPage(value);
+          
         }
         setOptionalServiceListLoading(false);
 
@@ -8011,6 +8015,7 @@ export function CreatePortfolio(props) {
         if (res.status === 200) {
           setOptionalServiceListData({ ...res.data, currentPage: 1, })
           setOptionalServiceTotalPages(res.data?.totalPages)
+          setOptionalServiceCurrentPage(1)
         }
         setOptionalServiceListLoading(false);
         const options = []
@@ -23683,13 +23688,13 @@ export function CreatePortfolio(props) {
                         )}
                         <Pagination
                           count={optionalServiceListData.totalPages}
-                          page={optionalServiceListData.currentPage}
+                          page={optionalServiceCurrentPage}
                           onChange={handleOptionalServicePageClick}
                           shape="rounded"
                           hidePrevButton
                           hideNextButton
                           size="large"
-                          color="#872ff7"
+                          // color="#872ff7"
                           className="optional-services-pagination"
                         />
                         {/* <ResponsivePagination

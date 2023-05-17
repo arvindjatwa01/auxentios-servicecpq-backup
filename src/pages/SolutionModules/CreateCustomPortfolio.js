@@ -841,6 +841,9 @@ export function CreateCustomPortfolio(props) {
 
 
   const [optionalPopup, setOptionalPopup] = useState(false)
+  const [optionalServicesTotalPages, setOptionalServiceTotalPages] = useState(0);
+  const [optionalServicesTotalRecords, setOptionalServiceTotalRecords] = useState(0);
+  const [optionalServiceCurrentPage, setOptionalServiceCurrentPage] = useState(1)
   const [optionalServiceListData, setOptionalServiceListData] = useState({
     totalPages: 0,
     totalRecords: 0,
@@ -852,8 +855,7 @@ export function CreateCustomPortfolio(props) {
   const [inclusionExclusionService, setInclusionExclusionService] = useState([])
   const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false)
 
-  const [optionalServicesTotalPages, setOptionalServiceTotalPages] = useState(0);
-  const [optionalServicesTotalRecords, setOptionalServiceTotalRecords] = useState(0);
+
   const [optionalServiceListLoading, setOptionalServiceListLoading] = useState(false);
   const [portfolioItemIdIs, setPortfolioItemIdIs] = useState("");
 
@@ -863,6 +865,7 @@ export function CreateCustomPortfolio(props) {
     // const optionalServicesList = await getServiceItemsList();
     // console.log("optionalServicesList ", optionalServicesList)
     setOptionalPopup(true)
+    setOptionalServiceCurrentPage(1);
   }
 
   const handleSelectOptionalService = (event, serviceName, serviceData) => {
@@ -1717,12 +1720,13 @@ export function CreateCustomPortfolio(props) {
   // handle Optional Service Page Click
   const handleOptionalServicePageClick = (event, value) => {
     // const newOffset = (event.selected * 6) % optionalServiceListData.totalRecords;
-    console.log("new page ", value, event)
+    // console.log("new page ", value, event)
     getCustomServiceItemsList(`pageNumber=${value}&pageSize=6`)
       .then((res) => {
         setOptionalServiceListLoading(true);
         if (res.status === 200) {
           setOptionalServiceListData({ ...res.data, currentPage: value, })
+          setOptionalServiceCurrentPage(value)
         }
         setOptionalServiceListLoading(false);
 
@@ -8379,6 +8383,7 @@ export function CreateCustomPortfolio(props) {
         if (res.status === 200) {
           setOptionalServiceListData({ ...res.data, currentPage: 1, })
           setOptionalServiceTotalPages(res.data?.totalPages)
+          setOptionalServiceCurrentPage(1)
         }
         setOptionalServiceListLoading(false);
         const options = []
@@ -26282,7 +26287,7 @@ onChange={handleAdministrativreChange}
                   {
                     optionalServiceListData.message === undefined ?
                       <>
-                        {optionalServiceListData.map((serviceData, i) =>
+                        {optionalServiceListData?.data.map((serviceData, i) =>
                           <div className="col-md-6 col-sm-6">
                             <div className="card p-4">
                               <div className="d-flex align-items-center ">
@@ -26310,13 +26315,13 @@ onChange={handleAdministrativreChange}
                         )}
                         <Pagination
                           count={optionalServiceListData.totalPages}
-                          page={optionalServiceListData.currentPage}
+                          page={optionalServiceCurrentPage}
                           onChange={handleOptionalServicePageClick}
                           shape="rounded"
                           hidePrevButton
                           hideNextButton
                           size="large"
-                          color="#872ff7"
+                          // color="#872ff7"
                           className="optional-services-pagination"
                         />
                       </>
