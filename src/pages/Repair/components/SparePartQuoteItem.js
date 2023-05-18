@@ -68,17 +68,14 @@ const SparepartQuoteItemModal = (props) => {
     } else if (type === "partNumber") {
       let quantity = props.quoteItem?.quantity;
       let extendedPrice = currentItem.listPrice * quantity;
-      let totalPrice = calculateTotalPrice(
-        extendedPrice,
-        props.quoteItem?.usagePercentage
-      );
+      let totalPrice = extendedPrice;
       props.setQuoteItem({
         ...props.quoteItem,
         groupNumber: currentItem.groupNumber,
-        unitPrice: currentItem.listPrice,
+        listPrice: currentItem.listPrice,
         partNumber: currentItem.partNumber,
         partType: currentItem.partType,
-        description: currentItem.partDescription,
+        partDescription: currentItem.partDescription,
         extendedPrice,
         totalPrice,
         salesUnit: currentItem.salesUnit,
@@ -190,7 +187,7 @@ const SparepartQuoteItemModal = (props) => {
                           partType: e.target.value,
                         })
                       }
-                      disabled
+                      // disabled
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -251,7 +248,7 @@ const SparepartQuoteItemModal = (props) => {
                     </label>
                     <input
                       type="text"
-                      disabled
+                      // disabled
                       className="form-control border-radius-10 text-primary"
                       value={props.quoteItem?.salesUnit}
                       onChange={(e) =>
@@ -315,7 +312,7 @@ const SparepartQuoteItemModal = (props) => {
                           currency: e.target.value,
                         })
                       }
-                      value={props.quoteItem?.currency}
+                      value={props.quoteItem?.currency ? props.quoteItem.currency : 'USD'}
                       disabled
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
@@ -519,7 +516,7 @@ const SparepartQuoteItemModal = (props) => {
               />
               <ReadOnlyField
                 label="DESCRIPTION"
-                value={props.quoteItem?.description}
+                value={props.quoteItem?.partDescription}
                 className="col-md-6 col-sm-6"
               />
             </div>

@@ -71,6 +71,8 @@ import {
   selectQuoteValidityList,
 } from "../dropdowns/quoteRepairSlice";
 import { Dropdown, DropdownButton } from "react-bootstrap";
+import PriceSummaryTable from "../components/PriceSummaryTable";
+import QuotePriceSummaryTable from "../components/QuotePriceSummaryTable ";
 
 const customStyles = {
   rows: {
@@ -160,6 +162,7 @@ export function SparePartsPortfolio(props) {
     netPrice: "",
     margin: "",
     discount: "",
+    priceEstimates: []
   });
   const [shippingDetail, setShippingDetail] = useState({
     deliveryType: "",
@@ -523,6 +526,7 @@ export function SparePartsPortfolio(props) {
       currency: result.currency,
       discount: result.discount,
       margin: result.margin,
+      priceEstimates: result.priceEstimates,
       netPrice: result.netPrice,
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
@@ -885,6 +889,7 @@ export function SparePartsPortfolio(props) {
       netPrice: billingDetail.netPrice,
       margin: billingDetail.margin,
       discount: billingDetail.discount,
+      priceEstimates: billingDetail.priceEstimates
     };
     updateQuoteHeader(quoteId, data)
       .then((result) => {
@@ -2412,7 +2417,7 @@ export function SparePartsPortfolio(props) {
                           quoteId={quoteId}
                         />
                       </div>
-                      <div className="mt-3 d-flex align-items-center justify-content-between">
+                      {/* <div className="mt-3 d-flex align-items-center justify-content-between">
                         <h6 className="mb-0 font-size-16 font-weight-600">
                           PRICE/ESTIMATE SUMMARY
                         </h6>
@@ -2428,9 +2433,36 @@ export function SparePartsPortfolio(props) {
                             Add Price Summary Type
                           </a>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="mt-3">
-                        <DataTable
+                        
+                      <QuotePriceSummaryTable
+                                rows={billingDetail.priceEstimates}
+                                setRows={(rows) =>
+                                  setBillingDetail({
+                                    ...billingDetail,
+                                    priceEstimates: rows,
+                                  })
+                                }
+                              />
+                              <div
+                                className="row my-3 mr-2"
+                                style={{ justifyContent: "right" }}
+                              >
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateBillingData}
+                                  disabled={
+                                    !billingDetail.paymentTerms ||
+                                    !billingDetail.billingFrequency ||
+                                    !billingDetail.billingType
+                                  }
+                                >
+                                  Save Price Summary
+                                </button>
+                              </div>
+                        {/* <DataTable
                           className=""
                           title=""
                           columns={priceSummaryColumns}
@@ -2439,7 +2471,7 @@ export function SparePartsPortfolio(props) {
                           pagination
                           // onRowClicked={(e) => handleRowClick(e)}
                           selectableRows
-                        />
+                        /> */}
                       </div>
                       {/* <div className="mt-3 d-flex align-items-center justify-content-between">
                           <h6 className="mb-0 font-size-16 font-weight-600">

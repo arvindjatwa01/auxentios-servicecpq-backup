@@ -71,6 +71,8 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { REPAIR_QUOTE_DETAILS, SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
 import { createRepairQuote } from "services/repairQuoteServices";
 import QuoteModal from "./components/QuoteModal";
+import PriceMethodTable from "./components/PriceMethodTable";
+import PriceSummaryTable from "./components/PriceSummaryTable";
 
 function WithSparePartsHeader(props) {
   const history = useHistory();
@@ -159,11 +161,12 @@ function WithSparePartsHeader(props) {
   });
 
   const [pricingData, setPricingData] = useState({
-    priceMethod: null,
     netPrice: 0.0,
     priceDate: new Date(),
     adjustedPrice: 0.0,
     currency: "",
+    priceDetailDTO: [],
+    priceEstimateDTO: [],
   });
 
   const validityOptions = [
@@ -179,110 +182,6 @@ function WithSparePartsHeader(props) {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
-
-  const partlistColumns = [
-    {
-      field: "priceBreakup",
-      headerName: "Price Breakup",
-      width: 150,
-      type: 'singleSelect',
-      valueOptions: [ 'A - Parts','B - Labor', 'C - Consumable', 'D - External work', 'E - Other Misc']
-      // renderCell: (params) => (
-      //   <div>
-      //     <span style={{fontSize: 12}}>{params.value}{" "}</span>
-      //     <span style={{ fontSize: 9 }}>
-      //       {"  " + params.row.versionNumber + ".0"}
-      //     </span>{" "}
-      //   </div>
-      // ),
-    },
-    {
-      field: "summary",
-      headerName: "Price Summary type",
-      flex: 1,
-      width: 150,
-      type: 'singleSelect',
-      valueOptions: [ 'Estimated labor', 'Estimated Parts', 'Estimated Misc.' , 'Flat Rate all', 'Environmental', 'Sundry Charges']
-      // renderCell: params => <span style={{fontSize: 12}}>{params.value+" - "+params.row.jobOperation}</span>
-    },
-    {
-      field: "priceMethod",
-      headerName: "Price Method",
-      flex: 1,
-      minWidth: 200,
-      type: 'singleSelect',
-      valueOptions: [ 'List', 'Cost', 'Special price', 'Flat rate']
-    },
-    {
-      field: "netPrice",
-      headerName: "Estimated $",
-      flex: 1,
-      minWidth: 80,      
-    },
-    {
-      field: "adjustedPrice",
-      headerName: "Adjusted $",
-      flex: 1,
-      minWidth: 80,      
-    },
-    {
-      field: "headerDiscount",
-      headerName: "Header Discount (%)",
-      flex: 1,
-      minWidth: 120,      
-    },
-    {
-      field: "Total Discount",
-      headerName: "Total Discount ($)",
-      flex: 1,
-      minWidth: 120,      
-    },    
-    {
-      field: "Actions",
-      headerName: "Actions",
-      type: "actions",
-      cellClassName: "actions",
-      getActions: (params) => {
-        return [
-          <GridActionsCellItem
-            icon={
-              <div className=" cursor">
-                <Tooltip title="View">
-                  <EYEIcon />
-                  {/* <img className="m-1" src={penIcon} alt="Edit" /> */}
-                </Tooltip>
-              </div>
-            }
-            label="Edit"
-            className="textPrimary"
-            // onClick={() => loadPartlist(params.row)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            icon={
-              <div className=" cursor">
-                <Tooltip title="Remove">
-                  <img className="m-1" src={deleteIcon} alt="Delete" />
-                </Tooltip>
-              </div>
-            }
-            label="Delete"
-            // onClick={() => handleDeletePartlist(params.row.id)}
-            color="inherit"
-          />,
-        ];
-      },
-      flex: 1,
-      width: 130,
-    },
-  ];
-
-  const priceRows = [
-    {
-      priceBreakup: "Parts",
-      summary: ""
-    }
-  ]
 
   const handleCreateQuote = async () => {
     await createRepairQuote(bId, quoteDescription, quoteReference).then(createdQuote => {
@@ -487,17 +386,19 @@ function WithSparePartsHeader(props) {
   const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod:
-        result.priceMethod && result.priceMethod !== "EMPTY"
-          ? priceMethodOptions.find(
-              (element) => element.value === result.priceMethod
-            )
-          : { label: "", value: "" },
+      // priceMethod:
+      //   result.priceMethod && result.priceMethod !== "EMPTY"
+      //     ? priceMethodOptions.find(
+      //         (element) => element.value === result.priceMethod
+      //       )
+      //     : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: result.currency
         ? currencyOptions.find((element) => element.value === result.currency)
         : { label: "", value: "" },
+      priceDetailDTO: result.priceDetailDTO,
+      priceEstimateDTO: result.priceEstimateDTO,
     });
   };
 
@@ -768,13 +669,14 @@ function WithSparePartsHeader(props) {
   const updatePriceData = () => {
     let data = {
       builderId,
-      priceMethod: pricingData.priceMethod?.value,
+      priceDetailDTO: pricingData.priceDetailDTO,
+      priceEstimateDTO: pricingData.priceEstimateDTO,
       currency: pricingData.currency?.value,
       priceDate: pricingData.priceDate,
-      adjustedPrice:
-        pricingData.priceMethod?.value === "FLAT_RATE"
-          ? pricingData.adjustedPrice
-          : 0,
+      // adjustedPrice:
+      //   pricingData.priceMethod?.value === "FLAT_RATE"
+      //     ? pricingData.adjustedPrice
+      //     : 0,
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
@@ -784,12 +686,21 @@ function WithSparePartsHeader(props) {
             ...pricingData,
             adjustedPrice: result.adjustedPrice,
             netPrice: result.netPrice,
+            priceDetailDTO: result.priceDetailDTO,
+            priceEstimateDTO: result.priceEstimateDTO,
           });
         }
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
         handleSnack("success", "Pricing details updated!");
       })
       .catch((err) => {
+        setPricingData({
+          ...pricingData,
+          adjustedPrice: savedHeaderDetails.adjustedPrice,
+          priceDetailDTO: savedHeaderDetails.priceDetailDTO,
+          priceEstimateDTO: savedHeaderDetails.priceEstimateDTO,
+          netPrice: savedHeaderDetails.netPrice,
+        });
         handleSnack(
           "error",
           "Error occurred while updating the pricing details!"
@@ -2022,25 +1933,7 @@ function WithSparePartsHeader(props) {
                                 </div>
                               </div>
 
-                              <div className="col-md-4 col-sm-4">
-                                <div className="form-group">
-                                  <label className="text-light-dark font-size-12 font-weight-500">
-                                    PRICE METHOD
-                                  </label>
-                                  <Select
-                                    value={pricingData.priceMethod}
-                                    onChange={(e) =>
-                                      setPricingData({
-                                        ...pricingData,
-                                        priceMethod: e,
-                                      })
-                                    }
-                                    options={priceMethodOptions}
-                                    styles={FONT_STYLE_SELECT}
-                                  />
-                                  <div className="css-w8dmq8">*Mandatory</div>
-                                </div>
-                              </div>
+                              
                               <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -2105,14 +1998,7 @@ function WithSparePartsHeader(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 onClick={updatePriceData}
-                                disabled={
-                                  !(pricingData.priceDate &&
-                                  pricingData.priceMethod &&
-                                  pricingData.currency &&
-                                  pricingData.priceMethod?.value === "FLAT_RATE"
-                                    ? pricingData.adjustedPrice > 0
-                                    : true)
-                                }
+                                disabled={ !(pricingData.priceDate && pricingData.currency )}
                               >
                                 Save
                               </button>
@@ -2136,11 +2022,6 @@ function WithSparePartsHeader(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
-                              label="PRICE METHOD"
-                              value={pricingData.priceMethod?.label}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={pricingData.adjustedPrice}
                               className="col-md-4 col-sm-4"
@@ -2151,20 +2032,65 @@ function WithSparePartsHeader(props) {
                               className="col-md-4 col-sm-4"
                             />
                           </div>
-                          {/* <DataGrid
-                              sx={{
-                                ...GRID_STYLE,
-                                // width: "80%",
-                                marginInline: "auto",
-                              }}
-                              paginationMode="client"
-                              rows={[]}
-                              columns={partlistColumns}
-                              pageSize={5}
-                              rowsPerPageOptions={[5]}
-                              autoHeight
-                            /> */}
-                          </>
+                          <hr />
+                            <div className="mb-5">
+                              <PriceMethodTable
+                                rows={pricingData.priceDetailDTO}
+                                setRows={(rows) => {
+                                  console.log(rows);
+                                  setPricingData({
+                                    ...pricingData,
+                                    priceDetailDTO: rows,
+                                  });
+                                }}
+                              />
+                              <div
+                                className="row my-3 mr-2"
+                                style={{ justifyContent: "right" }}
+                              >
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updatePriceData}
+                                  disabled={
+                                    !(
+                                      pricingData.priceDate &&
+                                      pricingData.currency
+                                    )
+                                  }
+                                >
+                                  Save Price Methods
+                                </button>
+                              </div>
+                              <PriceSummaryTable
+                                rows={pricingData.priceEstimateDTO}
+                                setRows={(rows) =>
+                                  setPricingData({
+                                    ...pricingData,
+                                    priceEstimateDTO: rows,
+                                  })
+                                }
+                              />
+                              <div
+                                className="row my-3 mr-2"
+                                style={{ justifyContent: "right" }}
+                              >
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updatePriceData}
+                                  disabled={
+                                    !(
+                                      pricingData.priceDate &&
+                                      pricingData.currency
+                                    )
+                                  }
+                                >
+                                  Save Price Summary
+                                </button>
+                              </div>
+                            </div>
+                            </>
                         )}
                       </TabPanel>
                     </TabContext>

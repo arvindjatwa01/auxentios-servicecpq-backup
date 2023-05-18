@@ -274,9 +274,25 @@ function WithSparePartsOperation(props) {
     setOpenSnack(true);
   };
 
-  const handleAnchors = (direction, index) => {
+  const handleAnchors = async (direction, index) => {
+    setOperationViewOnly(true);
     if (direction === "backward") {
       if (opIndex > 0) setOpIndex(opIndex - 1);
+      let groupedPartList = "";
+      let serviceEstimate = "";
+      await fetchPartlistFromOperation(operations[index].id).then(
+        (resultPartlists) => {
+          groupedPartList = groupBy(resultPartlists, "partlistId");
+          // console.log(groupedPartList);
+        }
+      );
+      await FetchServiceHeader(operations[index].id)
+        .then((resServiceEstimation) => {
+          serviceEstimate = resServiceEstimation;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
       setOperationData({
         ...operations[index],
@@ -285,6 +301,8 @@ function WithSparePartsOperation(props) {
           formatOperationNum(operations[index]?.operationNumber) +
           " - " +
           operations[index]?.description, //Rename once changed in API
+        partlists: groupedPartList,
+        serviceEstimation: serviceEstimate,
       });
     } else if (direction === "forward") {
       if (
@@ -295,6 +313,21 @@ function WithSparePartsOperation(props) {
         setOperationViewOnly(false);
       } else {
         if (operations.length - 1 > opIndex) setOpIndex(opIndex + 1);
+        let groupedPartList = "";
+        let serviceEstimate = "";
+        await fetchPartlistFromOperation(operations[index].id).then(
+          (resultPartlists) => {
+            groupedPartList = groupBy(resultPartlists, "partlistId");
+            // console.log(groupedPartList);
+          }
+        );
+        await FetchServiceHeader(operations[index].id)
+          .then((resServiceEstimation) => {
+            serviceEstimate = resServiceEstimation;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
         setOperationData({
           ...operations[index],
           header:
@@ -302,6 +335,8 @@ function WithSparePartsOperation(props) {
             formatOperationNum(operations[index].operationNumber) +
             " - " +
             operations[index].description, //Rename
+          serviceEstimation: serviceEstimate,
+          partlists: groupedPartList,
         });
       }
     }
@@ -374,6 +409,8 @@ function WithSparePartsOperation(props) {
             " - " +
             operations[operations.length - 1].description,
         });
+      } else {
+        setOperationData(operations[opIndex]);
       }
       setShowAddNewButton(true);
       setOperationViewOnly(true);
@@ -381,6 +418,14 @@ function WithSparePartsOperation(props) {
       if (operationData.header === NEW_OPERATION) {
         setActiveElement({ ...activeElement, name: "segment" });
       } else {
+        setOperationData({
+          ...operations[0],
+          header:
+            "Operation " +
+            formatOperationNum(operations[0].operationNumber) +
+            " - " +
+            operations[0].description,
+        });
         setOperationViewOnly(true);
         setShowAddNewButton(true);
       }
@@ -642,7 +687,7 @@ function WithSparePartsOperation(props) {
             </div>
             {((operationData.partlists &&
               Object.entries(operationData.partlists).length > 0) ||
-              operationData.serviceEstimation?.netPrice) && (
+              operationData.serviceEstimation?.netPrice > 0) && (
               <>
                 <h5 className="d-flex align-items-center  mx-2">
                   <div className="" style={{ display: "contents" }}>
@@ -723,7 +768,8 @@ function WithSparePartsOperation(props) {
                                         </h6>
                                       </div>
                                     </div>
-                                    </div><div className="row mb-4">
+                                  </div>
+                                  <div className="row mb-4">
                                     <div className="col-4">
                                       <div class="d-flex">
                                         <p className="mr-2 font-size-14 font-weight-500 mr-2">

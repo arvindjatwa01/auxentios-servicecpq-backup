@@ -13,12 +13,20 @@
  * Toggle this basePath variable between "actual-domain.com/" or "/data/".
  */
 
-// const SOLUTION_BASE_URL = "http://13.58.83.209:8080/";
 const PRICING_BASE_URL = "http://35.200.157.237/";
 const SOLUTION_BASE_URL = "http://35.200.157.237/";
 const USER_SERVICE_BASE_URL = "http://35.200.157.237/";
 const DATA_SERVICE_BASE_URL = "http://35.200.157.237/";
 const QUOTE_SERVICE_BASE_URL = "http://35.200.157.237/";
+const REPAIR_BUILDER_URI = "http://35.200.157.237/repair-builder-svc/v1/";
+
+
+// const PRICING_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
+// const SOLUTION_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
+// const USER_SERVICE_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
+// const DATA_SERVICE_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
+// const QUOTE_SERVICE_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
+// const REPAIR_BUILDER_URI = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/repair-builder-svc/v1/";
 
 const PRICING_URI = PRICING_BASE_URL + "pricing-svc/v1/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
@@ -29,7 +37,7 @@ const QUOTE_COMMON_REST_SERVICE = QUOTE_SERVICE_BASE_URL + "quote-svc/v1";
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
 const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/"
 const DATA_SERVICE_URI = DATA_SERVICE_BASE_URL + "data-svc/api/v1/";
-const REPAIR_BUILDER_URI = "http://35.200.157.237/repair-builder-svc/v1/";
+
 
 // search for coverage
 
@@ -245,17 +253,16 @@ export const SJ_SEGMENT = (templateId) => REPAIR_BUILDER_URI + `standard-job/${t
 export const UPDATE_SJ_VERSION = (templateId, version) => REPAIR_BUILDER_URI + `standard-job/${templateId}/version/${version}`;
 
 /* ===================== Repair Quote Service ============================= */
-export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
-export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
-export const CREATE_REPAIR_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
-export const CREATE_SPARE_PART_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const RECENT_QUOTES =(quoteType) => QUOTE_REST_SERVICE + `/recent?quote_type=${quoteType}`;
+export const SEARCH_REPAIR_QUOTES =(searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
+export const CREATE_REPAIR_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const CREATE_SPARE_PART_QUOTE =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const FETCH_REPAIR_QUOTE_VERSIONS = (quoteName) => QUOTE_REST_SERVICE + `/versions?quote_name=${quoteName}`;
 export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const UPDATE_REPAIR_QUOTE_ITEM = (quoteItemId) => QUOTE_REST_SERVICE + `/repair-buider/${quoteItemId}`;
 export const UPDATE_PL_QUOTE_ITEM = (quoteItemId) => QUOTE_REST_SERVICE + `/part-list/${quoteItemId}`;
 export const CREATE_QUOTE_VERSION = (existingQuote, existingVersion, newVersion) =>QUOTE_REST_SERVICE +`/copy-quote?existing_quote_name=${existingQuote}&existing_version=${existingVersion}&new_version=${newVersion}`
-
 export const ADD_REPAIR_QUOTE_ITEM = (quoteId) => QUOTE_REST_SERVICE + `/repair-buider?quote_id=${quoteId}`;
 export const ADD_PL_QUOTE_ITEM = (quoteId) => QUOTE_REST_SERVICE + `/part-list?quote_id=${quoteId}`;
 export const FETCH_QUOTE_SUMMARY = (quoteId) => QUOTE_REST_SERVICE + `/summary?quote_id=${quoteId}`;

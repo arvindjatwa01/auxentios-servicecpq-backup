@@ -255,6 +255,13 @@ export const GRID_STYLE = {
   "& .MuiDataGrid-cellContent": {
     fontSize: 12,
   },
+  "& .MuiInputBase-root": {
+    fontSize: 12, marginInline: 2, paddingInline: 1, 
+  },
+  '& .super-app-value': {
+    backgroundColor: '#dabffd',
+    fontWeight: '600',
+  },
 };
 export const FONT_STYLE = {
   color: "#872ff7",

@@ -779,7 +779,7 @@ function RepairServiceEstimate(props) {
       jobCode: partsData.jobCode,
       versionNumber: 1,
       description: partsData.description,
-      pricingMethod: partsData.pricingMethod?.value,
+      // pricingMethod: partsData.pricingMethod?.value,
     })
       .then(async (newPartlist) => {
         await fetchPartlistFromOperation(activeElement.oId).then(
@@ -922,7 +922,9 @@ function RepairServiceEstimate(props) {
     { label: "Days", value: "DAYS" },
   ];
   // Sets the value for the tab (labor, consumable, misc, extWork)
-  const [value, setValue] = useState(activeElement.builderType === WITH_PARTS ? "parts" : "labor");
+  const [value, setValue] = useState(
+    activeElement.builderType === WITH_PARTS ? "parts" : "labor"
+  );
 
   //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
@@ -983,8 +985,8 @@ function RepairServiceEstimate(props) {
             setPartsData({
               ...partsData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobCodeDescription,
-              jobOperation: result.jobOperation,
+              description: result.jobOperation,
+              jobOperation: result.jobCodeDescription,
               componentCode: result.componentCode,
             });
             setLabourData({
@@ -1096,8 +1098,8 @@ function RepairServiceEstimate(props) {
           setPartsData({
             ...partsData,
             jobCode: result.jobCode,
-            jobCodeDescription: result.jobCodeDescription,
-            jobOperation: result.jobOperation,
+            description: result.jobOperation,
+            jobOperation: result.jobCodeDescription,
             componentCode: result.componentCode,
           });
         });
@@ -1364,10 +1366,14 @@ function RepairServiceEstimate(props) {
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
-      flatRateIndicator: serviceEstimateData.flatRateIndicator,
-      adjustedPrice: serviceEstimateData.flatRateIndicator
-        ? serviceEstimateData.adjustedPrice
-        : 0.0,
+      netPrice: undefined,
+      priceDate: undefined,
+      flatRateIndicator: undefined,
+      adjustedPrice: undefined,
+      // flatRateIndicator: serviceEstimateData.flatRateIndicator,
+      // adjustedPrice: serviceEstimateData.flatRateIndicator
+      //   ? serviceEstimateData.adjustedPrice
+      //   : 0.0,
     };
     AddServiceHeader(activeElement.oId, data)
       .then((result) => {
@@ -1387,18 +1393,11 @@ function RepairServiceEstimate(props) {
   };
   const updateLabourEstHeader = () => {
     let data = {
-      // ...labourData,
       ...(labourData.id && { id: labourData.id }),
       jobCode: labourData.jobCode,
       jobCodeDescription: labourData.jobCodeDescription,
-      pricingMethod: labourData.pricingMethod?.value,
       laborCode: labourData.laborCode?.value,
       totalHours: labourData.totalHours,
-      flatRateIndicator: labourData.flatRateIndicator,
-      adjustedPrice: labourData.flatRateIndicator
-        ? labourData.adjustedPrice
-        : 0.0,
-      payer: labourData.payer,
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -1428,19 +1427,19 @@ function RepairServiceEstimate(props) {
       ...(consumableData.id && { id: consumableData.id }),
       jobCode: consumableData.jobCode,
       jobCodeDescription: consumableData.jobCodeDescription,
-      ...(!consumableData.flatRateIndicator
-        ? consumableData.pricingMethod?.value?.includes("PER")
-          ? {
-              percentageOfBase: consumableData.percentageOfBase,
-              pricingMethod: consumableData.pricingMethod?.value,
-              basePrice: consumableData.basePrice,
-            }
-          : { pricingMethod: consumableData.pricingMethod?.value }
-        : {}),
-      flatRateIndicator: consumableData.flatRateIndicator,
-      adjustedPrice: consumableData.flatRateIndicator
-        ? consumableData.adjustedPrice
-        : 0.0,
+      // ...(!consumableData.flatRateIndicator
+      //   ? consumableData.pricingMethod?.value?.includes("PER")
+      //     ? {
+      //         percentageOfBase: consumableData.percentageOfBase,
+      //         pricingMethod: consumableData.pricingMethod?.value,
+      //         basePrice: consumableData.basePrice,
+      //       }
+      //     : { pricingMethod: consumableData.pricingMethod?.value }
+      //   : {}),
+      // flatRateIndicator: consumableData.flatRateIndicator,
+      // adjustedPrice: consumableData.flatRateIndicator
+      //   ? consumableData.adjustedPrice
+      //   : 0.0,
       payer: consumableData.payer,
     };
     AddConsumableToService(serviceEstimateData.id, data)
@@ -1543,19 +1542,19 @@ function RepairServiceEstimate(props) {
       ...(extWorkData.id && { id: extWorkData.id }),
       jobCode: extWorkData.jobCode,
       jobCodeDescription: extWorkData.jobCodeDescription,
-      flatRateIndicator: extWorkData.flatRateIndicator,
-      ...(!extWorkData.flatRateIndicator
-        ? extWorkData.pricingMethod?.value?.includes("PER")
-          ? {
-              percentageOfBase: extWorkData.percentageOfBase,
-              pricingMethod: extWorkData.pricingMethod?.value,
-              basePrice: extWorkData.basePrice,
-            }
-          : { pricingMethod: extWorkData.pricingMethod?.value }
-        : {}),
-      adjustedPrice: extWorkData.flatRateIndicator
-        ? extWorkData.adjustedPrice
-        : 0.0,
+      // flatRateIndicator: extWorkData.flatRateIndicator,
+      // ...(!extWorkData.flatRateIndicator
+      //   ? extWorkData.pricingMethod?.value?.includes("PER")
+      //     ? {
+      //         percentageOfBase: extWorkData.percentageOfBase,
+      //         pricingMethod: extWorkData.pricingMethod?.value,
+      //         basePrice: extWorkData.basePrice,
+      //       }
+      //     : { pricingMethod: extWorkData.pricingMethod?.value }
+      //   : {}),
+      // adjustedPrice: extWorkData.flatRateIndicator
+      //   ? extWorkData.adjustedPrice
+      //   : 0.0,
       payer: extWorkData.payer,
     };
     AddExtWorkToService(serviceEstimateData.id, data)
@@ -1587,13 +1586,13 @@ function RepairServiceEstimate(props) {
       ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
       jobCodeDescription: miscData.jobCodeDescription,
-      flatRateIndicator: miscData.flatRateIndicator,
-      ...(!miscData.flatRateIndicator && {
-        percentageOfBase: miscData.percentageOfBase,
-        pricingMethod: miscData.pricingMethod?.value,
-        basePrice: miscData.basePrice,
-      }),
-      adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
+      // flatRateIndicator: miscData.flatRateIndicator,
+      // ...(!miscData.flatRateIndicator && {
+      //   percentageOfBase: miscData.percentageOfBase,
+      //   pricingMethod: miscData.pricingMethod?.value,
+      //   basePrice: miscData.basePrice,
+      // }),
+      // adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
       payer: miscData.payer,
       // type: miscData.type?.value,
       type: miscTypes,
@@ -2483,7 +2482,7 @@ function RepairServiceEstimate(props) {
                       />
                     </div>
                   </div>
-                  <div className="col-md-4 col-sm-4">
+                  {/* <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
                       <FormGroup>
                         <FormControlLabel
@@ -2533,7 +2532,7 @@ function RepairServiceEstimate(props) {
                         }
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 <div className=" text-right">
                   <button
@@ -2548,15 +2547,14 @@ function RepairServiceEstimate(props) {
                     type="button"
                     className="btn btn-light bg-primary text-white"
                     disabled={
-                      !(serviceEstimateData.jobOperation &&
-                      serviceEstimateData.description &&
-                      serviceEstimateData.currency &&
-                      serviceEstimateData.priceDate &&
-                      serviceEstimateData.reference &&
-                      serviceEstimateData.segmentTitle &&
-                      serviceEstimateData.flatRateIndicator
-                        ? serviceEstimateData.adjustedPrice > 0
-                        : true)
+                      !(
+                        serviceEstimateData.jobOperation &&
+                        serviceEstimateData.description &&
+                        serviceEstimateData.currency &&
+                        serviceEstimateData.priceDate &&
+                        serviceEstimateData.reference &&
+                        serviceEstimateData.segmentTitle
+                      )
                     }
                     onClick={updateServiceEstHeader}
                   >
@@ -2612,11 +2610,11 @@ function RepairServiceEstimate(props) {
                     value={serviceEstimateData.netPrice}
                     className="col-md-4 col-sm-4"
                   />
-                  <ReadOnlyField
+                  {/* <ReadOnlyField
                     label="ADJUSTED PRICE"
                     value={serviceEstimateData.adjustedPrice}
                     className="col-md-4 col-sm-4"
-                  />
+                  /> */}
                 </div>
                 <div className=" text-right">
                   <button
@@ -2753,7 +2751,7 @@ function RepairServiceEstimate(props) {
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
+                        {/* <div className="col-md-4 col-sm-4">
                           <div className="form-group mt-3">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               PRICE METHOD
@@ -2771,7 +2769,7 @@ function RepairServiceEstimate(props) {
                             />
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
-                        </div>
+                        </div> */}
                         <div className="col-md-4 col-sm-4">
                           <div class="form-group mt-3">
                             <label className="text-light-dark font-size-12 font-weight-600">
@@ -2800,7 +2798,6 @@ function RepairServiceEstimate(props) {
                               type="button"
                               className="btn btn-light bg-primary text-white"
                               onClick={createPartlistAndUpdate}
-                              disabled={!partsData.pricingMethod}
                             >
                               Save
                             </button>
@@ -3243,28 +3240,21 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4"></div>
-                            {!labourData.flatRateIndicator ? (
-                              <>
-                                <div className="col-md-4 col-sm-4">
+                            {/* <div className="col-md-4 col-sm-4"></div> */}
+
+                            {/* <div className="col-md-4 col-sm-4">
                                   <div className="form-group  mt-3">
                                     <label className="text-light-dark font-size-12 font-weight-500">
                                       PRICE METHOD
                                     </label>
-                                    <Select
-                                      onChange={(e) =>
-                                        setLabourData({
-                                          ...labourData,
-                                          pricingMethod: e,
-                                        })
-                                      }
-                                      options={LABOR_PRICE_OPTIONS}
-                                      value={labourData.pricingMethod}
-                                      styles={FONT_STYLE_SELECT}
+                                    <input
+                                      type="text"
+                                      disabled
+                                      class="form-control border-radius-10 text-primary"
+                                      value={labourData.pricingMethod?.label}
                                     />
-                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
-                                </div>
+                                </div> 
                                 <div className="col-md-4 col-sm-4">
                                   <div class="form-group mt-3">
                                     <label className="text-light-dark font-size-12 font-weight-600">
@@ -3276,28 +3266,26 @@ function RepairServiceEstimate(props) {
                                       class="form-control border-radius-10 text-primary"
                                       value={labourData.ratePerHourOrDay}
                                     />
-                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      NET PRICE
-                                    </label>
-                                    <input
-                                      type="text"
-                                      disabled
-                                      class="form-control border-radius-10 text-primary"
-                                      value={labourData.totalPrice}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                              </>
+                                </div> */}
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  value={labourData.totalPrice}
+                                />
+                              </div>
+                            </div>
+                            {/* </>
                             ) : (
                               <></>
-                            )}
-                            <div className="col-md-4 col-sm-4">
+                            )} */}
+                            {/* <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
                                   <FormControlLabel
@@ -3328,8 +3316,8 @@ function RepairServiceEstimate(props) {
                                   />
                                 </FormGroup>
                               </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
+                            </div> */}
+                            {/* <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
@@ -3347,7 +3335,7 @@ function RepairServiceEstimate(props) {
                                   }
                                 />
                               </div>
-                            </div>
+                            </div> */}
 
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
@@ -3358,9 +3346,7 @@ function RepairServiceEstimate(props) {
                                   disabled={
                                     !(
                                       labourData.laborCode &&
-                                      (labourData.flatRateIndicator
-                                        ? labourData.adjustedPrice
-                                        : labourData.pricingMethod)
+                                      labourData.totalHours
                                     )
                                   }
                                 >
@@ -3393,32 +3379,28 @@ function RepairServiceEstimate(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <div className="col-md-4 col-sm-4"></div>
-                            {!labourData.flatRateIndicator ? (
-                              <>
-                                <ReadOnlyField
-                                  label="PRICE METHOD"
-                                  value={labourData.pricingMethod?.label}
-                                  className="col-md-4 col-sm-4"
-                                />
-                                <ReadOnlyField
-                                  label="RATE PER HOUR / DAY"
-                                  value={labourData.ratePerHourOrDay}
-                                  className="col-md-4 col-sm-4"
-                                />
-                                <ReadOnlyField
-                                  label="NET PRICE"
-                                  value={labourData.totalPrice}
-                                  className="col-md-4 col-sm-4"
-                                />
-                              </>
-                            ) : (
-                              <></>
-                            )}
+
                             <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={labourData.pricingMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="RATE PER HOUR / DAY"
+                              value={labourData.ratePerHourOrDay}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={labourData.totalPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={labourData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                            /> */}
                           </div>
                         )}
                         <hr />
@@ -3519,6 +3501,7 @@ function RepairServiceEstimate(props) {
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3532,162 +3515,6 @@ function RepairServiceEstimate(props) {
                                     setConsumableData({
                                       ...consumableData,
                                       payer: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
-                            {!consumableData.flatRateIndicator ? (
-                              <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div className="form-group  mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                      PRICE METHOD
-                                    </label>
-                                    <Select
-                                      onChange={(e) => {
-                                        setConsumableData({
-                                          ...consumableData,
-                                          pricingMethod: e,
-                                          basePrice:
-                                            basePriceValues &&
-                                            basePriceValues[e.value]
-                                              ? basePriceValues[e.value]
-                                              : 0,
-                                        });
-                                      }}
-                                      value={consumableData.pricingMethod}
-                                      options={
-                                        flagRequired.labourEnabled
-                                          ? CONS_EXT_PRICE_OPTIONS
-                                          : CONSEXT_PRICE_OPTIONS_NOLABOR
-                                      }
-                                      styles={FONT_STYLE_SELECT}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                {consumableData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div className="form-group mt-3 date-box">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          PERCENTAGE OF BASE
-                                        </label>
-                                        <div
-                                          className=" d-flex form-control-date"
-                                          style={{ overflow: "hidden" }}
-                                        >
-                                          <input
-                                            type="text"
-                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                            // style={{width: '64%'}}
-
-                                            value={
-                                              consumableData.percentageOfBase
-                                            }
-                                            onChange={(e) =>
-                                              setConsumableData({
-                                                ...consumableData,
-                                                percentageOfBase:
-                                                  e.target.value,
-                                              })
-                                            }
-                                          />
-                                          <span
-                                            className="hours-div"
-                                            style={{
-                                              float: "left",
-                                              width: "40%",
-                                            }}
-                                          >
-                                            {consumableData.pricingMethod?.label
-                                              ? consumableData.pricingMethod?.label?.replace(
-                                                  "Percentage",
-                                                  "%"
-                                                )
-                                              : "%"}
-                                          </span>
-                                        </div>
-                                        <div className="css-w8dmq8">
-                                          *Mandatory
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          TOTAL BASE
-                                        </label>
-                                        <input
-                                          type="text"
-                                          disabled
-                                          class="form-control border-radius-10 text-primary"
-                                          value={consumableData.basePrice}
-                                        />
-                                        <div className="css-w8dmq8">
-                                          *Mandatory
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-                              </>
-                            ) : (
-                              <></>
-                            )}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={
-                                          consumableData.flatRateIndicator
-                                        }
-                                        onChange={(e) =>
-                                          setConsumableData({
-                                            ...consumableData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? consumableData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-600">
-                                        FLAT RATE INDICATOR
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled={!consumableData.flatRateIndicator}
-                                  class="form-control border-radius-10 text-primary"
-                                  value={consumableData.adjustedPrice}
-                                  onChange={(e) =>
-                                    setConsumableData({
-                                      ...consumableData,
-                                      adjustedPrice: e.target.value,
                                     })
                                   }
                                 />
@@ -3713,22 +3540,22 @@ function RepairServiceEstimate(props) {
                                   type="button"
                                   className="btn btn-light bg-primary text-white"
                                   onClick={updateConsumableHeader}
-                                  disabled={
-                                    !(
-                                      (!consumableData.flatRateIndicator
-                                        ? consumableData.pricingMethod &&
-                                          consumableData.pricingMethod.value.includes(
-                                            "PER"
-                                          )
-                                          ? consumableData.percentageOfBase &&
-                                            consumableData.basePrice
-                                          : consumableData.pricingMethod
-                                        : true) &&
-                                      (consumableData.flatRateIndicator
-                                        ? consumableData.adjustedPrice
-                                        : true)
-                                    )
-                                  }
+                                  // disabled={
+                                  //   !(
+                                  //     (!consumableData.flatRateIndicator
+                                  //       ? consumableData.pricingMethod &&
+                                  //         consumableData.pricingMethod.value.includes(
+                                  //           "PER"
+                                  //         )
+                                  //         ? consumableData.percentageOfBase &&
+                                  //           consumableData.basePrice
+                                  //         : consumableData.pricingMethod
+                                  //       : true) &&
+                                  //     (consumableData.flatRateIndicator
+                                  //       ? consumableData.adjustedPrice
+                                  //       : true)
+                                  //   )
+                                  // }
                                 >
                                   Save
                                 </button>
@@ -3752,45 +3579,23 @@ function RepairServiceEstimate(props) {
                               value={consumableData.payer}
                               className="col-md-4 col-sm-4"
                             />
-                            {!consumableData.flatRateIndicator ? (
-                              <>
-                                <ReadOnlyField
-                                  label="PRICE METHOD"
-                                  value={consumableData.pricingMethod?.label}
-                                  className="col-md-4 col-sm-4"
-                                />
-                                {consumableData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <ReadOnlyField
-                                      label="PERCENTAGE OF BASE"
-                                      value={consumableData.percentageOfBase}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                    <ReadOnlyField
-                                      label="TOTAL BASE"
-                                      value={consumableData.basePrice}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                  </>
-                                ) : (
-                                  <></>
-                                )}{" "}
-                              </>
-                            ) : (
-                              <></>
-                            )}
+
+                            <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={consumableData.pricingMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+
                             <ReadOnlyField
                               label="NET PRICE"
                               value={consumableData.totalPrice}
                               className="col-md-4 col-sm-4"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={consumableData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                            /> */}
                           </div>
                         )}
                         <hr />
@@ -3926,6 +3731,7 @@ function RepairServiceEstimate(props) {
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3944,107 +3750,11 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            {!extWorkData.flatRateIndicator ? (
-                              <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      PRICE METHOD
-                                    </label>
-                                    <Select
-                                      onChange={(e) =>
-                                        setExtWorkData({
-                                          ...extWorkData,
-                                          pricingMethod: e,
-                                          basePrice:
-                                            basePriceValues &&
-                                            basePriceValues[e.value]
-                                              ? basePriceValues[e.value]
-                                              : 0,
-                                        })
-                                      }
-                                      value={extWorkData.pricingMethod}
-                                      options={
-                                        flagRequired.labourEnabled
-                                          ? CONS_EXT_PRICE_OPTIONS
-                                          : CONSEXT_PRICE_OPTIONS_NOLABOR
-                                      }
-                                      styles={FONT_STYLE_SELECT}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                {extWorkData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div className="form-group mt-3 date-box">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          PERCENTAGE OF BASE
-                                        </label>
-                                        <div
-                                          className=" d-flex form-control-date"
-                                          style={{ overflow: "hidden" }}
-                                        >
-                                          <input
-                                            type="text"
-                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                            // style={{width: '64%'}}
 
-                                            value={extWorkData.percentageOfBase}
-                                            onChange={(e) =>
-                                              setExtWorkData({
-                                                ...extWorkData,
-                                                percentageOfBase:
-                                                  e.target.value,
-                                              })
-                                            }
-                                          />
-                                          <span
-                                            className="hours-div"
-                                            style={{
-                                              float: "left",
-                                              width: "40%",
-                                            }}
-                                          >
-                                            {extWorkData.pricingMethod?.label
-                                              ? extWorkData.pricingMethod?.label?.replace(
-                                                  "Percentage",
-                                                  "%"
-                                                )
-                                              : "%"}
-                                          </span>
-                                        </div>
-                                        <div className="css-w8dmq8">
-                                          *Mandatory
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          TOTAL BASE
-                                        </label>
-                                        <input
-                                          type="text"
-                                          disabled
-                                          class="form-control border-radius-10 text-primary"
-                                          value={extWorkData.basePrice}
-                                        />
-                                        <div className="css-w8dmq8">
-                                          *Mandatory
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-                              </>
+                            {/* </>
                             ) : (
                               <></>
-                            )}
+                            )} 
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
@@ -4095,7 +3805,7 @@ function RepairServiceEstimate(props) {
                                   }
                                 />
                               </div>
-                            </div>
+                            </div>*/}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -4116,22 +3826,22 @@ function RepairServiceEstimate(props) {
                                   type="button"
                                   className="btn btn-light bg-primary text-white"
                                   onClick={updateExtWorkHeader}
-                                  disabled={
-                                    !(
-                                      (!extWorkData.flatRateIndicator
-                                        ? extWorkData.pricingMethod &&
-                                          extWorkData.pricingMethod.value.includes(
-                                            "PER"
-                                          )
-                                          ? extWorkData.percentageOfBase &&
-                                            extWorkData.basePrice
-                                          : extWorkData.pricingMethod
-                                        : true) &&
-                                      (extWorkData.flatRateIndicator
-                                        ? extWorkData.adjustedPrice
-                                        : true)
-                                    )
-                                  }
+                                  // disabled={
+                                  //   !(
+                                  //     (!extWorkData.flatRateIndicator
+                                  //       ? extWorkData.pricingMethod &&
+                                  //         extWorkData.pricingMethod.value.includes(
+                                  //           "PER"
+                                  //         )
+                                  //         ? extWorkData.percentageOfBase &&
+                                  //           extWorkData.basePrice
+                                  //         : extWorkData.pricingMethod
+                                  //       : true) &&
+                                  //     (extWorkData.flatRateIndicator
+                                  //       ? extWorkData.adjustedPrice
+                                  //       : true)
+                                  //   )
+                                  // }
                                 >
                                   Save
                                 </button>
@@ -4150,46 +3860,33 @@ function RepairServiceEstimate(props) {
                               value={extWorkData.jobCodeDescription}
                               className="col-md-4 col-sm-4"
                             />
-                            {!extWorkData.flatRateIndicator ? (
-                              <>
-                                <ReadOnlyField
-                                  label="PRICE METHOD"
-                                  value={extWorkData.pricingMethod?.label}
-                                  className="col-md-4 col-sm-4"
-                                />
+                            <ReadOnlyField
+                              label="PAYER"
+                              value={extWorkData.payer}
+                              className="col-md-4 col-sm-4"
+                            />
+                            {/* {!extWorkData.flatRateIndicator ? (
+                              <> */}
+                            <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={extWorkData.pricingMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
 
-                                {extWorkData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <ReadOnlyField
-                                      label="PERCENTAGE OF BASE"
-                                      value={extWorkData.percentageOfBase}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                    <ReadOnlyField
-                                      label="TOTAL BASE"
-                                      value={extWorkData.basePrice}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-                              </>
+                            {/* </>
                             ) : (
                               <></>
-                            )}
+                            )} */}
                             <ReadOnlyField
                               label="NET PRICE"
                               value={extWorkData.totalPrice}
                               className="col-md-4 col-sm-4"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={extWorkData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                            /> */}
                           </div>
                         )}
                         <hr />
@@ -4330,89 +4027,27 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                             {/* <div className="col-md-8 col-sm-4"></div> */}
-                            {!miscData.flatRateIndicator ? (
-                              <>
-                                <div className="col-md-4 col-sm-4">
+                            {/* {!miscData.flatRateIndicator ? (
+                              <> */}
+                            {/* <div className="col-md-4 col-sm-4">
                                   <div class="form-group mt-3">
                                     <label className="text-light-dark font-size-12 font-weight-600">
                                       PRICE METHOD
                                     </label>
-                                    <Select
-                                      onChange={(e) =>
-                                        setMiscData({
-                                          ...miscData,
-                                          pricingMethod: e,
-                                          basePrice:
-                                            basePriceValues &&
-                                            basePriceValues[e.value]
-                                              ? basePriceValues[e.value]
-                                              : 0,
-                                        })
-                                      }
-                                      options={
-                                        flagRequired.labourEnabled
-                                          ? MISC_PRICE_OPTIONS
-                                          : MISC_PRICE_OPTIONS_NOLABOR
-                                      }
-                                      value={miscData.pricingMethod}
-                                      styles={FONT_STYLE_SELECT}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div className="form-group mt-3 date-box">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      PERCENTAGE OF BASE
-                                    </label>
-                                    <div
-                                      className=" d-flex form-control-date"
-                                      style={{ overflow: "hidden" }}
-                                    >
-                                      <input
-                                        type="text"
-                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                        value={miscData.percentageOfBase}
-                                        onChange={(e) =>
-                                          setMiscData({
-                                            ...miscData,
-                                            percentageOfBase: e.target.value,
-                                          })
-                                        }
-                                      />
-                                      <span
-                                        className="hours-div"
-                                        style={{ float: "left", width: "40%" }}
-                                      >
-                                        {miscData.pricingMethod?.label
-                                          ? miscData.pricingMethod?.label?.replace(
-                                              "Percentage",
-                                              "%"
-                                            )
-                                          : "%"}
-                                      </span>
-                                    </div>
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      TOTAL BASE
-                                    </label>
-                                    <input
+                                    
+                                     <input
                                       type="text"
                                       disabled
                                       class="form-control border-radius-10 text-primary"
-                                      value={miscData.basePrice}
+                                      value={miscData.pricingMethod?.label}
                                     />
-                                    <div className="css-w8dmq8">*Mandatory</div>
                                   </div>
-                                </div>
-                              </>
+                                </div> */}
+
+                            {/* </>
                             ) : (
                               <></>
-                            )}
+                            )} 
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
@@ -4463,7 +4098,7 @@ function RepairServiceEstimate(props) {
                                   }
                                 />
                               </div>
-                            </div>
+                            </div>*/}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -4504,15 +4139,16 @@ function RepairServiceEstimate(props) {
                                   onClick={updateMiscHeader}
                                   disabled={
                                     !(
-                                      (!miscData.flatRateIndicator
-                                        ? miscData.percentageOfBase &&
-                                          miscData.pricingMethod &&
-                                          miscData.basePrice
-                                        : true) &&
-                                      miscData.type &&
-                                      (miscData.flatRateIndicator
-                                        ? miscData.adjustedPrice
-                                        : true)
+                                      // (!miscData.flatRateIndicator
+                                      //   ? miscData.percentageOfBase &&
+                                      //     miscData.pricingMethod &&
+                                      //     miscData.basePrice
+                                      //   : true) &&
+                                      miscData.type
+                                      // &&
+                                      // (miscData.flatRateIndicator
+                                      //   ? miscData.adjustedPrice
+                                      //   : true)
                                     )
                                   }
                                 >
@@ -4549,37 +4185,28 @@ function RepairServiceEstimate(props) {
                               }
                               className="col-md-4 col-sm-4"
                             />
-                            {!miscData.flatRateIndicator ? (
-                              <>
-                                <ReadOnlyField
-                                  label="PRICE METHOD"
-                                  value={miscData.pricingMethod?.label}
-                                  className="col-md-4 col-sm-4"
-                                />
-                                <ReadOnlyField
-                                  label="PERCENTAGE OF BASE"
-                                  value={miscData.percentageOfBase}
-                                  className="col-md-4 col-sm-4"
-                                />
-                                <ReadOnlyField
-                                  label="TOTAL BASE"
-                                  value={miscData.basePrice}
-                                  className="col-md-4 col-sm-4"
-                                />
-                              </>
+                            {/* {!miscData.flatRateIndicator ? (
+                              <> */}
+                            <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={miscData.pricingMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+
+                            {/* </>
                             ) : (
                               <></>
-                            )}
+                            )} */}
                             <ReadOnlyField
                               label="NET PRICE"
                               value={miscData.totalPrice}
                               className="col-md-4 col-sm-4"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={miscData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                            /> */}
                           </div>
                         )}
                       </React.Fragment>

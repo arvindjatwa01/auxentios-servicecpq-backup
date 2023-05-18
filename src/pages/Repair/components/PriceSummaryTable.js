@@ -12,45 +12,60 @@ import {
   DataGrid,
   GridToolbarContainer,
   GridActionsCellItem,
+  GridEditInputCell,
+  useGridApiContext,
 } from "@mui/x-data-grid";
 import { GRID_STYLE } from "../CONSTANTS";
 import { Tooltip } from "@mui/material";
-import {
-  addQuotePayer,
-  removePayer,
-  updatePayerData,
-} from "services/repairQuoteServices";
+import { addQuotePayer } from "services/repairQuoteServices";
 import { useState } from "react";
-import { CREATE_QUOTE_PAYER } from "services/CONSTANTS";
+
+function SummaryAdjustedPrice(params) {
+  const { id, field } = params;
+  const apiRef = useGridApiContext();
+  const row = apiRef.current.unstable_getRowWithUpdatedValues(id, field);
+  return (
+    <GridEditInputCell {...params} disabled={row.priceSummaryType !== 'FLAT_RATE'}/>
+  );
+}
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel, rows } = props;
-  console.log(rows);
 
   const handleClick = () => {
-    const payerId = "new";
-    setRows((oldRows) => [
-      ...oldRows,
-      { payerId, payerName: "", billingSplit: "", price: 0, isNew: true },
+    const id = "new";
+    setRows([
+      ...rows,
+      {
+        id: "new",
+        priceBreakup: "",
+        priceSummaryType: "",
+        netPrice: 0,
+        adjustedPrice: 0,
+        percentageDiscount: 0,
+        fixedDiscount: 0,
+        isNew: true,
+      },
     ]);
+    console.log(rows);
     setRowModesModel((oldModel) => ({
       ...oldModel,
-      [payerId]: { mode: GridRowModes.Edit, fieldToFocus: "payerName" },
+      [id]: { mode: GridRowModes.Edit, fieldToFocus: "priceBreakup" },
     }));
   };
 
   return (
     <GridToolbarContainer className="row">
       <div className="col-md-6 col-lg-8 font-weight-500">
-        PAYERS
+        PRICE / ESTIMATE SUMMARY
       </div>
       <div
         className="row col-md-6 col-lg-4"
         style={{ justifyContent: "right" }}
       >
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add Payer
-      </Button>
+        <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+          Add Price Summary
+        </Button>
       </div>
     </GridToolbarContainer>
   );
@@ -61,13 +76,14 @@ EditToolbar.propTypes = {
   setRows: PropTypes.func.isRequired,
 };
 
-export default function PayerGridTable(props) {
-  const [rows, setRows] = React.useState(props.dataRows);
-  console.log(rows);
+export default function PriceSummaryTable(props) {
+  const { rows, setRows } = props;
+  // console.log(rows);
   const [rowModesModel, setRowModesModel] = React.useState({});
   const [loading, setLoading] = useState(false);
 
   const handleRowEditStart = (params, event) => {
+    console.log(params);
     event.defaultMuiPrevented = true;
   };
 
@@ -75,43 +91,34 @@ export default function PayerGridTable(props) {
     event.defaultMuiPrevented = true;
   };
 
-  const handleEditClick = (payerId) => () => {
+  const handleEditClick = (id) => () => {
     setRowModesModel({
       ...rowModesModel,
-      [payerId]: { mode: GridRowModes.Edit },
+      [id]: { mode: GridRowModes.Edit },
     });
   };
 
-  const handleSaveClick = (payerId) => () => {
-    console.log("rows", rows);
+  const handleSaveClick = (id) => () => {
+    // console.log("rows", rows);
     setRowModesModel({
       ...rowModesModel,
-      [payerId]: { mode: GridRowModes.View },
+      [id]: { mode: GridRowModes.View },
     });
   };
 
-  const handleDeleteClick = (payerId) => () => {
-    removePayer(payerId)
-      .then((success) => {
-        console.log(success);
-        props.handleSnack("success", "Payer has been removed!");
-        setRows(rows.filter((row) => row.payerId !== payerId));
-      })
-      .catch((e) => {
-        props.handleSnack("error", "Payer couldn't be removed!");
-        throw e;
-      });
+  const handleDeleteClick = (id) => () => {
+    setRows(rows.filter((row) => row.id !== id));
   };
 
-  const handleCancelClick = (payerId) => () => {
+  const handleCancelClick = (id) => () => {
     setRowModesModel({
       ...rowModesModel,
-      [payerId]: { mode: GridRowModes.View, ignoreModifications: true },
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
 
-    const editedRow = rows.find((row) => row.payerId === payerId);
+    const editedRow = rows.find((row) => row.id === id);
     if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.payerId !== payerId));
+      setRows(rows.filter((row) => row.id !== id));
     }
   };
 
@@ -119,19 +126,17 @@ export default function PayerGridTable(props) {
     (newRow, oldRow) =>
       new Promise((resolve, reject) => {
         const updatedRow = { ...newRow, isNew: false };
-        if (updatedRow.payerId === "new") {
+        if (updatedRow.id === "new") {
           console.log(oldRow, newRow, rows);
           addQuotePayer(props.quoteId, {
             ...updatedRow,
-            payerId: undefined,
+            id: undefined,
             isNew: undefined,
           })
             .then((savedPayer) => {
               props.handleSnack("success", `Payer has been added!`);
               setRows(
-                rows.map((row) =>
-                  row.payerId === newRow.payerId ? savedPayer : row
-                )
+                rows.map((row) => (row.id === newRow.id ? savedPayer : row))
               );
               resolve(savedPayer);
             })
@@ -140,22 +145,15 @@ export default function PayerGridTable(props) {
               resolve(oldRow);
             });
         } else {
-          updatePayerData(newRow.payerId, updatedRow)
-            .then((savedPayer) => {
-              props.handleSnack("success", "Payer has been updated!");
-              setRows(
-                rows.map((row) =>
-                  row.payerId === savedPayer.data.payerId
-                    ? savedPayer.data
-                    : row
-                )
-              );
-              resolve(savedPayer.data);
-            })
-            .catch((e) => {
-              props.handleSnack("error", "Payer details could not be updated");
-              resolve(oldRow);
-            });
+          setRows(
+            rows.map((row) =>
+              row.id === updatedRow.id
+                ? { ...updatedRow, isNew: undefined }
+                : row
+            )
+          );
+
+          resolve(updatedRow);
         }
       }),
     [rows]
@@ -165,24 +163,79 @@ export default function PayerGridTable(props) {
     setRowModesModel(newRowModesModel);
   };
 
-  const columns = [
-    { headerName: "Payer", field: "payerName", editable: true, flex: 1 },
+  const priceSummaryColumns = [
     {
-      headerName: "Billing Split",
-      field: "billingSplit",
+      field: "priceBreakup",
+      headerName: "Price Breakup",
+      width: 150,
+      // type: 'singleSelect',
+      // valueOptions: [ 'A - Parts','B - Labor', 'C - Consumable', 'D - External work', 'E - Other Misc']
+    },
+    {
+      field: "priceSummaryType",
+      headerName: "Price Summary type",
+      flex: 1,
+      width: 150,
+      // editable: true,
+      type: "singleSelect",
+      valueOptions: [
+        { label: "Estimated Labor", value: "ESTIMATED_LABOR" },
+        { label: "Estimated Parts", value: "ESTIMATED_PARTS" },
+        { label: "Estimated Misc.", value: "ESTIMATED_MISC" },
+        { label: "Flat Rate All", value: "FLAT_RATE" },
+        { label: "Environmental", value: "ENVIRONMENTAL" },
+        { label: "Tax", value: "TAX" },
+      ],
+      valueFormatter: ({ api, field, value }) => {
+        const options = api.getColumn(field).valueOptions;
+        const option = options.find(
+          ({ value: optionValue }) => value === optionValue
+        );
+
+        if (option) return option.label;
+        // renderCell: params => <span style={{fontSize: 12}}>{params.value+" - "+params.row.jobOperation}</span>
+      },
+    },
+    {
+      field: "netPrice",
+      headerName: "Estimated $",
+      flex: 1,
+      minWidth: 80,
+    },
+    {
+      field: "adjustedPrice",
+      headerName: "Adjusted $",
       editable: true,
       flex: 1,
+      minWidth: 80,
+      renderEditCell: (params) => <SummaryAdjustedPrice {...params} />,
+      cellClassName: (params) => {
+        if(params.value > 0){
+          return 'super-app-value'
+        }
+      },
     },
-    { headerName: "Price", field: "price", flex: 1 },
     {
-      field: "actions",
-      type: "actions",
-      headerName: "Actions",
+      field: "percentageDiscount",
+      headerName: "Header Discount (%)",
+      editable: true,
       flex: 1,
+      minWidth: 120,
+    },
+    {
+      field: "fixedDiscount",
+      headerName: "Total Discount ($)",
+      editable: true,
+      flex: 1,
+      minWidth: 120,
+    },
+    {
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
       cellClassName: "actions",
       getActions: ({ row }) => {
-        const isInEditMode =
-          rowModesModel[row.payerId]?.mode === GridRowModes.Edit;
+        const isInEditMode = rowModesModel[row.id]?.mode === GridRowModes.Edit;
         if (isInEditMode) {
           return [
             <GridActionsCellItem
@@ -192,7 +245,7 @@ export default function PayerGridTable(props) {
                 </Tooltip>
               }
               label="Save"
-              onClick={handleSaveClick(row.payerId)}
+              onClick={handleSaveClick(row.id)}
             />,
             <GridActionsCellItem
               icon={
@@ -202,7 +255,7 @@ export default function PayerGridTable(props) {
               }
               label="Cancel"
               className="textPrimary"
-              onClick={handleCancelClick(row.payerId)}
+              onClick={handleCancelClick(row.id)}
               color="inherit"
             />,
           ];
@@ -217,7 +270,7 @@ export default function PayerGridTable(props) {
             }
             label="Edit"
             className="textPrimary"
-            onClick={handleEditClick(row.payerId)}
+            onClick={handleEditClick(row.id)}
             color="inherit"
           />,
           <GridActionsCellItem
@@ -227,7 +280,7 @@ export default function PayerGridTable(props) {
               </Tooltip>
             }
             label="Delete"
-            onClick={handleDeleteClick(row.payerId)}
+            onClick={handleDeleteClick(row.id)}
             color="inherit"
           />,
         ];
@@ -240,9 +293,9 @@ export default function PayerGridTable(props) {
       sx={GRID_STYLE}
       loading={loading}
       rows={rows}
-      getRowId={(row) => row.payerId}
+      // getRowId={(row) => row? row.id : 'new'}
       autoHeight
-      columns={columns}
+      columns={priceSummaryColumns}
       editMode="row"
       rowModesModel={rowModesModel}
       onRowModesModelChange={handleRowModesModelChange}

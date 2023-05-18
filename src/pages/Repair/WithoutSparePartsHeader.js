@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import Moment from "react-moment";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
+import penIcon from "../../assets/images/pen.png";
 import {
   createBuilderVersion,
   createStandardJob,
@@ -47,6 +48,7 @@ import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
+  GRID_STYLE,
   QUOTE_OPTIONS,
   STATUS_OPTIONS,
 } from "./CONSTANTS";
@@ -66,9 +68,15 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import ReplayIcon from "@mui/icons-material/Replay";
 import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import WithSparePartsSegments from "./WithSparePartsSegments";
-import { REPAIR_QUOTE_DETAILS, STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
+import {
+  REPAIR_QUOTE_DETAILS,
+  STANDARD_JOB_DETAIL,
+} from "navigation/CONSTANTS";
 import { createRepairQuote } from "services/repairQuoteServices";
 import QuoteModal from "./components/QuoteModal";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import PriceSummaryTable from "./components/PriceSummaryTable";
+import PriceMethodTable from "./components/PriceMethodTable";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -100,7 +108,7 @@ function WithoutSparePartsHeader(props) {
     bId: "",
     sId: "",
     oId: "",
-    builderType: ""
+    builderType: "",
   });
   const [selBuilderStatus, setSelBuilderStatus] = useState({
     value: "DRAFT",
@@ -157,11 +165,12 @@ function WithoutSparePartsHeader(props) {
   });
 
   const [pricingData, setPricingData] = useState({
-    priceMethod: null,
     netPrice: 0.0,
     priceDate: new Date(),
     adjustedPrice: 0.0,
     currency: "",
+    priceDetailDTO: [],
+    priceEstimateDTO: [],
   });
 
   const validityOptions = [
@@ -177,6 +186,7 @@ function WithoutSparePartsHeader(props) {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
+
   // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
     await updateBuilderStatus(bId, e.value)
@@ -214,7 +224,7 @@ function WithoutSparePartsHeader(props) {
       setBuilderType(state.builderType);
       fetchAllDetails(state.bId);
     }
-    setActiveElement({...activeElement, builderType: state.builderType })
+    setActiveElement({ ...activeElement, builderType: state.builderType });
   }, []);
 
   const fetchAllDetails = async (builderId) => {
@@ -238,7 +248,7 @@ function WithoutSparePartsHeader(props) {
       setHeaderLoading(false);
     }
   };
-  
+
   const [headerLoading, setHeaderLoading] = useState(false);
   const [builderVersionOptions, setBuilderVersionOptions] = useState([
     { label: "Version 1", value: 1 },
@@ -360,17 +370,19 @@ function WithoutSparePartsHeader(props) {
   const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod:
-        result.priceMethod && result.priceMethod !== "EMPTY"
-          ? priceMethodOptions.find(
-              (element) => element.value === result.priceMethod
-            )
-          : { label: "", value: "" },
+      // priceMethod:
+      //   result.priceMethod && result.priceMethod !== "EMPTY"
+      //     ? priceMethodOptions.find(
+      //         (element) => element.value === result.priceMethod
+      //       )
+      //     : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: result.currency
         ? currencyOptions.find((element) => element.value === result.currency)
         : { label: "", value: "" },
+      priceDetailDTO: result.priceDetailDTO,
+      priceEstimateDTO: result.priceEstimateDTO,
     });
   };
 
@@ -641,13 +653,10 @@ function WithoutSparePartsHeader(props) {
   const updatePriceData = () => {
     let data = {
       builderId,
-      priceMethod: pricingData.priceMethod?.value,
+      priceDetailDTO: pricingData.priceDetailDTO,
+      priceEstimateDTO: pricingData.priceEstimateDTO,
       currency: pricingData.currency?.value,
       priceDate: pricingData.priceDate,
-      adjustedPrice:
-        pricingData.priceMethod?.value === "FLAT_RATE"
-          ? pricingData.adjustedPrice
-          : 0,
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
@@ -656,6 +665,8 @@ function WithoutSparePartsHeader(props) {
           setPricingData({
             ...pricingData,
             adjustedPrice: result.adjustedPrice,
+            priceDetailDTO: result.priceDetailDTO,
+            priceEstimateDTO: result.priceEstimateDTO,
             netPrice: result.netPrice,
           });
         }
@@ -663,6 +674,13 @@ function WithoutSparePartsHeader(props) {
         handleSnack("success", "Pricing details updated!");
       })
       .catch((err) => {
+        setPricingData({
+          ...pricingData,
+          adjustedPrice: savedHeaderDetails.adjustedPrice,
+          priceDetailDTO: savedHeaderDetails.priceDetailDTO,
+          priceEstimateDTO: savedHeaderDetails.priceEstimateDTO,
+          netPrice: savedHeaderDetails.netPrice,
+        });
         handleSnack(
           "error",
           "Error occurred while updating the pricing details!"
@@ -699,22 +717,24 @@ function WithoutSparePartsHeader(props) {
   };
 
   const handleCreateQuote = async () => {
-    await createRepairQuote(bId, quoteDescription, quoteReference).then(createdQuote => {
-      handleSnack('success',"Quote has been created successfully!");
-      let quoteDetails = {
-        quoteId: "",
-        // templateDBId: "",
-        type: "fetch",
-      };
-      quoteDetails.quoteId = createdQuote.quoteId;
-      // templateDetails.templateDBId = createdQuote.id;
-      history.push({
-        pathname: REPAIR_QUOTE_DETAILS,
-        state: quoteDetails,
+    await createRepairQuote(bId, quoteDescription, quoteReference)
+      .then((createdQuote) => {
+        handleSnack("success", "Quote has been created successfully!");
+        let quoteDetails = {
+          quoteId: "",
+          // templateDBId: "",
+          type: "fetch",
+        };
+        quoteDetails.quoteId = createdQuote.quoteId;
+        // templateDetails.templateDBId = createdQuote.id;
+        history.push({
+          pathname: REPAIR_QUOTE_DETAILS,
+          state: quoteDetails,
+        });
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occurred while creating quote");
       });
-    }).catch(e => {
-      handleSnack("error", "Error occurred while creating quote");
-    })
     setOpenQuotePopup(false);
   };
 
@@ -1910,7 +1930,7 @@ function WithoutSparePartsHeader(props) {
                                 </div>
                               </div>
 
-                              <div className="col-md-4 col-sm-4">
+                              {/* <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PRICE METHOD
@@ -1928,7 +1948,7 @@ function WithoutSparePartsHeader(props) {
                                   />
                                   <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -2007,37 +2027,98 @@ function WithoutSparePartsHeader(props) {
                             </div>
                           </>
                         ) : (
-                          <div className="row mt-3">
-                            <ReadOnlyField
-                              label="NET PRICE"
-                              value={pricingData.netPrice}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="PRICE DATE"
-                              value={
-                                <Moment format="DD/MM/YYYY">
-                                  {pricingData.priceDate}
-                                </Moment>
-                              }
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="PRICE METHOD"
-                              value={pricingData.priceMethod?.label}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="ADJUSTED PRICE"
-                              value={pricingData.adjustedPrice}
-                              className="col-md-4 col-sm-4"
-                            />
-                            <ReadOnlyField
-                              label="CURRENCY"
-                              value={pricingData.currency?.label}
-                              className="col-md-4 col-sm-4"
-                            />
-                          </div>
+                          <>
+                            <div className="row mt-3">
+                              <ReadOnlyField
+                                label="NET PRICE"
+                                value={pricingData.netPrice}
+                                className="col-md-4 col-sm-4"
+                              />
+                              <ReadOnlyField
+                                label="PRICE DATE"
+                                value={
+                                  <Moment format="DD/MM/YYYY">
+                                    {pricingData.priceDate}
+                                  </Moment>
+                                }
+                                className="col-md-4 col-sm-4"
+                              />
+                              {/* <ReadOnlyField
+                                label="PRICE METHOD"
+                                value={pricingData.priceMethod?.label}
+                                className="col-md-4 col-sm-4"
+                              /> */}
+                              <ReadOnlyField
+                                label="ADJUSTED PRICE"
+                                value={pricingData.adjustedPrice}
+                                className="col-md-4 col-sm-4"
+                              />
+                              <ReadOnlyField
+                                label="CURRENCY"
+                                value={pricingData.currency?.label}
+                                className="col-md-4 col-sm-4"
+                              />
+                            </div>
+                            <hr />
+                            <div className="mb-5">
+                              <PriceMethodTable
+                                rows={pricingData.priceDetailDTO}
+                                setRows={(rows) => {
+                                  console.log(rows);
+                                  setPricingData({
+                                    ...pricingData,
+                                    priceDetailDTO: rows,
+                                  });
+                                }}
+                              />
+                              <div
+                                className="row my-3 mr-2"
+                                style={{ justifyContent: "right" }}
+                              >
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updatePriceData}
+                                  disabled={
+                                    !(
+                                      pricingData.priceDate &&
+                                      pricingData.currency
+                                    )
+                                  }
+                                >
+                                  Save Price Methods
+                                </button>
+                              </div>
+                              <PriceSummaryTable
+                                rows={pricingData.priceEstimateDTO}
+                                setRows={(rows) =>{
+                                  console.log(rows);
+                                  setPricingData({
+                                    ...pricingData,
+                                    priceEstimateDTO: rows,
+                                  })}
+                                }
+                              />
+                              <div
+                                className="row my-3 mr-2"
+                                style={{ justifyContent: "right" }}
+                              >
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updatePriceData}
+                                  disabled={
+                                    !(
+                                      pricingData.priceDate &&
+                                      pricingData.currency
+                                    )
+                                  }
+                                >
+                                  Save Price Summary
+                                </button>
+                              </div>
+                            </div>
+                          </>
                         )}
                       </TabPanel>
                     </TabContext>
