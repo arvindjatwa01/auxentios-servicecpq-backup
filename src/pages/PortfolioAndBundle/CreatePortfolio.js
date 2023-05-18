@@ -178,6 +178,7 @@ import LoadingProgress from "../Repair/components/Loader";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Cookies from "js-cookie";
 import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
+import Pagination from '@mui/material/Pagination';
 
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -288,7 +289,15 @@ export function CreatePortfolio(props) {
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
-  const [optionalServiceListData, setOptionalServiceListData] = useState([]);
+  const [optionalServicesTotalPages, setOptionalServiceTotalPages] = useState(0);
+  const [optionalServicesTotalRecords, setOptionalServiceTotalRecords] = useState(0);
+  const [optionalServiceCurrentPage, setOptionalServiceCurrentPage] = useState(1)
+  const [optionalServiceListData, setOptionalServiceListData] = useState({
+    totalPages: 0,
+    totalRecords: 0,
+    currentPage: 1,
+    data: [],
+  });
   const [optionalServiceListLoading, setOptionalServiceListLoading] = useState(false);
   const [currentExpendBundleServiceRow, setCurrentExpendBundleServiceRow] = useState(null);
   const [currentExpendModelComponentRow, setCurrentExpendModelComponentRow] = useState(null);
@@ -470,6 +479,7 @@ export function CreatePortfolio(props) {
     // const optionalServicesList = await getServiceItemsList();
     // console.log("optionalServicesList ", optionalServicesList)
     setOptionalPopup(true)
+    setOptionalServiceCurrentPage(1)
   }
 
   const handleSelectOptionalService = (event, serviceName, serviceData) => {
@@ -1006,6 +1016,30 @@ export function CreatePortfolio(props) {
     $(`.scrollbar-model`).css("display", "none");
   }
 
+  const [itemOffset, setItemOffset] = useState(0);
+  // handle Optional Service Page Click
+  const handleOptionalServicePageClick = (event, value) => {
+    // const newOffset = (event.selected * 6) % optionalServiceListData.totalRecords;
+    console.log("new page ", value, event)
+    getServiceItemsList(`pageNumber=${value}&pageSize=6`)
+      .then((res) => {
+        setOptionalServiceListLoading(true);
+        if (res.status === 200) {
+          setOptionalServiceListData({ ...res.data, currentPage: value, })
+          setOptionalServiceCurrentPage(value);
+          
+        }
+        setOptionalServiceListLoading(false);
+
+      })
+      .catch((err) => {
+        toast.error(err);
+      });
+    // console.log(
+    //   `User requested page number ${event.selected}, which is offset ${newOffset}`
+    // );
+    // setItemOffset(newOffset);
+  };
 
 
   const selectPrefixOption = (e) => {
@@ -7979,7 +8013,9 @@ export function CreatePortfolio(props) {
       .then((res) => {
         setOptionalServiceListLoading(true);
         if (res.status === 200) {
-          setOptionalServiceListData(res.data)
+          setOptionalServiceListData({ ...res.data, currentPage: 1, })
+          setOptionalServiceTotalPages(res.data?.totalPages)
+          setOptionalServiceCurrentPage(1)
         }
         setOptionalServiceListLoading(false);
         const options = []
@@ -9381,7 +9417,7 @@ export function CreatePortfolio(props) {
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity !== undefined ? row?.quantity :1,
+      format: (row) => row?.quantity !== undefined ? row?.quantity : 1,
     },
     {
       name: (
@@ -23617,7 +23653,7 @@ export function CreatePortfolio(props) {
                   {
                     optionalServiceListData.message === undefined ?
                       <>
-                        {optionalServiceListData.map((serviceData, i) =>
+                        {optionalServiceListData?.data.map((serviceData, i) =>
                           <div className="col-md-6 col-sm-6">
                             <div className="card p-4">
                               <div className="d-flex align-items-center ">
@@ -23650,6 +23686,38 @@ export function CreatePortfolio(props) {
                             </div> */}
                           </div>
                         )}
+                        <Pagination
+                          count={optionalServiceListData.totalPages}
+                          page={optionalServiceCurrentPage}
+                          onChange={handleOptionalServicePageClick}
+                          shape="rounded"
+                          hidePrevButton
+                          hideNextButton
+                          size="large"
+                          // color="#872ff7"
+                          className="optional-services-pagination"
+                        />
+                        {/* <ResponsivePagination
+                          current={optionalServiceListData.currentPage}
+                          total={optionalServiceListData.totalPages}
+                          onPageChange={(newPage) => handleOptionalServicePageClick(newPage)}
+                          className="optional-services-pagination"
+                          activeItemClassName="optional-services-pagination-active"
+                          navClassName="optional-nav-class"
+                        /> */}
+                        {/* <ReactPaginate
+                          breakLabel="..."
+                          nextLabel="next >"
+                          onPageChange={handleOptionalServicePageClick}
+                          pageRangeDisplayed={6}
+                          pageCount={optionalServicesTotalPages}
+                          previousLabel="< previous"
+                          renderOnZeroPageCount={null}
+                          className="optional-services-pagination"
+                          activeClassName="optional-services-pagination-active"
+                          previousLinkClassName="optional-service-previous-button"
+                          nextLinkClassName="optional-service-next-button"
+                        /> */}
                         {/* <div className="col-md-6 col-sm-6">
                 <div className="card p-4">
                   <div className="d-flex align-items-center ">
