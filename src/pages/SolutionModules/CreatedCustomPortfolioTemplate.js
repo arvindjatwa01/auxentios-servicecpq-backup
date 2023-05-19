@@ -6363,10 +6363,10 @@ export function CreatedCustomPortfolioTemplate(props) {
         });
         // data.associatedServiceOrBundle?.map((bundleAndService, i)
         setTabs("1");
+
+        setPassItemEditRowData({ ...row, _customItemId: row.customItemId });
         setItemModelShow(true);
         setPortfolioItemDataEditable(true);
-        setPassItemEditRowData({ ...row, _customItemId: row.customItemId });
-
         setOpenSearchSolution(false);
         setCreateNewBundle(false);
         setOpenAddBundleItemHeader("Add New Portfolio Item");

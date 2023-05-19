@@ -3863,8 +3863,8 @@ export function CreateCustomPortfolio(props) {
           setTabs("1");
           setOpenSearchSolution(false);
           setCreateNewBundle(false);
-          setShowAddCustomPortfolioItemModelPopup(true)
           setPortfolioItemDataEditable(true);
+          setShowAddCustomPortfolioItemModelPopup(true)
           setOpenAddBundleItemHeader("Add New Portfolio Item");
         }
 
@@ -16810,6 +16810,7 @@ export function CreateCustomPortfolio(props) {
   const showAddCustomItemPopup = () => {
     // console.log("hello");
     setShowAddCustomPortfolioItemModelPopup(true);
+    setPortfolioItemDataEditable(false)
   }
 
   const showAddBundleServiceItemPopup = () => {

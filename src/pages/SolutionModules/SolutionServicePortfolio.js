@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal } from 'react-bootstrap';
+import { Dropdown, DropdownButton, Modal } from 'react-bootstrap';
 import { DataGrid } from '@mui/x-data-grid';
 import { CommanComponents } from "../../components/index"
 import FormGroup from '@mui/material/FormGroup';
@@ -71,6 +71,9 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { toast } from "react-toastify";
 import LoadingProgress from "pages/Repair/components/Loader";
 import { useDispatch } from "react-redux";
+import ModalCreateVersion from "pages/Repair/components/ModalCreateVersion";
+import { createQuoteVersion } from "services/repairQuoteServices";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 const customStyles = {
     rows: {
         style: {
@@ -192,6 +195,13 @@ export function SolutionServicePortfolio(props) {
         version: "",
         salesOffice: "",
     });
+
+    const [quoteVersionIs, setQuoteVersionIs] = useState(null);
+    const [newVersion, setNewVersion] = useState(null);
+    const [versionOpen, setVersionOpen] = useState(false);
+    const [solutionQuoteVersionOptions, setSolutionQuoteVersionOptions] = useState([
+        { label: "Version 1", value: 1 },
+    ]);
 
     // Shipping / Billing Details Tab Data 
 
@@ -2083,7 +2093,6 @@ export function SolutionServicePortfolio(props) {
             .catch((e) => {
                 handleSnack(
                     "error",
-                    true,
                     "Error occurred while searching the customer!"
                 );
             });
@@ -2126,6 +2135,8 @@ export function SolutionServicePortfolio(props) {
             // salesOffice: result.,
         });
 
+        setQuoteVersionIs(result.version)
+
         // General Details Tab Data 
         setShippingBillingDetails({
             deliveryType: result.deliveryType === "" || result.deliveryType === null ? "" : {
@@ -2140,8 +2151,8 @@ export function SolutionServicePortfolio(props) {
             split: result.split,
             netPayAble: result.netPayable,
             leadTime: result.leadTime,
-            serviceRecipentAddress: ((result.serviceRecipentAddress === "") || 
-            (result.serviceRecipentAddress === null)) ? customerAddressAre : result.serviceRecipentAddress,
+            serviceRecipentAddress: ((result.serviceRecipentAddress === "") ||
+                (result.serviceRecipentAddress === null)) ? customerAddressAre : result.serviceRecipentAddress,
         });
 
         // Price as Billing Tab Data
@@ -2288,7 +2299,6 @@ export function SolutionServicePortfolio(props) {
                 .catch((e) => {
                     handleSnack(
                         "error",
-                        true,
                         "Error occurred while searching the customer!"
                     );
                 });
@@ -2371,7 +2381,6 @@ export function SolutionServicePortfolio(props) {
                 .catch((e) => {
                     handleSnack(
                         "error",
-                        true,
                         "Error occurred while searching the machine!"
                     );
                 });
@@ -2475,10 +2484,17 @@ export function SolutionServicePortfolio(props) {
         setSelectedMasterData([]);
     };
 
-    const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+    const handleSnack = (snackSeverity, snackMessage) => {
         setSnackMessage(snackMessage);
         setSeverity(snackSeverity);
-        setOpenSnack(snackStatus);
+        setOpenSnack(true);
+    };
+
+    const handleSnackBarClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenSnack(false);
     };
 
     const addSearchQuerryHtml = () => {
@@ -2644,7 +2660,6 @@ export function SolutionServicePortfolio(props) {
     };
     const [masterData, setMasterData] = useState([]);
 
-
     const getFormattedDateTimeByTimeStamp = (timeStamp) => {
 
         var date = new Date(timeStamp);
@@ -2681,6 +2696,60 @@ export function SolutionServicePortfolio(props) {
         var finalDateString = year + "-" + month + "-" + day;
         return finalDateString;
     }
+
+    const handleVersionOpen = () => {
+
+        if (quoteVersionIs === "VERSION_3") {
+            handleSnack("warning", ERROR_MAX_VERSIONS);
+        } else {
+            if (quoteVersionIs === "VERSION_1") {
+                setNewVersion("VERSION_2");
+            } else if (quoteVersionIs === "VERSION_2") {
+                setNewVersion("VERSION_3");
+            }
+            setVersionOpen(true);
+        }
+
+        // if (quoteVersionOptions.length === 3)
+        //     handleSnack("warning", ERROR_MAX_VERSIONS);
+        // else {
+        //     if (savedQuoteDetails.version === "VERSION_1") {
+        //         if (quoteVersionOptions.length === 1) setNewVersion("VERSION_2");
+        //         else if (quoteVersionOptions.length === 2) setNewVersion("VERSION_3");
+        //     } else if (savedQuoteDetails.version === "VERSION_2") {
+        //         if (quoteVersionOptions.length === 1) setNewVersion("VERSION_1");
+        //         else if (quoteVersionOptions.length === 2) setNewVersion("VERSION_3");
+        //     }
+        //     setVersionOpen(true);
+        // }
+    };
+
+    const createVersion = async () => {
+        await createQuoteVersion(
+            generalDetails.quoteName,
+            quoteVersionIs,
+            newVersion
+        )
+            .then((result) => {
+                setVersionOpen(false);
+                setQuoteIdIs(result.quoteId);
+                fetchAllDetails(result.id);
+                // setVersionDescription("");
+                handleSnack(
+                    "success",
+                    `Version ${result.version} created successfully`
+                );
+            })
+            .catch((err) => {
+                setVersionOpen(false);
+
+                if (err.message === "Not Allowed")
+                    handleSnack("warning", ERROR_MAX_VERSIONS);
+                else
+                    handleSnack("error", "Error occurred while creating builder version");
+                // setVersionDescription("");
+            });
+    };
 
     return (
         <>
@@ -2725,6 +2794,16 @@ export function SolutionServicePortfolio(props) {
                                 <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
                                 <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
                                 <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                                <DropdownButton
+                                    className="customDropdown ml-2"
+                                    id="dropdown-item-button"
+                                >
+                                    <Dropdown.Item as="button" onClick={handleVersionOpen}>
+                                        New Versions
+                                    </Dropdown.Item>
+                                    <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                                    <Dropdown.Item as="button">Review</Dropdown.Item>
+                                </DropdownButton>
                                 {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
 
                             </div>
@@ -5179,6 +5258,23 @@ export function SolutionServicePortfolio(props) {
                     </div>
                 </div>
             </div>
+            <CustomizedSnackbar
+                handleClose={handleSnackBarClose}
+                open={openSnack}
+                severity={severity}
+                message={snackMessage}
+            />
+            <ModalCreateVersion
+                versionOpen={versionOpen}
+                handleCloseVersion={() => setVersionOpen(false)}
+                message="Another version of this quote will be created."
+                handleCreateVersion={createVersion}
+                type={"quote"}
+                // quoteVersionOptions={quoteVersionOptions}
+                existingVersion={quoteVersionIs}
+                quoteName={generalDetails.quoteName}
+                newVersion={newVersion}
+            />
         </>
     )
 }
