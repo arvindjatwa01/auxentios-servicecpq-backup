@@ -41,6 +41,12 @@ const ExpendTablePopup = ({ data, ...props }) => {
     }
     const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
+    const [expendedBundleServiceData, setExpendedBundleServiceData] = useState({
+        itemId: 0,
+        itemName: 0,
+        itemBodyModel: {},
+        itemHeaderModel: {}
+    });
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
     const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
     const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
@@ -238,7 +244,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
         if (fetchItemDetailsById.status === 200) {
 
             // const newItemDataData = await getItemDataById(data.itemId)
-
+            setExpendedBundleServiceData(fetchItemDetailsById.data)
             const newItemDataData = fetchItemDetailsById.data
 
             setAddPortFolioItem({
@@ -259,106 +265,118 @@ const ExpendTablePopup = ({ data, ...props }) => {
                     label: newItemDataData.itemBodyModel.unit,
                     value: newItemDataData.itemBodyModel.unit,
                 } : { label: "per day", value: "per day" },
+                repairOption: data.repairKitId,
+                templateId: data.standardJobId,
             });
 
             if (newItemDataData.itemBodyModel?.itemPrices.length > 0) {
-                ItemPriceDataFetchById();
+                console.log("newItemDataData =========== 272", newItemDataData);
+                ItemPriceDataFetchById(newItemDataData);
             }
         }
     }
 
 
 
-    const ItemPriceDataFetchById = async () => {
+    const ItemPriceDataFetchById = async (itemPriceData) => {
 
-        const priceId = data.itemBodyModel.itemPrices[0].itemPriceDataId;
 
-        const priceDataId = data.itemBodyModel.itemPrices[0].itemPriceDataId;
+        const priceId = itemPriceData.itemBodyModel.itemPrices[0].itemPriceDataId;
+        console.log("priceId 283 ", priceId);
+
+        const priceDataId = itemPriceData.itemBodyModel.itemPrices[0].itemPriceDataId;
 
         const resPrice = await getItemPriceData(priceDataId)
 
-        console.log("resPrice.data.additionalPriceType ", resPrice.data.additionalPriceType)
+        console.log("resPrice 291 ", resPrice);
+
+        // console.log("resPrice.itemPriceData.additionalPriceType ", resPrice.itemPriceData.additionalPriceType)
+
+        if (resPrice.status === 200) {
 
 
-
-        setPriceCalculator({
-            ...priceCalculator,
-            priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-                resPrice.data.priceMethod != "" ||
-                resPrice.data.priceMethod != null) ? {
-                label: resPrice.data.priceMethod,
-                value: resPrice.data.priceMethod
-            } : "",
-            priceType: (resPrice.data.priceType != "EMPTY" ||
-                resPrice.data.priceType != "" ||
-                resPrice.data.priceType != null) ? {
-                label: resPrice.data.priceType,
-                value: resPrice.data.priceType
-            } : "",
-            priceAdditionalSelect: (resPrice.data.additionalPriceType == "" ||
-                resPrice.data.additionalPriceType == "EMPTY" ||
-                resPrice.data.additionalPriceType == null) ?
-                { label: "Surcharge $", value: "ABSOLUTE", }
-                : {
-                    label: resPrice.data.additionalPriceType,
-                    value: resPrice.data.additionalPriceType
+            setPriceCalculator({
+                ...priceCalculator,
+                priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+                    resPrice.data.priceMethod != "" ||
+                    resPrice.data.priceMethod != null) ? {
+                    label: resPrice.data.priceMethod,
+                    value: resPrice.data.priceMethod
+                } : "",
+                priceType: (resPrice.data.priceType != "EMPTY" ||
+                    resPrice.data.priceType != "" ||
+                    resPrice.data.priceType != null) ? {
+                    label: resPrice.data.priceType,
+                    value: resPrice.data.priceType
+                } : "",
+                priceAdditionalSelect: (resPrice.data.additionalPriceType == "" ||
+                    resPrice.data.additionalPriceType == "EMPTY" ||
+                    resPrice.data.additionalPriceType == null) ?
+                    { label: "Surcharge $", value: "ABSOLUTE", }
+                    : {
+                        label: resPrice.data.additionalPriceType,
+                        value: resPrice.data.additionalPriceType
+                    },
+                priceAdditionalInput: resPrice.data.additionalPriceValue,
+                discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+                    resPrice.data.discountType != "" ||
+                    resPrice.data.discountType != null) ? {
+                    label: resPrice.data.discountType,
+                    value: resPrice.data.discountType
+                } : "",
+                discountTypeInput: resPrice.data.discountValue,
+                year: {
+                    label: resPrice.data.year, value: resPrice.data.year
                 },
-            priceAdditionalInput: resPrice.data.additionalPriceValue,
-            discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-                resPrice.data.discountType != "" ||
-                resPrice.data.discountType != null) ? {
-                label: resPrice.data.discountType,
-                value: resPrice.data.discountType
-            } : "",
-            discountTypeInput: resPrice.data.discountValue,
-            year: {
-                label: resPrice.data.year, value: resPrice.data.year
-            },
-            noOfYear: resPrice.data.noOfYear,
-            startUsage: resPrice.data.startUsage,
-            endUsage: resPrice.data.endUsage,
-            recommendedValue: resPrice.data.recommendedValue,
-            netPrice: resPrice.data.netService,
-            totalPrice: resPrice.data.totalPrice,
-            numberOfEvents: resPrice.data.numberOfEvents,
-            calculatedPrice: resPrice.data.calculatedPrice,
-            id: resPrice.data.itemPriceDataId,
-            portfolioDataId: resPrice.data.portfolio.portfolioId,
-        })
-
-        const fetchItemDetailsById = await getItemDataById(data.itemId);
-        if (fetchItemDetailsById === 200) {
-            // const newItemDataData = await getItemDataById(data.itemId)
-            const newItemDataData = fetchItemDetailsById.data;
-            console.log("data.itemBodyModel.frequency ", data.itemBodyModel.frequency)
-            setAddPortFolioItem({
-                ...addPortFolioItem,
-                id: newItemDataData.itemId,
-                name: newItemDataData.itemName,
-                description: newItemDataData.itemHeaderModel.itemHeaderDescription,
-                frequency: (newItemDataData.itemBodyModel.frequency != "" ||
-                    newItemDataData.itemBodyModel.frequency != "EMPTY" ||
-                    newItemDataData.itemBodyModel.frequency != null) ? {
-                    label: newItemDataData.itemBodyModel.frequency,
-                    value: newItemDataData.itemBodyModel.frequency,
-                } : { label: "once", value: "once" },
-                templateId: (resPrice.data.standardJobId != "string") ?
-                    resPrice.data.standardJobId : "",
-                templateDescription: {
-                    label: resPrice.data.templateDescription,
-                    value: resPrice.data.templateDescription,
-                },
-                repairOption: (resPrice.data.repairKitId != "string") ?
-                    resPrice.data.repairKitId : "",
-                unit: (newItemDataData.itemBodyModel.unit != "" ||
-                    newItemDataData.itemBodyModel.unit != "EMPTY" ||
-                    newItemDataData.itemBodyModel.unit != null) ? {
-                    label: newItemDataData.itemBodyModel.unit,
-                    value: newItemDataData.itemBodyModel.unit,
-                } : { label: "per day", value: "per day" },
+                noOfYear: resPrice.data.noOfYear,
+                startUsage: resPrice.data.startUsage,
+                endUsage: resPrice.data.endUsage,
+                recommendedValue: resPrice.data.recommendedValue,
+                netPrice: resPrice.data.netService,
+                totalPrice: resPrice.data.totalPrice,
+                numberOfEvents: resPrice.data.numberOfEvents,
+                calculatedPrice: resPrice.data.calculatedPrice,
+                id: resPrice.data.itemPriceDataId,
+                portfolioDataId: resPrice.data.portfolio.portfolioId,
             })
-        }
+            console.log("resPrice ======== 292 ", resPrice.data);
+            const fetchItemDetailsById = await getItemDataById(data.itemId);
+            console.log("fetchItemDetailsById ======= 344", fetchItemDetailsById);
+            if (fetchItemDetailsById.status === 200) {
+                // const newItemDataData = await getItemDataById(data.itemId)
+                const newItemDataData = fetchItemDetailsById.data;
+                console.log("data.itemBodyModel.frequency ", data)
+                setAddPortFolioItem({
+                    ...addPortFolioItem,
+                    id: newItemDataData.itemId,
+                    name: newItemDataData.itemName,
+                    description: newItemDataData.itemHeaderModel.itemHeaderDescription,
+                    frequency: (newItemDataData.itemBodyModel.frequency != "" ||
+                        newItemDataData.itemBodyModel.frequency != "EMPTY" ||
+                        newItemDataData.itemBodyModel.frequency != null) ? {
+                        label: newItemDataData.itemBodyModel.frequency,
+                        value: newItemDataData.itemBodyModel.frequency,
+                    } : { label: "once", value: "once" },
+                    templateId: (resPrice.data.standardJobId != "string") ?
+                        resPrice.data.standardJobId : "",
+                    templateDescription: {
+                        label: resPrice.data.templateDescription,
+                        value: resPrice.data.templateDescription,
+                    },
+                    repairOption: (resPrice.data.repairKitId != "string") ?
+                        resPrice.data.repairKitId : "",
+                    unit: (newItemDataData.itemBodyModel.unit != "" ||
+                        newItemDataData.itemBodyModel.unit != "EMPTY" ||
+                        newItemDataData.itemBodyModel.unit != null) ? {
+                        label: newItemDataData.itemBodyModel.unit,
+                        value: newItemDataData.itemBodyModel.unit,
+                    } : { label: "per day", value: "per day" },
+                    repairOption: data.repairKitId,
+                    templateId: data.standardJobId,
+                })
+            }
 
+        }
     }
 
     const handleEscalationPriceValue = (e) => {
@@ -427,6 +445,8 @@ const ExpendTablePopup = ({ data, ...props }) => {
     };
     const handleExpandedPriceSave = async (e, rowData) => {
         try {
+
+            console.log("rowData.itemBodyModel ", rowData);
 
             if ((addPortFolioItem.description == "") ||
                 (addPortFolioItem.description == undefined) ||
@@ -713,22 +733,43 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
             if (rowData.itemBodyModel.itemPrices.length > 0) {
 
+                // let reqRkOrSjIdObj = {
+                //     standardJobId: addPortFolioItem.templateId,
+                //     repairKitId: addPortFolioItem.repairOption,
+                //     itemId: addPortFolioItem.id,
+                //     itemPriceDataId: priceCalculator.id
+                // }
                 let reqRkOrSjIdObj = {
                     standardJobId: addPortFolioItem.templateId,
                     repairKitId: addPortFolioItem.repairOption,
                     itemId: addPortFolioItem.id,
                     itemPriceDataId: priceCalculator.id
                 }
-                if ((addPortFolioItem.templateId == "") ||
-                    (addPortFolioItem.templateId == null) ||
-                    addPortFolioItem.repairOption != "") {
-                    const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
 
+                // if ((addPortFolioItem.templateId == "") ||
+                //     (addPortFolioItem.templateId == null) ||
+                //     addPortFolioItem.repairOption != "") {
+                //     const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+
+                // }
+                if (((addPortFolioItem.templateId == "") ||
+                    (addPortFolioItem.templateId == null)) &&
+                    ((addPortFolioItem.repairOption != "") ||
+                        (addPortFolioItem.repairOption != null))) {
+                    const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
                 }
 
-                if ((addPortFolioItem.repairOption == "") ||
-                    (addPortFolioItem.repairOption == null) ||
-                    addPortFolioItem.templateId != "") {
+
+                // if ((addPortFolioItem.repairOption == "") ||
+                //     (addPortFolioItem.repairOption == null) ||
+                //     addPortFolioItem.templateId != "") {
+                //     const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
+                // }
+
+                if (((addPortFolioItem.repairOption == "") ||
+                    (addPortFolioItem.repairOption == null)) &&
+                    ((addPortFolioItem.templateId != "") ||
+                        (addPortFolioItem.templateId != null))) {
                     const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
                 }
             }
@@ -1569,7 +1610,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                 </div>
             </div>
             <div className="text-right my-3">
-                <button type="button" className="btn btn-light" onClick={(e) => handleExpandedPriceSave(e, data)}>Save</button>
+                <button type="button" className="btn btn-light" onClick={(e) => handleExpandedPriceSave(e, expendedBundleServiceData)}>Save</button>
             </div>
             <div className='p-3 d-flex align-items-center justify-content-between table-header-div'>
                 <div className=''></div>

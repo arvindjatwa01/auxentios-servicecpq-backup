@@ -12040,7 +12040,7 @@ export function CreatePortfolio(props) {
                 >
                   <div data-tag="allowRowEvents">
                     {/* {bundleAndService.itemHeaderModel.additional} */}
-                    {bundleAndService?.noOFEvents}
+                    {bundleAndService?.numberOfEvents}
                   </div>
                 </div>
                 <div
@@ -12467,7 +12467,7 @@ export function CreatePortfolio(props) {
               <div>
                 {/* 4 */}
                 {/* {bundleAndService?.quantity} */}
-                {bundleAndService?.noOfEvents}
+                {bundleAndService?.numberOfEvents}
               </div>
               <div className="funds-grey">
                 {/* <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
