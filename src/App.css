@@ -707,7 +707,7 @@ button:focus {
 
 .header {
   height: 5rem;
-  z-index: 2;
+  z-index: 30;
   position: fixed;
   padding: 1rem 0.9375rem;
   background: #fff;

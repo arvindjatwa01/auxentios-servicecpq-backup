@@ -67,7 +67,7 @@ export function HeaderComponent(props) {
   }, []);
   return (
     <>
-      <div className="header" style={{ backgroundColor: "#000000" }}>
+      <div className="header" style={{ backgroundColor: "#000000" , zIndex: 30}}>
         {/* <div className="header-content clearfix" style={{ display: "none" }}>
           <div className="nav-control">
                     <div className="hamburger">

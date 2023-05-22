@@ -35,6 +35,7 @@ import {
 import { createBuilder } from "services/repairBuilderServices";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import SearchComponentTemplate from "./components/SearchComponentTemplate";
+import { repairQuoteActions } from "./dropdowns/quoteRepairSlice";
 
 export const RepairServiceOnlyTemplate = () => {
   const [recentTemplates, setRecentTemplates] = useState([]);
@@ -52,6 +53,7 @@ export const RepairServiceOnlyTemplate = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairQuoteActions.fetchQuoteDropdowns())
     dispatch(repairActions.fetchDropdowns());
     fetchRecentTemplates();
     if (JSON.parse(localStorage.getItem("exitingType"))) {

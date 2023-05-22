@@ -65,7 +65,9 @@ import {
   fetchQuoteDetails,
   fetchQuoteSummary,
   fetchQuoteVersions,
+  removePLQuoteItem,
   removePayer,
+  removeRepQuoteItem,
   updatePayerData,
   updateQuoteHeader,
   updateQuoteItem,
@@ -167,7 +169,7 @@ const RepairQuoteDetails = (props) => {
     if (state) {
       setQuoteId(state.quoteId);
       fetchAllDetails(state.quoteId);
-      fetchSummaryDetails(state.quoteId);
+      // fetchSummaryDetails(state.quoteId);
     }
     // setActiveElement({...activeElement, builderType: state.builderType })
   }, []);
@@ -390,6 +392,9 @@ const RepairQuoteDetails = (props) => {
             onClick={() => openQuoteItemModal(row, "existing")}
           >
             <img className="m-1" src={penIcon} alt="Edit" />
+          </Tooltip>
+          <Tooltip title="Delete" className="cursor" onClick={() => handleDeleteQuoteItem(row.rbQuoteId)}>
+            <img className="m-1" src={deleteIcon} alt="Delete" />
           </Tooltip>
           {/* <Tooltip title="Comment" className="cursor">
             <CommentIcon />
@@ -820,68 +825,7 @@ const RepairQuoteDetails = (props) => {
     { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
     { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
   ];
-  const priceSummaryRows = [
-    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
-    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
-    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
-  ];
-  const priceSummaryColumns = [
-    {
-      name: (
-        <>
-          <div>Price Breakup</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Price Summary Type</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Estimated $</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Discounts %</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-  ];
+
   const miscItemColumns = [
     {
       name: (
@@ -990,6 +934,19 @@ const RepairQuoteDetails = (props) => {
     }
     setQuoteItemOpen(true);
   };
+
+    //Remove Quote Item
+    const handleDeleteQuoteItem = (quoteItemId) => {
+      removeRepQuoteItem(quoteItemId)
+        .then((res) => {
+          handleSnack("success", res);
+          fetchAllDetails(quoteId);
+        })
+        .catch((e) => {
+          console.log(e);
+          handleSnack("error", "Error occurred while removing the quote item");
+        });
+    };
   //Close Quote Item modal
   const handleQuoteItemClose = () => {
     setQuoteItemOpen(false);
@@ -1274,10 +1231,10 @@ const RepairQuoteDetails = (props) => {
   const [quoteSummary, setQuoteSummary] = useState("");
   const [summaryOpen, setSummaryOpen] = useState(false);
   const fetchSummaryDetails = async (selectedQuoteId) => {
-    console.log("ABCD", selectedQuoteId);
     await fetchQuoteSummary(selectedQuoteId)
       .then((summary) => {
         setQuoteSummary(summary);
+        setSummaryOpen(true);
       })
       .catch((e) => {
         console.log(e);
@@ -1411,7 +1368,7 @@ const RepairQuoteDetails = (props) => {
               <div className="col-md-1 text-right">
                 <div className="btn-sm cursor text-white">
                   <Tooltip title="Summary">
-                    <TextSnippetIcon onClick={() => setSummaryOpen(true)} />
+                    <TextSnippetIcon onClick={() => fetchSummaryDetails(quoteId)} />
                   </Tooltip>
                 </div>
               </div>

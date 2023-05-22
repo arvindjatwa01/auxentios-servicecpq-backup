@@ -31,6 +31,7 @@ import {
 } from "./CONSTANTS";
 import { createBuilder } from "services/repairBuilderServices";
 import { SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
+import { repairQuoteActions } from "./dropdowns/quoteRepairSlice";
 
 export const RepairServicePartTemplate = () => {
   const [recentTemplates, setRecentTemplates] = useState([]);
@@ -48,6 +49,7 @@ export const RepairServicePartTemplate = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairQuoteActions.fetchQuoteDropdowns())
     dispatch(repairActions.fetchDropdowns());
     fetchRecentTemplates();
     if (JSON.parse(localStorage.getItem("exitingType"))) {

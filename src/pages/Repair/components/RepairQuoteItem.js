@@ -1,11 +1,6 @@
 import { Modal } from "react-bootstrap";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import SearchBox from "./SearchBox";
-import { useState } from "react";
-import { TextareaAutosize } from "@material-ui/core";
-import { ReadOnlyField } from "./ReadOnlyField";
 import { default as Select } from "react-select";
+import { ReadOnlyField } from "./ReadOnlyField";
 
 const RepairQuoteItemModal = (props) => {
   const customStyle = {
@@ -180,9 +175,7 @@ const RepairQuoteItemModal = (props) => {
                       type="text"
                       // disabled
                       className="form-control border-radius-10 text-primary"
-                      value={
-                        props.quoteItem.partsPrice
-                      }
+                      value={props.quoteItem.partsPrice}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
@@ -202,9 +195,7 @@ const RepairQuoteItemModal = (props) => {
                     <input
                       type="Number"
                       className="form-control border-radius-10 text-primary"
-                      value={
-                        props.quoteItem.labourPrice
-                      }
+                      value={props.quoteItem.labourPrice}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
@@ -223,9 +214,7 @@ const RepairQuoteItemModal = (props) => {
                     <input
                       type="Number"
                       className="form-control border-radius-10 text-primary"
-                      value={
-                        props.quoteItem.miscPrice
-                      }
+                      value={props.quoteItem.miscPrice}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
@@ -244,9 +233,7 @@ const RepairQuoteItemModal = (props) => {
                     <input
                       type="text"
                       className="form-control border-radius-10 text-primary"
-                      value={
-                        props.quoteItem.totalPrice                          
-                      }
+                      value={props.quoteItem.totalPrice}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
@@ -285,9 +272,7 @@ const RepairQuoteItemModal = (props) => {
                     <input
                       type="Number"
                       className="form-control border-radius-10 text-primary"
-                      value={
-                        props.quoteItem.discount ? props.quoteItem.discount : 0
-                      }
+                      value={props.quoteItem?.discount}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,

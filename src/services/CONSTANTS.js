@@ -212,6 +212,7 @@ export const FETCH_BUILDER_VERSION_DETAILS = (builderNo, versionNo) => REPAIR_BU
 export const SEARCH_CUSTOMER = (query) => DATA_SERVICE_URI + `customer/search?search=${query}`;
 export const SEARCH_MACHINE = (query) => DATA_SERVICE_URI + `equipment/search?search=${query}`;
 export const SEARCH_SPAREPART = (query) => DATA_SERVICE_URI + `sparepart/search?search=${query}`;
+export const SEARCH_SPAREPART_MARGIN = (query) => DATA_SERVICE_URI + `sparepart/search-margin?search=${query}`;
 export const SEARCH_COMPONENT_CODE = (query) => DATA_SERVICE_URI + `component-code/search?search=${query}`;
 export const SEARCH_VENDOR = (query) => DATA_SERVICE_URI + `vendor/search?search=${query}`;
 export const SEARCH_CONSUMABLE = (query) => DATA_SERVICE_URI + `consumable/search?search=${query}`;

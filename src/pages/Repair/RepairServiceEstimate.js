@@ -2636,7 +2636,7 @@ function RepairServiceEstimate(props) {
                   <div className="d-flex align-items-center w-100 ml-2">
                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                       <h5 className="mr-2 mb-0">
-                        <span className="mr-3">Header</span>
+                        <span className="mr-3">ITEM HEADER</span>
                       </h5>
                       <a
                         href={undefined}

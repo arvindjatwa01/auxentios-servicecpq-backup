@@ -2098,7 +2098,7 @@ function WithSparePartsHeader(props) {
                 </Box>
               </div>
               <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
-                {segments.length > 0 ? (
+                {segments && segments.length > 0 ? (
                   <div class="repairbtn-dropdown">
                     <button className="btn bg-primary text-white ml-2 dropbtn">
                       View Segments

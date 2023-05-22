@@ -31,7 +31,7 @@ import {
 } from "../CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
-import { customerSearch, machineSearch } from "services/searchServices";
+import { customerSearch, machineSearch, sparePartSearch } from "services/searchServices";
 
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -49,7 +49,7 @@ import {
   fetchQuoteDetails,
   fetchQuoteSummary,
   fetchQuoteVersions,
-  removePayer,
+  removePLQuoteItem,
   updatePayerData,
   updatePLQuoteItem,
   updateQuoteHeader,
@@ -94,6 +94,7 @@ const customStyles = {
       paddingLeft: "8px", // override the cell padding for data cells
       paddingRight: "8px",
       borderRight: "1px solid rgba(0,0,0,.12)",
+      fontSize: "12px",
     },
   },
 };
@@ -162,7 +163,7 @@ export function SparePartsPortfolio(props) {
     netPrice: "",
     margin: "",
     discount: "",
-    priceEstimates: []
+    priceEstimates: [],
   });
   const [shippingDetail, setShippingDetail] = useState({
     deliveryType: "",
@@ -216,7 +217,7 @@ export function SparePartsPortfolio(props) {
     if (state) {
       setQuoteId(state.quoteId);
       fetchAllDetails(state.quoteId);
-      fetchSummaryDetails(state.quoteId);
+      // fetchSummaryDetails(state.quoteId);
     }
     // setActiveElement({...activeElement, builderType: state.builderType })
   }, []);
@@ -272,68 +273,6 @@ export function SparePartsPortfolio(props) {
   };
   const [value, setValue] = React.useState("customer");
   const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
-  const priceSummaryRows = [
-    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
-    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
-    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
-  ];
-  const priceSummaryColumns = [
-    {
-      name: (
-        <>
-          <div>Price Breakup</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Price Summary Type</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Estimated $</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Discounts %</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-  ];
   const handleResetData = (action) => {
     if (action === "RESET") {
       value === "customer" && populateCustomerData(savedQuoteDetails);
@@ -693,8 +632,6 @@ export function SparePartsPortfolio(props) {
       setMachineData({
         ...machineData,
         model: currentItem.model,
-        fleetNo: currentItem.stockNumber,
-        smu: currentItem.sensorId,
       });
       setSearchModelResults([]);
     } else if (type === "equipmentNumber") {
@@ -704,6 +641,10 @@ export function SparePartsPortfolio(props) {
         fleetNo: currentItem.stockNumber,
         serialNo: currentItem.equipmentNumber,
         smu: currentItem.sensorId,
+        make: currentItem.maker,
+        family: currentItem.market,
+        productGroup: currentItem.productGroup,
+        productSegment: currentItem.productSegment,
       });
       setSearchSerialResults([]);
     }
@@ -730,6 +671,7 @@ export function SparePartsPortfolio(props) {
     await fetchQuoteSummary(selectedQuoteId)
       .then((summary) => {
         setQuoteSummary(summary);
+        setSummaryOpen(true);
       })
       .catch((e) => {
         console.log(e);
@@ -889,7 +831,7 @@ export function SparePartsPortfolio(props) {
       netPrice: billingDetail.netPrice,
       margin: billingDetail.margin,
       discount: billingDetail.discount,
-      priceEstimates: billingDetail.priceEstimates
+      priceEstimates: billingDetail.priceEstimates,
     };
     updateQuoteHeader(quoteId, data)
       .then((result) => {
@@ -1059,28 +1001,28 @@ export function SparePartsPortfolio(props) {
       sortable: true,
       format: (row) => row.margin,
     },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Payer Type</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.payerType,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.payerType,
+    // },
     {
       name: (
         <>
-          <div>Payer Type</div>
+          <div>Delivery Date</div>
         </>
       ),
-      selector: (row) => row.payerType,
+      selector: (row) => row.deliveryDate,
       wrap: true,
       sortable: true,
-      format: (row) => row.payerType,
+      format: (row) => row.deliveryDate,
     },
-    {
-        name: (
-          <>
-            <div>Delivery Date</div>
-          </>
-        ),
-        selector: (row) => row.deliveryDate,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.deliveryDate,
-      },
     {
       name: (
         <>
@@ -1097,32 +1039,46 @@ export function SparePartsPortfolio(props) {
           <Tooltip
             title="Edit"
             className="mr-2 cursor"
-            onClick={() => openQuoteItemModal(row)}
+            onClick={() => openQuoteItemModal(row, "existing")}
           >
             <img className="m-1" src={penIcon} alt="Edit" />
           </Tooltip>
-          <Tooltip title="Comment" className="cursor">
-            <CommentIcon />
+          <Tooltip title="Delete" className="cursor" onClick={() => handleDeleteQuoteItem(row.plQuoteId)}>
+            {/* <CommentIcon /> */}
+            <img className="m-1" src={deleteIcon} alt="Delete" />
           </Tooltip>
         </div>
       ),
     },
   ];
 
+  //Remove Spare Part
+  const handleDeleteQuoteItem = (quoteItemId) => {
+    removePLQuoteItem(quoteItemId)
+      .then((res) => {
+        handleSnack("success", res);
+        fetchAllDetails(quoteId);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack("error", "Error occurred while removing the quote item");
+      });
+  };
+  
   const initialQuoteItem = {
     groupNumber: "",
     partType: "",
     partNumber: "",
     quantity: "",
-    unitPrice: 0.0,
+    listPrice: 0.0,
     extendedPrice: 0.0,
     salesUnit: "",
     currency: "USD",
     usagePercentage: 0,
     totalPrice: 0.0,
     comment: "",
-    description: "",
-    netAdjustedPrice: "",
+    partDescription: "",
+    adjustedPrice: "",
     discount: 0,
     margin: 0,
     payerType: "",
@@ -1134,15 +1090,25 @@ export function SparePartsPortfolio(props) {
   const [quoteItemModalTitle, setQuoteItemModalTitle] =
     useState("Add New Quote Item");
   const [quoteItemOpen, setQuoteItemOpen] = useState(false);
-
+  const payerTypeOptions = [
+    { label: "Customer", value: "CUSTOMER" },
+    { label: "Goodwill", value: "GOODWILL" },
+    { label: "Insurer", value: "INSURER" },
+  ];
   // Open quote item modal
   const openQuoteItemModal = (row, operation) => {
-    // console.log(row);
-    setQuoteItem(row);
+     // console.log(row);
+     setQuoteItem({
+      ...row,
+      payerType: payerTypeOptions.find(
+        (element) => element.value === row.payerType
+      ),
+      margin: row.margin ? row.margin : 30,
+    });
     if (operation === "existing") {
-      setQuoteItemModalTitle(
-        row?.component + " | " + row?.operation + " | " + row?.description
-      );
+      
+      setQuoteItemModalTitle(row?.groupNumber + " | " + row?.partNumber)
+
       setQuoteItemViewOnly(true);
     }
     setQuoteItemOpen(true);
@@ -1348,7 +1314,7 @@ export function SparePartsPortfolio(props) {
               <div className="col-md-1 text-right">
                 <div className="btn-sm cursor text-white">
                   <Tooltip title="Summary">
-                    <TextSnippetIcon onClick={() => setSummaryOpen(true)} />
+                    <TextSnippetIcon onClick={() => fetchSummaryDetails(quoteId)} />
                   </Tooltip>
                 </div>
               </div>
@@ -1360,10 +1326,7 @@ export function SparePartsPortfolio(props) {
             >
               <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList
-                    className=""
-                    onChange={handleChange}
-                  >
+                  <TabList className="" onChange={handleChange}>
                     <Tab
                       label="Customer"
                       value="customer"
@@ -2435,33 +2398,32 @@ export function SparePartsPortfolio(props) {
                         </div>
                       </div> */}
                       <div className="mt-3">
-                        
-                      <QuotePriceSummaryTable
-                                rows={billingDetail.priceEstimates}
-                                setRows={(rows) =>
-                                  setBillingDetail({
-                                    ...billingDetail,
-                                    priceEstimates: rows,
-                                  })
-                                }
-                              />
-                              <div
-                                className="row my-3 mr-2"
-                                style={{ justifyContent: "right" }}
-                              >
-                                <button
-                                  type="button"
-                                  className="btn btn-light bg-primary text-white"
-                                  onClick={updateBillingData}
-                                  disabled={
-                                    !billingDetail.paymentTerms ||
-                                    !billingDetail.billingFrequency ||
-                                    !billingDetail.billingType
-                                  }
-                                >
-                                  Save Price Summary
-                                </button>
-                              </div>
+                        <QuotePriceSummaryTable
+                          rows={billingDetail.priceEstimates}
+                          setRows={(rows) =>
+                            setBillingDetail({
+                              ...billingDetail,
+                              priceEstimates: rows,
+                            })
+                          }
+                        />
+                        <div
+                          className="row my-3 mr-2"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updateBillingData}
+                            disabled={
+                              !billingDetail.paymentTerms ||
+                              !billingDetail.billingFrequency ||
+                              !billingDetail.billingType
+                            }
+                          >
+                            Save Price Summary
+                          </button>
+                        </div>
                         {/* <DataTable
                           className=""
                           title=""
@@ -2657,6 +2619,7 @@ export function SparePartsPortfolio(props) {
           </div>
           <SparepartQuoteItemModal
             quoteItem={quoteItem}
+            searchAPI={sparePartSearch}
             setQuoteItem={setQuoteItem}
             handleQuoteItemUpdate={handleQuoteItemUpdate}
             quoteItemOpen={quoteItemOpen}

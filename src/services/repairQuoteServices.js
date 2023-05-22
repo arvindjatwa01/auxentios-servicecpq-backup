@@ -324,6 +324,59 @@ export const removePayer = (payerId) => {
   });
 };
 
+
+//Remove PL Quote Item
+export const removePLQuoteItem = (itemId) => {
+  console.log("service repairQuote > removePLQuoteItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(UPDATE_PL_QUOTE_ITEM(itemId), config)
+        .then((res) => {
+          console.log("repairQuote -> removePLQuoteItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("removePLQuoteItem > axios err=", err);
+          reject("Error in removePLQuoteItem axios!");
+        });
+    } catch (error) {
+      console.error("removePLQuoteItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Remove repair Quote Item
+export const removeRepQuoteItem = (itemId) => {
+  console.log("service repairQuote > removeRepQuoteItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(UPDATE_REPAIR_QUOTE_ITEM(itemId), config)
+        .then((res) => {
+          console.log("repairQuote -> removeRepQuoteItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("removeRepQuoteItem > axios err=", err);
+          reject("Error in removeRepQuoteItem axios!");
+        });
+    } catch (error) {
+      console.error("removeRepQuoteItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 //Fetch Quote Details
 export const fetchQuoteDetails = (quoteId) => {
   console.log("RepairBuilder > fetchQuoteDetails called...");
