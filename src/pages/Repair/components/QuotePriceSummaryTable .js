@@ -199,7 +199,7 @@ export default function QuotePriceSummaryTable(props) {
     },
     {
       field: "netPrice",
-      headerName: "Estimated $",
+      headerName: "Net $",
       flex: 1,
       minWidth: 80,
     },

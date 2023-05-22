@@ -934,7 +934,7 @@ export function SubHeaderComponent(props) {
       <div>
         {["right"].map((anchor) => (
           <React.Fragment key={anchor}>
-            <div className="headerbottom" style={{width: "100%", marginLeft: 0, zIndex: 30}}>
+            <div className="headerbottom" style={{width: "100%", marginLeft: 0, zIndex: 21}}>
               <div className="header-content clearfix">
                 <div className="row h-100">
                   <div className="col-6 h-100">

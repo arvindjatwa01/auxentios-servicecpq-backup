@@ -197,7 +197,7 @@ export default function PriceSummaryTable(props) {
       },
     },
     {
-      field: "netPrice",
+      field: "estimatedPrice",
       headerName: "Estimated $",
       flex: 1,
       minWidth: 80,
@@ -205,10 +205,10 @@ export default function PriceSummaryTable(props) {
     {
       field: "adjustedPrice",
       headerName: "Adjusted $",
-      editable: true,
+      // editable: true,
       flex: 1,
       minWidth: 80,
-      renderEditCell: (params) => <SummaryAdjustedPrice {...params} />,
+      // renderEditCell: (params) => <SummaryAdjustedPrice {...params} />,
       cellClassName: (params) => {
         if(params.value > 0){
           return 'super-app-value'
@@ -226,6 +226,12 @@ export default function PriceSummaryTable(props) {
       field: "fixedDiscount",
       headerName: "Total Discount ($)",
       editable: true,
+      flex: 1,
+      minWidth: 120,
+    },
+    {
+      field: "netPrice",
+      headerName: "Net $",
       flex: 1,
       minWidth: 120,
     },
