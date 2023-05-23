@@ -62,6 +62,8 @@ import { customerSearch } from "services/searchServices";
 import ServiceOnlyTemplateEstimation from "./ServiceOnlyTemplateEstimation";
 import { fetchSegments } from "services/repairBuilderServices";
 import UpdateCoverageModal from "./components/UpdateCoverageModal";
+import PriceMethodTable from "./components/PriceMethodTable";
+import PriceSummaryTable from "./components/PriceSummaryTable";
 
 function ServiceOnlyTemplates(props) {
   const history = useHistory();
@@ -168,7 +170,7 @@ function ServiceOnlyTemplates(props) {
   const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] =
     useState([]);
   const [pricingData, setPricingData] = useState({
-    priceMethod: null,
+    // priceMethod: null,
     netPrice: 0.0,
     netPriceParts: 0.0,
     netPriceLabor: 0.0,
@@ -176,6 +178,8 @@ function ServiceOnlyTemplates(props) {
     priceDate: new Date(),
     adjustedPrice: 0.0,
     currency: "",
+    priceDetailDTO: [],
+    priceEstimateDTO: [],
   });
   const [uploadOpen, setUploadOpen] = React.useState(false);
   const handleClose = () => setOpen(false);
@@ -303,11 +307,7 @@ function ServiceOnlyTemplates(props) {
       generalViewOnly: result.estimationDate ? true : false,
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
-        result.priceMethod !== "EMPTY" &&
-        result.priceMethod !== null &&
-        result.priceMethod !== ""
-          ? true
-          : false,
+        result.currency ? true : false,
       usageViewOnly: result.application ? true : false,
     });
     setRating(result.rating);
@@ -353,9 +353,9 @@ function ServiceOnlyTemplates(props) {
     });
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod: priceMethodOptions.find(
-        (element) => element.value === result.priceMethod
-      ),
+      // priceMethod: priceMethodOptions.find(
+      //   (element) => element.value === result.priceMethod
+      // ),
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: currencyOptions.find(
@@ -363,6 +363,8 @@ function ServiceOnlyTemplates(props) {
       ),
       netPriceLabor: result.totalLabourPrice,
       netPriceMisc: result.totalMiscPrice,
+      priceDetailDTO: result.priceDetailDTO,
+      priceEstimateDTO: result.priceEstimateDTO,
     });
     setSelectedCoverageData(result.coverages ? result.coverages : []);
     setUsageData({
@@ -798,9 +800,11 @@ function ServiceOnlyTemplates(props) {
   const updatePriceData = () => {
     let data = {
       templateDBId,
-      priceMethod: pricingData.priceMethod?.value,
+      // priceMethod: pricingData.priceMethod?.value,
       currency: pricingData.currency?.value,
       priceDate: pricingData.priceDate,
+      priceDetailDTO: pricingData.priceDetailDTO,
+      priceEstimateDTO: pricingData.priceEstimateDTO,
       adjustedPrice:
         pricingData.priceMethod?.value === "FLAT_RATE"
           ? pricingData.adjustedPrice
@@ -810,11 +814,25 @@ function ServiceOnlyTemplates(props) {
       .then((result) => {
         // setValue("price");
         // fetchAllDetails(kitDBId, generalData.version);
+        setPricingData({
+          ...pricingData,
+          adjustedPrice: result.adjustedPrice,
+            netPrice: result.netPrice,
+          priceDetailDTO: result.priceDetailDTO,
+          priceEstimateDTO: result.priceEstimateDTO,
+        })
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
 
         handleSnack("success", "Pricing details updated!");
       })
       .catch((err) => {
+        // setPricingData({
+        //   ...pricingData,
+        //   adjustedPrice: savedHeaderDetails.adjustedPrice,
+        //   priceDetailDTO: savedHeaderDetails.priceDetailDTO,
+        //   priceEstimateDTO: savedHeaderDetails.priceEstimateDTO,
+        //   netPrice: savedHeaderDetails.netPrice,
+        // });
         handleSnack(
           "error",
           "Error occurred while updating the pricing details!"
@@ -1709,6 +1727,7 @@ function ServiceOnlyTemplates(props) {
                             </div>
                           </React.Fragment>
                         ) : (
+                          <>
                           <div className="row mt-3">
                             <ReadOnlyField
                               label="PRICE METHOD"
@@ -1750,6 +1769,65 @@ function ServiceOnlyTemplates(props) {
                               className="col-md-4 col-sm-4"
                             />
                           </div>
+                          <hr />
+                          <div className="mb-5">
+                            <PriceMethodTable
+                              rows={pricingData.priceDetailDTO}
+                              setRows={(rows) => {
+                                console.log(rows);
+                                setPricingData({
+                                  ...pricingData,
+                                  priceDetailDTO: rows,
+                                });
+                              }}
+                            />
+                            <div
+                              className="row my-3 mr-2"
+                              style={{ justifyContent: "right" }}
+                            >
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updatePriceData}
+                                disabled={
+                                  !(
+                                    pricingData.priceDate &&
+                                    pricingData.currency
+                                  )
+                                }
+                              >
+                                Save Price Methods
+                              </button>
+                            </div>
+                            <PriceSummaryTable
+                              rows={pricingData.priceEstimateDTO}
+                              setRows={(rows) =>
+                                setPricingData({
+                                  ...pricingData,
+                                  priceEstimateDTO: rows,
+                                })
+                              }
+                            />
+                            <div
+                              className="row my-3 mr-2"
+                              style={{ justifyContent: "right" }}
+                            >
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updatePriceData}
+                                disabled={
+                                  !(
+                                    pricingData.priceDate &&
+                                    pricingData.currency
+                                  )
+                                }
+                              >
+                                Save Price Summary
+                              </button>
+                            </div>
+                          </div>
+                          </>
                         )}
                       </TabPanel>
                       <TabPanel value="coverage">

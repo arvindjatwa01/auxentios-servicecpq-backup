@@ -2607,24 +2607,15 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                disabled={
-                                  !(
-                                    pricingData.priceMethod?.value ===
-                                    "FLAT_RATE"
-                                  )
-                                }
+                                disabled
                                 className="form-control border-radius-10 text-primary"
-                                value={
-                                  pricingData.priceMethod?.value === "FLAT_RATE"
-                                    ? pricingData.adjustedPrice
-                                    : 0
-                                }
-                                onChange={(e) =>
-                                  setPricingData({
-                                    ...pricingData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
+                                value={pricingData.adjustedPrice}
+                                // onChange={(e) =>
+                                //   setPricingData({
+                                //     ...pricingData,
+                                //     adjustedPrice: e.target.value,
+                                //   })
+                                // }
                               />
                             </div>
                           </div>

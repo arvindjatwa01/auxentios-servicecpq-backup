@@ -83,6 +83,8 @@ import SearchComponent from "./components/SearchComponent";
 import { Typography } from "@material-ui/core";
 import { fetchPartsFromPartlist } from "services/repairBuilderServices";
 import UpdateCoverageModal from "./components/UpdateCoverageModal";
+import PriceMethodTable from "./components/PriceMethodTable";
+import PriceSummaryTable from "./components/PriceSummaryTable";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -298,11 +300,13 @@ function Kits(props) {
     salesOffice: null,
   });
   const [pricingData, setPricingData] = useState({
-    priceMethod: null,
+    // priceMethod: null,
     netPrice: 0.0,
     priceDate: new Date(),
     adjustedPrice: 0.0,
     currency: "USD",
+    priceDetailDTO: [],
+    priceEstimateDTO: [],
   });
   const fetchAllDetails = (id) => {
     console.log(id);
@@ -595,23 +599,40 @@ function Kits(props) {
   const updatePriceData = () => {
     let data = {
       kitDBId,
-      priceMethod: pricingData.priceMethod?.value,
+      // priceMethod: pricingData.priceMethod?.value,
+      priceDetailDTO: pricingData.priceDetailDTO,
+      priceEstimateDTO: pricingData.priceEstimateDTO,
       currency: pricingData.currency?.value,
       priceDate: pricingData.priceDate,
-      adjustedPrice:
-        pricingData.priceMethod?.value === "FLAT_RATE"
-          ? pricingData.adjustedPrice
-          : 0,
+      // adjustedPrice:
+      //   pricingData.priceMethod?.value === "FLAT_RATE"
+      //     ? pricingData.adjustedPrice
+      //     : 0,
     };
     updateKITPrice(kitDBId, data)
       .then((result) => {
+
         setSavedKITHeaderDetails(result);
+        setPricingData({
+          ...pricingData,
+          adjustedPrice: result.adjustedPrice,
+          priceDetailDTO: result.priceDetailDTO,
+          priceEstimateDTO: result.priceEstimateDTO,
+          netPrice: result.netPrice,
+        });
         // fetchAllDetails(kitDBId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
 
         handleSnack("success", "Pricing details updated!");
       })
       .catch((err) => {
+        setPricingData({
+          ...pricingData,
+          adjustedPrice: savedKITHeaderDetails.adjustedPrice,
+          priceDetailDTO: savedKITHeaderDetails.priceDetailDTO,
+          priceEstimateDTO: savedKITHeaderDetails.priceEstimateDTO,
+          netPrice: savedKITHeaderDetails.netPrice,
+        });
         handleSnack(
           "error",
           "Error occurred while updating the pricing details!"
@@ -656,11 +677,7 @@ function Kits(props) {
       generalViewOnly: result.application ? true : false,
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly:
-        result.priceMethod !== "EMPTY" &&
-        result.priceMethod !== null &&
-        result.priceMethod !== ""
-          ? true
-          : false,
+        result.netPrice ? true : false,
     });
     setRating(result.rating);
     setSelKITStatus(STATUS_OPTIONS.filter((x) => x.value === result.status)[0]);
@@ -729,17 +746,19 @@ function Kits(props) {
   const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod:
-        result.priceMethod && result.priceMethod !== "EMPTY"
-          ? priceMethodOptions.find(
-              (element) => element.value === result.priceMethod
-            )
-          : { label: "", value: "" },
+      // priceMethod:
+      //   result.priceMethod && result.priceMethod !== "EMPTY"
+      //     ? priceMethodOptions.find(
+      //         (element) => element.value === result.priceMethod
+      //       )
+      //     : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: result.currency
         ? currencyOptions.find((element) => element.value === result.currency)
         : { label: "", value: "" },
+      priceDetailDTO: result.priceDetailDTO,
+      priceEstimateDTO: result.priceEstimateDTO,
     });
   };
 
@@ -2287,7 +2306,7 @@ function Kits(props) {
                               </div>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
+                          {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 PRICE METHOD
@@ -2305,7 +2324,7 @@ function Kits(props) {
                               />
                               <div className="css-w8dmq8">*Mandatory</div>
                             </div>
-                          </div>
+                          </div> */}
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -2313,24 +2332,15 @@ function Kits(props) {
                               </label>
                               <input
                                 type="text"
-                                disabled={
-                                  !(
-                                    pricingData.priceMethod?.value ===
-                                    "FLAT_RATE"
-                                  )
-                                }
+                                disabled
                                 className="form-control border-radius-10 text-primary"
-                                value={
-                                  pricingData.priceMethod?.value === "FLAT_RATE"
-                                    ? pricingData.adjustedPrice
-                                    : 0
-                                }
-                                onChange={(e) =>
-                                  setPricingData({
-                                    ...pricingData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
+                                value={pricingData.adjustedPrice}
+                                // onChange={(e) =>
+                                //   setPricingData({
+                                //     ...pricingData,
+                                //     adjustedPrice: e.target.value,
+                                //   })
+                                // }
                               />
                             </div>
                           </div>
@@ -2371,11 +2381,7 @@ function Kits(props) {
                             onClick={updatePriceData}
                             disabled={
                               !(pricingData.priceDate &&
-                              pricingData.priceMethod &&
-                              pricingData.currency &&
-                              pricingData.priceMethod?.value === "FLAT_RATE"
-                                ? pricingData.adjustedPrice > 0
-                                : true)
+                              pricingData.currency)
                             }
                           >
                             Save
@@ -2383,6 +2389,7 @@ function Kits(props) {
                         </div>
                       </React.Fragment>
                     ) : (
+                      <>
                       <div className="row mt-3">
                         <ReadOnlyField
                           label="NET PRICE"
@@ -2399,11 +2406,6 @@ function Kits(props) {
                           className="col-md-4 col-sm-4"
                         />
                         <ReadOnlyField
-                          label="PRICE METHOD"
-                          value={pricingData.priceMethod?.label}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
                           label="ADJUSTED PRICE"
                           value={pricingData.adjustedPrice}
                           className="col-md-4 col-sm-4"
@@ -2414,6 +2416,59 @@ function Kits(props) {
                           className="col-md-4 col-sm-4"
                         />
                       </div>
+                      <hr />
+                      <div className="mb-5">
+                        <PriceMethodTable
+                          rows={pricingData.priceDetailDTO}
+                          setRows={(rows) => {
+                            console.log(rows);
+                            setPricingData({
+                              ...pricingData,
+                              priceDetailDTO: rows,
+                            });
+                          }}
+                        />
+                        <div
+                          className="row my-3 mr-2"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updatePriceData}
+                            disabled={
+                              !(pricingData.priceDate && pricingData.currency)
+                            }
+                          >
+                            Save Price Methods
+                          </button>
+                        </div>
+                        <PriceSummaryTable
+                          rows={pricingData.priceEstimateDTO}
+                          setRows={(rows) =>
+                            setPricingData({
+                              ...pricingData,
+                              priceEstimateDTO: rows,
+                            })
+                          }
+                        />
+                        <div
+                          className="row my-3 mr-2"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updatePriceData}
+                            disabled={
+                              !(pricingData.priceDate && pricingData.currency)
+                            }
+                          >
+                            Save Price Summary
+                          </button>
+                        </div>
+                      </div>
+                    </>
                     )}
                   </TabPanel>
                   <TabPanel value="coverage">

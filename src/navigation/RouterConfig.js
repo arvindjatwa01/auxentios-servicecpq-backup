@@ -76,7 +76,7 @@ import PriceMaintenance from "pages/Price/PriceMaintenance";
 import PriceComputation from "pages/Price/PriceComputation";
 import { RepairServiceOnlyTemplate } from "pages/Repair/RepairServiceOnlyTemplate";
 import ServiceOnlyTemplatesHeader from "pages/Repair/ServiceOnlyTemplatesHeader";
-import { SparePartsPortfolio } from "pages/Repair/quote/SparePartsPortfolio";
+import { SparePartsQuoteDetails } from "pages/Repair/quote/SparePartsQuoteDetails";
 import { GuidedRepairQuote } from "pages/Repair/quote/GuidedRepairQuote";
 import QuoteSparepartsTemplate from "pages/Repair/quote/QuoteSparepartsTemplate";
 import QuoteSparepartsReviewed from "pages/Repair/quote/QuoteSparepartsReviewed";
@@ -159,7 +159,7 @@ export const RouterConfig = () => {
         <Route exact path={QUOTE_SOLUTION_CONFIGURATION} component={QuoteSolutionConfiguration} />
         <Route exact path={SOLUTION_QUOTE_CONFIG} component={SolutionQuoteConfiguration} />
         <Route exact path={SOLUTION_SERVICE_PORTFOLIO} component={SolutionServicePortfolio} />
-        <Route exact path={SPARE_PARTS_QUOTE_DETAILS} component={SparePartsPortfolio} />
+        <Route exact path={SPARE_PARTS_QUOTE_DETAILS} component={SparePartsQuoteDetails} />
         <Route exact path={QUOTE_SOLUTION_BUILDER} component={QuoteSolutionBuilder} />
         <Route exact path={REPAIR_QUOTE_WITH_EVALUATION} component={QuoteWithEvaluation} />
         <Route exact path={REPAIR_QUOTE_DETAILS} component={RepairQuoteDetails} />

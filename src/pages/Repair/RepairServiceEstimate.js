@@ -51,7 +51,6 @@ import {
   FetchMiscforService,
   FetchBasePrice,
   addPartToPartList,
-  addPartlist,
   uploadPartsToPartlist,
   RemoveSparepart,
   fetchPartsFromPartlist,
@@ -1398,6 +1397,7 @@ function RepairServiceEstimate(props) {
       jobCodeDescription: labourData.jobCodeDescription,
       laborCode: labourData.laborCode?.value,
       totalHours: labourData.totalHours,
+      // payer: labourData.payer,
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -1833,21 +1833,21 @@ function RepairServiceEstimate(props) {
         );
       });
   };
-  const [basePriceValues, setBasePriceValues] = useState({
-    PER_ON_TOTAL: 0.0,
-    PER_ON_LABOR: 0.0,
-  });
+  // const [basePriceValues, setBasePriceValues] = useState({
+  //   PER_ON_TOTAL: 0.0,
+  //   PER_ON_LABOR: 0.0,
+  // });
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    if (["consumables", "extwork", "othrMisc"].includes(newValue)) {
-      FetchBasePrice(serviceEstimateData.id)
-        .then((result) => {
-          setBasePriceValues(result);
-        })
-        .catch((e) => {
-          handleSnack("error", "Error occurred while fetching base price!");
-        });
-    }
+    // if (["consumables", "extwork", "othrMisc"].includes(newValue)) {
+    //   FetchBasePrice(serviceEstimateData.id)
+    //     .then((result) => {
+    //       setBasePriceValues(result);
+    //     })
+    //     .catch((e) => {
+    //       handleSnack("error", "Error occurred while fetching base price!");
+    //     });
+    // }
   };
 
   const handleReadFile = (file) => {
