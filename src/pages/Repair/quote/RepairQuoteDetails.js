@@ -190,13 +190,13 @@ const RepairQuoteDetails = (props) => {
     value: 1,
   });
   const initialQuoteItem = {
-    componentCode: "",
+    component: "",
     description: "",
     discount: 0,
     itemNo: "",
     labourPrice: 0,
     miscPrice: 0,
-    operation: "",
+    jobDescription: "",
     partListId: "",
     partsPrice: "",
     payerType: "",
@@ -248,10 +248,10 @@ const RepairQuoteDetails = (props) => {
           <div>Component</div>
         </>
       ),
-      selector: (row) => row.componentCode,
+      selector: (row) => row.component,
       wrap: true,
       sortable: true,
-      format: (row) => row.componentCode,
+      format: (row) => row.component,
     },
     {
       name: (
@@ -259,10 +259,10 @@ const RepairQuoteDetails = (props) => {
           <div>Job Desc.</div>
         </>
       ),
-      selector: (row) => row.operation,
+      selector: (row) => row.jobDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.operation,
+      format: (row) => row.jobDescription,
     },
     {
       name: (
@@ -927,7 +927,7 @@ const RepairQuoteDetails = (props) => {
     });
     if (operation === "existing") {
       setQuoteItemModalTitle(
-        row?.componentCode + " | " + row?.operation + " | " + row?.description
+        row?.component + " | " + row?.description
       );
 
       setQuoteItemViewOnly(true);

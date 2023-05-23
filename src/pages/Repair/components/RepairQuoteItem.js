@@ -97,7 +97,7 @@ const RepairQuoteItemModal = (props) => {
                     <input
                       type="text"
                       className="form-control border-radius-10 text-primary"
-                      value={props.quoteItem.componentCode}
+                      value={props.quoteItem.component}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
@@ -116,7 +116,7 @@ const RepairQuoteItemModal = (props) => {
                     <input
                       type="text"
                       className="form-control border-radius-10 text-primary"
-                      value={props.quoteItem.operation}
+                      value={props.quoteItem.jobDescription}
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
@@ -358,12 +358,12 @@ const RepairQuoteItemModal = (props) => {
             <div className="row mt-4">
               <ReadOnlyField
                 label="COMPONENT"
-                value={props.quoteItem.componentCode}
+                value={props.quoteItem.component}
                 className="col-md-6 col-sm-6 mb-2"
               />
               <ReadOnlyField
                 label="JOB DESCRIPTION"
-                value={props.quoteItem.operation}
+                value={props.quoteItem.jobDescription}
                 className="col-md-6 col-sm-6"
               />
               <ReadOnlyField
