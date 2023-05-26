@@ -1027,7 +1027,7 @@ export function CreatePortfolio(props) {
         if (res.status === 200) {
           setOptionalServiceListData({ ...res.data, currentPage: value, })
           setOptionalServiceCurrentPage(value);
-          
+
         }
         setOptionalServiceListLoading(false);
 
@@ -13838,10 +13838,26 @@ export function CreatePortfolio(props) {
       updateItemPrice
     );
 
+    // let rObjSJRkId = {}
+    // let itemReqObj = {};
+    // for (let i = 0; i < tempBundleItems.length; i++) {
+    //   if (tempBundleItems[i].itemId === currentItemId) {
+    //     rObjSJRkId = {
+    //       itemId: tempBundleItems[i].itemId,
+    //       standardJobId: addPortFolioItem.templateId,
+    //       repairKitId: iaddPortFolioItem.repairOption,
+    //       itemPriceDataId: priceCalculator.id
+    //     }
+    //     itemReqObj = tempBundleItems[i];
+    //     break;
+    //   }
+    // }
+
     const rObjSJRkId = {
       standardJobId: addPortFolioItem.templateId,
       repairKitId: addPortFolioItem.repairOption,
-      itemId: addPortFolioItem.id,
+      // itemId: addPortFolioItem.id,
+      itemId: currentItemId,
       itemPriceDataId: priceCalculator.id
     }
 

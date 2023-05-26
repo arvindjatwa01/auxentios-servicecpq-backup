@@ -204,18 +204,28 @@ const PriceCalculator = (props) => {
           label: res.data.priceMethod,
           value: res.data.priceMethod
         } : "",
+        // priceMethod: (res.data.priceMethod != "EMPTY" ||
+        //   res.data.priceMethod != "" ||
+        //   res.data.priceMethod != null) ? priceMethodKeyValue.find(o => o.value === res.data.priceMethod) : "",
         priceType: (res.data.priceType != "EMPTY" ||
           res.data.priceType != "" ||
           res.data.priceType != null) ? {
           label: res.data.priceType,
           value: res.data.priceType
         } : "",
-        priceAdditionalSelect: {
-          label: (res.data.additionalPriceType != "" ||
-            res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE",
-          value: (res.data.additionalPriceType != "" ||
-            res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE"
-        },
+        // priceType: (res.data.priceType != "EMPTY" ||
+        //   res.data.priceType != "" ||
+        //   res.data.priceType != null) ? priceTypeKeyValue.find(o => o.value === res.data.priceType) : "",
+        // priceAdditionalSelect: {
+        //   label: (res.data.additionalPriceType != "" ||
+        //     res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE",
+        //   value: (res.data.additionalPriceType != "" ||
+        //     res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE"
+        // },
+        priceAdditionalSelect: (res.data.additionalPriceType != "" ||
+          res.data.additionalPriceType != null) ? additionalPriceHeadTypeKeyValue.find(o => o.value === res.data.additionalPriceType) :
+          { label: "Surcharge $", value: "ABSOLUTE", },
+
         priceAdditionalInput: res.data.additionalPriceValue,
         discountTypeSelect: (res.data.discountType != "EMPTY" ||
           res.data.discountType != "" ||
@@ -605,7 +615,7 @@ const PriceCalculator = (props) => {
       console.log("props ---------- ", props, disable)
       if (props.bundleOrServiceEditOrNot) {
         // if (disable) {
-          props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, disable);
+        props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, disable);
         // }
       } else {
         if ((priceCalculator.startUsage == "") ||
@@ -699,10 +709,10 @@ const PriceCalculator = (props) => {
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
             </span>
-            <span className="mr-3">
+            {/* <span className="mr-3">
               <MonetizationOnOutlinedIcon className=" font-size-16" />
               <span className="ml-2"> Adjust price</span>
-            </span>
+            </span> */}
             {/* <span className="mr-3">
                       <FormatListBulletedOutlinedIcon className=" font-size-16" />
                       <span className="ml-2">Related part list(s)</span>
@@ -711,10 +721,10 @@ const PriceCalculator = (props) => {
                       <AccessAlarmOutlinedIcon className=" font-size-16" />
                       <span className="ml-2">Related service estimate(s)</span>
                     </span> */}
-            <span>
+            {/* <span>
               <SellOutlinedIcon className=" font-size-16" />
               <span className="ml-2">Split price</span>
-            </span>
+            </span> */}
           </div>
         </div>
         <div className="p-3">
@@ -1120,7 +1130,7 @@ const PriceCalculator = (props) => {
                       <input
                         type="text"
                         className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                        placeholder="20%"
+                        placeholder="0%"
                         id="priceEscalationInput"
                         value={priceCalculator.escalationPriceInputValue}
                         onChange={(e) =>

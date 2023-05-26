@@ -2342,6 +2342,7 @@ export function CreateCustomPortfolio(props) {
             expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: newBundleServiceItemsArr })
           })
 
+          setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
           // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
           setSelectedSearchMasterData(expandAblePortfolioItems)
         }
@@ -9851,20 +9852,24 @@ export function CreateCustomPortfolio(props) {
   };
   // console.log("portfolioId -------------- ", portfolioId);
 
-  const handleCreateCustomItem_SearchResult = async () => {
-
+  const selectedItemsToCustomBundleServiceItemCreation = async () => {
     try {
-      let reqObj = {};
+      // if (portfolioId === undefined || portfolioId == null) {
+      //   throw "Please Create Solution First";
+      // }
+
+      // if (currentItemId == null || currentItemId == "") {
+      //   throw "Please Create Item First";
+      // }
+
+      var createSolutionItemPriceReqObj = {};
+      var createdItemId = currentItemId;
+
+      // ==============  for Solution Price Request Obj ============ //
       for (let i = 0; i < tempBundleItems.length; i++) {
-        createdItemId = tempBundleItems[i].customItemId;
-        if (tempBundleItems[i].customItemId === currentItemId) {
-          // reqObj = {
-          //     itemId: tempBundleItems[i].customItemId,
-          //     standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
-          //     repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
-          // }
-          reqObj = {
-            itemId: tempBundleItems[i].customItemId,
+        if (tempBundleItems[i].itemId === currentItemId) {
+          createSolutionItemPriceReqObj = {
+            itemId: tempBundleItems[i].itemId,
             standardJobId: itemPriceData.standardJobId,
             repairKitId: itemPriceData.repairKitId,
             itemPriceDataId: itemPriceData.customItemPriceDataId
@@ -9873,13 +9878,299 @@ export function CreateCustomPortfolio(props) {
         }
       }
 
-      if (portfolioId === undefined || portfolioId == null) {
-        throw "Please Create Solution First";
+      // ============== Convert Selected Bundle/Service to Custom Bundle/Service ============ //
+      var createdNewCustomItems = [];
+      for (let i = 0; i < tempBundleService2.length; i++) {
+        var customItemsIdData = [];
+        var customPriceIdArr = [];
+        var customPriceIdIs = 0;
+        var repairKitIdIs = "";
+        var standardJobIdIs = "";
+
+        // ================ get Item Data using Id ================ //
+        const itemDetailsById = await getItemDataById(tempBundleService2[i].itemId);
+        if (itemDetailsById.status === 200) {
+
+          // ============= Bundle/Service Price ============== //
+          if (itemDetailsById.data.itemBodyModel.itemPrices.length > 0) {
+            for (let j = 0; j < itemDetailsById.data.itemBodyModel.itemPrices.length; j++) {
+
+              // =============== Search Item Price Using Price Id ============== //
+              var itemsPrice = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
+              const itemPriceRequestObj = {
+                customItemPriceDataId: 0,
+                quantity: parseInt(itemsPrice.quantity),
+                standardJobId: itemsPrice.standardJobId,
+                repairKitId: itemsPrice.repairKitId,
+                templateDescription: itemsPrice.templateDescription,
+                repairOption: itemsPrice.repairOption,
+                additional: itemsPrice.additional,
+                partListId: itemsPrice.partListId,
+                serviceEstimateId: itemsPrice.serviceEstimateId,
+                numberOfEvents: 0,
+                priceMethod: itemsPrice.priceMethod,
+                priceType: itemsPrice.priceType,
+                listPrice: itemsPrice.listPrice,
+                priceEscalation: itemsPrice.priceEscalation,
+                calculatedPrice: itemsPrice.calculatedPrice,
+                flatPrice: itemsPrice.flatPrice,
+                year: itemsPrice.year,
+                noOfYear: parseInt(itemsPrice.noOfYear),
+                sparePartsPrice: itemsPrice.sparePartsPrice,
+                sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                servicePrice: itemsPrice.totalPrice,
+                labourPrice: itemsPrice.labourPrice,
+                labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                miscPrice: itemsPrice.miscPrice,
+                miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                totalPrice: itemsPrice.totalPrice,
+                netService: itemsPrice.netService,
+                additionalPriceType: itemsPrice.additionalPriceType,
+                additionalPriceValue: itemsPrice.additionalPriceValue,
+                discountType: itemsPrice.discountType,
+                discountValue: itemsPrice.discountValue,
+                recommendedValue: itemsPrice.recommendedValue,
+                startUsage: itemsPrice.startUsage,
+                endUsage: itemsPrice.endUsage,
+                sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                labourEscalation: itemsPrice.labourEscalation,
+                miscEscalation: itemsPrice.miscEscalation,
+                serviceEscalation: itemsPrice.serviceEscalation,
+                withBundleService: itemsPrice.withBundleService,
+                customPortfolio: ((portfolioId == 0) ||
+                  (portfolioId == null) ||
+                  (portfolioId == undefined) ||
+                  (portfolioId == "")) ? null : {
+                  portfolioId: portfolioId
+                },
+                // tenantId: itemsPrice.tenantId,
+                tenantId: loginTenantId,
+                partsRequired: itemsPrice.partsRequired,
+                labourRequired: itemsPrice.labourRequired,
+                miscRequired: itemsPrice.miscRequired,
+                serviceRequired: itemsPrice.serviceRequired,
+                inclusionExclusion: itemsPrice.inclusionExclusion
+              }
+
+              const createPriceForCustomItem = await customPriceCreation(itemPriceRequestObj)
+              customItemsIdData.push(createPriceForCustomItem.data)
+              customPriceIdArr.push({
+                customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+              })
+
+              customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+              repairKitIdIs = createPriceForCustomItem.data.repairKitId;
+              standardJobIdIs = createPriceForCustomItem.data.standardJobId;
+            }
+          }
+
+          let createCutsomItemRequestObj = {
+            customItemId: 0,
+            itemName: itemDetailsById.data.itemName,
+            customItemHeaderModel: {
+              customItemHeaderId: 0,
+              itemHeaderDescription: itemDetailsById.data.itemHeaderModel.itemHeaderDescription,
+              bundleFlag: itemDetailsById.data.itemHeaderModel.bundleFlag,
+              withBundleService: itemDetailsById.data.itemHeaderModel.withBundleService,
+              portfolioItemId: currentItemId,
+              reference: itemDetailsById.data.itemHeaderModel.reference,
+              itemHeaderMake: itemDetailsById.data.itemHeaderModel.itemHeaderMake,
+              itemHeaderFamily: itemDetailsById.data.itemHeaderModel.itemHeaderFamily,
+              model: itemDetailsById.data.itemHeaderModel.model,
+              prefix: itemDetailsById.data.itemHeaderModel.prefix,
+              type: itemDetailsById.data.itemHeaderModel.type,
+              additional: itemDetailsById.data.itemHeaderModel.additional,
+              currency: itemDetailsById.data.itemHeaderModel.currency,
+              netPrice: itemDetailsById.data.itemHeaderModel.netPrice,
+              itemProductHierarchy: itemDetailsById.data.itemHeaderModel.itemProductHierarchy,
+              itemHeaderGeographic: itemDetailsById.data.itemHeaderModel.itemHeaderGeographic,
+              responseTime: itemDetailsById.data.itemHeaderModel.responseTime,
+              usage: itemDetailsById.data.itemHeaderModel.usage,
+              validFrom: itemDetailsById.data.itemHeaderModel.validFrom,
+              validTo: itemDetailsById.data.itemHeaderModel.validTo,
+              estimatedTime: itemDetailsById.data.itemHeaderModel.estimatedTime,
+              servicePrice: itemDetailsById.data.itemHeaderModel.servicePrice,
+              status: itemDetailsById.data.itemHeaderModel.status,
+              componentCode: itemDetailsById.data.itemHeaderModel.componentCode,
+              componentDescription: itemDetailsById.data.itemHeaderModel.componentDescription,
+              serialNumber: itemDetailsById.data.itemHeaderModel.serialNumber,
+              itemHeaderStrategy: itemDetailsById.data.itemHeaderModel.itemHeaderStrategy,
+              variant: itemDetailsById.data.itemHeaderModel.variant,
+              itemHeaderCustomerSegment: itemDetailsById.data.itemHeaderModel.itemHeaderCustomerSegment,
+              jobCode: itemDetailsById.data.itemHeaderModel.jobCode,
+              preparedBy: itemDetailsById.data.itemHeaderModel.preparedBy,
+              approvedBy: itemDetailsById.data.itemHeaderModel.approvedBy,
+              preparedOn: itemDetailsById.data.itemHeaderModel.preparedOn,
+              revisedBy: itemDetailsById.data.itemHeaderModel.revisedBy,
+              revisedOn: itemDetailsById.data.itemHeaderModel.revisedOn,
+              salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
+              offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
+              serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
+              serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+            },
+            customItemBodyModel: {
+              customItemBodyId: 0,
+              itemBodyDescription: itemDetailsById.data.itemBodyModel.itemBodyDescription,
+              spareParts: itemDetailsById.data.itemBodyModel.spareParts,
+              labours: itemDetailsById.data.itemBodyModel.labours,
+              miscellaneous: itemDetailsById.data.itemBodyModel.miscellaneous,
+              taskType: itemDetailsById.data.itemBodyModel.taskType,
+              solutionCode: itemDetailsById.data.itemBodyModel.solutionCode,
+              usageIn: itemDetailsById.data.itemBodyModel.usageIn,
+              usage: itemDetailsById.data.itemBodyModel.usage,
+              year: itemDetailsById.data.itemBodyModel.year,
+              avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
+              unit: itemDetailsById.data.itemBodyModel.unit,
+              frequency: itemDetailsById.data.itemBodyModel.frequency,
+              customItemPrices: customPriceIdArr
+            }
+          }
+          const _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
+
+          // ============= create cutom Bundle/Service Item ============== //
+          const customItemCreationResult = await customItemCreation(createCutsomItemRequestObj)
+          if (customItemCreationResult.status === 200) {
+            createdNewCustomItems.push({ customItemId: customItemCreationResult.data.customItemId })
+            _selectedSolutionCustomItems.push({ customItemId: customItemCreationResult.data.customItemId })
+            if (customPriceIdIs !== 0) {
+              const updatePriceForCreatedItem = {
+                itemId: customItemCreationResult.data.customItemId,
+                standardJobId: standardJobIdIs,
+                repairKitId: repairKitIdIs,
+                itemPriceDataId: customPriceIdIs
+              }
+
+              // Update ItemPrice RkId
+              if (((standardJobIdIs == "") ||
+                (standardJobIdIs == null)) &&
+                ((repairKitIdIs != "") ||
+                  (repairKitIdIs != null))) {
+                const updateRkIdPrice = await customPortfolioItemPriceRkId(updatePriceForCreatedItem)
+              }
+
+              // Update Item Price SjId
+              if (((repairKitIdIs == "") ||
+                (repairKitIdIs == null)) &&
+                ((standardJobIdIs != "") ||
+                  (standardJobIdIs != null))) {
+                const updateSjIdPrice = await customPortfolioItemPriceSJID(updatePriceForCreatedItem)
+              }
+            }
+          }
+          setSelectedSolutionCustomItems(_selectedSolutionCustomItems)
+
+        }
+      }
+      let _tempBundleItems = [...tempBundleItems];
+
+      var foundSolutionItem = _tempBundleItems.find(obj => obj.itemId === currentItemId);
+
+      if (foundSolutionItem !== undefined) {
+
+        if (createdNewCustomItems.length > 0) {
+          var tempBundleItemsUrl = createdNewCustomItems.map((data, i) =>
+            // var tempBundleItemsUrl = createItemsArr.map((data, i) =>
+            `itemIds=${data.customItemId}`
+          ).join('&');
+
+          const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+          let expandAblePortfolioItems = []
+          let expendedBundleServiceItems = [];
+          let _currentExpendableItemRow = { ...currentExpendableItemRow }
+
+          if (tempBundleItemsColumnsData.status === 200) {
+            var dataLength = tempBundleItemsColumnsData.data.length;
+
+            var newBundleServiceItemsArr = [];
+
+            for (let c = 0; c < tempBundleItemsColumnsData.data[dataLength - 1].bundleItems.length; c++) {
+              newBundleServiceItemsArr.push(tempBundleItemsColumnsData.data[dataLength - 1].bundleItems[c]);
+              expendedBundleServiceItems.push(tempBundleItemsColumnsData.data[dataLength - 1].bundleItems[c]);
+            }
+
+            for (let d = 0; d < tempBundleItemsColumnsData.data[dataLength - 1].serviceItems.length; d++) {
+              newBundleServiceItemsArr.push(tempBundleItemsColumnsData.data[dataLength - 1].serviceItems[d]);
+              expendedBundleServiceItems.push(tempBundleItemsColumnsData.data[dataLength - 1].serviceItems[d]);
+            }
+
+            if ('associatedServiceOrBundle' in foundSolutionItem) {
+              foundSolutionItem["associatedServiceOrBundle"] = [...foundSolutionItem["associatedServiceOrBundle"], ...newBundleServiceItemsArr]
+            } else {
+              foundSolutionItem["associatedServiceOrBundle"] = [...newBundleServiceItemsArr];
+            }
+            // for (let index = 0; index < selectedSearchMasterData.length; index++) {
+            //   if (selectedSearchMasterData[index].itemId === currentItemId) {
+            //     if ('associatedServiceOrBundleExitsorNot' in selectedSearchMasterData[index].itemId) {
+            //       selectedSearchMasterData[index].associatedServiceOrBundle = [...selectedSearchMasterData[index]?.associatedServiceOrBundle, ...newBundleServiceItemsArr]
+            //     } else {
+            //       selectedSearchMasterData[index]["associatedServiceOrBundle"] = [...newBundleServiceItemsArr];
+            //     }
+
+            //   }
+            // }
+          }
+        }
+
+        
+
+        const index = _tempBundleItems.findIndex(object => {
+          return object.itemId === currentItemId;
+        });
+        console.log("==================== ", foundSolutionItem)
+        _tempBundleItems = _tempBundleItems.splice(index, 1, foundSolutionItem);
+
+        console.log("==================== _tempBundleItems ", _tempBundleItems)
+        setTempBundleItems(_tempBundleItems);
+      }
+      setItemListShowLoading(false);
+      setTempBundleService3([...tempBundleService3, ...tempBundleService2])
+      // setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemIds]);
+      setAddBundleServiceItem1([])
+      setTempBundleService1([])
+    } catch (error) {
+      console.log("error ", error);
+      toast(`😐 ` + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  const handleCreateCustomItem_SearchResult = async () => {
+
+    try {
+      let reqObj = {};
+      var createItemsArr = [];
+
+      for (let i = 0; i < tempBundleItems.length; i++) {
+        // createdItemId = tempBundleItems[i].customItemId;
+        createdItemId = tempBundleItems[i].itemId;
+        // if (tempBundleItems[i].itemId === currentItemId) {
+        if (tempBundleItems[i].customItemId === currentItemId) {
+          reqObj = {
+            // itemId: tempBundleItems[i].customItemId,
+            itemId: tempBundleItems[i].itemId,
+            standardJobId: itemPriceData.standardJobId,
+            repairKitId: itemPriceData.repairKitId,
+            itemPriceDataId: itemPriceData.customItemPriceDataId
+          }
+          break;
+        }
       }
 
-      if (currentItemId == null || currentItemId == "") {
-        throw "Please Create Item First";
-      }
+      // if (portfolioId === undefined || portfolioId == null) {
+      //   throw "Please Create Solution First";
+      // }
+
+      // if (currentItemId == null || currentItemId == "") {
+      //   throw "Please Create Item First";
+      // }
 
       var createdItemId = 0;
 
@@ -9895,125 +10186,128 @@ export function CreateCustomPortfolio(props) {
         var repairKitIdIs = "";
         var standardJobIdIs = "";
 
-        if (tempBundleService2[i].itemBodyModel.itemPrices.length > 0) {
+        const itemDetailsById = await getItemDataById(tempBundleService2[i].itemId)
+        if (itemDetailsById.status === 200) {
+          if (itemDetailsById.data.itemBodyModel.itemPrices.length > 0) {
 
-          for (let j = 0; j < tempBundleService2[i].itemBodyModel.itemPrices.length; j++) {
+            for (let j = 0; j < itemDetailsById.data.itemBodyModel.itemPrices.length; j++) {
 
-            /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+              /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-            var itemsPrice = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
-            console.log("item price is before : ", itemsPrice)
+              var itemsPrice = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
+              console.log("item price is before : ", itemsPrice)
 
-            // let itemPriceObj = {
-            //     customItemPriceDataId: 0,
-            //     quantity: parseInt(itemsPrice.quantity),
-            //     startUsage: itemsPrice.startUsage,
-            //     endUsage: itemsPrice.endUsage,
-            //     standardJobId: itemsPrice.standardJobId,
-            //     repairKitId: itemsPrice.repairKitId,
-            //     templateDescription: itemsPrice.templateDescription,
-            //     repairOption: itemsPrice.repairOption,
-            //     frequency: itemsPrice.frequency,
-            //     additional: itemsPrice.additional,
-            //     recommendedValue: parseInt(itemsPrice.recommendedValue),
-            //     partListId: itemsPrice.partListId,
-            //     serviceEstimateId: itemsPrice.serviceEstimateId,
-            //     numberOfEvents: parseInt(itemsPrice.numberOfEvents),
-            //     priceMethod: itemsPrice.priceMethod,
-            //     priceType: itemsPrice.priceType,
-            //     listPrice: itemsPrice.listPrice,
-            //     priceEscalation: itemsPrice.priceEscalation,
-            //     calculatedPrice: itemsPrice.calculatedPrice,
-            //     flatPrice: itemsPrice.flatPrice,
-            //     discountType: itemsPrice.discountType,
-            //     year: itemsPrice.year,
-            //     noOfYear: itemsPrice.noOfYear,
-            //     sparePartsPrice: itemsPrice.sparePartsPrice,
-            //     sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
-            //     servicePrice: itemsPrice.servicePrice,
-            //     labourPrice: itemsPrice.labourPrice,
-            //     labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-            //     miscPrice: itemsPrice.miscPrice,
-            //     miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
-            //     totalPrice: itemsPrice.totalPrice,
-            //     netService: itemsPrice.netService,
-            //     customPortfolio: {
-            //         portfolioId: portfolioId
-            //     },
-            //     tenantId: itemsPrice.tenantId,
-            //     partsRequired: itemsPrice.partsRequired,
-            //     labourRequired: itemsPrice.labourRequired,
-            //     serviceRequired: itemsPrice.serviceRequired,
-            //     miscRequired: itemsPrice.miscRequired
-            // }
+              // let itemPriceObj = {
+              //     customItemPriceDataId: 0,
+              //     quantity: parseInt(itemsPrice.quantity),
+              //     startUsage: itemsPrice.startUsage,
+              //     endUsage: itemsPrice.endUsage,
+              //     standardJobId: itemsPrice.standardJobId,
+              //     repairKitId: itemsPrice.repairKitId,
+              //     templateDescription: itemsPrice.templateDescription,
+              //     repairOption: itemsPrice.repairOption,
+              //     frequency: itemsPrice.frequency,
+              //     additional: itemsPrice.additional,
+              //     recommendedValue: parseInt(itemsPrice.recommendedValue),
+              //     partListId: itemsPrice.partListId,
+              //     serviceEstimateId: itemsPrice.serviceEstimateId,
+              //     numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+              //     priceMethod: itemsPrice.priceMethod,
+              //     priceType: itemsPrice.priceType,
+              //     listPrice: itemsPrice.listPrice,
+              //     priceEscalation: itemsPrice.priceEscalation,
+              //     calculatedPrice: itemsPrice.calculatedPrice,
+              //     flatPrice: itemsPrice.flatPrice,
+              //     discountType: itemsPrice.discountType,
+              //     year: itemsPrice.year,
+              //     noOfYear: itemsPrice.noOfYear,
+              //     sparePartsPrice: itemsPrice.sparePartsPrice,
+              //     sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+              //     servicePrice: itemsPrice.servicePrice,
+              //     labourPrice: itemsPrice.labourPrice,
+              //     labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+              //     miscPrice: itemsPrice.miscPrice,
+              //     miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+              //     totalPrice: itemsPrice.totalPrice,
+              //     netService: itemsPrice.netService,
+              //     customPortfolio: {
+              //         portfolioId: portfolioId
+              //     },
+              //     tenantId: itemsPrice.tenantId,
+              //     partsRequired: itemsPrice.partsRequired,
+              //     labourRequired: itemsPrice.labourRequired,
+              //     serviceRequired: itemsPrice.serviceRequired,
+              //     miscRequired: itemsPrice.miscRequired
+              // }
 
-            let itemPriceObj = {
-              customItemPriceDataId: 0,
-              quantity: parseInt(itemsPrice.quantity),
-              standardJobId: itemsPrice.standardJobId,
-              repairKitId: itemsPrice.repairKitId,
-              templateDescription: itemsPrice.templateDescription,
-              repairOption: itemsPrice.repairOption,
-              additional: itemsPrice.additional,
-              partListId: itemsPrice.partListId,
-              serviceEstimateId: itemsPrice.serviceEstimateId,
-              numberOfEvents: 0,
-              priceMethod: itemsPrice.priceMethod,
-              priceType: itemsPrice.priceType,
-              listPrice: itemsPrice.listPrice,
-              priceEscalation: itemsPrice.priceEscalation,
-              calculatedPrice: itemsPrice.calculatedPrice,
-              flatPrice: itemsPrice.flatPrice,
-              year: itemsPrice.year,
-              noOfYear: parseInt(itemsPrice.noOfYear),
-              sparePartsPrice: itemsPrice.sparePartsPrice,
-              sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-              servicePrice: itemsPrice.totalPrice,
-              labourPrice: itemsPrice.labourPrice,
-              labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-              miscPrice: itemsPrice.miscPrice,
-              miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-              totalPrice: itemsPrice.totalPrice,
-              netService: itemsPrice.netService,
-              additionalPriceType: itemsPrice.additionalPriceType,
-              additionalPriceValue: itemsPrice.additionalPriceValue,
-              discountType: itemsPrice.discountType,
-              discountValue: itemsPrice.discountValue,
-              recommendedValue: itemsPrice.recommendedValue,
-              startUsage: itemsPrice.startUsage,
-              endUsage: itemsPrice.endUsage,
-              sparePartsEscalation: itemsPrice.sparePartsEscalation,
-              labourEscalation: itemsPrice.labourEscalation,
-              miscEscalation: itemsPrice.miscEscalation,
-              serviceEscalation: itemsPrice.serviceEscalation,
-              withBundleService: itemsPrice.withBundleService,
-              customPortfolio: ((portfolioId == 0) ||
-                (portfolioId == null) ||
-                (portfolioId == undefined) ||
-                (portfolioId == "")) ? null : {
-                portfolioId: portfolioId
-              },
-              // tenantId: itemsPrice.tenantId,
-              tenantId: loginTenantId,
-              partsRequired: itemsPrice.partsRequired,
-              labourRequired: itemsPrice.labourRequired,
-              miscRequired: itemsPrice.miscRequired,
-              serviceRequired: itemsPrice.serviceRequired,
-              inclusionExclusion: itemsPrice.inclusionExclusion
+              let itemPriceObj = {
+                customItemPriceDataId: 0,
+                quantity: parseInt(itemsPrice.quantity),
+                standardJobId: itemsPrice.standardJobId,
+                repairKitId: itemsPrice.repairKitId,
+                templateDescription: itemsPrice.templateDescription,
+                repairOption: itemsPrice.repairOption,
+                additional: itemsPrice.additional,
+                partListId: itemsPrice.partListId,
+                serviceEstimateId: itemsPrice.serviceEstimateId,
+                numberOfEvents: 0,
+                priceMethod: itemsPrice.priceMethod,
+                priceType: itemsPrice.priceType,
+                listPrice: itemsPrice.listPrice,
+                priceEscalation: itemsPrice.priceEscalation,
+                calculatedPrice: itemsPrice.calculatedPrice,
+                flatPrice: itemsPrice.flatPrice,
+                year: itemsPrice.year,
+                noOfYear: parseInt(itemsPrice.noOfYear),
+                sparePartsPrice: itemsPrice.sparePartsPrice,
+                sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                servicePrice: itemsPrice.totalPrice,
+                labourPrice: itemsPrice.labourPrice,
+                labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                miscPrice: itemsPrice.miscPrice,
+                miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                totalPrice: itemsPrice.totalPrice,
+                netService: itemsPrice.netService,
+                additionalPriceType: itemsPrice.additionalPriceType,
+                additionalPriceValue: itemsPrice.additionalPriceValue,
+                discountType: itemsPrice.discountType,
+                discountValue: itemsPrice.discountValue,
+                recommendedValue: itemsPrice.recommendedValue,
+                startUsage: itemsPrice.startUsage,
+                endUsage: itemsPrice.endUsage,
+                sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                labourEscalation: itemsPrice.labourEscalation,
+                miscEscalation: itemsPrice.miscEscalation,
+                serviceEscalation: itemsPrice.serviceEscalation,
+                withBundleService: itemsPrice.withBundleService,
+                customPortfolio: ((portfolioId == 0) ||
+                  (portfolioId == null) ||
+                  (portfolioId == undefined) ||
+                  (portfolioId == "")) ? null : {
+                  portfolioId: portfolioId
+                },
+                // tenantId: itemsPrice.tenantId,
+                tenantId: loginTenantId,
+                partsRequired: itemsPrice.partsRequired,
+                labourRequired: itemsPrice.labourRequired,
+                miscRequired: itemsPrice.miscRequired,
+                serviceRequired: itemsPrice.serviceRequired,
+                inclusionExclusion: itemsPrice.inclusionExclusion
+              }
+
+              const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
+
+              customItemsIdData.push(createPriceForCustomItem.data)
+              customPriceIdArr.push({
+                customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+              })
+
+              customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+              repairKitIdIs = createPriceForCustomItem.data.standardJobId;
+              standardJobIdIs = createPriceForCustomItem.data.repairKitId;
             }
 
-            const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
-
-            customItemsIdData.push(createPriceForCustomItem.data)
-            customPriceIdArr.push({
-              customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
-            })
-
-            customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
-            repairKitIdIs = createPriceForCustomItem.data.standardJobId;
-            standardJobIdIs = createPriceForCustomItem.data.repairKitId;
           }
-
         }
 
         // let customItemObj = {
@@ -10077,69 +10371,77 @@ export function CreateCustomPortfolio(props) {
 
         let customItemObj = {
           customItemId: 0,
-          itemName: tempBundleService2[i].itemName,
+          itemName: itemDetailsById.data.itemName,
           customItemHeaderModel: {
             customItemHeaderId: 0,
-            itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
-            bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
-            withBundleService: tempBundleService2[i].itemHeaderModel.withBundleService,
+            itemHeaderDescription: itemDetailsById.data.itemHeaderModel.itemHeaderDescription,
+            bundleFlag: itemDetailsById.data.itemHeaderModel.bundleFlag,
+            withBundleService: itemDetailsById.data.itemHeaderModel.withBundleService,
             portfolioItemId: currentItemId,
-            reference: tempBundleService2[i].itemHeaderModel.reference,
-            itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
-            itemHeaderFamily: tempBundleService2[i].itemHeaderModel.itemHeaderFamily,
-            model: tempBundleService2[i].itemHeaderModel.model,
-            prefix: tempBundleService2[i].itemHeaderModel.prefix,
-            type: tempBundleService2[i].itemHeaderModel.type,
-            additional: tempBundleService2[i].itemHeaderModel.additional,
-            currency: tempBundleService2[i].itemHeaderModel.currency,
-            netPrice: tempBundleService2[i].itemHeaderModel.netPrice,
-            itemProductHierarchy: tempBundleService2[i].itemHeaderModel.itemProductHierarchy,
-            itemHeaderGeographic: tempBundleService2[i].itemHeaderModel.itemHeaderGeographic,
-            responseTime: tempBundleService2[i].itemHeaderModel.responseTime,
-            usage: tempBundleService2[i].itemHeaderModel.usage,
-            validFrom: tempBundleService2[i].itemHeaderModel.validFrom,
-            validTo: tempBundleService2[i].itemHeaderModel.validTo,
-            estimatedTime: tempBundleService2[i].itemHeaderModel.estimatedTime,
-            servicePrice: tempBundleService2[i].itemHeaderModel.servicePrice,
-            status: tempBundleService2[i].itemHeaderModel.status,
-            componentCode: tempBundleService2[i].itemHeaderModel.componentCode,
-            componentDescription: tempBundleService2[i].itemHeaderModel.componentDescription,
-            serialNumber: tempBundleService2[i].itemHeaderModel.serialNumber,
-            itemHeaderStrategy: tempBundleService2[i].itemHeaderModel.itemHeaderStrategy,
-            variant: tempBundleService2[i].itemHeaderModel.variant,
-            itemHeaderCustomerSegment: tempBundleService2[i].itemHeaderModel.itemHeaderCustomerSegment,
-            jobCode: tempBundleService2[i].itemHeaderModel.jobCode,
-            preparedBy: tempBundleService2[i].itemHeaderModel.preparedBy,
-            approvedBy: tempBundleService2[i].itemHeaderModel.approvedBy,
-            preparedOn: tempBundleService2[i].itemHeaderModel.preparedOn,
-            revisedBy: tempBundleService2[i].itemHeaderModel.revisedBy,
-            revisedOn: tempBundleService2[i].itemHeaderModel.revisedOn,
-            salesOffice: tempBundleService2[i].itemHeaderModel.salesOffice,
-            offerValidity: tempBundleService2[i].itemHeaderModel.offerValidity,
-            serviceChargable: tempBundleService2[i].itemHeaderModel.serviceChargable,
-            serviceOptional: tempBundleService2[i].itemHeaderModel.serviceOptional
+            reference: itemDetailsById.data.itemHeaderModel.reference,
+            itemHeaderMake: itemDetailsById.data.itemHeaderModel.itemHeaderMake,
+            itemHeaderFamily: itemDetailsById.data.itemHeaderModel.itemHeaderFamily,
+            model: itemDetailsById.data.itemHeaderModel.model,
+            prefix: itemDetailsById.data.itemHeaderModel.prefix,
+            type: itemDetailsById.data.itemHeaderModel.type,
+            additional: itemDetailsById.data.itemHeaderModel.additional,
+            currency: itemDetailsById.data.itemHeaderModel.currency,
+            netPrice: itemDetailsById.data.itemHeaderModel.netPrice,
+            itemProductHierarchy: itemDetailsById.data.itemHeaderModel.itemProductHierarchy,
+            itemHeaderGeographic: itemDetailsById.data.itemHeaderModel.itemHeaderGeographic,
+            responseTime: itemDetailsById.data.itemHeaderModel.responseTime,
+            usage: itemDetailsById.data.itemHeaderModel.usage,
+            validFrom: itemDetailsById.data.itemHeaderModel.validFrom,
+            validTo: itemDetailsById.data.itemHeaderModel.validTo,
+            estimatedTime: itemDetailsById.data.itemHeaderModel.estimatedTime,
+            servicePrice: itemDetailsById.data.itemHeaderModel.servicePrice,
+            status: itemDetailsById.data.itemHeaderModel.status,
+            componentCode: itemDetailsById.data.itemHeaderModel.componentCode,
+            componentDescription: itemDetailsById.data.itemHeaderModel.componentDescription,
+            serialNumber: itemDetailsById.data.itemHeaderModel.serialNumber,
+            itemHeaderStrategy: itemDetailsById.data.itemHeaderModel.itemHeaderStrategy,
+            variant: itemDetailsById.data.itemHeaderModel.variant,
+            itemHeaderCustomerSegment: itemDetailsById.data.itemHeaderModel.itemHeaderCustomerSegment,
+            jobCode: itemDetailsById.data.itemHeaderModel.jobCode,
+            preparedBy: itemDetailsById.data.itemHeaderModel.preparedBy,
+            approvedBy: itemDetailsById.data.itemHeaderModel.approvedBy,
+            preparedOn: itemDetailsById.data.itemHeaderModel.preparedOn,
+            revisedBy: itemDetailsById.data.itemHeaderModel.revisedBy,
+            revisedOn: itemDetailsById.data.itemHeaderModel.revisedOn,
+            salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
+            offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
+            serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
+            serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
           },
           customItemBodyModel: {
             customItemBodyId: 0,
-            itemBodyDescription: tempBundleService2[i].itemBodyModel.itemBodyDescription,
-            spareParts: tempBundleService2[i].itemBodyModel.spareParts,
-            labours: tempBundleService2[i].itemBodyModel.labours,
-            miscellaneous: tempBundleService2[i].itemBodyModel.miscellaneous,
-            taskType: tempBundleService2[i].itemBodyModel.taskType,
-            solutionCode: tempBundleService2[i].itemBodyModel.solutionCode,
-            usageIn: tempBundleService2[i].itemBodyModel.usageIn,
-            usage: tempBundleService2[i].itemBodyModel.usage,
-            year: tempBundleService2[i].itemBodyModel.year,
-            avgUsage: tempBundleService2[i].itemBodyModel.avgUsage,
-            unit: tempBundleService2[i].itemBodyModel.unit,
-            frequency: tempBundleService2[i].itemBodyModel.frequency,
+            itemBodyDescription: itemDetailsById.data.itemBodyModel.itemBodyDescription,
+            spareParts: itemDetailsById.data.itemBodyModel.spareParts,
+            labours: itemDetailsById.data.itemBodyModel.labours,
+            miscellaneous: itemDetailsById.data.itemBodyModel.miscellaneous,
+            taskType: itemDetailsById.data.itemBodyModel.taskType,
+            solutionCode: itemDetailsById.data.itemBodyModel.solutionCode,
+            usageIn: itemDetailsById.data.itemBodyModel.usageIn,
+            usage: itemDetailsById.data.itemBodyModel.usage,
+            year: itemDetailsById.data.itemBodyModel.year,
+            avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
+            unit: itemDetailsById.data.itemBodyModel.unit,
+            frequency: itemDetailsById.data.itemBodyModel.frequency,
             customItemPrices: customPriceIdArr
           }
         }
 
+        var _selectedSolutionCustomItemsArray = [...selectedSolutionCustomItems];
         const itemRes = await customItemCreation(customItemObj)
+        var customItemIds = []
         if (itemRes.status === 200) {
           createdNewCustomItems.push(itemRes.data)
+          let _selectedSearchMasterData = [...selectedSearchMasterData];
+          var arrIndex = _selectedSearchMasterData.findIndex(data => data.itemId === currentExpendableItemRow.itemId)
+          // _selectedSearchMasterData[arrIndex].associatedServiceOrBundle.push(itemRes.data)
+          customItemIds.push({ customItemId: itemRes.data.customItemId })
+          createItemsArr.push(customItemIds)
+          _selectedSolutionCustomItemsArray.push({ customItemId: itemRes.data.customItemId })
           if (customPriceIdIs != 0) {
 
             var newreqObj = {
@@ -10163,6 +10465,57 @@ export function CreateCustomPortfolio(props) {
             }
           }
         }
+
+        if (_selectedSolutionCustomItemsArray.length > 0) {
+          var tempBundleItemsUrl = _selectedSolutionCustomItemsArray.map((data, i) =>
+            // var tempBundleItemsUrl = createItemsArr.map((data, i) =>
+            `itemIds=${data.customItemId}`
+          ).join('&');
+
+          const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+          let expandAblePortfolioItems = []
+          let expendedBundleServiceItems = [];
+          let _currentExpendableItemRow = { ...currentExpendableItemRow }
+
+          if (tempBundleItemsColumnsData.status === 200) {
+            var dataLength = tempBundleItemsColumnsData.data.length;
+
+            var newBundleServiceItemsArr = [];
+
+            for (let c = 0; c < tempBundleItemsColumnsData.data[dataLength - 1].bundleItems.length; c++) {
+              newBundleServiceItemsArr.push(tempBundleItemsColumnsData.data[dataLength - 1].bundleItems[c]);
+              expendedBundleServiceItems.push(tempBundleItemsColumnsData.data[dataLength - 1].bundleItems[c]);
+            }
+
+            for (let d = 0; d < tempBundleItemsColumnsData.data[dataLength - 1].serviceItems.length; d++) {
+              newBundleServiceItemsArr.push(tempBundleItemsColumnsData.data[dataLength - 1].serviceItems[d]);
+              expendedBundleServiceItems.push(tempBundleItemsColumnsData.data[dataLength - 1].serviceItems[d]);
+            }
+
+            for (let index = 0; index < selectedSearchMasterData.length; index++) {
+              if (selectedSearchMasterData[index].itemId === currentItemId) {
+                if ('associatedServiceOrBundleExitsorNot' in selectedSearchMasterData[index].itemId) {
+                  selectedSearchMasterData[index].associatedServiceOrBundle = [...selectedSearchMasterData[index]?.associatedServiceOrBundle, ...newBundleServiceItemsArr]
+                } else {
+                  selectedSearchMasterData[index]["associatedServiceOrBundle"] = [...newBundleServiceItemsArr];
+                }
+
+              }
+            }
+
+            console.log("newBundleServiceItemsArr ============= ", newBundleServiceItemsArr);
+
+            setAddBundleServiceItem3([...addBundleServiceItem3, ...newBundleServiceItemsArr]);
+          }
+
+        }
+
+        setItemListShowLoading(false);
+        setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemIds]);
+        // setAddBundleServiceItem3([...addBundleServiceItem3, ...createdNewCustomItems]);
+        setAddBundleServiceItem1([])
+        setTempBundleService1([])
       }
 
       if (((itemPriceData.standardJobId == "") ||
@@ -10218,14 +10571,13 @@ export function CreateCustomPortfolio(props) {
         id: resPrice.data.customItemPriceDataId,
       })
 
-
-
-      setTempBundleService3([...tempBundleService3, ...createdNewCustomItems]);
+      // setTempBundleService3([...tempBundleService3, ...createdNewCustomItems]);
       // setTempBundleService3(createdNewCustomItems);
       // console.log("tempBundleService3 after : ", tempBundleService3);
-      setTempBundleService1([])
+      // setTempBundleService1([])
 
     } catch (error) {
+      console.log("error ", error);
       toast(`😐 ` + error, {
         position: "top-right",
         autoClose: 3000,
@@ -10282,6 +10634,8 @@ export function CreateCustomPortfolio(props) {
     // }
 
   }
+
+  console.log("addBundleServiceItem3 ============= ", addBundleServiceItem3);
 
   const handleAddBundleServiceForSolutionItem = async () => {
     let reqObj = {};
@@ -10496,7 +10850,13 @@ export function CreateCustomPortfolio(props) {
           expendedBundleServiceItems.push(tempBundleItemsColumnsData.data[dataLength - 1].serviceItems[d]);
         }
 
-        currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow.associatedServiceOrBundle, ...newBundleServiceItemsArr];
+        let associatedServiceOrBundleExitsorNot = Boolean(currentExpendableItemRow.find(el => el.associatedServiceOrBundle))
+        if (associatedServiceOrBundleExitsorNot) {
+          currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow?.associatedServiceOrBundle, ...newBundleServiceItemsArr];
+        } else {
+          currentExpendableItemRow["associatedServiceOrBundle"] = [...newBundleServiceItemsArr];
+        }
+        // currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow?.associatedServiceOrBundle, ...newBundleServiceItemsArr];
 
         // tempBundleItemsColumnsData.data.map((data, i) => {
         //   var newBundleServiceItemsArr = [];
@@ -13846,195 +14206,365 @@ export function CreateCustomPortfolio(props) {
   }
 
   const ExpendedModelComponent = ({ data }) => (
-    <div className="scrollbar" id="style">
-      {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
-        <div
-          key={i}
-          id="row-0"
-          role="row"
-          className="sc-evZas cMMpBL rdt_TableRow"
-          style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
-        >
-          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
-          <div
-            id="cell-1-undefined"
-            data-column-id="1"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div>{bundleAndService.customItemId}</div>
-          </div>
-          <div
-            id="cell-1-undefined"
-            data-column-id="1"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div></div>
-            {/* <div>{bundleAndService.customItemId}</div> */}
-          </div>
-          <div
-            id="cell-2-undefined"
-            data-column-id="2"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.itemBodyDescription}
-            </div>
-          </div>
-          <div
-            id="cell-3-undefined"
-            data-column-id="3"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemHeaderModel?.strategy}
-            </div>
-          </div>
-          <div
-            id="cell-4-undefined"
-            data-column-id="4"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.standardJobId}
-            </div>
-          </div>
-          <div
-            id="cell-5-undefined"
-            data-column-id="5"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.repairOption}
-            </div>
-          </div>
-          <div
-            id="cell-6-undefined"
-            data-column-id="6"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.frequency}
-            </div>
-          </div>
-          <div
-            id="cell-7-undefined"
-            data-column-id="7"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.quantity}
-            </div>
-          </div>
-          <div
-            id="cell-8-undefined"
-            data-column-id="8"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.sparePartsPrice}
-            </div>
-          </div>
-          <div
-            id="cell-9-undefined"
-            data-column-id="9"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.servicePrice}
-            </div>
-          </div>
-          <div
-            id="cell-10-undefined"
-            data-column-id="10"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div data-tag="allowRowEvents">
-              {bundleAndService.customItemBodyModel?.totalPrice}
-            </div>
-          </div>
-          {bundleItems.length > 0 && (<div
-            id="cell-11-undefined"
-            data-column-id="11"
-            role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
-            data-tag="allowRowEvents"
-          >
-            <div
-              className="cursor"
-              onClick={(e) =>
-                handleExpandedRowEdit(
-                  e,
-                  data.customItemId,
-                  data.associatedServiceOrBundle[i]
-                )
-              }
-            >
-              <Tooltip title="Edit">
-                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
-              </Tooltip>
-            </div>
-            <div
-              className="cursor"
-              onClick={(e) =>
-                handleExpandedRowDelete(
-                  e,
-                  data.customItemId,
-                  data.associatedServiceOrBundle[i].customItemId
-                )
-              }
-            >
-              <Tooltip title="Delete">
-                <Link to="#" className="mx-1">
-                  <svg
-                    data-name="Layer 41"
-                    id="Layer_41"
-                    width="14px"
-                    viewBox="0 0 50 50"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <title />
-                    <path
-                      className="cls-1"
-                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                    />
-                    <path
-                      className="cls-1"
-                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                    />
-                    <path
-                      className="cls-1"
-                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                    />
-                  </svg>
-                </Link>
-              </Tooltip>
-            </div>
-          </div>)}
-
+    <div>
+      <div
+        id="row-0"
+        role="row"
+        className="border-radius-5 bg-primary text-white sc-evZas cMMpBL rdt_TableRow table-row-baseline"
+        style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+      >
+        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+          {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
         </div>
-      ))}
+        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell py-2">
+          {/* <div class="checkbox">
+                <input type="checkbox" value=""></input>
+            </div> */}
+        </div>
+        <div
+          id="cell-1-undefined"
+          data-column-id="1"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <span className="portfolio-icon mr-1">
+            <svg style={{ width: "11px" }}
+              id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 119.30736 133.59966"
+            >
+              <path
+                className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+              />
+            </svg>
+          </span>
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Solution Sequence</p>
+        </div>
+        <div
+          id="cell-2-undefined"
+          data-column-id="2"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle ID</p>
+        </div>
+        <div
+          id="cell-3-undefined"
+          data-column-id="3"
+          role="gridcell"
+          className="py-2 justify-content-between sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Bundle Description</p>
+        </div>
+        <div
+          id="cell-4-undefined"
+          data-column-id="4"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Strategy</p>
+        </div>
+        <div
+          id="cell-5-undefined"
+          data-column-id="5"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Standard Job Id</p>
+        </div>
+        <div
+          id="cell-6-undefined"
+          data-column-id="6"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Repair Option</p>
+        </div>
+        <div
+          id="cell-7-undefined"
+          data-column-id="7"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Frequency</p>
+        </div>
+        <div
+          id="cell-8-undefined"
+          data-column-id="8"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">No. of Events</p>
+        </div>
+        <div
+          id="cell-9-undefined"
+          data-column-id="9"
+          role="gridcell"
+          className=" justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Part $</p>
+        </div>
+        <div
+          id="cell-10-undefined"
+          data-column-id="10"
+          role="gridcell"
+          className="justify-content-between py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Service $</p>
+        </div>
+        <div
+          id="cell-11-undefined"
+          data-column-id="10"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Total $</p>
+        </div>
+        <div
+          id="cell-12-undefined"
+          data-column-id="11"
+          role="gridcell"
+          className="py-2 sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+          data-tag="allowRowEvents"
+        >
+          <p className="mb-0 font-size-12 font-weight-500 text-white">Comments</p>
+        </div>
+      </div>
+      <div className="scrollbar" id="style">
+        {data.associatedServiceOrBundle?.length > 0 && data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+          <div
+            key={i}
+            id="row-0"
+            role="row"
+            className="sc-evZas cMMpBL rdt_TableRow"
+            style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+          >
+            <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+            <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+            <div
+              id="cell-1-undefined"
+              data-column-id="1"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              {/* <div>{bundleAndService.customItemId}</div> */}
+              <div>{bundleAndService.itemId}</div>
+            </div>
+            <div
+              id="cell-2-undefined"
+              data-column-id="1"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div>{bundleAndService.itemName}</div>
+              {/* <div>{bundleAndService.customItemId}</div> */}
+            </div>
+            <div
+              id="cell-3-undefined"
+              data-column-id="2"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.itemBodyDescription} */}
+                {bundleAndService.itemDescription}
+              </div>
+            </div>
+            <div
+              id="cell-4-undefined"
+              data-column-id="3"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemHeaderModel?.strategy} */}
+                {bundleAndService?.itemHeaderStrategy}
+              </div>
+            </div>
+            <div
+              id="cell-5-undefined"
+              data-column-id="4"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.standardJobId} */}
+                {bundleAndService?.standardJobId === null ||
+                  bundleAndService?.standardJobId === "" ||
+                  bundleAndService?.standardJobId === undefined ||
+                  bundleAndService?.standardJobId === "string" ? "NA" :
+                  bundleAndService?.standardJobId}
+              </div>
+            </div>
+            <div
+              id="cell-6-undefined"
+              data-column-id="5"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.repairOption} */}
+                {bundleAndService?.repairKitId === null ||
+                  bundleAndService?.repairKitId === "" ||
+                  bundleAndService?.repairKitId === undefined ||
+                  bundleAndService?.repairKitId === "string" ? "NA" :
+                  bundleAndService?.repairKitId}
+              </div>
+            </div>
+            <div
+              id="cell-7-undefined"
+              data-column-id="6"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.frequency} */}
+                {bundleAndService?.frequency}
+              </div>
+            </div>
+            <div
+              id="cell-8-undefined"
+              data-column-id="7"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.quantity} */}
+                {bundleAndService?.numberOfEvents}
+              </div>
+            </div>
+            <div
+              id="cell-9-undefined"
+              data-column-id="8"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.sparePartsPrice} */}
+                {bundleAndService?.sparePartsPrice}
+              </div>
+            </div>
+            <div
+              id="cell-10-undefined"
+              data-column-id="9"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.servicePrice} */}
+                {bundleAndService?.servicePrice}
+              </div>
+            </div>
+            <div
+              id="cell-11-undefined"
+              data-column-id="10"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.totalPrice} */}
+                {bundleAndService?.calculatedPrice}
+              </div>
+            </div>
+            <div
+              id="cell-12-undefined"
+              data-column-id="10"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div data-tag="allowRowEvents">
+                {/* {bundleAndService.customItemBodyModel?.totalPrice} */}
+                {bundleAndService?.comments}
+              </div>
+            </div>
+            {/* {bundleItems.length > 0 && (<div
+              id="cell-11-undefined"
+              data-column-id="11"
+              role="gridcell"
+              className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+              data-tag="allowRowEvents"
+            >
+              <div
+                className="cursor"
+                onClick={(e) =>
+                  handleExpandedRowEdit(
+                    e,
+                    data.customItemId,
+                    data.associatedServiceOrBundle[i]
+                  )
+                }
+              >
+                <Tooltip title="Edit">
+                  <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                </Tooltip>
+              </div>
+              <div
+                className="cursor"
+                onClick={(e) =>
+                  handleExpandedRowDelete(
+                    e,
+                    data.customItemId,
+                    data.associatedServiceOrBundle[i].customItemId
+                  )
+                }
+              >
+                <Tooltip title="Delete">
+                  <Link to="#" className="mx-1">
+                    <svg
+                      data-name="Layer 41"
+                      id="Layer_41"
+                      width="14px"
+                      viewBox="0 0 50 50"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <title />
+                      <path
+                        className="cls-1"
+                        d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                      />
+                      <path
+                        className="cls-1"
+                        d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                      />
+                      <path
+                        className="cls-1"
+                        d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                      />
+                    </svg>
+                  </Link>
+                </Tooltip>
+              </div>
+            </div>)} */}
+
+          </div>
+        ))}
+      </div>
     </div>
   );
 
@@ -16149,6 +16679,8 @@ export function CreateCustomPortfolio(props) {
       setItemListShowLoading(true);
       var _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
       let _currentExpendableItemRow = { ...currentExpendableItemRow }
+
+
 
       // if (_selectedSolutionCustomItems.length > 0) {
       //   var tempBundleItemsUrl = _selectedSolutionCustomItems.map((data, i) =>
@@ -19447,7 +19979,8 @@ onChange={handleAdministrativreChange}
                         href={undefined}
                         style={{ whiteSpace: "pre" }}
                         className="btn-sm cursor"
-                        onClick={showAddCustomItemPopup}
+                        // onClick={showAddCustomItemPopup} // Current May 21, 2023
+                        onClick={handleNewBundleItem}
                       >
                         <span className="mr-2">
                           <AddIcon />
@@ -23016,9 +23549,6 @@ onChange={handleAdministrativreChange}
                     />
                   </>
                 }
-
-
-                {/*  */}
               </TabPanel>
               <TabPanel value="2">
                 <QuerySearchComp
@@ -23033,41 +23563,57 @@ onChange={handleAdministrativreChange}
                     { label: "Description", value: "description" },
                   ]}
                   setTempBundleService1={setTempBundleService1}
+                  // setTempBundleService1={setAddBundleServiceItem1}
                   setLoadingItem={setLoadingItem}
                 />
                 {loadingItem === "01" ? ("loading") :
                   <>
                     {tempBundleService1.length > 0 && (<>
+                      {/* {addBundleServiceItem1.length > 0 && (<> */}
                       <DataTable
                         title=""
                         columns={tempBundleItemColumns1}
                         data={tempBundleService1}
+                        // data={addBundleServiceItem1}
                         customStyles={customStyles}
                         selectableRows
                         onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
+                        // onSelectedRowsChange={(state) => setAddBundleServiceItem2(state.selectedRows)}
                         pagination
-                      />{tempBundleService2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                      />
+                      {/* {tempBundleService2.length > 0 && ( */}
+                      <div className="row mt-5 mb-3" style={{ justifyContent: "right" }}>
                         <button
                           type="button"
-                          className="btn btn-light"
+                          // className="btn btn-light"
+                          className="btn btn-primary mr-3"
                           // onClick={() => {
                           //     setTempBundleService3(tempBundleService2)
                           //     setTempBundleService1([])
                           // }}
-                          onClick={handleCreateCustomItem_SearchResult}
+                          // onClick={handleCreateCustomItem_SearchResult}
+                          onClick={selectedItemsToCustomBundleServiceItemCreation}
+                          // disabled={addBundleServiceItem2.length === 0}
+                          disabled={tempBundleService2.length === 0}
+                        // onClick={handleAddBundleServiceForSolutionItem}
                         >
                           Add Selected
                         </button>
-                      </div>)}
+                      </div>
+                      {/* )} */}
                     </>)}
                   </>
 
                 }
                 {tempBundleService3.length > 0 && <>
+                  {/* {addBundleServiceItem3.length > 0 && <> */}
                   <DataTable
                     title=""
-                    columns={tempBundleItemColumns1New}
+                    // // columns={tempBundleItemColumns1New}
+                    // columns={bundleServiceSelectedItemsColumn}
+                    columns={tempBundleItemColumns1}
                     data={tempBundleService3}
+                    // data={addBundleServiceItem3}
                     customStyles={customStyles}
                     expandableRows
                     // expandableRowsComponent={ExpandedPriceCalculator}
@@ -24238,10 +24784,13 @@ onChange={handleAdministrativreChange}
                   >
                     <DataTable
                       title=""
-                      columns={tempBundleCustomItemColumns}
+                      // columns={tempBundleCustomItemColumns}
+                      columns={searchItemsColumns}
                       data={tempBundleItems}
                       customStyles={customStyles}
                       expandableRows
+                      selectableRows
+                      // onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
                       // expandableRowsComponent={ExpandedComponent}
                       expandableRowsComponent={ExpendedModelComponent}
                       pagination

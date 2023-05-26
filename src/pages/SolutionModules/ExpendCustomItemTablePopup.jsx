@@ -557,11 +557,13 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
         var searchStr = e.target.value;
         getSearchStandardJobId(searchStr)
             .then((res) => {
-                $(`.scrollbar-model`).css("display", "block");
-                setQuerySearchStandardJobResult(res)
-                var preArr = [];
-                for (var n = 0; n < res.length; n++) {
-                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                if (res.status === 200) {
+                    $(`.scrollbar-model`).css("display", "block");
+                    setQuerySearchStandardJobResult(res)
+                    var preArr = [];
+                    for (var n = 0; n < res.data.length; n++) {
+                        preArr.push({ label: res.data[n].prefix, value: res.data[n].prefix })
+                    }
                 }
             })
             .catch((err) => {
@@ -577,11 +579,13 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
         var searchStr = e.target.value;
         getSearchKitId(searchStr)
             .then((res) => {
-                $(`.scrollbar-model`).css("display", "block");
-                setQuerySearchRelatedKitResult(res)
-                var preArr = [];
-                for (var n = 0; n < res.length; n++) {
-                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                if(res.status === 200){
+                    $(`.scrollbar-model`).css("display", "block");
+                    setQuerySearchRelatedKitResult(res.data)
+                    var preArr = [];
+                    for (var n = 0; n < res.data.length; n++) {
+                        preArr.push({ label: res.data[n].prefix, value: res.data[n].prefix })
+                    }
                 }
             })
             .catch((err) => {
