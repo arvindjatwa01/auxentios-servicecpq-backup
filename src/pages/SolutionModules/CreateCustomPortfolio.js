@@ -260,6 +260,7 @@ export function CreateCustomPortfolio(props) {
   const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
   const [disable, setDisable] = useState(true);
+  const [portfolioItemPriceEditable, setPortfolioItemPriceEditable] = useState(false);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
   const [makeKeyValue, setMakeKeyValue] = useState([]);
   const [modelKeyValue, setModelKeyValue] = useState([]);
@@ -3836,9 +3837,183 @@ export function CreateCustomPortfolio(props) {
     setOpenAddBundleItemHeader("Add New Portfolio Item");
   };
 
+
+  const handleCustomSolutionItem = async (e, row) => {
+    try {
+      if ((row === null) || (row === undefined)) {
+        throw "Something Went Wrong.";
+      }
+
+      const getCustomItemData = await getCustomItemDataById(row.itemId);
+
+      if (getCustomItemData.status === 200) {
+        const selectedItemData = getCustomItemData.data;
+        if (selectedItemData.customItemBodyModel.customItemPrices.length > 0) {
+
+          const resPrice = await getCustomItemPriceById(selectedItemData.customItemBodyModel.customItemPrices[0].customItemPriceDataId)
+          if (resPrice.status === 200) {
+            setItemPriceData(resPrice.data);
+            setPriceCalculator({
+              ...priceCalculator,
+              calculatedPrice: resPrice.data.calculatedPrice,
+              priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+                resPrice.data.priceMethod != "" ||
+                resPrice.data.priceMethod != null) ? {
+                label: resPrice.data.priceMethod,
+                value: resPrice.data.priceMethod
+              } : "",
+              priceType: (resPrice.data.priceType != "EMPTY" ||
+                resPrice.data.priceType != "" ||
+                resPrice.data.priceType != null) ? {
+                label: resPrice.data.priceType,
+                value: resPrice.data.priceType
+              } : "",
+              priceAdditionalSelect: {
+                label: (resPrice.data.additionalPriceType != "" ||
+                  resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
+                value: (resPrice.data.additionalPriceType != "" ||
+                  resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
+              },
+              priceAdditionalInput: resPrice.data.additionalPriceValue,
+              discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+                resPrice.data.discountType != "" ||
+                resPrice.data.discountType != null) ? {
+                label: resPrice.data.discountType,
+                value: resPrice.data.discountType
+              } : "",
+              discountTypeInput: resPrice.data.discountValue,
+
+              year: { label: resPrice.data.year, value: resPrice.data.year, },
+
+              noOfYear: resPrice.data.noOfYear,
+              startUsage: resPrice.data.startUsage,
+              endUsage: resPrice.data.endUsage,
+              recommendedValue: resPrice.data.recommendedValue,
+              netPrice: resPrice.data.netService,
+              totalPrice: resPrice.data.totalPrice,
+              id: resPrice.data.itemPriceDataId,
+              numberOfEvents: resPrice.data.numberOfEvents,
+              // portfolioDataId: resPrice.data.portfolio.portfolioId,
+              portfolioDataId: resPrice.data.customPortfolio.portfolioId,
+
+              flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+              escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+                label: resPrice.data.priceEscalation,
+                value: resPrice.data.priceEscalation,
+              } : ""),
+              escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+                resPrice.data.priceEscalation : ""),
+              escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+                resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                  resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                    resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                      resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+              priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+                "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                  resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+              priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+                resPrice.data.sparePartsPriceBreakDownPercentage :
+                resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                  resPrice.data.labourPriceBreakDownPercentage :
+                  resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                    resPrice.data.miscPriceBreakDownPercentage : 0,
+
+              priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+                label: "PARTS",
+                value: "PARTS",
+              } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+                label: "LABOR",
+                value: "LABOR",
+              } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+                label: "MISCELLANEOUS",
+                value: "MISCELLANEOUS",
+              } : "",
+
+              currency: ((selectedItemData?.customItemHeaderModel?.currency != "")) ? {
+                label: selectedItemData?.customItemHeaderModel?.currency,
+                value: selectedItemData?.customItemHeaderModel?.currency
+              } : "",
+              unit: ((selectedItemData?.customItemBodyModel?.unit != "")) ? {
+                label: selectedItemData?.customItemBodyModel?.unit,
+                value: selectedItemData?.customItemBodyModel?.unit
+              } : "",
+              frequency: (selectedItemData?.customItemBodyModel?.frequency != "") ? {
+                label: selectedItemData?.customItemBodyModel?.frequency,
+                value: selectedItemData?.customItemBodyModel?.frequency
+              } : "",
+              usageType: ((selectedItemData?.customItemBodyModel?.usage != "")) ? {
+                label: selectedItemData?.customItemBodyModel?.usage,
+                value: selectedItemData?.customItemBodyModel?.usage
+              } : "",
+            });
+          }
+        }
+
+        setAddportFolioItem({
+          ...addPortFolioItem,
+          currency: ((selectedItemData?.customItemHeaderModel?.currency != "")) ? {
+            label: selectedItemData?.customItemHeaderModel?.currency,
+            value: selectedItemData?.customItemHeaderModel?.currency
+          } : "",
+          unit: ((selectedItemData?.customItemBodyModel?.unit != "")) ? {
+            label: selectedItemData?.customItemBodyModel?.unit,
+            value: selectedItemData?.customItemBodyModel?.unit
+          } : "",
+          frequency: (selectedItemData?.customItemBodyModel?.frequency != "") ? {
+            label: selectedItemData?.customItemBodyModel?.frequency,
+            value: selectedItemData?.customItemBodyModel?.frequency
+          } : "",
+          usageType: ((selectedItemData?.customItemBodyModel?.usage != "")) ? {
+            label: selectedItemData?.customItemBodyModel?.usage,
+            value: selectedItemData?.customItemBodyModel?.usage
+          } : "",
+          year: {
+            label: selectedItemData.customItemBodyModel.year,
+            value: selectedItemData.customItemBodyModel.year
+          },
+        });
+
+        setTempBundleService3(row.associatedServiceOrBundle)
+
+        setComponentData({
+          ...componentData,
+          componentCode: selectedItemData.customItemHeaderModel.componentCode,
+          description: selectedItemData.customItemHeaderModel.componentDescription,
+          model: selectedItemData.customItemHeaderModel.model,
+          make: selectedItemData.customItemHeaderModel.itemHeaderMake,
+          serialNo: selectedItemData.customItemHeaderModel.serialNumber,
+        });
+
+        setTabs("1");
+        setPassItemEditRowData({ ...selectedItemData, _customItemId: selectedItemData.customItemId });
+
+        setOpenSearchSolution(false);
+        setCreateNewBundle(false);
+        setPortfolioItemDataEditable(true);
+        setPortfolioItemPriceEditable(true);
+        setItemModelShow(true);
+
+        setOpenAddBundleItemHeader("Add New Portfolio Item");
+      }
+
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
   // View custom Portfolio Item
   const handleEditPortfolioItem = async (e, row) => {
-
     try {
       if ((row === null) || (row === undefined)) {
         throw "Something Went Wrong.";
@@ -3858,19 +4033,16 @@ export function CreateCustomPortfolio(props) {
             serialNo: selectedItemData.customItemHeaderModel.serialNumber,
           });
           // data.associatedServiceOrBundle?.map((bundleAndService, i)
-          // setItemModelShow(true);
           setPassItemEditRowData({ ...selectedItemData, _customItemId: selectedItemData.customItemId });
 
           setTabs("1");
           setOpenSearchSolution(false);
           setCreateNewBundle(false);
-          setPortfolioItemDataEditable(true);
-          setShowAddCustomPortfolioItemModelPopup(true)
+          setItemModelShow(true);
+          // setPortfolioItemDataEditable(true);
+          // setShowAddCustomPortfolioItemModelPopup(true)
           setOpenAddBundleItemHeader("Add New Portfolio Item");
         }
-
-
-
       }
     } catch (error) {
       // console.log(error);
@@ -8849,6 +9021,7 @@ export function CreateCustomPortfolio(props) {
         })
       }
       setSelectedSearchMasterData(expandAblePortfolioItems);
+      setTempBundleItems(expandAblePortfolioItems);
 
     }
 
@@ -9522,6 +9695,138 @@ export function CreateCustomPortfolio(props) {
     setTempBundleItemCheckList(_tempBundleItemCheckList);
   };
 
+
+  const addTempItemsInToSearchItems = async () => {
+    setLoadingItem(true);
+    setItemModelShow(false);
+    let checkListArray = [];
+    tempBundleItemCheckList.map((item, i) => {
+      checkListArray.push({ customItemId: item.itemId });
+      if (item.associatedServiceOrBundle && item.associatedServiceOrBundle.length > 0) {
+        item.associatedServiceOrBundle.map((bundleService) => {
+          checkListArray.push({ customItemId: bundleService.itemId });
+        })
+      }
+    })
+
+    selectedSearchMasterData.map((item, i) => {
+      checkListArray.push({ customItemId: item.itemId });
+      if (item.associatedServiceOrBundle && item.associatedServiceOrBundle.length > 0) {
+        item.associatedServiceOrBundle.map((bundleService) => {
+          checkListArray.push({ customItemId: bundleService.itemId });
+        })
+      }
+    })
+
+    if (checkListArray.length > 0) {
+
+      var tempBundleItemsUrl = checkListArray.map((data, i) =>
+        `itemIds=${data.customItemId}`
+      ).join('&');
+
+      // if ((portfolioId !== "" || (portfolioId !== undefined))) {
+      //   tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
+      // }
+
+      const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+      let expandAblePortfolioItems = []
+      let expendedBundleServiceItems = [];
+      if (tempBundleItemsColumnsData.status === 200) {
+        tempBundleItemsColumnsData.data.map((data, i) => {
+
+          for (let c = 0; c < data.bundleItems.length; c++) {
+            expendedBundleServiceItems.push(data.bundleItems[c]);
+          }
+
+          for (let d = 0; d < data.serviceItems.length; d++) {
+            expendedBundleServiceItems.push(data.serviceItems[d]);
+          }
+
+          expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+        })
+      }
+      // setSelectedSearchMasterData([...selectedSearchMasterData, ...expandAblePortfolioItems]);
+      setSelectedSearchMasterData(expandAblePortfolioItems);
+
+      let newReqObj = {
+        name: generalComponentData.name,
+        description: generalComponentData.description,
+        customerId: parseInt(customerData.customerID),
+        externalReference: generalComponentData.externalReference,
+        customerGroup: customerData.customerGroup,
+        customerSegment: generalComponentData?.customerSegment != "" ?
+          generalComponentData?.customerSegment?.value : "",
+        template: flagTemplate,
+        visibleInCommerce: flagCommerce,
+
+        validFrom: validityData.fromDate,
+        validTo: validityData.toDate,
+
+        responseTime: stratgyResponseTimeKeyValue?.value ?
+          stratgyResponseTimeKeyValue?.value : "EMPTY",
+        productHierarchy: stratgyHierarchyKeyValue?.value ?
+          stratgyHierarchyKeyValue?.value : "EMPTY",
+        geographic: stratgyGeographicKeyValue?.value ?
+          stratgyGeographicKeyValue?.value : "EMPTY",
+        solutionType: solutionTypeListKeyValue?.value ?
+          solutionTypeListKeyValue?.value : "EMPTY",
+        solutionLevel: solutionLevelListKeyValue?.value ?
+          solutionLevelListKeyValue?.value : "EMPTY",
+
+        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+          ? portfolioPriceDataId : null,
+
+        customCoverages: selectedSolutionCustomCoverages,
+
+        preparedBy: (administrative.preparedBy != null ||
+          administrative.preparedBy != "" ? administrative.preparedBy : ""),
+        approvedBy: (administrative.approvedBy != null ||
+          administrative.approvedBy != "" ? administrative.approvedBy : ""),
+        preparedOn: administrative.preparedOn,
+        revisedBy: (administrative.revisedBy != null ||
+          administrative.revisedBy != "" ? administrative.revisedBy : ""),
+        revisedOn: administrative.revisedOn,
+        salesOffice: (administrative.salesOffice != null ||
+          administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
+        offerValidity: (administrative.offerValidity != null ||
+          administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
+
+        status: value2.value,
+        supportLevel: value3.value,
+        machineType: "EMPTY",
+        searchTerm: "",
+        lubricant: true,
+        strategyTask: "EMPTY",
+        taskType: "EMPTY",
+        usageCategory: "EMPTY",
+        availability: "EMPTY",
+        type: "EMPTY",
+        application: "EMPTY",
+        contractOrSupport: "EMPTY",
+        lifeStageOfMachine: "EMPTY",
+        numberOfEvents: 0,
+        rating: "",
+        startUsage: 0,
+        endUsage: 0,
+        unit: "EMPTY",
+        additionals: "",
+
+        customItems: checkListArray,
+      }
+
+      const exitingGeneralSolutionUpdate = await updateCustomPortfolio(
+        portfolioId,
+        newReqObj
+      );
+
+    }
+
+    setLoadingItem(false);
+    setTabs("1");
+    console.log("tempBundleItemCheckList ======== ", tempBundleItemCheckList, checkListArray);
+  }
+
   const addTempItemIntobundleItem = async () => {
     setLoadingItem(true);
     setItemModelShow(false);
@@ -10112,7 +10417,7 @@ export function CreateCustomPortfolio(props) {
           }
         }
 
-        
+
 
         const index = _tempBundleItems.findIndex(object => {
           return object.itemId === currentItemId;
@@ -10634,8 +10939,6 @@ export function CreateCustomPortfolio(props) {
     // }
 
   }
-
-  console.log("addBundleServiceItem3 ============= ", addBundleServiceItem3);
 
   const handleAddBundleServiceForSolutionItem = async () => {
     let reqObj = {};
@@ -12235,7 +12538,7 @@ export function CreateCustomPortfolio(props) {
     {
       name: (
         <>
-          <div>Actions</div>
+          <div>Actions 222</div>
         </>
       ),
       // selector: (row) => row.customItemBodyModel?.type,
@@ -12253,7 +12556,8 @@ export function CreateCustomPortfolio(props) {
         >
           <div>
             <Tooltip title="View">
-              <Link to="#" className="px-1" onClick={(e) => handleEditPortfolioItem(e, row)}>
+              {/* <Link to="#" className="px-1" onClick={(e) => handleEditPortfolioItem(e, row)}> */}
+              <Link to="#" className="px-1" onClick={(e) => handleCustomSolutionItem(e, row)}>
                 <VisibilityOutlinedIcon />
               </Link>
             </Tooltip>
@@ -14011,6 +14315,14 @@ export function CreateCustomPortfolio(props) {
   const getAddPortfolioItemDataFun = async (data) => {
     console.log("dataaaaa23324442", data)
     setAddportFolioItem(data);
+    setPriceCalculator({
+      ...priceCalculator,
+      unit: data?.unit,
+      usageType: data?.usageType,
+      frequency: data?.frequency,
+      currency: data?.currency,
+      year: data?.year,
+    })
 
     // Old Todo 
     // const rObj = {
@@ -16137,6 +16449,179 @@ export function CreateCustomPortfolio(props) {
   };
 
 
+  const handleComponentTabDataSave = async () => {
+    try {
+      // if (portfolioId === undefined || portfolioId == null) {
+      //   throw "Please Create Solution First";
+      // }
+
+      // if (currentItemId == null || currentItemId == "") {
+      //   throw "Please Create Item First";
+      // }
+
+      let reqObj = {}
+      let itemReqObj = {};
+
+      const createSolutionItemdDataById = await getCustomItemDataById(currentItemId);
+      if (createSolutionItemdDataById.status === 200) {
+        const selectedData = createSolutionItemdDataById.data;
+        const updateBundleServiceComponent = {
+          customItemId: selectedData.customItemId,
+          itemName: selectedData.itemName,
+          customItemHeaderModel: {
+            customItemHeaderId: selectedData.customItemHeaderModel.customItemHeaderId,
+            itemHeaderDescription: selectedData.customItemHeaderModel.itemHeaderDescription,
+            bundleFlag: selectedData.customItemHeaderModel.bundleFlag,
+            withBundleService: selectedData.customItemHeaderModel.withBundleService,
+            portfolioItemId: selectedData.customItemHeaderModel.portfolioItemId,
+            reference: selectedData.customItemHeaderModel.reference,
+            itemHeaderMake: componentData.make,
+            itemHeaderFamily: componentData.family,
+            model: componentData.modal,
+            prefix: componentData.prefix,
+            type: selectedData.customItemHeaderModel.type,
+            additional: selectedData.customItemHeaderModel.additional,
+            currency: selectedData.customItemHeaderModel.currency,
+            netPrice: selectedData.customItemHeaderModel.netPrice,
+            itemProductHierarchy: selectedData.customItemHeaderModel.itemProductHierarchy,
+            itemHeaderGeographic: selectedData.customItemHeaderModel.itemHeaderGeographic,
+            responseTime: selectedData.customItemHeaderModel.responseTime,
+            usage: selectedData.customItemHeaderModel.usage,
+            validFrom: selectedData.customItemHeaderModel.validaFrom,
+            validTo: selectedData.customItemHeaderModel.validTo,
+            estimatedTime: selectedData.customItemHeaderModel.estimatedTime,
+            servicePrice: selectedData.customItemHeaderModel.sservicePrice,
+            status: selectedData.customItemHeaderModel.status,
+            componentCode: componentData.componentCode,
+            componentDescription: componentData.description,
+            serialNumber: selectedData.customItemHeaderModel.serialNumber,
+            itemHeaderStrategy: selectedData.customItemHeaderModel.itemHeaderStrategy,
+            variant: selectedData.customItemHeaderModel.variant,
+            itemHeaderCustomerSegment: selectedData.customItemHeaderModel.itemHeaderCustomerSegment,
+            jobCode: selectedData.customItemHeaderModel.jobcode,
+            preparedBy: selectedData.customItemHeaderModel.preparedBy,
+            approvedBy: selectedData.customItemHeaderModel.approvedBy,
+            preparedOn: selectedData.customItemHeaderModel.preparedOn,
+            revisedBy: selectedData.customItemHeaderModel.revisedBy,
+            revisedOn: selectedData.customItemHeaderModel.revisedOn,
+            salesOffice: selectedData.customItemHeaderModel.salesOffice,
+            offerValidity: selectedData.customItemHeaderModel.offerValidity,
+            serviceChargable: selectedData.customItemHeaderModel.serviceChargable,
+            serviceOptional: selectedData.customItemHeaderModel.serviceOptional
+          },
+          customItemBodyModel: {
+            customItemBodyId: selectedData.customItemBodyModel.customItemBodyId,
+            itemBodyDescription: selectedData.customItemBodyModel.itemBodyDescription,
+            spareParts: selectedData.customItemBodyModel.spareParts,
+            labours: selectedData.customItemBodyModel.labours,
+            miscellaneous: selectedData.customItemBodyModel.miscellaneous,
+            taskType: selectedData.customItemBodyModel.taskType,
+            solutionCode: selectedData.customItemBodyModel.solutionCode,
+            usageIn: selectedData.customItemBodyModel.usageIn,
+            usage: selectedData.customItemBodyModel.usage,
+            year: selectedData.customItemBodyModel.year,
+            avgUsage: selectedData.customItemBodyModel.avgUsage,
+            unit: selectedData.customItemBodyModel.unit,
+            frequency: selectedData.customItemBodyModel.frequency,
+            customItemPrices: selectedData.customItemBodyModel.customItemPrices
+          },
+        }
+
+        if (selectedData.customItemBodyModel.customItemPrices.length > 0) {
+          for (let i = 0; i < tempBundleItems.length; i++) {
+            if (tempBundleItems[i].customItemId === currentItemId) {
+              reqObj = {
+                itemId: tempBundleItems[i].customItemId,
+                standardJobId: itemPriceData.standardJobId,
+                repairKitId: itemPriceData.repairKitId,
+                itemPriceDataId: itemPriceData.customItemPriceDataId
+              }
+              itemReqObj = tempBundleItems[i];
+              break;
+            }
+          }
+          // reqObj = {
+          //   itemId: currentItemId,
+          //   standardJobId: expendedSolutionSubComponent.standardJobId,
+          //   repairKitId: expendedSolutionSubComponent.repairKitId,
+          //   itemPriceDataId: selectedData.customItemBodyModel.customItemPrices[0].customItemPriceDataId
+          // }
+        }
+
+        if (Object.keys(reqObj).length !== 0) {
+
+          if (((expendedSolutionSubComponent.standardJobId == "") ||
+            (expendedSolutionSubComponent.standardJobId == null)) &&
+            ((expendedSolutionSubComponent.repairKitId != "") ||
+              (expendedSolutionSubComponent.repairKitId != null))) {
+            const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+          }
+
+          if (((expendedSolutionSubComponent.repairKitId == "") ||
+            (expendedSolutionSubComponent.repairKitId == null)) &&
+            (expendedSolutionSubComponent.standardJobId != "") ||
+            (expendedSolutionSubComponent.standardJobId != null)) {
+            const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+          }
+          const res = await getCustomItemPriceById(selectedData.customItemBodyModel.customItemPrices[0].customItemPriceDataId)
+
+          setPriceCalculator({
+            ...priceCalculator,
+            priceMethod: (res.data.priceMethod != "EMPTY" ||
+              res.data.priceMethod != "" ||
+              res.data.priceMethod != null) ? {
+              label: res.data.priceMethod,
+              value: res.data.priceMethod
+            } : "",
+            priceType: (res.data.priceType != "EMPTY" ||
+              res.data.priceType != "" ||
+              res.data.priceType != null) ? {
+              label: res.data.priceType,
+              value: res.data.priceType
+            } : "",
+            priceAdditionalSelect: {
+              label: res.data.additionalPriceType, value: res.data.additionalPriceType
+            },
+            priceAdditionalInput: res.data.additionalPriceValue,
+            discountTypeSelect: (res.data.discountType != "EMPTY" ||
+              res.data.discountType != "" ||
+              res.data.discountType != null) ? {
+              label: res.data.discountType,
+              value: res.data.discountType
+            } : "",
+            discountTypeInput: res.data.discountValue,
+            year: {
+              label: res.data.year, value: res.data.year
+            },
+            noOfYear: res.data.noOfYear,
+            startUsage: res.data.startUsage,
+            endUsage: res.data.endUsage,
+            recommendedValue: res.data.recommendedValue,
+            netPrice: res.data.netService,
+            totalPrice: res.data.totalPrice,
+            id: res.data.customItemPriceDataId,
+          })
+        }
+
+        const updateItem = await updateCustomItemData(currentItemId, updateBundleServiceComponent);
+
+        if (updateItem.status === 200) {
+          setTabs("5")
+        }
+
+      }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
 
   const handleComponentDataSave = async () => {
     try {
@@ -16616,26 +17101,38 @@ export function CreateCustomPortfolio(props) {
     }
 
     const _tempBundleItems = [...tempBundleItems]
-    for (let i = 0; i < _tempBundleItems.length; i++) {
-      if (currentItemId === _tempBundleItems[i].customItemId) {
-        if (_tempBundleItems[i].associatedServiceOrBundle) {
-          for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
-            console.log("tempBundleService2", tempBundleService2)
-            for (let k = 0; k < tempBundleService2.length; k++) {
-              if (_tempBundleItems[i].associatedServiceOrBundle[j].customItemId == tempBundleService3[k].customItemId) {
-                tempBundleService2.splice(k, 1)//remove object if already exist
-                break;
-              }
-            }
-          }
-          _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService3]
-        } else {
-          _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService3] }
-        }
-      }
-      setTempBundleItems(_tempBundleItems)
+
+
+    // for (let i = 0; i < _tempBundleItems.length; i++) {
+    //   if (currentItemId === _tempBundleItems[i].itemId) {
+    //     for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+
+    //     }
+    //   }
+    // }
+
+
+    // for (let i = 0; i < _tempBundleItems.length; i++) {
+
+    //   if (currentItemId === _tempBundleItems[i].customItemId) {
+    //     if (_tempBundleItems[i].associatedServiceOrBundle) {
+    //       for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+    //         console.log("tempBundleService2", tempBundleService2)
+    //         for (let k = 0; k < tempBundleService2.length; k++) {
+    //           if (_tempBundleItems[i].associatedServiceOrBundle[j].customItemId == tempBundleService3[k].customItemId) {
+    //             tempBundleService2.splice(k, 1)//remove object if already exist
+    //             break;
+    //           }
+    //         }
+    //       }
+    //       _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService3]
+    //     } else {
+    //       _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService3] }
+    //     }
+    //   }
+    //   setTempBundleItems(_tempBundleItems)
       setLoadingItem("22")
-    }
+    // }
   }
 
   const getFormattedDateTimeByTimeStamp = (timeStamp) => {
@@ -24005,7 +24502,8 @@ onChange={handleAdministrativreChange}
                   <div className="row mt-5" style={{ justifyContent: "right" }}>
                     <button
                       type="button"
-                      onClick={handleComponentDataSave}
+                      // onClick={handleComponentDataSave}
+                      onClick={handleComponentTabDataSave}
                       className="btn btn-light"
                     >
                       Save and Continue
@@ -24024,7 +24522,10 @@ onChange={handleAdministrativreChange}
 
                 <div className="ligt-greey-bg p-3">
                   <div>
-                    <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
+                    <span className="mr-3 cursor"
+                      // onClick={() => setDisable(!disable)}
+                      onClick={() => setPortfolioItemPriceEditable(!portfolioItemPriceEditable)}
+                    >
                       <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
                       <span className="ml-2">Edit</span>
                     </span>
@@ -24371,61 +24872,276 @@ onChange={handleAdministrativreChange}
                     </div>
                   </div>
 
-                  <div className="border border-radius-10 mt-3 py-2 px-3">
-                    <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            YEAR
-                          </label>
-
-
-                          <Select
-                            // options={[
-                            //   { value: "1", label: "1" },
-                            //   { value: "2", label: "2" },
-                            //   { value: "3", label: "3" },
-                            // ]}
-                            options={yearsOption}
-                            placeholder="Select..."
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                year: e
-                              })
-                            }
-                            value={priceCalculator.year}
-                          />
+                  {portfolioItemPriceEditable ?
+                    <>
+                      <div className="row input-fields">
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE METHOD</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceMethod == "" ||
+                                priceCalculator?.priceMethod == undefined)
+                                ? "NA" : priceCalculator?.priceMethod?.value}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> CURRENCY</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.currency == "" ||
+                                priceCalculator?.currency == undefined)
+                                ? "NA" : priceCalculator?.currency?.value}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE DATE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceDate == "" ||
+                                priceCalculator?.priceDate == undefined)
+                                ? "NA" : getFormattedDateTimeByTimeStamp(priceCalculator?.priceDate)}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE TYPE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceType == "" ||
+                                priceCalculator?.priceType == undefined)
+                                ? "NA" : priceCalculator?.priceType?.value}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> ADDITIONAL</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceAdditionalSelect == "" ||
+                                priceCalculator?.priceAdditionalSelect == undefined)
+                                ? "NA" : priceCalculator?.priceAdditionalSelect?.value}
+                              {(priceCalculator?.priceAdditionalInput == "" ||
+                                priceCalculator?.priceAdditionalInput == undefined)
+                                ? ` NA` : ` ${priceCalculator?.priceAdditionalInput}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE ESCALATION</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.escalationPriceOptionsValue1 == "" ||
+                                priceCalculator?.escalationPriceOptionsValue1 == undefined)
+                                ? "NA" : priceCalculator?.escalationPriceOptionsValue1?.value}
+                              {(priceCalculator?.escalationPriceInputValue == "" ||
+                                priceCalculator?.escalationPriceInputValue == undefined)
+                                ? ` NA` : ` ${priceCalculator?.escalationPriceInputValue}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FLAT RATE INDICATOR</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator.flatRateIndicator == true)
+                                ? "Yes" : "No"}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FLAT PRICE / ADJUSTED PRICE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.flatPrice == "" ||
+                                priceCalculator?.flatPrice == undefined)
+                                ? ` NA` : ` ${priceCalculator?.flatPrice}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">  DISCOUNT TYPE</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.discountTypeSelect == "" ||
+                                priceCalculator?.discountTypeSelect == undefined)
+                                ? "NA" : priceCalculator?.discountTypeSelect?.value}
+                              {(priceCalculator?.discountTypeInput == "" ||
+                                priceCalculator?.discountTypeInput == undefined)
+                                ? ` NA` : ` ${priceCalculator?.discountTypeInput}`}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <p className="text-light-dark font-size-12 font-weight-500 mb-2">  PRICE BREAK DOWN</p>
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                              {(priceCalculator?.priceBreakDownOptionsKeyValue1 == "" ||
+                                priceCalculator?.priceBreakDownOptionsKeyValue1 == undefined)
+                                ? "NA" : priceCalculator?.priceBreakDownOptionsKeyValue1?.value}
+                              {(priceCalculator?.priceBreakDownInputValue == "" ||
+                                priceCalculator?.priceBreakDownInputValue == undefined)
+                                ? ` NA` : ` ${priceCalculator?.priceBreakDownInputValue}`}
+                            </h6>
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            NO. OF YEARS
-                          </label>
-                          <input
-                            type="number"
-                            // type="text"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                            placeholder="No. of Years"
-                            // defaultValue={props?.priceCalculator?.startUsage}
-                            // value={priceCalculator.startUsage}
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                noOfYear: e.target.value,
-                              })}
-                            value={priceCalculator.noOfYear}
-                            name="noOfYear"
-                          />
-                          {/* <Select
+                      <div className="border border-radius-10 mt-3 py-2 px-3">
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  YEAR</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.year == "" ||
+                                  priceCalculator?.year == undefined)
+                                  ? "NA" : priceCalculator?.year?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  NO. OF YEARS</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.noOfYear == "" ||
+                                  priceCalculator?.noOfYear == undefined)
+                                  ? "NA" : priceCalculator?.noOfYear}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  START USAGE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.startUsage == "" ||
+                                  priceCalculator?.startUsage == undefined)
+                                  ? "NA" : priceCalculator?.startUsage}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  END USAGE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.endUsage == "" ||
+                                  priceCalculator?.endUsage == undefined)
+                                  ? "NA" : priceCalculator?.endUsage}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">  USAGE TYPE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(addPortFolioItem?.usageType == "" ||
+                                  addPortFolioItem?.usageType == undefined)
+                                  ? "NA" : addPortFolioItem?.usageType?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FREQUENCY</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(addPortFolioItem?.frequency == "" ||
+                                  addPortFolioItem?.frequency == undefined)
+                                  ? "NA" : addPortFolioItem?.frequency?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> UNIT</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(addPortFolioItem?.unit == "" ||
+                                  addPortFolioItem?.unit == undefined)
+                                  ? "NA" : addPortFolioItem?.unit?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> RECOMMENDED VALUE</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.recommendedValue == "" ||
+                                  priceCalculator?.recommendedValue == undefined)
+                                  ? "NA" : priceCalculator?.recommendedValue}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2"> NO. OF EVENTS</p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculator?.numberOfEvents == "" ||
+                                  priceCalculator?.numberOfEvents == undefined)
+                                  ? "NA" : priceCalculator?.numberOfEvents}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                    :
+                    <>
+                      <div className="border border-radius-10 mt-3 py-2 px-3">
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                YEAR
+                              </label>
+
+
+                              <Select
+                                // options={[
+                                //   { value: "1", label: "1" },
+                                //   { value: "2", label: "2" },
+                                //   { value: "3", label: "3" },
+                                // ]}
+                                options={yearsOption}
+                                placeholder="Select..."
+                                className="text-primary"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    year: e
+                                  })
+                                }
+                                value={priceCalculator.year}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                NO. OF YEARS
+                              </label>
+                              <input
+                                type="number"
+                                // type="text"
+                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                placeholder="No. of Years"
+                                // defaultValue={props?.priceCalculator?.startUsage}
+                                // value={priceCalculator.startUsage}
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    noOfYear: e.target.value,
+                                  })}
+                                value={priceCalculator.noOfYear}
+                                name="noOfYear"
+                              />
+                              {/* <Select
                                   options={[
                                     { value: "1", label: "1" },
                                     { value: "2", label: "2" },
@@ -24438,300 +25154,305 @@ onChange={handleAdministrativreChange}
                                   }
                                   value={addPortFolioItem.noOfYear}
                                 /> */}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
-                    <div className="row input-fields">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            START USAGE
-                          </label>
-                          <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                          >
-                            <input
-                              type="number"
-                              // type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                              placeholder="10,000 hours"
-                              // defaultValue={props?.priceCalculator?.startUsage}
-                              // value={priceCalculator.startUsage}
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  startUsage: e.target.value,
-                                })}
-                              value={priceCalculator.startUsage}
-                              name="startUsage"
-                            />
-                            <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                            </div>
                           </div>
-                          <div className="css-w8dmq8">*Mandatory</div>
                         </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            END USAGE
-                          </label>
-                          <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                          >
-                            <input
-                              type="number"
-                              // type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                              placeholder="16,000 hours"
-                              // defaultValue={props?.priceCalculator?.startUsage}
-                              // value={priceCalculator.startUsage}
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  endUsage: e.target.value,
-                                })}
-                              value={priceCalculator.endUsage}
-                              name="endUsage"
-                            />
-                            <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
-                          </div>
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            USAGE TYPE
-                          </label>
-                          <Select
-                            options={usageTypeOption}
-                            placeholder="Planned Usage"
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                usageType: e,
-                              })
-                            }
-                            value={priceCalculator.usageType}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            FREQUENCY
-                          </label>
-                          <Select
-                            options={frequencyOptions}
-                            placeholder="Select....."
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                frequency: e,
-                              })
-                            }
-                            value={priceCalculator.frequency}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            UNIT
-                          </label>
-                          <Select
-                            options={[
-                              { value: "per Hr", label: "per Hr" },
-                              { value: "per Km", label: "per Km" },
-                              { value: "per Miles", label: "per Miles" },
-                              { value: "per year", label: "per year" },
-                              { value: "per month", label: "per month" },
-                              { value: "per day", label: "per day" },
-                              { value: "per quarter", label: "per quarter" },
-                            ]}
-                            placeholder="Select..."
-                            className="text-primary"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator, unit: e
-                              })
-                            }
-                            value={priceCalculator.unit}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            RECOMMENDED VALUE
-                          </label>
-                          <div
-                            className=" d-flex form-control-date"
-                            style={{ overflow: "hidden" }}
-                          >
-                            <input
-                              type="number"
-                              // type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                              placeholder="Recommended Value"
-                              // defaultValue={props?.priceCalculator?.startUsage}
-                              // value={priceCalculator.startUsage}
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  recommendedValue: e.target.value,
-                                })}
-                              value={priceCalculator.recommendedValue}
-                              name="recommendedValue"
-                            // name="startUsage"
-                            // onChange={(e) =>
-                            //   setPriceCalculator({
-                            //     ...priceCalculator,
-                            //     startUsage: e.target.value,
-                            //   })
-                            // }
-                            />
-                            <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
-                          </div>
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group w-100">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            NO. OF EVENTS
-                          </label>
-                          <input
-                            type="number"
-                            className="form-control border-radius-10 text-primary"
-                            placeholder="NO. OF EVENTS"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                numberOfEvents: e.target.value,
-                              })
-                            }
-                            value={priceCalculator.numberOfEvents}
-                          />
-                          <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group mt-1">
-                          <FormGroup>
-                            <FormControlLabel
-                              style={{
-                                alignItems: "start",
-                                marginLeft: 0,
-                              }}
-                              control={
-                                <Switch1
-                                  checked={extWorkData.flatRateIndicator}
+                        <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                        <div className="row input-fields">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                START USAGE
+                              </label>
+                              <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                              >
+                                <input
+                                  type="number"
+                                  // type="text"
+                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                  placeholder="10,000 hours"
+                                  // defaultValue={props?.priceCalculator?.startUsage}
+                                  // value={priceCalculator.startUsage}
                                   onChange={(e) =>
-                                    setExtWorkData({
-                                      ...extWorkData,
-                                      flatRateIndicator: e.target.checked,
-                                      adjustedPrice: e.target.checked
-                                        ? extWorkData.adjustedPrice
-                                        : 0.0,
-                                    })
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      startUsage: e.target.value,
+                                    })}
+                                  value={priceCalculator.startUsage}
+                                  name="startUsage"
+                                />
+                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                END USAGE
+                              </label>
+                              <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                              >
+                                <input
+                                  type="number"
+                                  // type="text"
+                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                  placeholder="16,000 hours"
+                                  // defaultValue={props?.priceCalculator?.startUsage}
+                                  // value={priceCalculator.startUsage}
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      endUsage: e.target.value,
+                                    })}
+                                  value={priceCalculator.endUsage}
+                                  name="endUsage"
+                                />
+                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                USAGE TYPE
+                              </label>
+                              <Select
+                                options={usageTypeOption}
+                                placeholder="Planned Usage"
+                                className="text-primary"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    usageType: e,
+                                  })
+                                }
+                                value={priceCalculator.usageType}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                FREQUENCY
+                              </label>
+                              <Select
+                                options={frequencyOptions}
+                                placeholder="Select....."
+                                className="text-primary"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    frequency: e,
+                                  })
+                                }
+                                value={priceCalculator.frequency}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                UNIT
+                              </label>
+                              <Select
+                                options={[
+                                  { value: "per Hr", label: "per Hr" },
+                                  { value: "per Km", label: "per Km" },
+                                  { value: "per Miles", label: "per Miles" },
+                                  { value: "per year", label: "per year" },
+                                  { value: "per month", label: "per month" },
+                                  { value: "per day", label: "per day" },
+                                  { value: "per quarter", label: "per quarter" },
+                                ]}
+                                placeholder="Select..."
+                                className="text-primary"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator, unit: e
+                                  })
+                                }
+                                value={priceCalculator.unit}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                RECOMMENDED VALUE
+                              </label>
+                              <div
+                                className=" d-flex form-control-date"
+                                style={{ overflow: "hidden" }}
+                              >
+                                <input
+                                  type="number"
+                                  // type="text"
+                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                  placeholder="Recommended Value"
+                                  // defaultValue={props?.priceCalculator?.startUsage}
+                                  // value={priceCalculator.startUsage}
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      recommendedValue: e.target.value,
+                                    })}
+                                  value={priceCalculator.recommendedValue}
+                                  name="recommendedValue"
+                                // name="startUsage"
+                                // onChange={(e) =>
+                                //   setPriceCalculator({
+                                //     ...priceCalculator,
+                                //     startUsage: e.target.value,
+                                //   })
+                                // }
+                                />
+                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                              </div>
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group w-100">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                for="exampleInputEmail1"
+                              >
+                                NO. OF EVENTS
+                              </label>
+                              <input
+                                type="number"
+                                className="form-control border-radius-10 text-primary"
+                                placeholder="NO. OF EVENTS"
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    numberOfEvents: e.target.value,
+                                  })
+                                }
+                                disabled
+                                readOnly
+                                value={priceCalculator.numberOfEvents}
+                              />
+                              <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div class="form-group mt-1">
+                              <FormGroup>
+                                <FormControlLabel
+                                  style={{
+                                    alignItems: "start",
+                                    marginLeft: 0,
+                                  }}
+                                  control={
+                                    <Switch1
+                                      checked={extWorkData.flatRateIndicator}
+                                      onChange={(e) =>
+                                        setExtWorkData({
+                                          ...extWorkData,
+                                          flatRateIndicator: e.target.checked,
+                                          adjustedPrice: e.target.checked
+                                            ? extWorkData.adjustedPrice
+                                            : 0.0,
+                                        })
+                                      }
+                                    />
+                                  }
+                                  labelPlacement="top"
+                                  label={
+                                    <span className="text-light-dark font-size-12 font-weight-500">
+                                      SUPRESSION
+                                    </span>
                                   }
                                 />
-                              }
-                              labelPlacement="top"
-                              label={
-                                <span className="text-light-dark font-size-12 font-weight-500">
-                                  SUPRESSION
-                                </span>
-                              }
-                            />
-                          </FormGroup>
+                              </FormGroup>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="my-1 d-flex align-items-center justify-content-end">
-                      <Link to="#" className="btn border mr-4">Cancel</Link>
-                      <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
-                        <span className="mr-2 funds">
-                          <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                            <g>
-                              <g>
-                                <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                        <div className="my-1 d-flex align-items-center justify-content-end">
+                          <Link to="#" className="btn border mr-4">Cancel</Link>
+                          <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                            <span className="mr-2 funds">
+                              <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+                                <g>
+                                  <g>
+                                    <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
                               C74.2,101.4,70.7,105,66.3,105.1z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
                               C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
                               C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C90.7,157.7,94.3,154.1,98.6,154z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C123.2,157.7,126.8,154.1,131.1,154z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
                               c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
                               c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                              </g>
-                              <g>
-                                <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                                  </g>
+                                  <g>
+                                    <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
                               S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
                               c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
-                              </g>
-                            </g>
-                          </svg>
-                        </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
-                    </div>
-                  </div>
+                                  </g>
+                                </g>
+                              </svg>
+                            </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                        </div>
+                      </div>
+                    </>
+                  }
+
                   <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
                       <div className="d-block mr-4">
@@ -24791,6 +25512,7 @@ onChange={handleAdministrativreChange}
                       expandableRows
                       selectableRows
                       // onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
+                      onSelectedRowsChange={(state) => setTempBundleItemCheckList(state.selectedRows)}
                       // expandableRowsComponent={ExpandedComponent}
                       expandableRowsComponent={ExpendedModelComponent}
                       pagination
@@ -24803,7 +25525,8 @@ onChange={handleAdministrativreChange}
         </Modal.Body>
         <Modal.Footer>
           {tabs === "6" && (
-            <Button variant="primary" onClick={addTempItemIntobundleItem}>
+            // <Button variant="primary" onClick={addTempItemIntobundleItem}>
+            <Button variant="primary" onClick={addTempItemsInToSearchItems}>
               Add Selected
             </Button>
           )}

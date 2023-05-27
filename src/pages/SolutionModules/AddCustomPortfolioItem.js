@@ -413,10 +413,12 @@ const AddCustomPortfolioItem = (props) => {
       if (props.setBundleServiceNeed != undefined) {
         if (props.passItemEditRowData.customItemHeaderModel.withBundleService) {
           // props.setBundleServiceNeed(props.passItemEditRowData.customItemHeaderModel.withBundleService)
-          props.setBundleServiceNeed(true)
+          // props.setBundleServiceNeed(true)
+          props.setBundleServiceNeed(false)
         } else {
           // props.setBundleServiceNeed(!props.passItemEditRowData.customItemHeaderModel.withBundleService)
-          props.setBundleServiceNeed(false)
+          // props.setBundleServiceNeed(false)
+          props.setBundleServiceNeed(true)
         }
       }
 
