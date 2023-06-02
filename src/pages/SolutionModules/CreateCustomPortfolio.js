@@ -22542,7 +22542,6 @@ onChange={handleAdministrativreChange}
                       //   handleEscalationPriceValue(e)
                       // }
                       onChange={(e) => setPriceEscalationKeyValue1(e)}
-                      options={priceHeadTypeKeyValue}
                       placeholder="Select "
                       value={priceEscalationHeadKeyValue1}
                     />
@@ -25650,7 +25649,7 @@ onChange={handleAdministrativreChange}
                       </div>
                     </>
                   }
-                  
+
                   <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
                       <div className="d-block mr-4">
