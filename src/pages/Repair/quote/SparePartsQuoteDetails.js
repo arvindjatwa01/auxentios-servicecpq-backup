@@ -1,94 +1,84 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
-import Box from "@mui/material/Box";
-import EditIcon from "@mui/icons-material/EditOutlined";
-import penIcon from "../../../assets/images/pen.png";
-import EYEIcon from "@mui/icons-material/VisibilityOutlined";
+import AddIcon from "@mui/icons-material/Add";
 import CommentIcon from "@mui/icons-material/Chat";
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
+import Tab from "@mui/material/Tab";
+import React, { useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
+import { useHistory } from "react-router-dom";
+import Select from "react-select";
+import penIcon from "../../../assets/images/pen.png";
+// import MuiMenuComponent from "../Operational/MuiMenuComponent";
+import copyIcon from "../../../assets/icons/svg/Copy.svg";
+import cpqIcon from "../../../assets/icons/svg/CPQ.svg";
+import deleteIcon from "../../../assets/icons/svg/delete.svg";
+import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
+import shareIcon from "../../../assets/icons/svg/share.svg";
+import uploadIcon from "../../../assets/icons/svg/upload.svg";
 import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
   FONT_STYLE_UNIT_SELECT,
-  GRID_STYLE,
   OPTIONS_LEADTIME_UNIT,
+  STATUS_OPTIONS,
 } from "../CONSTANTS";
-import Tab from "@mui/material/Tab";
-import { customerSearch, machineSearch } from "services/searchServices";
-import { toast } from "react-toastify";
-import { solutionQuoteCreation } from "../../../services/index";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+// import SearchBox from "../ /components/SearchBox";
+import SearchBox from "pages/Repair/components/SearchBox";
+import {
+  customerSearch,
+  machineSearch,
+  sparePartSearch,
+} from "services/searchServices";
 
 import DateFnsUtils from "@date-io/date-fns";
-import Menu from "@mui/material/Menu";
-import SearchBox from "pages/Repair/components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import AddIcon from "@mui/icons-material/Add";
-import { styled, alpha } from "@mui/material/styles";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "react-select";
-import FormControl from "@mui/material/FormControl";
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import MenuItem from "@mui/material/MenuItem";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import DataTable from "react-data-table-component";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import shareIcon from "../../../assets/icons/svg/share.svg";
-import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
-import uploadIcon from "../../../assets/icons/svg/upload.svg";
-import deleteIcon from "../../../assets/icons/svg/delete.svg";
-import copyIcon from "../../../assets/icons/svg/Copy.svg";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
-import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+import { TextareaAutosize, TextField, Tooltip } from "@mui/material";
+import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useAppSelector } from "app/hooks";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import Moment from "react-moment";
 import {
-  selectQuoteDropdownOption,
-  selectBillingFreqList,
-  selectBillingTypeList,
-  selectDelPriorityList,
-  selectDelTypeList,
-  selectPaymentTermList,
-  selectQuoteStatusList,
-  selectQuoteValidityList,
-} from "pages/Repair/dropdowns/quoteRepairSlice";
-import { Link, useHistory } from "react-router-dom";
-import {
-  addQuoteItem,
+  addPLQuoteItem,
   addQuotePayer,
   createQuoteVersion,
   fetchQuoteDetails,
   fetchQuoteSummary,
   fetchQuoteVersions,
   removePLQuoteItem,
-  removePayer,
-  removeRepQuoteItem,
   updatePayerData,
+  updatePLQuoteItem,
   updateQuoteHeader,
-  updateQuoteItem,
 } from "services/repairQuoteServices";
-import { ReadOnlyField } from "../components/ReadOnlyField";
-import Moment from "react-moment";
-import { TextareaAutosize, TextField, Tooltip } from "@mui/material";
-import LoadingProgress from "../components/Loader";
 import Validator from "utils/validator";
-import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import RepairQuoteItemModal from "../components/RepairQuoteItem";
-import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import TextSnippetIcon from "@mui/icons-material/TextSnippet";
-import { useAppSelector } from "app/hooks";
 import ModalCreateVersion from "../components/ModalCreateVersion";
-import QuoteSummary from "../components/QuoteSummary";
-import { DataGrid } from "@mui/x-data-grid";
 import PayerGridTable from "../components/PayerGridTable";
+import QuoteSummary from "../components/QuoteSummary";
+import { ReadOnlyField } from "../components/ReadOnlyField";
+import SparepartQuoteItemModal from "../components/SparePartQuoteItem";
+import {
+  selectBillingFreqList,
+  selectBillingTypeList,
+  selectDelPriorityList,
+  selectDelTypeList,
+  selectPaymentTermList,
+  selectQuoteDropdownOption,
+  selectQuoteStatusList,
+  selectQuoteValidityList,
+} from "../dropdowns/quoteRepairSlice";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import PriceSummaryTable from "../components/PriceSummaryTable";
 import QuotePriceSummaryTable from "../components/QuotePriceSummaryTable ";
+import LoadingProgress from "../components/Loader";
+
 const customStyles = {
   rows: {
     style: {
@@ -102,8 +92,6 @@ const customStyles = {
       backgroundColor: "#872ff7",
       color: "#fff",
       borderRight: "1px solid rgba(0,0,0,.12)",
-      minWidth: "100px !important",
-      maxWidth: "120px !important",
     },
   },
   cells: {
@@ -112,18 +100,35 @@ const customStyles = {
       paddingRight: "8px",
       borderRight: "1px solid rgba(0,0,0,.12)",
       fontSize: "12px",
-      minWidth: "100px !important",
-      maxWidth: "120px !important",
     },
   },
 };
 
-const RepairQuoteDetails = (props) => {
+export function SparePartsQuoteDetails(props) {
   const history = useHistory();
   const { state } = props.location;
-  const [quoteId, setQuoteId] = useState("");
-  const [versionOpen, setVersionOpen] = useState(false);
+  //   console.log("props are : ", props);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [quoteItems, setQuoteItems] = useState([]);
+  const [searchModelResults, setSearchModelResults] = useState([]);
+  const [searchSerialResults, setSearchSerialResults] = useState([]);
+
+  const [quoteId, setQuoteId] = useState(0);
+
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+  const [searchCustResults, setSearchCustResults] = useState([]);
+
   const [headerLoading, setHeaderLoading] = useState(false);
+
+  // Customer Tab Data
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
     // source: "",
@@ -134,8 +139,57 @@ const RepairQuoteDetails = (props) => {
     contactPhone: "",
     customerGroup: "",
   });
-  const [quoteItems, setQuoteItems] = useState([]);
-  // Retrieve delivery types
+
+  // Machine Tab Data
+  const [machineData, setMachineData] = useState({
+    model: "",
+    serialNo: "",
+    smu: "",
+    fleetNo: "",
+    registrationNo: "",
+    chasisNo: "",
+  });
+
+  // Estimate Details Tab Data
+  const [estimateDetails, setEstimateDetails] = useState({
+    preparedBy: "",
+    approvedBy: "",
+    preparedOn: new Date(),
+    revisedBy: "",
+    revisedOn: new Date(),
+    salesOffice: "",
+  });
+  const [billingDetail, setBillingDetail] = useState({
+    priceDate: new Date(),
+    paymentTerm: "",
+    currency: "",
+    billingType: "",
+    billingFrequency: "",
+    netPrice: "",
+    margin: "",
+    discount: "",
+    priceEstimates: [],
+  });
+  const [shippingDetail, setShippingDetail] = useState({
+    deliveryType: "",
+    deliveryPriority: "",
+    leadTime: "",
+    serviceRecipientAddress: "",
+    unit: "",
+  });
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [noOptionsModel, setNoOptionsModel] = useState(false);
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+  // General Details Tab Data
+  const [generalDetails, setGeneralDetails] = useState({
+    quoteDate: new Date(),
+    quote: "",
+    description: "",
+    reference: "",
+    validity: "",
+    version: "",
+    salesOffice: "",
+  });
   const deliveryTypeOptions = useAppSelector(
     selectQuoteDropdownOption(selectDelTypeList)
   );
@@ -163,7 +217,6 @@ const RepairQuoteDetails = (props) => {
   const validityOptions = useAppSelector(
     selectQuoteDropdownOption(selectQuoteValidityList)
   );
-
   useEffect(() => {
     console.log(state);
     if (state) {
@@ -180,8 +233,34 @@ const RepairQuoteDetails = (props) => {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
-  // const [deliveryTypeOptions, setDelTypeOptions] = useState([]);
-  // const [deliveryPriorityOptions, setDelPriorityOptions] = useState([]);
+  const [payers, setPayers] = useState([]);
+  const [quoteSummary, setQuoteSummary] = useState("");
+
+  async function createQuotePayer(data) {
+    await addQuotePayer(quoteId, {
+      ...data,
+      payerId: undefined,
+      isNew: undefined,
+    })
+      .then((payer) => {
+        handleSnack("success", `Payer has been added!${JSON.stringify(payer)}`);
+        return payer;
+      })
+      .catch((e) => {
+        handleSnack("error", "Payer details could not be added");
+        throw e;
+      });
+  }
+  const updateQuotePayer = async (payerQuoteId, data) => {
+    await updatePayerData(payerQuoteId, data)
+      .then((savedPayer) => {
+        handleSnack("success", "Payer has been updated!");
+      })
+      .catch((e) => {
+        handleSnack("error", "Payer details could not be updated");
+      });
+  };
+
   const [quoteVersionOptions, setQuoteVersionOptions] = useState([
     { label: "Version 1", value: 1 },
   ]);
@@ -189,222 +268,52 @@ const RepairQuoteDetails = (props) => {
     label: "Version 1",
     value: 1,
   });
-  const initialQuoteItem = {
-    component: "",
-    description: "",
-    discount: 0,
-    itemNo: "",
-    labourPrice: 0,
-    miscPrice: 0,
-    jobDescription: "",
-    partListId: "",
-    partsPrice: "",
-    payerType: "",
-    totalPrice: 0,
-    adjustedPrice: 0,
-    margin: 0,
-    // type: '',
-    // unit: ''
-  };
-  const [payers, setPayers] = useState([]);
-  const [quoteItemOpen, setQuoteItemOpen] = useState(false);
-  const [quoteItemModalTitle, setQuoteItemModalTitle] =
-    useState("Add New Quote Item");
-  const [quoteItem, setQuoteItem] = useState(initialQuoteItem);
+  const [selQuoteStatus, setSelQuoteStatus] = useState({
+    value: "DRAFT",
+    label: "Draft",
+  });
   const handleVersion = (e) => {
     setSelectedVersion(e);
     fetchAllDetails(e.quoteId);
   };
+  const [value, setValue] = React.useState("customer");
+  const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
+  const handleResetData = (action) => {
+    if (action === "RESET") {
+      value === "customer" && populateCustomerData(savedQuoteDetails);
+      value === "machine" && populateMachineData(savedQuoteDetails);
+      value === "general" && populateGeneralData(savedQuoteDetails);
+      value === "estimation" && populateEstData(savedQuoteDetails);
+      value === "price" && populatePricingData(savedQuoteDetails);
+      value === "shipping" && populateShippingData(savedQuoteDetails);
+    } else if (action === "CANCEL") {
+      populateHeader(savedQuoteDetails);
+    }
+    // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+  };
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
   const fetchAllDetails = async (quoteId) => {
-    // var versionHistoryData = {
-    //   builderId: "",
-    //   exitingType: "repair",
-    //   editable: false,
-    // };
-    // localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
+    // console.log("quoteId --- ", quoteId);
     if (quoteId) {
       setHeaderLoading(true);
       await fetchQuoteDetails(quoteId)
         .then((result) => {
           setQuoteId(result.quoteId);
           populateHeader(result);
-          setQuoteItems(result.rbQuoteItems);
+          console.log(result.plQuoteItems);
+          setQuoteItems(result.plQuoteItems);
         })
+
         .catch((err) => {
-          console.log(err);
           handleSnack("error", "Error occured while fetching header details");
         });
       setHeaderLoading(false);
     }
   };
-  const [selQuoteStatus, setSelQuoteStatus] = useState("");
-  const quoteItemsColumns = [
-    {
-      name: (
-        <>
-          <div>Component</div>
-        </>
-      ),
-      selector: (row) => row.component,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.component,
-    },
-    {
-      name: (
-        <>
-          <div>Job Desc.</div>
-        </>
-      ),
-      selector: (row) => row.jobDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.jobDescription,
-    },
-    {
-      name: (
-        <>
-          <div>Description</div>
-        </>
-      ),
-      selector: (row) => row.description,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.description,
-    },
-    {
-      name: (
-        <>
-          <div>Part List ID</div>
-        </>
-      ),
-      selector: (row) => row.partListId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.partListId,
-    },
-    {
-      name: (
-        <>
-          <div>Parts $</div>
-        </>
-      ),
-      selector: (row) => row.partsPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.partsPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Labor $</div>
-        </>
-      ),
-      selector: (row) => row.labourPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.labourPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Misc $</div>
-        </>
-      ),
-      selector: (row) => row.miscPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.miscPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Price</div>
-        </>
-      ),
-      selector: (row) => row.totalPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.totalPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Net Adjusted $</div>
-        </>
-      ),
-      selector: (row) => row.adjustedPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.adjustedPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Discount</div>
-        </>
-      ),
-      selector: (row) => row.discount,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.discount,
-    },
-    {
-      name: (
-        <>
-          <div>Margin</div>
-        </>
-      ),
-      selector: (row) => row.margin,
-      wrap: true,
-      sortable: true,
-      format: (row) => (row.margin ? row.margin : 30),
-    },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Payer Type</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.payerType,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.payerType,
-    // },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      wrap: true,
-      width: "30px",
-      sortable: true,
-      format: (row) => row.action,
-      cell: (row) => (
-        <div>
-          <Tooltip
-            title="Edit"
-            className="mr-2 cursor"
-            onClick={() => openQuoteItemModal(row, "existing")}
-          >
-            <img className="m-1" src={penIcon} alt="Edit" />
-          </Tooltip>
-          <Tooltip
-            title="Delete"
-            className="cursor"
-            onClick={() => handleDeleteQuoteItem(row.rbQuoteId)}
-          >
-            <img className="m-1" src={deleteIcon} alt="Delete" />
-          </Tooltip>
-          {/* <Tooltip title="Comment" className="cursor">
-            <CommentIcon />
-          </Tooltip> */}
-        </div>
-      ),
-    },
-  ];
-  const [savedQuoteDetails, setSavedQuoteDetails] = useState([]);
+
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
     machineViewOnly: false,
@@ -413,6 +322,34 @@ const RepairQuoteDetails = (props) => {
     priceViewOnly: false,
     shippingViewOnly: false,
   });
+  const makeHeaderEditable = () => {
+    if (value === "customer" && viewOnlyTab.custViewOnly)
+      setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+    else if (value === "machine" && viewOnlyTab.machineViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        machineViewOnly: false,
+      });
+    else if (value === "estimation" && viewOnlyTab.estViewOnly) {
+      console.log(value);
+      setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
+    } else if (value === "general" && viewOnlyTab.generalViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        generalViewOnly: false,
+      });
+    else if (value === "price" && viewOnlyTab.priceViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        priceViewOnly: false,
+      });
+    else if (value === "shipping" && viewOnlyTab.shippingViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        shippingViewOnly: false,
+      });
+  };
+
   const populateHeader = (result) => {
     setSavedQuoteDetails(result);
     // console.log("Header Details", result);
@@ -470,9 +407,6 @@ const RepairQuoteDetails = (props) => {
       country: result.country ? result.country : "",
       regionOrState: result.regionOrState ? result.regionOrState : "",
     });
-    if (result.customerName && result.payers.length === 0) {
-      addPayerDetails(result.quoteId, result.customerName, 100);
-    }
     setSearchCustResults([]);
   };
   const populateMachineData = (result) => {
@@ -536,8 +470,8 @@ const RepairQuoteDetails = (props) => {
       currency: result.currency,
       discount: result.discount,
       margin: result.margin,
-      netPrice: result.netPrice,
       priceEstimates: result.priceEstimates,
+      netPrice: result.netPrice,
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
           ? paymentTermOptions.find(
@@ -602,40 +536,6 @@ const RepairQuoteDetails = (props) => {
         : serviceRecipientAddress,
     });
   };
-  const addPayerDetails = (id, payerName, billingSplit) => {
-    addQuotePayer(id, { payerName, billingSplit })
-      .then((addedPayer) => {
-        setPayers([addedPayer]);
-      })
-      .catch((e) => {
-        handleSnack("warning", "please check the payer data!");
-      });
-  };
-
-  const updatePayerDetails = React.useCallback(
-    (existingPayerName, payerName) =>
-      new Promise((resolve, reject) => {
-        console.log(payerName);
-        setHeaderLoading(true);
-        setPayers(
-          payers.map((indPayer) => {
-            if (indPayer.payerName === existingPayerName) {
-              console.log(payerName);
-              updatePayerData(indPayer.payerId, { payerName })
-                .then((updatedPayer) => {
-                  resolve(updatedPayer);
-                })
-                .catch((e) => {
-                  handleSnack("warning", "please check the payer data!");
-                  resolve(indPayer);
-                });
-            }
-          })
-        );
-        setHeaderLoading(false);
-      }),
-    [payers]
-  );
 
   // Machine search based on model and serial number
   const handleMachineSearch = async (searchMachinefieldName, searchText) => {
@@ -687,20 +587,7 @@ const RepairQuoteDetails = (props) => {
     }
   };
 
-  const handleSnack = (snackSeverity, snackMessage) => {
-    setSnackMessage(snackMessage);
-    setSeverity(snackSeverity);
-    setOpenSnack(true);
-  };
-  const handleSnackBarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnack(false);
-  };
-  const [severity, setSeverity] = useState("");
-  const [openSnack, setOpenSnack] = useState(false);
-  const [snackMessage, setSnackMessage] = useState("");
+  // Search Customer with customer ID
   const handleCustSearch = async (searchCustfieldName, searchText) => {
     setSearchCustResults([]);
     customerData.customerID = searchText;
@@ -719,7 +606,8 @@ const RepairQuoteDetails = (props) => {
         });
     }
   };
-  const [searchCustResults, setSearchCustResults] = useState([]);
+
+  // Select the customer from search result
   const handleCustSelect = (type, currentItem) => {
     setCustomerData({
       ...customerData,
@@ -732,6 +620,8 @@ const RepairQuoteDetails = (props) => {
     });
     setSearchCustResults([]);
   };
+
+  //Individual customer field value change
   const handleCustomerDataChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -741,30 +631,7 @@ const RepairQuoteDetails = (props) => {
       [name]: value,
     });
   };
-  const [estimateDetails, setEstimateDetails] = useState({
-    preparedBy: "",
-    approvedBy: "",
-    preparedOn: new Date(),
-    revisedBy: "",
-    revisedOn: new Date(),
-    salesOffice: null,
-  });
-  const [machineData, setMachineData] = useState({
-    model: "",
-    serialNo: "",
-    smu: "",
-    fleetNo: "",
-    registrationNo: "",
-    chasisNo: "",
-  });
-  const handleMachineDataChange = (e) => {
-    var value = e.target.value;
-    var name = e.target.name;
-    setMachineData({
-      ...machineData,
-      [name]: value,
-    });
-  };
+
   // Select machine from the search result
   const handleModelSelect = (type, currentItem) => {
     if (type === "model") {
@@ -788,185 +655,35 @@ const RepairQuoteDetails = (props) => {
       setSearchSerialResults([]);
     }
   };
-  const [searchModelResults, setSearchModelResults] = useState([]);
-  const [searchSerialResults, setSearchSerialResults] = useState([]);
 
-  const [generalDetails, setGeneralDetails] = useState({
-    quoteDate: new Date(),
-    quoteName: "",
-    description: "",
-    reference: "",
-    validity: "",
-    version: "",
-  });
-  const [billingDetail, setBillingDetail] = useState({
-    priceDate: new Date(),
-    paymentTerms: "",
-    currency: "",
-    billingType: "",
-    billingFrequency: "",
-    netPrice: "",
-    margin: "",
-    discount: "",
-    priceEstimates: [],
-  });
-  const [shippingDetail, setShippingDetail] = useState({
-    deliveryType: "",
-    deliveryPriority: "",
-    leadTime: "",
-    serviceRecipientAddress: "",
-    unit: { label: "Day", value: "DAY" },
-  });
-  const [noOptionsCust, setNoOptionsCust] = useState(false);
-  const [noOptionsModel, setNoOptionsModel] = useState(false);
-  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
-
-  const miscItemRows = [
-    { id: 1, GroupNumber: "Snow", Type: "Jon", Partnumber: 35 },
-    { id: 2, GroupNumber: "Lannister", Type: "Cersei", Partnumber: 42 },
-    { id: 3, GroupNumber: "Lannister", Type: "Jaime", Partnumber: 45 },
-  ];
-
-  const miscItemColumns = [
-    {
-      name: (
-        <>
-          <div>Other Misc Type $</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Price</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      selector: (row) => row.sbQuoteId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.sbQuoteId,
-    },
-  ];
-
-  function getStyles(name, personName, theme) {
-    return {
-      fontWeight:
-        personName.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
-    };
-  }
-
-  const makeHeaderEditable = () => {
-    if (value === "customer" && viewOnlyTab.custViewOnly)
-      setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
-    else if (value === "machine" && viewOnlyTab.machineViewOnly)
-      setViewOnlyTab({
-        ...viewOnlyTab,
-        machineViewOnly: false,
-      });
-    else if (value === "estimation" && viewOnlyTab.estViewOnly) {
-      console.log(value);
-      setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
-    } else if (value === "general" && viewOnlyTab.generalViewOnly)
-      setViewOnlyTab({
-        ...viewOnlyTab,
-        generalViewOnly: false,
-      });
-    else if (value === "price" && viewOnlyTab.priceViewOnly)
-      setViewOnlyTab({
-        ...viewOnlyTab,
-        priceViewOnly: false,
-      });
-    else if (value === "shipping" && viewOnlyTab.shippingViewOnly)
-      setViewOnlyTab({
-        ...viewOnlyTab,
-        shippingViewOnly: false,
-      });
-  };
-
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-  const [quoteItemViewOnly, setQuoteItemViewOnly] = useState(false);
-  const payerTypeOptions = [
-    { label: "Customer", value: "CUSTOMER" },
-    { label: "Goodwill", value: "GOODWILL" },
-    { label: "Insurer", value: "INSURER" },
-  ];
-  // Open quote item modal
-  const openQuoteItemModal = (row, operation) => {
-    // console.log(row);
-    setQuoteItem({
-      ...row,
-      payerType: payerTypeOptions.find(
-        (element) => element.value === row.payerType
-      ),
-      margin: row.margin ? row.margin : 30,
+  //Individual machine field value change
+  const handleMachineDataChange = (e) => {
+    var value = e.target.value;
+    var name = e.target.name;
+    setMachineData({
+      ...machineData,
+      [name]: value,
     });
-    if (operation === "existing") {
-      setQuoteItemModalTitle(row?.component + " | " + row?.description);
-
-      setQuoteItemViewOnly(true);
-    }
-    setQuoteItemOpen(true);
   };
 
-  //Remove Quote Item
-  const handleDeleteQuoteItem = (quoteItemId) => {
-    removeRepQuoteItem(quoteItemId)
-      .then((res) => {
-        handleSnack("success", res);
-        fetchAllDetails(quoteId);
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const fetchSummaryDetails = async (selectedQuoteId) => {
+    console.log("ABCD", selectedQuoteId);
+    await fetchQuoteSummary(selectedQuoteId)
+      .then((summary) => {
+        setQuoteSummary(summary);
+        setSummaryOpen(true);
       })
       .catch((e) => {
         console.log(e);
-        handleSnack("error", "Error occurred while removing the quote item");
       });
   };
-  //Close Quote Item modal
-  const handleQuoteItemClose = () => {
-    setQuoteItemOpen(false);
-    setQuoteItem(initialQuoteItem);
-    setQuoteItemViewOnly(false);
-    setQuoteItemModalTitle("Add New Quote Item");
-  };
 
-  const [value, setValue] = React.useState("customer");
-  const steps = [
-    "Draft",
-    "Reviewed",
-    "Sent to Costomer",
-    "In revision",
-    "Revised",
-    "Accepted",
-  ];
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
   const updateCustomerData = async () => {
     let existingCustName = savedQuoteDetails.customerName;
     // populate service recipient address
@@ -995,8 +712,8 @@ const RepairQuoteDetails = (props) => {
       customerSegment: customerData.customerSegment,
       regionOrState: customerData.regionOrState,
       country: customerData.country,
-      serviceRecipientAddress,
     };
+    console.log(data);
     setShippingDetail({ ...shippingDetail, serviceRecipientAddress });
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
@@ -1005,15 +722,6 @@ const RepairQuoteDetails = (props) => {
       updateQuoteHeader(quoteId, data)
         .then((result) => {
           setSavedQuoteDetails(result);
-          // To update the first payer name whenever customer name changes
-          // payers.map(indPayer => {
-          //   if(indPayer.payerName === existingCustName){
-          // updatePayerDetails(existingCustName, customerData.customerName);
-          //     return {...indPayer, payerName: customerData.customerName}
-          //   }
-
-          // })
-          console.log(payers);
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
           handleSnack("success", "Customer details updated!");
@@ -1025,18 +733,6 @@ const RepairQuoteDetails = (props) => {
           );
         });
     }
-  };
-  const handleResetData = (action) => {
-    if (action === "RESET") {
-      value === "customer" && populateCustomerData(savedQuoteDetails);
-      value === "machine" && populateMachineData(savedQuoteDetails);
-      value === "general" && populateGeneralData(savedQuoteDetails);
-      value === "estimation" && populateEstData(savedQuoteDetails);
-      value === "price" && populatePricingData(savedQuoteDetails);
-    } else if (action === "CANCEL") {
-      populateHeader(savedQuoteDetails);
-    }
-    // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
   };
   const updateMachineData = () => {
     let data = {
@@ -1069,7 +765,7 @@ const RepairQuoteDetails = (props) => {
       quoteDate: generalDetails.quoteDate,
       description: generalDetails.description,
       reference: generalDetails.reference,
-      validity: generalDetails.validity?.value,
+      validityDays: generalDetails.validity?.value,
     };
     updateQuoteHeader(quoteId, data)
       .then((result) => {
@@ -1100,7 +796,7 @@ const RepairQuoteDetails = (props) => {
         setSavedQuoteDetails(result);
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
-        handleSnack("success", "Estimation details updated!");
+        handleSnack("success", "General details updated!");
       })
       .catch((err) => {
         handleSnack(
@@ -1168,78 +864,273 @@ const RepairQuoteDetails = (props) => {
         handleSnack("error", `Failed to update the status!`);
       });
   };
+  const quoteItemsColumns = [
+    {
+      name: (
+        <>
+          <div>Group Number</div>
+        </>
+      ),
+      selector: (row) => row.groupNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.groupNumber,
+    },
+    {
+      name: (
+        <>
+          <div>Type</div>
+        </>
+      ),
+      selector: (row) => row.partType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partType,
+    },
+    {
+      name: (
+        <>
+          <div>Desc</div>
+        </>
+      ),
+      selector: (row) => row.partDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Part Number</div>
+        </>
+      ),
+      selector: (row) => row.partNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.partNumber,
+    },
+    {
+      name: (
+        <>
+          <div>Qty</div>
+        </>
+      ),
+      selector: (row) => row.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Sales Unit</div>
+        </>
+      ),
+      selector: (row) => row.salesUnit,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.salesUnit,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price</div>
+        </>
+      ),
+      selector: (row) => row.listPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.listPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Extended Price</div>
+        </>
+      ),
+      selector: (row) => row.extendedPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.extendedPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Currency</div>
+        </>
+      ),
+      selector: (row) => row.currency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.currency,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Adjusted Price</div>
+        </>
+      ),
+      selector: (row) => row.adjustedPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.adjustedPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Discount</div>
+        </>
+      ),
+      selector: (row) => row.discount,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.discount,
+    },
+    {
+      name: (
+        <>
+          <div>Margin</div>
+        </>
+      ),
+      selector: (row) => row.margin,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.margin,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Payer Type</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.payerType,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.payerType,
+    // },
+    {
+      name: (
+        <>
+          <div>Delivery Date</div>
+        </>
+      ),
+      selector: (row) => row.deliveryDate,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.deliveryDate,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      maxWidth: "10px",
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) => (
+        <div>
+          <Tooltip
+            title="Edit"
+            className="mr-2 cursor"
+            onClick={() => openQuoteItemModal(row, "existing")}
+          >
+            <img className="m-1" src={penIcon} alt="Edit" />
+          </Tooltip>
+          <Tooltip
+            title="Delete"
+            className="cursor"
+            onClick={() => handleDeleteQuoteItem(row.plQuoteId)}
+          >
+            {/* <CommentIcon /> */}
+            <img className="m-1" src={deleteIcon} alt="Delete" />
+          </Tooltip>
+        </div>
+      ),
+    },
+  ];
 
-  const handleQuoteItemUpdate = async () => {
-    if (quoteItemModalTitle !== "Add New Quote Item") {
-      await updateQuoteItem(quoteItem.rbQuoteId, {
-        ...quoteItem,
-        itemType: quoteItem.itemType ? quoteItem.itemType : "RB_ITEM",
-        payerType: quoteItem.payerType?.value,
-      })
-        .then((quoteItem) => {
-          fetchAllDetails(quoteId);
-          handleSnack("success", "Quote item has been updated successfully!");
-        })
-        .catch((err) => {
-          console.log(err);
-          handleSnack("error", "Item update failed!");
-        });
-    } else {
-      console.log(quoteItem);
-      await addQuoteItem(quoteId, {
-        ...quoteItem,
-        itemType: "RB_ITEM",
-        payerType: quoteItem.payerType?.value,
-      })
-        .then((quoteItem) => {
-          fetchAllDetails(quoteId);
-          handleSnack("success", "Quote item has been added successfully!");
-        })
-        .catch((err) => {
-          console.log(err);
-          handleSnack("error", "Add item failed!");
-        });
-    }
-    setQuoteItemOpen(false);
-  };
-  const createVersion = async () => {
-    await createQuoteVersion(
-      savedQuoteDetails.quoteName,
-      savedQuoteDetails.version,
-      newVersion
-    )
-      .then((result) => {
-        setVersionOpen(false);
-        setQuoteId(result.quoteId);
-        fetchAllDetails(result.quoteId);
-        // setVersionDescription("");
-        handleSnack(
-          "success",
-          `Version ${result.version} of ${result.quoteName} created successfully`
-        );
-      })
-      .catch((err) => {
-        setVersionOpen(false);
-
-        if (err.message === "Not Allowed")
-          handleSnack("warning", ERROR_MAX_VERSIONS);
-        else
-          handleSnack("error", "Error occurred while creating builder version");
-        // setVersionDescription("");
-      });
-  };
-  const [quoteSummary, setQuoteSummary] = useState("");
-  const [summaryOpen, setSummaryOpen] = useState(false);
-  const fetchSummaryDetails = async (selectedQuoteId) => {
-    await fetchQuoteSummary(selectedQuoteId)
-      .then((summary) => {
-        setQuoteSummary(summary);
-        setSummaryOpen(true);
+  //Remove Spare Part
+  const handleDeleteQuoteItem = (quoteItemId) => {
+    removePLQuoteItem(quoteItemId)
+      .then((res) => {
+        handleSnack("success", res);
+        fetchAllDetails(quoteId);
       })
       .catch((e) => {
         console.log(e);
+        handleSnack("error", "Error occurred while removing the quote item");
       });
   };
+
+  const initialQuoteItem = {
+    groupNumber: "",
+    partType: "",
+    partNumber: "",
+    quantity: "",
+    listPrice: 0.0,
+    extendedPrice: 0.0,
+    salesUnit: "",
+    currency: "USD",
+    usagePercentage: 0,
+    totalPrice: 0.0,
+    comment: "",
+    partDescription: "",
+    adjustedPrice: "",
+    discount: 0,
+    margin: 0,
+    payerType: "",
+  };
+
+  const [quoteItem, setQuoteItem] = useState(initialQuoteItem);
+  const [quoteItemViewOnly, setQuoteItemViewOnly] = useState(false);
+
+  const [quoteItemModalTitle, setQuoteItemModalTitle] =
+    useState("Add New Quote Item");
+  const [quoteItemOpen, setQuoteItemOpen] = useState(false);
+  const payerTypeOptions = [
+    { label: "Customer", value: "CUSTOMER" },
+    { label: "Goodwill", value: "GOODWILL" },
+    { label: "Insurer", value: "INSURER" },
+  ];
+  // Open quote item modal
+  const openQuoteItemModal = (row, operation) => {
+    // console.log(row);
+    setQuoteItem({
+      ...row,
+      payerType: payerTypeOptions.find(
+        (element) => element.value === row.payerType
+      ),
+      margin: row.margin ? row.margin : 30,
+    });
+    if (operation === "existing") {
+      setQuoteItemModalTitle(row?.groupNumber + " | " + row?.partNumber);
+
+      setQuoteItemViewOnly(true);
+    }
+    setQuoteItemOpen(true);
+  };
+  //Close Quote Item modal
+  const handleQuoteItemClose = () => {
+    setQuoteItemOpen(false);
+    setQuoteItem(initialQuoteItem);
+    setQuoteItemViewOnly(false);
+    setQuoteItemModalTitle("Add New Quote Item");
+  };
+  const [versionOpen, setVersionOpen] = useState(false);
   const [newVersion, setNewVersion] = useState("");
   const handleVersionOpen = (type) => {
     if (type === "new_version") {
@@ -1260,6 +1151,67 @@ const RepairQuoteDetails = (props) => {
       setVersionOpen(true);
     }
   };
+  const handleQuoteItemUpdate = async () => {
+    if (quoteItemModalTitle !== "Add New Quote Item") {
+      await updatePLQuoteItem(quoteItem.plQuoteId, {
+        ...quoteItem,
+        itemType: quoteItem.itemType ? quoteItem.itemType : "PL_ITEM",
+        payerType: quoteItem.payerType?.value,
+      })
+        .then((quoteItem) => {
+          fetchAllDetails(quoteId);
+          handleSnack("success", "Quote item has been updated successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          handleSnack("error", "Item update failed!");
+        });
+    } else {
+      console.log(quoteItem);
+      await addPLQuoteItem(quoteId, {
+        ...quoteItem,
+        itemType: "PL_ITEM",
+        payerType: quoteItem.payerType?.value,
+      })
+        .then((quoteItem) => {
+          fetchAllDetails(quoteId);
+          handleSnack("success", "Quote item has been added successfully!");
+        })
+        .catch((err) => {
+          console.log(err);
+          handleSnack("error", "Add item failed!");
+        });
+    }
+    setQuoteItemOpen(false);
+  };
+  // Create new version of the quote
+  const createVersion = async () => {
+    await createQuoteVersion(
+      savedQuoteDetails.quoteName,
+      savedQuoteDetails.version,
+      newVersion
+    )
+      .then((result) => {
+        setVersionOpen(false);
+        setQuoteId(result.quoteId);
+        fetchAllDetails(result.quoteId);
+        // setVersionDescription("");
+        handleSnack(
+          "success",
+          `Version ${result.version} created successfully`
+        );
+      })
+      .catch((err) => {
+        setVersionOpen(false);
+
+        if (err.message === "Not Allowed")
+          handleSnack("warning", ERROR_MAX_VERSIONS);
+        else
+          handleSnack("error", "Error occurred while creating builder version");
+        // setVersionDescription("");
+      });
+  };
+
   return (
     <>
       <CustomizedSnackbar
@@ -1276,8 +1228,8 @@ const RepairQuoteDetails = (props) => {
         type={"quote"}
         quoteVersionOptions={quoteVersionOptions}
         existingVersion={savedQuoteDetails.version}
-        quoteName={savedQuoteDetails.quoteName}
         newVersion={newVersion}
+        quoteName={savedQuoteDetails.quoteName}
       />
       <QuoteSummary
         summaryOpen={summaryOpen}
@@ -1288,7 +1240,7 @@ const RepairQuoteDetails = (props) => {
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
-              <h5 className="font-weight-600 mb-0">Repair Quote</h5>
+              <h5 className="font-weight-600 mb-0">Spare Part Quote</h5>
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select
@@ -1304,29 +1256,32 @@ const RepairQuoteDetails = (props) => {
                     className="customselectbtn"
                     onChange={(e) => handleQuoteStatus(e)}
                     // isOptionDisabled={(e) => disableStatusOptions(e)}
-                    options={statusOptions}
+                    options={STATUS_OPTIONS}
                     value={selQuoteStatus}
                   />
                 </div>
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
-              <a href="#" className="ml-3 font-size-14" title="Share">
+              {/* <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>GO TO SOLUTION</a> */}
+              <a href="#" className="ml-3 font-size-14">
                 <img src={shareIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14" title="Items to review">
+              <a href="#" className="ml-3 font-size-14">
                 <img src={folderaddIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14" title="Upload">
+              <a href="#" className="ml-3 font-size-14">
                 <img src={uploadIcon}></img>
               </a>
-              {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+              <a href="#" className="ml-3 font-size-14">
+                <img src={cpqIcon}></img>
+              </a>
               <a href="#" className="ml-3 font-size-14" title="Delete">
                 <img src={deleteIcon}></img>
               </a>
               <a
                 href={undefined}
-                className="ml-3 font-size-14"
+                className="ml-3 font-size-14 cursor"
                 title="Copy"
                 onClick={() => handleVersionOpen("copy")}
               >
@@ -1336,10 +1291,7 @@ const RepairQuoteDetails = (props) => {
                 className="customDropdown ml-2"
                 id="dropdown-item-button"
               >
-                <Dropdown.Item
-                  as="button"
-                  onClick={() => handleVersionOpen("new_version")}
-                >
+                <Dropdown.Item as="button" onClick={handleVersionOpen}>
                   New Versions
                 </Dropdown.Item>
                 <Dropdown.Item as="button">Show Errors</Dropdown.Item>
@@ -1347,6 +1299,7 @@ const RepairQuoteDetails = (props) => {
               </DropdownButton>
             </div>
           </div>
+
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
               <div className="row col-md-11">
@@ -1420,12 +1373,12 @@ const RepairQuoteDetails = (props) => {
                         className="heading-tabs"
                       />
                       <Tab
-                        label="Billing"
+                        label="Price"
                         value="price"
                         className="heading-tabs"
                       />
                       <Tab
-                        label="Shipping"
+                        label="Shipping / Billing"
                         value="shipping"
                         className="heading-tabs"
                       />
@@ -2477,22 +2430,22 @@ const RepairQuoteDetails = (props) => {
                           />
                         </div>
                         {/* <div className="mt-3 d-flex align-items-center justify-content-between">
-                          <h6 className="mb-0 font-size-16 font-weight-600">
-                            PRICE/ESTIMATE SUMMARY
-                          </h6>
-                          <div className="d-flex align-items-center">
-                            <a href="#" className="text-primary mr-3">
-                              <ModeEditOutlineOutlinedIcon />
-                            </a>
-                            <a href="#" className="text-primary mr-3">
-                              <ShareOutlinedIcon />
-                            </a>
-                            <a href="#" className="btn bg-primary text-white">
-                              <AddIcon className="mr-2" />
-                              Add Price Summary Type
-                            </a>
-                          </div>
-                        </div> */}
+                        <h6 className="mb-0 font-size-16 font-weight-600">
+                          PRICE/ESTIMATE SUMMARY
+                        </h6>
+                        <div className="d-flex align-items-center">
+                          <a href="#" className="text-primary mr-3">
+                            <ModeEditOutlineOutlinedIcon />
+                          </a>
+                          <a href="#" className="text-primary mr-3">
+                            <ShareOutlinedIcon />
+                          </a>
+                          <a href="#" className="btn bg-primary text-white">
+                            <AddIcon className="mr-2" />
+                            Add Price Summary Type
+                          </a>
+                        </div>
+                      </div> */}
                         <div className="mt-3">
                           <QuotePriceSummaryTable
                             rows={billingDetail.priceEstimates}
@@ -2521,15 +2474,15 @@ const RepairQuoteDetails = (props) => {
                             </button>
                           </div>
                           {/* <DataTable
-                            className=""
-                            title=""
-                            columns={priceSummaryColumns}
-                            data={priceSummaryRows}
-                            customStyles={customStyles}
-                            pagination
-                            // onRowClicked={(e) => handleRowClick(e)}
-                            selectableRows
-                          /> */}
+                          className=""
+                          title=""
+                          columns={priceSummaryColumns}
+                          data={priceSummaryRows}
+                          customStyles={customStyles}
+                          pagination
+                          // onRowClicked={(e) => handleRowClick(e)}
+                          selectableRows
+                        /> */}
                         </div>
                         {/* <div className="mt-3 d-flex align-items-center justify-content-between">
                           <h6 className="mb-0 font-size-16 font-weight-600">
@@ -2717,8 +2670,9 @@ const RepairQuoteDetails = (props) => {
               )}
             </Box>
           </div>
-          <RepairQuoteItemModal
+          <SparepartQuoteItemModal
             quoteItem={quoteItem}
+            searchAPI={sparePartSearch}
             setQuoteItem={setQuoteItem}
             handleQuoteItemUpdate={handleQuoteItemUpdate}
             quoteItemOpen={quoteItemOpen}
@@ -2764,6 +2718,4 @@ const RepairQuoteDetails = (props) => {
       </div>
     </>
   );
-};
-
-export default RepairQuoteDetails;
+}

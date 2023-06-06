@@ -218,10 +218,18 @@ function WithoutSparePartsOperation(props) {
     setOpenSnack(true);
   };
 
-  const handleAnchors = (direction, index) => {
+  const handleAnchors = async (direction, index) => {
+    setOperationViewOnly(true);
     if (direction === "backward") {
       if (opIndex > 0) setOpIndex(opIndex - 1);
-
+      let serviceEstimate = "";
+      await FetchServiceHeader(operations[index].id)
+        .then((resServiceEstimation) => {
+          serviceEstimate = resServiceEstimation;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       setOperationData({
         ...operations[index],
         header:
@@ -229,6 +237,7 @@ function WithoutSparePartsOperation(props) {
           formatOperationNum(operations[index]?.operationNumber) +
           " - " +
           operations[index]?.description, //Rename once changed in API
+        serviceEstimation: serviceEstimate,
       });
     } else if (direction === "forward") {
       if (
@@ -239,6 +248,14 @@ function WithoutSparePartsOperation(props) {
         setOperationViewOnly(false);
       } else {
         if (operations.length - 1 > opIndex) setOpIndex(opIndex + 1);
+        let serviceEstimate = "";
+        await FetchServiceHeader(operations[index].id)
+          .then((resServiceEstimation) => {
+            serviceEstimate = resServiceEstimation;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
         setOperationData({
           ...operations[index],
           header:
@@ -246,6 +263,7 @@ function WithoutSparePartsOperation(props) {
             formatOperationNum(operations[index].operationNumber) +
             " - " +
             operations[index].description, //Rename
+          serviceEstimation: serviceEstimate,
         });
       }
     }
@@ -297,7 +315,6 @@ function WithoutSparePartsOperation(props) {
   const makeHeaderEditable = () => {
     if (operationViewOnly) setOperationViewOnly(false);
   };
-
   const handleCancelOperation = () => {
     if (operations.length > 1) {
       if (operationData.header === NEW_OPERATION) {
@@ -316,6 +333,8 @@ function WithoutSparePartsOperation(props) {
             " - " +
             operations[operations.length - 1].description,
         });
+      } else {
+        setOperationData(operations[opIndex]);
       }
       setShowAddNewButton(true);
       setOperationViewOnly(true);
@@ -323,6 +342,14 @@ function WithoutSparePartsOperation(props) {
       if (operationData.header === NEW_OPERATION) {
         setActiveElement({ ...activeElement, name: "segment" });
       } else {
+        setOperationData({
+          ...operations[0],
+          header:
+            "Operation " +
+            formatOperationNum(operations[0].operationNumber) +
+            " - " +
+            operations[0].description,
+        });
         setOperationViewOnly(true);
         setShowAddNewButton(true);
       }
@@ -658,7 +685,8 @@ function WithoutSparePartsOperation(props) {
                               </h6>
                             </div>
                           </div>
-                          </div><div className="row mb-4">
+                        </div>
+                        <div className="row mb-4">
                           <div className="col-4">
                             <div class="d-flex">
                               <p className="mr-2 font-size-14 font-weight-500 mr-2">

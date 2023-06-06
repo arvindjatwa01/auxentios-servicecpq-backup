@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 export function HeaderLogoComponent(props) {
   return (
     <>
-      <div className="nav-header">
+      <div className="nav-header" style={{zIndex: 30}}>
         <div className="brand-logo">
           <Link>
             <b className="logo-abbr"> </b>

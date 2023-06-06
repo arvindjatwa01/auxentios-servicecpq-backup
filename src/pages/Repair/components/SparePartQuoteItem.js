@@ -5,8 +5,28 @@ import SearchBox from "./SearchBox";
 import { useState } from "react";
 import { TextareaAutosize } from "@material-ui/core";
 import { ReadOnlyField } from "./ReadOnlyField";
+import { default as Select } from "react-select";
 
 const SparepartQuoteItemModal = (props) => {
+  const customStyle = {
+    control: (styles, { isDisabled }) => {
+      return {
+        ...styles,
+        background: isDisabled ? "#e9ecef" : "white",
+        borderRadius: 10,
+        fontSize: 12,
+      };
+    },
+    singleValue: (styles, { isDisabled }) => {
+      return {
+        ...styles,
+        color: "#616161",
+        borderRadius: 10,
+        fontSize: 12,
+        fontWeight: 500,
+      };
+    },
+  };
   const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
   const [searchPartNoResults, setSearchPartNoResults] = useState([]);
 
@@ -67,27 +87,23 @@ const SparepartQuoteItemModal = (props) => {
       setSearchGroupNoResults([]);
     } else if (type === "partNumber") {
       let quantity = props.quoteItem?.quantity;
-      let extendedPrice = currentItem.listPrice * quantity;
-      let totalPrice = calculateTotalPrice(
-        extendedPrice,
-        props.quoteItem?.usagePercentage
-      );
+      let extendedPrice = currentItem.listPrice
+        ? currentItem.listPrice * quantity
+        : 0;
+      let totalPrice = extendedPrice;
       props.setQuoteItem({
         ...props.quoteItem,
         groupNumber: currentItem.groupNumber,
-        unitPrice: currentItem.listPrice,
+        listPrice: currentItem.listPrice,
         partNumber: currentItem.partNumber,
         partType: currentItem.partType,
-        description: currentItem.partDescription,
+        partDescription: currentItem.partDescription,
         extendedPrice,
         totalPrice,
         salesUnit: currentItem.salesUnit,
       });
       setSearchPartNoResults([]);
     }
-  };
-  const calculateTotalPrice = (extendedPrice, usage) => {
-    return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
   };
 
   const closeModal = () => {
@@ -110,23 +126,23 @@ const SparepartQuoteItemModal = (props) => {
       <Modal.Body className="p-0 bg-white">
         <div className="ligt-greey-bg p-3">
           <div>
-            {props.partFieldViewonly ? (
+            {props.quoteItemViewOnly ? (
               <div>
                 <a
                   className="mr-3"
-                  onClick={() => props.setPartFieldViewonly(false)}
+                  onClick={() => props.setQuoteItemViewOnly(false)}
                   style={{ cursor: "pointer" }}
                 >
                   <i
                     className="fa fa-pencil font-size-12"
                     aria-hidden="true"
                   ></i>
-                  <span className="ml-2">Edit</span>
+                  <span className="ml-2">Edit Details</span>
                 </a>
               </div>
             ) : (
               <div>
-                <span className="mr-3">
+                {/* <span className="mr-3">
                   <FormatListBulletedOutlinedIcon className=" font-size-16" />
                   <span
                     className="ml-2 cursor"
@@ -149,15 +165,15 @@ const SparepartQuoteItemModal = (props) => {
                 <span className="mr-3">
                   <MonetizationOnOutlinedIcon className=" font-size-16" />
                   <span className="ml-2"> Adjust price</span>
-                </span>
+                </span> */}
               </div>
             )}
           </div>
         </div>
-        {!props.partFieldViewonly ? (
+        {!props.quoteItemViewOnly ? (
           <div>
             <div className="p-3">
-              <div className="row mt-4">
+            <div className="row mt-4 input-fields">
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
@@ -175,6 +191,7 @@ const SparepartQuoteItemModal = (props) => {
                     />
                   </div>
                 </div>
+                
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
@@ -190,7 +207,7 @@ const SparepartQuoteItemModal = (props) => {
                           partType: e.target.value,
                         })
                       }
-                      disabled
+                      // disabled
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -225,18 +242,11 @@ const SparepartQuoteItemModal = (props) => {
                           ...props.quoteItem,
                           quantity: e.target.value,
                           extendedPrice: parseFloat(
-                            props.quoteItem?.unitPrice * e.target.value
+                            props.quoteItem?.listPrice * e.target.value
                           ).toFixed(2),
-                          totalPrice:
-                            props.quoteItem?.usagePercentage > 0
-                              ? parseFloat(
-                                  (props.quoteItem?.usagePercentage / 100) *
-                                    props.quoteItem?.unitPrice *
-                                    e.target.value
-                                ).toFixed(2)
-                              : parseFloat(
-                                  props.quoteItem?.unitPrice * e.target.value
-                                ).toFixed(2),
+                          totalPrice: parseFloat(
+                            props.quoteItem?.listPrice * e.target.value
+                          ).toFixed(2),
                         })
                       }
                       value={props.quoteItem?.quantity}
@@ -251,7 +261,7 @@ const SparepartQuoteItemModal = (props) => {
                     </label>
                     <input
                       type="text"
-                      disabled
+                      // disabled
                       className="form-control border-radius-10 text-primary"
                       value={props.quoteItem?.salesUnit}
                       onChange={(e) =>
@@ -272,12 +282,19 @@ const SparepartQuoteItemModal = (props) => {
                     <input
                       type="Number"
                       className="form-control border-radius-10 text-primary"
-                      value={
-                        props.quoteItem?.unitPrice
-                          ? parseFloat(props.quoteItem?.unitPrice).toFixed(2)
-                          : 0.0
+                      value={props.quoteItem?.listPrice}
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          listPrice: e.target.value,
+                          extendedPrice: parseFloat(
+                            props.quoteItem?.listPrice * e.target.value
+                          ).toFixed(2),
+                          totalPrice: parseFloat(
+                            props.quoteItem?.listPrice * e.target.value
+                          ).toFixed(2),
+                        })
                       }
-                      disabled
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
@@ -294,7 +311,9 @@ const SparepartQuoteItemModal = (props) => {
                       // onChange={(e) => props.setQuoteItem({...props.quoteItem, extendedPrice: e.target.value})}
                       value={
                         props.quoteItem?.extendedPrice
-                          ? parseFloat(props.quoteItem?.extendedPrice).toFixed(2)
+                          ? parseFloat(props.quoteItem?.extendedPrice).toFixed(
+                              2
+                            )
                           : 0.0
                       }
                     />
@@ -315,38 +334,17 @@ const SparepartQuoteItemModal = (props) => {
                           currency: e.target.value,
                         })
                       }
-                      value={props.quoteItem?.currency}
+                      value={
+                        props.quoteItem?.currency
+                          ? props.quoteItem.currency
+                          : "USD"
+                      }
                       disabled
                     />
                     <div className="css-w8dmq8">*Mandatory</div>
                   </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label className="text-light-dark font-size-12 font-weight-500">
-                      % USAGE
-                    </label>
-                    <input
-                      type="Number"
-                      className="form-control border-radius-10 text-primary"
-                      onChange={(e) =>
-                        props.setQuoteItem({
-                          ...props.quoteItem,
-                          usagePercentage: e.target.value,
-                          totalPrice: props.quoteItem?.extendedPrice
-                            ? parseFloat(
-                                calculateTotalPrice(
-                                  props.quoteItem?.extendedPrice,
-                                  e.target.value
-                                )
-                              ).toFixed(2)
-                            : 0.0,
-                        })
-                      }
-                      value={props.quoteItem?.usagePercentage}
-                    />
-                  </div>
-                </div>
+
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
@@ -387,6 +385,42 @@ const SparepartQuoteItemModal = (props) => {
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group w-100">
                     <label className="text-light-dark font-size-12 font-weight-500">
+                      DISCOUNT
+                    </label>
+                    <TextareaAutosize
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={props.quoteItem?.discount}
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          discount: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      MARGIN
+                    </label>
+                    <TextareaAutosize
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      value={props.quoteItem?.margin}
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          margin: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label className="text-light-dark font-size-12 font-weight-500">
                       COMMENT
                     </label>
                     <TextareaAutosize
@@ -421,36 +455,58 @@ const SparepartQuoteItemModal = (props) => {
                     />
                   </div>
                 </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      PAYER TYPE
+                    </label>
+                    <Select
+                      // isDisabled={props.quoteItem.payerType}
+                      onChange={(e) =>
+                        props.setQuoteItem({
+                          ...props.quoteItem,
+                          payerType: e,
+                        })
+                      }
+                      styles={customStyle}
+                      options={[
+                        { label: "Customer", value: "CUSTOMER" },
+                        { label: "Goodwill", value: "GOODWILL" },
+                        { label: "Insurer", value: "INSURER" },
+                      ]}
+                      value={props.quoteItem.payerType}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <div className="m-3 text-right">
               <button
-                onClick={props.handleAddPartClose}
+                onClick={props.handleQuoteItemClose}
                 className="btn border mr-3 "
               >
-                {" "}
                 Cancel
               </button>
               <button
                 type="button"
                 className="btn btn-light bg-primary text-white"
-                onClick={props.handleIndPartAdd}
-                disabled={
-                  !props.quoteItem?.partType ||
-                  !props.quoteItem?.partNumber ||
-                  !props.quoteItem?.quantity ||
-                  // !props.quoteItem?.unitPrice ||
-                  // !props.quoteItem?.extendedPrice ||
-                  !props.quoteItem?.currency
-                  // !props.quoteItem?.totalPrice
-                }
+                onClick={props.handleQuoteItemUpdate}
+                // disabled={
+                //   !props.quoteItem?.partType ||
+                //   !props.quoteItem?.partNumber ||
+                //   !props.quoteItem?.quantity ||
+                //   // !props.quoteItem?.listPrice ||
+                //   // !props.quoteItem?.extendedPrice ||
+                //   !props.quoteItem?.currency
+                //   // !props.quoteItem?.totalPrice
+                // }
               >
                 Save
               </button>
             </div>
           </div>
         ) : (
-          <div className="p-3">
+          <div className="border border-radius-10 py-2 px-3 m-2">
             <div className="row mt-4">
               <ReadOnlyField
                 label="GROUP NUMBER"
@@ -480,8 +536,8 @@ const SparepartQuoteItemModal = (props) => {
               <ReadOnlyField
                 label="UNIT PRICE"
                 value={
-                  props.quoteItem?.unitPrice
-                    ? parseFloat(props.quoteItem?.unitPrice).toFixed(2)
+                  props.quoteItem?.listPrice
+                    ? parseFloat(props.quoteItem?.listPrice).toFixed(2)
                     : 0.0
                 }
                 className="col-md-6 col-sm-6"
@@ -500,16 +556,38 @@ const SparepartQuoteItemModal = (props) => {
                 value={props.quoteItem?.currency}
                 className="col-md-6 col-sm-6"
               />
-              <ReadOnlyField
-                label="Delivery Date"
-                value={props.quoteItem?.deliveryDate}
-                className="col-md-6 col-sm-6"
-              />
+              
               <ReadOnlyField
                 label="TOTAL PRICE"
                 value={
-                  props.quoteItem?.totalPrice ? props.quoteItem?.totalPrice : 0.0
+                  props.quoteItem?.totalPrice
+                    ? props.quoteItem?.totalPrice
+                    : 0.0
                 }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="NET ADJUSTED PRICE"
+                value={
+                  props.quoteItem?.adjustedPrice
+                    ? props.quoteItem?.adjustedPrice
+                    : 0.0
+                }
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="DISCOUNT"
+                value={props.quoteItem?.discount}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="MARGIN"
+                value={props.quoteItem?.margin}
+                className="col-md-6 col-sm-6"
+              />              
+              <ReadOnlyField
+                label="Delivery Date"
+                value={props.quoteItem?.deliveryDate}
                 className="col-md-6 col-sm-6"
               />
               <ReadOnlyField
@@ -519,7 +597,12 @@ const SparepartQuoteItemModal = (props) => {
               />
               <ReadOnlyField
                 label="DESCRIPTION"
-                value={props.quoteItem?.description}
+                value={props.quoteItem?.partDescription}
+                className="col-md-6 col-sm-6"
+              />
+              <ReadOnlyField
+                label="PAYER TYPE"
+                value={props.quoteItem?.payerType?.label}
                 className="col-md-6 col-sm-6"
               />
             </div>

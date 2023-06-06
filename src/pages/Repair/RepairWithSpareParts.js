@@ -23,12 +23,14 @@ import LoadingProgress from "./components/Loader";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
 import SearchComponent from "./components/SearchComponent";
+import { repairQuoteActions } from "./dropdowns/quoteRepairSlice";
 
 export const RepairWithSpareParts = () => {
   const [recentBuilders, setRecentBuilders] = useState([]);
   const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairQuoteActions.fetchQuoteDropdowns())
     dispatch(repairActions.fetchDropdowns());
     fetchRecentBuilders(
       `builderType:${WITH_PARTS} AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`

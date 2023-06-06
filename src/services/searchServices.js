@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_EXTWORK, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_VENDOR } from "./CONSTANTS";
+import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_EXTWORK, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_SPAREPART_MARGIN, SEARCH_VENDOR } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -82,6 +82,33 @@ export const sparePartSearch = async (searchStr) => {
     try {
       await axios
         .get(SEARCH_SPAREPART(searchStr), { headers: headersData })
+        .then((res) => {
+          console.log("sparePartSearch > axios res=", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Status:", res.status);
+            reject("Error in Search Sparepart axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("sparePartSearch > axios err=", err);
+          reject("Error in itemSearch axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > sparePartSearch, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Search Spare Part with margin based on the search criteria (Remove this after actual API is created)
+export const sparePartSearchMargin = async (searchStr) => {
+  console.log("RepairBuilder > sparePartSearch called...");
+  return new Promise(async (resolve, reject) => {
+    try {
+      await axios
+        .get(SEARCH_SPAREPART_MARGIN(searchStr), { headers: headersData })
         .then((res) => {
           console.log("sparePartSearch > axios res=", res);
           if (res.status === 200) {

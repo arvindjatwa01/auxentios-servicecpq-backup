@@ -33,6 +33,8 @@ import LoadingProgress from "../components/Loader";
 import { QUOTE_SPARE_PARTS_SEARCH, SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { quoteRecent } from "services/repairQuoteServices";
+import { useDispatch } from "react-redux";
+import { repairQuoteActions } from "../dropdowns/quoteRepairSlice";
 
 const RecentSparePartQuote = () => {
   const [modalComponent, setModalComponent] = useState(null);
@@ -54,7 +56,9 @@ const RecentSparePartQuote = () => {
     setSeverity(snackSeverity);
     setOpenSnack(true);
   };
+  let dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairQuoteActions.fetchQuoteDropdowns())
     fetchRecentQuotes();
   }, []);
 

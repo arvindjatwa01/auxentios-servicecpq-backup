@@ -51,7 +51,6 @@ import {
   FetchMiscforService,
   FetchBasePrice,
   addPartToPartList,
-  addPartlist,
   uploadPartsToPartlist,
   RemoveSparepart,
   fetchPartsFromPartlist,
@@ -413,9 +412,9 @@ function ServiceOnlyTemplateEstimation(props) {
   };
   // Search table column for spareparts
   const columnsPartListSearch = [
-    { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
+    { headerName: "Group Number", field: "groupNumber", flex: 1, width: 70 },
     { headerName: "Type", field: "partType", flex: 1, width: 130 },
-    { headerName: "PartNumber", field: "partNumber", flex: 1, width: 130 },
+    { headerName: "Part Number", field: "partNumber", flex: 1, width: 130 },
     {
       headerName: "Description",
       field: "partDescription",
@@ -520,10 +519,10 @@ function ServiceOnlyTemplateEstimation(props) {
   //Columns to display spare parts for the partlist
   const columnsPartListSpareParts = [
     // { headerName: 'Sl#', field: 'rowNum', flex: 1, },
-    { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
+    { headerName: "Group Number", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "Desc", field: "description", flex: 1 },
-    { headerName: "PartNumber", field: "partNumber", flex: 1 },
+    { headerName: "Part Number", field: "partNumber", flex: 1 },
     {
       headerName: "Qty",
       field: "quantity",
@@ -774,7 +773,7 @@ function ServiceOnlyTemplateEstimation(props) {
       jobCode: partsData.jobCode,
       versionNumber: 1,
       description: partsData.description,
-      pricingMethod: partsData.pricingMethod?.value,
+      // pricingMethod: partsData.pricingMethod?.value,
     })
       .then(async (newPartlist) => {
         await fetchPartlistFromOperation(activeElement.oId).then(
@@ -787,6 +786,8 @@ function ServiceOnlyTemplateEstimation(props) {
           }
         );
         setPartListId(newPartlist.id);
+        setShowParts(true);
+        setSpareparts([]);
         setPartsViewOnly(true);
         handleSnack("success", `Partlist updated successfully`);
       })
@@ -914,7 +915,9 @@ function ServiceOnlyTemplateEstimation(props) {
     { label: "Days", value: "DAYS" },
   ];
   // Sets the value for the tab (labor, consumable, misc, extWork)
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(
+    activeElement.templateType === PART_AND_SERVICE_TEMPLATE ? "parts" : "labor"
+  );
 
   //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
@@ -926,8 +929,8 @@ function ServiceOnlyTemplateEstimation(props) {
     if (activeElement.oId) {
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
-          if (activeElement.templateType === PART_AND_SERVICE_TEMPLATE) setValue("parts");
-          else setValue("labor");
+          //if (activeElement.templateType === PART_AND_SERVICE_TEMPLATE) setValue("parts");
+          //else setValue("labor");
           setServiceEstimateData({
             ...serviceEstimateData,
             reference: result.reference,
@@ -973,8 +976,8 @@ function ServiceOnlyTemplateEstimation(props) {
             setPartsData({
               ...partsData,
               jobCode: result.jobCode,
-              jobCodeDescription: result.jobCodeDescription,
-              jobOperation: result.jobOperation,
+              description: result.jobOperation,
+              jobOperation: result.jobCodeDescription,
               componentCode: result.componentCode,
             });
             setLabourData({
@@ -1043,7 +1046,6 @@ function ServiceOnlyTemplateEstimation(props) {
       );
       setPartsViewOnly(true);
     } else {
-      
       fetchPartlistFromOperation(activeElement.oId)
         .then((resultPartLists) => {
           if (resultPartLists && resultPartLists.length > 0) {
@@ -1083,8 +1085,8 @@ function ServiceOnlyTemplateEstimation(props) {
           setPartsData({
             ...partsData,
             jobCode: result.jobCode,
-            jobCodeDescription: result.jobCodeDescription,
-            jobOperation: result.jobOperation,
+            description: result.jobOperation,
+            jobOperation: result.jobCodeDescription,
             componentCode: result.componentCode,
           });
         });
@@ -1124,6 +1126,8 @@ function ServiceOnlyTemplateEstimation(props) {
       .then((resultLabourItems) => {
         if (resultLabourItems && resultLabourItems.result?.length > 0) {
           setLaborItems(resultLabourItems.result);
+        } else {
+          setLaborItems([]);
         }
       })
       .catch((e) => {
@@ -1342,10 +1346,14 @@ function ServiceOnlyTemplateEstimation(props) {
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
-      flatRateIndicator: serviceEstimateData.flatRateIndicator, 
-      adjustedPrice: serviceEstimateData.flatRateIndicator
-        ? serviceEstimateData.adjustedPrice
-        : 0.0,
+      netPrice: undefined,
+      priceDate: undefined,
+      flatRateIndicator: undefined,
+      adjustedPrice: undefined,
+      // flatRateIndicator: serviceEstimateData.flatRateIndicator, 
+      // adjustedPrice: serviceEstimateData.flatRateIndicator
+      //  ? serviceEstimateData.adjustedPrice
+      //  : 0.0,
       // priceMethod: null,
     };
     AddServiceHeader(activeElement.oId, data)
@@ -1373,14 +1381,14 @@ function ServiceOnlyTemplateEstimation(props) {
       ...(labourData.id && { id: labourData.id }),
       jobCode: labourData.jobCode,
       jobCodeDescription: labourData.jobCodeDescription,
-      pricingMethod: labourData.pricingMethod?.value,
+      // pricingMethod: labourData.pricingMethod?.value,
       laborCode: labourData.laborCode?.value,
       totalHours: labourData.totalHours,
-      flatRateIndicator: labourData.flatRateIndicator,
-      adjustedPrice: labourData.flatRateIndicator
-        ? labourData.adjustedPrice
-        : 0.0,
-      payer: labourData.payer,
+      // flatRateIndicator: labourData.flatRateIndicator,
+      // adjustedPrice: labourData.flatRateIndicator
+      //  ? labourData.adjustedPrice
+      //  : 0.0,
+      // payer: labourData.payer,
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -1410,19 +1418,19 @@ function ServiceOnlyTemplateEstimation(props) {
       ...(consumableData.id && { id: consumableData.id }),
       jobCode: consumableData.jobCode,
       jobCodeDescription: consumableData.jobCodeDescription,
-      ...(!consumableData.flatRateIndicator
-        ? consumableData.pricingMethod?.value?.includes("PER")
-          ? {
-              percentageOfBase: consumableData.percentageOfBase,
-              pricingMethod: consumableData.pricingMethod?.value,
-              basePrice: consumableData.basePrice,
-            }
-          : { pricingMethod: consumableData.pricingMethod?.value }
-        : {}),
-      flatRateIndicator: consumableData.flatRateIndicator,
-      adjustedPrice: consumableData.flatRateIndicator
-        ? consumableData.adjustedPrice
-        : 0.0,
+      // ...(!consumableData.flatRateIndicator
+      //   ? consumableData.pricingMethod?.value?.includes("PER")
+      //     ? {
+      //         percentageOfBase: consumableData.percentageOfBase,
+      //         pricingMethod: consumableData.pricingMethod?.value,
+      //         basePrice: consumableData.basePrice,
+      //       }
+      //     : { pricingMethod: consumableData.pricingMethod?.value }
+      //   : {}),
+      // flatRateIndicator: consumableData.flatRateIndicator,
+      // adjustedPrice: consumableData.flatRateIndicator
+      //   ? consumableData.adjustedPrice
+      //   : 0.0,
       payer: consumableData.payer,
     };
     AddConsumableToService(serviceEstimateData.id, data)
@@ -1487,9 +1495,9 @@ function ServiceOnlyTemplateEstimation(props) {
     }
     setPartsLoading(false);
   };
-  // Open Labor item to view or edit
+  // Open partlist to view or edit
   const loadPartlist = (row) => {
-    console.log(row);
+    // console.log(row);
     setPartsData({
       ...row,
       pricingMethod: priceMethodOptions.find(
@@ -1523,19 +1531,19 @@ function ServiceOnlyTemplateEstimation(props) {
       ...(extWorkData.id && { id: extWorkData.id }),
       jobCode: extWorkData.jobCode,
       jobCodeDescription: extWorkData.jobCodeDescription,
-      flatRateIndicator: extWorkData.flatRateIndicator,
-      ...(!extWorkData.flatRateIndicator
-        ? extWorkData.pricingMethod?.value?.includes("PER")
-          ? {
-              percentageOfBase: extWorkData.percentageOfBase,
-              pricingMethod: extWorkData.pricingMethod?.value,
-              basePrice: extWorkData.basePrice,
-            }
-          : { pricingMethod: extWorkData.pricingMethod?.value }
-        : {}),
-      adjustedPrice: extWorkData.flatRateIndicator
-        ? extWorkData.adjustedPrice
-        : 0.0,
+      // flatRateIndicator: extWorkData.flatRateIndicator,
+      // ...(!extWorkData.flatRateIndicator
+      //   ? extWorkData.pricingMethod?.value?.includes("PER")
+      //     ? {
+      //         percentageOfBase: extWorkData.percentageOfBase,
+      //         pricingMethod: extWorkData.pricingMethod?.value,
+      //         basePrice: extWorkData.basePrice,
+      //       }
+      //     : { pricingMethod: extWorkData.pricingMethod?.value }
+      //   : {}),
+      // adjustedPrice: extWorkData.flatRateIndicator
+      //   ? extWorkData.adjustedPrice
+      //   : 0.0,
       payer: extWorkData.payer,
     };
     AddExtWorkToService(serviceEstimateData.id, data)
@@ -1567,13 +1575,13 @@ function ServiceOnlyTemplateEstimation(props) {
       ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
       jobCodeDescription: miscData.jobCodeDescription,
-      flatRateIndicator: miscData.flatRateIndicator,
-      ...(!miscData.flatRateIndicator && {
-        percentageOfBase: miscData.percentageOfBase,
-        pricingMethod: miscData.pricingMethod?.value,
-        basePrice: miscData.basePrice,
-      }),
-      adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
+      // flatRateIndicator: miscData.flatRateIndicator,
+      // ...(!miscData.flatRateIndicator && {
+      //   percentageOfBase: miscData.percentageOfBase,
+      //   pricingMethod: miscData.pricingMethod?.value,
+      //   basePrice: miscData.basePrice,
+      // }),
+      // adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
       payer: miscData.payer,
       // type: miscData.type?.value,
       type: miscTypes,
@@ -1818,7 +1826,7 @@ function ServiceOnlyTemplateEstimation(props) {
 
   // Open ext work item to view or edit
   const openExtWorkRow = (row) => {
-    console.log(row.activityId);
+    // console.log(row.activityId);
     setExtWorkItemData({
       ...row,
       activityId: activityIdList.find(
@@ -1852,21 +1860,21 @@ function ServiceOnlyTemplateEstimation(props) {
         );
       });
   };
-  const [basePriceValues, setBasePriceValues] = useState({
-    PER_ON_TOTAL: 0.0,
-    PER_ON_LABOR: 0.0,
-  });
+  // const [basePriceValues, setBasePriceValues] = useState({
+  //   PER_ON_TOTAL: 0.0,
+  //   PER_ON_LABOR: 0.0,
+  // });
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    if (["consumables", "extwork", "othrMisc"].includes(newValue)) {
-      FetchBasePrice(serviceEstimateData.id)
-        .then((result) => {
-          setBasePriceValues(result);
-        })
-        .catch((e) => {
-          handleSnack("error", "Error occurred while fetching base price!");
-        });
-    }
+    // if (["consumables", "extwork", "othrMisc"].includes(newValue)) {
+    //   FetchBasePrice(serviceEstimateData.id)
+    //     .then((result) => {
+    //       setBasePriceValues(result);
+    //     })
+    //     .catch((e) => {
+    //       handleSnack("error", "Error occurred while fetching base price!");
+    //     });
+    // }
   };
 
   const handleReadFile = (file) => {
@@ -2500,7 +2508,7 @@ function ServiceOnlyTemplateEstimation(props) {
                       />
                     </div>
                   </div>
-                  <div className="col-md-4 col-sm-4">
+                  {/* <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
                       <FormGroup>
                         <FormControlLabel
@@ -2550,7 +2558,7 @@ function ServiceOnlyTemplateEstimation(props) {
                         }
                       />
                     </div>
-                  </div>
+                      </div> */}
                 </div>
                 <div className=" text-right">
                   <button
@@ -2570,10 +2578,8 @@ function ServiceOnlyTemplateEstimation(props) {
                       serviceEstimateData.currency &&
                       serviceEstimateData.priceDate &&
                       serviceEstimateData.reference &&
-                      serviceEstimateData.segmentTitle &&
-                      serviceEstimateData.flatRateIndicator
-                        ? serviceEstimateData.adjustedPrice > 0
-                        : true)
+                      serviceEstimateData.segmentTitle
+                      )
                     }
                     onClick={updateServiceEstHeader}
                   >
@@ -2629,11 +2635,11 @@ function ServiceOnlyTemplateEstimation(props) {
                     value={serviceEstimateData.netPrice}
                     className="col-md-4 col-sm-4"
                   />
-                  <ReadOnlyField
+                  {/* <ReadOnlyField
                     label="ADJUSTED PRICE"
                     value={serviceEstimateData.adjustedPrice}
                     className="col-md-4 col-sm-4"
-                  />
+                  /> */}
                 </div>
                 <div className=" text-right">
                   <button
@@ -2651,11 +2657,11 @@ function ServiceOnlyTemplateEstimation(props) {
           {serviceEstimateData.id && (
             <div className="card p-4 mt-5">
               <div className="row align-items-center">
-                <div className="col-10 mx-2">
-                  <div className="d-flex align-items-center w-100">
+                <div className="col-8">
+                  <div className="d-flex align-items-center w-100 ml-2">
                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                       <h5 className="mr-2 mb-0">
-                        <span className="mr-3">Header</span>
+                        <span className="mr-3">ITEM HEADER</span>
                       </h5>
                       <a
                         href={undefined}
@@ -2670,14 +2676,26 @@ function ServiceOnlyTemplateEstimation(props) {
                   </div>
                 </div>
                 {value === "parts" && (
-                  <div class="">
+                  <div className="col-4">
+                  <div className="text-right">
+                    {partLists && partLists.length > 1 && showParts && (
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white mr-2"
+                        onClick={() => setShowParts(false)}
+                      >
+                        Back To Partlists
+                      </button>
+                    )}
+
                     <button
-                      className="btn text-violet border"
+                      className="btn btn-light bg-primary text-white"
                       onClick={() => loadNewPartList()}
                     >
-                      Create New Partlist
+                      + New Partlist
                     </button>
                   </div>
+                </div>
                 )}
               </div>
               <Box sx={{ width: "100%", typography: "body1" }}>
@@ -2697,7 +2715,9 @@ function ServiceOnlyTemplateEstimation(props) {
                     </TabList>
                   </Box>
                   <TabPanel value="parts">
-                    {partsLoading ?   <LoadingProgress />: !partsViewOnly ? (
+                    {partsLoading ?   
+                      <LoadingProgress /> : 
+                      !partsViewOnly ? (
                       <div className="row mt-2 input-fields">
                         <div className="col-md-4 col-sm-4">
                           <div class="form-group mt-3">
@@ -2755,7 +2775,7 @@ function ServiceOnlyTemplateEstimation(props) {
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
+                       {/* <div className="col-md-4 col-sm-4">
                           <div className="form-group mt-3">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               PRICE METHOD
@@ -2773,7 +2793,7 @@ function ServiceOnlyTemplateEstimation(props) {
                             />
                             <div className="css-w8dmq8">*Mandatory</div>
                           </div>
-                        </div>
+                        </div>*/}
                         <div className="col-md-4 col-sm-4">
                           <div class="form-group mt-3">
                             <label className="text-light-dark font-size-12 font-weight-600">
@@ -2802,7 +2822,6 @@ function ServiceOnlyTemplateEstimation(props) {
                               type="button"
                               className="btn btn-light bg-primary text-white"
                               onClick={createPartlistAndUpdate}
-                              disabled={!partsData.pricingMethod}
                             >
                               Save
                             </button>
@@ -2816,7 +2835,7 @@ function ServiceOnlyTemplateEstimation(props) {
                             <DataGrid
                               sx={{
                                 ...GRID_STYLE,
-                                width: "80%",
+                                // width: "80%",
                                 marginInline: "auto",
                               }}
                               paginationMode="client"
@@ -2842,9 +2861,6 @@ function ServiceOnlyTemplateEstimation(props) {
                                     }
                                   >
                                     New Version
-                                  </Dropdown.Item>
-                                  <Dropdown.Item as="button">
-                                    New Partlist
                                   </Dropdown.Item>
                                 </DropdownButton>
                               </div>
@@ -2881,7 +2897,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 className="col-md-4 col-sm-4"
                               />
                             </div>
-                            {partLists && partLists.length > 1 && (
+                            {/* partLists && partLists.length > 1 && (
                               <div className="col-md-12">
                                 <div class="form-group mt-3 mb-0 text-right">
                                   <button
@@ -2893,7 +2909,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                   </button>
                                 </div>
                               </div>
-                            )}
+                            ) */}
                             <RenderConfirmDialog
                               confimationOpen={confirmationVersionOpen}
                               message={`Pressing 'Yes' will create another version of this partlist`}
@@ -3260,7 +3276,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4"></div>
+                           {/*} <div className="col-md-4 col-sm-4"></div>
                             {!labourData.flatRateIndicator ? (
                               <>
                             <div className="col-md-4 col-sm-4">
@@ -3295,7 +3311,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 />
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
-                            </div>
+                                </div> */}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3307,14 +3323,14 @@ function ServiceOnlyTemplateEstimation(props) {
                                   class="form-control border-radius-10 text-primary"
                                   value={labourData.totalPrice}
                                 />
-                                <div className="css-w8dmq8">*Mandatory</div>
+                                
                               </div>
                             </div>
-                              </>
+                            {/*  </>
                             ) : (
                               <></>
-                            )}
-                            <div className="col-md-4 col-sm-4">
+                            )} */}
+                            {/* <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
                                   <FormControlLabel
@@ -3345,7 +3361,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                   />
                                 </FormGroup>
                               </div>
-                            </div>
+                            </div> 
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3364,7 +3380,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                   }
                                 />
                               </div>
-                            </div>
+                                </div> */}
 
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
@@ -3375,9 +3391,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                   disabled={
                                     !(
                                       labourData.laborCode &&
-                                      (labourData.flatRateIndicator
-                                        ? labourData.adjustedPrice
-                                        : labourData.pricingMethod)
+                                      labourData.totalHours
                                     )
                                   }
                                 >
@@ -3410,8 +3424,7 @@ function ServiceOnlyTemplateEstimation(props) {
                               className="col-md-4 col-sm-4"
                             />
                             <div className="col-md-4 col-sm-4"></div>
-                            {!labourData.flatRateIndicator ? (
-                              <>
+                            
                             <ReadOnlyField
                               label="PRICE METHOD"
                               value={labourData.pricingMethod?.label}
@@ -3427,15 +3440,12 @@ function ServiceOnlyTemplateEstimation(props) {
                               value={labourData.totalPrice}
                               className="col-md-4 col-sm-4"
                             />
-                              </>
-                            ) : (
-                              <></>
-                            )}
-                            <ReadOnlyField
+                             
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={labourData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                        /> */}
                           </div>
                         )}
                         <hr />
@@ -3536,6 +3546,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3554,159 +3565,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 />
                               </div>
                             </div>
-                            {!consumableData.flatRateIndicator ? (
-                              <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div className="form-group  mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                      PRICE METHOD
-                                    </label>
-                                    <Select
-                                      onChange={(e) => {
-                                        setConsumableData({
-                                          ...consumableData,
-                                          pricingMethod: e,
-                                          basePrice:
-                                            basePriceValues &&
-                                            basePriceValues[e.value]
-                                              ? basePriceValues[e.value]
-                                              : 0,
-                                        });
-                                      }}
-                                      value={consumableData.pricingMethod}
-                                      options={
-                                        flagRequired.labourEnabled
-                                          ? CONS_EXT_PRICE_OPTIONS
-                                          : CONSEXT_PRICE_OPTIONS_NOLABOR
-                                      }
-                                      styles={FONT_STYLE_SELECT}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                {consumableData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div className="form-group mt-3 date-box">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          PERCENTAGE OF BASE
-                                        </label>
-                                        <div
-                                          className=" d-flex form-control-date"
-                                          style={{ overflow: "hidden" }}
-                                        >
-                                          <input
-                                            type="text"
-                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                            // style={{width: '64%'}}
-
-                                            value={
-                                              consumableData.percentageOfBase
-                                            }
-                                            onChange={(e) =>
-                                              setConsumableData({
-                                                ...consumableData,
-                                                percentageOfBase:
-                                                  e.target.value,
-                                              })
-                                            }
-                                          />
-                                          <span
-                                            className="hours-div"
-                                            style={{
-                                              float: "left",
-                                              width: "40%",
-                                            }}
-                                          >
-                                            {consumableData.pricingMethod?.label
-                                              ? consumableData.pricingMethod?.label?.replace(
-                                                  "Percentage",
-                                                  "%"
-                                                )
-                                              : "%"}
-                                          </span>
-                                        </div>
-                                        <div className="css-w8dmq8">
-                                          *Mandatory
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          TOTAL BASE
-                                        </label>
-                                        <input
-                                          type="text"
-                                          disabled
-                                          class="form-control border-radius-10 text-primary"
-                                          value={consumableData.basePrice}
-                                        />
-                                      </div>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-                              </>
-                            ) : (
-                              <></>
-                            )}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={
-                                          consumableData.flatRateIndicator
-                                        }
-                                        onChange={(e) =>
-                                          setConsumableData({
-                                            ...consumableData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? consumableData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-600">
-                                        FLAT RATE INDICATOR
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled={!consumableData.flatRateIndicator}
-                                  class="form-control border-radius-10 text-primary"
-                                  value={consumableData.adjustedPrice}
-                                  onChange={(e) =>
-                                    setConsumableData({
-                                      ...consumableData,
-                                      adjustedPrice: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+                            
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3727,22 +3586,22 @@ function ServiceOnlyTemplateEstimation(props) {
                                   type="button"
                                   className="btn btn-light bg-primary text-white"
                                   onClick={updateConsumableHeader}
-                                  disabled={
-                                    !(
-                                      (!consumableData.flatRateIndicator
-                                        ? consumableData.pricingMethod &&
-                                          consumableData.pricingMethod.value.includes(
-                                            "PER"
-                                          )
-                                          ? consumableData.percentageOfBase &&
-                                            consumableData.basePrice
-                                          : consumableData.pricingMethod
-                                        : true) &&
-                                      (consumableData.flatRateIndicator
-                                        ? consumableData.adjustedPrice
-                                        : true)
-                                    )
-                                  }
+                                  // disabled={
+                                  //   !(
+                                  //     (!consumableData.flatRateIndicator
+                                 //       ? consumableData.pricingMethod &&
+                                 //         consumableData.pricingMethod.value.includes(
+                                 //           "PER"
+                                 //         )
+                                 //         ? consumableData.percentageOfBase &&
+                                 //           consumableData.basePrice
+                                 //         : consumableData.pricingMethod
+                                 //       : true) &&
+                                 //     (consumableData.flatRateIndicator
+                                 //       ? consumableData.adjustedPrice
+                                 //       : true)
+                                 //   )
+                                 // }
                                 >
                                   Save
                                 </button>
@@ -3766,45 +3625,23 @@ function ServiceOnlyTemplateEstimation(props) {
                               value={consumableData.payer}
                               className="col-md-4 col-sm-4"
                             />
-                            {!consumableData.flatRateIndicator ? (
-                              <>
+
                                 <ReadOnlyField
                                   label="PRICE METHOD"
                                   value={consumableData.pricingMethod?.label}
                                   className="col-md-4 col-sm-4"
                                 />
-                                {consumableData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <ReadOnlyField
-                                      label="PERCENTAGE OF BASE"
-                                      value={consumableData.percentageOfBase}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                    <ReadOnlyField
-                                      label="TOTAL BASE"
-                                      value={consumableData.basePrice}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                  </>
-                                ) : (
-                                  <></>
-                                )}{" "}
-                              </>
-                            ) : (
-                              <></>
-                            )}
+                                
                             <ReadOnlyField
                               label="NET PRICE"
                               value={consumableData.totalPrice}
                               className="col-md-4 col-sm-4"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={consumableData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                        /> */}
                           </div>
                         )}
                         <hr />
@@ -3940,6 +3777,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <div className="css-w8dmq8">*Mandatory</div>
                               </div>
                             </div>
+                            <div className="col-md-4 col-sm-4"></div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3958,155 +3796,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 />
                               </div>
                             </div>
-                            {!extWorkData.flatRateIndicator ? (
-                              <>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      PRICE METHOD
-                                    </label>
-                                    <Select
-                                      onChange={(e) =>
-                                        setExtWorkData({
-                                          ...extWorkData,
-                                          pricingMethod: e,
-                                          basePrice:
-                                            basePriceValues &&
-                                            basePriceValues[e.value]
-                                              ? basePriceValues[e.value]
-                                              : 0,
-                                        })
-                                      }
-                                      value={extWorkData.pricingMethod}
-                                      options={
-                                        flagRequired.labourEnabled
-                                          ? CONS_EXT_PRICE_OPTIONS
-                                          : CONSEXT_PRICE_OPTIONS_NOLABOR
-                                      }
-                                      styles={FONT_STYLE_SELECT}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                {extWorkData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div className="form-group mt-3 date-box">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          PERCENTAGE OF BASE
-                                        </label>
-                                        <div
-                                          className=" d-flex form-control-date"
-                                          style={{ overflow: "hidden" }}
-                                        >
-                                          <input
-                                            type="text"
-                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                            // style={{width: '64%'}}
-
-                                            value={extWorkData.percentageOfBase}
-                                            onChange={(e) =>
-                                              setExtWorkData({
-                                                ...extWorkData,
-                                                percentageOfBase:
-                                                  e.target.value,
-                                              })
-                                            }
-                                          />
-                                          <span
-                                            className="hours-div"
-                                            style={{
-                                              float: "left",
-                                              width: "40%",
-                                            }}
-                                          >
-                                            {extWorkData.pricingMethod?.label
-                                              ? extWorkData.pricingMethod?.label?.replace(
-                                                  "Percentage",
-                                                  "%"
-                                                )
-                                              : "%"}
-                                          </span>
-                                        </div>
-                                        <div className="css-w8dmq8">
-                                          *Mandatory
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="col-md-4 col-sm-4">
-                                      <div class="form-group mt-3">
-                                        <label className="text-light-dark font-size-12 font-weight-600">
-                                          TOTAL BASE
-                                        </label>
-                                        <input
-                                          type="text"
-                                          disabled
-                                          class="form-control border-radius-10 text-primary"
-                                          value={extWorkData.basePrice}
-                                        />
-                                      </div>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-                              </>
-                            ) : (
-                              <></>
-                            )}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <FormGroup>
-                                  <FormControlLabel
-                                    style={{
-                                      alignItems: "start",
-                                      marginLeft: 0,
-                                    }}
-                                    control={
-                                      <Switch
-                                        checked={extWorkData.flatRateIndicator}
-                                        onChange={(e) =>
-                                          setExtWorkData({
-                                            ...extWorkData,
-                                            flatRateIndicator: e.target.checked,
-                                            adjustedPrice: e.target.checked
-                                              ? extWorkData.adjustedPrice
-                                              : 0.0,
-                                          })
-                                        }
-                                      />
-                                    }
-                                    labelPlacement="top"
-                                    label={
-                                      <span className="text-light-dark font-size-12 font-weight-600">
-                                        FLAT RATE INDICATOR
-                                      </span>
-                                    }
-                                  />
-                                </FormGroup>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled={!extWorkData.flatRateIndicator}
-                                  class="form-control border-radius-10 text-primary"
-                                  value={extWorkData.adjustedPrice}
-                                  onChange={(e) =>
-                                    setExtWorkData({
-                                      ...extWorkData,
-                                      adjustedPrice: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+                            
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -4126,23 +3816,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                 <button
                                   type="button"
                                   className="btn btn-light bg-primary text-white"
-                                  onClick={updateExtWorkHeader}
-                                  disabled={
-                                    !(
-                                      (!extWorkData.flatRateIndicator
-                                        ? extWorkData.pricingMethod &&
-                                          extWorkData.pricingMethod.value.includes(
-                                            "PER"
-                                          )
-                                          ? extWorkData.percentageOfBase &&
-                                            extWorkData.basePrice
-                                          : extWorkData.pricingMethod
-                                        : true) &&
-                                      (extWorkData.flatRateIndicator
-                                        ? extWorkData.adjustedPrice
-                                        : true)
-                                    )
-                                  }
+                                  onClick={updateExtWorkHeader}                                 
                                 >
                                   Save
                                 </button>
@@ -4161,46 +3835,27 @@ function ServiceOnlyTemplateEstimation(props) {
                               value={extWorkData.jobCodeDescription}
                               className="col-md-4 col-sm-4"
                             />
-                            {!extWorkData.flatRateIndicator ? (
-                              <>
+                            <ReadOnlyField
+                              label="PAYER"
+                              value={extWorkData.payer}
+                              className="col-md-4 col-sm-4"
+                            />
                                 <ReadOnlyField
                                   label="PRICE METHOD"
                                   value={extWorkData.pricingMethod?.label}
                                   className="col-md-4 col-sm-4"
                                 />
-
-                                {extWorkData.pricingMethod?.value?.includes(
-                                  "PER"
-                                ) ? (
-                                  <>
-                                    <ReadOnlyField
-                                      label="PERCENTAGE OF BASE"
-                                      value={extWorkData.percentageOfBase}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                    <ReadOnlyField
-                                      label="TOTAL BASE"
-                                      value={extWorkData.basePrice}
-                                      className="col-md-4 col-sm-4"
-                                    />
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-                              </>
-                            ) : (
-                              <></>
-                            )}
+                                
                             <ReadOnlyField
                               label="NET PRICE"
                               value={extWorkData.totalPrice}
                               className="col-md-4 col-sm-4"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={extWorkData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                        /> */}
                           </div>
                         )}
                         <hr />
@@ -4341,85 +3996,23 @@ function ServiceOnlyTemplateEstimation(props) {
                               </div>
                             </div>
                             {/* <div className="col-md-8 col-sm-4"></div> */}
-                            {!miscData.flatRateIndicator ? (
+                            {/*!miscData.flatRateIndicator ? (
                               <>
                                 <div className="col-md-4 col-sm-4">
                                   <div class="form-group mt-3">
                                     <label className="text-light-dark font-size-12 font-weight-600">
                                       PRICE METHOD
                                     </label>
-                                    <Select
-                                      onChange={(e) =>
-                                        setMiscData({
-                                          ...miscData,
-                                          pricingMethod: e,
-                                          basePrice:
-                                            basePriceValues &&
-                                            basePriceValues[e.value]
-                                              ? basePriceValues[e.value]
-                                              : 0,
-                                        })
-                                      }
-                                      options={
-                                        flagRequired.labourEnabled
-                                          ? MISC_PRICE_OPTIONS
-                                          : MISC_PRICE_OPTIONS_NOLABOR
-                                      }
-                                      value={miscData.pricingMethod}
-                                      styles={FONT_STYLE_SELECT}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div className="form-group mt-3 date-box">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      PERCENTAGE OF BASE
-                                    </label>
-                                    <div
-                                      className=" d-flex form-control-date"
-                                      style={{ overflow: "hidden" }}
-                                    >
-                                      <input
-                                        type="text"
-                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                        value={miscData.percentageOfBase}
-                                        onChange={(e) =>
-                                          setMiscData({
-                                            ...miscData,
-                                            percentageOfBase: e.target.value,
-                                          })
-                                        }
-                                      />
-                                      <span
-                                        className="hours-div"
-                                        style={{ float: "left", width: "40%" }}
-                                      >
-                                        {miscData.pricingMethod?.label
-                                          ? miscData.pricingMethod?.label?.replace(
-                                              "Percentage",
-                                              "%"
-                                            )
-                                          : "%"}
-                                      </span>
-                                    </div>
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                  </div>
-                                </div>
-                                <div className="col-md-4 col-sm-4">
-                                  <div class="form-group mt-3">
-                                    <label className="text-light-dark font-size-12 font-weight-600">
-                                      TOTAL BASE
-                                    </label>
+                                    
                                     <input
                                       type="text"
                                       disabled
                                       class="form-control border-radius-10 text-primary"
-                                      value={miscData.basePrice}
+                                      value={miscData.pricingMethod?.label}
                                     />
                                   </div>
-                                </div>
-                              </>
+                                </div> */}
+                             {/* </>
                             ) : (
                               <></>
                             )}
@@ -4473,7 +4066,7 @@ function ServiceOnlyTemplateEstimation(props) {
                                   }
                                 />
                               </div>
-                            </div>
+                                </div> */}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -4514,15 +4107,16 @@ function ServiceOnlyTemplateEstimation(props) {
                                   onClick={updateMiscHeader}
                                   disabled={
                                     !(
-                                      (!miscData.flatRateIndicator
-                                        ? miscData.percentageOfBase &&
-                                          miscData.pricingMethod &&
-                                          miscData.basePrice
-                                        : true) &&
-                                      miscData.type &&
-                                      (miscData.flatRateIndicator
-                                        ? miscData.adjustedPrice
-                                        : true)
+                                      // (!miscData.flatRateIndicator
+                                      //   ? miscData.percentageOfBase &&
+                                      //     miscData.pricingMethod &&
+                                      //     miscData.basePrice
+                                      //   : true) &&
+                                       miscData.type 
+                                       // &&
+                                      // (miscData.flatRateIndicator
+                                      //   ? miscData.adjustedPrice
+                                      //   : true)
                                     )
                                   }
                                 >
@@ -4559,37 +4153,27 @@ function ServiceOnlyTemplateEstimation(props) {
                               }
                               className="col-md-4 col-sm-4"
                             />
-                            {!miscData.flatRateIndicator ? (
-                              <>
+                            {/* !miscData.flatRateIndicator ? (
+                              <> */}
                                 <ReadOnlyField
                                   label="PRICE METHOD"
                                   value={miscData.pricingMethod?.label}
                                   className="col-md-4 col-sm-4"
                                 />
-                                <ReadOnlyField
-                                  label="PERCENTAGE OF BASE"
-                                  value={miscData.percentageOfBase}
-                                  className="col-md-4 col-sm-4"
-                                />
-                                <ReadOnlyField
-                                  label="TOTAL BASE"
-                                  value={miscData.basePrice}
-                                  className="col-md-4 col-sm-4"
-                                />
-                              </>
+                                {/* </>
                             ) : (
                               <></>
-                            )}
+                            )} */}
                             <ReadOnlyField
                               label="NET PRICE"
                               value={miscData.totalPrice}
                               className="col-md-4 col-sm-4"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="ADJUSTED PRICE"
                               value={miscData.adjustedPrice}
                               className="col-md-4 col-sm-4"
-                            />
+                          /> */}
                           </div>
                         )}
                       </React.Fragment>

@@ -110,6 +110,8 @@ import { ReadOnlyField } from "./components/ReadOnlyField";
 import QuoteModal from "./components/QuoteModal";
 import { createSparePartQuote } from "services/repairQuoteServices";
 import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
+import PriceMethodTable from "./components/PriceMethodTable";
+import PriceSummaryTable from "./components/PriceSummaryTable";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -276,11 +278,12 @@ function PartList(props) {
     salesOffice: null,
   });
   const [pricingData, setPricingData] = useState({
-    priceMethod: null,
     netPrice: 0.0,
     priceDate: new Date(),
     adjustedPrice: 0.0,
-    currency: "USD",
+    currency: "",
+    priceDetailDTO: [],
+    priceEstimateDTO: [],
   });
   const initialSparePart = {
     groupNumber: "",
@@ -518,17 +521,19 @@ function PartList(props) {
   const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      priceMethod:
-        result.priceMethod && result.priceMethod !== "EMPTY"
-          ? priceMethodOptions.find(
-              (element) => element.value === result.priceMethod
-            )
-          : { label: "", value: "" },
+      // priceMethod:
+      //   result.priceMethod && result.priceMethod !== "EMPTY"
+      //     ? priceMethodOptions.find(
+      //         (element) => element.value === result.priceMethod
+      //       )
+      //     : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: result.currency
         ? currencyOptions.find((element) => element.value === result.currency)
         : { label: "", value: "" },
+      priceDetailDTO: result.priceDetailDTO,
+      priceEstimateDTO: result.priceEstimateDTO,
     });
   };
   const createVersion = async (versionDesc) => {
@@ -856,23 +861,39 @@ function PartList(props) {
   const updatePriceData = () => {
     let data = {
       builderId,
-      priceMethod: pricingData.priceMethod?.value,
+      priceDetailDTO: pricingData.priceDetailDTO,
+      priceEstimateDTO: pricingData.priceEstimateDTO,
       currency: pricingData.currency?.value,
       priceDate: pricingData.priceDate,
-      adjustedPrice:
-        pricingData.priceMethod?.value === "FLAT_RATE"
-          ? pricingData.adjustedPrice
-          : 0,
+      // adjustedPrice:
+      //   pricingData.priceMethod?.value === "FLAT_RATE"
+      //     ? pricingData.adjustedPrice
+      //     : 0,
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
         setSavedBuilderHeaderDetails(result);
+        if (result) {
+          setPricingData({
+            ...pricingData,
+            adjustedPrice: result.adjustedPrice,
+            priceDetailDTO: result.priceDetailDTO,
+            priceEstimateDTO: result.priceEstimateDTO,
+            netPrice: result.netPrice,
+          });
+        }
         fetchAllDetails(builderId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
-
         handleSnack("success", "Pricing details updated!");
       })
       .catch((err) => {
+        setPricingData({
+          ...pricingData,
+          adjustedPrice: savedBuilderHeaderDetails.adjustedPrice,
+          priceDetailDTO: savedBuilderHeaderDetails.priceDetailDTO,
+          priceEstimateDTO: savedBuilderHeaderDetails.priceEstimateDTO,
+          netPrice: savedBuilderHeaderDetails.netPrice,
+        });
         handleSnack(
           "error",
           "Error occurred while updating the pricing details!"
@@ -2579,39 +2600,6 @@ function PartList(props) {
                               <div className="css-w8dmq8">*Mandatory</div>
                             </div>
                           </div>
-                          {/* <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            COST PRICE
-                          </label>
-                          <input
-                            type="email"
-                            className="form-control border-radius-10 text-primary"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="Placeholder (Optional)"
-                          />
-                        </div>
-                      </div> */}
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setPricingData({
-                                    ...pricingData,
-                                    priceMethod: e,
-                                  })
-                                }
-                                options={priceMethodOptions}
-                                value={pricingData.priceMethod}
-                                styles={FONT_STYLE_SELECT}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -2619,24 +2607,15 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                disabled={
-                                  !(
-                                    pricingData.priceMethod?.value ===
-                                    "FLAT_RATE"
-                                  )
-                                }
+                                disabled
                                 className="form-control border-radius-10 text-primary"
-                                value={
-                                  pricingData.priceMethod?.value === "FLAT_RATE"
-                                    ? pricingData.adjustedPrice
-                                    : 0
-                                }
-                                onChange={(e) =>
-                                  setPricingData({
-                                    ...pricingData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
+                                value={pricingData.adjustedPrice}
+                                // onChange={(e) =>
+                                //   setPricingData({
+                                //     ...pricingData,
+                                //     adjustedPrice: e.target.value,
+                                //   })
+                                // }
                               />
                             </div>
                           </div>
@@ -2679,11 +2658,6 @@ function PartList(props) {
                             disabled={
                               !(
                                 pricingData.priceDate &&
-                                pricingData.priceMethod !== "EMPTY" &&
-                                pricingData.priceMethod?.value !== "" &&
-                                (pricingData.priceMethod?.value === "FLAT_RATE"
-                                  ? pricingData.adjustedPrice > 0
-                                  : true) &&
                                 pricingData.currency?.value !== ""
                               )
                             }
@@ -2693,37 +2667,86 @@ function PartList(props) {
                         </div>
                       </React.Fragment>
                     ) : (
-                      <div className="row mt-3">
-                        <ReadOnlyField
-                          label="NET PRICE"
-                          value={pricingData.netPrice}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="PRICE DATE"
-                          value={
-                            <Moment format="DD/MM/YYYY">
-                              {pricingData.priceDate}
-                            </Moment>
-                          }
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="PRICE METHOD"
-                          value={pricingData.priceMethod?.label}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="ADJUSTED PRICE"
-                          value={pricingData.adjustedPrice}
-                          className="col-md-4 col-sm-4"
-                        />
-                        <ReadOnlyField
-                          label="CURRENCY"
-                          value={pricingData.currency?.label}
-                          className="col-md-4 col-sm-4"
-                        />
-                      </div>
+                      <>
+                        <div className="row mt-3">
+                          <ReadOnlyField
+                            label="NET PRICE"
+                            value={pricingData.netPrice}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="PRICE DATE"
+                            value={
+                              <Moment format="DD/MM/YYYY">
+                                {pricingData.priceDate}
+                              </Moment>
+                            }
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="ADJUSTED PRICE"
+                            value={pricingData.adjustedPrice}
+                            className="col-md-4 col-sm-4"
+                          />
+                          <ReadOnlyField
+                            label="CURRENCY"
+                            value={pricingData.currency?.label}
+                            className="col-md-4 col-sm-4"
+                          />
+                        </div>
+                        <hr />
+                        <div className="mb-5">
+                          <PriceMethodTable
+                            rows={pricingData.priceDetailDTO}
+                            setRows={(rows) => {
+                              console.log(rows);
+                              setPricingData({
+                                ...pricingData,
+                                priceDetailDTO: rows,
+                              });
+                            }}
+                          />
+                          <div
+                            className="row my-3 mr-2"
+                            style={{ justifyContent: "right" }}
+                          >
+                            <button
+                              type="button"
+                              className="btn btn-light bg-primary text-white"
+                              onClick={updatePriceData}
+                              disabled={
+                                !(pricingData.priceDate && pricingData.currency)
+                              }
+                            >
+                              Save Price Methods
+                            </button>
+                          </div>
+                          <PriceSummaryTable
+                            rows={pricingData.priceEstimateDTO}
+                            setRows={(rows) =>
+                              setPricingData({
+                                ...pricingData,
+                                priceEstimateDTO: rows,
+                              })
+                            }
+                          />
+                          <div
+                            className="row my-3 mr-2"
+                            style={{ justifyContent: "right" }}
+                          >
+                            <button
+                              type="button"
+                              className="btn btn-light bg-primary text-white"
+                              onClick={updatePriceData}
+                              disabled={
+                                !(pricingData.priceDate && pricingData.currency)
+                              }
+                            >
+                              Save Price Summary
+                            </button>
+                          </div>
+                        </div>
+                      </>
                     )}
                   </TabPanel>
                 </TabContext>

@@ -14,12 +14,12 @@ const ModalCreateVersion = (props) => {
         <div class="modal-content">
           <div class="modal-header border-none">
             <h5 class="modal-title" id="exampleModalLongTitle">
-              New Version
+              {props.type === 'quote' && props.newVersion === 'EMPTY'? "Copy Quote" : "New Version"}
             </h5>
           </div>
 
           <p className="mx-3 mt-0">
-            {props.message}
+            {props.type === 'quote' && props.newVersion === 'EMPTY'? "Another copy of this quote will be created" : props.message}
           </p>
           <div className="hr"></div>
           {props.type === "quote" ? 
@@ -30,15 +30,15 @@ const ModalCreateVersion = (props) => {
             className={"col-md-6"}
           />
           <ReadOnlyField 
-            label="Existing Version"
+            label="Current Version"
             value={ props.existingVersion? "Version " + props.existingVersion?.substring(8): ""}
             className={"col-md-6"}
           />
-          <ReadOnlyField 
+          {!(props.type === 'quote' && props.newVersion === 'EMPTY') && <ReadOnlyField 
             label="New Version"
             value={props.newVersion? "Version " + props.newVersion?.substring(8) : ""}
             className={"col-md-6"}
-          />
+          />}
           </> :
           <div class="modal-body" style={{ marginBottom: 10 }}>
             <input

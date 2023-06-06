@@ -126,8 +126,8 @@ const SearchComponent = (props) => {
             <div
               className={
                 props.background === "white"
-                  ? `customselectPortfolio ${(i < (props.querySearchSelector.length - 1)) ? "p-2" : ""} d-flex align-items-center mr-3 my-2 border-radius-6`
-                  : `customselect ${(i < (props.querySearchSelector.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-6`
+                  ? `customselectPortfolio d-flex align-items-center mr-3 my-2 border-radius-6`
+                  : `customselect ${(i < (props.querySearchSelector.length - 1)) ? "py-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-6`
               }
               style={{ position: "relative", zIndex: 20 - i }}
               key={"query" + i}
