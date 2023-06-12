@@ -573,7 +573,8 @@ export function SideBarComponent(props) {
         </ul>
         <ul className="metismenu scrollbamenu" id="menu">
         <li className="has-subnav sub-li">
-            <Link to="/" className="border-radius-50" aria-expanded="false">
+        <NavLink exact to="/" activeClassName="active" className="border-radius-50">
+            {/* <Link to="/" className="border-radius-50" aria-expanded="false"> */}
               <span className="span-icon home">
                   <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 37 27.3" className="width-24">
@@ -601,10 +602,10 @@ export function SideBarComponent(props) {
                   </span>
                 </span>
               </span>
-            </Link>
+            </NavLink>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+            <a className="has-arrow border-radius-50 cursor" href={undefined} aria-expanded="false">
               <span className="span-icon">
                 <svg
                   id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278"
@@ -639,7 +640,7 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <NavLink exact to="/" activeClassName="active" className="border-radius-50">
+                <NavLink exact to="/overview" activeClassName="active" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-80f962bf-0984-4652-b8d6-016aa47e6fca"
@@ -663,7 +664,7 @@ export function SideBarComponent(props) {
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
                       <span className="font-size-14 font-weight-600 text-dark">
-                        Operational
+                        Overview
                       </span>
                     </span>
                   </span>

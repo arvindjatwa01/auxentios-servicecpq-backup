@@ -2698,10 +2698,10 @@ export function SparePartsQuoteDetails(props) {
                 </div>
               </div>
             </div>
-            <div
+            {/* <div
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
-            >
+            > */}
               <DataTable
                 className=""
                 title=""
@@ -2712,7 +2712,7 @@ export function SparePartsQuoteDetails(props) {
                 // onRowClicked={(e) => handleRowClick(e)}
                 // selectableRows
               />
-            </div>
+            {/* </div> */}
           </div>
         </div>
       </div>

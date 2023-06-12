@@ -3371,6 +3371,29 @@ button.bg-primary:hover {
   border-bottom: 2px solid #872ff7 !important;
 }
 
+.home-tabs-div {}
+.home-tabs-div span {
+  display: none;
+}
+
+.home-tabs-div button {
+  padding: 10px 15px !important;
+  background-color: #d4d4d4;
+  color: black
+}
+
+.home-tabs-div button.Mui-selected {
+  color: #ffffff !important;
+  background-color: #000;
+}
+
+.home-tab {
+  margin-right: 17px !important;
+  border-radius: 6px !important;
+  padding: 12px 10px !important;
+  min-height: 32px !important;
+  max-height: 32px;
+}
 /* .rdt_TableRow {
   font-size: 12px !important;
   color: #808080 !important;

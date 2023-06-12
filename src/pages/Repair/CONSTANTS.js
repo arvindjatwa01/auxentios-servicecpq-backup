@@ -262,6 +262,9 @@ export const GRID_STYLE = {
     backgroundColor: '#dabffd',
     fontWeight: '600',
   },
+  '& .disable-value': {
+    backgroundColor: '#f2f2f2',
+  },
 };
 export const FONT_STYLE = {
   color: "#872ff7",
