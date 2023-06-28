@@ -312,3 +312,7 @@ export const SOLUTION_COVERAGE_SEARCH_DROPDOWN = SOLUTION_BUILDER_URI + "coverag
 
 export const QUOTE_COMMON_CONFIG_URL = QUOTE_COMMON_REST_SERVICE + "/common-config/";
 
+
+//Dashboard Services
+export const FETCH_PROPENSITY_TO_BUY = "https://do7wm3sbgg.execute-api.us-east-2.amazonaws.com/propensity-to-buy";
+

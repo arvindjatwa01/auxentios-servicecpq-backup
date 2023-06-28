@@ -153,7 +153,7 @@ export default function TimeToBuildChart(props) {
           allowDuplicatedCategory={false}
         />
 
-        <Tooltip />
+        <Tooltip cursor={{fill: 'transparent'}} />
         <Legend />
         <Bar name="Time To Build" dataKey="time" fill="#8884d8" barSize={5}>
           {data.map((singData, entry, index) => (

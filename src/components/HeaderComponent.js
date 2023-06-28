@@ -10,14 +10,24 @@ import { Link, useHistory } from "react-router-dom";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FormControl from "@mui/material/FormControl";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from "react-redux";
 
-import { history } from 'utils';
-import { WITH_SPARE_PARTS, WITHOUT_SPARE_PARTS_DETAILS, PART_LIST, STANDARD_JOBS, KITS, PORTFOLIO_SUMMARY, SOLUTION_BUILDER_ANALYTICS, SOLUTION_QUOTE, REPAIR_SERVICE_PARTS_TEMPLATE } from "../navigation/CONSTANTS"
+import { history } from "utils";
+import {
+  WITH_SPARE_PARTS,
+  WITHOUT_SPARE_PARTS_DETAILS,
+  PART_LIST,
+  STANDARD_JOBS,
+  KITS,
+  PORTFOLIO_SUMMARY,
+  SOLUTION_BUILDER_ANALYTICS,
+  SOLUTION_QUOTE,
+  REPAIR_SERVICE_PARTS_TEMPLATE,
+} from "../navigation/CONSTANTS";
 import Cookies from "js-cookie";
 
 export function HeaderComponent(props) {
@@ -42,19 +52,19 @@ export function HeaderComponent(props) {
     // window.location.href = "/login";
   };
   useEffect(() => {
-    var userLoginStatus = localStorage.getItem('user_logIn_Status');
+    var userLoginStatus = localStorage.getItem("user_logIn_Status");
     var CookiesSetData = Cookies.get("loginTenantDtl");
 
     if (CookiesSetData != undefined) {
-      var getCookiesJsonData = JSON.parse(CookiesSetData)
+      var getCookiesJsonData = JSON.parse(CookiesSetData);
       if (getCookiesJsonData.user_logIn_Status) {
-        setLoginStatus(true)
+        setLoginStatus(true);
       } else {
-        setLoginStatus(false)
-        history.push("/login")
+        setLoginStatus(false);
+        history.push("/login");
       }
     } else {
-      setLoginStatus(false)
+      setLoginStatus(false);
       history.push("/login");
     }
     // if (userLoginStatus) {
@@ -67,7 +77,10 @@ export function HeaderComponent(props) {
   }, []);
   return (
     <>
-      <div className="header" style={{ backgroundColor: "#000000" , zIndex: 30}}>
+      <div
+        className="header"
+        style={{ backgroundColor: "#000000", zIndex: 30 }}
+      >
         {/* <div className="header-content clearfix" style={{ display: "none" }}>
           <div className="nav-control">
                     <div className="hamburger">
@@ -347,7 +360,6 @@ export function HeaderComponent(props) {
                   className="input-group"
                   style={{ border: "1px solid #cfcfcf", borderRadius: "5px" }}
                 >
-
                   {/* <div className="">
                   
                     <input
@@ -661,10 +673,23 @@ export function HeaderComponent(props) {
                 >
                   {/* <img src={notificationIcon}></img> */}
                   {/* <span className="badge badge-pill gradient-2">3</span> */}
-                  <div><SearchIcon className="text-white" style={{ fontSize: "45px" }} /></div>
+                  <div>
+                    <svg
+                      fill="#FFFFFF"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 30 30"
+                      width="24px"
+                      height="24px"
+                    >
+                      <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z" />
+                    </svg>
+                  </div>
                   {/* <div className="li-contant">Search</div> */}
                 </a>
-                <div className="drop-down animated fadeIn dropdown-menu dropdown-notfication p-0 border-radius-1" style={{ minWidth: "600px !important" }}>
+                <div
+                  className="drop-down animated fadeIn dropdown-menu dropdown-notfication p-0 border-radius-1"
+                  style={{ minWidth: "600px !important" }}
+                >
                   {/* <div className="dropdown-content-heading ">
                     <div className="d-flex">
                       <div class="input-group icons border overflow-hidden">
@@ -683,7 +708,16 @@ export function HeaderComponent(props) {
                     <div className="bg-white p-3">
                       <div className="row search-dropdown-list">
                         <div className="col-md-3 col-sm-3 ">
-                          <div className="dropdown-item border-radius-1 bg-light-grey border cursor-pointer white-space-normal height-82" onClick={() => history.push("/RepairWithSpareParts")} style={{ cursor: "pointer", height: "93px !important" }} >
+                          <div
+                            className="dropdown-item border-radius-1 bg-light-grey border cursor-pointer white-space-normal height-82"
+                            onClick={() =>
+                              history.push("/RepairWithSpareParts")
+                            }
+                            style={{
+                              cursor: "pointer",
+                              height: "93px !important",
+                            }}
+                          >
                             <span className="span-icon">
                               <svg
                                 id="uuid-7dbd4a75-0a07-4ebd-ae99-a9c37850cf3f"
@@ -728,10 +762,15 @@ export function HeaderComponent(props) {
                                 />
                               </svg>
                             </span>
-                            <h6 className="mt-2">Repair Options</h6></div>
+                            <h6 className="mt-2">Repair Options</h6>
+                          </div>
                         </div>
                         <div className="col-md-3 col-sm-3">
-                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push("/RepairPartList")} style={{ cursor: "pointer" }}>
+                          <div
+                            className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
+                            onClick={() => history.push("/RepairPartList")}
+                            style={{ cursor: "pointer" }}
+                          >
                             <span className="span-icon">
                               <svg
                                 id="uuid-ae0f5633-9fa9-459c-9052-9dfe57b47331"
@@ -772,7 +811,13 @@ export function HeaderComponent(props) {
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3">
-                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push(REPAIR_SERVICE_PARTS_TEMPLATE)} style={{ cursor: "pointer" }}>
+                          <div
+                            className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
+                            onClick={() =>
+                              history.push(REPAIR_SERVICE_PARTS_TEMPLATE)
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
                             <span className="span-icon">
                               <svg
                                 id="uuid-71879914-eb74-479f-b04a-3a9b28cfee15"
@@ -793,7 +838,11 @@ export function HeaderComponent(props) {
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3">
-                          <div className="dropdown-item cursor-pointer border-radius-1 bg-light-grey border white-space-normal height-82" onClick={() => history.push("/RepairKits")} style={{ cursor: "pointer" }}>
+                          <div
+                            className="dropdown-item cursor-pointer border-radius-1 bg-light-grey border white-space-normal height-82"
+                            onClick={() => history.push("/RepairKits")}
+                            style={{ cursor: "pointer" }}
+                          >
                             <span className="span-icon">
                               <svg
                                 id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
@@ -822,7 +871,11 @@ export function HeaderComponent(props) {
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3 mt-4">
-                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push("/portfolio/summary")} style={{ cursor: "pointer" }}>
+                          <div
+                            className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
+                            onClick={() => history.push("/portfolio/summary")}
+                            style={{ cursor: "pointer" }}
+                          >
                             <span className="span-icon">
                               <svg
                                 id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
@@ -836,11 +889,19 @@ export function HeaderComponent(props) {
                               </svg>
                             </span>
                             {/* <h6 className="mt-2">Portfolio and bundle</h6> */}
-                            <h6 className="mt-2">Portfolio, Bundles & Services</h6>
+                            <h6 className="mt-2">
+                              Portfolio, Bundles & Services
+                            </h6>
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3 mt-4">
-                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push("/solutionBuilder/analytics")} style={{ cursor: "pointer" }}>
+                          <div
+                            className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
+                            onClick={() =>
+                              history.push("/solutionBuilder/analytics")
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
                             <span className="span-icon">
                               <svg
                                 id="uuid-adbb1b3a-fca6-467b-8c3d-db09204755c3"
@@ -862,7 +923,11 @@ export function HeaderComponent(props) {
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3 mt-4">
-                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push("/SolutionQuote")} style={{ cursor: "pointer" }}>
+                          <div
+                            className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
+                            onClick={() => history.push("/SolutionQuote")}
+                            style={{ cursor: "pointer" }}
+                          >
                             <span className="span-icon">
                               <svg
                                 id="uuid-44f21729-ee7f-4ae1-a13f-50d052182172"
@@ -895,7 +960,10 @@ export function HeaderComponent(props) {
                           </div>
                         </div>
                         <div className="col-md-3 col-sm-3 mt-4">
-                          <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" style={{ cursor: "pointer" }}>
+                          <div
+                            className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
+                            style={{ cursor: "pointer" }}
+                          >
                             {/* <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push("/RepairWithoutSpareParts")} style={{ cursor: "pointer"}}></div> */}
                             <span className="span-icon">
                               <svg
@@ -944,15 +1012,7 @@ export function HeaderComponent(props) {
                             <h6 className="mt-2">Commerce</h6>
                           </div>
                         </div>
-
-
-
-
-
-
                       </div>
-
-
                     </div>
                   </div>
                 </div>
@@ -1346,7 +1406,8 @@ export function HeaderComponent(props) {
                       </li> */}
                       <li>
                         <a className="cursor" onClick={handleLogout}>
-                          <i className="icon-key"></i> <span>{loginStatus ? "Logout" : "Login"}</span>
+                          <i className="icon-key"></i>{" "}
+                          <span>{loginStatus ? "Logout" : "Login"}</span>
                         </a>
                       </li>
                     </ul>

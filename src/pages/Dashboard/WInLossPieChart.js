@@ -3,10 +3,7 @@ import { useState } from 'react';
 import { useCallback } from 'react';
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-const data01 = [
-  { name: 'Win', value: 72 },
-  { name: 'Loss', value: 28 }
-];
+
 
 
 const COLORS = ['#0088FE', '#d06fff', '#FFBB28', '#FF8042'];
@@ -68,7 +65,7 @@ export default function WinLossPieChart(props) {
         <PieChart width={400} height={400}>
         <Pie
         activeIndex={activeIndex}
-          data={data01}
+          data={props.data}
           cx="50%" cy="50%" 
           innerRadius={50}
           outerRadius={80}
@@ -78,7 +75,7 @@ export default function WinLossPieChart(props) {
           activeShape={renderActiveShape}
           onMouseEnter={onPieEnter}
         >
-          {data01.map((entry, index) => (
+          {props.data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>

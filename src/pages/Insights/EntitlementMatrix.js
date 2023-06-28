@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { DashboardView } from "./DashboardView";
-import { Link } from "react-router-dom";
-import { ROOT } from "navigation/CONSTANTS";
-import { UserList } from "./UserList";
-import { CommanComponents } from "../../components/index";
-import { MuiMenuComponent } from "../Operational/index";
-import CottageOutlinedIcon from "@mui/icons-material/CottageOutlined";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
+
 import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Chart1, TinyAreaBasic, BubbleChart } from "../Common/index";
+
 
 import { getAllUsers, itemSearch } from "services";
 import {
@@ -32,9 +22,7 @@ import {
 import LinearProgress, {
   linearProgressClasses,
 } from "@mui/material/LinearProgress";
-import StatusStackedChart from "./StatusStackedChart";
-import WinLossPieChart from "./WInLossPieChart";
-import TopQuoteBarChart from "./TopQuoteBarChart";
+
 const winLossData = [
   { name: "Win", value: 72 },
   { name: "Loss", value: 28 },
@@ -193,7 +181,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
   },
 }));
-export const AnalyticsDashboard = () => {
+export default function EntitlementMatrix() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState("cust_seg");
@@ -235,7 +223,7 @@ export const AnalyticsDashboard = () => {
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid mt-3">
-          <h5 className="">Analytics</h5>
+          <h5 className="">Propensity to buy</h5>
           <Grid
             container
             sx={{
@@ -246,7 +234,7 @@ export const AnalyticsDashboard = () => {
               padding: 2,
             }}
           >
-            <Grid item md={8} xs={12}>
+            <Grid item xs={8}>
               <Card
                 className="mr-2"
                 sx={{ borderRadius: 4, height: 400, mx: 1 }}
@@ -284,14 +272,14 @@ export const AnalyticsDashboard = () => {
                 <div style={{ display: "flex" }}>
                   <div style={{ flexGrow: 1, marginLeft: 10 }}>Total</div>
                   <div
-                    style={{ fontSize: 18, marginRight: 20, fontWeight: 600 }}
+                    style={{ fontSize: 18, marginRight: 5, fontWeight: 600 }}
                   >
                     {quoteSales.total}
                   </div>
                 </div>
               </Card>
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item xs={4}>
               <Card
                 className="mr-2"
                 sx={{ borderRadius: 4, height: 400 }}
@@ -413,13 +401,12 @@ export const AnalyticsDashboard = () => {
                     <Card
                       variant="outlined"
                       sx={{
-                        padding: 1,
-                        mt: 2,
+                        p: 1,
                         mb: 5,
                         borderRadius: 3,
                         backgroundColor: "#f6f6f6",
                         width: "90%",
-                        marginInline: "auto",                      
+                        marginInline: "auto",
                       }}
                     >
                       <div
@@ -437,7 +424,7 @@ export const AnalyticsDashboard = () => {
                 <div style={{ display: "flex" }}>
                   <div style={{ flexGrow: 1, marginLeft: 10 }}>Total</div>
                   <div
-                    style={{ fontSize: 18, marginRight: 20, fontWeight: "600" }}
+                    style={{ fontSize: 18, marginRight: 5, fontWeight: "600" }}
                   >
                     $ {parseFloat(items.totalPrice).toFixed(2)}
                   </div>
@@ -446,255 +433,9 @@ export const AnalyticsDashboard = () => {
             </Grid>
             {/* </div> */}
           </Grid>
-          <Grid
-            container
-            sx={{
-              width: "100%",
-              backgroundColor: "#f3eafe",
-              borderRadius: 5,
-              marginBlock: 3,
-              padding: 2,
-            }}
-          >
-            <Grid item xs={3}>
-              <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
-              >
-                <Typography className="m-3">Win / Loss %</Typography>
-                <Divider />
-                <WinLossPieChart data={winLossData} />
-              </Card>
-            </Grid>
-            <Grid item xs={9}>
-              <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
-              >
-                <Typography className="m-3">Lifecycle Statuses</Typography>
-                <Divider />
-                <StatusStackedChart data={lifeCycleStatusData} />
-              </Card>
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            sx={{
-              width: "100%",
-              backgroundColor: "#f3eafe",
-              borderRadius: 5,
-              marginBlock: 3,
-              padding: 2,
-            }}
-          >
-            <Grid item xs={9}>
-              <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
-              >
-                <Typography className="m-3">
-                  {topQuotes === "top10" ? "Top 10 Quotes" : "Bottom 10 Quotes"}
-                  <RadioGroup row value={topQuotes} onChange={handleTopQuotes}>
-                    <FormControlLabel
-                      label={
-                        <Typography sx={{ fontSize: 14 }}>Top 10</Typography>
-                      }
-                      control={<Radio />}
-                      value={"top10"}
-                    />
-                    <FormControlLabel
-                      label={
-                        <Typography sx={{ fontSize: 14 }}>Bottom 10</Typography>
-                      }
-                      control={<Radio />}
-                      value={"bottom10"}
-                    />
-                  </RadioGroup>
-                </Typography>
-
-                <Divider />
-                <TopQuoteBarChart
-                  data={topQuotes === "top10" ? top10Quote : bottom10Quote}
-                />
-              </Card>
-            </Grid>
-            <Grid item xs={3}>
-              <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
-              >
-                <Grid container className="mt-4">
-                  <Grid item xs={12}>
-                    <Card
-                      variant="outlined"
-                      sx={{
-                        padding: 1,
-                        margin: 3,
-                        marginInline: "auto",
-                        borderRadius: 3,
-                        backgroundColor: "#f6f6f6",
-                        width: "90%",
-                        paddingBlock : 3
-                      }}
-                      className="row"
-                    >
-                      <div
-                        style={{ fontSize: 18, color: "gray" }}
-                        className="col-md-9"
-                      >
-                        Parts
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: "600" }}>
-                        48 %
-                      </div>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Card
-                      variant="outlined"
-                      sx={{
-                        padding: 1,
-                        margin: 3,
-                        borderRadius: 3,
-                        backgroundColor: "#f6f6f6",
-                        width: "90%",
-                        paddingBlock : 3,
-                        marginInline: "auto",
-                      }}
-                      className="row"
-                    >
-                      <div
-                        style={{ fontSize: 18, color: "gray" }}
-                        className="col-md-9"
-                      >
-                        Solutions
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: "600" }}>
-                        67 %
-                      </div>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={12} >
-                    <Card
-                      variant="outlined"
-                      sx={{
-                        padding: 1,
-                        margin: 3,
-                        borderRadius: 3,
-                        marginInline: "auto",
-                        backgroundColor: "#f6f6f6",
-                        width: "90%",
-                        paddingBlock : 3
-                      }}
-                      className="row"
-                    >
-                      <div
-                        style={{ fontSize: 18, color: "gray" }}
-                        className="col-md-9"
-                      >
-                        Repair
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: "600" }}>
-                        49 %
-                      </div>
-                    </Card>
-                  </Grid>
-                  </Grid>
-              </Card>
-            </Grid>
-          </Grid>
-          {/* <div className="row mt-4">
-            <div className="col-md-4 col-sm-6">
-              <div className="card overflow-hidden">
-                <div className="activity-div bg-light-dark p-3">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h6 className="font-weight-500 text-dark-black mb-0">
-                      Total Estimations <b>$</b>
-                    </h6>
-                    <MuiMenuComponent options={workFlowOptions} />
+          
+         
                   </div>
-                </div>
-                <div className="p-3">
-                  <div className="row">
-                    <div className="col-6"></div>
-                    <div className="col-6">
-                      <TinyAreaBasic />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-8 col-sm-6">
-              <div className="card overflow-hidden">
-                <div className="activity-div bg-light-green p-3">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h6 className="font-weight-500 text-dark-black mb-0">
-                      Time To Build
-                    </h6>
-                    <MuiMenuComponent options={transOptions} />
-                  </div>
-                </div>
-                <div className="row m-0 mt-4">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="card overflow-hidden border p-2">
-                      <div class="span4 collapse-group">
-                        <div>
-                          <div class="collapse show" id="bysoluction">
-                            <Chart1 />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="card overflow-hidden">
-            <div className="activity-div bg-light-dark p-3">
-              <div className="d-flex justify-content-between align-items-center">
-                <h6 className="font-weight-500 text-dark-black mb-0">
-                  Conversion
-                </h6>
-                <MuiMenuComponent options={transOptions} />
-              </div>
-            </div>
-            <div className="row m-0 mt-4">
-              <div className="col-md-6 col-sm-12">
-                <div className="card overflow-hidden border p-2">
-                  <div class="span4 collapse-group">
-                    <div>
-                      <div class="collapse show" id="bysoluction">
-                        <BubbleChart />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-12">
-                <div className="card overflow-hidden border p-2">
-                  <div class="span4 collapse-group">
-                    <div>
-                      <a
-                        href="#"
-                        data-toggle="collapse"
-                        data-target="#bystatus"
-                      >
-                        <span>
-                          <i
-                            class="fa fa-angle-down f-s-16 mr-2"
-                            aria-hidden="true"
-                          ></i>
-                        </span>
-                        <span className="font-weight-500">By Status</span>
-                      </a>
-                      <div class="collapse show" id="bystatus">
-                        <p> Bars represent solutions</p>
-                      </div>
-                      <Chart1 />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
-        </div>
       </div>
     </div>
   );

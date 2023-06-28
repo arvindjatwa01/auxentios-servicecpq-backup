@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tab from "@mui/material/Tab";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EYEIcon from "@mui/icons-material/VisibilityOutlined";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -110,7 +111,11 @@ function WithSparePartsHeader(props) {
     value: "DRAFT",
     label: "Draft",
   });
-
+  const recentList = () => {
+    history.push({
+      pathname: "/RepairWithSpareParts",
+    });
+  }
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
     machineViewOnly: false,
@@ -1037,6 +1042,11 @@ function WithSparePartsHeader(props) {
                     <div className="btn-sm cursor text-white">
                       <Tooltip title="Add to Review">
                         <ReviewAddIcon />
+                      </Tooltip>
+                    </div>
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Back">
+                        <ArrowBackIcon onClick={() => recentList()} />
                       </Tooltip>
                     </div>
                   </div>

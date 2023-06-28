@@ -1008,6 +1008,17 @@ export function SparePartsQuoteDetails(props) {
       sortable: true,
       format: (row) => row.margin,
     },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.totalPrice,
+    },
     // {
     //   name: (
     //     <>

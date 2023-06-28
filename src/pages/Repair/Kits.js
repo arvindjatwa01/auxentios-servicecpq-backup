@@ -85,6 +85,7 @@ import { fetchPartsFromPartlist } from "services/repairBuilderServices";
 import UpdateCoverageModal from "./components/UpdateCoverageModal";
 import PriceMethodTable from "./components/PriceMethodTable";
 import PriceSummaryTable from "./components/PriceSummaryTable";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -183,6 +184,11 @@ function Kits(props) {
     comment: "",
     description: "",
   };
+  const recentList = () => {
+    history.push({
+      pathname: "/RepairKits",
+    });
+  }
   const [sparePart, setSparePart] = useState(initialSparePart);
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
@@ -1476,6 +1482,11 @@ function Kits(props) {
                 <div className="btn-sm cursor text-white">
                   <Tooltip title="Reset">
                     <ReplayIcon onClick={() => handleResetData("RESET")}/>
+                  </Tooltip>
+                </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Back">
+                    <ArrowBackIcon onClick={() => recentList()} />
                   </Tooltip>
                 </div>
               </div>

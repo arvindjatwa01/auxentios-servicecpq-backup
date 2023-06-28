@@ -822,7 +822,6 @@ function ServiceOnlyTemplates(props) {
           priceEstimateDTO: result.priceEstimateDTO,
         })
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
-
         handleSnack("success", "Pricing details updated!");
       })
       .catch((err) => {

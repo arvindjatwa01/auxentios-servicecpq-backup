@@ -12,51 +12,51 @@ import {
 const DATA_FETCHED = [
   {
     name: "Jan",
-    pv: 0.5,
+    ratio: 0.5,
   },
   {
     name: "Feb",
-    pv: 0.11,
+    ratio: 0.11,
   },
   {
     name: "Mar",
-    pv: 0.2,
+    ratio: 0.2,
   },
   {
     name: "Apr",
-    pv: 0.3,
+    ratio: 0.3,
   },
   {
     name: "May",
-    pv: 0.92,
+    ratio: 0.92,
   },
   {
     name: "June",
-    pv: 0.99,
+    ratio: 0.99,
   },
   {
     name: "July",
-    pv: 0.9,
+    ratio: 0.9,
   },
   {
     name: "Aug",
-    pv: 0.34,
+    ratio: 0.34,
   },
   {
     name: "Sep",
-    pv: 0.88,
+    ratio: 0.88,
   },
   {
     name: "Oct",
-    pv: 0.78,
+    ratio: 0.78,
   },
   {
     name: "Nov",
-    pv: 0.54,
+    ratio: 0.54,
   },
   {
     name: "Dec",
-    pv: 0.67,
+    ratio: 0.67,
   },
   
 ];
@@ -81,7 +81,7 @@ export default function QuoteConvRatioChart(props) {
       margin={{ top: 50, right: 30, left: 0, bottom: 0 }}
     >
       <defs>
-        <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="colorratio" x1="0" y1="0" x2="0" y2="1">
           <stop offset="5%" stopColor="#9F58F8" stopOpacity={0.8} />
           <stop offset="95%" stopColor="#9F58F8" stopOpacity={0} />
         </linearGradient>
@@ -92,10 +92,10 @@ export default function QuoteConvRatioChart(props) {
       <Tooltip />
       <Area
         type="monotone"
-        dataKey="pv"
+        dataKey="ratio"
         stroke="#82ca9d"
         fillOpacity={1}
-        fill="url(#colorPv)"
+        fill="url(#colorratio)"
       />
     </AreaChart>
      </ResponsiveContainer>
