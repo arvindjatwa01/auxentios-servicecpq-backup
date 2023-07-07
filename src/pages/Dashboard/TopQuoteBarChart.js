@@ -63,9 +63,9 @@ export default function TopQuoteBarChart(props) {
         >
           <XAxis dataKey="name" tickLine={false}/>
           <YAxis tickLine={false}/>
-          <Tooltip />
+          <Tooltip cursor={{fill: 'transparent'}} />
           <Legend />
-          <Bar dataKey="value" fill="#5b0bbd" barSize={20} radius={[4, 4, 0, 0]} />
+          <Bar dataKey="value" fill="#896dfe" barSize={20} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     );

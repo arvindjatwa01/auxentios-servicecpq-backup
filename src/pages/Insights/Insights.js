@@ -9,6 +9,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import GapToEntitlement from "./GapToEntitlement";
 
 export default function Insights(props) {
   const [insightType, setInsightType] = useState("propensity");
@@ -20,7 +21,7 @@ export default function Insights(props) {
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div class="container-fluid mt-3">
         <Grid container>
-          <Grid item container md={6} xs={12}>
+          <Grid item container md={5} xs={12}>
             <Card
               sx={{ padding: 2, marginBlock: 2, display: "flex", width: "100%" }}
             >
@@ -38,7 +39,7 @@ export default function Insights(props) {
                   sx={{ minWidth: 300, paddingLeft: 2 }}
                 >
                   <MenuItem value={"propensity"}>Propensity To Buy</MenuItem>
-                  <MenuItem value={"entitlement"}>Entitlement Matrix</MenuItem>
+                  <MenuItem value={"entitlement"}>Gap To Entitlement</MenuItem>
                   <MenuItem value={"spare-parts-segment"}>
                     Spare Parts Segment
                   </MenuItem>
@@ -54,6 +55,7 @@ export default function Insights(props) {
           </Grid>
         </Grid>
         {insightType === 'propensity' && <Propensity />}
+        {insightType === 'entitlement' && <GapToEntitlement />}
       </div>
     </div>
   );

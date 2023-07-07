@@ -174,10 +174,10 @@ const items = {
 
 const quoteSales = {
   categories: [
-    { status: "In Progress", quantity: 37 },
-    { status: "Sent to Customer", quantity: 31 },
-    { status: "Accepted", quantity: 24 },
-    { status: "Rejected", quantity: 29 },
+    { status: "In Progress", quantity: 60 },
+    { status: "Sent to Customer", quantity: 71 },
+    { status: "Accepted", quantity: 49 },
+    { status: "Rejected", quantity: 32 },
   ],
   total: 112,
 };
@@ -190,7 +190,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    backgroundColor: theme.palette.mode === "light" ? "#1a90ff" : "#308fe8",
+    background: `linear-gradient(90deg, #6fa7ff 40%, #d06fff 100%)`
   },
 }));
 export const AnalyticsDashboard = () => {
@@ -246,13 +246,13 @@ export const AnalyticsDashboard = () => {
               padding: 2,
             }}
           >
-            <Grid item md={8} xs={12}>
+            <Grid item md={7} xs={12} container >
               <Card
-                className="mr-2"
-                sx={{ borderRadius: 4, height: 400, mx: 1 }}
-                variant="outlined"
+                elevation={10}
+                sx={{ borderRadius: 4, height: 400, width: "97%", mx: 2, my:1}}
+                // variant="outlined"
               >
-                <Typography className="m-3">Quote Performance</Typography>
+                <Typography className="m-3" style={{fontWeight: 600}}>Quote Performance</Typography>
                 <Divider className="mb-3" />
                 {quoteSales.categories.map(
                   (quote) =>
@@ -291,23 +291,23 @@ export const AnalyticsDashboard = () => {
                 </div>
               </Card>
             </Grid>
-            <Grid item md={4} xs={12}>
+            <Grid item md={5} xs={12} container >
               <Card
-                className="mr-2"
-                sx={{ borderRadius: 4, height: 400 }}
-                variant="outlined"
+                elevation={10}
+                sx={{ borderRadius: 4, height: 400, width: "97%", mx: 2, my:1}}
+                // variant="outlined"
               >
                 <div style={{ display: "flex" }}>
-                  <Typography className="m-3" style={{ flexGrow: 1 }}>
+                  <Typography className="m-3" style={{ flexGrow: 1, fontWeight: 600}}>
                     Sales
                   </Typography>
                   <FormControl
-                    style={{ minWidth: 130, marginBlock: "auto" }}
+                    style={{ minWidth: 140, marginBlock: "auto" }}
                     size="small"
                   >
                     <Select
                       value={type}
-                      style={{ fontSize: 12 }}
+                      style={{ fontSize: 12, paddingLeft: 8 }}
                       onChange={handeChangeType}
                       input={<OutlinedInput />}
                     >
@@ -332,7 +332,7 @@ export const AnalyticsDashboard = () => {
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        style={{ fontSize: 12, minWidth: 100 }}
+                        style={{ fontSize: 12, minWidth: 140 }}
                       />
                     )}
                     onChange={(event, newValue) => {
@@ -456,20 +456,22 @@ export const AnalyticsDashboard = () => {
               padding: 2,
             }}
           >
-            <Grid item xs={3}>
+            <Grid item xs={12} md={3} container >
               <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
+                sx={{ width: "97%", borderRadius: 4 , mx: 2, my:1}}
+                elevation={10}
               >
-                <Typography className="m-3">Win / Loss %</Typography>
+                <Typography className="m-3" style={{fontWeight: 600}}>Win / Loss %</Typography>
                 <Divider />
                 <WinLossPieChart data={winLossData} />
               </Card>
             </Grid>
-            <Grid item xs={9}>
+            <Grid item md={9} xs={12} container >
               <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
+              elevation={10}
+                sx={{ width: "97%", borderRadius: 4 , mx: 2, my:1}}
               >
-                <Typography className="m-3">Lifecycle Statuses</Typography>
+                <Typography className="m-3" style={{fontWeight: 600}}>Lifecycle Statuses</Typography>
                 <Divider />
                 <StatusStackedChart data={lifeCycleStatusData} />
               </Card>
@@ -485,13 +487,15 @@ export const AnalyticsDashboard = () => {
               padding: 2,
             }}
           >
-            <Grid item xs={9}>
+            <Grid item sm={12} md={9} container >
               <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
+                            elevation={10}
+                sx={{ width: "97%", borderRadius: 4 , mx: 2, my:1}}
               >
-                <Typography className="m-3">
-                  {topQuotes === "top10" ? "Top 10 Quotes" : "Bottom 10 Quotes"}
-                  <RadioGroup row value={topQuotes} onChange={handleTopQuotes}>
+                <Typography className="m-3" style={{fontWeight: 600}}>               
+
+                  {topQuotes === "top10" ? "Top 10 Quotes" : "Bottom 10 Quotes"} </Typography>
+                  <RadioGroup sx={{marginInline: 2}} row value={topQuotes} onChange={handleTopQuotes}>
                     <FormControlLabel
                       label={
                         <Typography sx={{ fontSize: 14 }}>Top 10</Typography>
@@ -507,7 +511,6 @@ export const AnalyticsDashboard = () => {
                       value={"bottom10"}
                     />
                   </RadioGroup>
-                </Typography>
 
                 <Divider />
                 <TopQuoteBarChart
@@ -515,9 +518,10 @@ export const AnalyticsDashboard = () => {
                 />
               </Card>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item md={3} sm={12} container >
               <Card
-                sx={{ width: "98%", marginInline: "auto", borderRadius: 5 }}
+              elevation={10}
+                sx={{ width: "97%", borderRadius: 4 , mx: 2, my:1}}
               >
                 <Grid container className="mt-4">
                   <Grid item xs={12}>

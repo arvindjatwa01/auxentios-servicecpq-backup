@@ -246,7 +246,9 @@ export const GRID_STYLE = {
     borderRight: `1px solid rgba(0,0,0,.12)`,
     paddingLeft: "8px",
     paddingRight: "8px",
-    minHeight: "72px"
+    minHeight: "72px",
+    whiteSpace: 'normal !important',
+    wordWrap: "break-word !important"
   },
   "& .MuiDataGrid-iconSeparator": {
     display: "none",

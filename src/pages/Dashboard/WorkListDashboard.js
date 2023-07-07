@@ -156,7 +156,7 @@ export function WorkListDash(props) {
     },
     {
       field: "consistencyStatus",
-      headerName: "Consistent?",
+      headerName: "Consistent",
       flex: 1,
     },
     {
@@ -176,12 +176,12 @@ export function WorkListDash(props) {
           <GridActionsCellItem
             icon={
               <div className="cursor">
-                <Tooltip title="Build">
-                  <img className="m-1" src={PartIcons} alt="Build" />
+                <Tooltip title="Assign">
+                  <img className="m-1" src={PartIcons} alt="Assign" />
                 </Tooltip>
               </div>
             }
-            label="Build"
+            label="Assign"
             className="bg-primary textPrimary"
             onClick={() => setShow(true)}
             color="inherit"

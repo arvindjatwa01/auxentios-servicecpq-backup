@@ -3,22 +3,22 @@ import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 
 import StopIcon from "@mui/icons-material/Square";
-import { Card, Divider, Grid } from "@mui/material";
-import { getPropensityToBuy } from "services/dashboardServices";
+import { Box, Card, Divider, Grid } from "@mui/material";
+import { getPropensityDetails, getPropensityToBuy } from "services/dashboardServices";
 import LoadingProgress from "../Repair/components/Loader";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
 
 const propensityValues = [
-  { propensitylabel: "low", networthlabel: "low", value: "10%" },
-  { propensitylabel: "low", networthlabel: "high", value: "12%" },
-  { propensitylabel: "low", networthlabel: "medium", value: "15%" },
-  { propensitylabel: "medium", networthlabel: "low", value: "2%" },
-  { propensitylabel: "medium", networthlabel: "medium", value: "23%" },
-  { propensitylabel: "medium", networthlabel: "high", value: "18%" },
-  { propensitylabel: "high", networthlabel: "low", value: "2%" },
-  { propensitylabel: "high", networthlabel: "medium", value: "21%" },
-  { propensitylabel: "high", networthlabel: "high", value: "39%" },
+  { propensity_level: "low", transaction_level: "low", value: "10%" },
+  { propensity_level: "low", transaction_level: "high", value: "12%" },
+  { propensity_level: "low", transaction_level: "medium", value: "15%" },
+  { propensity_level: "medium", transaction_level: "low", value: "2%" },
+  { propensity_level: "medium", transaction_level: "medium", value: "23%" },
+  { propensity_level: "medium", transaction_level: "high", value: "18%" },
+  { propensity_level: "high", transaction_level: "low", value: "2%" },
+  { propensity_level: "high", transaction_level: "medium", value: "21%" },
+  { propensity_level: "high", transaction_level: "high", value: "39%" },
 ];
 
 const propensityMatrix = [
@@ -36,7 +36,7 @@ const propensityMatrix = [
 export default function Propensity(props) {
   const [propensityData, setPropensityData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+    const [isLoadingTable, setIsLoadingTable] = useState(false);
   useEffect(() => {
     setIsLoading(true);
     getPropensityToBuy()
@@ -55,91 +55,67 @@ export default function Propensity(props) {
     };
   }, []);
   const [showCustomerDetail, setShowCustomerDetail] = useState(false);
-  const handleClickPropensity = (propensityLabel, netGrowthLabel) => {
+  const [propensityDetails, setPropensityDetails] = useState([]);
+  const [selPropensityLevel, setSelPropensityLevel] = useState("");
+  const [selTransactionLevel, setSelTransactionLevel] = useState("");
+
+  const handleClickPropensity = (propensityLevel, transactionLevel) => {
+    setIsLoadingTable(true);
+    setPropensityDetails([]);
+    setSelPropensityLevel(propensityLevel);
+    setSelTransactionLevel(transactionLevel);
+    getPropensityDetails(propensityLevel, transactionLevel).then((res) => {
+        setPropensityDetails(res);
+        setIsLoadingTable(false);
+      })
+      .catch((err) => {
+        console.log("axios err=", err);
+        setPropensityDetails([]);
+        setIsLoadingTable(false);
+      });
     setShowCustomerDetail(true);
   };
   const customerDetailColumns = [
-    { field: "customerId", headerName: "Customer ID", width: 70 },
-    { field: "customerName", headerName: "Customer Name", width: 130 },
-    { field: "customerGroup", headerName: "Customer Group", width: 130 },
-    { field: "customerSegment", headerName: "Customer Segment", width: 130 },
-    { field: "customerLabel", headerName: "Customer Label", width: 130 },
-    { field: "lastPurchaseDate", headerName: "Last Purchase Date", width: 130 },
-    { field: "recency", headerName: "Recency", width: 130 },
-    { field: "frequency", headerName: "Frequency", width: 130 },
-    { field: "monetary", headerName: "Monetary", width: 130 },
-    { field: "minDiscount", headerName: "Min Discount", width: 130 },
-    { field: "maxDiscount", headerName: "Max Discount", width: 130 },
-    { field: "ageDiscount", headerName: "Age Discount", width: 130 },
-    { field: "equipmentNo", headerName: "Equipment #", width: 130 },
+    { field: "customer_id", headerName: "Customer ID", width: 100 },
+    { field: "customer_name", headerName: "Customer Name", width: 130 },
+    { field: "customer_group", headerName: "Customer Group", width: 130 },
+    { field: "customer_segment", headerName: "Customer Segment", width: 130 },
+    { field: "customer_level", headerName: "Customer Level", width: 130 },
+    { field: "last_purchase", headerName: "Last Purchase Date", width: 130 },
+    { field: "recency", headerName: "Recency", width: 100 },
+    { field: "frequency", headerName: "Frequency", width: 100 },
+    { field: "transaction_value", headerName: "Transaction Value", width: 100 },
+    { field: "transaction_level", headerName: "Transaction Level", width: 100 },
+    { field: "min_discount", headerName: "Min Discount", width: 100 },
+    { field: "max_discount", headerName: "Max Discount", width: 100 },
+    { field: "avg_discount", headerName: "Avg Discount", width: 100 },
+    { field: "equipment_no", headerName: "Equipment #", width: 130 },
     { field: "description", headerName: "Description", width: 130 },
     { field: "maker", headerName: "Maker", width: 130 },
-    { field: "serialNo", headerName: "Maker Serial#", width: 130 },
-    { field: "modelPrefix", headerName: "Model Prefix", width: 130 },
+    { field: "maker_serial_num", headerName: "Maker Serial#", width: 130 },
+    { field: "model_prefix", headerName: "Model Prefix", width: 130 },
     { field: "model", headerName: "Model", width: 130 },
     { field: "brand", headerName: "Brand", width: 130 },
-    { field: "productSegment", headerName: "Product Segment", width: 130 },
+    { field: "product_segment", headerName: "Product Segment", width: 130 },
     {
-      field: "warrantyAvailability",
+      field: "warranty_availability",
       headerName: "Warranty Availability",
       width: 130,
     },
-    { field: "plannedUsage", headerName: "Planned Usage", width: 130 },
+    { field: "planned_usage", headerName: "Planned Usage", width: 130 },
     { field: "warranty", headerName: "Warranty", width: 130 },
     { field: "contract", headerName: "Contract", width: 130 },
-    { field: "propensityScore", headerName: "Propensity Score", width: 130 },
-    { field: "propensityLabel", headerName: "Propensity Label", width: 130 },
+    { field: "propensity_score", headerName: "Propensity Score", width: 130 },
+    { field: "propensity_level", headerName: "Propensity Level", width: 130 },
   ];
 
-  const customerDetail = [
-    {
-      id: 1,
-      customerId: "123",
-      customerName: "Customer Name",
-      customerGroup: "Customer Group",
-      customerSegment: "Customer Segment",
-      customerLabel: "Customer Label",
-      lastPurchaseDate: "Last Purchase Date",
-      recency: "Recency",
-      frequency: "Frequency",
-      monetary: "Monetary",
-      minDiscount: "Min Discount",
-      maxDiscount: "Max Discount",
-      ageDiscount: "Age Discount",
-      equipmentNo: "Equipment #",
-      description: "Description",
-      maker: "Maker",
-      serialNo: "Maker Serial#",
-      modelPrefix: "Model Prefix",
-      model: "Model",
-      brand: "Brand",
-      productSegment: "Product Segment",
-      warrantyAvailability: "Warranty Availability",
-      plannedUsage: "Planned Usage",
-      warranty: "Warranty",
-      contract: "Contract",
-      propensityScore: "Propensity Score",
-      propensityLabel: "Propensity Label",
-    },
-  ];
+  const [pageSize, setPageSize] = useState(5);
   return isLoading ? (
     <LoadingProgress />
   ) : (
     <div>
       {/* <h5 className="">Propensity to buy</h5> */}
-      {showCustomerDetail ? (
-        <div>
-            <Typography sx={{fontSize: 14, fontWeight: 600}}>Propensity to Buy Details</Typography>
-          <DataGrid
-            sx={GRID_STYLE}
-            rows={customerDetail}
-            columns={customerDetailColumns}
-            pageSize={5}
-            rowsPerPageOptions={[10, 20, 50]}
-            autoHeight
-          />{" "}
-        </div>
-      ) : (
+      
         <Grid
           container
           sx={{
@@ -149,7 +125,46 @@ export default function Propensity(props) {
             marginBlock: 3,
             padding: 2,
           }}
-        >
+        >{showCustomerDetail ? (
+            <Card sx={{width: "100%",
+            marginInline: "auto", paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4}}>
+              <Typography sx={{ fontSize: 16, fontWeight: 600, marginBlock: 2 }}>
+                Propensity to Buy Details
+              </Typography>
+              <div style={{ display: "flex", marginBlock: 4 }}>
+                <Typography sx={{ fontSize: 14, marginRight: 2 }}>
+                  {" "}
+                  <strong>Propensity Level : </strong> {selPropensityLevel}
+                </Typography>
+                <Typography sx={{ fontSize: 14 }}>
+                  <strong>Transaction Level : </strong> {selTransactionLevel}
+                </Typography>
+              </div>
+              <Box sx={{ height: 500 }}>
+              <DataGrid
+                loading={isLoadingTable}
+                getRowId={(row) => row.customer_id}
+                sx={GRID_STYLE}
+                rows={propensityDetails}
+                columns={customerDetailColumns}
+                pageSize={pageSize}
+                onPageSizeChange={(newPageSize)=> setPageSize(newPageSize)}
+                rowsPerPageOptions={[5, 10, 20, 50]}
+                // autoHeight
+              /></Box>
+              <div
+                className="row"
+                style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
+              >
+                <button
+                  class="btn bg-primary text-white"
+                  onClick={() => setShowCustomerDetail(false)}
+                >
+                  Back
+                </button>
+              </div>
+            </Card>
+          ) : (
           <Card
             className="mr-2"
             sx={{
@@ -238,6 +253,7 @@ export default function Propensity(props) {
                         onClick={() =>
                           handleClickPropensity(indArray[0], indArray[1])
                         }
+                        style={{ cursor: "pointer" }}
                       >
                         {/* <div
                         style={{ fontSize: 12, color: "gray", marginBlock: 10 }}
@@ -250,10 +266,11 @@ export default function Propensity(props) {
                           {
                             propensityData.filter(
                               (object) =>
-                                object.propensity_label === indArray[0] &&
-                                object.networth_label === indArray[1]
+                                object.propensity_level === indArray[0] &&
+                                object.transaction_level === indArray[1]
                             )[0]?.percentage_value
-                          }
+                          }{" "}
+                          %
                         </Typography>
                       </Card>
                     </Grid>
@@ -332,10 +349,9 @@ export default function Propensity(props) {
               </Grid>
               <Grid item xs={3}></Grid>
             </Grid>
-          </Card>
+          </Card>)}
           {/* </div> */}
         </Grid>
-      )}
     </div>
   );
 }

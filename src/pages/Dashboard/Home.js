@@ -14,6 +14,20 @@ import { WorkListDash } from "./WorkListDashboard";
 const activityOptions = ["None", "Atria", "Callisto"];
 const workFlowOptions = ["None", "Atria"];
 const transOptions = ["Test1", "Test2", "Test3", "Test4"];
+
+const DataGridContainer = (props) => 
+  (<Box
+  margin={"auto"}
+  sx={{
+    backgroundColor: "#ffffff",
+    height: 400,
+    borderRadius: 5,
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+  }}
+>{props.children}</Box>)
+
 const activitiesData = [
   {
     id: 1,
@@ -291,28 +305,28 @@ export const HomePage = () => {
                   }}
                 >
                   <TabList
-                    className="home-tabs-div"
+                    // className="home-tabs-div"
                     onChange={fetchUserSpecifics}
                   >
                     <Tab
                       label="Recent Activities"
                       value={"activities"}
-                      className="home-tab"
+                      className="heading-tabs"
                     />
                     <Tab
                       label="Saved Tasks"
                       value={"tasks"}
-                      className="home-tab"
+                      className="heading-tabs"
                     />
                     <Tab
                       label="Items to Review "
                       value={"review"}
-                      className="home-tab"
+                      className="heading-tabs"
                     />
                   </TabList>
                 </Box>
                 <TabPanel value="activities">
-                  {/* <div className="card" style={{ height: "400px" }}> */}
+                <DataGridContainer>
                     <DataGrid
                       sx={{
                         ...GRID_STYLE
@@ -324,18 +338,10 @@ export const HomePage = () => {
                       rowsPerPageOptions={[5]}
                       autoHeight
                     />
-                  {/* </div> */}
+                </DataGridContainer>
                 </TabPanel>
                 <TabPanel value="tasks">
-                  {/* <div className="card" style={{ height: 400 }}> */}
-                    {/* <DataTable
-                      title=""
-                      // selectableRows
-                      columns={savedTasksColumns}
-                      data={savedTasksData}
-                      customStyles={customStyles}
-                      pagination
-                    /> */}
+                <DataGridContainer>
                     <DataGrid
                       sx={{
                         ...GRID_STYLE
@@ -347,18 +353,11 @@ export const HomePage = () => {
                       rowsPerPageOptions={[5]}
                       autoHeight
                     />
+                    </DataGridContainer>
                   {/* </div> */}
                 </TabPanel>
                 <TabPanel value="review">
-                  {/* <div className="card" style={{ height: 400 }}> */}
-                    {/* <DataTable
-                      title=""
-                      // selectableRows
-                      columns={savedTasksColumns}
-                      data={savedTasksData}
-                      customStyles={customStyles}
-                      pagination
-                    /> */}
+                <DataGridContainer>
                     <DataGrid
                       sx={{
                         ...GRID_STYLE
@@ -370,7 +369,7 @@ export const HomePage = () => {
                       rowsPerPageOptions={[5]}
                       autoHeight
                     />
-                  {/* </div> */}
+                  </DataGridContainer>
                 </TabPanel>
               </TabContext>
             </Grid>

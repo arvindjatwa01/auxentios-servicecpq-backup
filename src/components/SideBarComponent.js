@@ -19,7 +19,11 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Modal } from "react-bootstrap";
 import Radio from "@material-ui/core/Radio";
 import { Link, NavLink, exact } from "react-router-dom";
-import { QUOTE_RECENT_REPAIR, QUOTE_SPARE_PARTS, REPAIR_SERVICE_PARTS_TEMPLATE } from "navigation/CONSTANTS";
+import {
+  QUOTE_RECENT_REPAIR,
+  QUOTE_SPARE_PARTS,
+  REPAIR_SERVICE_PARTS_TEMPLATE,
+} from "navigation/CONSTANTS";
 
 export function SideBarComponent(props) {
   const [solutionBuilderShow, setSolutionBuilderShow] = useState(false);
@@ -198,8 +202,9 @@ export function SideBarComponent(props) {
     //     </div>
     // </div>
     <div>
-      <nav className="main-menu" 
-      // style={{backgroundColor: '	#404040'}}
+      <nav
+        className="main-menu"
+        // style={{backgroundColor: '	#404040'}}
       >
         <ul style={{ display: "none" }}>
           <li className="">
@@ -572,28 +577,46 @@ export function SideBarComponent(props) {
             </li> */}
         </ul>
         <ul className="metismenu scrollbamenu" id="menu">
-        <li className="has-subnav sub-li">
-        <NavLink exact to="/" activeClassName="active" className="border-radius-50">
-            {/* <Link to="/" className="border-radius-50" aria-expanded="false"> */}
+          <li className="has-subnav sub-li">
+            <NavLink
+              exact
+              to="/"
+              activeClassName="active"
+              className="border-radius-50"
+            >
+              {/* <Link to="/" className="border-radius-50" aria-expanded="false"> */}
               <span className="span-icon home">
-                  <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 37 27.3" className="width-24">
-                      <g>
-                        <g>
-                          <path class="st1" d="M1.5,18.7c-0.4,0-0.8-0.1-1.1-0.4c-0.6-0.6-0.6-1.5,0-2.1L15.2,1.4c0.9-0.9,2-1.4,3.3-1.4
+                <svg
+                  id="Layer_1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 37 27.3"
+                  className="width-24"
+                >
+                  <g>
+                    <g>
+                      <path
+                        class="st1"
+                        d="M1.5,18.7c-0.4,0-0.8-0.1-1.1-0.4c-0.6-0.6-0.6-1.5,0-2.1L15.2,1.4c0.9-0.9,2-1.4,3.3-1.4
                             c1.2,0,2.4,0.5,3.3,1.4l14.8,14.8c0.6,0.6,0.6,1.5,0,2.1c-0.6,0.6-1.5,0.6-2.1,0L19.6,3.5c-0.6-0.6-1.7-0.6-2.3,0L2.6,18.3
-                            C2.3,18.6,1.9,18.7,1.5,18.7z"/>
-                        </g>
-                        <g>
-                          <path class="st1" d="M18.5,27.3c-5,0-9.1-4.1-9.1-9.1c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5c0,3.4,2.8,6.1,6.1,6.1
-                            s6.1-2.8,6.1-6.1c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5C27.6,23.2,23.5,27.3,18.5,27.3z"/>
-                        </g>
-                        <g>
-                          <path class="st1" d="M31.6,13.8c-0.8,0-1.5-0.7-1.5-1.5V4.5c0-0.8,0.7-1.5,1.5-1.5c0.8,0,1.5,0.7,1.5,1.5v7.9
-                            C33.1,13.2,32.4,13.8,31.6,13.8z"/>
-                        </g>
-                      </g>
-                    </svg>
+                            C2.3,18.6,1.9,18.7,1.5,18.7z"
+                      />
+                    </g>
+                    <g>
+                      <path
+                        class="st1"
+                        d="M18.5,27.3c-5,0-9.1-4.1-9.1-9.1c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5c0,3.4,2.8,6.1,6.1,6.1
+                            s6.1-2.8,6.1-6.1c0-0.8,0.7-1.5,1.5-1.5s1.5,0.7,1.5,1.5C27.6,23.2,23.5,27.3,18.5,27.3z"
+                      />
+                    </g>
+                    <g>
+                      <path
+                        class="st1"
+                        d="M31.6,13.8c-0.8,0-1.5-0.7-1.5-1.5V4.5c0-0.8,0.7-1.5,1.5-1.5c0.8,0,1.5,0.7,1.5,1.5v7.9
+                            C33.1,13.2,32.4,13.8,31.6,13.8z"
+                      />
+                    </g>
+                  </g>
+                </svg>
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
@@ -605,7 +628,11 @@ export function SideBarComponent(props) {
             </NavLink>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow border-radius-50 cursor" href={undefined} aria-expanded="false">
+            <a
+              className="has-arrow border-radius-50 cursor"
+              href={undefined}
+              aria-expanded="false"
+            >
               <span className="span-icon">
                 <svg
                   id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278"
@@ -640,7 +667,12 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <NavLink exact to="/overview" activeClassName="active" className="border-radius-50">
+                <NavLink
+                  exact
+                  to="/overview"
+                  activeClassName="active"
+                  className="border-radius-50"
+                >
                   <span className="span-icon">
                     <svg
                       id="uuid-80f962bf-0984-4652-b8d6-016aa47e6fca"
@@ -671,7 +703,11 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/analytics" activeClassName="active" className="border-radius-50">
+                <NavLink
+                  to="/analytics"
+                  activeClassName="active"
+                  className="border-radius-50"
+                >
                   <span className="span-icon">
                     <svg
                       id="uuid-c05174b0-733e-42a0-8a41-26f820ee4aba"
@@ -694,7 +730,11 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/reports" activeClassName="active" className="border-radius-50">
+                <NavLink
+                  to="/reports"
+                  activeClassName="active"
+                  className="border-radius-50"
+                >
                   <span className="span-icon">
                     <svg
                       id="uuid-2339a07b-c6d4-4b85-897c-b6ee6a6101ee"
@@ -729,28 +769,37 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/insights" activeClassName="active" className="border-radius-50">
+                <NavLink
+                  to="/insights"
+                  activeClassName="active"
+                  className="border-radius-50"
+                >
                   <span className="span-icon">
                     <svg
-                      id="uuid-2339a07b-c6d4-4b85-897c-b6ee6a6101ee"
+                      version="1.1"
+                      id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 110.29999 145.5706"
+                      viewBox="0 0 37 39.6"
                     >
                       <path
-                        className="uuid-e32578ab-2aa2-47d9-8df4-2b8a18d4a5e3"
-                        d="M110.29996,19.605C110.29996,8.79397,101.50601,.00002,90.69571,.00002H21.81094V21.81081H-.00009v123.75977H88.48916v-21.81104h21.81079V19.605Zm-30.14575,117.63062H8.33487V30.14577H74.89273c2.90088,0,5.26147,2.3606,5.26147,5.26172v101.82812Zm21.81079-21.81104h-13.47583V35.40749c0-7.49658-6.09912-13.59668-13.59644-13.59668H30.1459V8.33498h60.5498c6.21387,0,11.26929,5.0564,11.26929,11.27002V115.42458Z"
+                        className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
+                        d="M5.3,39.6c-2.9,0-5.3-2.4-5.3-5.3V23.8c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v10.4
+            C10.6,37.2,8.2,39.6,5.3,39.6z M5.3,21c-1.5,0-2.8,1.3-2.8,2.8v10.4c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8V23.8
+            C8.1,22.3,6.8,21,5.3,21z"
                       />
+
                       <path
-                        className="uuid-e32578ab-2aa2-47d9-8df4-2b8a18d4a5e3"
-                        d="M63.08194,98.36257H25.40616c-2.30176,0-4.16748,1.86548-4.16748,4.16748,0,2.30176,1.86572,4.16748,4.16748,4.16748H63.08194c2.302,0,4.16748-1.86572,4.16748-4.16748,0-2.302-1.86548-4.16748-4.16748-4.16748Z"
+                        className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
+                        d="M18.5,39.6c-2.9,0-5.3-2.4-5.3-5.3v-29c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v29
+            C23.8,37.2,21.4,39.6,18.5,39.6z M18.5,2.5c-1.5,0-2.8,1.3-2.8,2.8v29c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8v-29
+            C21.3,3.8,20,2.5,18.5,2.5z"
                       />
+
                       <path
-                        className="uuid-e32578ab-2aa2-47d9-8df4-2b8a18d4a5e3"
-                        d="M63.08194,118.39895H25.40616c-2.30176,0-4.16748,1.86548-4.16748,4.16748s1.86572,4.16748,4.16748,4.16748H63.08194c2.302,0,4.16748-1.86548,4.16748-4.16748s-1.86548-4.16748-4.16748-4.16748Z"
-                      />
-                      <path
-                        className="uuid-e32578ab-2aa2-47d9-8df4-2b8a18d4a5e3"
-                        d="M44.24454,40.64919c-12.68555,0-23.00586,10.32104-23.00586,23.00586s10.32031,23.00415,23.00586,23.00415c12.68481,0,23.00488-10.31934,23.00488-23.00415s-10.32007-23.00586-23.00488-23.00586Zm-14.6709,23.00586c0-8.08911,6.58179-14.6709,14.6709-14.6709,2.53198,0,4.91577,.64526,6.99658,1.7793l-11.16406,11.16602v15.7832c-6.06421-1.80078-10.50342-7.41675-10.50342-14.05762Zm18.83838,14.05762v-12.33203l8.7229-8.72339c1.13428,2.0813,1.77954,4.46558,1.77954,6.9978,0,6.64087-4.43848,12.25684-10.50244,14.05762Z"
+                        className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
+                        d="M31.7,39.6c-2.9,0-5.3-2.4-5.3-5.3V16.6c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v17.6
+            C37,37.2,34.6,39.6,31.7,39.6z M31.7,13.8c-1.5,0-2.8,1.3-2.8,2.8v17.6c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8V16.6
+            C34.5,15.1,33.2,13.8,31.7,13.8z"
                       />
                     </svg>
                   </span>
@@ -766,7 +815,11 @@ export function SideBarComponent(props) {
             </ul>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+            <a
+              className="has-arrow border-radius-50"
+              href="#"
+              aria-expanded="false"
+            >
               <span className="span-icon">
                 <svg
                   id="uuid-0b37c72c-fd44-4acc-9628-08cba1263678"
@@ -797,7 +850,11 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+                <a
+                  className="has-arrow border-radius-50"
+                  href="#"
+                  aria-expanded="false"
+                >
                   <span className="span-icon">
                     <svg
                       id="uuid-cf613211-c02e-4b21-bff9-68072c5a135d"
@@ -820,7 +877,11 @@ export function SideBarComponent(props) {
                 </a>
                 <ul aria-expanded="false">
                   <li>
-                    <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+                    <a
+                      className="has-arrow border-radius-50"
+                      href="#"
+                      aria-expanded="false"
+                    >
                       <span className="span-icon">
                         <svg
                           id="uuid-bef549ba-ad8e-4cb9-81ef-441e7c48833e"
@@ -985,7 +1046,11 @@ export function SideBarComponent(props) {
                   </li>
 
                   <li>
-                    <NavLink to="/RepairPartList" activeClassName="active" className="border-radius-50">
+                    <NavLink
+                      to="/RepairPartList"
+                      activeClassName="active"
+                      className="border-radius-50"
+                    >
                       <span className="span-icon">
                         <svg
                           id="uuid-ae0f5633-9fa9-459c-9052-9dfe57b47331"
@@ -1035,7 +1100,11 @@ export function SideBarComponent(props) {
                     </NavLink>
                   </li>
                   <li>
-                    <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+                    <a
+                      className="has-arrow border-radius-50"
+                      href="#"
+                      aria-expanded="false"
+                    >
                       <span className="span-icon">
                         <img src={TemplatesIcon} height="28" />
                       </span>
@@ -1050,9 +1119,9 @@ export function SideBarComponent(props) {
                         </span>
                       </span>
                     </a>
-                      
+
                     <ul aria-expanded="false">
-                    <li>
+                      <li>
                         <NavLink
                           to="/standard-job"
                           activeClassName="active"
@@ -1064,16 +1133,16 @@ export function SideBarComponent(props) {
                               xmlns="http://www.w3.org/2000/svg"
                               viewBox="0 0 151.95043 151.95043"
                             >
-                              <path 
-                                className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7" 
+                              <path
+                                className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
                                 d="M110.90729,35.26434c-1.15991-1.98608-3.71094-2.66162-5.69946-1.49927-1.98853,1.15918-2.65991,3.70996-1.50098,5.69922,3.83691,6.57764,6.12378,13.96167,6.74316,21.56348h-6.21069c-2.302,0-4.16748,1.86572-4.16748,4.16748,0,2.302,1.86548,4.16748,4.16748,4.16748h6.21582c-2.01807,24.88574-21.91504,44.78174-46.80078,46.79956v-4.9519c0-2.302-1.86572-4.16748-4.16748-4.16748-2.302,0-4.16748,1.86548-4.16748,4.16748v4.96289c-8.66724-.69971-16.96973-3.57227-24.2251-8.42236-.05811-.03857-.12183-.06055-.18115-.09595l9.38379-2.25635c2.23755-.53882,3.61548-2.78882,3.07739-5.0271-.53784-2.23682-2.78784-3.60742-5.02612-3.07666l-18.67139,4.48975c-2.23779,.53882-3.61572,2.78857-3.07764,5.0271l4.49072,18.67212c.45898,1.90967,2.1665,3.19409,4.04858,3.19409,.32227,0,.65015-.03906,.97754-.11719,2.23828-.53882,3.61548-2.78882,3.07739-5.0271l-2.01904-8.39624c9.62842,6.24194,20.77856,9.54395,32.3125,9.54395,32.80176,0,59.48755-26.68481,59.48755-59.48608,0-10.53101-2.78955-20.88135-8.06714-29.93091Z"
                               />
-                              <path 
-                                className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7" 
+                              <path
+                                className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
                                 d="M55.37458,65.74457c.01611,.11914,.02393,.23999,.04956,.35571,.03003,.13501,.07959,.2644,.12305,.39624,.0415,.12573,.07544,.25415,.12842,.37427,.05054,.11548,.11963,.2229,.1814,.33398,.07007,.12622,.13452,.25513,.21704,.3728,.06445,.09229,.14429,.17529,.21704,.26318,.104,.12549,.20581,.25098,.32349,.36328,.01978,.0188,.03345,.0415,.05347,.06006l19.22827,17.65967c.80005,.73584,1.8103,1.09888,2.81787,1.09888,1.12573,0,2.24829-.45435,3.07031-1.3479,1.55713-1.69629,1.44482-4.33203-.25073-5.88818l-17.87939-16.42114v-16.06738c0-2.302-1.86572-4.16748-4.16748-4.16748-2.302,0-4.16748,1.86548-4.16748,4.16748v17.89722c0,.02905,.00781,.05566,.00854,.08447,.00317,.15625,.02612,.30981,.04663,.46484Z"
                               />
-                              <path 
-                                className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7" 
+                              <path
+                                className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
                                 d="M17.63849,65.19525c0-2.30176-1.86548-4.16748-4.16748-4.16748h-4.9519C10.53718,36.14203,30.43366,16.24505,55.3194,14.22674v6.21533c0,2.302,1.86548,4.16748,4.16748,4.16748,2.30176,0,4.16748-1.86548,4.16748-4.16748v-6.22339c7.6123,.61816,14.98022,2.9248,21.57031,6.76855l-9.05664,1.99268c-2.24805,.49512-3.66919,2.71704-3.17432,4.96533,.42822,1.94702,2.1521,3.27368,4.06567,3.27368,.29712,0,.59839-.03247,.89941-.09937l18.75464-4.12671c2.24805-.49487,3.66919-2.71704,3.17432-4.96509l-4.12744-18.75537c-.49414-2.24976-2.72681-3.66772-4.96533-3.17432-2.24805,.49463-3.66943,2.7168-3.17432,4.96509l1.93799,8.80615c-9.09375-5.33813-19.46436-8.16162-30.07178-8.16162C26.68561,5.7077,.00007,32.39447,.00007,65.19525,.00007,75.09955,2.48346,84.90619,7.18244,93.55218c.75537,1.39014,2.18701,2.17822,3.66602,2.17822,.67163,0,1.35376-.16284,1.98608-.50635,2.02197-1.09888,2.77075-3.62866,1.67188-5.65039-3.37671-6.21436-5.40112-13.13037-5.97998-20.21094h4.94458c2.302,0,4.16748-1.86548,4.16748-4.16748Z"
                               />
                             </svg>
@@ -1125,7 +1194,11 @@ export function SideBarComponent(props) {
                         </NavLink>
                       </li> */}
                       <li>
-                        <NavLink to="/RepairKits" activeClassName="active" className="border-radius-50">
+                        <NavLink
+                          to="/RepairKits"
+                          activeClassName="active"
+                          className="border-radius-50"
+                        >
                           <span className="span-icon">
                             <svg
                               id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
@@ -1167,7 +1240,11 @@ export function SideBarComponent(props) {
                 </ul>
               </li>
               <li>
-                <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+                <a
+                  className="has-arrow border-radius-50"
+                  href="#"
+                  aria-expanded="false"
+                >
                   <span className="span-icon">
                     <svg
                       id="uuid-3abd2398-f403-4cd5-aa98-d6b336293d57"
@@ -1277,7 +1354,11 @@ export function SideBarComponent(props) {
           </li>
 
           <li className="has-subnav sub-li">
-            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+            <a
+              className="has-arrow border-radius-50"
+              href="#"
+              aria-expanded="false"
+            >
               <span className="span-icon">
                 <svg
                   id="uuid-44f21729-ee7f-4ae1-a13f-50d052182172"
@@ -1439,7 +1520,11 @@ export function SideBarComponent(props) {
             </ul>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
+            <a
+              className="has-arrow border-radius-50"
+              href="#"
+              aria-expanded="false"
+            >
               <span className="span-icon">
                 <svg
                   id="uuid-9ce0e2a9-dce3-4e3c-9203-296e2dedc338"

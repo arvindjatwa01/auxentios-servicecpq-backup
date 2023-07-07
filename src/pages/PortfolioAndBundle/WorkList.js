@@ -177,7 +177,7 @@ export function WorkList(props) {
             format: row => row.status,
         },
         {
-            name: <><div>Consistency status</div></>,
+            name: <><div>Consistency</div></>,
             selector: row => row.consistencyStatus,
             wrap: true,
             sortable: true,
@@ -194,7 +194,7 @@ export function WorkList(props) {
             name: 'Actions',
             button: true,
             minWidth: '200px',
-            cell: () => <><span className="mr-3 btn bg-primary text-white cursor" style={{ width: '100%' }} onClick={() => setShow(true)}><img className='mr-2' src={PartIcons}></img>Build</span></>,
+            cell: () => <><span className="mr-3 btn bg-primary text-white cursor" style={{ width: '100%' }} onClick={() => setShow(true)}><img className='mr-2' src={PartIcons}></img>Assign</span></>,
         },
     ];
 
