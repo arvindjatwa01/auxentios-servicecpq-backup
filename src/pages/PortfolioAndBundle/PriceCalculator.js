@@ -26,11 +26,14 @@ import {
   getItemPriceData,
   getSolutionPriceCommonConfig,
   getItemDataById,
+  updateItemPriceData,
+  createItemPriceData,
 } from "../../services/index";
 
 import {
   taskActions,
 } from "./customerSegment/strategySlice";
+import Cookies from "js-cookie";
 
 
 const PriceCalculator = (props) => {
@@ -39,6 +42,14 @@ const PriceCalculator = (props) => {
   const [priceTypeKeyValue, setPriceTypeKeyValue] = useState([]);
   const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
   const [needFlatOrAdjustedPrice, setNeedFlatOrAdjustedPrice] = useState(false);
+
+  var CookiesSetData = Cookies.get("loginTenantDtl");
+  var getCookiesJsonData;
+  if (CookiesSetData != undefined) {
+    getCookiesJsonData = JSON.parse(CookiesSetData);
+  }
+
+  const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
   // const [escalationPriceOptionsValue, setEscalationPriceOptionValue] = useState("");
   // const [escalationPriceOptionsValue1, setEscalationPriceOptionValue1] = useState("");
@@ -78,6 +89,7 @@ const PriceCalculator = (props) => {
 
 
   const [priceCalculator, setPriceCalculator] = useState({
+    itemPriceId: null,
     priceMethod: "",
     currency: "",
     priceDate: new Date(),
@@ -111,7 +123,7 @@ const PriceCalculator = (props) => {
     cycle: "",
     suppresion: "",
     id: "",
-    portfolioDataId: 1,
+    portfolioDataId: null,
     escalationPriceOptionsValue: "",
     escalationPriceOptionsValue1: "",
     escalationPriceInputValue: 0,
@@ -198,21 +210,11 @@ const PriceCalculator = (props) => {
       const bundleOrServiceData = fetchItemDetailsById.data;
       setPriceCalculator({
         ...priceCalculator,
-        priceMethod: (res.data.priceMethod != "EMPTY" ||
-          res.data.priceMethod != "" ||
-          res.data.priceMethod != null) ? {
-          label: res.data.priceMethod,
-          value: res.data.priceMethod
-        } : "",
-        // priceMethod: (res.data.priceMethod != "EMPTY" ||
-        //   res.data.priceMethod != "" ||
-        //   res.data.priceMethod != null) ? priceMethodKeyValue.find(o => o.value === res.data.priceMethod) : "",
-        priceType: (res.data.priceType != "EMPTY" ||
-          res.data.priceType != "" ||
-          res.data.priceType != null) ? {
-          label: res.data.priceType,
-          value: res.data.priceType
-        } : "",
+        itemPriceId: res.data.itemPriceDataId,
+        priceMethod: ((res.data.priceMethod === "") || (res.data.priceMethod === null) || (res.data.priceMethod === "EMPTY")) ? "" :
+          props.priceMethodDropdownKeyValue.find(o => o.value === res.data.priceMethod),
+        priceType: ((res.data.priceType === "") || (res.data.priceType === null) || (res.data.priceType === "EMPTY")) ? "" :
+          props.priceTypeDropdownKeyValue.find(o => o.value === res.data.priceType),
         // priceType: (res.data.priceType != "EMPTY" ||
         //   res.data.priceType != "" ||
         //   res.data.priceType != null) ? priceTypeKeyValue.find(o => o.value === res.data.priceType) : "",
@@ -227,12 +229,8 @@ const PriceCalculator = (props) => {
           { label: "Surcharge $", value: "ABSOLUTE", },
 
         priceAdditionalInput: res.data.additionalPriceValue,
-        discountTypeSelect: (res.data.discountType != "EMPTY" ||
-          res.data.discountType != "" ||
-          res.data.discountType != null) ? {
-          label: res.data.discountType,
-          value: res.data.discountType
-        } : "",
+        discountTypeSelect: ((res.data.discountType === "") || (res.data.discountType === null) || (res.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === res.data.discountType),
         discountTypeInput: res.data.discountValue,
         // year: {
         //   label: (res.data.year != "" ||
@@ -250,7 +248,7 @@ const PriceCalculator = (props) => {
         startUsage: res.data.startUsage,
         endUsage: res.data.endUsage,
         recommendedValue: res.data.recommendedValue,
-        netPrice: res.data.netService,
+        // netPrice: res.data.netService,
         totalPrice: res.data.totalPrice,
         calculatedPrice: res.data.calculatedPrice,
         id: res.data.itemPriceDataId,
@@ -302,16 +300,27 @@ const PriceCalculator = (props) => {
           label: bundleOrServiceData?.itemHeaderModel?.currency,
           value: bundleOrServiceData?.itemHeaderModel?.currency
         } : "",
-        unit: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.unit) &&
-          (bundleOrServiceData?.itemBodyModel?.unit != "")) ? {
-          label: bundleOrServiceData?.itemBodyModel?.unit,
-          value: bundleOrServiceData?.itemBodyModel?.unit
-        } : "",
-        frequency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.frequency) &&
-          bundleOrServiceData?.itemBodyModel?.frequency != "") ? {
-          label: bundleOrServiceData?.itemBodyModel?.frequency,
-          value: bundleOrServiceData?.itemBodyModel?.frequency
-        } : "",
+        unit: (((props.createdBundleItems === "") || ((props.createdBundleItems?.unit === "") || (props.createdBundleItems?.unit === null) ||
+          (props.createdBundleItems?.unit === undefined))) ? (((res.data?.usageUnit === "") || (res.data?.usageUnit === null) ||
+            (res.data?.usageUnit === undefined)) ? "" :
+            props.unitDropdownKeyValue.find(o => o.value === res.data.usageUnit)) : props.createdBundleItems?.unit),
+
+        frequency: (((props.createdBundleItems === "") || ((props.createdBundleItems?.frequency === "") || (props.createdBundleItems?.frequency === null) ||
+          (props.createdBundleItems?.frequency === undefined))) ? (((res.data?.frequency === "") || (res.data?.frequency === null) ||
+            (res.data?.frequency === undefined)) ? "" :
+            props.frequencyDropdownKeyValue.find(o => o.value === res.data.frequency)) : props.createdBundleItems?.frequency),
+
+        //   ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.unit) &&
+        //     (bundleOrServiceData?.itemBodyModel?.unit != "")) ? {
+        //   label: bundleOrServiceData?.itemBodyModel?.unit,
+        //   value: bundleOrServiceData?.itemBodyModel?.unit
+        // } : "",
+
+        // frequency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.frequency) &&
+        //   bundleOrServiceData?.itemBodyModel?.frequency != "") ? {
+        //   label: bundleOrServiceData?.itemBodyModel?.frequency,
+        //   value: bundleOrServiceData?.itemBodyModel?.frequency
+        // } : "",
         usageType: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.usage) &&
           (bundleOrServiceData?.itemBodyModel?.usage != "")) ? {
           label: bundleOrServiceData?.itemBodyModel?.usage,
@@ -319,6 +328,14 @@ const PriceCalculator = (props) => {
         } : "",
       })
     }
+
+    setPriceBreakDownFieldsValue({
+      ...priceBreakDownFieldsValue,
+      parts: res.data.sparePartsNOE,
+      labor: res.data.labourNOE,
+      miscellaneous: res.data.miscNOE,
+      service: res.data.servicePrice,
+    })
 
     setExtWorkData({
       ...extWorkData,
@@ -465,6 +482,14 @@ const PriceCalculator = (props) => {
     basePrice: 0.0,
     percentageOfBase: 0,
   });
+
+  const [priceBreakDownFieldsValue, setPriceBreakDownFieldsValue] = useState({
+    parts: "",
+    labor: "",
+    miscellaneous: "",
+    service: "",
+  })
+
   const handleItemPriceCalculatorChange = (e) => {
     setItemPriceCalculator({ ...itemPriceCalculator, [e.target.name]: e.target.value })
   }
@@ -615,7 +640,10 @@ const PriceCalculator = (props) => {
       console.log("props ---------- ", props, disable)
       if (props.bundleOrServiceEditOrNot) {
         // if (disable) {
-        props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, disable);
+        let priceDataEditableOrNot = ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
+          (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) ? "noEditAble" : "editAble";
+        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, disable);
+        // props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, disable);
         // }
       } else {
         if ((priceCalculator.startUsage == "") ||
@@ -628,11 +656,23 @@ const PriceCalculator = (props) => {
           throw "End Usage is a required field, you can’t leave it blank";
         }
 
+        if (parseInt(priceCalculator.startUsage) > parseInt(priceCalculator.endUsage)) {
+          throw "start Usage must not be greater to End Usage.";
+        }
+
+        if ((priceCalculator.unit == "") ||
+          (priceCalculator.unit == undefined)) {
+          throw "Unit is a required field, you can’t leave it blank";
+        }
+
         if ((priceCalculator.recommendedValue == "") ||
           (priceCalculator.recommendedValue == undefined)) {
           throw "Recommended Value is a required field, you can’t leave it blank";
         }
-        props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, false);
+        let priceDataEditableOrNot = ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
+          (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) ? "noEditAble" : "editAble";
+        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, false);
+        // props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, false);
 
       }
 
@@ -653,6 +693,145 @@ const PriceCalculator = (props) => {
     // 
     // props.setBundleTabs("1")
   };
+
+  const calculateItemPrice = async () => {
+    try {
+      if ((priceCalculator.startUsage == "") ||
+        (priceCalculator.startUsage == undefined)) {
+        throw "Start Usage is a required field, you can’t leave it blank";
+      }
+
+      if ((priceCalculator.endUsage == "") ||
+        (priceCalculator.endUsage == undefined)) {
+        throw "End Usage is a required field, you can’t leave it blank";
+      }
+
+      if (parseInt(priceCalculator.startUsage) > parseInt(priceCalculator.endUsage)) {
+        throw "start Usage must not be greater to End Usage.";
+      }
+
+      if ((priceCalculator.unit == "") ||
+        (priceCalculator.unit == undefined)) {
+        throw "Unit is a required field, you can’t leave it blank";
+      }
+
+      if ((priceCalculator.recommendedValue == "") ||
+        (priceCalculator.recommendedValue == undefined)) {
+        throw "Recommended Value is a required field, you can’t leave it blank";
+      }
+
+      console.log("price calculator ===== ", priceCalculator);
+
+      let priceUpdateData = {
+        itemPriceDataId: ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
+          (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) ? 0 : priceCalculator?.itemPriceId,
+        quantity: 1,
+        standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
+        repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
+        templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+        repairOption: "",
+        additional: "",
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: 0,
+        frequency: priceCalculator?.frequency !== "" ? priceCalculator?.frequency?.value : "CYCLIC",
+        priceMethod: (priceCalculator.priceMethod === "EMPTY"
+          || priceCalculator.priceMethod === "" ||
+          priceCalculator.priceMethod === null) ?
+          "LIST_PRICE" : priceCalculator.priceMethod?.value,
+        priceType: (priceCalculator.priceType === "EMPTY" ||
+          priceCalculator.priceType === "" ||
+          priceCalculator.priceType === null) ? "EVENT_BASED" : priceCalculator.priceType?.value,
+        listPrice: 0,
+        priceEscalation: priceCalculator.escalationPriceOptionsValue != "" ? priceCalculator.escalationPriceOptionsValue : "",
+        calculatedPrice: 0,
+        flatPrice: priceCalculator.flatPrice ? parseInt(priceCalculator.flatPrice) : 0,
+        year: priceCalculator.year?.value,
+        noOfYear: parseInt(priceCalculator.noOfYear),
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+          (priceCalculator.priceBreakDownOptionsKeyValue == "PARTS") ?
+          priceCalculator.priceBreakDownInputValue : 0),
+        servicePrice: 0,
+        labourPrice: 0,
+        labourPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+          (priceCalculator.priceBreakDownOptionsKeyValue == "LABOR") ?
+          priceCalculator.priceBreakDownInputValue : 0),
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+          (priceCalculator.priceBreakDownOptionsKeyValue == "MISCELLANEOUS") ?
+          priceCalculator.priceBreakDownInputValue : 0),
+        totalPrice: 0,
+        netService: 0,
+        additionalPriceType: (priceCalculator?.priceAdditionalSelect === "EMPTY" ||
+          priceCalculator?.priceAdditionalSelect === "" ||
+          priceCalculator?.priceAdditionalSelect === null) ?
+          "ABSOLUTE" : priceCalculator?.priceAdditionalSelect?.value,
+        additionalPriceValue: priceCalculator?.priceAdditionalInput,
+        discountType: ((priceCalculator?.discountTypeSelect === "EMPTY") ||
+          (priceCalculator?.discountTypeSelect === "") ||
+          (priceCalculator?.discountTypeSelect === null)) ? "PORTFOLIO_DISCOUNT" : priceCalculator?.discountTypeSelect?.value,
+        discountValue: priceCalculator?.discountTypeInput,
+        recommendedValue: parseInt(priceCalculator.recommendedValue),
+        startUsage: parseInt(priceCalculator.startUsage),
+        endUsage: parseInt(priceCalculator.endUsage),
+        sparePartsEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+          (priceCalculator.escalationPriceOptionsValue == "PARTS") ?
+          priceCalculator.escalationPriceInputValue : 0),
+        labourEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+          (priceCalculator.escalationPriceOptionsValue == "LABOR") ?
+          priceCalculator.escalationPriceInputValue : 0),
+        miscEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+          (priceCalculator.escalationPriceOptionsValue == "MISCELLANEOUS") ?
+          priceCalculator.escalationPriceInputValue : 0),
+        serviceEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+          (priceCalculator.escalationPriceOptionsValue == "SERVICE") ?
+          priceCalculator.escalationPriceInputValue : 0),
+        sparePartsNOE: 0,
+        labourNOE: 0,
+        miscNOE: 0,
+        recommendedUnit: priceCalculator?.unit?.value === "YEAR" ? "MONTH" : priceCalculator?.unit?.value,
+        usageUnit: priceCalculator?.unit != "" ? priceCalculator?.unit?.value : "YEAR",
+        withBundleService: false,
+        portfolio: ((priceCalculator.portfolioDataId == null) || (priceCalculator.portfolioDataId == 0) ||
+          (priceCalculator.portfolioDataId == undefined) || (priceCalculator.portfolioDataId == "")) ? null : {
+          portfolioId: priceCalculator.portfolioDataId
+        },
+        tenantId: loginTenantId,
+        inclusionExclusion: false,
+        partsRequired: true,
+        labourRequired: true,
+        serviceRequired: false,
+        miscRequired: true
+      }
+
+      if ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
+        (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) {
+        const updatePriceId = await createItemPriceData(priceUpdateData)
+        if (updatePriceId.status === 200) {
+          setPriceCalculator({
+            ...priceCalculator,
+            numberOfEvents: updatePriceId?.data?.numberOfEvents,
+          })
+        }
+      } else {
+        const updatePriceId = await updateItemPriceData(
+          priceCalculator?.itemPriceId,
+          priceUpdateData
+        );
+        if (updatePriceId.status === 200) {
+          setPriceCalculator({
+            ...priceCalculator,
+            numberOfEvents: updatePriceId?.data?.numberOfEvents,
+          })
+        }
+      }
+
+
+    } catch (error) {
+
+    }
+  }
 
   const handlePriceChange = (e) => {
     setPriceCalculator({
@@ -737,7 +916,7 @@ const PriceCalculator = (props) => {
                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                       {(priceCalculator.priceMethod == "" ||
                         priceCalculator.priceMethod == undefined)
-                        ? "NA" : priceCalculator.priceMethod?.value}
+                        ? "NA" : priceCalculator.priceMethod?.label}
                     </h6>
                   </div>
                 </div>
@@ -767,7 +946,7 @@ const PriceCalculator = (props) => {
                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                       {(priceCalculator.priceType == "" ||
                         priceCalculator.priceType == undefined)
-                        ? "NA" : priceCalculator.priceType?.value}
+                        ? "NA" : priceCalculator.priceType?.label}
                     </h6>
                   </div>
                 </div>
@@ -778,6 +957,7 @@ const PriceCalculator = (props) => {
                       {(priceCalculator.priceAdditionalSelect == "" ||
                         priceCalculator.priceAdditionalSelect == undefined)
                         ? "NA" : priceCalculator.priceAdditionalSelect?.value}
+                      {" - "}
                       {(priceCalculator.priceAdditionalInput == "" ||
                         priceCalculator.priceAdditionalInput == undefined)
                         ? ` NA` : ` ${priceCalculator.priceAdditionalInput}`}
@@ -791,6 +971,7 @@ const PriceCalculator = (props) => {
                       {(priceCalculator.escalationPriceOptionsValue1 == "" ||
                         priceCalculator.escalationPriceOptionsValue1 == undefined)
                         ? "NA" : priceCalculator.escalationPriceOptionsValue1?.value}
+                      {" - "}
                       {(priceCalculator.escalationPriceInputValue == "" ||
                         priceCalculator.escalationPriceInputValue == undefined)
                         ? ` NA` : ` ${priceCalculator.escalationPriceInputValue}`}
@@ -822,7 +1003,8 @@ const PriceCalculator = (props) => {
                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                       {(priceCalculator.discountTypeSelect == "" ||
                         priceCalculator.discountTypeSelect == undefined)
-                        ? "NA" : priceCalculator.discountTypeSelect?.value}
+                        ? "NA" : priceCalculator.discountTypeSelect?.label}
+                      {" - "}
                       {(priceCalculator.discountTypeInput == "" ||
                         priceCalculator.discountTypeInput == undefined)
                         ? ` NA` : ` ${priceCalculator.discountTypeInput}`}
@@ -836,9 +1018,15 @@ const PriceCalculator = (props) => {
                       {(priceCalculator.priceBreakDownOptionsKeyValue1 == "" ||
                         priceCalculator.priceBreakDownOptionsKeyValue1 == undefined)
                         ? "NA" : priceCalculator.priceBreakDownOptionsKeyValue1?.value}
-                      {(priceCalculator.priceBreakDownInputValue == "" ||
+                      {/* {(priceCalculator.priceBreakDownInputValue == "" ||
                         priceCalculator.priceBreakDownInputValue == undefined)
-                        ? ` NA` : ` ${priceCalculator.priceBreakDownInputValue}`}
+                        ? ` NA` : ` ${priceCalculator.priceBreakDownInputValue}`} */}
+                      {" - "}
+                      {priceCalculator?.priceBreakDownOptionsKeyValue1?.value === "PARTS" ? priceBreakDownFieldsValue.parts :
+                        priceCalculator?.priceBreakDownOptionsKeyValue1?.value === "LABOR" ? priceBreakDownFieldsValue.labor :
+                          priceCalculator?.priceBreakDownOptionsKeyValue1?.value === "MISCELLANEOUS" ? priceBreakDownFieldsValue.miscellaneous :
+                            priceCalculator?.priceBreakDownOptionsKeyValue1?.value === "SERVICE" ? priceBreakDownFieldsValue.service : "NA"
+                      }
                     </h6>
                   </div>
                 </div>
@@ -1091,7 +1279,7 @@ const PriceCalculator = (props) => {
                       <input
                         type="text"
                         className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                        placeholder="10%"
+                        // placeholder="10%"
                         // defaultValue={props?.priceCalculator?.priceAdditionalInput}
                         value={priceCalculator.priceAdditionalInput}
                         name="priceAdditionalInput"
@@ -1250,7 +1438,7 @@ const PriceCalculator = (props) => {
                               discountTypeSelect: e,
                             })
                           }
-                          isClearable={true}
+                          // isClearable={true}
                           options={discountTypeOptions}
                           placeholder="Select"
                         />
@@ -1266,7 +1454,7 @@ const PriceCalculator = (props) => {
                             discountTypeInput: e.target.value,
                           })
                         }
-                        placeholder="10%"
+                      // placeholder="10%"
                       />
                     </div>
                   </div>
@@ -1294,6 +1482,8 @@ const PriceCalculator = (props) => {
                         // options={options}
                         options={priceHeadTypeKeyValue}
                         placeholder="Select "
+                        disabled={((priceBreakDownFieldsValue.parts === "") || (priceBreakDownFieldsValue.labor === "") ||
+                          (priceBreakDownFieldsValue.miscellaneous === "")) ? false : true}
                       />
                       <input
                         type="text"
@@ -1407,7 +1597,7 @@ const PriceCalculator = (props) => {
                           type="number"
                           // type="text"
                           className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                          placeholder="10,000 hours"
+                          placeholder="Required*"
                           // defaultValue={props?.priceCalculator?.startUsage}
                           // value={priceCalculator.startUsage}
                           onChange={(e) =>
@@ -1440,7 +1630,7 @@ const PriceCalculator = (props) => {
                           type="number"
                           // type="text"
                           className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                          placeholder="16,000 hours"
+                          placeholder="Required*"
                           // defaultValue={props?.priceCalculator?.startUsage}
                           // value={priceCalculator.startUsage}
                           onChange={(e) =>
@@ -1467,7 +1657,7 @@ const PriceCalculator = (props) => {
                       </label>
                       <Select
                         options={usageTypeOption}
-                        placeholder="Planned Usage"
+                        // placeholder="Planned Usage"
                         className="text-primary"
                         onChange={(e) =>
                           // setAddportFolioItem({
@@ -1492,26 +1682,16 @@ const PriceCalculator = (props) => {
                         FREQUENCY
                       </label>
                       <Select
-                        options={frequencyOptions}
+                        // options={frequencyOptions}
+                        options={props.frequencyDropdownKeyValue}
                         placeholder="Select....."
                         className="text-primary"
-                        // onChange={(e) =>
-                        //   setPriceCalculator({
-                        //     ...priceCalculator,
-                        //     frequency: e,
-                        //   })
-                        // }
-                        // value={priceCalculator.frequency}
-                        onChange={(e) =>
-                          // setAddportFolioItem({
-                          //   ...addPortFolioItem,
-                          //   frequency: e,
-                          // })
+                        onChange={(e) => {
                           setPriceCalculator({
                             ...priceCalculator,
                             frequency: e,
                           })
-                        }
+                        }}
                         value={priceCalculator.frequency}
                       />
                     </div>
@@ -1525,15 +1705,16 @@ const PriceCalculator = (props) => {
                         UNIT
                       </label>
                       <Select
-                        options={[
-                          { value: "per Hr", label: "per Hr" },
-                          { value: "per Km", label: "per Km" },
-                          { value: "per Miles", label: "per Miles" },
-                          { value: "per year", label: "per year" },
-                          { value: "per month", label: "per month" },
-                          { value: "per day", label: "per day" },
-                          { value: "per quarter", label: "per quarter" },
-                        ]}
+                        // options={[
+                        //   { value: "per Hr", label: "per Hr" },
+                        //   { value: "per Km", label: "per Km" },
+                        //   { value: "per Miles", label: "per Miles" },
+                        //   { value: "per year", label: "per year" },
+                        //   { value: "per month", label: "per month" },
+                        //   { value: "per day", label: "per day" },
+                        //   { value: "per quarter", label: "per quarter" },
+                        // ]}
+                        options={props.unitDropdownKeyValue}
                         placeholder="Select..."
                         className="text-primary"
                         onChange={(e) =>
@@ -1545,6 +1726,7 @@ const PriceCalculator = (props) => {
                         }
                         value={priceCalculator.unit}
                       />
+                      <div className="css-w8dmq8">*Mandatory</div>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
@@ -1582,7 +1764,7 @@ const PriceCalculator = (props) => {
                         //   })
                         // }
                         />
-                        <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                        <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.value.toLowerCase() === "year" ? "Month" : priceCalculator.unit.label}</span>
                       </div>
                       <div className="css-w8dmq8">*Mandatory</div>
                     </div>
@@ -1646,8 +1828,8 @@ const PriceCalculator = (props) => {
                   </div>
                 </div>
                 <div className="my-1 d-flex align-items-center justify-content-end">
-                  <Link to="#" className="btn border mr-4">Cancel</Link>
-                  <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                  <a className="btn border mr-4 cursor">Cancel</a>
+                  <a className="btn d-flex align-items-center border bg-primary text-white cursor" onClick={calculateItemPrice}>
                     <span className="mr-2 funds">
                       <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                         <g>
@@ -1699,7 +1881,7 @@ const PriceCalculator = (props) => {
                           </g>
                         </g>
                       </svg>
-                    </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                    </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></a>
                 </div>
               </div>
             </>}
@@ -1878,21 +2060,20 @@ const PriceCalculator = (props) => {
             <div className="d-flex">
               <div>
                 <h6 className="text-light-dark font-size-12 font-weight-500 mr-4">
-                  NET PRICE
+                  TOTAL BASE PRICE
                 </h6>
-                ${priceCalculator.netPrice}
+                ${priceCalculator.totalPrice}
               </div>
               <div>
                 <h6 className="text-light-dark font-size-12 font-weight-500">
-                  TOTAL PRICE
+                  NET PRICE
                 </h6>
                 ${priceCalculator.calculatedPrice}
               </div>
+
             </div>
             <div className="my-3 text-right">
-              <a
-                href="#"
-                className="btn text-white bg-primary"
+              <a className="btn text-white bg-primary cursor"
                 onClick={
                   props.serviceOrBundlePrefix === ""
                     ? handleItemPriceSave
@@ -1905,9 +2086,7 @@ const PriceCalculator = (props) => {
           </div>
         </div>
         {/* <div className="m-3 text-right">
-          <a
-            href="#"
-            className="btn text-white bg-primary"
+          <a className="btn text-white bg-primary cursor"
             onClick={
               props.serviceOrBundlePrefix === ""
                 ? handleItemPriceSave

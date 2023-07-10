@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { Common_SOLUTION_BUILDER_URL, GET_AUDIT_SERVICE_DATA } from "./CONSTANTS";
+import { Common_SOLUTION_BUILDER_URL, GET_AUDIT_SERVICE_DATA, PORTFOLIO_SOLUTION_COMMON_CONFIG_URL } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -330,6 +330,31 @@ export const getAuditRestServiceData = (searchText) => {
         });
     } catch (error) {
       // console.error("in userServices > getAuditRestServiceData, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+/**
+ * Function to fetch the use case3-4 common config Select Option List.
+ */
+
+export const getPortfolioAndSolutionCommonConfig = (endPath) => {
+  console.log("CommonSolutionBuilderService > getPortfolioSolutionCommonConfig called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PORTFOLIO_SOLUTION_COMMON_CONFIG_URL + endPath, { headers: headersData })
+        .then((res) => {
+          console.log("getPortfolioSolutionCommonConfig > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getPortfolioSolutionCommonConfig > axios err=", err);
+          reject("Error in getPortfolioSolutionCommonConfig axios!");
+        });
+    } catch (error) {
+      console.error("in pricingCommonConfig.js > getPortfolioSolutionCommonConfig, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

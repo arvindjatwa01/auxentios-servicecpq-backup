@@ -5,7 +5,7 @@ import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useCallback } from "react";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, Button, Stack, Tab } from "@mui/material";
@@ -38,6 +38,8 @@ import {
   portfolioSearchDropdownList,
   itemSearch,
   portfolioItemPriceSjid,
+  getPortfolioAndSolutionCommonConfig,
+  updateItemPriceData,
 } from "../../services/index";
 import $ from "jquery";
 import {
@@ -74,10 +76,12 @@ import {
   selectUpdateList,
   taskActions,
 } from "./customerSegment/strategySlice"
+import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 
 
 const AddPortfolioItem = (props) => {
 
+  const history = useHistory();
   var CookiesSetData = Cookies.get("loginTenantDtl");
   var getCookiesJsonData;
   if (CookiesSetData != undefined) {
@@ -251,9 +255,8 @@ const AddPortfolioItem = (props) => {
     // ]);
     // setCount(count + 1);
   };
+
   const handleBundleItemSaveAndContinue = async (data, itemPriceData) => {
-
-
     try {
       // let reqObj = {
       //   itemId: 0,
@@ -608,6 +611,7 @@ const AddPortfolioItem = (props) => {
       return;
     }
   };
+
   const [columnSearchText, setColumnSearchText] = useState("");
   const [typeOfSearch, setTypeOfSearch] = useState(null);
   const handleCreateNewServiceBundle = () => {
@@ -633,6 +637,9 @@ const AddPortfolioItem = (props) => {
   const [bundleServiceItemData, setBundleServiceItemData] = useState([]);
   const [filterMasterData, setFilterMasterData] = useState([]);
   const [selectedMasterData, setSelectedMasterData] = useState([]);
+  const [unitOptionKeyValue, setUnitOptionKeyValue] = useState([])
+  const [frequencyOptionKeyValue, setFrequencyOptionKeyValue] = useState([])
+
   const handleLandingPageQuerySearchClick = async () => {
     try {
       if (selectedItemType == "" ||
@@ -708,6 +715,7 @@ const AddPortfolioItem = (props) => {
       return
     }
   };
+
   const handleSearchListClick = (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -717,6 +725,7 @@ const AddPortfolioItem = (props) => {
     setQuerySearchSelector([...tempArray]);
     $(`.scrollbar-${id}`).css("display", "none");
   };
+
   const handleInputSearch = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -835,6 +844,7 @@ const AddPortfolioItem = (props) => {
     obj.inputSearch = e.target.value;
     setQuerySearchSelector([...tempArray]);
   };
+
   const handleFamily = (e, id) => {
     let tempArray = [...querySearchSelector];
     console.log("handleFamily e:", tempArray[id]);
@@ -843,7 +853,9 @@ const AddPortfolioItem = (props) => {
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
   };
+
   const [familySelectOption, setFamilySelectOption] = useState([]);
+
   const handleOperator = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -851,6 +863,7 @@ const AddPortfolioItem = (props) => {
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
   };
+
   const handleItemType = useCallback(
     (e, i) => {
       // console.log("event is : ", e.value)
@@ -900,6 +913,7 @@ const AddPortfolioItem = (props) => {
     },
     [],
   );
+
   const handleQuerySearchClick = () => {
     $(".scrollbar").css("display", "none");
     console.log("handleQuerySearchClick", querySearchSelector);
@@ -929,6 +943,7 @@ const AddPortfolioItem = (props) => {
         console.log("error in getSearchQueryCoverage", err);
       });
   };
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -942,9 +957,15 @@ const AddPortfolioItem = (props) => {
   const [masterData, setMasterData] = useState([]);
   const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
   const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
+  const [selectedStandardJobId, setSelectedStandardJobId] = useState({
+    templateDBId: "",
+    templateType: "",
+    templateId: "",
+  })
+  const [selectedRepairKitId, setSelectedRepairKitId] = useState(null)
   // const [querySearchStandardJobDescriptionResult, setQuerySearchStandardJobDescriptionResult] = useState()
   // const {stratgyTaskTypeKeyValue,categoryUsageKeyValue1} = useContext(PortfolioContext);
-  const [addPortFolioItem, setAddportFolioItem] = useState({
+  const [addPortFolioItem, setAddPortFolioItem] = useState({
     id: 0,
     name: "",
     description: "",
@@ -977,6 +998,7 @@ const AddPortfolioItem = (props) => {
     endUsage: "",
     usageType: "",
     withBundleService: false,
+    itemPriceId: null,
   });
 
   const [bundleFlagType, setBundleFlagType] = useState("");
@@ -1060,6 +1082,46 @@ const AddPortfolioItem = (props) => {
       .catch((err) => {
         alert(err);
       });
+
+    // fetch Unit Dropdown API
+    getPortfolioAndSolutionCommonConfig("unit")
+      .then((res) => {
+        if (res.status === 200) {
+          const options = []
+          res.data.map((d) => {
+            if ((d.key != "EMPTY") && (d.key != "MONTH")) {
+              options.push({
+                value: d.key,
+                label: d.value,
+              })
+            }
+          });
+          setUnitOptionKeyValue(options);
+        }
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    // Frequency Dropdown 
+    getPortfolioAndSolutionCommonConfig("frequency")
+      .then((res) => {
+        if (res.status === 200) {
+          const options = []
+          res.data.map((d) => {
+            if (d.key != "EMPTY") {
+              options.push({
+                value: d.key,
+                label: d.value,
+              })
+            }
+          });
+          setFrequencyOptionKeyValue(options);
+        }
+      })
+      .catch((err) => {
+        alert(err);
+      });
   };
   const dispatch = useDispatch();
 
@@ -1083,15 +1145,15 @@ const AddPortfolioItem = (props) => {
         templateDescription,
         repairOption,
       } = props.passItemEditRowData.itemBodyModel;
-      setAddportFolioItem({
+      setAddPortFolioItem({
         ...addPortFolioItem,
         id: props.passItemEditRowData.itemId,
         name: props.passItemEditRowData.itemName,
         description: itemBodyDescription,
         usageIn: { label: usageIn, value: usageIn },
         taskType: { label: taskType[0], value: taskType[0] },
-        frequency: { label: frequency, value: frequency },
-        unit: { label: unit, value: unit },
+        // frequency: { label: frequency, value: frequency },
+        // unit: { label: unit, value: unit },
         recommendedValue: recommendedValue,
         usageType: { label: usage, value: usage },
         quantity,
@@ -1144,7 +1206,7 @@ const AddPortfolioItem = (props) => {
       templateDescription,
       // repairOption,
     } = props.passItemEditRowData.itemBodyModel;
-    setAddportFolioItem({
+    setAddPortFolioItem({
       ...addPortFolioItem,
       id: props.passItemEditRowData.itemId,
       name: props.passItemEditRowData.itemName,
@@ -1152,8 +1214,12 @@ const AddPortfolioItem = (props) => {
       usageIn: { label: usageIn, value: usageIn },
       usageType: { label: usage, value: usage },
       taskType: { label: taskType[0], value: taskType[0] },
-      frequency: { label: frequency, value: frequency },
-      unit: { label: unit, value: unit },
+      // frequency: { label: frequency, value: frequency },
+      // unit: { label: res.data.usageUnit, value: res.data.usageUnit },
+      unit: ((res.data?.usageUnit === "") || (res.data?.usageUnit === null) || (res.data?.usageUnit === "EMPTY")) ? "" :
+        props.unitDropdownKeyValue.find(o => o.value === res.data.usageUnit),
+      frequency: (res.data?.frequency === "" || res.data?.frequency === null || (res.data?.frequency === "EMPTY")) ? "" :
+        props.frequencyDropdownKeyValue.find(o => o.value === res.data.frequency),
       recommendedValue: res.data.recommendedValue,
       quantity: res.data.quantity,
       numberOfEvents: res.data.numberOfEvents,
@@ -1181,6 +1247,7 @@ const AddPortfolioItem = (props) => {
           label: props.passItemEditRowData?.itemHeaderModel?.currency,
           value: props.passItemEditRowData?.itemHeaderModel?.currency,
         } : "",
+      itemPriceId: res.data.itemPriceDataId,
     });
 
 
@@ -1198,7 +1265,7 @@ const AddPortfolioItem = (props) => {
   useEffect(() => {
     if (props.createdBundleItems !== undefined) {
       if (props.createdBundleItems !== "") {
-        setAddportFolioItem({
+        setAddPortFolioItem({
           ...addPortFolioItem,
           id: 0,
           name: props.createdBundleItems?.name,
@@ -1246,7 +1313,7 @@ const AddPortfolioItem = (props) => {
     addPortFolioItem.strategyTask = "";
     addPortFolioItem.taskType = "";
     // setCategoryUsageKeyValue1(e);
-    setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
+    setAddPortFolioItem({ ...addPortFolioItem, usageIn: e })
     dispatch(taskActions.updateList(e.value));
   };
 
@@ -1254,22 +1321,28 @@ const AddPortfolioItem = (props) => {
     setStratgyTaskTypeKeyValue([]);
     addPortFolioItem.taskType = "";
     // setStratgyTaskUsageKeyValue(e);
-    setAddportFolioItem({ ...addPortFolioItem, strategyTask: e })
+    setAddPortFolioItem({ ...addPortFolioItem, strategyTask: e })
     dispatch(taskActions.updateTask(e.value));
   };
 
   const handleStandardJobInputSearch = (e) => {
 
-    setAddportFolioItem({
+    setAddPortFolioItem({
       ...addPortFolioItem,
       templateId: e.target.value,
+    })
+
+    setSelectedStandardJobId({
+      templateDBId: "",
+      templateType: "",
+      templateId: "",
     })
     var searchStr = e.target.value;
     getSearchStandardJobId(searchStr)
       .then((res) => {
         // console.log("search Query Result --------- :", res);
         // setMasterData(res);
-        if(res.status === 200){
+        if (res.status === 200) {
           $(`.scrollbar-model`).css("display", "block");
           setQuerySearchStandardJobResult(res.data)
           var preArr = [];
@@ -1285,7 +1358,7 @@ const AddPortfolioItem = (props) => {
   }
 
   const handleRelatedKitInputSearch = (e) => {
-    setAddportFolioItem({
+    setAddPortFolioItem({
       ...addPortFolioItem,
       repairOption: e.target.value,
     })
@@ -1312,10 +1385,15 @@ const AddPortfolioItem = (props) => {
 
     // console.log("currentItem : ", currentItem);
     // templateDescription
-    setAddportFolioItem({
+    setAddPortFolioItem({
       ...addPortFolioItem,
       templateId: currentItem.standardJobId,
       templateDescription: { label: currentItem.description, value: currentItem.description },
+    })
+    setSelectedStandardJobId({
+      templateDBId: currentItem.id,
+      templateType: currentItem.templateType,
+      templateId: currentItem.templateId,
     })
     $(`.scrollbar-model`).css("display", "none");
   }
@@ -1325,7 +1403,7 @@ const AddPortfolioItem = (props) => {
     if (props.setBundleServiceNeed !== undefined) {
       props.setBundleServiceNeed(e.target.checked)
       setNoNeedBundleService(e.target.checked);
-      setAddportFolioItem({
+      setAddPortFolioItem({
         ...addPortFolioItem,
         withBundleService: e.target.checked,
       })
@@ -1336,7 +1414,7 @@ const AddPortfolioItem = (props) => {
 
     console.log("currentItem : ", currentItem);
     // templateDescription
-    setAddportFolioItem({
+    setAddPortFolioItem({
       ...addPortFolioItem,
       repairOption: currentItem.kitId,
       // templateDescription: { label: currentItem.description, value: currentItem.description },
@@ -1349,16 +1427,13 @@ const AddPortfolioItem = (props) => {
 
     try {
       if (tabs == "itemSummary") {
-        // console.log("addPortFolioItem?.kitDescription : ", addPortFolioItem?.kitDescription)
-        // console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId)
-        // console.log("addPortFolioItem.repairOption : ", addPortFolioItem.repairOption)
         if ((props.compoFlag === "ITEM")) {
 
-          if ((props.portfolioDataId == "") ||
-            (props.portfolioDataId == undefined)) {
-            props.itemModelShow(false)
-            throw "Please Create Portfolio First, then you can Add Item";
-          }
+          // if ((props.portfolioDataId == "") ||
+          //   (props.portfolioDataId == undefined)) {
+          //   props.itemModelShow(false)
+          //   throw "Please Create Portfolio First, then you can Add Item";
+          // }
 
           if ((addPortFolioItem.name == "") ||
             (addPortFolioItem.name == undefined)) {
@@ -1372,12 +1447,12 @@ const AddPortfolioItem = (props) => {
 
           if ((addPortFolioItem.usageIn == "") ||
             (addPortFolioItem.usageIn == undefined)) {
-            throw "UsageIn is a required field, you can’t leave it blank";
+            throw "Usage In is a required field, you can’t leave it blank";
           }
 
           if ((addPortFolioItem.usageIn.value == "") ||
             (addPortFolioItem.usageIn.value == undefined)) {
-            throw "UsageIn is a required field, you can’t leave it blank";
+            throw "Usage In is a required field, you can’t leave it blank";
           }
 
           if ((addPortFolioItem.taskType.value == "") ||
@@ -1393,6 +1468,20 @@ const AddPortfolioItem = (props) => {
           if ((addPortFolioItem.endUsage == "") ||
             (addPortFolioItem.endUsage == undefined)) {
             throw "End Usage is a required field, you can’t leave it blank";
+          }
+
+          if (parseInt(addPortFolioItem.startUsage) > parseInt(addPortFolioItem.endUsage)) {
+            throw "start Usage must not be greater to End Usage.";
+          }
+
+          if ((addPortFolioItem.unit == "") ||
+            (addPortFolioItem.unit == undefined)) {
+            throw "Unit is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.unit.value == "") ||
+            (addPortFolioItem.unit.value == undefined)) {
+            throw "Unit is a required field, you can’t leave it blank";
           }
 
           if ((addPortFolioItem.recommendedValue == "") ||
@@ -1400,29 +1489,18 @@ const AddPortfolioItem = (props) => {
             throw "Recommended Value is a required field, you can’t leave it blank";
           }
 
-          // if ((addPortFolioItem.quantity == "") ||
-          //   (addPortFolioItem.quantity == undefined)) {
-          //   throw "Quantity is a required field, you can’t leave it blank";
-          // }
-
-
-          // if ((addPortFolioItem.numberOfEvents == "") ||
-          //   (addPortFolioItem.numberOfEvents == undefined)) {
-          //   throw "No of Events is a required field, you can’t leave it blank";
-          // }
-
         }
 
         if ((props.compoFlag === "BUNDLE")) {
 
           if ((addPortFolioItem.usageIn == "") ||
             (addPortFolioItem.usageIn == undefined)) {
-            throw "UsageIn is a required field, you can’t leave it blank";
+            throw "Usage In is a required field, you can’t leave it blank";
           }
 
           if ((addPortFolioItem.usageIn.value == "") ||
             (addPortFolioItem.usageIn.value == undefined)) {
-            throw "UsageIn is a required field, you can’t leave it blank";
+            throw "Usage In is a required field, you can’t leave it blank";
           }
 
           if ((addPortFolioItem.taskType.value == "") ||
@@ -1438,6 +1516,20 @@ const AddPortfolioItem = (props) => {
           if ((addPortFolioItem.endUsage == "") ||
             (addPortFolioItem.endUsage == undefined)) {
             throw "End Usage is a required field, you can’t leave it blank";
+          }
+
+          if (parseInt(addPortFolioItem.startUsage) > parseInt(addPortFolioItem.endUsage)) {
+            throw "start Usage must not be greater to End Usage.";
+          }
+
+          if ((addPortFolioItem.unit == "") ||
+            (addPortFolioItem.unit == undefined)) {
+            throw "Unit is a required field, you can’t leave it blank";
+          }
+
+          if ((addPortFolioItem.unit.value == "") ||
+            (addPortFolioItem.unit.value == undefined)) {
+            throw "Unit is a required field, you can’t leave it blank";
           }
 
           if ((addPortFolioItem.recommendedValue == "") ||
@@ -1461,18 +1553,19 @@ const AddPortfolioItem = (props) => {
           if ((addPortFolioItem.templateId == "") &&
             (addPortFolioItem.repairOption == "")) {
             setTabs("relatedTemplate")
-          } else if ((addPortFolioItem.templateId != "")) {
+          } else if ((addPortFolioItem.templateId != "" || addPortFolioItem.templateId != null) &&
+            (addPortFolioItem.repairOption == "" || addPortFolioItem.repairOption == null)) {
             setTabs("relatedTemplate")
-          } else if ((addPortFolioItem.repairOption != "")) {
+          } else if ((addPortFolioItem.templateId == "" || addPortFolioItem.templateId == null) &&
+            (addPortFolioItem.repairOption != "" || addPortFolioItem.repairOption != null)) {
             setTabs("relatedKit")
           }
           // setTabs((prev) => `${parseInt(prev) + 1}`)
         } else {
           setTabs("relatedTemplate")
           // setTabs((prev) => `${parseInt(prev) + 1}`)
-          setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+          setAddPortFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
         }
-
       }
 
       if (tabs == "relatedTemplate") {
@@ -1500,30 +1593,26 @@ const AddPortfolioItem = (props) => {
           }
 
           if ((props.compoFlag === "BUNDLE")) {
-
-
-            // const rObj = {
+            //  Old working Price creation request Obj
+            // const newPriceObj = {
             //   itemPriceDataId: 0,
-            //   quantity: addPortFolioItem.quantity,
-            //   startUsage: addPortFolioItem.startUsage,
-            //   endUsage: addPortFolioItem.endUsage,
+            //   quantity: 1,
             //   standardJobId: addPortFolioItem.templateId,
-            //   repairKitId: "",
-            //   templateDescription: addPortFolioItem.templateDescription?.value,
+            //   repairKitId: addPortFolioItem.repairOption,
+            //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
             //   repairOption: "",
             //   additional: "",
             //   partListId: "",
             //   serviceEstimateId: "",
-            //   numberOfEvents: addPortFolioItem?.numberOfEvents,
-            //   priceMethod: "LIST_PRICE",
-            //   priceType: "FIXED",
+            //   numberOfEvents: 0,
+            //   priceMethod: "EMPTY",
+            //   priceType: "EMPTY",
             //   listPrice: 0,
             //   priceEscalation: "",
             //   calculatedPrice: 0,
             //   flatPrice: 0,
-            //   discountType: "",
             //   year: addPortFolioItem.year?.value,
-            //   noOfYear: addPortFolioItem.noOfYear,
+            //   noOfYear: parseInt(addPortFolioItem.noOfYear),
             //   sparePartsPrice: 0,
             //   sparePartsPriceBreakDownPercentage: 0,
             //   servicePrice: 0,
@@ -1533,29 +1622,47 @@ const AddPortfolioItem = (props) => {
             //   miscPriceBreakDownPercentage: 0,
             //   totalPrice: 0,
             //   netService: 0,
-            //   portfolio: {
-            //     portfolioId: 1
+            //   additionalPriceType: "ABSOLUTE",
+            //   additionalPriceValue: 0,
+            //   discountType: "EMPTY",
+            //   discountValue: 0,
+            //   recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+            //   startUsage: parseInt(addPortFolioItem.startUsage),
+            //   endUsage: parseInt(addPortFolioItem.endUsage),
+            //   sparePartsEscalation: 0,
+            //   labourEscalation: 0,
+            //   miscEscalation: 0,
+            //   serviceEscalation: 0,
+            //   withBundleService: false,
+            //   portfolio: ((props.portfolioDataId == "") ||
+            //     (props.portfolioDataId == undefined) ||
+            //     (props.portfolioDataId == null) ||
+            //     (props.portfolioDataId == 0)) ? null : {
+            //     portfolioId: props.portfolioDataId
             //   },
             //   tenantId: loginTenantId,
             //   partsRequired: true,
-            //   serviceRequired: false,
             //   labourRequired: true,
-            //   miscRequired: true
+            //   serviceRequired: false,
+            //   miscRequired: true,
+            //   inclusionExclusion: false
             // }
 
-            const newPriceObj = {
+            // new price creation request obj
+            let newPriceObj = {
               itemPriceDataId: 0,
-              quantity: 0,
-              standardJobId: addPortFolioItem.templateId,
-              repairKitId: addPortFolioItem.repairOption,
-              templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+              quantity: 1,
+              standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
+              repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
+              templateDescription: addPortFolioItem.templateId === "" ? "" : addPortFolioItem.templateDescription?.value,
               repairOption: "",
               additional: "",
               partListId: "",
               serviceEstimateId: "",
               numberOfEvents: 0,
-              priceMethod: "EMPTY",
-              priceType: "EMPTY",
+              frequency: addPortFolioItem?.frequency === "" ? "CYCLIC" : addPortFolioItem?.frequency?.value,
+              priceMethod: "LIST_PRICE",
+              priceType: "EVENT_BASED",
               listPrice: 0,
               priceEscalation: "",
               calculatedPrice: 0,
@@ -1573,7 +1680,7 @@ const AddPortfolioItem = (props) => {
               netService: 0,
               additionalPriceType: "ABSOLUTE",
               additionalPriceValue: 0,
-              discountType: "EMPTY",
+              discountType: "PORTFOLIO_DISCOUNT",
               discountValue: 0,
               recommendedValue: parseInt(addPortFolioItem.recommendedValue),
               startUsage: parseInt(addPortFolioItem.startUsage),
@@ -1582,6 +1689,11 @@ const AddPortfolioItem = (props) => {
               labourEscalation: 0,
               miscEscalation: 0,
               serviceEscalation: 0,
+              sparePartsNOE: 0,
+              labourNOE: 0,
+              miscNOE: 0,
+              recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+              usageUnit: addPortFolioItem?.unit === "" ? "" : addPortFolioItem?.unit?.value,
               withBundleService: false,
               portfolio: ((props.portfolioDataId == "") ||
                 (props.portfolioDataId == undefined) ||
@@ -1590,15 +1702,12 @@ const AddPortfolioItem = (props) => {
                 portfolioId: props.portfolioDataId
               },
               tenantId: loginTenantId,
+              inclusionExclusion: false,
               partsRequired: true,
               labourRequired: true,
               serviceRequired: false,
-              miscRequired: true,
-              inclusionExclusion: false
+              miscRequired: true
             }
-
-
-
             const itemPriceData = await createItemPriceData(newPriceObj)
             if (itemPriceData.status === 200) {
               props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data);
@@ -1624,7 +1733,6 @@ const AddPortfolioItem = (props) => {
               editable
             );
           }
-
           // const rObj = {
           //   itemPriceDataId: 0,
           //   quantity: addPortFolioItem.quantity,
@@ -1667,7 +1775,6 @@ const AddPortfolioItem = (props) => {
           // }
           // const itemPriceData = await createItemPriceData(rObj);
           // props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
-
         }
       }
 
@@ -1720,7 +1827,7 @@ const AddPortfolioItem = (props) => {
     //       setTabs((prev) => `${parseInt(prev) + 1}`)
     //     } else {
     //       setTabs((prev) => `${parseInt(prev) + 1}`)
-    //       setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+    //       setAddPortFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
     //     }
     //   }
     // } else if (tabs == 2 && addPortFolioItem.templateId == "") {
@@ -1887,17 +1994,17 @@ const AddPortfolioItem = (props) => {
 
     try {
 
-      if ((props.compoFlag === "ITEM")) {
-        if ((props.portfolioDataId == "") ||
-          (props.portfolioDataId == undefined)) {
-          props.itemModelShow(false)
-          throw "Please Create Portfolio First, then you can Add Item";
-        }
-      }
+      // if ((props.compoFlag === "ITEM")) {
+      //   if ((props.portfolioDataId == "") ||
+      //     (props.portfolioDataId == undefined)) {
+      //     props.itemModelShow(false)
+      //     throw "Please Create Portfolio First, then you can Add Item";
+      //   }
+      // }
 
-      if (addPortFolioItem.repairOption == "") {
-        throw "you can’t leave blank related Kit field";
-      }
+      // if (addPortFolioItem.repairOption == "") {
+      //   throw "you can’t leave blank related Kit field";
+      // }
 
       if ((props.compoFlag === "ITEM")) {
         if ((props.portfolioDataId == "") ||
@@ -1921,28 +2028,26 @@ const AddPortfolioItem = (props) => {
         (props.compoFlagTest === "itemEditBundle")) {
         props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
       } else {
-        // const rObj = {
+        //  Old working Price creation request Obj
+        // const newPriceObj = {
         //   itemPriceDataId: 0,
-        //   quantity: addPortFolioItem.quantity,
-        //   startUsage: addPortFolioItem.startUsage,
-        //   endUsage: addPortFolioItem.endUsage,
+        //   quantity: 1,
         //   standardJobId: addPortFolioItem.templateId,
         //   repairKitId: addPortFolioItem.repairOption,
-        //   templateDescription: addPortFolioItem.templateDescription,
+        //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
         //   repairOption: "",
         //   additional: "",
         //   partListId: "",
         //   serviceEstimateId: "",
-        //   numberOfEvents: addPortFolioItem.numberOfEvents,
-        //   priceMethod: "LIST_PRICE",
-        //   priceType: "FIXED",
+        //   numberOfEvents: 0,
+        //   priceMethod: "EMPTY",
+        //   priceType: "EMPTY",
         //   listPrice: 0,
         //   priceEscalation: "",
         //   calculatedPrice: 0,
         //   flatPrice: 0,
-        //   discountType: "",
         //   year: addPortFolioItem.year?.value,
-        //   noOfYear: addPortFolioItem.noOfYear,
+        //   noOfYear: parseInt(addPortFolioItem.noOfYear),
         //   sparePartsPrice: 0,
         //   sparePartsPriceBreakDownPercentage: 0,
         //   servicePrice: 0,
@@ -1952,29 +2057,45 @@ const AddPortfolioItem = (props) => {
         //   miscPriceBreakDownPercentage: 0,
         //   totalPrice: 0,
         //   netService: 0,
-        //   portfolio: {
-        //     portfolioId: 1
-        //   },
+        //   additionalPriceType: "ABSOLUTE",
+        //   additionalPriceValue: 0,
+        //   discountType: "EMPTY",
+        //   discountValue: 0,
+        //   recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+        //   startUsage: parseInt(addPortFolioItem.startUsage),
+        //   endUsage: parseInt(addPortFolioItem.endUsage),
+        //   sparePartsEscalation: 0,
+        //   labourEscalation: 0,
+        //   miscEscalation: 0,
+        //   serviceEscalation: 0,
+        //   withBundleService: false,
+        //   // portfolio: {
+        //   //   portfolioId: 1
+        //   // },
+        //   portfolio: null,
         //   tenantId: loginTenantId,
         //   partsRequired: true,
-        //   serviceRequired: false,
         //   labourRequired: true,
-        //   miscRequired: true
+        //   serviceRequired: false,
+        //   miscRequired: true,
+        //   inclusionExclusion: false
         // }
 
+        // new price creation request obj
         const newPriceObj = {
           itemPriceDataId: 0,
-          quantity: 0,
-          standardJobId: addPortFolioItem.templateId,
-          repairKitId: addPortFolioItem.repairOption,
-          templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+          quantity: 1,
+          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
+          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
+          templateDescription: addPortFolioItem.templateId === "" ? "" : addPortFolioItem.templateDescription?.value,
           repairOption: "",
           additional: "",
           partListId: "",
           serviceEstimateId: "",
           numberOfEvents: 0,
-          priceMethod: "EMPTY",
-          priceType: "EMPTY",
+          frequency: addPortFolioItem?.frequency === "" ? "CYCLIC" : addPortFolioItem?.frequency?.value,
+          priceMethod: "LIST_PRICE",
+          priceType: "EVENT_BASED",
           listPrice: 0,
           priceEscalation: "",
           calculatedPrice: 0,
@@ -1992,7 +2113,7 @@ const AddPortfolioItem = (props) => {
           netService: 0,
           additionalPriceType: "ABSOLUTE",
           additionalPriceValue: 0,
-          discountType: "EMPTY",
+          discountType: "PORTFOLIO_DISCOUNT",
           discountValue: 0,
           recommendedValue: parseInt(addPortFolioItem.recommendedValue),
           startUsage: parseInt(addPortFolioItem.startUsage),
@@ -2001,22 +2122,29 @@ const AddPortfolioItem = (props) => {
           labourEscalation: 0,
           miscEscalation: 0,
           serviceEscalation: 0,
+          sparePartsNOE: 0,
+          labourNOE: 0,
+          miscNOE: 0,
+          recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+          usageUnit: addPortFolioItem?.unit === "" ? "" : addPortFolioItem?.unit?.value,
           withBundleService: false,
-          // portfolio: {
-          //   portfolioId: 1
-          // },
-          portfolio: null,
+          portfolio: ((props.portfolioDataId == "") ||
+            (props.portfolioDataId == undefined) ||
+            (props.portfolioDataId == null) ||
+            (props.portfolioDataId == 0)) ? null : {
+            portfolioId: props.portfolioDataId
+          },
           tenantId: loginTenantId,
+          inclusionExclusion: false,
           partsRequired: true,
           labourRequired: true,
           serviceRequired: false,
-          miscRequired: true,
-          inclusionExclusion: false
+          miscRequired: true
         }
 
         const itemPriceData = await createItemPriceData(newPriceObj);
         props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
-        props.setBundleTabs("bundleServicePriceCalculator");
+        // props.setBundleTabs("bundleServicePriceCalculator");
       }
     } catch (error) {
       toast("😐" + error, {
@@ -2171,6 +2299,228 @@ const AddPortfolioItem = (props) => {
     }
   }
 
+  const calculateItemPrice = async () => {
+    try {
+      if ((props.compoFlag === "ITEM")) {
+
+        if ((props.portfolioDataId == "") ||
+          (props.portfolioDataId == undefined)) {
+          props.itemModelShow(false)
+          throw "Please Create Portfolio First, then you can Add Item";
+        }
+
+        if ((addPortFolioItem.startUsage == "") ||
+          (addPortFolioItem.startUsage == undefined)) {
+          throw "Start Usage is a required field, you can’t leave it blank";
+        }
+
+        if ((addPortFolioItem.endUsage == "") ||
+          (addPortFolioItem.endUsage == undefined)) {
+          throw "End Usage is a required field, you can’t leave it blank";
+        }
+
+        if (parseInt(addPortFolioItem.startUsage) > parseInt(addPortFolioItem.endUsage)) {
+          throw "start Usage must not be greater to End Usage.";
+        }
+
+        if ((addPortFolioItem.unit == "") ||
+          (addPortFolioItem.unit == undefined)) {
+          throw "Unit is a required field, you can’t leave it blank";
+        }
+
+        if ((addPortFolioItem.recommendedValue == "") ||
+          (addPortFolioItem.recommendedValue == undefined)) {
+          throw "Recommended Value is a required field, you can’t leave it blank";
+        }
+
+        //  Old working Price creation request Obj
+        // let newPriceObj = {
+        //   itemPriceDataId: 0,
+        //   quantity: 1,
+        //   standardJobId: addPortFolioItem.templateId,
+        //   repairKitId: addPortFolioItem.repairOption,
+        //   templateDescription: "",
+        //   repairOption: "",
+        //   additional: "",
+        //   partListId: "",
+        //   serviceEstimateId: "",
+        //   numberOfEvents: 0,
+        //   frequency: (addPortFolioItem?.frequency === "" || addPortFolioItem?.frequency?.value === undefined) ? "CYCLIC" : addPortFolioItem?.frequency?.value,
+        //   priceMethod: "LIST_PRICE",
+        //   priceType: "EVENT_BASED",
+        //   listPrice: 0,
+        //   priceEscalation: "",
+        //   calculatedPrice: 0,
+        //   flatPrice: 0,
+        //   year: addPortFolioItem.year?.value === "" || addPortFolioItem.year?.value === undefined ? "" : addPortFolioItem.year?.value,
+        //   noOfYear: parseInt(addPortFolioItem.noOfYear),
+        //   sparePartsPrice: 0,
+        //   sparePartsPriceBreakDownPercentage: 0,
+        //   servicePrice: 0,
+        //   labourPrice: 0,
+        //   labourPriceBreakDownPercentage: 0,
+        //   miscPrice: 0,
+        //   miscPriceBreakDownPercentage: 0,
+        //   totalPrice: 0,
+        //   netService: 0,
+        //   additionalPriceType: "ABSOLUTE",
+        //   additionalPriceValue: 0,
+        //   discountType: "PORTFOLIO_DISCOUNT",
+        //   discountValue: 0,
+        //   recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+        //   startUsage: parseInt(addPortFolioItem.startUsage),
+        //   endUsage: parseInt(addPortFolioItem.endUsage),
+        //   sparePartsEscalation: 0,
+        //   labourEscalation: 0,
+        //   miscEscalation: 0,
+        //   serviceEscalation: 0,
+        //   sparePartsNOE: 0,
+        //   labourNOE: 0,
+        //   miscNOE: 0,
+        //   recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+        //   usageUnit: addPortFolioItem?.unit?.value,
+        //   withBundleService: true,
+        //   portfolio: null,
+        //   tenantId: loginTenantId,
+        //   partsRequired: true,
+        //   labourRequired: true,
+        //   serviceRequired: false,
+        //   miscRequired: true,
+        //   inclusionExclusion: false
+        // }
+
+        // new price creation request obj
+        let newPriceObj = {
+          itemPriceDataId: 0,
+          quantity: 1,
+          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
+          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
+          templateDescription: addPortFolioItem.templateId === "" ? "" : addPortFolioItem.templateDescription?.value,
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          frequency: addPortFolioItem?.frequency === "" ? "CYCLIC" : addPortFolioItem?.frequency?.value,
+          priceMethod: "LIST_PRICE",
+          priceType: "EVENT_BASED",
+          listPrice: 0,
+          priceEscalation: "",
+          calculatedPrice: 0,
+          flatPrice: 0,
+          year: addPortFolioItem.year?.value,
+          noOfYear: parseInt(addPortFolioItem.noOfYear),
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0,
+          netService: 0,
+          additionalPriceType: "ABSOLUTE",
+          additionalPriceValue: 0,
+          discountType: "PORTFOLIO_DISCOUNT",
+          discountValue: 0,
+          recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+          startUsage: parseInt(addPortFolioItem.startUsage),
+          endUsage: parseInt(addPortFolioItem.endUsage),
+          sparePartsEscalation: 0,
+          labourEscalation: 0,
+          miscEscalation: 0,
+          serviceEscalation: 0,
+          sparePartsNOE: 0,
+          labourNOE: 0,
+          miscNOE: 0,
+          recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+          usageUnit: addPortFolioItem?.unit === "" ? "" : addPortFolioItem?.unit?.value,
+          withBundleService: false,
+          portfolio: ((props.portfolioDataId == "") ||
+            (props.portfolioDataId == undefined) ||
+            (props.portfolioDataId == null) ||
+            (props.portfolioDataId == 0)) ? null : {
+            portfolioId: props.portfolioDataId
+          },
+          tenantId: loginTenantId,
+          inclusionExclusion: false,
+          partsRequired: true,
+          labourRequired: true,
+          serviceRequired: false,
+          miscRequired: true
+        }
+
+        if (addPortFolioItem.itemPriceId === null) {
+          const itemPriceData = await createItemPriceData(newPriceObj);
+          if (itemPriceData.status === 200) {
+            setAddPortFolioItem({
+              ...addPortFolioItem,
+              numberOfEvents: itemPriceData.data.numberOfEvents,
+              itemPriceId: itemPriceData.data.itemPriceDataId,
+            })
+          }
+        } else {
+          const itemPriceData = await updateItemPriceData(addPortFolioItem.itemPriceId, newPriceObj);
+          if (itemPriceData.status === 200) {
+            setAddPortFolioItem({
+              ...addPortFolioItem,
+              numberOfEvents: itemPriceData.data.numberOfEvents,
+              itemPriceId: itemPriceData.data.itemPriceDataId,
+            })
+          }
+        }
+
+      }
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  const goToTemplate = () => {
+    try {
+      if (selectedStandardJobId.templateDBId === "") {
+        throw "Search and Select any one Template Id"
+      }
+
+      let templateDetails = {
+        templateId: "",
+        templateDBId: "",
+        partListNo: "",
+        partListId: "",
+        type: "fetch",
+        templateType: selectedStandardJobId.templateType
+      };
+
+      templateDetails.templateId = selectedStandardJobId.templateId;
+      templateDetails.templateDBId = selectedStandardJobId.templateDBId;
+
+      history.push({
+        pathname: STANDARD_JOB_DETAIL,
+        state: templateDetails,
+      });
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
   return (
     <>
       <div className="ligt-greey-bg p-3 d-none">
@@ -2236,7 +2586,7 @@ const AddPortfolioItem = (props) => {
                 className="form-control border-radius-10"
                 placeholder="DESCRIPTION"
                 name="description"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, description: e.target.value, })}
+                onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, description: e.target.value, })}
                 value={addPortFolioItem.description}
                 disabled={editable}
               />
@@ -2254,14 +2604,14 @@ const AddPortfolioItem = (props) => {
                 options={categoryList}
                 // options={props.categoryList}
                 value={addPortFolioItem.usageIn}
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, usageIn: e })}
+                onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, usageIn: e })}
                 isDisabled={editable}
               />
             </div>
           </div>
         </div>
 
-        <p className="mt-4">STRATEGY</p>
+        <p className="mt-4">STRATEGY TASK</p>
         <div className="row mt-4">
           <div className="col-md-6 col-sm-6">
             <div className="form-group">
@@ -2277,7 +2627,7 @@ const AddPortfolioItem = (props) => {
                     options={updatedTaskList}
                     // options={props.updatedTaskList}
                     value={addPortFolioItem.taskType}
-                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e, })}
+                    onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, taskType: e, })}
                     isDisabled={editable}
                   />
                   <span className="search-icon searchIcon">
@@ -2296,9 +2646,10 @@ const AddPortfolioItem = (props) => {
                 FREQUENCY
               </label>
               <Select
-                options={frequencyOptions}
+                // options={frequencyOptions}
+                options={frequencyOptionKeyValue}
                 placeholder="FREQUENCY"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, frequency: e, })}
+                onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, frequency: e, })}
                 value={addPortFolioItem.frequency}
                 isDisabled={editable}
               />
@@ -2307,7 +2658,7 @@ const AddPortfolioItem = (props) => {
                   <Select
                     options={frequencyOptions}
                     placeholder="FREQUENCY"
-                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, frequency: e, })}
+                    onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, frequency: e, })}
                     value={addPortFolioItem.frequency}
                     isDisabled={editable}
                   />
@@ -2327,20 +2678,22 @@ const AddPortfolioItem = (props) => {
                 UNIT
               </label>
               <Select
-                options={[
-                  { value: "per Hr", label: "per Hr" },
-                  { value: "per Km", label: "per Km" },
-                  { value: "per Miles", label: "per Miles" },
-                  { value: "per year", label: "per year" },
-                  { value: "per month", label: "per month" },
-                  { value: "per day", label: "per day" },
-                  { value: "per quarter", label: "per quarter" },
-                ]}
+                // options={[
+                //   { value: "per Hr", label: "per Hr" },
+                //   { value: "per Km", label: "per Km" },
+                //   { value: "per Miles", label: "per Miles" },
+                //   { value: "per year", label: "per year" },
+                //   { value: "per month", label: "per month" },
+                //   { value: "per day", label: "per day" },
+                //   { value: "per quarter", label: "per quarter" },
+                // ]}
+                options={unitOptionKeyValue}
                 placeholder="HOURS"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, unit: e })}
+                onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, unit: e })}
                 value={addPortFolioItem.unit}
                 isDisabled={editable}
               />
+              <div className="css-w8dmq8">*Mandatory</div>
             </div>
           </div>
           <div className="col-md-6 col-sm-6">
@@ -2357,7 +2710,7 @@ const AddPortfolioItem = (props) => {
                 className="form-control border-radius-10"
                 // options={options}
 
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
                 value={addPortFolioItem.recommendedValue}
                 isDisabled={editable}
               />
@@ -2375,7 +2728,7 @@ const AddPortfolioItem = (props) => {
                 type="text"
                 className="form-control border-radius-10"
                 placeholder="QUANTITY"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, quantity: e.target.value, })}
+                onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, quantity: e.target.value, })}
                 value={addPortFolioItem.quantity}
                 disabled={editable}
               />
@@ -2394,7 +2747,7 @@ const AddPortfolioItem = (props) => {
                 className="form-control border-radius-10"
                 placeholder="NO. OF EVENTS"
                 onChange={(e) =>
-                  setAddportFolioItem({
+                  setAddPortFolioItem({
                     ...addPortFolioItem,
                     numberOfEvents: e.target.value,
                   })
@@ -2423,7 +2776,7 @@ const AddPortfolioItem = (props) => {
                         options={options}
                         placeholder="TEMPLATE ID"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             templateId: e,
                           })
@@ -2452,7 +2805,7 @@ const AddPortfolioItem = (props) => {
                         options={options}
                         placeholder="TEMPLATE DESCRIPTION"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             templateDescription: e,
                           })
@@ -2470,9 +2823,7 @@ const AddPortfolioItem = (props) => {
               <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <div className="mt-4">
-                    <a
-                      href="#"
-                      className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                    <a className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2 cursor"
                     >
                       <span className="mr-2">+</span>Add Template / Kit
                     </a>
@@ -2497,7 +2848,7 @@ const AddPortfolioItem = (props) => {
                         options={options}
                         placeholder="REPAIR OPTION"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             repairOption: e,
                           })
@@ -2515,9 +2866,7 @@ const AddPortfolioItem = (props) => {
               <div className="col-md-4 col-sm-4">
                 <div className="form-group">
                   <div className="mt-4">
-                    <a
-                      href="#"
-                      className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                    <a className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2 cursor"
                     >
                       <span className="mr-2">+</span>Add Repair Option
                     </a>
@@ -2528,7 +2877,7 @@ const AddPortfolioItem = (props) => {
         <div className="text-right pb-2">
           <Link
             to="#"
-            className="btn border mr-4"
+            className="btn cursor bg-primary text-white border mr-4"
             onClick={handleAddPortfolioSave}
           >
             {props.compoFlag === "itemEdit"
@@ -2562,7 +2911,7 @@ const AddPortfolioItem = (props) => {
                 options={options}
                 placeholder="TEMPLATE ID"
                 onChange={(e) =>
-                  setAddportFolioItem({
+                  setAddPortFolioItem({
                     ...addPortFolioItem,
                     templateId: e,
                   })
@@ -2595,7 +2944,7 @@ const AddPortfolioItem = (props) => {
                     options={options}
                     placeholder="TEMPLATE ID"
                     onChange={(e) =>
-                      setAddportFolioItem({
+                      setAddPortFolioItem({
                         ...addPortFolioItem,
                         templateId: e,
                       })
@@ -2622,7 +2971,7 @@ const AddPortfolioItem = (props) => {
                 options={options}
                 placeholder="TEMPLATE DESCRIPTION"
                 onChange={(e) =>
-                  setAddportFolioItem({
+                  setAddPortFolioItem({
                     ...addPortFolioItem,
                     templateDescription: e,
                   })
@@ -2636,7 +2985,7 @@ const AddPortfolioItem = (props) => {
                     options={options}
                     placeholder="TEMPLATE DESCRIPTION"
                     onChange={(e) =>
-                      setAddportFolioItem({
+                      setAddPortFolioItem({
                         ...addPortFolioItem,
                         templateDescription: e,
                       })
@@ -2654,9 +3003,7 @@ const AddPortfolioItem = (props) => {
           <div className="col-md-6 col-sm-6">
             <div className="form-group">
               <div className="mt-4">
-                <a
-                  href="#"
-                  className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                <a className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2 cursor"
                 >
                   <span className="mr-2">+</span>Add Template / Kit
                 </a>
@@ -2681,7 +3028,7 @@ const AddPortfolioItem = (props) => {
                 options={options}
                 placeholder="REPAIR OPTION"
                 onChange={(e) =>
-                  setAddportFolioItem({
+                  setAddPortFolioItem({
                     ...addPortFolioItem,
                     repairOption: e,
                   })
@@ -2695,7 +3042,7 @@ const AddPortfolioItem = (props) => {
                     options={options}
                     placeholder="REPAIR OPTION"
                     onChange={(e) =>
-                      setAddportFolioItem({
+                      setAddPortFolioItem({
                         ...addPortFolioItem,
                         repairOption: e,
                       })
@@ -2713,9 +3060,7 @@ const AddPortfolioItem = (props) => {
           <div className="col-md-4 col-sm-4">
             <div className="form-group">
               <div className="mt-4">
-                <a
-                  href="#"
-                  className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                <a className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2 cursor"
                 >
                   <span className="mr-2">+</span>Add Repair Option
                 </a>
@@ -3032,7 +3377,7 @@ const AddPortfolioItem = (props) => {
                             className="form-control border-radius-10"
                             placeholder="Required*"
                             onChange={(e) =>
-                              setAddportFolioItem({
+                              setAddPortFolioItem({
                                 ...addPortFolioItem,
                                 name: e.target.value,
                               })
@@ -3058,7 +3403,7 @@ const AddPortfolioItem = (props) => {
                             className="form-control border-radius-10"
                             placeholder="Required*"
                             onChange={(e) =>
-                              setAddportFolioItem({
+                              setAddPortFolioItem({
                                 ...addPortFolioItem,
                                 headerdescription: e.target.value,
                               })
@@ -3072,7 +3417,7 @@ const AddPortfolioItem = (props) => {
                             className="form-control border-radius-10"
                             placeholder="Optional"
                             onChange={(e) =>
-                              setAddportFolioItem({
+                              setAddPortFolioItem({
                                 ...addPortFolioItem,
                                 description: e.target.value,
                               })
@@ -3084,7 +3429,7 @@ const AddPortfolioItem = (props) => {
                     className="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                     onChange={(e) =>
-                      setAddportFolioItem({
+                      setAddPortFolioItem({
                         ...addPortFolioItem,
                         description: e.target.value,
                       })
@@ -3101,7 +3446,8 @@ const AddPortfolioItem = (props) => {
                             type="checkbox"
                             class="form-check-input"
                             id="exampleCheck1"
-                            checked={noNeedBundleService}
+                            // checked={noNeedBundleService}
+                            checked={props.bundleServiceNeed}
                             onChange={(e) => BundleServiceItemsNeed(e)}
                           />I don’t need bundles / services</label>
                       </div>
@@ -3124,7 +3470,7 @@ const AddPortfolioItem = (props) => {
                           className="text-primary"
                           value={addPortFolioItem.usageIn}
                           // onChange={(e) =>
-                          //   setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
+                          //   setAddPortFolioItem({ ...addPortFolioItem, usageIn: e })
                           // }
                           placeholder="Select(Required*)"
                           onChange={(e) => HandleCatUsage(e)}
@@ -3143,7 +3489,7 @@ const AddPortfolioItem = (props) => {
                         <Select
                           options={updatedList}
                           // onChange={(e) =>
-                          //   setAddportFolioItem({
+                          //   setAddPortFolioItem({
                           //     ...addPortFolioItem,
                           //     strategyTask: e,
                           //   })
@@ -3158,7 +3504,7 @@ const AddPortfolioItem = (props) => {
                           <Select
                             options={updatedList}
                             // onChange={(e) =>
-                            //   setAddportFolioItem({
+                            //   setAddPortFolioItem({
                             //     ...addPortFolioItem,
                             //     strategyTask: e,
                             //   })
@@ -3185,7 +3531,7 @@ const AddPortfolioItem = (props) => {
                           options={updatedTaskList}
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({
+                            setAddPortFolioItem({
                               ...addPortFolioItem,
                               taskType: e,
                             })
@@ -3198,7 +3544,7 @@ const AddPortfolioItem = (props) => {
                           <Select
                             options={updatedTaskList}
                             onChange={(e) =>
-                              setAddportFolioItem({
+                              setAddPortFolioItem({
                                 ...addPortFolioItem,
                                 taskType: e,
                               })
@@ -3236,7 +3582,7 @@ const AddPortfolioItem = (props) => {
                           placeholder="Select..."
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({ ...addPortFolioItem, year: e })
+                            setAddPortFolioItem({ ...addPortFolioItem, year: e })
                           }
                           value={addPortFolioItem.year}
                         />
@@ -3257,7 +3603,7 @@ const AddPortfolioItem = (props) => {
                           placeholder="No. of Years"
                           // defaultValue={props?.priceCalculator?.startUsage}
                           // value={priceCalculator.startUsage}
-                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
+                          onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, noOfYear: e.target.value, })}
                           value={addPortFolioItem.noOfYear}
                           name="noOfYear"
                         />
@@ -3270,7 +3616,7 @@ const AddPortfolioItem = (props) => {
                           placeholder="Select..."
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({ ...addPortFolioItem, noOfYear: e })
+                            setAddPortFolioItem({ ...addPortFolioItem, noOfYear: e })
                           }
                           value={addPortFolioItem.noOfYear}
                         /> */}
@@ -3295,10 +3641,10 @@ const AddPortfolioItem = (props) => {
                             type="number"
                             // type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                            placeholder="10,000 hours"
+                            placeholder="Required*"
                             // defaultValue={props?.priceCalculator?.startUsage}
                             // value={priceCalculator.startUsage}
-                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
+                            onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, startUsage: e.target.value, })}
                             value={addPortFolioItem.startUsage}
                             name="startUsage"
                           />
@@ -3323,10 +3669,10 @@ const AddPortfolioItem = (props) => {
                             type="number"
                             // type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                            placeholder="16,000 hours"
+                            placeholder="Required*"
                             // defaultValue={props?.priceCalculator?.startUsage}
                             // value={priceCalculator.startUsage}
-                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
+                            onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, endUsage: e.target.value, })}
                             value={addPortFolioItem.endUsage}
                             name="endUsage"
                           />
@@ -3345,10 +3691,10 @@ const AddPortfolioItem = (props) => {
                         </label>
                         <Select
                           options={usageTypeOption}
-                          placeholder="Planned Usage"
+                          // placeholder="Planned Usage"
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({
+                            setAddPortFolioItem({
                               ...addPortFolioItem,
                               usageType: e,
                             })
@@ -3366,11 +3712,12 @@ const AddPortfolioItem = (props) => {
                           FREQUENCY
                         </label>
                         <Select
-                          options={frequencyOptions}
+                          // options={frequencyOptions}
+                          options={frequencyOptionKeyValue}
                           placeholder="Select....."
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({
+                            setAddPortFolioItem({
                               ...addPortFolioItem,
                               frequency: e,
                             })
@@ -3388,22 +3735,24 @@ const AddPortfolioItem = (props) => {
                           UNIT
                         </label>
                         <Select
-                          options={[
-                            { value: "per Hr", label: "per Hr" },
-                            { value: "per Km", label: "per Km" },
-                            { value: "per Miles", label: "per Miles" },
-                            { value: "per year", label: "per year" },
-                            { value: "per month", label: "per month" },
-                            { value: "per day", label: "per day" },
-                            { value: "per quarter", label: "per quarter" },
-                          ]}
+                          // options={[
+                          //   { value: "per Hr", label: "per Hr" },
+                          //   { value: "per Km", label: "per Km" },
+                          //   { value: "per Miles", label: "per Miles" },
+                          //   { value: "per year", label: "per year" },
+                          //   { value: "per month", label: "per month" },
+                          //   { value: "per day", label: "per day" },
+                          //   { value: "per quarter", label: "per quarter" },
+                          // ]}
+                          options={unitOptionKeyValue}
                           placeholder="Select..."
                           className="text-primary"
                           onChange={(e) =>
-                            setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                            setAddPortFolioItem({ ...addPortFolioItem, unit: e })
                           }
                           value={addPortFolioItem.unit}
                         />
+                        <div className="css-w8dmq8">*Mandatory</div>
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
@@ -3425,7 +3774,7 @@ const AddPortfolioItem = (props) => {
                             placeholder="Recommended Value"
                             // defaultValue={props?.priceCalculator?.startUsage}
                             // value={priceCalculator.startUsage}
-                            onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                            onChange={(e) => setAddPortFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
                             value={addPortFolioItem.recommendedValue}
                             name="recommendedValue"
                           // name="startUsage"
@@ -3436,7 +3785,7 @@ const AddPortfolioItem = (props) => {
                           //   })
                           // }
                           />
-                          <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                          <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit?.value.toLowerCase() === "year" ? "Month" : addPortFolioItem.unit.label}</span>
                         </div>
                         <div className="css-w8dmq8">*Mandatory</div>
                       </div>
@@ -3454,7 +3803,7 @@ const AddPortfolioItem = (props) => {
                           className="form-control border-radius-10 text-primary"
                           placeholder="NO. OF EVENTS"
                           onChange={(e) =>
-                            setAddportFolioItem({
+                            setAddPortFolioItem({
                               ...addPortFolioItem,
                               numberOfEvents: e.target.value,
                             })
@@ -3500,8 +3849,8 @@ const AddPortfolioItem = (props) => {
                     </div>
                   </div>
                   <div className="my-1 d-flex align-items-center justify-content-end">
-                    <Link to="#" className="btn border mr-4">Cancel</Link>
-                    <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                    <a to="#" className="btn border mr-4">Cancel</a>
+                    <a className="btn d-flex align-items-center border bg-primary text-white" onClick={calculateItemPrice}>
                       <span className="mr-2 funds">
                         <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                           <g>
@@ -3553,7 +3902,7 @@ const AddPortfolioItem = (props) => {
                             </g>
                           </g>
                         </svg>
-                      </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                      </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></a>
                   </div>
                 </div>
 
@@ -3671,7 +4020,7 @@ const AddPortfolioItem = (props) => {
                     options={options}
                     placeholder="TEMPLATE ID"
                     onChange={(e) =>
-                      setAddportFolioItem({
+                      setAddPortFolioItem({
                         ...addPortFolioItem,
                         templateId: e,
                       })
@@ -3684,7 +4033,7 @@ const AddPortfolioItem = (props) => {
                         options={options}
                         placeholder="TEMPLATE ID"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             templateId: e,
                           })
@@ -3721,7 +4070,7 @@ const AddPortfolioItem = (props) => {
                         placeholder="TEMPLATE DESCRIPTION"
                         className="text-primary"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             templateDescription: e,
                           })
@@ -3735,7 +4084,7 @@ const AddPortfolioItem = (props) => {
                         options={options}
                         placeholder="TEMPLATE DESCRIPTION"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             templateDescription: e,
                           })
@@ -3753,8 +4102,8 @@ const AddPortfolioItem = (props) => {
                     <div className="form-group">
                       <div className="mt-4">
                         <a
-                          href="#"
-                          className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                          className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2 cursor"
+                          onClick={goToTemplate}
                         >
                           <span className="mr-2">+</span>Go to Template
                           {/* <span className="mr-2">+</span>Add Template / Kit */}
@@ -3895,7 +4244,7 @@ const AddPortfolioItem = (props) => {
                         <div className="d-flex align-items-center">
                           <div className="customselect d-flex align-items-center border-white border-radius-10 d-flex ml-3">
                             {/* <span>
-                                        <a href="#" className="btn-sm">+</a>
+                                        <a className="btn-sm cursor">+</a>
                                     </span> */}
                             <Select
                               onChange={handleTypeOfSearchChange}
@@ -3908,7 +4257,7 @@ const AddPortfolioItem = (props) => {
                             {typeOfSearch != null ? (
                               <div className="customselect d-flex align-items-center border-radius-10 d-flex ml-3">
                                 <span>
-                                  <a href="#" className="btn-sm">
+                                  <a className="btn-sm cursor">
                                     +
                                   </a>
                                 </span>
@@ -4121,7 +4470,7 @@ const AddPortfolioItem = (props) => {
                     className="text-primary"
                     placeholder="REPAIR OPTION"
                     onChange={(e) =>
-                      setAddportFolioItem({
+                      setAddPortFolioItem({
                         ...addPortFolioItem,
                         repairOption: e,
                       })
@@ -4134,7 +4483,7 @@ const AddPortfolioItem = (props) => {
                         options={options}
                         placeholder="REPAIR OPTION"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             repairOption: e,
                           })
@@ -4169,7 +4518,7 @@ const AddPortfolioItem = (props) => {
                         options={options}
                         placeholder="KIT DESCRIPTION"
                         onChange={(e) =>
-                          setAddportFolioItem({
+                          setAddPortFolioItem({
                             ...addPortFolioItem,
                             kitDescription: e,
                           })
@@ -4183,9 +4532,7 @@ const AddPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <div className="mt-4">
-                        <a
-                          href="#"
-                          className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                        <a className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2 cursor"
                         >
                           {/* <span className="mr-2">+</span>Add Repair Option */}
                           <span className="mr-2">+</span>Go to Related Kit
@@ -4201,7 +4548,7 @@ const AddPortfolioItem = (props) => {
                         <div className="d-flex align-items-center">
                           <div className="customselect d-flex align-items-center border-white border-radius-10 d-flex ml-3">
                             {/* <span>
-                                        <a href="#" className="btn-sm">+</a>
+                                        <a className="btn-sm cursor">+</a>
                                     </span> */}
                             <Select
                               onChange={handleTypeOfSearchChange}
@@ -4214,7 +4561,7 @@ const AddPortfolioItem = (props) => {
                             {typeOfSearch != null ? (
                               <div className="customselect d-flex align-items-center border-radius-10 d-flex ml-3">
                                 <span>
-                                  <a href="#" className="btn-sm">
+                                  <a className="btn-sm cursor">
                                     +
                                   </a>
                                 </span>
@@ -4311,7 +4658,7 @@ const AddPortfolioItem = (props) => {
                 <div className="text-right pb-2">
                   <Link
                     to="#"
-                    className="btn border mr-4"
+                    className="btn cursor bg-primary text-white border mr-4"
                     onClick={handleAddPortfolioSave}
                   >
                     {props.bundleOrServiceEditOrNot ? "Next" :
