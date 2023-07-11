@@ -240,125 +240,88 @@ const RepairQuoteDetails = (props) => {
   const [selQuoteStatus, setSelQuoteStatus] = useState("");
   const quoteItemsColumns = [
     {
-      name: (
-        <>
-          <div>Component</div>
-        </>
-      ),
+      name: "Component",
       selector: (row) => row.component,
       wrap: true,
       sortable: true,
       format: (row) => row.component,
     },
     {
-      name: (
-        <>
-          <div>Job Desc.</div>
-        </>
-      ),
+      name: "Job Desc.",
       selector: (row) => row.jobDescription,
       wrap: true,
       sortable: true,
       format: (row) => row.jobDescription,
     },
     {
-      name: (
-        <>
-          <div>Description</div>
-        </>
-      ),
+      name: "Description",
       selector: (row) => row.description,
       wrap: true,
       sortable: true,
       format: (row) => row.description,
     },
     {
-      name: (
-        <>
-          <div>Part List ID</div>
-        </>
-      ),
+      name: "Part List ID",
       selector: (row) => row.partListId,
       wrap: true,
       sortable: true,
       format: (row) => row.partListId,
     },
     {
-      name: (
-        <>
-          <div>Parts $</div>
-        </>
-      ),
+      name: "Parts $",
       selector: (row) => row.partsPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.partsPrice,
     },
     {
-      name: (
-        <>
-          <div>Labor $</div>
-        </>
-      ),
+      name: "Labor $",
       selector: (row) => row.labourPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.labourPrice,
     },
     {
-      name: (
-        <>
-          <div>Misc $</div>
-        </>
-      ),
+      name: "Misc $",
       selector: (row) => row.miscPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.miscPrice,
     },
     {
-      name: (
-        <>
-          <div>Net Price</div>
-        </>
-      ),
+      name: "Net Price",
       selector: (row) => row.totalPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.totalPrice,
     },
     {
-      name: (
-        <>
-          <div>Net Adjusted $</div>
-        </>
-      ),
+      name: "Net Adjusted $",
       selector: (row) => row.adjustedPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.adjustedPrice,
     },
     {
-      name: (
-        <>
-          <div>Discount</div>
-        </>
-      ),
+      name: "Discount",
       selector: (row) => row.discount,
       wrap: true,
       sortable: true,
       format: (row) => row.discount,
     },
     {
-      name: (
-        <>
-          <div>Margin</div>
-        </>
-      ),
+      name: "Margin",
       selector: (row) => row.margin,
       wrap: true,
       sortable: true,
       format: (row) => (row.margin ? row.margin : 30),
+    },
+    {
+      name:"Total Price",
+      selector: (row) => row.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.totalPrice,
     },
     // {
     //   name: (
@@ -372,11 +335,7 @@ const RepairQuoteDetails = (props) => {
     //   format: (row) => row.payerType,
     // },
     {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
+      name: "Actions",
       wrap: true,
       width: "30px",
       sortable: true,

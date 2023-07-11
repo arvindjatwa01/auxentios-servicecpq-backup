@@ -1008,6 +1008,17 @@ export function SparePartsQuoteDetails(props) {
       sortable: true,
       format: (row) => row.margin,
     },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.totalPrice,
+    },
     // {
     //   name: (
     //     <>
@@ -2698,10 +2709,10 @@ export function SparePartsQuoteDetails(props) {
                 </div>
               </div>
             </div>
-            <div
+            {/* <div
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
-            >
+            > */}
               <DataTable
                 className=""
                 title=""
@@ -2712,7 +2723,7 @@ export function SparePartsQuoteDetails(props) {
                 // onRowClicked={(e) => handleRowClick(e)}
                 // selectableRows
               />
-            </div>
+            {/* </div> */}
           </div>
         </div>
       </div>

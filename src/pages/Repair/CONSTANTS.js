@@ -246,7 +246,9 @@ export const GRID_STYLE = {
     borderRight: `1px solid rgba(0,0,0,.12)`,
     paddingLeft: "8px",
     paddingRight: "8px",
-    minHeight: "72px"
+    minHeight: "72px",
+    whiteSpace: 'normal !important',
+    wordWrap: "break-word !important"
   },
   "& .MuiDataGrid-iconSeparator": {
     display: "none",
@@ -261,6 +263,9 @@ export const GRID_STYLE = {
   '& .super-app-value': {
     backgroundColor: '#dabffd',
     fontWeight: '600',
+  },
+  '& .disable-value': {
+    backgroundColor: '#f2f2f2',
   },
 };
 export const FONT_STYLE = {

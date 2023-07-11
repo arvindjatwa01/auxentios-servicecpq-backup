@@ -6,6 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Tab from "@mui/material/Tab";
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Select from "react-select";
 // import { MuiMenuComponent } from "./components/MuiMenuRepair";
 import {
@@ -1296,6 +1297,12 @@ function PartList(props) {
     setSelectedMasterData([]);
   };
 
+  const recentList = () => {
+    history.push({
+      pathname: "/RepairPartList",
+    });
+  }
+
   const handleResetData = (action) => {
     if (action === "RESET") {
       value === "customer" && populateCustomerData(savedBuilderHeaderDetails);
@@ -1710,6 +1717,12 @@ function PartList(props) {
                     <ReplayIcon onClick={() => handleResetData("RESET")} />
                   </Tooltip>
                 </div>
+                <div className="btn-sm cursor text-white">
+                  <Tooltip title="Back">
+                    <ArrowBackIcon onClick={() => recentList()} />
+                  </Tooltip>
+                </div>
+                
                 {/* <div className="btn-sm cursor text-white">
                   <Tooltip title="Share">
                     <ShareOutlinedIcon />
@@ -2574,8 +2587,8 @@ function PartList(props) {
                                   <MobileDatePicker
                                     inputFormat="dd/MM/yyyy"
                                     className="form-controldate border-radius-10"
-                                    minDate={pricingData.priceDate}
-                                    maxDate={new Date()}
+                                    // minDate={pricingData.priceDate}
+                                    // maxDate={new Date()}
                                     closeOnSelect
                                     value={pricingData.priceDate}
                                     onChange={(e) =>

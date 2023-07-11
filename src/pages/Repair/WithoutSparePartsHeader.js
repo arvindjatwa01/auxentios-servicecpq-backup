@@ -15,6 +15,7 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MuiMenuComponent } from "pages/Operational";
 import React, { useEffect, useState } from "react";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Moment from "react-moment";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
@@ -114,7 +115,11 @@ function WithoutSparePartsHeader(props) {
     value: "DRAFT",
     label: "Draft",
   });
-
+  const recentList = () => {
+    history.push({
+      pathname: "/RepairWithoutSpareParts",
+    });
+  }
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
     machineViewOnly: false,
@@ -1034,6 +1039,11 @@ function WithoutSparePartsHeader(props) {
                     <div className="btn-sm cursor text-white">
                       <Tooltip title="Add to Review">
                         <ReviewAddIcon />
+                      </Tooltip>
+                    </div>
+                    <div className="btn-sm cursor text-white">
+                      <Tooltip title="Back">
+                        <ArrowBackIcon onClick={() => recentList()} />
                       </Tooltip>
                     </div>
                   </div>

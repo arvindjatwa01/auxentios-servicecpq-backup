@@ -246,30 +246,41 @@ export default function PriceMethodTable(props) {
       renderEditCell: (params) => <CustomAmountPercentage {...params} />
     },
     {
-      field: "adjustedPrice",
-      headerName: "Adjusted $",
-      editable: true,
-      flex: 1,
-      minWidth: 80,
-      renderEditCell: (params) => <CustomAdjustedPrice {...params} />,
-      cellClassName: (params) => {
-
-        console.log(params.value)
-        // if (params.value == null && params.value === 0 && params.value === '') {
-        //   return '';
-        // }
-        if(params.value > 0){
-        return 'super-app-value'
-        }
-      },
-    },
-    {
       field: "netItemLevelPrice",
       headerName: "Estimated $",
       renderCell: (params) => <span style={{fontSize: 12}}>{params.value? parseFloat(params.value).toFixed(2): <></>}</span>,
       flex: 1,
       minWidth: 120,
+      cellClassName: (params) => {
+        if(params.value > 0 && params.row.adjustedPrice === 0){
+          return 'super-app-value'
+        } else {
+          return 'disable-value'
+        }
+      },
     },
+    {
+      field: "adjustedPrice",
+      headerName: "Adjusted $",
+      editable: true,
+      flex: 1,
+      minWidth: 80,
+      renderCell: (params) => <span style={{fontSize: 12}}>{params.value? parseFloat(params.value).toFixed(2): <></>}</span>,
+      renderEditCell: (params) => <CustomAdjustedPrice {...params} />,
+      cellClassName: (params) => {
+        console.log(params);
+        // console.log(params.value)
+        // if (params.value == null && params.value === 0 && params.value === '') {
+        //   return '';
+        // }
+        if(params.value > 0){
+        return 'super-app-value'
+        } else {
+          return 'disable-value'
+        }
+      },
+    },
+    
     {
       field: "Actions",
       headerName: "Actions",

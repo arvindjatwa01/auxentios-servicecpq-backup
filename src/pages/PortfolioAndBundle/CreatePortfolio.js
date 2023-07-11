@@ -11224,9 +11224,8 @@ export function CreatePortfolio(props) {
       selector: (row) => row.check1,
       wrap: true,
       sortable: true,
-      maxWidth: "300px",
-      maxWidth: "51px",
-      minWidth: "51px",
+      maxWidth: "53px",
+      minWidth: "53px",
       cell: (row) => (
         <>
           {valueOfUseCase == 3 ? (
@@ -11275,314 +11274,397 @@ export function CreatePortfolio(props) {
       selector: (row, i) => ((i + 1) * 10), // row.itemId,
       wrap: true,
       sortable: true,
-      format: (row, i) => ((i + 1) * 10), // row.itemId,
+      cell: (row, i) => ((i + 1) * 10), // row.itemId,
+      minWidth: "100px",
+      maxWidth: "100px",
     },
     {
-      name: (
-        <>
-          <div>Solution Id</div>
-        </>
-      ),
+      name: "Solution Id",
       selector: (row) => row.itemName,
       wrap: true,
       sortable: true,
       format: (row) => row.itemName,
+      minWidth: "120px",
+      maxWidth: "120px",
     },
     {
-      name: (
-        <>
-          <div>Solution Description</div>
-        </>
-      ),
-      // selector: (row) => row.itemHeaderModel.itemHeaderDescription,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      name: "Solution Description",
       selector: (row) => row.itemDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemDescription,
+      cell: (row) => row.itemDescription,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Strategy</div>
-        </>
-      ),
-      // selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      name: "Strategy",
       selector: (row) => row.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderStrategy,
+      cell: (row) => row.itemHeaderStrategy,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
-
-    // --------------- New (Add on Update Item Fileds) Start ------------------- //
     {
-      name: (
-        <>
-          <div>Task Type</div>
-        </>
-      ),
-      // selector: (row) => row.itemBodyModel.taskType,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemBodyModel.taskType,
+      name: "Task Type",
       selector: (row) => row.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.taskType,
+      cell: (row) => row.taskType,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Quantity</div>
-        </>
-      ),
-      // selector: (row) => row.itemBodyModel?.quantity,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemBodyModel?.quantity,
+      name: "Quantity",
       selector: (row) => row?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row?.quantity !== undefined ? row?.quantity : 1,
+      cell: (row) => row?.quantity !== undefined ? row?.quantity : 1,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Recommended Value</div>
-        </>
-      ),
+      name: "Recommended Value",
       selector: (row) => row?.recommendedValue,
       wrap: true,
       sortable: true,
-      format: (row) => row?.recommendedValue,
+      cell: (row) => row?.recommendedValue,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Unit Price (per one)</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.netPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.netPrice,
-    // },
     {
-      name: (
-        <>
-          {/* <div>Net Service</div> */}
-          <div>Service Price</div>
-        </>
-      ),
-      // selector: (row) => row.itemBodyModel?.servicePrice,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemBodyModel?.servicePrice,
+      name: "Service Price",
       selector: (row) => row?.servicePrice,
       wrap: true,
       sortable: true,
-      format: (row) => row?.servicePrice,
+      cell: (row) => row?.servicePrice,
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          {/* <div>Net Parts</div> */}
-          <div>Parts Price</div>
-        </>
-      ),
-      // selector: (row) => row.itemBodyModel?.partsprice,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemBodyModel?.partsprice,
+      name: "Parts Price",
       selector: (row) => row?.sparePartsPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row?.sparePartsPrice,
+      cell: (row) => row?.sparePartsPrice,
+      minWidth: "120px",
+      maxWidth: "120px",
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Price</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.netPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.netPrice,
-    //   selector: (row) => row?.netPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row?.netPrice,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Additional</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel.additional,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel.additional,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Parts Price</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.partsprice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.partsprice,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Service Price</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemHeaderModel?.servicePrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemHeaderModel?.servicePrice,
-    // },
     {
-      name: (
-        <>
-          <div>Total $</div>
-        </>
-      ),
-      // selector: (row) => row.itemBodyModel?.totalPrice,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.itemBodyModel?.totalPrice,
+      name: "Total $",
       selector: (row) => row?.calculatedPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row?.calculatedPrice,
+      cell: (row) => row?.calculatedPrice,
+      minWidth: "120px",
+      maxWidth: "120px",
     },
     {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
+      name: "Comments",
       selector: (row) => row?.comments,
       wrap: true,
       sortable: true,
-      format: (row) => row?.comments,
+      cell: (row) => row?.comments,
     },
 
-    // --------------- New (Add on Update Item Fileds) End ------------------- //
+    // {
+    //   // name: (
+    //   //   <>
+    //   //     <div>Solution Description</div>
+    //   //   </>
+    //   // ),
+    //   name: "Solution Description",
+    //   // selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.itemHeaderModel.itemHeaderDescription,
+    //   selector: (row) => row.itemDescription,
+    //   wrap: true,
+    //   sortable: true,
+    //   cell: (row) => row.itemDescription,
+    //   minWidth: "150px",
+    //   maxWidth: "150px",
+    // },
+    // {
+    //   // name: (
+    //   //   <>
+    //   //     <div>Strategy</div>
+    //   //   </>
+    //   // ),
+    //   name: "Strategy",
+    //   // selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+    //   selector: (row) => row.itemHeaderStrategy,
+    //   wrap: true,
+    //   sortable: true,
+    //   cell: (row) => row.itemHeaderStrategy,
+    //   minWidth: "150px",
+    //   maxWidth: "150px",
+    // },
 
+    // // --------------- New (Add on Update Item Fileds) Start ------------------- //
     // {
-    //   name: (
-    //     <>
-    //       <div>Standard Job Id</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.standardJobId,
+    //   // name: (
+    //   //   <>
+    //   //     <div>Task Type</div>
+    //   //   </>
+    //   // ),
+    //   name: "Task Type",
+    //   // selector: (row) => row.itemBodyModel.taskType,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.itemBodyModel.taskType,
+    //   selector: (row) => row.taskType,
     //   wrap: true,
     //   sortable: true,
-    //   format: (row) => row.itemBodyModel.standardJobId,
+    //   cell: (row) => row.taskType,
+    //   minWidth: "150px",
+    //   maxWidth: "150px",
     // },
     // {
-    //   name: (
-    //     <>
-    //       <div>Repair Options</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.repairOption,
-    //   sortable: true,
-    //   maxWidth: "300px",
-    //   format: (row) => row.itemBodyModel.repairOption,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Frequency</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.frequency,
+    //   // name: (
+    //   //   <>
+    //   //     <div>Quantity</div>
+    //   //   </>
+    //   // ),
+    //   name: "Quantity",
+    //   // selector: (row) => row.itemBodyModel?.quantity,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.itemBodyModel?.quantity,
+    //   selector: (row) => row?.quantity,
     //   wrap: true,
     //   sortable: true,
-    //   format: (row) => row.itemBodyModel.frequency,
+    //   cell: (row) => row?.quantity !== undefined ? row?.quantity : 1,
+    //   minWidth: "150px",
+    //   maxWidth: "150px",
+    // },
+    // {
+    //   // name: (
+    //   //   <>
+    //   //     <div>Recommended Value</div>
+    //   //   </>
+    //   // ),
+    //   name: "Recommended Value",
+    //   selector: (row) => row?.recommendedValue,
+    //   wrap: true,
+    //   sortable: true,
+    //   cell: (row) => row?.recommendedValue,
+    //   minWidth: "150px",
+    //   maxWidth: "150px",
+    // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Unit Price (per one)</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemHeaderModel?.netPrice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemHeaderModel?.netPrice,
+    // // },
+    // {
+    //   // name: (
+    //   //   <>
+    //   //     <div>Service Price</div>
+    //   //   </>
+    //   // ),
+    //   name: "Service Price",
+    //   // selector: (row) => row.itemBodyModel?.servicePrice,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.itemBodyModel?.servicePrice,
+    //   selector: (row) => row?.servicePrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   cell: (row) => row?.servicePrice,
+    //   minWidth: "150px",
+    //   maxWidth: "150px",
+    // },
+    // {
+    //   // name: (
+    //   //   <>
+    //   //     <div>Parts Price</div>
+    //   //   </>
+    //   // ),
+    //   name: "Parts Price",
+    //   // selector: (row) => row.itemBodyModel?.partsprice,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.itemBodyModel?.partsprice,
+    //   selector: (row) => row?.sparePartsPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   cell: (row) => row?.sparePartsPrice,
+    //   minWidth: "120px",
+    //   maxWidth: "120px",
+    // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Net Price</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemHeaderModel?.netPrice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemHeaderModel?.netPrice,
+    // //   selector: (row) => row?.netPrice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row?.netPrice,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Net Additional</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemHeaderModel.additional,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemHeaderModel.additional,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Net Parts Price</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemHeaderModel?.partsprice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemHeaderModel?.partsprice,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Net Service Price</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemHeaderModel?.servicePrice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemHeaderModel?.servicePrice,
+    // // },
+    // {
+    //   // name: (
+    //   //   <>
+    //   //     <div>Total $</div>
+    //   //   </>
+    //   // ),
+    //   name: "Total $",
+    //   // selector: (row) => row.itemBodyModel?.totalPrice,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.itemBodyModel?.totalPrice,
+    //   selector: (row) => row?.calculatedPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   cell: (row) => row?.calculatedPrice,
+    //   minWidth: "120px",
+    //   maxWidth: "120px",
     // },
     // {
     //   name: (
     //     <>
-    //       <div>Quantity</div>
+    //       <div>Comments</div>
     //     </>
     //   ),
-    //   selector: (row) => row.itemBodyModel.quantity,
+    //   selector: (row) => row?.comments,
     //   wrap: true,
     //   sortable: true,
-    //   format: (row) => row.itemBodyModel.quantity,
+    //   cell: (row) => row?.comments,
     // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Parts $</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.sparePartsPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemBodyModel.sparePartsPrice,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Service $</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.servicePrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemBodyModel.servicePrice,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Total $</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.itemBodyModel.totalPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.itemBodyModel.totalPrice,
-    // },
+
+    // // --------------- New (Add on Update Item Fileds) End ------------------- //
+
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Standard Job Id</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemBodyModel.standardJobId,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemBodyModel.standardJobId,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Repair Options</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemBodyModel.repairOption,
+    // //   sortable: true,
+    // //   maxWidth: "300px",
+    // //   format: (row) => row.itemBodyModel.repairOption,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Frequency</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemBodyModel.frequency,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemBodyModel.frequency,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Quantity</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemBodyModel.quantity,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemBodyModel.quantity,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Parts $</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemBodyModel.sparePartsPrice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemBodyModel.sparePartsPrice,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Service $</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemBodyModel.servicePrice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemBodyModel.servicePrice,
+    // // },
+    // // {
+    // //   name: (
+    // //     <>
+    // //       <div>Total $</div>
+    // //     </>
+    // //   ),
+    // //   selector: (row) => row.itemBodyModel.totalPrice,
+    // //   wrap: true,
+    // //   sortable: true,
+    // //   format: (row) => row.itemBodyModel.totalPrice,
+    // // },
   ];
 
   const reviewTabExpendBundleServiceItemColumns = [
     {
-      name: (
-        <>
-          <div></div>
-        </>
-      ),
-      selector: (row) => <div></div>,
-      wrap: true,
-      sortable: false,
-      format: (row) => <div></div>,
-      width: "47px"
-    },
-    {
-      name: (<>
-        <div></div>
-      </>
-      ),
-      selector: (row) => <div></div>,
-      wrap: true,
-      sortable: false,
-      format: (row) => <div></div>,
-      width: "52px"
+      name: '',
+      cell: () => null
     },
     {
       name: (
@@ -11608,137 +11690,101 @@ export function CreatePortfolio(props) {
       wrap: true,
       sortable: true,
       format: (row, i) => row.itemId,
-      width: "110px"
+      minWidth: "100px",
+      maxWidth: "100px",
     },
     {
-      name: (
-        <>
-          <div>Bundle Id</div>
-        </>
-      ),
+      name: "Bundle Id",
       selector: (row) => row.itemName,
       wrap: true,
       sortable: true,
       cell: (row) => row.itemName,
-      style: {
-        width: "110px",
-      },
+      minWidth: "120px",
+      maxWidth: "120px",
     },
     {
-      name: (
-        <>
-          <div>Bundle Description</div>
-        </>
-      ),
+      name: "Bundle Description",
       selector: (row) => row.itemDescription,
       wrap: true,
       sortable: true,
       cell: (row) => row.itemDescription,
-      style: {
-        width: "150px",
-      },
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Strategy</div>
-        </>
-      ),
+      name: "Strategy",
       selector: (row) => row.itemHeaderStrategy,
       wrap: true,
       sortable: true,
       cell: (row) => row.itemHeaderStrategy,
-      // width: "150px",
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Standard Job Id</div>
-        </>
-      ),
+      name: "Standard Job Id",
       selector: (row) => row.standardJobId,
       wrap: true,
       sortable: true,
       cell: (row) => row.standardJobId,
-      // width: "150px",
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Repair Option</div>
-        </>
-      ),
+      name: "Repair Option",
       selector: (row) => row?.repairKitId,
       wrap: true,
       sortable: true,
       cell: (row) => row?.repairKitId,
-      // width: "150px",
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Frequency</div>
-        </>
-      ),
+      name: "Frequency",
       selector: (row) => row?.frequency,
       wrap: true,
       sortable: true,
       cell: (row) => row?.frequency,
-      // width: "150px",
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>No. of Events</div>
-        </>
-      ),
+      name: "No. of Events",
       selector: (row) => row?.numberOfEvents,
       wrap: true,
       sortable: true,
       cell: (row) => row?.numberOfEvents,
-      // width: "150px",
+      minWidth: "150px",
+      maxWidth: "150px",
     },
     {
-      name: (
-        <>
-          <div>Part $</div>
-        </>
-      ),
+      name: "Part $",
       selector: (row) => row?.sparePartsPrice,
       wrap: true,
       sortable: true,
       cell: (row) => row?.sparePartsPrice,
-      // width: "150px",
+      minWidth: "120px",
+      maxWidth: "120px",
     },
     {
-      name: (
-        <>
-          <div>Service $</div>
-        </>
-      ),
+      name: "Service $",
       selector: (row) => row?.servicePrice,
       wrap: true,
       sortable: true,
       cell: (row) => row?.servicePrice,
-      // width: "150px",
+      minWidth: "120px",
+      maxWidth: "120px",
     },
     {
-      name: (
-        <>
-          <div>Total $</div>
-        </>
-      ),
+      name: "Total $",
       selector: (row) => row?.calculatedPrice,
       wrap: true,
       sortable: true,
       cell: (row) => row?.calculatedPrice,
+      // minWidth: "120px",
+      // maxWidth: "120px",
     },
     {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
+      name: "Comments",
       selector: (row) => row?.comments,
       wrap: true,
       sortable: true,
@@ -14034,13 +14080,15 @@ export function CreatePortfolio(props) {
 
   const ReviewModalTabExpendableBundleServiceItems = ({ data }) => {
     return (
-      <DataTable
-        title=""
-        columns={reviewTabExpendBundleServiceItemColumns}
-        data={data.associatedServiceOrBundle}
-        customStyles={customStyles}
-        pagination={false}
-      />
+      <div style={{ paddingTop: "8px" }}>
+        <DataTable
+          title=""
+          columns={reviewTabExpendBundleServiceItemColumns}
+          data={data.associatedServiceOrBundle}
+          customStyles={customStyles}
+          pagination={false}
+        />
+      </div>
     )
   }
 
@@ -24876,6 +24924,9 @@ export function CreatePortfolio(props) {
                       // expandableRowsComponent={ExpendedModelComponent}
                       expandableRowsComponent={ReviewModalTabExpendableBundleServiceItems}
                       onRowExpandToggled={(bool, row) => setCurrentExpendModelComponentRow(row)}
+                      expandableRowStyles={{
+                        background: '#7f0606',
+                      }}
                       pagination
                     />
                   </div>

@@ -1,9 +1,12 @@
 export const ROOT = "/";
+export const OVERVIEW = "/overview";
 export const ANALYTICS = "/analytics";
 export const WORK_LIST = "/workList";
 export const WORK_LIST_NEW = "/workList/new";
 export const REPORTS = "/reports";
 export const LOGIN = "/login";
+export const INSIGHTS ="/insights";
+
 export const PORTFOLIO_SUMMARY = "/portfolio/summary";
 export const RESET = "/reset";
 export const PERMISSION = "/permission";

@@ -259,6 +259,9 @@ export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_
 export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
 export const CREATE_REPAIR_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const CREATE_SPARE_PART_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const CREATE_PART_QUOTE_FROM_KIT =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-kit-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const CREATE_REPAIR_QUOTE_FROM_SJ =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-sj-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+
 export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const FETCH_REPAIR_QUOTE_VERSIONS = (quoteName) => QUOTE_REST_SERVICE + `/versions?quote_name=${quoteName}`;
 export const UPDATE_REPAIR_QUOTE = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
@@ -310,4 +313,10 @@ export const SOLUTION_COVERAGE_SEARCH_DROPDOWN = SOLUTION_BUILDER_URI + "coverag
 // Quote Common config
 
 export const QUOTE_COMMON_CONFIG_URL = QUOTE_COMMON_REST_SERVICE + "/common-config/";
+
+
+//Dashboard Services
+export const FETCH_PROPENSITY_TO_BUY = "https://do7wm3sbgg.execute-api.us-east-2.amazonaws.com/propensity-to-buy";
+export const FETCH_PROPENSITY_TO_BUY_DET = (propensityLevel, transLevel) => `https://vlup8cemj1.execute-api.us-east-2.amazonaws.com/propensity_table?propensity_level=${propensityLevel}&transaction_level=${transLevel}`;
+export const FETCH_GAP_TO_ENTITLEMENT = `https://yr2btg0lie.execute-api.us-east-2.amazonaws.com/gap-to-entitlement`;
 
