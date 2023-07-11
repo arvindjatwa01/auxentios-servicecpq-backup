@@ -296,7 +296,8 @@ export const itemPriceDataId = (searchId) => {
         .get(PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + searchId, { headers: headersData })
         .then((res) => {
           // console.log("itemPricedataSearch > axios res=", res);
-          resolve(res.data);
+          resolve(res);
+          // resolve(res.data);
         })
         .catch((err) => {
           // console.log("itemPricedataSearch > axios err=", err);

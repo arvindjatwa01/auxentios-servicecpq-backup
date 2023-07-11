@@ -41,7 +41,11 @@ export const getComponentCodeSuggetions = (query) => {
         .get(SEARCH_COMPONENT_CODE(query), { headers: headersData })
         .then((res) => {
           console.log("getComponentCodeSuggetions > axios res=", res);
-          resolve(res.data);
+          if(res.status === 200){
+            resolve(res.data);
+          }else{
+            resolve([]);
+          }
         })
         .catch((err) => {
           console.log("getComponentCodeSuggetions > axios err=", err);

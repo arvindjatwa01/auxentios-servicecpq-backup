@@ -2919,7 +2919,9 @@ nav.main-menu li.active>a,
 .search-drop-div.show {
   top: 60px !important;
 }
-
+.portfolioItems-expandable-data-table .eLCUDv{min-width:100px !important;}
+.portfolioItems-expandable-data-table{ overflow:auto;}
+.portfolioItems-expandable-data-table .doQoVi{overflow-x: auto !important;}
 .eLCUDv {
   min-width: auto !important;
 }
@@ -4023,3 +4025,8 @@ input[type="checkbox"]:checked:after {
   height: auto !important;
   width: auto !important;
 } 
+.modal-backdrop.show:nth-last-child(6) {
+  z-index: 1000;
+}
+
+/* .rdt_TableCol{ width: 100px !important;} */

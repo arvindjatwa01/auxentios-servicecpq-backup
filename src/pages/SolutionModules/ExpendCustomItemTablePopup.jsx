@@ -36,6 +36,8 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
     }
     const loginTenantId = CookiesSetData != undefined ? getCookiesJsonData?.user_tenantId : 74;
 
+    const [bundleServiceItemObj, setBundleServiceItemObj] = useState([]);
+
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
     const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
     const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
@@ -193,116 +195,172 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
     }, [])
 
     const fetchBundleServiceDataById = async () => {
-        const newItemDataData = await getCustomItemDataById(data.customItemId);
+        // const newItemDataData = await getCustomItemDataById(data.customItemId);
+        // const newItemDataData = await getCustomItemDataById(data.itemId);
+        const bundleServiceRes = await getCustomItemDataById(data.itemId);
 
-        setAddPortFolioItem({
-            ...addPortFolioItem,
-            id: newItemDataData.customItemId,
-            name: newItemDataData.itemName,
-            description: newItemDataData.customItemHeaderModel.itemHeaderDescription,
-            frequency: (newItemDataData.customItemBodyModel.frequency != "" ||
-                newItemDataData.customItemBodyModel.frequency != "EMPTY" ||
-                newItemDataData.customItemBodyModel.frequency != null) ? {
-                label: newItemDataData.customItemBodyModel.frequency,
-                value: newItemDataData.customItemBodyModel.frequency,
-            } : { label: "once", value: "once" },
-            unit: (newItemDataData.customItemBodyModel.unit != "" ||
-                newItemDataData.customItemBodyModel.unit != "EMPTY" ||
-                newItemDataData.customItemBodyModel.unit != null) ? {
-                label: newItemDataData.customItemBodyModel.unit,
-                value: newItemDataData.customItemBodyModel.unit,
-            } : { label: "per day", value: "per day" },
-        });
+        if (bundleServiceRes.status === 200) {
+            const newItemDataData = bundleServiceRes.data;
+            setBundleServiceItemObj(newItemDataData)
+            setAddPortFolioItem({
+                ...addPortFolioItem,
+                id: newItemDataData.customItemId,
+                name: newItemDataData.itemName,
+                description: newItemDataData.customItemHeaderModel.itemHeaderDescription,
+                frequency: (newItemDataData.customItemBodyModel.frequency != "" ||
+                    newItemDataData.customItemBodyModel.frequency != "EMPTY" ||
+                    newItemDataData.customItemBodyModel.frequency != null) ? {
+                    label: newItemDataData.customItemBodyModel.frequency,
+                    value: newItemDataData.customItemBodyModel.frequency,
+                } : { label: "once", value: "once" },
+                unit: (newItemDataData.customItemBodyModel.unit != "" ||
+                    newItemDataData.customItemBodyModel.unit != "EMPTY" ||
+                    newItemDataData.customItemBodyModel.unit != null) ? {
+                    label: newItemDataData.customItemBodyModel.unit,
+                    value: newItemDataData.customItemBodyModel.unit,
+                } : { label: "per day", value: "per day" },
+            });
 
-        if (newItemDataData.customItemBodyModel?.customItemPrices.length > 0) {
-            ItemPriceDataFetchById();
+            if (newItemDataData.customItemBodyModel?.customItemPrices.length > 0) {
+                ItemPriceDataFetchById(newItemDataData);
+            }
         }
+
+        // console.log("newItemDataData ======== ", newItemDataData);
+
     }
 
-    const ItemPriceDataFetchById = async () => {
-        const priceId = data.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+    const ItemPriceDataFetchById = async (bundleServiceObj) => {
 
-        const priceDataId = data.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+
+        // const priceId = data.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+        // const priceDataId = data.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+
+
+        const priceDataId = bundleServiceObj.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+
 
         const resPrice = await getCustomItemPriceById(priceDataId);
 
-        setPriceCalculator({
-            ...priceCalculator,
-            priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-                resPrice.data.priceMethod != "" ||
-                resPrice.data.priceMethod != null) ? {
-                label: resPrice.data.priceMethod,
-                value: resPrice.data.priceMethod
-            } : "",
-            priceType: (resPrice.data.priceType != "EMPTY" ||
-                resPrice.data.priceType != "" ||
-                resPrice.data.priceType != null) ? {
-                label: resPrice.data.priceType,
-                value: resPrice.data.priceType
-            } : "",
-            priceAdditionalSelect: (resPrice.data.additionalPriceType == "" ||
-                resPrice.data.additionalPriceType == "EMPTY" ||
-                resPrice.data.additionalPriceType == null) ?
-                { label: "Surcharge $", value: "ABSOLUTE", }
-                : {
-                    label: resPrice.data.additionalPriceType,
-                    value: resPrice.data.additionalPriceType
+        console.log("resPrice =========== ", resPrice);
+
+        if (resPrice.status === 200) {
+            setPriceCalculator({
+                ...priceCalculator,
+                priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+                    resPrice.data.priceMethod != "" ||
+                    resPrice.data.priceMethod != null) ? {
+                    label: resPrice.data.priceMethod,
+                    value: resPrice.data.priceMethod
+                } : "",
+                priceType: (resPrice.data.priceType != "EMPTY" ||
+                    resPrice.data.priceType != "" ||
+                    resPrice.data.priceType != null) ? {
+                    label: resPrice.data.priceType,
+                    value: resPrice.data.priceType
+                } : "",
+                priceAdditionalSelect: (resPrice.data.additionalPriceType == "" ||
+                    resPrice.data.additionalPriceType == "EMPTY" ||
+                    resPrice.data.additionalPriceType == null) ?
+                    { label: "Surcharge $", value: "ABSOLUTE", }
+                    : {
+                        label: resPrice.data.additionalPriceType,
+                        value: resPrice.data.additionalPriceType
+                    },
+                priceAdditionalInput: resPrice.data.additionalPriceValue,
+                discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+                    resPrice.data.discountType != "" ||
+                    resPrice.data.discountType != null) ? {
+                    label: resPrice.data.discountType,
+                    value: resPrice.data.discountType
+                } : "",
+                discountTypeInput: resPrice.data.discountValue,
+                year: {
+                    label: resPrice.data.year, value: resPrice.data.year
                 },
-            priceAdditionalInput: resPrice.data.additionalPriceValue,
-            discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-                resPrice.data.discountType != "" ||
-                resPrice.data.discountType != null) ? {
-                label: resPrice.data.discountType,
-                value: resPrice.data.discountType
-            } : "",
-            discountTypeInput: resPrice.data.discountValue,
-            year: {
-                label: resPrice.data.year, value: resPrice.data.year
-            },
-            noOfYear: resPrice.data.noOfYear,
-            startUsage: resPrice.data.startUsage,
-            endUsage: resPrice.data.endUsage,
-            recommendedValue: resPrice.data.recommendedValue,
-            netPrice: resPrice.data.netService,
-            totalPrice: resPrice.data.totalPrice,
-            numberOfEvents: resPrice.data.numberOfEvents,
-            calculatedPrice: resPrice.data.calculatedPrice,
-            id: resPrice.data.customItemPriceDataId,
-            portfolioDataId: resPrice.data.customPortfolio.portfolioId,
-        })
+                noOfYear: resPrice.data.noOfYear,
+                startUsage: resPrice.data.startUsage,
+                endUsage: resPrice.data.endUsage,
+                recommendedValue: resPrice.data.recommendedValue,
+                netPrice: resPrice.data.netService,
+                totalPrice: resPrice.data.totalPrice,
+                numberOfEvents: resPrice.data.numberOfEvents,
+                calculatedPrice: resPrice.data.calculatedPrice,
+                id: resPrice.data.customItemPriceDataId,
+                portfolioDataId: resPrice.data.customPortfolio.portfolioId,
+            })
 
-        const newItemDataData = await getCustomItemDataById(data.customItemId);
+            setAddPortFolioItem({
+                ...addPortFolioItem,
+                id: bundleServiceObj.customItemId,
+                name: bundleServiceObj.itemName,
+                description: bundleServiceObj.customItemHeaderModel.itemHeaderDescription,
+                frequency: (bundleServiceObj.customItemBodyModel.frequency != "" ||
+                    bundleServiceObj.customItemBodyModel.frequency != "EMPTY" ||
+                    bundleServiceObj.customItemBodyModel.frequency != null) ? {
+                    label: bundleServiceObj.customItemBodyModel.frequency,
+                    value: bundleServiceObj.customItemBodyModel.frequency,
+                } : { label: "once", value: "once" },
+                templateId: ((resPrice.data.standardJobId != "string") ||
+                    (resPrice.data.standardJobId != "") ||
+                    resPrice.data.standardJobId != null) ?
+                    resPrice.data.standardJobId : "",
+                templateDescription: {
+                    label: resPrice.data.templateDescription,
+                    value: resPrice.data.templateDescription,
+                },
+                repairOption: ((resPrice.data.repairKitId != "string") ||
+                    (resPrice.data.repairKitId != "") ||
+                    resPrice.data.repairKitId != null) ?
+                    resPrice.data.repairKitId : "",
+                unit: (bundleServiceObj.customItemBodyModel.unit != "" ||
+                    bundleServiceObj.customItemBodyModel.unit != "EMPTY" ||
+                    bundleServiceObj.customItemBodyModel.unit != null) ? {
+                    label: bundleServiceObj.customItemBodyModel.unit,
+                    value: bundleServiceObj.customItemBodyModel.unit,
+                } : { label: "per day", value: "per day" },
+            })
+        }
 
-        setAddPortFolioItem({
-            ...addPortFolioItem,
-            id: newItemDataData.customItemId,
-            name: newItemDataData.itemName,
-            description: newItemDataData.customItemHeaderModel.itemHeaderDescription,
-            frequency: (newItemDataData.customItemBodyModel.frequency != "" ||
-                newItemDataData.customItemBodyModel.frequency != "EMPTY" ||
-                newItemDataData.customItemBodyModel.frequency != null) ? {
-                label: newItemDataData.customItemBodyModel.frequency,
-                value: newItemDataData.customItemBodyModel.frequency,
-            } : { label: "once", value: "once" },
-            templateId: ((resPrice.data.standardJobId != "string") ||
-                (resPrice.data.standardJobId != "") ||
-                resPrice.data.standardJobId != null) ?
-                resPrice.data.standardJobId : "",
-            templateDescription: {
-                label: resPrice.data.templateDescription,
-                value: resPrice.data.templateDescription,
-            },
-            repairOption: ((resPrice.data.repairKitId != "string") ||
-                (resPrice.data.repairKitId != "") ||
-                resPrice.data.repairKitId != null) ?
-                resPrice.data.repairKitId : "",
-            unit: (newItemDataData.customItemBodyModel.unit != "" ||
-                newItemDataData.customItemBodyModel.unit != "EMPTY" ||
-                newItemDataData.customItemBodyModel.unit != null) ? {
-                label: newItemDataData.customItemBodyModel.unit,
-                value: newItemDataData.customItemBodyModel.unit,
-            } : { label: "per day", value: "per day" },
-        })
+
+        // const newItemDataData = await getCustomItemDataById(data.customItemId);
+        // const newItemDataData = await getCustomItemDataById(data.itemId);
+
+        // const bundleServiceRes = await getCustomItemDataById(data.itemId);
+        // if (bundleServiceRes.status === 200) {
+        //     const newItemDataData = bundleServiceRes.data;
+        //     setAddPortFolioItem({
+        //         ...addPortFolioItem,
+        //         id: bundleServiceObj.customItemId,
+        //         name: bundleServiceObj.itemName,
+        //         description: bundleServiceObj.customItemHeaderModel.itemHeaderDescription,
+        //         frequency: (bundleServiceObj.customItemBodyModel.frequency != "" ||
+        //             bundleServiceObj.customItemBodyModel.frequency != "EMPTY" ||
+        //             bundleServiceObj.customItemBodyModel.frequency != null) ? {
+        //             label: bundleServiceObj.customItemBodyModel.frequency,
+        //             value: bundleServiceObj.customItemBodyModel.frequency,
+        //         } : { label: "once", value: "once" },
+        //         templateId: ((resPrice.data.standardJobId != "string") ||
+        //             (resPrice.data.standardJobId != "") ||
+        //             resPrice.data.standardJobId != null) ?
+        //             resPrice.data.standardJobId : "",
+        //         templateDescription: {
+        //             label: resPrice.data.templateDescription,
+        //             value: resPrice.data.templateDescription,
+        //         },
+        //         repairOption: ((resPrice.data.repairKitId != "string") ||
+        //             (resPrice.data.repairKitId != "") ||
+        //             resPrice.data.repairKitId != null) ?
+        //             resPrice.data.repairKitId : "",
+        //         unit: (bundleServiceObj.customItemBodyModel.unit != "" ||
+        //             bundleServiceObj.customItemBodyModel.unit != "EMPTY" ||
+        //             bundleServiceObj.customItemBodyModel.unit != null) ? {
+        //             label: bundleServiceObj.customItemBodyModel.unit,
+        //             value: bundleServiceObj.customItemBodyModel.unit,
+        //         } : { label: "per day", value: "per day" },
+        //     })
+        // }
+
     }
 
     const [tabs, setTabs] = useState("0");
@@ -523,15 +581,17 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
                     itemPriceDataId: priceCalculator.id
                 }
 
-                if (addPortFolioItem.templateId == "" ||
-                    addPortFolioItem.templateId == null ||
-                    addPortFolioItem.repairOption != "") {
+                if (((addPortFolioItem.templateId == "") ||
+                    (addPortFolioItem.templateId == null)) &&
+                    (addPortFolioItem.repairOption != "") ||
+                    (addPortFolioItem.repairOption != null)) {
                     const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
                 }
 
-                if (addPortFolioItem.repairOption == "" ||
-                    addPortFolioItem.repairOption == null ||
-                    addPortFolioItem.templateId != "") {
+                if (((addPortFolioItem.repairOption == "") ||
+                    (addPortFolioItem.repairOption == null)) &&
+                    (addPortFolioItem.templateId != "") ||
+                    (addPortFolioItem.templateId != null)) {
                     const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
                 }
             }
@@ -557,11 +617,13 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
         var searchStr = e.target.value;
         getSearchStandardJobId(searchStr)
             .then((res) => {
-                $(`.scrollbar-model`).css("display", "block");
-                setQuerySearchStandardJobResult(res)
-                var preArr = [];
-                for (var n = 0; n < res.length; n++) {
-                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                if (res.status === 200) {
+                    $(`.scrollbar-model`).css("display", "block");
+                    setQuerySearchStandardJobResult(res)
+                    var preArr = [];
+                    for (var n = 0; n < res.data.length; n++) {
+                        preArr.push({ label: res.data[n].prefix, value: res.data[n].prefix })
+                    }
                 }
             })
             .catch((err) => {
@@ -577,11 +639,13 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
         var searchStr = e.target.value;
         getSearchKitId(searchStr)
             .then((res) => {
-                $(`.scrollbar-model`).css("display", "block");
-                setQuerySearchRelatedKitResult(res)
-                var preArr = [];
-                for (var n = 0; n < res.length; n++) {
-                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                if (res.status === 200) {
+                    $(`.scrollbar-model`).css("display", "block");
+                    setQuerySearchRelatedKitResult(res.data)
+                    var preArr = [];
+                    for (var n = 0; n < res.data.length; n++) {
+                        preArr.push({ label: res.data[n].prefix, value: res.data[n].prefix })
+                    }
                 }
             })
             .catch((err) => {
@@ -1221,7 +1285,8 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
                     type="button"
                     className="btn btn-primary"
                     onClick={(e) =>
-                        handleExpandedPriceSave(e, data)}
+                        // handleExpandedPriceSave(e, data)}
+                        handleExpandedPriceSave(e, bundleServiceItemObj)}
                 >
                     Save
                 </button>

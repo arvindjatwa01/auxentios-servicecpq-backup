@@ -200,7 +200,8 @@ export const getSearchStandardJobId = (searchStr) => {
         .get(GET_SEARCH_STANDARD_JOB_ID + searchStr, { headers: headersData })
         .then((res) => {
           console.log("getSearchStandardJobId > axios res=", res);
-          resolve(res.data);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getSearchStandardJobId > axios err=", err);
