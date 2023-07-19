@@ -469,7 +469,7 @@ export function CreateService() {
         customerSegment: null,
         machineComponent: null
     })
-    
+
 
     const handleCustomerSegmentChange = (e) => {
         setGeneralComponetData({
@@ -910,16 +910,18 @@ export function CreateService() {
 
         if (portfolioId != null) {
             getPortfolio(portfolioId).then((res) => {
-                const portfolioDetails = res
-                console.log(portfolioDetails)
-                if (portfolioDetails.portfolioId != null) {
-                    setGeneralComponetData({
-                        portfolioName: portfolioDetails.name,
-                        portfolioDescription: portfolioDetails.description,
-                        serviceProgramDescription: "",
-                        reference: portfolioDetails.externalReference,
-                        customerSegment: ""
-                    })
+                if (res.status === 200) {
+                    const portfolioDetails = res.data
+                    console.log(portfolioDetails)
+                    if (portfolioDetails.portfolioId != null) {
+                        setGeneralComponetData({
+                            portfolioName: portfolioDetails.name,
+                            portfolioDescription: portfolioDetails.description,
+                            serviceProgramDescription: "",
+                            reference: portfolioDetails.externalReference,
+                            customerSegment: ""
+                        })
+                    }
                 }
             })
                 .catch((err) => {

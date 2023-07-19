@@ -339,43 +339,21 @@ const ExpendTablePopup = (props) => {
 
             setPriceCalculator({
                 ...priceCalculator,
-                // priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-                //     resPrice.data.priceMethod != "" ||
-                //     resPrice.data.priceMethod != null) ? {
-                //     label: resPrice.data.priceMethod,
-                //     value: resPrice.data.priceMethod
-                // } : "",
-                // priceType: (resPrice.data.priceType != "EMPTY" ||
-                //     resPrice.data.priceType != "" ||
-                //     resPrice.data.priceType != null) ? {
-                //     label: resPrice.data.priceType,
-                //     value: resPrice.data.priceType
-                // } : "",
-                priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-                    resPrice.data.priceMethod != "" ||
-                    resPrice.data.priceMethod != null) ? props.priceMethodDropdownKeyValue.find(o => o.value === resPrice.data.priceMethod) : "",
-                priceType: (resPrice.data.priceType === "EMPTY" ||
-                    resPrice.data.priceType === "" ||
-                    resPrice.data.priceType === null) ? {label : "Event Type", value: "EVENT_BASED"} : props.priceTypeDropdownKeyValue.find(o => o.value === resPrice.data.priceType),
-                priceAdditionalSelect: (resPrice.data.additionalPriceType == "" ||
-                    resPrice.data.additionalPriceType == "EMPTY" ||
-                    resPrice.data.additionalPriceType == null) ?
-                    { label: "Surcharge $", value: "ABSOLUTE", }
-                    : {
-                        label: resPrice.data.additionalPriceType,
-                        value: resPrice.data.additionalPriceType
-                    },
+                priceMethod: ((resPrice.data.priceMethod === "EMPTY") ||
+                    (resPrice.data.priceMethod === "") || (resPrice.data.priceMethod === null)) ? "" :
+                    props.priceMethodDropdownKeyValue.find(o => o.value === resPrice.data.priceMethod),
+                priceType: ((resPrice.data.priceType === "EMPTY") || (resPrice.data.priceType === "") ||
+                    (resPrice.data.priceType === null)) ? "" : props.priceTypeDropdownKeyValue.find(o => o.value === resPrice.data.priceType),
+                priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+                    (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+                    additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
                 priceAdditionalInput: resPrice.data.additionalPriceValue,
-                discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-                    resPrice.data.discountType != "" ||
-                    resPrice.data.discountType != null) ? {
-                    label: resPrice.data.discountType,
-                    value: resPrice.data.discountType
-                } : "",
+                discountTypeSelect: ((resPrice.data.discountType === "") ||
+                    (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+                    props.discountTypeDropdownKeyValue.find(o => o.value === resPrice.data.discountType),
                 discountTypeInput: resPrice.data.discountValue,
-                year: {
-                    label: resPrice.data.year, value: resPrice.data.year
-                },
+                year: ((resPrice.data.year === "") || (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+                    { label: resPrice.data.year, value: resPrice.data.year },
                 noOfYear: resPrice.data.noOfYear,
                 startUsage: resPrice.data.startUsage,
                 endUsage: resPrice.data.endUsage,
@@ -399,26 +377,16 @@ const ExpendTablePopup = (props) => {
                     id: newItemDataData.itemId,
                     name: newItemDataData.itemName,
                     description: newItemDataData.itemHeaderModel.itemHeaderDescription,
-                    templateId: (resPrice.data.standardJobId != "string") ?
-                        resPrice.data.standardJobId : "",
-                    templateDescription: {
+
+                    templateId: ((resPrice.data.standardJobId === "string") || (resPrice.data.standardJobId === "") ||
+                        (resPrice.data.standardJobId === null)) ? "" : resPrice.data.standardJobId,
+                    templateDescription: ((resPrice.data.standardJobId === "string") || (resPrice.data.standardJobId === "") ||
+                        (resPrice.data.standardJobId === null)) ? "" : {
                         label: resPrice.data.templateDescription,
                         value: resPrice.data.templateDescription,
                     },
-                    repairOption: (resPrice.data.repairKitId != "string") ?
-                        resPrice.data.repairKitId : "",
-                    // frequency: (newItemDataData.itemBodyModel.frequency != "" ||
-                    //     newItemDataData.itemBodyModel.frequency != "EMPTY" ||
-                    //     newItemDataData.itemBodyModel.frequency != null) ? {
-                    //     label: newItemDataData.itemBodyModel.frequency,
-                    //     value: newItemDataData.itemBodyModel.frequency,
-                    // } : { label: "once", value: "once" },
-                    // unit: (newItemDataData.itemBodyModel.unit != "" ||
-                    //     newItemDataData.itemBodyModel.unit != "EMPTY" ||
-                    //     newItemDataData.itemBodyModel.unit != null) ? {
-                    //     label: newItemDataData.itemBodyModel.unit,
-                    //     value: newItemDataData.itemBodyModel.unit,
-                    // } : { label: "per day", value: "per day" },
+                    repairOption: ((resPrice.data.repairKitId === "string") || (resPrice.data.repairKitId === "") ||
+                        resPrice.data.repairKitId === null) ? "" : resPrice.data.repairKitId,
 
                     frequency: ((resPrice.data.frequency === "") ||
                         (resPrice.data.frequency === "EMPTY") ||
@@ -428,8 +396,6 @@ const ExpendTablePopup = (props) => {
                         resPrice.data.usageUnit === "EMPTY" ||
                         resPrice.data.usageUnit === null) ?
                         "" : props.unitDropdownKeyValue.find(o => o.value === resPrice.data.usageUnit),
-                    repairOption: props.bundleServiceData.repairKitId,
-                    templateId: props.bundleServiceData.standardJobId,
                 })
             }
 
@@ -503,18 +469,15 @@ const ExpendTablePopup = (props) => {
     const handleExpandedPriceSave = async (e, rowData) => {
         try {
 
-            console.log("rowData.itemBodyModel ", rowData);
-
             if ((addPortFolioItem.description == "") ||
                 (addPortFolioItem.description == undefined) ||
                 (addPortFolioItem.description == null)) {
                 throw "Description is a required field, you can’t leave it blank";
             }
 
-            if ((priceCalculator.recommendedValue == "") ||
-                (priceCalculator.recommendedValue == undefined) ||
-                (priceCalculator.recommendedValue == 0)) {
-                throw "Recommended Value is a required field, you can’t leave it blank or Zero(0)";
+            if ((priceCalculator.priceMethod == "") ||
+                (priceCalculator.priceMethod == undefined)) {
+                throw "Price Method is a required field, you can’t leave it blank";
             }
 
             if ((priceCalculator.startUsage == "") ||
@@ -529,10 +492,19 @@ const ExpendTablePopup = (props) => {
                 throw "End usage is a required field, you can’t leave it blank or Zero(0)";
             }
 
-            if ((priceCalculator.priceMethod == "") ||
-                (priceCalculator.priceMethod == undefined)) {
-                throw "Price Method is a required field, you can’t leave it blank";
+            if ((addPortFolioItem.unit == "") ||
+                (addPortFolioItem.unit == undefined) ||
+                (addPortFolioItem.unit == null)) {
+                throw "Unit is a required field, you can’t leave it blank";
             }
+
+            if ((priceCalculator.recommendedValue == "") ||
+                (priceCalculator.recommendedValue == undefined) ||
+                (priceCalculator.recommendedValue == 0)) {
+                throw "Recommended Value is a required field, you can’t leave it blank or Zero(0)";
+            }
+
+
 
 
 
@@ -1886,14 +1858,19 @@ const ExpendTablePopup = (props) => {
             </div>
             <div className='p-3 d-flex align-items-center justify-content-between table-header-div'>
                 <div className=''></div>
-                <div className='text-white'>Item ID</div>
+                <div className='text-white'>Item Name</div>
                 <div className='text-white'>Description</div>
-                <div className='text-white'>Usage In</div>
                 <div className='text-white'>Strategy</div>
                 <div className='text-white'>Task Type</div>
                 <div className='text-white'>Quantity</div>
                 <div className='text-white'>Recommended Value</div>
-                <div className='text-white'>Template/Kit ID</div>
+                <div className='text-white'>Template/Kit Id</div>
+                {/* <div className='text-white'>Net Price</div>
+                <div className='text-white'>Net Additional</div>
+                <div className='text-white'>Net Parts Price</div>
+                <div className='text-white'>Total Price</div>
+                <div className='text-white'>Comments</div>
+                <div className='text-white'>Total $</div> */}
             </div>
         </>
     )

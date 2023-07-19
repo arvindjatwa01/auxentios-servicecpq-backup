@@ -1586,34 +1586,23 @@ export function CreatePortfolio(props) {
         ...priceCalculator,
 
         calculatedPrice: resPrice.data.calculatedPrice,
-        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-          resPrice.data.priceMethod != "" ||
-          resPrice.data.priceMethod != null) ? {
-          label: resPrice.data.priceMethod,
-          value: resPrice.data.priceMethod
-        } : "",
-        priceType: (resPrice.data.priceType != "EMPTY" ||
-          resPrice.data.priceType != "" ||
-          resPrice.data.priceType != null) ? {
-          label: resPrice.data.priceType,
-          value: resPrice.data.priceType
-        } : "",
-        priceAdditionalSelect: {
-          label: (resPrice.data.additionalPriceType != "" ||
-            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
-          value: (resPrice.data.additionalPriceType != "" ||
-            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
-        },
+        priceMethod: ((resPrice.data.priceMethod === "") ||
+          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+        priceType: ((resPrice.data.priceType === "") ||
+          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
         priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-          resPrice.data.discountType != "" ||
-          resPrice.data.discountType != null) ? {
-          label: resPrice.data.discountType,
-          value: resPrice.data.discountType
-        } : "",
+        discountTypeSelect: ((resPrice.data.discountType === "") ||
+          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
         discountTypeInput: resPrice.data.discountValue,
-
-        year: { label: resPrice.data.year, value: resPrice.data.year, },
+        year: ((resPrice.data.year === "") ||
+          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+          { label: resPrice.data.year, value: resPrice.data.year },
 
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
@@ -2212,32 +2201,24 @@ export function CreatePortfolio(props) {
       setPriceCalculator({
         ...priceCalculator,
         calculatedPrice: resPrice.data.calculatedPrice,
-        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-          resPrice.data.priceMethod != "" ||
-          resPrice.data.priceMethod != null) ? {
-          label: resPrice.data.priceMethod,
-          value: resPrice.data.priceMethod
-        } : "",
-        priceType: (resPrice.data.priceType != "EMPTY" ||
-          resPrice.data.priceType != "" ||
-          resPrice.data.priceType != null) ? {
-          label: resPrice.data.priceType,
-          value: resPrice.data.priceType
-        } : "",
-        priceAdditionalSelect: {
-          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
-        },
+        priceMethod: ((resPrice.data.priceMethod === "") ||
+          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+        priceType: ((resPrice.data.priceType === "") ||
+          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
         priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-          resPrice.data.discountType != "" ||
-          resPrice.data.discountType != null) ? {
-          label: resPrice.data.discountType,
-          value: resPrice.data.discountType
-        } : "",
+        discountTypeSelect: ((resPrice.data.discountType === "") ||
+          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
         discountTypeInput: resPrice.data.discountValue,
-        year: {
-          label: resPrice.data.year, value: resPrice.data.year
-        },
+        year: ((resPrice.data.year === "") ||
+          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+          { label: resPrice.data.year, value: resPrice.data.year },
+
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
         endUsage: resPrice.data.endUsage,
@@ -4836,34 +4817,23 @@ export function CreatePortfolio(props) {
             setPriceCalculator({
               ...priceCalculator,
               calculatedPrice: updatePriceId.data.calculatedPrice,
-              priceMethod: (updatePriceId.data.priceMethod != "EMPTY" ||
-                updatePriceId.data.priceMethod != "" ||
-                updatePriceId.data.priceMethod != null) ? {
-                label: updatePriceId.data.priceMethod,
-                value: updatePriceId.data.priceMethod
-              } : "",
-              priceType: (updatePriceId.data.priceType != "EMPTY" ||
-                updatePriceId.data.priceType != "" ||
-                updatePriceId.data.priceType != null) ? {
-                label: updatePriceId.data.priceType,
-                value: updatePriceId.data.priceType
-              } : "",
-              priceAdditionalSelect: {
-                label: (updatePriceId.data.additionalPriceType != "" ||
-                  updatePriceId.data.additionalPriceType != null) ? updatePriceId.data.additionalPriceType : "ABSOLUTE",
-                value: (updatePriceId.data.additionalPriceType != "" ||
-                  updatePriceId.data.additionalPriceType != null) ? updatePriceId.data.additionalPriceType : "ABSOLUTE"
-              },
+              priceMethod: ((updatePriceId.data.priceMethod === "") ||
+                (updatePriceId.data.priceMethod === null) || (updatePriceId.data.priceMethod === "EMPTY")) ? "" :
+                priceMethodKeyValue.find(o => o.value === updatePriceId.data.priceMethod),
+              priceType: ((updatePriceId.data.priceType === "") ||
+                (updatePriceId.data.priceType === null) || (updatePriceId.data.priceType === "EMPTY")) ? "" :
+                priceTypeKeyValue.find(o => o.value === updatePriceId.data.priceType),
+              priceAdditionalSelect: ((updatePriceId.data.additionalPriceType === "") ||
+                (updatePriceId.data.additionalPriceType === null) || (updatePriceId.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+                additionalPriceHeadTypeKeyValue.find(o => o.value === updatePriceId.data.additionalPriceType),
               priceAdditionalInput: updatePriceId.data.additionalPriceValue,
-              discountTypeSelect: (updatePriceId.data.discountType != "EMPTY" ||
-                updatePriceId.data.discountType != "" ||
-                updatePriceId.data.discountType != null) ? {
-                label: updatePriceId.data.discountType,
-                value: updatePriceId.data.discountType
-              } : "",
+              discountTypeSelect: ((updatePriceId.data.discountType === "") ||
+                (updatePriceId.data.discountType === null) || (updatePriceId.data.discountType === "EMPTY")) ? "" :
+                discountTypeOptions.find(o => o.value === updatePriceId.data.discountType),
               discountTypeInput: updatePriceId.data.discountValue,
-
-              year: { label: updatePriceId.data.year, value: updatePriceId.data.year, },
+              year: ((updatePriceId.data.year === "") ||
+                (updatePriceId.data.year === null) || (updatePriceId.data.year === "EMPTY")) ? "" :
+                { label: updatePriceId.data.year, value: updatePriceId.data.year },
 
               noOfYear: updatePriceId.data.noOfYear,
               startUsage: updatePriceId.data.startUsage,
@@ -5240,34 +5210,23 @@ export function CreatePortfolio(props) {
           setPriceCalculator({
             ...priceCalculator,
             calculatedPrice: resPrice.data.calculatedPrice,
-            priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-              resPrice.data.priceMethod != "" ||
-              resPrice.data.priceMethod != null) ? {
-              label: resPrice.data.priceMethod,
-              value: resPrice.data.priceMethod
-            } : "",
-            priceType: (resPrice.data.priceType != "EMPTY" ||
-              resPrice.data.priceType != "" ||
-              resPrice.data.priceType != null) ? {
-              label: resPrice.data.priceType,
-              value: resPrice.data.priceType
-            } : "",
-            priceAdditionalSelect: {
-              label: (resPrice.data.additionalPriceType != "" ||
-                resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
-              value: (resPrice.data.additionalPriceType != "" ||
-                resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
-            },
+            priceMethod: ((resPrice.data.priceMethod === "") ||
+              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+            priceType: ((resPrice.data.priceType === "") ||
+              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
             priceAdditionalInput: resPrice.data.additionalPriceValue,
-            discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-              resPrice.data.discountType != "" ||
-              resPrice.data.discountType != null) ? {
-              label: resPrice.data.discountType,
-              value: resPrice.data.discountType
-            } : "",
+            discountTypeSelect: ((resPrice.data.discountType === "") ||
+              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
             discountTypeInput: resPrice.data.discountValue,
-
-            year: { label: resPrice.data.year, value: resPrice.data.year, },
+            year: ((resPrice.data.year === "") ||
+              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+              { label: resPrice.data.year, value: resPrice.data.year },
 
             noOfYear: resPrice.data.noOfYear,
             startUsage: resPrice.data.startUsage,
@@ -7987,91 +7946,90 @@ export function CreatePortfolio(props) {
     try {
       if (portfolioId != undefined || portfolioId != null) {
         if (newVersionName != "") {
-          let versionObj = await getPortfolio(portfolioId);
 
-          var verNewValue;
-          if (versionObj.supportLevel == "EMPTY") {
-            verNewValue = "STANDARD";
-          } else if (versionObj.supportLevel == "STANDARD") {
-            verNewValue = "SUPERIOR";
-          } else if (versionObj.supportLevel == "SUPERIOR") {
-            verNewValue = "PREMIUM";
-          } else {
-            verNewValue = versionObj.supportLevel;
-          }
+          const getPortfolioData = await getPortfolio(portfolioId);
+          if (getPortfolioData.status === 200) {
+            let versionObj = getPortfolioData.data;
 
-          // if (verNewValue === "PREMIUM") {
-          //   throw "All Versions already Created";
-          // } else {
-          // }
-          // if (verNewValue !== versionValue)
-          let createNewVersionObj = {
-            portfolioId: 0,
-            name: newVersionName,
-            description: versionObj.description,
-            machineType: versionObj.machineType,
-            searchTerm: versionObj.searchTerm,
-            lubricant: versionObj.lubricant,
-            customerId: versionObj.customerId,
-            customerGroup: versionObj.customerGroup,
-            customerSegment: versionObj.customerSegment,
-            externalReference: versionObj.externalReference,
-            status: versionObj.status,
-            validFrom: versionObj.validFrom,
-            validTo: versionObj.validTo,
-            strategyTask: versionObj.strategyTask,
-            taskType: versionObj.taskType,
-            usageCategory: versionObj.usageCategory,
-            productHierarchy: versionObj.productHierarchy,
-            geographic: versionObj.geographic,
-            availability: versionObj.availability,
-            responseTime: versionObj.responseTime,
-            type: versionObj.type,
-            application: versionObj.application,
-            contractOrSupport: versionObj.contractOrSupport,
-            lifeStageOfMachine: versionObj.lifeStageOfMachine,
-            // supportLevel: verNewValue,
-            supportLevel: versionValue.value,
-            numberOfEvents: versionObj.numberOfEvents,
-            itemRelations: versionObj.itemRelations,
-            rating: versionObj.rating,
-            startUsage: versionObj.startUsage,
-            endUsage: versionObj.endUsage,
-            unit: versionObj.unit,
-            additionals: versionObj.additional,
-            preparedBy: versionObj.preparedBy,
-            approvedBy: versionObj.approvedBy,
-            preparedOn: versionObj.preparedOn,
-            revisedBy: versionObj.revisedBy,
-            revisedOn: versionObj.revisedOn,
-            salesOffice: versionObj.salesOffice,
-            offerValidity: versionObj.offerValidity,
-            items: versionObj.items,
-            coverages: versionObj.coverages,
-            portfolioPrice: versionObj.portfolioPrice,
-            additionalPrice: versionObj.additionalPrice,
-            escalationPrice: versionObj.escalationPrice,
-            saveState: versionObj.saveState,
-            userId: versionObj.userId,
-            template: versionObj.template,
-            visibleInCommerce: versionObj.visibleInCommerce,
-          }
+            var verNewValue;
+            if (versionObj.supportLevel == "EMPTY") {
+              verNewValue = "STANDARD";
+            } else if (versionObj.supportLevel == "STANDARD") {
+              verNewValue = "SUPERIOR";
+            } else if (versionObj.supportLevel == "SUPERIOR") {
+              verNewValue = "PREMIUM";
+            } else {
+              verNewValue = versionObj.supportLevel;
+            }
 
-          const portfolioRes = await createPortfolio(createNewVersionObj);
-          if (portfolioRes.status === 200) {
-            toast(<div onClick={() => goToNewCreatedVersion(portfolioRes.data)} style={{ cursor: "pointer" }}>
-              👏 New Version Created Click Here to View
-            </div>, {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
+            let createNewVersionObj = {
+              portfolioId: 0,
+              name: newVersionName,
+              description: versionObj.description,
+              machineType: versionObj.machineType,
+              searchTerm: versionObj.searchTerm,
+              lubricant: versionObj.lubricant,
+              customerId: versionObj.customerId,
+              customerGroup: versionObj.customerGroup,
+              customerSegment: versionObj.customerSegment,
+              externalReference: versionObj.externalReference,
+              status: versionObj.status,
+              validFrom: versionObj.validFrom,
+              validTo: versionObj.validTo,
+              strategyTask: versionObj.strategyTask,
+              taskType: versionObj.taskType,
+              usageCategory: versionObj.usageCategory,
+              productHierarchy: versionObj.productHierarchy,
+              geographic: versionObj.geographic,
+              availability: versionObj.availability,
+              responseTime: versionObj.responseTime,
+              type: versionObj.type,
+              application: versionObj.application,
+              contractOrSupport: versionObj.contractOrSupport,
+              lifeStageOfMachine: versionObj.lifeStageOfMachine,
+              // supportLevel: verNewValue,
+              supportLevel: versionValue.value,
+              numberOfEvents: versionObj.numberOfEvents,
+              itemRelations: versionObj.itemRelations,
+              rating: versionObj.rating,
+              startUsage: versionObj.startUsage,
+              endUsage: versionObj.endUsage,
+              unit: versionObj.unit,
+              additionals: versionObj.additional,
+              preparedBy: versionObj.preparedBy,
+              approvedBy: versionObj.approvedBy,
+              preparedOn: versionObj.preparedOn,
+              revisedBy: versionObj.revisedBy,
+              revisedOn: versionObj.revisedOn,
+              salesOffice: versionObj.salesOffice,
+              offerValidity: versionObj.offerValidity,
+              items: versionObj.items,
+              coverages: versionObj.coverages,
+              portfolioPrice: versionObj.portfolioPrice,
+              additionalPrice: versionObj.additionalPrice,
+              escalationPrice: versionObj.escalationPrice,
+              saveState: versionObj.saveState,
+              userId: versionObj.userId,
+              template: versionObj.template,
+              visibleInCommerce: versionObj.visibleInCommerce,
+            }
 
-            setVersionPopup(false)
+            const portfolioRes = await createPortfolio(createNewVersionObj);
+            if (portfolioRes.status === 200) {
+              toast(<div onClick={() => goToNewCreatedVersion(portfolioRes.data)} style={{ cursor: "pointer" }}>
+                👏 New Version Created Click Here to View
+              </div>, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+
+              setVersionPopup(false)
+            }
           }
 
         } else {
@@ -8694,31 +8652,21 @@ export function CreatePortfolio(props) {
   }
 
   const getPortfolioDetails = (portfolioId) => {
-    // getAllUsers()
-    //     .then((res) => {
-    //         console.log("Dashboard > getAllUsers > res=", res);
-    //         setUsers(res);
-    //         setIsLoading(false);
-    //     })
-    //     .catch((err) => {
-    //         console.log("axios err=", err);
-    //         setUsers([]);
-    //         setIsLoading(false);
-    //     });
-
     if (portfolioId != null) {
       getPortfolio(portfolioId)
         .then((res) => {
-          const portfolioDetails = res;
-          if (portfolioDetails.portfolioId != null) {
-            setGeneralComponentData({
-              ...generalComponentData,
-              name: portfolioDetails.name,
-              description: portfolioDetails.description,
-              externalReference: portfolioDetails.externalReference,
-              customerSegment: portfolioDetails.customerSegment,
-              // serviceProgramDescription: "",
-            });
+          if(res.status === 200){
+            const portfolioDetails = res.data;
+            if (portfolioDetails.portfolioId != null) {
+              setGeneralComponentData({
+                ...generalComponentData,
+                name: portfolioDetails.name,
+                description: portfolioDetails.description,
+                externalReference: portfolioDetails.externalReference,
+                customerSegment: portfolioDetails.customerSegment,
+                // serviceProgramDescription: "",
+              });
+            }
           }
         })
         .catch((err) => {
@@ -9228,7 +9176,9 @@ export function CreatePortfolio(props) {
       setHeaderLoading(true);
       await getPortfolio(PortfolioId)
         .then((result) => {
-          populateHeader(result);
+          if(result.status === 200){
+            populateHeader(result?.data);
+          }
         })
         .catch((err) => {
           handleSnack("error", "Error occured while fetching header details");
@@ -15981,34 +15931,23 @@ export function CreatePortfolio(props) {
           ...priceCalculator,
 
           calculatedPrice: resPrice.data.calculatedPrice,
-          priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-            resPrice.data.priceMethod != "" ||
-            resPrice.data.priceMethod != null) ? {
-            label: resPrice.data.priceMethod,
-            value: resPrice.data.priceMethod
-          } : "",
-          priceType: (resPrice.data.priceType != "EMPTY" ||
-            resPrice.data.priceType != "" ||
-            resPrice.data.priceType != null) ? {
-            label: resPrice.data.priceType,
-            value: resPrice.data.priceType
-          } : "",
-          priceAdditionalSelect: {
-            label: (resPrice.data.additionalPriceType != "" ||
-              resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
-            value: (resPrice.data.additionalPriceType != "" ||
-              resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
-          },
+          priceMethod: ((resPrice.data.priceMethod === "") ||
+            (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+            priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+          priceType: ((resPrice.data.priceType === "") ||
+            (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+            priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+          priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+            (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+            additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
           priceAdditionalInput: resPrice.data.additionalPriceValue,
-          discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-            resPrice.data.discountType != "" ||
-            resPrice.data.discountType != null) ? {
-            label: resPrice.data.discountType,
-            value: resPrice.data.discountType
-          } : "",
+          discountTypeSelect: ((resPrice.data.discountType === "") ||
+            (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+            discountTypeOptions.find(o => o.value === resPrice.data.discountType),
           discountTypeInput: resPrice.data.discountValue,
-
-          year: { label: resPrice.data.year, value: resPrice.data.year, },
+          year: ((resPrice.data.year === "") ||
+            (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+            { label: resPrice.data.year, value: resPrice.data.year },
 
           noOfYear: resPrice.data.noOfYear,
           startUsage: resPrice.data.startUsage,
@@ -16654,34 +16593,23 @@ export function CreatePortfolio(props) {
       setPriceCalculator({
         ...priceCalculator,
         calculatedPrice: resPrice.data.calculatedPrice,
-        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-          resPrice.data.priceMethod != "" ||
-          resPrice.data.priceMethod != null) ? {
-          label: resPrice.data.priceMethod,
-          value: resPrice.data.priceMethod
-        } : "",
-        priceType: (resPrice.data.priceType != "EMPTY" ||
-          resPrice.data.priceType != "" ||
-          resPrice.data.priceType != null) ? {
-          label: resPrice.data.priceType,
-          value: resPrice.data.priceType
-        } : "",
-        priceAdditionalSelect: {
-          label: (resPrice.data.additionalPriceType != "" ||
-            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
-          value: (resPrice.data.additionalPriceType != "" ||
-            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
-        },
+        priceMethod: ((resPrice.data.priceMethod === "") ||
+          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+        priceType: ((resPrice.data.priceType === "") ||
+          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
         priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-          resPrice.data.discountType != "" ||
-          resPrice.data.discountType != null) ? {
-          label: resPrice.data.discountType,
-          value: resPrice.data.discountType
-        } : "",
+        discountTypeSelect: ((resPrice.data.discountType === "") ||
+          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
         discountTypeInput: resPrice.data.discountValue,
-
-        year: { label: resPrice.data.year, value: resPrice.data.year, },
+        year: ((resPrice.data.year === "") ||
+          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+          { label: resPrice.data.year, value: resPrice.data.year },
 
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
@@ -17061,34 +16989,23 @@ export function CreatePortfolio(props) {
         ...priceCalculator,
 
         calculatedPrice: resPrice.data.calculatedPrice,
-        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-          resPrice.data.priceMethod != "" ||
-          resPrice.data.priceMethod != null) ? {
-          label: resPrice.data.priceMethod,
-          value: resPrice.data.priceMethod
-        } : "",
-        priceType: (resPrice.data.priceType != "EMPTY" ||
-          resPrice.data.priceType != "" ||
-          resPrice.data.priceType != null) ? {
-          label: resPrice.data.priceType,
-          value: resPrice.data.priceType
-        } : "",
-        priceAdditionalSelect: {
-          label: (resPrice.data.additionalPriceType != "" ||
-            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
-          value: (resPrice.data.additionalPriceType != "" ||
-            resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
-        },
+        priceMethod: ((resPrice.data.priceMethod === "") ||
+          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+        priceType: ((resPrice.data.priceType === "") ||
+          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
         priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-          resPrice.data.discountType != "" ||
-          resPrice.data.discountType != null) ? {
-          label: resPrice.data.discountType,
-          value: resPrice.data.discountType
-        } : "",
+        discountTypeSelect: ((resPrice.data.discountType === "") ||
+          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
         discountTypeInput: resPrice.data.discountValue,
-
-        year: { label: resPrice.data.year, value: resPrice.data.year, },
+        year: ((resPrice.data.year === "") ||
+          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+          { label: resPrice.data.year, value: resPrice.data.year },
 
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
@@ -17253,32 +17170,23 @@ export function CreatePortfolio(props) {
           ...priceCalculator,
 
           calculatedPrice: resPrice.data.calculatedPrice,
-          priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-            resPrice.data.priceMethod != "" ||
-            resPrice.data.priceMethod != null) ? {
-            label: resPrice.data.priceMethod,
-            value: resPrice.data.priceMethod
-          } : "",
-          priceType: (resPrice.data.priceType != "EMPTY" ||
-            resPrice.data.priceType != "" ||
-            resPrice.data.priceType != null) ? {
-            label: resPrice.data.priceType,
-            value: resPrice.data.priceType
-          } : "",
-          priceAdditionalSelect: {
-            label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
-          },
+          priceMethod: ((resPrice.data.priceMethod === "") ||
+            (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+            priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+          priceType: ((resPrice.data.priceType === "") ||
+            (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+            priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+          priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+            (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+            additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
           priceAdditionalInput: resPrice.data.additionalPriceValue,
-          discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-            resPrice.data.discountType != "" ||
-            resPrice.data.discountType != null) ? {
-            label: resPrice.data.discountType,
-            value: resPrice.data.discountType
-          } : "",
+          discountTypeSelect: ((resPrice.data.discountType === "") ||
+            (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+            discountTypeOptions.find(o => o.value === resPrice.data.discountType),
           discountTypeInput: resPrice.data.discountValue,
-          year: {
-            label: resPrice.data.year, value: resPrice.data.year
-          },
+          year: ((resPrice.data.year === "") ||
+            (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+            { label: resPrice.data.year, value: resPrice.data.year },
           noOfYear: resPrice.data.noOfYear,
           startUsage: resPrice.data.startUsage,
           endUsage: resPrice.data.endUsage,
@@ -23161,8 +23069,8 @@ export function CreatePortfolio(props) {
             <TabContext value={tabs}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList className="custom-tabs-div"
-                  // onChange={(e, newValue) => setTabs(newValue)}
-                  onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
+                  onChange={(e, newValue) => setTabs(newValue)}
+                  // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
@@ -23922,7 +23830,7 @@ export function CreatePortfolio(props) {
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceMethod == "" ||
                                 priceCalculator?.priceMethod == undefined)
-                                ? "NA" : priceCalculator?.priceMethod?.value}
+                                ? "NA" : priceCalculator?.priceMethod?.label}
                             </h6>
                           </div>
                         </div>
@@ -23932,7 +23840,7 @@ export function CreatePortfolio(props) {
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.currency == "" ||
                                 priceCalculator?.currency == undefined)
-                                ? "NA" : priceCalculator?.currency?.value}
+                                ? "NA" : priceCalculator?.currency?.label}
                             </h6>
                           </div>
                         </div>
@@ -23952,7 +23860,7 @@ export function CreatePortfolio(props) {
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceType == "" ||
                                 priceCalculator?.priceType == undefined)
-                                ? "NA" : priceCalculator?.priceType?.value}
+                                ? "NA" : priceCalculator?.priceType?.label}
                             </h6>
                           </div>
                         </div>
@@ -23962,7 +23870,7 @@ export function CreatePortfolio(props) {
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceAdditionalSelect == "" ||
                                 priceCalculator?.priceAdditionalSelect == undefined)
-                                ? "NA" : priceCalculator?.priceAdditionalSelect?.value}
+                                ? "NA" : priceCalculator?.priceAdditionalSelect?.label}
                               {" - "}
                               {(priceCalculator?.priceAdditionalInput == "" ||
                                 priceCalculator?.priceAdditionalInput == undefined)
@@ -23976,7 +23884,7 @@ export function CreatePortfolio(props) {
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.escalationPriceOptionsValue1 == "" ||
                                 priceCalculator?.escalationPriceOptionsValue1 == undefined)
-                                ? "NA" : priceCalculator?.escalationPriceOptionsValue1?.value}
+                                ? "NA" : priceCalculator?.escalationPriceOptionsValue1?.label}
                               {" - "}
                               {(priceCalculator?.escalationPriceInputValue == "" ||
                                 priceCalculator?.escalationPriceInputValue == undefined)
@@ -24009,7 +23917,7 @@ export function CreatePortfolio(props) {
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.discountTypeSelect == "" ||
                                 priceCalculator?.discountTypeSelect == undefined)
-                                ? "NA" : priceCalculator?.discountTypeSelect?.value}
+                                ? "NA" : priceCalculator?.discountTypeSelect?.label}
                               {" - "}
                               {(priceCalculator?.discountTypeInput == "" ||
                                 priceCalculator?.discountTypeInput == undefined)
@@ -24023,7 +23931,7 @@ export function CreatePortfolio(props) {
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceBreakDownOptionsKeyValue1 == "" ||
                                 priceCalculator?.priceBreakDownOptionsKeyValue1 == undefined)
-                                ? "NA" : priceCalculator?.priceBreakDownOptionsKeyValue1?.value}
+                                ? "NA" : priceCalculator?.priceBreakDownOptionsKeyValue1?.label}
                               {" - "}
                               {priceCalculator?.priceBreakDownOptionsKeyValue1?.value === "PARTS" ? priceBreakDownFieldsValue.parts :
                                 priceCalculator?.priceBreakDownOptionsKeyValue1?.value === "LABOR" ? priceBreakDownFieldsValue.labor :
@@ -24046,7 +23954,7 @@ export function CreatePortfolio(props) {
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                   {(priceCalculator?.year == "" ||
                                     priceCalculator?.year == undefined)
-                                    ? "NA" : priceCalculator?.year?.value}
+                                    ? "NA" : priceCalculator?.year?.label}
                                 </h6>
                               </div>
                             </div>
@@ -24089,7 +23997,7 @@ export function CreatePortfolio(props) {
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                   {(addPortFolioItem?.usageType == "" ||
                                     addPortFolioItem?.usageType == undefined)
-                                    ? "NA" : addPortFolioItem?.usageType?.value}
+                                    ? "NA" : addPortFolioItem?.usageType?.label}
                                 </h6>
                               </div>
                             </div>
@@ -24099,7 +24007,7 @@ export function CreatePortfolio(props) {
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                   {(addPortFolioItem?.frequency == "" ||
                                     addPortFolioItem?.frequency == undefined)
-                                    ? "NA" : addPortFolioItem?.frequency?.value}
+                                    ? "NA" : addPortFolioItem?.frequency?.label}
                                 </h6>
                               </div>
                             </div>
@@ -24109,7 +24017,7 @@ export function CreatePortfolio(props) {
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                   {(addPortFolioItem?.unit == "" ||
                                     addPortFolioItem?.unit == undefined)
-                                    ? "NA" : addPortFolioItem?.unit?.value}
+                                    ? "NA" : addPortFolioItem?.unit?.label}
                                 </h6>
                               </div>
                             </div>

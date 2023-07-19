@@ -183,7 +183,8 @@ import {
   customPortfolioItemPriceHierarchySearch,
   getItemDataById,
   getCustomServiceItemsList,
-  linkCustomItemToPortfolio
+  linkCustomItemToPortfolio,
+  getPortfolioAndSolutionCommonConfig
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -270,6 +271,9 @@ export function CreateCustomPortfolio(props) {
   const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
+
+  const [unitOptionKeyValue, setUnitOptionKeyValue] = useState([])
+  const [frequencyOptionKeyValue, setFrequencyOptionKeyValue] = useState([])
 
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -630,7 +634,7 @@ export function CreateCustomPortfolio(props) {
 
   const [portfolioId, setPortfolioId] = useState();
   const [searchedPortfolioId, setSearchedPortfolioId] = useState(0);
-  const [currentItemId, setCurrentItemId] = useState();
+  const [currentItemId, setCurrentItemId] = useState(null);
   const [alignment, setAlignment] = useState("Portfolio");
   const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
@@ -686,6 +690,7 @@ export function CreateCustomPortfolio(props) {
     family: "",
     inputField: "",
   });
+
   const [priceCalculator, setPriceCalculator] = useState({
     priceMethod: "",
     currency: "",
@@ -721,6 +726,14 @@ export function CreateCustomPortfolio(props) {
     suppresion: "",
     id: "",
   });
+
+  const [priceBreakDownFieldsValue, setPriceBreakDownFieldsValue] = useState({
+    parts: "",
+    labor: "",
+    miscellaneous: "",
+    service: "",
+  })
+
   const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
     itemId: "",
     description: "",
@@ -769,9 +782,13 @@ export function CreateCustomPortfolio(props) {
   const [showAddCustomPortfolioItemModelPopup, setShowAddCustomPortfolioItemModelPopup] = useState(false);
   const [showAddBundleServiceItemsModelPopup, setShowAddBundleServiceItemsModelPopup] = useState(false);
   const [showAddItemComponentDataModelPopup, setShowAddItemComponentDataModelPopup] = useState(false);
+  const [itemIdForComponentDataModelPopup, setItemIdForComponentDataModelPopup] = useState(null)
   const [addBundleServiceItem1, setAddBundleServiceItem1] = useState([]);
   const [addBundleServiceItem2, setAddBundleServiceItem2] = useState([]);
   const [addBundleServiceItem3, setAddBundleServiceItem3] = useState([]);
+
+  const [searchedBundleServiceItemsOnExpend, setSearchedBundleServiceItemsOnExpend] = useState([])
+  const [selectedBundleServiceItemsOnExpend, setSelectedBundleServiceItemsOnExpend] = useState([])
 
   const [loadingItem, setLoadingItem] = useState("");
   const [tempBundleItems, setTempBundleItems] = useState([]);
@@ -1808,11 +1825,11 @@ export function CreateCustomPortfolio(props) {
           </td>
           <td>
             <div>
-              <a href="#" className="mr-3">
+              <a className="mr-3 cursor">
                 <RemoveRedEyeOutlinedIcon className="font-size-16 mr-2" />
                 View detail
               </a>
-              <a href="#" onClick={() => handleRemove(index)} className="">
+              <a onClick={() => handleRemove(index)} className="cursor">
                 <ModeEditIcon className="font-size-16 mr-2" />
                 View detail
               </a>
@@ -1887,6 +1904,78 @@ export function CreateCustomPortfolio(props) {
         throw "Please Create Solution First, then you can Add Item";
       }
 
+      // Previous working request obj for custom Item creation
+      // let reqObj = {
+      //   customItemId: 0,
+      //   itemName: itemData.name,
+      //   customItemHeaderModel: {
+      //     customItemHeaderId: 0,
+      //     itemHeaderDescription: itemData.description,
+      //     bundleFlag: "PORTFOLIO",
+      //     withBundleService: bundleServiceNeed,
+      //     portfolioItemId: 0,
+      //     reference: generalComponentData.externalReference,
+      //     itemHeaderMake: itemData?.make,
+      //     itemHeaderFamily: itemData?.family,
+      //     model: itemData.model,
+      //     prefix: itemData.prefix,
+      //     type: "EMPTY",
+      //     additional: "",
+      //     currency: "",
+      //     netPrice: 0,
+      //     // itemProductHierarchy: "END_PRODUCT",
+      //     // itemHeaderGeographic: "ONSITE",
+      //     // responseTime: "PROACTIVE",
+      //     itemProductHierarchy: "EMPTY",
+      //     itemHeaderGeographic: "EMPTY",
+      //     responseTime: "EMPTY",
+      //     usage: "",
+      //     validFrom: generalComponentData.validFrom,
+      //     validTo: generalComponentData.validTo,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "DRAFT",
+      //     componentCode: "",
+      //     componentDescription: "",
+      //     serialNumber: "",
+      //     itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "EMPTY",
+      //     variant: "",
+      //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
+      //     jobCode: "",
+      //     preparedBy: administrative.preparedBy,
+      //     approvedBy: administrative.approvedBy,
+      //     preparedOn: administrative.preparedOn,
+      //     revisedBy: administrative.revisedBy,
+      //     revisedOn: administrative.revisedOn,
+      //     salesOffice: administrative.salesOffice?.value,
+      //     offerValidity: administrative.offerValidity?.value,
+      //     serviceChargable: true,
+      //     serviceOptional: true
+      //   },
+      //   customItemBodyModel: {
+      //     customItemBodyId: 0,
+      //     itemBodyDescription: itemData.description,
+      //     spareParts: ["EMPTY"],
+      //     labours: ["EMPTY"],
+      //     miscellaneous: ["EMPTY"],
+      //     taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["EMPTY"],
+      //     solutionCode: "",
+      //     usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "EMPTY",
+      //     usage: "",
+      //     year: itemData.year?.value,
+      //     avgUsage: 0,
+      //     unit: itemData.unit != "" ? itemData.unit?.value : "",
+      //     frequency: itemData.frequency != "" ? itemData.frequency?.value : "",
+      //     customItemPrices: [
+      //       {
+      //         customItemPriceDataId: itemPriceData.customItemPriceDataId
+      //       }
+      //     ]
+      //   }
+      // }
+
+
+      // new working request Obj for custom Item creation
       let reqObj = {
         customItemId: 0,
         itemName: itemData.name,
@@ -1896,33 +1985,32 @@ export function CreateCustomPortfolio(props) {
           bundleFlag: "PORTFOLIO",
           withBundleService: bundleServiceNeed,
           portfolioItemId: 0,
-          reference: generalComponentData.externalReference,
+          reference: "",
           itemHeaderMake: itemData?.make,
           itemHeaderFamily: itemData?.family,
-          model: itemData.model,
-          prefix: itemData.prefix,
+          model: itemData?.model,
+          prefix: itemData?.prefix,
           type: "EMPTY",
           additional: "",
           currency: "",
           netPrice: 0,
-          // itemProductHierarchy: "END_PRODUCT",
-          // itemHeaderGeographic: "ONSITE",
-          // responseTime: "PROACTIVE",
           itemProductHierarchy: "EMPTY",
           itemHeaderGeographic: "EMPTY",
           responseTime: "EMPTY",
           usage: "",
-          validFrom: generalComponentData.validFrom,
-          validTo: generalComponentData.validTo,
+          validFrom: "",
+          validTo: "",
           estimatedTime: "",
           servicePrice: 0,
           status: "DRAFT",
           componentCode: "",
           componentDescription: "",
           serialNumber: "",
-          itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "EMPTY",
+          itemHeaderStrategy: ((itemData.strategyTask === "") || (itemData.strategyTask === null) ||
+            (itemData.strategyTask === undefined)) ? "EMPTY" : itemData.strategyTask?.value,
           variant: "",
-          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
+          itemHeaderCustomerSegment: ((createServiceOrBundle.customerSegment === "") || (createServiceOrBundle.customerSegment === null) ||
+            (createServiceOrBundle.customerSegment === undefined)) ? "" : createServiceOrBundle.customerSegment?.value,
           jobCode: "",
           preparedBy: administrative.preparedBy,
           approvedBy: administrative.approvedBy,
@@ -1940,20 +2028,21 @@ export function CreateCustomPortfolio(props) {
           spareParts: ["EMPTY"],
           labours: ["EMPTY"],
           miscellaneous: ["EMPTY"],
-          taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["EMPTY"],
-          solutionCode: "",
-          usageIn: itemData.usageIn != "" ? itemData.usageIn.value : "EMPTY",
+          taskType: ((itemData.taskType === "") || (itemData.taskType === null) ||
+            (itemData.taskType === undefined)) ? itemData.taskType?.value : ["EMPTY"],
+          solutionCode: "string",
+          usageIn: ((itemData.usageIn === "") || (itemData.usageIn === null) ||
+            (itemData.usageIn === undefined)) ? "EMPTY" : itemData.usageIn.value,
           usage: "",
           year: itemData.year?.value,
           avgUsage: 0,
-          unit: itemData.unit != "" ? itemData.unit?.value : "",
-          frequency: itemData.frequency != "" ? itemData.frequency?.value : "",
-          customItemPrices: [
+          customItemPrices: ((itemPriceData.customItemPriceDataId === 0) || (itemPriceData.customItemPriceDataId === null) ||
+            (itemPriceData.customItemPriceDataId === undefined)) ? [] : [
             {
               customItemPriceDataId: itemPriceData.customItemPriceDataId
             }
           ]
-        }
+        },
       }
 
 
@@ -1963,56 +2052,50 @@ export function CreateCustomPortfolio(props) {
         throw "Something went wrong/Item not created"
       }
 
-      let reqObjSJId = {
-        itemId: itemRes.data.customItemId,
-        standardJobId: itemPriceData.standardJobId,
-        repairKitId: itemPriceData.repairKitId,
-        itemPriceDataId: itemPriceData.customItemPriceDataId
-      }
+      if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
+        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
+        let reqObjSJId = {
+          itemId: itemRes.data.customItemId,
+          standardJobId: itemPriceData.standardJobId,
+          repairKitId: itemPriceData.repairKitId,
+          itemPriceDataId: itemPriceData.customItemPriceDataId
+        }
 
-      if (((itemPriceData.standardJobId == "") ||
-        (itemPriceData.standardJobId == null)) &&
-        ((itemPriceData.repairKitId != "") ||
-          (itemPriceData.repairKitId != null))) {
-        const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
-      }
+        if (((itemPriceData.standardJobId == "") ||
+          (itemPriceData.standardJobId == null)) &&
+          ((itemPriceData.repairKitId != "") ||
+            (itemPriceData.repairKitId != null))) {
+          const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+        }
 
-      if (((itemPriceData.repairKitId == "") ||
-        (itemPriceData.repairKitId == null)) &&
-        ((itemPriceData.standardJobId != "") ||
-          (itemPriceData.standardJobId != null))) {
-        const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+        if (((itemPriceData.repairKitId == "") ||
+          (itemPriceData.repairKitId == null)) &&
+          ((itemPriceData.standardJobId != "") ||
+            (itemPriceData.standardJobId != null))) {
+          const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+        }
       }
 
       const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
+
       setPriceCalculator({
-        ...priceCalculator,
-        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-          resPrice.data.priceMethod != "" ||
-          resPrice.data.priceMethod != null) ? {
-          label: resPrice.data.priceMethod,
-          value: resPrice.data.priceMethod
-        } : "",
-        priceType: (resPrice.data.priceType != "EMPTY" ||
-          resPrice.data.priceType != "" ||
-          resPrice.data.priceType != null) ? {
-          label: resPrice.data.priceType,
-          value: resPrice.data.priceType
-        } : "",
-        priceAdditionalSelect: {
-          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
-        },
+        priceMethod: ((resPrice.data.priceMethod === "") ||
+          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+        priceType: ((resPrice.data.priceType === "") ||
+          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
         priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-          resPrice.data.discountType != "" ||
-          resPrice.data.discountType != null) ? {
-          label: resPrice.data.discountType,
-          value: resPrice.data.discountType
-        } : "",
+        discountTypeSelect: ((resPrice.data.discountType === "") ||
+          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
         discountTypeInput: resPrice.data.discountValue,
-        year: {
-          label: resPrice.data.year, value: resPrice.data.year
-        },
+        year: ((resPrice.data.year === "") ||
+          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+          { label: resPrice.data.year, value: resPrice.data.year },
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
         endUsage: resPrice.data.endUsage,
@@ -2021,6 +2104,43 @@ export function CreateCustomPortfolio(props) {
         totalPrice: resPrice.data.totalPrice,
         id: resPrice.data.customItemPriceDataId,
       })
+
+      // setPriceCalculator({
+      //   ...priceCalculator,
+      //   priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+      //     resPrice.data.priceMethod != "" ||
+      //     resPrice.data.priceMethod != null) ? {
+      //     label: resPrice.data.priceMethod,
+      //     value: resPrice.data.priceMethod
+      //   } : "",
+      //   priceType: (resPrice.data.priceType != "EMPTY" ||
+      //     resPrice.data.priceType != "" ||
+      //     resPrice.data.priceType != null) ? {
+      //     label: resPrice.data.priceType,
+      //     value: resPrice.data.priceType
+      //   } : "",
+      //   priceAdditionalSelect: {
+      //     label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+      //   },
+      //   priceAdditionalInput: resPrice.data.additionalPriceValue,
+      //   discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+      //     resPrice.data.discountType != "" ||
+      //     resPrice.data.discountType != null) ? {
+      //     label: resPrice.data.discountType,
+      //     value: resPrice.data.discountType
+      //   } : "",
+      //   discountTypeInput: resPrice.data.discountValue,
+      //   year: {
+      //     label: resPrice.data.year, value: resPrice.data.year
+      //   },
+      //   noOfYear: resPrice.data.noOfYear,
+      //   startUsage: resPrice.data.startUsage,
+      //   endUsage: resPrice.data.endUsage,
+      //   recommendedValue: resPrice.data.recommendedValue,
+      //   netPrice: resPrice.data.netService,
+      //   totalPrice: resPrice.data.totalPrice,
+      //   id: resPrice.data.customItemPriceDataId,
+      // })
 
       setCurrentItemId(itemRes.data.customItemId);
       // setCreatedItemsIdData([...createdItemsIdData, itemRes.data.customItemId]);
@@ -2147,6 +2267,77 @@ export function CreateCustomPortfolio(props) {
         throw "Please Create Solution First, then you can Add Item";
       }
 
+      // Previous working request obj for custom Item creation
+      // let reqObj = {
+      //   customItemId: 0,
+      //   itemName: itemData.name,
+      //   customItemHeaderModel: {
+      //     customItemHeaderId: 0,
+      //     itemHeaderDescription: itemData.description,
+      //     bundleFlag: "PORTFOLIO",
+      //     withBundleService: !bundleServiceNeed,
+      //     portfolioItemId: 0,
+      //     reference: generalComponentData.externalReference,
+      //     itemHeaderMake: itemData?.make,
+      //     itemHeaderFamily: itemData?.family,
+      //     model: itemData.model,
+      //     prefix: itemData.prefix,
+      //     type: "EMPTY",
+      //     additional: "",
+      //     currency: "",
+      //     netPrice: 0,
+      //     // itemProductHierarchy: "END_PRODUCT",
+      //     // itemHeaderGeographic: "ONSITE",
+      //     // responseTime: "PROACTIVE",
+      //     itemProductHierarchy: "EMPTY",
+      //     itemHeaderGeographic: "EMPTY",
+      //     responseTime: "EMPTY",
+      //     usage: itemData.usageIn != "" ? ((typeof itemData.usageType === "object") ? itemData.usageIn.value : itemData.usageIn) : "EMPTY",
+      //     validFrom: generalComponentData.validFrom,
+      //     validTo: generalComponentData.validTo,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "DRAFT",
+      //     componentCode: "",
+      //     componentDescription: "",
+      //     serialNumber: "",
+      //     itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "EMPTY",
+      //     variant: "",
+      //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
+      //     jobCode: "",
+      //     preparedBy: administrative.preparedBy,
+      //     approvedBy: administrative.approvedBy,
+      //     preparedOn: administrative.preparedOn,
+      //     revisedBy: administrative.revisedBy,
+      //     revisedOn: administrative.revisedOn,
+      //     salesOffice: administrative.salesOffice?.value,
+      //     offerValidity: administrative.offerValidity?.value,
+      //     serviceChargable: true,
+      //     serviceOptional: true
+      //   },
+      //   customItemBodyModel: {
+      //     customItemBodyId: 0,
+      //     itemBodyDescription: itemData.description,
+      //     spareParts: ["EMPTY"],
+      //     labours: ["EMPTY"],
+      //     miscellaneous: ["EMPTY"],
+      //     taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["EMPTY"],
+      //     solutionCode: "",
+      //     usageIn: itemData.usageIn != "" ? ((typeof itemData.usageType === "object") ? itemData.usageIn.value : itemData.usageIn) : "EMPTY",
+      //     usage: itemData.usageType != "" ? ((typeof itemData.usageType === "object") ? itemData.usageType?.value : itemData.usageType) : "",
+      //     year: itemData.year?.value,
+      //     avgUsage: 0,
+      //     unit: itemData.unit != "" ? itemData.unit?.value : "",
+      //     frequency: itemData.frequency != "" ? itemData.frequency?.value : "",
+      //     customItemPrices: [
+      //       {
+      //         customItemPriceDataId: itemPriceData.customItemPriceDataId
+      //       }
+      //     ]
+      //   }
+      // }
+
+      // new working request Obj for custom Item creation
       let reqObj = {
         customItemId: 0,
         itemName: itemData.name,
@@ -2156,33 +2347,33 @@ export function CreateCustomPortfolio(props) {
           bundleFlag: "PORTFOLIO",
           withBundleService: !bundleServiceNeed,
           portfolioItemId: 0,
-          reference: generalComponentData.externalReference,
+          reference: "",
           itemHeaderMake: itemData?.make,
           itemHeaderFamily: itemData?.family,
-          model: itemData.model,
-          prefix: itemData.prefix,
+          model: itemData?.model,
+          prefix: itemData?.prefix,
           type: "EMPTY",
           additional: "",
           currency: "",
           netPrice: 0,
-          // itemProductHierarchy: "END_PRODUCT",
-          // itemHeaderGeographic: "ONSITE",
-          // responseTime: "PROACTIVE",
           itemProductHierarchy: "EMPTY",
           itemHeaderGeographic: "EMPTY",
           responseTime: "EMPTY",
-          usage: itemData.usageIn != "" ? ((typeof itemData.usageType === "object") ? itemData.usageIn.value : itemData.usageIn) : "EMPTY",
-          validFrom: generalComponentData.validFrom,
-          validTo: generalComponentData.validTo,
+          usage: ((itemData.usageIn === "") || (itemData.usageIn === null) || (itemData.usageIn === undefined)) ? "EMPTY" :
+            ((typeof itemData.usageType === "object") ? itemData.usageIn.value : itemData.usageIn),
+          validFrom: "",
+          validTo: "",
           estimatedTime: "",
           servicePrice: 0,
           status: "DRAFT",
           componentCode: "",
           componentDescription: "",
           serialNumber: "",
-          itemHeaderStrategy: itemData.strategyTask !== "" ? itemData.strategyTask?.value : "EMPTY",
+          itemHeaderStrategy: ((itemData.strategyTask === "") || (itemData.strategyTask === null) ||
+            (itemData.strategyTask === undefined)) ? "EMPTY" : itemData.strategyTask?.value,
           variant: "",
-          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
+          itemHeaderCustomerSegment: ((createServiceOrBundle.customerSegment === "") || (createServiceOrBundle.customerSegment === null) ||
+            (createServiceOrBundle.customerSegment === undefined)) ? "" : createServiceOrBundle.customerSegment?.value,
           jobCode: "",
           preparedBy: administrative.preparedBy,
           approvedBy: administrative.approvedBy,
@@ -2200,20 +2391,22 @@ export function CreateCustomPortfolio(props) {
           spareParts: ["EMPTY"],
           labours: ["EMPTY"],
           miscellaneous: ["EMPTY"],
-          taskType: itemData.taskType != "" ? [itemData.taskType.value] : ["EMPTY"],
+          taskType: ((itemData.taskType === "") || (itemData.taskType === null) ||
+            (itemData.taskType === undefined)) ? [itemData.taskType?.value] : ["EMPTY"],
           solutionCode: "",
-          usageIn: itemData.usageIn != "" ? ((typeof itemData.usageType === "object") ? itemData.usageIn.value : itemData.usageIn) : "EMPTY",
-          usage: itemData.usageType != "" ? ((typeof itemData.usageType === "object") ? itemData.usageType?.value : itemData.usageType) : "",
+          usageIn: ((itemData.usageIn === "") || (itemData.usageIn === null) ||
+            (itemData.usageIn === undefined)) ? "EMPTY" : ((typeof itemData.usageIn === "object") ? itemData.usageIn.value : itemData.usageIn),
+          usage: ((itemData.usageType === "") || (itemData.usageType === null) ||
+            (itemData.usageType === undefined)) ? "EMPTY" : ((typeof itemData.usageType === "object") ? itemData.usageType.value : itemData.usageType),
           year: itemData.year?.value,
           avgUsage: 0,
-          unit: itemData.unit != "" ? itemData.unit?.value : "",
-          frequency: itemData.frequency != "" ? itemData.frequency?.value : "",
-          customItemPrices: [
+          customItemPrices: ((itemPriceData.customItemPriceDataId === 0) || (itemPriceData.customItemPriceDataId === null) ||
+            (itemPriceData.customItemPriceDataId === undefined)) ? [] : [
             {
               customItemPriceDataId: itemPriceData.customItemPriceDataId
             }
           ]
-        }
+        },
       }
 
       const itemRes = await customItemCreation(reqObj);
@@ -2223,57 +2416,52 @@ export function CreateCustomPortfolio(props) {
       }
 
       if (itemRes.status === 200) {
-        let reqObjSJId = {
-          itemId: itemRes.data.customItemId,
-          standardJobId: itemPriceData.standardJobId,
-          repairKitId: itemPriceData.repairKitId,
-          itemPriceDataId: itemPriceData.customItemPriceDataId
-        }
 
-        if (((itemPriceData.standardJobId == "") ||
-          (itemPriceData.standardJobId == null)) &&
-          ((itemPriceData.repairKitId != "") ||
-            (itemPriceData.repairKitId != null))) {
-          const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
-        }
+        if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
+          ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
+          let reqObjSJId = {
+            itemId: itemRes.data.customItemId,
+            standardJobId: itemPriceData.standardJobId,
+            repairKitId: itemPriceData.repairKitId,
+            itemPriceDataId: itemPriceData.customItemPriceDataId
+          }
 
-        if (((itemPriceData.repairKitId == "") ||
-          (itemPriceData.repairKitId == null)) &&
-          ((itemPriceData.standardJobId != "") ||
-            (itemPriceData.standardJobId != ""))) {
-          const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+          if (((itemPriceData.standardJobId == "") ||
+            (itemPriceData.standardJobId == null)) &&
+            ((itemPriceData.repairKitId != "") ||
+              (itemPriceData.repairKitId != null))) {
+            const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+          }
+
+          if (((itemPriceData.repairKitId == "") ||
+            (itemPriceData.repairKitId == null)) &&
+            ((itemPriceData.standardJobId != "") ||
+              (itemPriceData.standardJobId != ""))) {
+            const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+          }
         }
       }
 
       const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
       setPriceCalculator({
         ...priceCalculator,
-        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-          resPrice.data.priceMethod != "" ||
-          resPrice.data.priceMethod != null) ? {
-          label: resPrice.data.priceMethod,
-          value: resPrice.data.priceMethod
-        } : "",
-        priceType: (resPrice.data.priceType != "EMPTY" ||
-          resPrice.data.priceType != "" ||
-          resPrice.data.priceType != null) ? {
-          label: resPrice.data.priceType,
-          value: resPrice.data.priceType
-        } : "",
-        priceAdditionalSelect: {
-          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
-        },
+        priceMethod: ((resPrice.data.priceMethod === "") ||
+          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+        priceType: ((resPrice.data.priceType === "") ||
+          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
         priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-          resPrice.data.discountType != "" ||
-          resPrice.data.discountType != null) ? {
-          label: resPrice.data.discountType,
-          value: resPrice.data.discountType
-        } : "",
+        discountTypeSelect: ((resPrice.data.discountType === "") ||
+          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
         discountTypeInput: resPrice.data.discountValue,
-        year: {
-          label: resPrice.data.year, value: resPrice.data.year
-        },
+        year: ((resPrice.data.year === "") ||
+          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+          { label: resPrice.data.year, value: resPrice.data.year },
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
         endUsage: resPrice.data.endUsage,
@@ -2288,18 +2476,25 @@ export function CreateCustomPortfolio(props) {
         year: itemData?.year,
       })
 
+      setPriceBreakDownFieldsValue({
+        ...priceBreakDownFieldsValue,
+        parts: resPrice.data.sparePartsNOE,
+        labor: resPrice.data.labourNOE,
+        miscellaneous: resPrice.data.miscNOE,
+        service: resPrice.data.servicePrice,
+      })
 
+      setCurrentItemId(itemRes.data.customItemId);
 
       itemRes.data.associatedServiceOrBundle = [];
       // setSearchedPortfolioItemsData([...searchedPortfolioItemsData, itemRes.data]);
       setShowAddCustomPortfolioItemModelPopup(false);
 
-      setCurrentItemId(itemRes.data.customItemId);
       const _generalComponentData = { ...generalComponentData };
       _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
       var _itemArrData = [...selectedSolutionCustomItems];
       _itemArrData.push({ customItemId: itemRes.data.customItemId })
-
+      setSelectedSolutionCustomItems(_itemArrData);
 
       if (_itemArrData.length > 0) {
         var tempBundleItemsUrl = _itemArrData.map((data, i) =>
@@ -2361,102 +2556,101 @@ export function CreateCustomPortfolio(props) {
 
       }
 
+      if ((portfolioId !== "") || (portfolioId !== undefined) || (portfolioId !== null) || (portfolioId !== 0)) {
 
-      setSelectedSolutionCustomItems(_itemArrData);
+        let solutionReqObj = {
+          name: generalComponentData.name,
+          description: generalComponentData.description,
+          customerId: parseInt(customerData.customerID),
+          externalReference: generalComponentData.externalReference,
+          customerGroup: customerData.customerGroup,
+          customerSegment: generalComponentData?.customerSegment != "" ?
+            generalComponentData?.customerSegment?.value : "",
+          template: flagTemplate,
+          visibleInCommerce: flagCommerce,
 
+          validFrom: validityData.fromDate,
+          validTo: validityData.toDate,
 
-      // let obj = {
-      //   name: generalComponentData.name,
-      //   description: generalComponentData.description,
-      //   customerId: parseInt(customerData.customerID),
-      //   externalReference: generalComponentData.externalReference,
-      //   customerGroup: customerData.customerGroup,
-      //   customerSegment: generalComponentData?.customerSegment != "" ?
-      //     generalComponentData?.customerSegment?.value : "",
-      //   template: flagTemplate,
-      //   visibleInCommerce: flagCommerce,
+          responseTime: stratgyResponseTimeKeyValue?.value ?
+            stratgyResponseTimeKeyValue?.value : "EMPTY",
+          productHierarchy: stratgyHierarchyKeyValue?.value ?
+            stratgyHierarchyKeyValue?.value : "EMPTY",
+          geographic: stratgyGeographicKeyValue?.value ?
+            stratgyGeographicKeyValue?.value : "EMPTY",
+          solutionType: solutionTypeListKeyValue?.value ?
+            solutionTypeListKeyValue?.value : "EMPTY",
+          solutionLevel: solutionLevelListKeyValue?.value ?
+            solutionLevelListKeyValue?.value : "EMPTY",
 
-      //   validFrom: validityData.fromDate,
-      //   validTo: validityData.toDate,
+          portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+            ? portfolioPriceDataId : null,
 
-      //   responseTime: stratgyResponseTimeKeyValue?.value ?
-      //     stratgyResponseTimeKeyValue?.value : "EMPTY",
-      //   productHierarchy: stratgyHierarchyKeyValue?.value ?
-      //     stratgyHierarchyKeyValue?.value : "EMPTY",
-      //   geographic: stratgyGeographicKeyValue?.value ?
-      //     stratgyGeographicKeyValue?.value : "EMPTY",
-      //   solutionType: solutionTypeListKeyValue?.value ?
-      //     solutionTypeListKeyValue?.value : "EMPTY",
-      //   solutionLevel: solutionLevelListKeyValue?.value ?
-      //     solutionLevelListKeyValue?.value : "EMPTY",
+          customCoverages: selectedSolutionCustomCoverages,
 
-      //   portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
-      //     ? portfolioPriceDataId : null,
+          preparedBy: (administrative.preparedBy != null ||
+            administrative.preparedBy != "" ? administrative.preparedBy : ""),
+          approvedBy: (administrative.approvedBy != null ||
+            administrative.approvedBy != "" ? administrative.approvedBy : ""),
+          preparedOn: administrative.preparedOn,
+          revisedBy: (administrative.revisedBy != null ||
+            administrative.revisedBy != "" ? administrative.revisedBy : ""),
+          revisedOn: administrative.revisedOn,
+          salesOffice: (administrative.salesOffice != null ||
+            administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
+          offerValidity: (administrative.offerValidity != null ||
+            administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
 
-      //   customCoverages: selectedSolutionCustomCoverages,
+          status: value2.value,
+          supportLevel: value3.value,
 
-      //   preparedBy: (administrative.preparedBy != null ||
-      //     administrative.preparedBy != "" ? administrative.preparedBy : ""),
-      //   approvedBy: (administrative.approvedBy != null ||
-      //     administrative.approvedBy != "" ? administrative.approvedBy : ""),
-      //   preparedOn: administrative.preparedOn,
-      //   revisedBy: (administrative.revisedBy != null ||
-      //     administrative.revisedBy != "" ? administrative.revisedBy : ""),
-      //   revisedOn: administrative.revisedOn,
-      //   salesOffice: (administrative.salesOffice != null ||
-      //     administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
-      //   offerValidity: (administrative.offerValidity != null ||
-      //     administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
+          machineType: "EMPTY",
+          searchTerm: "",
+          lubricant: true,
+          strategyTask: "EMPTY",
+          taskType: "EMPTY",
+          usageCategory: "EMPTY",
+          availability: "EMPTY",
+          type: "EMPTY",
+          application: "EMPTY",
+          contractOrSupport: "EMPTY",
+          lifeStageOfMachine: "EMPTY",
+          numberOfEvents: 0,
+          rating: "",
+          startUsage: 0,
+          endUsage: 0,
+          unit: "EMPTY",
+          additionals: "",
 
-      //   status: value2.value,
-      //   supportLevel: value3.value,
+          customItems: _itemArrData,
+        }
 
-      //   machineType: "NEW",
-      //   searchTerm: "",
-      //   lubricant: true,
-      //   strategyTask: "PREVENTIVE_MAINTENANCE",
-      //   taskType: "PM1",
-      //   usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-      //   availability: "AVAILABILITY_GREATER_95",
-      //   type: "MACHINE",
-      //   application: "HILL",
-      //   contractOrSupport: "LEVEL_I",
-      //   lifeStageOfMachine: "NEW_BREAKIN",
-      //   numberOfEvents: 0,
-      //   rating: "",
-      //   startUsage: 0,
-      //   endUsage: 0,
-      //   unit: "HOURS",
-      //   additionals: "",
-      //   customItems: _itemArrData,
-      // }
+        if ((portfolioId !== "") || (portfolioId !== undefined) || (portfolioId !== null) || (portfolioId !== 0)) {
+          const updatePortfolioRes = await updateCustomPortfolio(
+            portfolioId,
+            solutionReqObj
+          );
+          if (updatePortfolioRes.status === 200) {
+            toast(`👏 Solution ${generalComponentData.name} saved Successfully`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else {
+            throw `${updatePortfolioRes.status}:Something went wrong`;
+          }
+        }
 
-      // if ((portfolioId !== "" || (portfolioId !== undefined))) {
-      //   const updatePortfolioRes = await updateCustomPortfolio(
-      //     portfolioId,
-      //     obj
-      //   );
-      //   if (updatePortfolioRes.status === 200) {
-      //     toast(`👏 Solution ${generalComponentData.name} saved Successfully`, {
-      //       position: "top-right",
-      //       autoClose: 5000,
-      //       hideProgressBar: false,
-      //       closeOnClick: true,
-      //       pauseOnHover: true,
-      //       draggable: true,
-      //       progress: undefined,
-      //     });
-      //   } else {
-      //     throw `${updatePortfolioRes.status}:Something went wrong`;
-      //   }
-      // }
+        setGeneralComponentData(_generalComponentData);
+        // setTempBundleItems([...tempBundleItems, itemRes.data]);
 
-      // setGeneralComponentData(_generalComponentData);
-      // setTempBundleItems([...tempBundleItems, itemRes.data]);
-
-      // setOpenAddBundleItem(false);
-      // setOpenSearchSolution(false);
-
+        setOpenAddBundleItem(false);
+        setOpenSearchSolution(false);
+      }
     } catch (error) {
       toast("😐" + error, {
         position: "top-right",
@@ -2473,85 +2667,86 @@ export function CreateCustomPortfolio(props) {
 
   const handleBundleItemSaveAndContinue = async (data, itemPriceData) => {
     try {
-
+      // Previous working request obj for custom Item creation
       // let reqObj = {
-      //     customItemId: 0,
-      //     itemName: "",
-      //     customItemHeaderModel: {
-      //         customItemHeaderId: 0,
-      //         itemHeaderDescription: generalComponentData.description,
-      //         bundleFlag: "PORTFOLIO",
-      //         reference: generalComponentData.externalReference,
-      //         itemHeaderMake: "",
-      //         itemHeaderFamily: "",
-      //         model: "",
-      //         prefix: "",
-      //         type: "MACHINE",
-      //         additional: "",
-      //         currency: "",
-      //         netPrice: 0,
-      //         itemProductHierarchy: generalComponentData.productHierarchy,
-      //         itemHeaderGeographic: generalComponentData.geographic,
-      //         responseTime: generalComponentData.responseTime,
-      //         usage: "",
-      //         validFrom: generalComponentData.validFrom,
-      //         validTo: generalComponentData.validTo,
-      //         estimatedTime: "",
-      //         servicePrice: 0,
-      //         status: "DRAFT",
-      //     },
-      //     customItemBodyModel: {
-      //         customItemBodyId: parseInt(addPortFolioItem.id),
-      //         itemBodyDescription: addPortFolioItem.description,
-      //         quantity: parseInt(addPortFolioItem.quantity),
-      //         startUsage: priceCalculator.startUsage,
-      //         endUsage: priceCalculator.endUsage,
-      //         standardJobId: "",
-      //         frequency: addPortFolioItem.frequency.value,
-      //         additional: "",
-      //         spareParts: ["WITH_SPARE_PARTS"],
-      //         labours: ["WITH_LABOUR"],
-      //         miscellaneous: ["LUBRICANTS"],
-      //         taskType: [addPortFolioItem.taskType.value],
-      //         solutionCode: "",
-      //         usageIn: addPortFolioItem.usageIn.value,
-      //         recommendedValue: 0,
-      //         usage: "",
-      //         repairKitId: "",
-      //         templateDescription: addPortFolioItem.description.value,
-      //         partListId: "",
-      //         serviceEstimateId: "",
-      //         numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-      //         repairOption: addPortFolioItem.repairOption.value,
-      //         priceMethod: "LIST_PRICE",
-      //         listPrice: parseInt(priceCalculator.listPrice),
-      //         priceEscalation: "",
-      //         calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-      //         flatPrice: parseInt(priceCalculator.flatPrice),
-      //         discountType: "",
-      //         year: priceCalculator.priceYear.value,
-      //         avgUsage: 0,
-      //         unit: addPortFolioItem.unit.value,
-      //         sparePartsPrice: 0,
-      //         sparePartsPriceBreakDownPercentage: 0,
-      //         servicePrice: 0,
-      //         servicePriceBreakDownPercentage: 0,
-      //         miscPrice: 0,
-      //         miscPriceBreakDownPercentage: 0,
-      //         totalPrice: 0,
-      //     },
-      // };
+      //   customItemId: 0,
+      //   itemName: data.name,
+      //   customItemHeaderModel: {
+      //     customItemHeaderId: 0,
+      //     itemHeaderDescription: data.description,
+      //     // itemHeaderDescription: data.headerdescription,
+      //     bundleFlag: "PORTFOLIO",
+      //     portfolioItemId: 0,
+      //     reference: generalComponentData.externalReference,
+      //     itemHeaderMake: data?.make,
+      //     itemHeaderFamily: data?.family,
+      //     model: data?.model,
+      //     prefix: data?.prefix,
+      //     type: "EMPTY",
+      //     additional: "",
+      //     currency: "",
+      //     netPrice: 0,
+      //     // itemProductHierarchy: "END_PRODUCT",
+      //     // itemHeaderGeographic: "ONSITE",
+      //     // responseTime: "PROACTIVE",
+      //     itemProductHierarchy: "EMPTY",
+      //     itemHeaderGeographic: "EMPTY",
+      //     responseTime: "EMPTY",
+      //     usage: "",
+      //     validFrom: validityData.fromDate,
+      //     validTo: validityData.toDate,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "DRAFT",
+      //     componentCode: "",
+      //     componentDescription: "",
+      //     serialNumber: "",
+      //     itemHeaderStrategy: "EMPTY",
+      //     variant: "",
+      //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
+      //     jobCode: "",
+      //     preparedBy: administrative.preparedBy,
+      //     approvedBy: administrative.approvedBy,
+      //     preparedOn: administrative.preparedOn,
+      //     revisedBy: administrative.revisedBy,
+      //     revisedOn: administrative.revisedOn,
+      //     salesOffice: administrative.salesOffice?.value,
+      //     offerValidity: administrative.offerValidity?.value
+      //   },
+      //   customItemBodyModel: {
+      //     customItemBodyId: 0,
+      //     itemBodyDescription: data.description,
+      //     spareParts: ['EMPTY'],
+      //     labours: ['EMPTY'],
+      //     miscellaneous: ['EMPTY'],
+      //     taskType: data.taskType != "" ? [data.taskType.value] : ["EMPTY"],
+      //     solutionCode: "",
+      //     usageIn: data.usageIn != "" ? data.usageIn.value : "EMPTY",
+      //     usage: "",
+      //     year: "",
+      //     avgUsage: 0,
+      //     unit: data.unit != "" ? data.unit?.value : "",
+      //     frequency: data.frequency != "" ? data.frequency?.value : "",
+      //     recommendedValue: parseInt(data.recommendedValue),
+      //     customItemPrices: [
+      //       {
+      //         customItemPriceDataId: itemPriceData.customItemPriceDataId
+      //       }
+      //     ]
+      //   },
+      // }
 
+      // new working request Obj for custom Item creation
       let reqObj = {
         customItemId: 0,
         itemName: data.name,
         customItemHeaderModel: {
           customItemHeaderId: 0,
           itemHeaderDescription: data.description,
-          // itemHeaderDescription: data.headerdescription,
           bundleFlag: "PORTFOLIO",
+          withBundleService: !bundleServiceNeed,
           portfolioItemId: 0,
-          reference: generalComponentData.externalReference,
+          reference: "",
           itemHeaderMake: data?.make,
           itemHeaderFamily: data?.family,
           model: data?.model,
@@ -2560,24 +2755,24 @@ export function CreateCustomPortfolio(props) {
           additional: "",
           currency: "",
           netPrice: 0,
-          // itemProductHierarchy: "END_PRODUCT",
-          // itemHeaderGeographic: "ONSITE",
-          // responseTime: "PROACTIVE",
           itemProductHierarchy: "EMPTY",
           itemHeaderGeographic: "EMPTY",
           responseTime: "EMPTY",
-          usage: "",
-          validFrom: validityData.fromDate,
-          validTo: validityData.toDate,
+          usage: ((data.usageIn === "") || (data.usageIn === null) || (data.usageIn === undefined)) ? "EMPTY" :
+            ((typeof data.usageType === "object") ? data.usageIn.value : data.usageIn),
+          validFrom: "",
+          validTo: "",
           estimatedTime: "",
           servicePrice: 0,
           status: "DRAFT",
           componentCode: "",
           componentDescription: "",
           serialNumber: "",
-          itemHeaderStrategy: "EMPTY",
+          itemHeaderStrategy: ((data.strategyTask === "") || (data.strategyTask === null) ||
+            (data.strategyTask === undefined)) ? "EMPTY" : data.strategyTask?.value,
           variant: "",
-          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "",
+          itemHeaderCustomerSegment: ((createServiceOrBundle.customerSegment === "") || (createServiceOrBundle.customerSegment === null) ||
+            (createServiceOrBundle.customerSegment === undefined)) ? "" : createServiceOrBundle.customerSegment?.value,
           jobCode: "",
           preparedBy: administrative.preparedBy,
           approvedBy: administrative.approvedBy,
@@ -2585,24 +2780,27 @@ export function CreateCustomPortfolio(props) {
           revisedBy: administrative.revisedBy,
           revisedOn: administrative.revisedOn,
           salesOffice: administrative.salesOffice?.value,
-          offerValidity: administrative.offerValidity?.value
+          offerValidity: administrative.offerValidity?.value,
+          serviceChargable: true,
+          serviceOptional: true
         },
         customItemBodyModel: {
           customItemBodyId: 0,
           itemBodyDescription: data.description,
-          spareParts: ['EMPTY'],
-          labours: ['EMPTY'],
-          miscellaneous: ['EMPTY'],
-          taskType: data.taskType != "" ? [data.taskType.value] : ["EMPTY"],
+          spareParts: ["EMPTY"],
+          labours: ["EMPTY"],
+          miscellaneous: ["EMPTY"],
+          taskType: ((data.taskType === "") || (data.taskType === null) ||
+            (data.taskType === undefined)) ? [data.taskType?.value] : ["EMPTY"],
           solutionCode: "",
-          usageIn: data.usageIn != "" ? data.usageIn.value : "EMPTY",
-          usage: "",
-          year: "",
+          usageIn: ((data.usageIn === "") || (data.usageIn === null) ||
+            (data.usageIn === undefined)) ? "EMPTY" : ((typeof data.usageIn === "object") ? data.usageIn.value : data.usageIn),
+          usage: ((data.usageType === "") || (data.usageType === null) ||
+            (data.usageType === undefined)) ? "EMPTY" : ((typeof data.usageType === "object") ? data.usageType.value : data.usageType),
+          year: data.year?.value,
           avgUsage: 0,
-          unit: data.unit != "" ? data.unit?.value : "",
-          frequency: data.frequency != "" ? data.frequency?.value : "",
-          recommendedValue: parseInt(data.recommendedValue),
-          customItemPrices: [
+          customItemPrices: ((itemPriceData.customItemPriceDataId === 0) || (itemPriceData.customItemPriceDataId === null) ||
+            (itemPriceData.customItemPriceDataId === undefined)) ? [] : [
             {
               customItemPriceDataId: itemPriceData.customItemPriceDataId
             }
@@ -2801,75 +2999,161 @@ export function CreateCustomPortfolio(props) {
 
   const saveAddNewServiceOrBundle = async () => {
     try {
+      // Previous working request obj for custom Item creation
+      // let reqObj = {
+      //   itemId: 0,
+      //   itemName: "",
+      //   itemHeaderModel: {
+      //     itemHeaderId: 0,
+      //     // itemHeaderId: parseInt(generalComponentData.portfolioId),
+      //     itemHeaderDescription: createServiceOrBundle.description,
+      //     bundleFlag:
+      //       serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+      //     reference: createServiceOrBundle.reference,
+      //     itemHeaderMake: createServiceOrBundle.make,
+      //     itemHeaderFamily: "",
+      //     model: createServiceOrBundle.models,
+      //     prefix: createServiceOrBundle.prefix,
+      //     type: "EMPTY",
+      //     additional: createServiceOrBundle.additional.value,
+      //     currency: "",
+      //     netPrice: 0,
+      //     itemProductHierarchy: generalComponentData.productHierarchy,
+      //     itemHeaderGeographic: generalComponentData.geographic,
+      //     responseTime: generalComponentData.responseTime,
+      //     usage: "",
+      //     validFrom: generalComponentData.validFrom,
+      //     validTo: generalComponentData.validTo,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "DRAFT",
+      //   },
+      //   itemBodyModel: {
+      //     itemBodyId: parseInt(addPortFolioItem.id),
+      //     itemBodyDescription: addPortFolioItem.description,
+      //     quantity: parseInt(addPortFolioItem.quantity),
+      //     startUsage: priceCalculator.startUsage,
+      //     endUsage: priceCalculator.endUsage,
+      //     standardJobId: "",
+      //     frequency: addPortFolioItem.frequency.value,
+      //     additional: "",
+      //     spareParts: ["EMPTY"],
+      //     labours: ["EMPTY"],
+      //     miscellaneous: ["EMPTY"],
+      //     taskType: [addPortFolioItem.taskType.value],
+      //     solutionCode: "",
+      //     usageIn: addPortFolioItem.usageIn.value,
+      //     recommendedValue: 0,
+      //     usage: "",
+      //     repairKitId: "",
+      //     templateDescription: addPortFolioItem.description.value,
+      //     partListId: "",
+      //     serviceEstimateId: "",
+      //     numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
+      //     repairOption: addPortFolioItem.repairOption.value,
+      //     priceMethod: "EMPTY",
+      //     listPrice: parseInt(priceCalculator.listPrice),
+      //     priceEscalation: "",
+      //     calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+      //     flatPrice: parseInt(priceCalculator.flatPrice),
+      //     discountType: "",
+      //     year: priceCalculator.priceYear.value,
+      //     avgUsage: 0,
+      //     unit: addPortFolioItem.unit.value,
+      //     sparePartsPrice: 0,
+      //     sparePartsPriceBreakDownPercentage: 0,
+      //     servicePrice: 0,
+      //     servicePriceBreakDownPercentage: 0,
+      //     miscPrice: 0,
+      //     miscPriceBreakDownPercentage: 0,
+      //     totalPrice: 0,
+      //   },
+      // };
+
+      // new working request Obj for custom Item creation
       let reqObj = {
-        itemId: 0,
+        customItemId: 0,
         itemName: "",
-        itemHeaderModel: {
-          itemHeaderId: 0,
-          // itemHeaderId: parseInt(generalComponentData.portfolioId),
+        customItemHeaderModel: {
+          customItemHeaderId: 0,
           itemHeaderDescription: createServiceOrBundle.description,
-          bundleFlag:
-            serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+          bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" :
+            serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
+          withBundleService: !bundleServiceNeed,
+          portfolioItemId: 0,
           reference: createServiceOrBundle.reference,
-          itemHeaderMake: createServiceOrBundle.make,
-          itemHeaderFamily: "",
-          model: createServiceOrBundle.models,
-          prefix: createServiceOrBundle.prefix,
+          itemHeaderMake: createServiceOrBundle?.make,
+          itemHeaderFamily: createServiceOrBundle?.family,
+          model: createServiceOrBundle?.model,
+          prefix: createServiceOrBundle?.prefix,
           type: "EMPTY",
-          additional: createServiceOrBundle.additional.value,
+          additional: ((createServiceOrBundle.additional === "") || (createServiceOrBundle.additional === null) ||
+            (createServiceOrBundle.additional === undefined)) ? "" : createServiceOrBundle.additional?.value,
           currency: "",
           netPrice: 0,
           itemProductHierarchy: generalComponentData.productHierarchy,
           itemHeaderGeographic: generalComponentData.geographic,
           responseTime: generalComponentData.responseTime,
+          // usage: ((addPortFolioItem.usageIn === "") || (addPortFolioItem.usageIn === null) || (addPortFolioItem.usageIn === undefined)) ? "EMPTY" :
+          //   ((typeof addPortFolioItem.usageType === "object") ? addPortFolioItem.usageIn.value : addPortFolioItem.usageIn),
           usage: "",
           validFrom: generalComponentData.validFrom,
           validTo: generalComponentData.validTo,
           estimatedTime: "",
           servicePrice: 0,
           status: "DRAFT",
+          componentCode: "",
+          componentDescription: "",
+          serialNumber: "",
+          // itemHeaderStrategy: ((addPortFolioItem.strategyTask === "") || (addPortFolioItem.strategyTask === null) ||
+          //   (addPortFolioItem.strategyTask === undefined)) ? "EMPTY" : addPortFolioItem.strategyTask?.value,
+          itemHeaderStrategy: "EMPTY",
+          variant: "",
+          // itemHeaderCustomerSegment: ((createServiceOrBundle.customerSegment === "") || (createServiceOrBundle.customerSegment === null) ||
+          //   (createServiceOrBundle.customerSegment === undefined)) ? "" : createServiceOrBundle.customerSegment?.value,
+          itemHeaderCustomerSegment: "",
+          jobCode: "",
+          // preparedBy: administrative.preparedBy,
+          // approvedBy: administrative.approvedBy,
+          // preparedOn: administrative.preparedOn,
+          // revisedBy: administrative.revisedBy,
+          // revisedOn: administrative.revisedOn,
+          // salesOffice: administrative.salesOffice?.value,
+          // offerValidity: administrative.offerValidity?.value,
+          preparedBy: "",
+          approvedBy: "",
+          preparedOn: "",
+          revisedBy: "",
+          revisedOn: "",
+          salesOffice: "",
+          offerValidity: "",
+          serviceChargable: true,
+          serviceOptional: true
         },
-        itemBodyModel: {
-          itemBodyId: parseInt(addPortFolioItem.id),
+        customItemBodyModel: {
+          customItemBodyId: 0,
           itemBodyDescription: addPortFolioItem.description,
-          quantity: parseInt(addPortFolioItem.quantity),
-          startUsage: priceCalculator.startUsage,
-          endUsage: priceCalculator.endUsage,
-          standardJobId: "",
-          frequency: addPortFolioItem.frequency.value,
-          additional: "",
           spareParts: ["EMPTY"],
           labours: ["EMPTY"],
           miscellaneous: ["EMPTY"],
-          taskType: [addPortFolioItem.taskType.value],
+          taskType: ((addPortFolioItem.taskType === "") || (addPortFolioItem.taskType === null) ||
+            (addPortFolioItem.taskType === undefined)) ? [addPortFolioItem.taskType?.value] : ["EMPTY"],
           solutionCode: "",
-          usageIn: addPortFolioItem.usageIn.value,
-          recommendedValue: 0,
-          usage: "",
-          repairKitId: "",
-          templateDescription: addPortFolioItem.description.value,
-          partListId: "",
-          serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
-          repairOption: addPortFolioItem.repairOption.value,
-          priceMethod: "EMPTY",
-          listPrice: parseInt(priceCalculator.listPrice),
-          priceEscalation: "",
-          calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-          flatPrice: parseInt(priceCalculator.flatPrice),
-          discountType: "",
-          year: priceCalculator.priceYear.value,
+          usageIn: ((addPortFolioItem.usageIn === "") || (addPortFolioItem.usageIn === null) ||
+            (addPortFolioItem.usageIn === undefined)) ? "EMPTY" : ((typeof addPortFolioItem.usageIn === "object") ? addPortFolioItem.usageIn.value : addPortFolioItem.usageIn),
+          usage: ((addPortFolioItem.usageType === "") || (addPortFolioItem.usageType === null) ||
+            (addPortFolioItem.usageType === undefined)) ? "EMPTY" : ((typeof addPortFolioItem.usageType === "object") ? addPortFolioItem.usageType.value : addPortFolioItem.usageType),
+          year: priceCalculator?.priceYear.value,
           avgUsage: 0,
-          unit: addPortFolioItem.unit.value,
-          sparePartsPrice: 0,
-          sparePartsPriceBreakDownPercentage: 0,
-          servicePrice: 0,
-          servicePriceBreakDownPercentage: 0,
-          miscPrice: 0,
-          miscPriceBreakDownPercentage: 0,
-          totalPrice: 0,
+          // customItemPrices: ((itemPriceData.customItemPriceDataId === 0) || (itemPriceData.customItemPriceDataId === null) ||
+          //   (itemPriceData.customItemPriceDataId === undefined)) ? [] : [
+          //   {
+          //     customItemPriceDataId: itemPriceData.customItemPriceDataId
+          //   }
+          // ],
+          customItemPrices: []
         },
-      };
+      }
 
       const res = await customItemCreation(reqObj);
       setCurrentItemId(res.data.itemId);
@@ -2884,11 +3168,36 @@ export function CreateCustomPortfolio(props) {
           progress: undefined,
         });
 
-        const itemPriceRes = await customPortfolioItemPriceRkId({
-          standardJobId: res.data.customItemBodyModel.standardJobId,
-          repairKitId: res.data.customItemBodyModel.repairKitId,
-          itemId: res.data.customItemId,
-        });
+        var itemPriceRes = "";
+        if (!(((res.data.customItemBodyModel.standardJobId === "") || (res.data.customItemBodyModel.standardJobId === null) || (res.data.customItemBodyModel.standardJobId === undefined)) &&
+          ((res.data.customItemBodyModel.repairKitId === "") || (res.data.customItemBodyModel.repairKitId === null) || (res.data.customItemBodyModel.repairKitId === undefined)))) {
+
+          // Update ItemPrice RkId
+          if (((res.data.customItemBodyModel.standardJobId === "" == "") ||
+            (res.data.customItemBodyModel.standardJobId === "" == null)) &&
+            ((res.data.customItemBodyModel.repairKitId != "") ||
+              (res.data.customItemBodyModel.repairKitId != null))) {
+            itemPriceRes = await customPortfolioItemPriceRkId({
+              standardJobId: res.data.customItemBodyModel.standardJobId,
+              repairKitId: res.data.customItemBodyModel.repairKitId,
+              itemId: res.data.customItemId,
+            });
+          }
+
+          // Update Item Price SjId
+          if (((res.data.customItemBodyModel.repairKitId == "") ||
+            (res.data.customItemBodyModel.repairKitId == null)) &&
+            ((res.data.customItemBodyModel.standardJobId === "" != "") ||
+              (res.data.customItemBodyModel.standardJobId === "" != null))) {
+            itemPriceRes = await customPortfolioItemPriceSJID({
+              standardJobId: res.data.customItemBodyModel.standardJobId,
+              repairKitId: res.data.customItemBodyModel.repairKitId,
+              itemId: res.data.customItemId,
+            })
+          }
+
+        }
+
         const {
           priceMethod,
           listPrice,
@@ -2902,7 +3211,7 @@ export function CreateCustomPortfolio(props) {
           usage,
           avgUsage,
           frequency,
-        } = itemPriceRes.itemBodyModel;
+        } = itemPriceRes?.itemBodyModel;
 
         setPriceCalculator({
           ...priceCalculator,
@@ -3395,25 +3704,87 @@ export function CreateCustomPortfolio(props) {
         if ((editAbleItemPriceData?.customItemPriceDataId != "") ||
           (editAbleItemPriceData?.customItemPriceDataId != undefined)) {
 
-          const priceUpdateData = {
+          //Previous item price update request obj 
+          // const priceUpdateData = {
+          //   customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId,
+          //   quantity: 0,
+          //   standardJobId: addPortFolioItem.templateId,
+          //   repairKitId: addPortFolioItem.repairOption,
+          //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+          //   repairOption: editAbleItemPriceData.repairOption,
+          //   additional: editAbleItemPriceData.additional,
+          //   partListId: editAbleItemPriceData.partListId,
+          //   serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
+          //   numberOfEvents: 0,
+          //   priceMethod: editAbleItemPriceData.priceMethod,
+          //   priceType: editAbleItemPriceData.priceType,
+          //   listPrice: editAbleItemPriceData.listPrice,
+          //   priceEscalation: editAbleItemPriceData.priceEscalation,
+          //   calculatedPrice: 0,
+          //   flatPrice: 0,
+          //   year: addPortFolioItem?.year?.value,
+          //   noOfYear: addPortFolioItem?.noOfYear,
+          //   sparePartsPrice: 0,
+          //   sparePartsPriceBreakDownPercentage: 0,
+          //   servicePrice: 0,
+          //   labourPrice: 0,
+          //   labourPriceBreakDownPercentage: 0,
+          //   miscPrice: 0,
+          //   miscPriceBreakDownPercentage: 0,
+          //   totalPrice: 0,
+          //   netService: 0,
+          //   additionalPriceType: editAbleItemPriceData.additionalPriceType,
+          //   additionalPriceValue: editAbleItemPriceData.additionalPriceValue,
+          //   discountType: editAbleItemPriceData.discountType,
+          //   discountValue: editAbleItemPriceData.discountValue,
+          //   recommendedValue: addPortFolioItem?.recommendedValue,
+          //   startUsage: addPortFolioItem?.startUsage,
+          //   endUsage: addPortFolioItem?.endUsage,
+          //   sparePartsEscalation: 0,
+          //   labourEscalation: 0,
+          //   miscEscalation: 0,
+          //   serviceEscalation: 0,
+          //   withBundleService: bundleServiceNeed,
+          //   customPortfolio: ((portfolioId == 0) ||
+          //     (portfolioId == null) ||
+          //     (portfolioId == undefined) ||
+          //     (portfolioId == "")) ? null : {
+          //     portfolioId: portfolioId
+          //   },
+          //   tenantId: loginTenantId,
+          //   partsRequired: true,
+          //   labourRequired: true,
+          //   serviceRequired: false,
+          //   miscRequired: true,
+          //   inclusionExclusion: true
+          // }
+
+          // current item price request Obj
+          let priceUpdateData = {
             customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId,
-            quantity: 0,
+            quantity: 1,
             standardJobId: addPortFolioItem.templateId,
             repairKitId: addPortFolioItem.repairOption,
-            templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+            templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+              (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateDescription?.value,
             repairOption: editAbleItemPriceData.repairOption,
             additional: editAbleItemPriceData.additional,
             partListId: editAbleItemPriceData.partListId,
             serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
             numberOfEvents: 0,
-            priceMethod: editAbleItemPriceData.priceMethod,
-            priceType: editAbleItemPriceData.priceType,
+            frequency: ((addPortFolioItem.frequency === "") || (addPortFolioItem.frequency === null) ||
+              (addPortFolioItem.frequency === "EMPTY") || (addPortFolioItem.frequency === undefined)) ? "CYCLIC" : addPortFolioItem.frequency?.value,
+            priceMethod: ((editAbleItemPriceData.priceMethod === "") || ((editAbleItemPriceData.priceMethod === null) ||
+              (editAbleItemPriceData.priceMethod === "EMPTY") || (editAbleItemPriceData.priceMethod === undefined))) ? "LIST_PRICE" : editAbleItemPriceData.priceMethod,
+            priceType: ((editAbleItemPriceData.priceType === "") || ((editAbleItemPriceData.priceType === null) ||
+              (editAbleItemPriceData.priceType === "EMPTY") || (editAbleItemPriceData.priceType === undefined))) ? "EVENT_BASED" : editAbleItemPriceData.priceType,
             listPrice: editAbleItemPriceData.listPrice,
             priceEscalation: editAbleItemPriceData.priceEscalation,
             calculatedPrice: 0,
-            flatPrice: 0,
+            flatPrice: ((editAbleItemPriceData.flatPrice === "") || (editAbleItemPriceData.flatPrice === null) ||
+              (editAbleItemPriceData.flatPrice === undefined)) ? 0 : editAbleItemPriceData.flatPrice,
             year: addPortFolioItem?.year?.value,
-            noOfYear: addPortFolioItem?.noOfYear,
+            noOfYear: parseInt(addPortFolioItem?.noOfYear),
             sparePartsPrice: 0,
             sparePartsPriceBreakDownPercentage: 0,
             servicePrice: 0,
@@ -3423,22 +3794,30 @@ export function CreateCustomPortfolio(props) {
             miscPriceBreakDownPercentage: 0,
             totalPrice: 0,
             netService: 0,
-            additionalPriceType: editAbleItemPriceData.additionalPriceType,
+            additionalPriceType: ((editAbleItemPriceData.additionalPriceType === null) || (editAbleItemPriceData.additionalPriceType === "") ||
+              (editAbleItemPriceData.additionalPriceType === undefined) || (editAbleItemPriceData.additionalPriceType === "EMPTY")) ? "ABSOLUTE" : editAbleItemPriceData.additionalPriceType,
             additionalPriceValue: editAbleItemPriceData.additionalPriceValue,
-            discountType: editAbleItemPriceData.discountType,
+            discountType: ((editAbleItemPriceData.discountType === "") || (editAbleItemPriceData.discountType === null) ||
+              (editAbleItemPriceData.discountType === undefined) || (editAbleItemPriceData.discountType === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : editAbleItemPriceData.discountType,
             discountValue: editAbleItemPriceData.discountValue,
-            recommendedValue: addPortFolioItem?.recommendedValue,
-            startUsage: addPortFolioItem?.startUsage,
-            endUsage: addPortFolioItem?.endUsage,
+            recommendedValue: parseInt(addPortFolioItem?.recommendedValue),
+            startUsage: parseInt(addPortFolioItem?.startUsage),
+            endUsage: parseInt(addPortFolioItem?.endUsage),
             sparePartsEscalation: 0,
             labourEscalation: 0,
             miscEscalation: 0,
             serviceEscalation: 0,
-            withBundleService: bundleServiceNeed,
-            customPortfolio: ((portfolioId == 0) ||
-              (portfolioId == null) ||
-              (portfolioId == undefined) ||
-              (portfolioId == "")) ? null : {
+            withBundleService: bundleServiceNeed ? false : true,
+            sparePartsNOE: 0,
+            labourNOE: 0,
+            miscNOE: 0,
+            recommendedUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+              (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "MONTH" :
+              addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+            usageUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+              (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "YEAR" : addPortFolioItem?.unit?.value,
+            customPortfolio: ((portfolioId == "") || (portfolioId == undefined) ||
+              (portfolioId == null) || (portfolioId == 0)) ? null : {
               portfolioId: portfolioId
             },
             tenantId: loginTenantId,
@@ -3446,7 +3825,7 @@ export function CreateCustomPortfolio(props) {
             labourRequired: true,
             serviceRequired: false,
             miscRequired: true,
-            inclusionExclusion: true
+            inclusionExclusion: false
           }
 
           const updatePriceId = await updateCustomPriceData(
@@ -3552,25 +3931,87 @@ export function CreateCustomPortfolio(props) {
         if ((editAbleItemPriceData?.customItemPriceDataId != "") ||
           (editAbleItemPriceData?.customItemPriceDataId != undefined)) {
 
-          const priceUpdateData = {
+          // Previous item price update request Obj 
+          // const priceUpdateData = {
+          //   customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId,
+          //   quantity: 0,
+          //   standardJobId: addPortFolioItem.templateId,
+          //   repairKitId: addPortFolioItem.repairOption,
+          //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+          //   repairOption: editAbleItemPriceData.repairOption,
+          //   additional: editAbleItemPriceData.additional,
+          //   partListId: editAbleItemPriceData.partListId,
+          //   serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
+          //   numberOfEvents: 0,
+          //   priceMethod: editAbleItemPriceData.priceMethod,
+          //   priceType: editAbleItemPriceData.priceType,
+          //   listPrice: editAbleItemPriceData.listPrice,
+          //   priceEscalation: editAbleItemPriceData.priceEscalation,
+          //   calculatedPrice: 0,
+          //   flatPrice: 0,
+          //   year: addPortFolioItem?.year?.value,
+          //   noOfYear: addPortFolioItem?.noOfYear,
+          //   sparePartsPrice: 0,
+          //   sparePartsPriceBreakDownPercentage: 0,
+          //   servicePrice: 0,
+          //   labourPrice: 0,
+          //   labourPriceBreakDownPercentage: 0,
+          //   miscPrice: 0,
+          //   miscPriceBreakDownPercentage: 0,
+          //   totalPrice: 0,
+          //   netService: 0,
+          //   additionalPriceType: editAbleItemPriceData.additionalPriceType,
+          //   additionalPriceValue: editAbleItemPriceData.additionalPriceValue,
+          //   discountType: editAbleItemPriceData.discountType,
+          //   discountValue: editAbleItemPriceData.discountValue,
+          //   recommendedValue: addPortFolioItem?.recommendedValue,
+          //   startUsage: addPortFolioItem?.startUsage,
+          //   endUsage: addPortFolioItem?.endUsage,
+          //   sparePartsEscalation: 0,
+          //   labourEscalation: 0,
+          //   miscEscalation: 0,
+          //   serviceEscalation: 0,
+          //   withBundleService: bundleServiceNeed,
+          //   customPortfolio: ((portfolioId == 0) ||
+          //     (portfolioId == null) ||
+          //     (portfolioId == undefined) ||
+          //     (portfolioId == "")) ? null : {
+          //     portfolioId: portfolioId
+          //   },
+          //   tenantId: loginTenantId,
+          //   partsRequired: true,
+          //   labourRequired: true,
+          //   serviceRequired: false,
+          //   miscRequired: true,
+          //   inclusionExclusion: true
+          // }
+
+          // current item Price update request obj 
+          let priceUpdateData = {
             customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId,
-            quantity: 0,
+            quantity: 1,
             standardJobId: addPortFolioItem.templateId,
             repairKitId: addPortFolioItem.repairOption,
-            templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+            templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+              (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateDescription?.value,
             repairOption: editAbleItemPriceData.repairOption,
             additional: editAbleItemPriceData.additional,
             partListId: editAbleItemPriceData.partListId,
             serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
             numberOfEvents: 0,
-            priceMethod: editAbleItemPriceData.priceMethod,
-            priceType: editAbleItemPriceData.priceType,
+            frequency: ((addPortFolioItem.frequency === "") || (addPortFolioItem.frequency === null) ||
+              (addPortFolioItem.frequency === "EMPTY") || (addPortFolioItem.frequency === undefined)) ? "CYCLIC" : addPortFolioItem.frequency?.value,
+            priceMethod: ((editAbleItemPriceData.priceMethod === "") || ((editAbleItemPriceData.priceMethod === null) ||
+              (editAbleItemPriceData.priceMethod === "EMPTY") || (editAbleItemPriceData.priceMethod === undefined))) ? "LIST_PRICE" : editAbleItemPriceData.priceMethod,
+            priceType: ((editAbleItemPriceData.priceType === "") || ((editAbleItemPriceData.priceType === null) ||
+              (editAbleItemPriceData.priceType === "EMPTY") || (editAbleItemPriceData.priceType === undefined))) ? "EVENT_BASED" : editAbleItemPriceData.priceType,
             listPrice: editAbleItemPriceData.listPrice,
             priceEscalation: editAbleItemPriceData.priceEscalation,
             calculatedPrice: 0,
-            flatPrice: 0,
+            flatPrice: ((editAbleItemPriceData.flatPrice === "") || (editAbleItemPriceData.flatPrice === null) ||
+              (editAbleItemPriceData.flatPrice === undefined)) ? 0 : editAbleItemPriceData.flatPrice,
             year: addPortFolioItem?.year?.value,
-            noOfYear: addPortFolioItem?.noOfYear,
+            noOfYear: parseInt(addPortFolioItem?.noOfYear),
             sparePartsPrice: 0,
             sparePartsPriceBreakDownPercentage: 0,
             servicePrice: 0,
@@ -3580,22 +4021,30 @@ export function CreateCustomPortfolio(props) {
             miscPriceBreakDownPercentage: 0,
             totalPrice: 0,
             netService: 0,
-            additionalPriceType: editAbleItemPriceData.additionalPriceType,
+            additionalPriceType: ((editAbleItemPriceData.additionalPriceType === null) || (editAbleItemPriceData.additionalPriceType === "") ||
+              (editAbleItemPriceData.additionalPriceType === undefined) || (editAbleItemPriceData.additionalPriceType === "EMPTY")) ? "ABSOLUTE" : editAbleItemPriceData.additionalPriceType,
             additionalPriceValue: editAbleItemPriceData.additionalPriceValue,
-            discountType: editAbleItemPriceData.discountType,
+            discountType: ((editAbleItemPriceData.discountType === "") || (editAbleItemPriceData.discountType === null) ||
+              (editAbleItemPriceData.discountType === undefined) || (editAbleItemPriceData.discountType === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : editAbleItemPriceData.discountType,
             discountValue: editAbleItemPriceData.discountValue,
-            recommendedValue: addPortFolioItem?.recommendedValue,
-            startUsage: addPortFolioItem?.startUsage,
-            endUsage: addPortFolioItem?.endUsage,
+            recommendedValue: parseInt(addPortFolioItem?.recommendedValue),
+            startUsage: parseInt(addPortFolioItem?.startUsage),
+            endUsage: parseInt(addPortFolioItem?.endUsage),
             sparePartsEscalation: 0,
             labourEscalation: 0,
             miscEscalation: 0,
             serviceEscalation: 0,
-            withBundleService: bundleServiceNeed,
-            customPortfolio: ((portfolioId == 0) ||
-              (portfolioId == null) ||
-              (portfolioId == undefined) ||
-              (portfolioId == "")) ? null : {
+            withBundleService: bundleServiceNeed ? false : true,
+            sparePartsNOE: 0,
+            labourNOE: 0,
+            miscNOE: 0,
+            recommendedUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+              (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "MONTH" :
+              addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+            usageUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+              (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "YEAR" : addPortFolioItem?.unit?.value,
+            customPortfolio: ((portfolioId == "") || (portfolioId == undefined) ||
+              (portfolioId == null) || (portfolioId == 0)) ? null : {
               portfolioId: portfolioId
             },
             tenantId: loginTenantId,
@@ -3603,9 +4052,8 @@ export function CreateCustomPortfolio(props) {
             labourRequired: true,
             serviceRequired: false,
             miscRequired: true,
-            inclusionExclusion: true
+            inclusionExclusion: false
           }
-
           const updatePriceId = await updateCustomPriceData(
             editAbleItemPriceData.customItemPriceDataId,
             priceUpdateData
@@ -3930,6 +4378,7 @@ export function CreateCustomPortfolio(props) {
 
       const getCustomItemData = await getCustomItemDataById(row.itemId);
 
+      setCurrentItemId(row.itemId)
       if (getCustomItemData.status === 200) {
         const selectedItemData = getCustomItemData.data;
         if (selectedItemData.customItemBodyModel.customItemPrices.length > 0) {
@@ -3940,34 +4389,23 @@ export function CreateCustomPortfolio(props) {
             setPriceCalculator({
               ...priceCalculator,
               calculatedPrice: resPrice.data.calculatedPrice,
-              priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-                resPrice.data.priceMethod != "" ||
-                resPrice.data.priceMethod != null) ? {
-                label: resPrice.data.priceMethod,
-                value: resPrice.data.priceMethod
-              } : "",
-              priceType: (resPrice.data.priceType != "EMPTY" ||
-                resPrice.data.priceType != "" ||
-                resPrice.data.priceType != null) ? {
-                label: resPrice.data.priceType,
-                value: resPrice.data.priceType
-              } : "",
-              priceAdditionalSelect: {
-                label: (resPrice.data.additionalPriceType != "" ||
-                  resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE",
-                value: (resPrice.data.additionalPriceType != "" ||
-                  resPrice.data.additionalPriceType != null) ? resPrice.data.additionalPriceType : "ABSOLUTE"
-              },
+              priceMethod: ((resPrice.data.priceMethod === "") ||
+                (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+                priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+              priceType: ((resPrice.data.priceType === "") ||
+                (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+                priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+              priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+                (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+                additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
               priceAdditionalInput: resPrice.data.additionalPriceValue,
-              discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-                resPrice.data.discountType != "" ||
-                resPrice.data.discountType != null) ? {
-                label: resPrice.data.discountType,
-                value: resPrice.data.discountType
-              } : "",
+              discountTypeSelect: ((resPrice.data.discountType === "") ||
+                (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+                discountTypeOptions.find(o => o.value === resPrice.data.discountType),
               discountTypeInput: resPrice.data.discountValue,
-
-              year: { label: resPrice.data.year, value: resPrice.data.year, },
+              year: ((resPrice.data.year === "") ||
+                (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+                { label: resPrice.data.year, value: resPrice.data.year },
 
               noOfYear: resPrice.data.noOfYear,
               startUsage: resPrice.data.startUsage,
@@ -8089,37 +8527,39 @@ export function CreateCustomPortfolio(props) {
   }
 
   const getPortfolioDetails = (portfolioId) => {
-    // getAllUsers()
-    //     .then((res) => {
-    //         console.log("Dashboard > getAllUsers > res=", res);
-    //         setUsers(res);
-    //         setIsLoading(false);
-    //     })
-    //     .catch((err) => {
-    //         console.log("axios err=", err);
-    //         setUsers([]);
-    //         setIsLoading(false);
-    //     });
+    try {
+      if ((portfolioId === "") || (portfolioId === null) || (portfolioId === 0) || (portfolioId === undefined)) {
+        throw "Something wend wrong, Solution not exists."
+      }
 
-    if (portfolioId != null) {
       getPortfolio(portfolioId)
         .then((res) => {
-          const portfolioDetails = res;
-          console.log("portfolioDetails", portfolioDetails);
-          if (portfolioDetails.portfolioId != null) {
-            setGeneralComponentData({
-              ...generalComponentData,
-              name: portfolioDetails.name,
-              description: portfolioDetails.description,
-              externalReference: portfolioDetails.externalReference,
-              customerSegment: portfolioDetails.customerSegment,
-              // serviceProgramDescription: "",
-            });
+          if (res.status === 200) {
+            const portfolioDetails = res.data;
+            console.log("portfolioDetails", portfolioDetails);
+            if (portfolioDetails.portfolioId != null) {
+              setGeneralComponentData({
+                ...generalComponentData,
+                name: portfolioDetails.name,
+                description: portfolioDetails.description,
+                externalReference: portfolioDetails.externalReference,
+                customerSegment: portfolioDetails.customerSegment,
+                // serviceProgramDescription: "",
+              });
+            }
           }
         })
         .catch((err) => {
           console.log("error:", err);
         });
+
+
+      if (portfolioId != null) {
+
+      }
+
+    } catch (error) {
+
     }
   };
 
@@ -8659,6 +9099,46 @@ export function CreateCustomPortfolio(props) {
       .catch((err) => {
         alert(err);
       });
+
+    // fetch Unit Dropdown API
+    getPortfolioAndSolutionCommonConfig("unit")
+      .then((res) => {
+        if (res.status === 200) {
+          const options = []
+          res.data.map((d) => {
+            if ((d.key != "EMPTY") && (d.key != "MONTH")) {
+              options.push({
+                value: d.key,
+                label: d.value,
+              })
+            }
+          });
+          setUnitOptionKeyValue(options);
+        }
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    // Frequency Dropdown 
+    getPortfolioAndSolutionCommonConfig("frequency")
+      .then((res) => {
+        if (res.status === 200) {
+          const options = []
+          res.data.map((d) => {
+            if (d.key != "EMPTY") {
+              options.push({
+                value: d.key,
+                label: d.value,
+              })
+            }
+          });
+          setFrequencyOptionKeyValue(options);
+        }
+      })
+      .catch((err) => {
+        alert(err);
+      });
   };
 
   const dispatch = useDispatch();
@@ -8674,43 +9154,59 @@ export function CreateCustomPortfolio(props) {
   }, [dispatch]);
 
   useEffect(() => {
-
-    if (
-      (state && state.type == "fetch") &&
-      (portfolioPriceDataIdForExiting !== ""
-        // ||
-        //     portfolioPriceDataIdForExiting == null ||
-        //     portfolioPriceDataIdForExiting == "string" ||
-        //     portfolioPriceDataIdForExiting == undefined
-      )
-    ) {
-      // if  {
+    if (state && !((portfolioPriceDataIdForExiting === "") || (portfolioPriceDataIdForExiting === null) ||
+      (portfolioPriceDataIdForExiting === "string") || (portfolioPriceDataIdForExiting === undefined))) {
       fetchPortfolioPriceDataById(portfolioPriceDataIdForExiting);
-      // }
-    } else if (
-      (state && state.type == "new") &&
-      (portfolioPriceDataIdForExiting !== ""
-        // ||
-        //     portfolioPriceDataIdForExiting !== null ||
-        //     portfolioPriceDataIdForExiting !== "string" ||
-        //     portfolioPriceDataIdForExiting !== undefined
-      )
-    ) {
-      // if  {
-      fetchPortfolioPriceDataById(portfolioPriceDataIdForExiting);
-      // }
     }
-    // 
+    // if (
+    //   (state && state.type == "fetch") &&
+    //   (portfolioPriceDataIdForExiting !== ""
+    //     // ||
+    //     //     portfolioPriceDataIdForExiting == null ||
+    //     //     portfolioPriceDataIdForExiting == "string" ||
+    //     //     portfolioPriceDataIdForExiting == undefined
+    //   )
+    // ) {
+    //   // if  {
+    //   fetchPortfolioPriceDataById(portfolioPriceDataIdForExiting);
+    //   // }
+    // } else if (
+    //   (state && state.type == "new") &&
+    //   (portfolioPriceDataIdForExiting !== ""
+    //     // ||
+    //     //     portfolioPriceDataIdForExiting !== null ||
+    //     //     portfolioPriceDataIdForExiting !== "string" ||
+    //     //     portfolioPriceDataIdForExiting !== undefined
+    //   )
+    // ) {
+    //   // if  {
+    //   fetchPortfolioPriceDataById(portfolioPriceDataIdForExiting);
+    //   // }
+    // }
+    // // 
   }, [value]);
 
   const fetchPortfolioPriceDataById = async (id) => {
-
-    // alert(id)
-    const portfolioPriceDataFetch = await getPortfolioPriceById(id);
-
-    setPricePriceData(portfolioPriceDataFetch.data.price)
-    setPriceCalculatedPrice(portfolioPriceDataFetch.data.calculatedPrice);
-
+    try {
+      if ((id === "") || (id === null) || (id === undefined) || (id === 0)) {
+        throw "Something went wrong."
+      }
+      const portfolioPriceDataFetch = await getPortfolioPriceById(id);
+      if (portfolioPriceDataFetch.status === 200) {
+        setPricePriceData(portfolioPriceDataFetch.data.price)
+        setPriceCalculatedPrice(portfolioPriceDataFetch.data.calculatedPrice);
+      }
+    } catch (error) {
+      toast(`😐 ` + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   useEffect(() => {
@@ -9512,15 +10008,36 @@ export function CreateCustomPortfolio(props) {
               var customItemArr = [];
               if (res.status === 200) {
                 var result = res.data;
-                // console.log("result is ----- ", result)
-                if (res.data.customItems.length > 0) {
-                  res.data.customItems.map((data, i) => {
-                    customItemArr.push({ customItemId: data.customItemId })
-                  });
+                console.log("result is ----- ", result)
 
+                if (res.data.itemRelations.length > 0) {
+                  res.data.itemRelations.map((itemData, i) => {
+                    customItemArr.push({ customItemId: itemData.portfolioItemId });
+
+                    if (itemData.bundles.length > 0) {
+                      itemData.bundles.map((bundleItem, j) => {
+                        customItemArr.push({ customItemId: bundleItem });
+                      })
+                    }
+
+                    if (itemData.services.length > 0) {
+                      itemData.services.map((serviceItem, k) => {
+                        customItemArr.push({ customItemId: serviceItem });
+                      })
+                    }
+
+                  })
                   setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemArr])
-
                 }
+
+                // if (res.data.customItems.length > 0) {
+                //   res.data.customItems.map((data, i) => {
+                //     customItemArr.push({ customItemId: data.customItemId })
+                //   });
+
+                //   setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemArr])
+
+                // }
 
                 if (customItemArr.length > 0) {
 
@@ -9681,8 +10198,10 @@ export function CreateCustomPortfolio(props) {
         for (let d = 0; d < data.serviceItems.length; d++) {
           expendedBundleServiceItems.push(data.serviceItems[d]);
         }
+        if (data.portfolioItem !== null) {
+          expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+        }
 
-        expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
       })
       myArr.push(...expandAblePortfolioItems);
       console.log("expandAblePortfolioItems ----------- ======= ", expandAblePortfolioItems, myArr);
@@ -10245,11 +10764,11 @@ export function CreateCustomPortfolio(props) {
 
   const selectedItemsToCustomBundleServiceItemCreation = async () => {
     try {
-      if (portfolioId === undefined || portfolioId == null) {
+      if ((portfolioId === undefined) || (portfolioId === null) || (portfolioId === "") || portfolioId === 0) {
         throw "Please Create Solution First";
       }
 
-      if (currentItemId == null || currentItemId == "") {
+      if ((currentItemId === null) || (currentItemId === "") || (currentItemId === undefined) || (currentItemId == 0)) {
         throw "Please Create Item First";
       }
 
@@ -10287,74 +10806,210 @@ export function CreateCustomPortfolio(props) {
             for (let j = 0; j < itemDetailsById.data.itemBodyModel.itemPrices.length; j++) {
 
               // =============== Search Item Price Using Price Id ============== //
-              var itemsPrice = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
-              const itemPriceRequestObj = {
-                customItemPriceDataId: 0,
-                quantity: parseInt(itemsPrice.quantity),
-                standardJobId: itemsPrice.standardJobId,
-                repairKitId: itemsPrice.repairKitId,
-                templateDescription: itemsPrice.templateDescription,
-                repairOption: itemsPrice.repairOption,
-                additional: itemsPrice.additional,
-                partListId: itemsPrice.partListId,
-                serviceEstimateId: itemsPrice.serviceEstimateId,
-                numberOfEvents: 0,
-                priceMethod: itemsPrice.priceMethod,
-                priceType: itemsPrice.priceType,
-                listPrice: itemsPrice.listPrice,
-                priceEscalation: itemsPrice.priceEscalation,
-                calculatedPrice: itemsPrice.calculatedPrice,
-                flatPrice: itemsPrice.flatPrice,
-                year: itemsPrice.year,
-                noOfYear: parseInt(itemsPrice.noOfYear),
-                sparePartsPrice: itemsPrice.sparePartsPrice,
-                sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                servicePrice: itemsPrice.totalPrice,
-                labourPrice: itemsPrice.labourPrice,
-                labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                miscPrice: itemsPrice.miscPrice,
-                miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                totalPrice: itemsPrice.totalPrice,
-                netService: itemsPrice.netService,
-                additionalPriceType: itemsPrice.additionalPriceType,
-                additionalPriceValue: itemsPrice.additionalPriceValue,
-                discountType: itemsPrice.discountType,
-                discountValue: itemsPrice.discountValue,
-                recommendedValue: itemsPrice.recommendedValue,
-                startUsage: itemsPrice.startUsage,
-                endUsage: itemsPrice.endUsage,
-                sparePartsEscalation: itemsPrice.sparePartsEscalation,
-                labourEscalation: itemsPrice.labourEscalation,
-                miscEscalation: itemsPrice.miscEscalation,
-                serviceEscalation: itemsPrice.serviceEscalation,
-                withBundleService: itemsPrice.withBundleService,
-                customPortfolio: ((portfolioId == 0) ||
-                  (portfolioId == null) ||
-                  (portfolioId == undefined) ||
-                  (portfolioId == "")) ? null : {
-                  portfolioId: portfolioId
-                },
-                // tenantId: itemsPrice.tenantId,
-                tenantId: loginTenantId,
-                partsRequired: itemsPrice.partsRequired,
-                labourRequired: itemsPrice.labourRequired,
-                miscRequired: itemsPrice.miscRequired,
-                serviceRequired: itemsPrice.serviceRequired,
-                inclusionExclusion: itemsPrice.inclusionExclusion
+              var itemsPriceReq = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
+
+              if (itemsPriceReq.status === 200) {
+                var itemsPrice = itemsPriceReq.data;
+                // previous Item price creation request Obj  
+                // const itemPriceRequestObj = {
+                //   customItemPriceDataId: 0,
+                //   quantity: parseInt(itemsPrice.quantity),
+                //   standardJobId: itemsPrice.standardJobId,
+                //   repairKitId: itemsPrice.repairKitId,
+                //   templateDescription: itemsPrice.templateDescription,
+                //   repairOption: itemsPrice.repairOption,
+                //   additional: itemsPrice.additional,
+                //   partListId: itemsPrice.partListId,
+                //   serviceEstimateId: itemsPrice.serviceEstimateId,
+                //   numberOfEvents: 0,
+                //   priceMethod: itemsPrice.priceMethod,
+                //   priceType: itemsPrice.priceType,
+                //   listPrice: itemsPrice.listPrice,
+                //   priceEscalation: itemsPrice.priceEscalation,
+                //   calculatedPrice: itemsPrice.calculatedPrice,
+                //   flatPrice: itemsPrice.flatPrice,
+                //   year: itemsPrice.year,
+                //   noOfYear: parseInt(itemsPrice.noOfYear),
+                //   sparePartsPrice: itemsPrice.sparePartsPrice,
+                //   sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                //   servicePrice: itemsPrice.totalPrice,
+                //   labourPrice: itemsPrice.labourPrice,
+                //   labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                //   miscPrice: itemsPrice.miscPrice,
+                //   miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                //   totalPrice: itemsPrice.totalPrice,
+                //   netService: itemsPrice.netService,
+                //   additionalPriceType: itemsPrice.additionalPriceType,
+                //   additionalPriceValue: itemsPrice.additionalPriceValue,
+                //   discountType: itemsPrice.discountType,
+                //   discountValue: itemsPrice.discountValue,
+                //   recommendedValue: itemsPrice.recommendedValue,
+                //   startUsage: itemsPrice.startUsage,
+                //   endUsage: itemsPrice.endUsage,
+                //   sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                //   labourEscalation: itemsPrice.labourEscalation,
+                //   miscEscalation: itemsPrice.miscEscalation,
+                //   serviceEscalation: itemsPrice.serviceEscalation,
+                //   withBundleService: itemsPrice.withBundleService,
+                //   customPortfolio: ((portfolioId == 0) ||
+                //     (portfolioId == null) ||
+                //     (portfolioId == undefined) ||
+                //     (portfolioId == "")) ? null : {
+                //     portfolioId: portfolioId
+                //   },
+                //   // tenantId: itemsPrice.tenantId,
+                //   tenantId: loginTenantId,
+                //   partsRequired: itemsPrice.partsRequired,
+                //   labourRequired: itemsPrice.labourRequired,
+                //   miscRequired: itemsPrice.miscRequired,
+                //   serviceRequired: itemsPrice.serviceRequired,
+                //   inclusionExclusion: itemsPrice.inclusionExclusion
+                // }
+
+                // current Item price creation request Obj
+                let itemPriceRequestObj = {
+                  customItemPriceDataId: 0,
+                  quantity: parseInt(itemsPrice.quantity),
+                  standardJobId: itemsPrice.standardJobId,
+                  repairKitId: itemsPrice.repairKitId,
+                  templateDescription: itemsPrice.templateDescription,
+                  repairOption: itemsPrice.repairOption,
+                  additional: itemsPrice.additional,
+                  partListId: itemsPrice.partListId,
+                  serviceEstimateId: itemsPrice.serviceEstimateId,
+                  numberOfEvents: 0,
+                  frequency: ((itemsPrice.frequency === "") || (itemsPrice.frequency === null) ||
+                    (itemsPrice.frequency === undefined) || (itemsPrice.frequency === "EMPTY")) ? "CYCLIC" : itemsPrice.frequency,
+                  priceMethod: ((itemsPrice.priceMethod === "") || (itemsPrice.priceMethod === null) ||
+                    (itemsPrice.priceMethod === undefined) || (itemsPrice.priceMethod === "EMPTY")) ? "LIST_PRICE" : itemsPrice.priceMethod,
+                  priceType: ((itemsPrice.priceType === "") || (itemsPrice.priceType === null) ||
+                    (itemsPrice.priceType === undefined) || (itemsPrice.priceType === "EMPTY")) ? "EVENT_BASED" : itemsPrice.priceType,
+                  listPrice: itemsPrice.listPrice,
+                  priceEscalation: itemsPrice.priceEscalation,
+                  calculatedPrice: itemsPrice.calculatedPrice,
+                  flatPrice: itemsPrice.flatPrice,
+                  year: itemsPrice.year,
+                  noOfYear: parseInt(itemsPrice.noOfYear),
+                  sparePartsPrice: itemsPrice.sparePartsPrice,
+                  sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                  servicePrice: itemsPrice.servicePrice,
+                  labourPrice: itemsPrice.labourPrice,
+                  labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  miscPrice: itemsPrice.miscPrice,
+                  miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                  totalPrice: itemsPrice.totalPrice,
+                  netService: itemsPrice.netService,
+                  additionalPriceType: ((itemsPrice.additionalPriceType === "") || (itemsPrice.additionalPriceType === null) ||
+                    (itemsPrice.additionalPriceType === "EMPTY") || (itemsPrice.additionalPriceType === undefined)) ? "ABSOLUTE" : itemsPrice.additionalPriceType,
+                  additionalPriceValue: itemsPrice.additionalPriceValue,
+                  discountType: ((itemsPrice.discountType === "") || (itemsPrice.discountType === null) ||
+                    (itemsPrice.discountType === undefined) || (itemsPrice.discountType === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : itemsPrice.discountType,
+                  discountValue: itemsPrice.discountValue,
+                  recommendedValue: itemsPrice.recommendedValue,
+                  startUsage: itemsPrice.startUsage,
+                  endUsage: itemsPrice.endUsage,
+                  sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                  labourEscalation: itemsPrice.labourEscalation,
+                  miscEscalation: itemsPrice.miscEscalation,
+                  serviceEscalation: itemsPrice.serviceEscalation,
+                  withBundleService: itemsPrice.withBundleService,
+                  sparePartsNOE: itemsPrice.sparePartsNOE,
+                  labourNOE: itemsPrice.labourNOE,
+                  miscNOE: itemsPrice.miscNOE,
+                  recommendedUnit: ((itemsPrice.recommendedUnit === "") || (itemsPrice.recommendedUnit === null) ||
+                    (itemsPrice.recommendedUnit === undefined) || (itemsPrice.recommendedUnit === "EMPTY")) ? "MONTH" : itemsPrice.recommendedUnit,
+                  usageUnit: ((itemsPrice.usageUnit === "") || (itemsPrice.usageUnit === null) ||
+                    (itemsPrice.usageUnit === undefined) || (itemsPrice.usageUnit === "EMPTY")) ? "YEAR" : itemsPrice.usageUnit,
+                  customPortfolio: ((portfolioId === 0) || (portfolioId === null) ||
+                    (portfolioId === undefined) || (portfolioId === "")) ? null : {
+                    portfolioId: portfolioId
+                  },
+                  tenantId: loginTenantId,
+                  partsRequired: itemsPrice.partsRequired,
+                  labourRequired: itemsPrice.labourRequired,
+                  serviceRequired: itemsPrice.miscRequired,
+                  miscRequired: itemsPrice.serviceRequired,
+                  inclusionExclusion: itemsPrice.inclusionExclusion
+                }
+
+                const createPriceForCustomItem = await customPriceCreation(itemPriceRequestObj)
+                customItemsIdData.push(createPriceForCustomItem.data)
+                customPriceIdArr.push({
+                  customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+                })
+
+                customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+                repairKitIdIs = createPriceForCustomItem.data.repairKitId;
+                standardJobIdIs = createPriceForCustomItem.data.standardJobId;
               }
-
-              const createPriceForCustomItem = await customPriceCreation(itemPriceRequestObj)
-              customItemsIdData.push(createPriceForCustomItem.data)
-              customPriceIdArr.push({
-                customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
-              })
-
-              customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
-              repairKitIdIs = createPriceForCustomItem.data.repairKitId;
-              standardJobIdIs = createPriceForCustomItem.data.standardJobId;
             }
           }
 
+          // Previous working request obj for custom Item creation
+          // let createCutsomItemRequestObj = {
+          //   customItemId: 0,
+          //   itemName: itemDetailsById.data.itemName,
+          //   customItemHeaderModel: {
+          //     customItemHeaderId: 0,
+          //     itemHeaderDescription: itemDetailsById.data.itemHeaderModel.itemHeaderDescription,
+          //     bundleFlag: itemDetailsById.data.itemHeaderModel.bundleFlag,
+          //     withBundleService: itemDetailsById.data.itemHeaderModel.withBundleService,
+          //     portfolioItemId: currentItemId,
+          //     reference: itemDetailsById.data.itemHeaderModel.reference,
+          //     itemHeaderMake: itemDetailsById.data.itemHeaderModel.itemHeaderMake,
+          //     itemHeaderFamily: itemDetailsById.data.itemHeaderModel.itemHeaderFamily,
+          //     model: itemDetailsById.data.itemHeaderModel.model,
+          //     prefix: itemDetailsById.data.itemHeaderModel.prefix,
+          //     type: itemDetailsById.data.itemHeaderModel.type,
+          //     additional: itemDetailsById.data.itemHeaderModel.additional,
+          //     currency: itemDetailsById.data.itemHeaderModel.currency,
+          //     netPrice: itemDetailsById.data.itemHeaderModel.netPrice,
+          //     itemProductHierarchy: itemDetailsById.data.itemHeaderModel.itemProductHierarchy,
+          //     itemHeaderGeographic: itemDetailsById.data.itemHeaderModel.itemHeaderGeographic,
+          //     responseTime: itemDetailsById.data.itemHeaderModel.responseTime,
+          //     usage: itemDetailsById.data.itemHeaderModel.usage,
+          //     validFrom: itemDetailsById.data.itemHeaderModel.validFrom,
+          //     validTo: itemDetailsById.data.itemHeaderModel.validTo,
+          //     estimatedTime: itemDetailsById.data.itemHeaderModel.estimatedTime,
+          //     servicePrice: itemDetailsById.data.itemHeaderModel.servicePrice,
+          //     status: itemDetailsById.data.itemHeaderModel.status,
+          //     componentCode: itemDetailsById.data.itemHeaderModel.componentCode,
+          //     componentDescription: itemDetailsById.data.itemHeaderModel.componentDescription,
+          //     serialNumber: itemDetailsById.data.itemHeaderModel.serialNumber,
+          //     itemHeaderStrategy: itemDetailsById.data.itemHeaderModel.itemHeaderStrategy,
+          //     variant: itemDetailsById.data.itemHeaderModel.variant,
+          //     itemHeaderCustomerSegment: itemDetailsById.data.itemHeaderModel.itemHeaderCustomerSegment,
+          //     jobCode: itemDetailsById.data.itemHeaderModel.jobCode,
+          //     preparedBy: itemDetailsById.data.itemHeaderModel.preparedBy,
+          //     approvedBy: itemDetailsById.data.itemHeaderModel.approvedBy,
+          //     preparedOn: itemDetailsById.data.itemHeaderModel.preparedOn,
+          //     revisedBy: itemDetailsById.data.itemHeaderModel.revisedBy,
+          //     revisedOn: itemDetailsById.data.itemHeaderModel.revisedOn,
+          //     salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
+          //     offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
+          //     serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
+          //     serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+          //   },
+          //   customItemBodyModel: {
+          //     customItemBodyId: 0,
+          //     itemBodyDescription: itemDetailsById.data.itemBodyModel.itemBodyDescription,
+          //     spareParts: itemDetailsById.data.itemBodyModel.spareParts,
+          //     labours: itemDetailsById.data.itemBodyModel.labours,
+          //     miscellaneous: itemDetailsById.data.itemBodyModel.miscellaneous,
+          //     taskType: itemDetailsById.data.itemBodyModel.taskType,
+          //     solutionCode: itemDetailsById.data.itemBodyModel.solutionCode,
+          //     usageIn: itemDetailsById.data.itemBodyModel.usageIn,
+          //     usage: itemDetailsById.data.itemBodyModel.usage,
+          //     year: itemDetailsById.data.itemBodyModel.year,
+          //     avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
+          //     unit: itemDetailsById.data.itemBodyModel.unit,
+          //     frequency: itemDetailsById.data.itemBodyModel.frequency,
+          //     customItemPrices: customPriceIdArr
+          //   }
+          // }
+
+
+          // new working request Obj for custom Item creation
           let createCutsomItemRequestObj = {
             customItemId: 0,
             itemName: itemDetailsById.data.itemName,
@@ -10397,7 +11052,7 @@ export function CreateCustomPortfolio(props) {
               salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
               offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
               serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
-              serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+              serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional,
             },
             customItemBodyModel: {
               customItemBodyId: 0,
@@ -10411,11 +11066,10 @@ export function CreateCustomPortfolio(props) {
               usage: itemDetailsById.data.itemBodyModel.usage,
               year: itemDetailsById.data.itemBodyModel.year,
               avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
-              unit: itemDetailsById.data.itemBodyModel.unit,
-              frequency: itemDetailsById.data.itemBodyModel.frequency,
               customItemPrices: customPriceIdArr
-            }
+            },
           }
+
           const _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
 
           // ============= create cutom Bundle/Service Item ============== //
@@ -10424,27 +11078,31 @@ export function CreateCustomPortfolio(props) {
             createdNewCustomItems.push({ customItemId: customItemCreationResult.data.customItemId })
             _selectedSolutionCustomItems.push({ customItemId: customItemCreationResult.data.customItemId })
             if (customPriceIdIs !== 0) {
-              const updatePriceForCreatedItem = {
-                itemId: customItemCreationResult.data.customItemId,
-                standardJobId: standardJobIdIs,
-                repairKitId: repairKitIdIs,
-                itemPriceDataId: customPriceIdIs
-              }
 
-              // Update ItemPrice RkId
-              if (((standardJobIdIs == "") ||
-                (standardJobIdIs == null)) &&
-                ((repairKitIdIs != "") ||
-                  (repairKitIdIs != null))) {
-                const updateRkIdPrice = await customPortfolioItemPriceRkId(updatePriceForCreatedItem)
-              }
+              if (!(((standardJobIdIs === "") || (standardJobIdIs === null)) &&
+                ((repairKitIdIs === "") || (repairKitIdIs === null)))) {
+                const updatePriceForCreatedItem = {
+                  itemId: customItemCreationResult.data.customItemId,
+                  standardJobId: standardJobIdIs,
+                  repairKitId: repairKitIdIs,
+                  itemPriceDataId: customPriceIdIs
+                }
 
-              // Update Item Price SjId
-              if (((repairKitIdIs == "") ||
-                (repairKitIdIs == null)) &&
-                ((standardJobIdIs != "") ||
-                  (standardJobIdIs != null))) {
-                const updateSjIdPrice = await customPortfolioItemPriceSJID(updatePriceForCreatedItem)
+                // Update ItemPrice RkId
+                if (((standardJobIdIs == "") ||
+                  (standardJobIdIs == null)) &&
+                  ((repairKitIdIs != "") ||
+                    (repairKitIdIs != null))) {
+                  const updateRkIdPrice = await customPortfolioItemPriceRkId(updatePriceForCreatedItem)
+                }
+
+                // Update Item Price SjId
+                if (((repairKitIdIs == "") ||
+                  (repairKitIdIs == null)) &&
+                  ((standardJobIdIs != "") ||
+                    (standardJobIdIs != null))) {
+                  const updateSjIdPrice = await customPortfolioItemPriceSJID(updatePriceForCreatedItem)
+                }
               }
             }
           }
@@ -10574,181 +11232,256 @@ export function CreateCustomPortfolio(props) {
 
               /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-              var itemsPrice = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
-              console.log("item price is before : ", itemsPrice)
+              var itemsPriceReq = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
+              console.log("item price is before : ", itemsPriceReq)
+              if (itemsPriceReq.status === 200) {
+                var itemsPrice = itemsPriceReq.data;
+                // let itemPriceObj = {
+                //     customItemPriceDataId: 0,
+                //     quantity: parseInt(itemsPrice.quantity),
+                //     startUsage: itemsPrice.startUsage,
+                //     endUsage: itemsPrice.endUsage,
+                //     standardJobId: itemsPrice.standardJobId,
+                //     repairKitId: itemsPrice.repairKitId,
+                //     templateDescription: itemsPrice.templateDescription,
+                //     repairOption: itemsPrice.repairOption,
+                //     frequency: itemsPrice.frequency,
+                //     additional: itemsPrice.additional,
+                //     recommendedValue: parseInt(itemsPrice.recommendedValue),
+                //     partListId: itemsPrice.partListId,
+                //     serviceEstimateId: itemsPrice.serviceEstimateId,
+                //     numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                //     priceMethod: itemsPrice.priceMethod,
+                //     priceType: itemsPrice.priceType,
+                //     listPrice: itemsPrice.listPrice,
+                //     priceEscalation: itemsPrice.priceEscalation,
+                //     calculatedPrice: itemsPrice.calculatedPrice,
+                //     flatPrice: itemsPrice.flatPrice,
+                //     discountType: itemsPrice.discountType,
+                //     year: itemsPrice.year,
+                //     noOfYear: itemsPrice.noOfYear,
+                //     sparePartsPrice: itemsPrice.sparePartsPrice,
+                //     sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                //     servicePrice: itemsPrice.servicePrice,
+                //     labourPrice: itemsPrice.labourPrice,
+                //     labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                //     miscPrice: itemsPrice.miscPrice,
+                //     miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                //     totalPrice: itemsPrice.totalPrice,
+                //     netService: itemsPrice.netService,
+                //     customPortfolio: {
+                //         portfolioId: portfolioId
+                //     },
+                //     tenantId: itemsPrice.tenantId,
+                //     partsRequired: itemsPrice.partsRequired,
+                //     labourRequired: itemsPrice.labourRequired,
+                //     serviceRequired: itemsPrice.serviceRequired,
+                //     miscRequired: itemsPrice.miscRequired
+                // }
 
-              // let itemPriceObj = {
-              //     customItemPriceDataId: 0,
-              //     quantity: parseInt(itemsPrice.quantity),
-              //     startUsage: itemsPrice.startUsage,
-              //     endUsage: itemsPrice.endUsage,
-              //     standardJobId: itemsPrice.standardJobId,
-              //     repairKitId: itemsPrice.repairKitId,
-              //     templateDescription: itemsPrice.templateDescription,
-              //     repairOption: itemsPrice.repairOption,
-              //     frequency: itemsPrice.frequency,
-              //     additional: itemsPrice.additional,
-              //     recommendedValue: parseInt(itemsPrice.recommendedValue),
-              //     partListId: itemsPrice.partListId,
-              //     serviceEstimateId: itemsPrice.serviceEstimateId,
-              //     numberOfEvents: parseInt(itemsPrice.numberOfEvents),
-              //     priceMethod: itemsPrice.priceMethod,
-              //     priceType: itemsPrice.priceType,
-              //     listPrice: itemsPrice.listPrice,
-              //     priceEscalation: itemsPrice.priceEscalation,
-              //     calculatedPrice: itemsPrice.calculatedPrice,
-              //     flatPrice: itemsPrice.flatPrice,
-              //     discountType: itemsPrice.discountType,
-              //     year: itemsPrice.year,
-              //     noOfYear: itemsPrice.noOfYear,
-              //     sparePartsPrice: itemsPrice.sparePartsPrice,
-              //     sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
-              //     servicePrice: itemsPrice.servicePrice,
-              //     labourPrice: itemsPrice.labourPrice,
-              //     labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-              //     miscPrice: itemsPrice.miscPrice,
-              //     miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
-              //     totalPrice: itemsPrice.totalPrice,
-              //     netService: itemsPrice.netService,
-              //     customPortfolio: {
-              //         portfolioId: portfolioId
-              //     },
-              //     tenantId: itemsPrice.tenantId,
-              //     partsRequired: itemsPrice.partsRequired,
-              //     labourRequired: itemsPrice.labourRequired,
-              //     serviceRequired: itemsPrice.serviceRequired,
-              //     miscRequired: itemsPrice.miscRequired
-              // }
+                // Previous Item Price Creation Request obj
+                // let itemPriceObj = {
+                //   customItemPriceDataId: 0,
+                //   quantity: parseInt(itemsPrice.quantity),
+                //   standardJobId: itemsPrice.standardJobId,
+                //   repairKitId: itemsPrice.repairKitId,
+                //   templateDescription: itemsPrice.templateDescription,
+                //   repairOption: itemsPrice.repairOption,
+                //   additional: itemsPrice.additional,
+                //   partListId: itemsPrice.partListId,
+                //   serviceEstimateId: itemsPrice.serviceEstimateId,
+                //   numberOfEvents: 0,
+                //   priceMethod: itemsPrice.priceMethod,
+                //   priceType: itemsPrice.priceType,
+                //   listPrice: itemsPrice.listPrice,
+                //   priceEscalation: itemsPrice.priceEscalation,
+                //   calculatedPrice: itemsPrice.calculatedPrice,
+                //   flatPrice: itemsPrice.flatPrice,
+                //   year: itemsPrice.year,
+                //   noOfYear: parseInt(itemsPrice.noOfYear),
+                //   sparePartsPrice: itemsPrice.sparePartsPrice,
+                //   sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                //   servicePrice: itemsPrice.totalPrice,
+                //   labourPrice: itemsPrice.labourPrice,
+                //   labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                //   miscPrice: itemsPrice.miscPrice,
+                //   miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                //   totalPrice: itemsPrice.totalPrice,
+                //   netService: itemsPrice.netService,
+                //   additionalPriceType: itemsPrice.additionalPriceType,
+                //   additionalPriceValue: itemsPrice.additionalPriceValue,
+                //   discountType: itemsPrice.discountType,
+                //   discountValue: itemsPrice.discountValue,
+                //   recommendedValue: itemsPrice.recommendedValue,
+                //   startUsage: itemsPrice.startUsage,
+                //   endUsage: itemsPrice.endUsage,
+                //   sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                //   labourEscalation: itemsPrice.labourEscalation,
+                //   miscEscalation: itemsPrice.miscEscalation,
+                //   serviceEscalation: itemsPrice.serviceEscalation,
+                //   withBundleService: itemsPrice.withBundleService,
+                //   customPortfolio: ((portfolioId == 0) ||
+                //     (portfolioId == null) ||
+                //     (portfolioId == undefined) ||
+                //     (portfolioId == "")) ? null : {
+                //     portfolioId: portfolioId
+                //   },
+                //   // tenantId: itemsPrice.tenantId,
+                //   tenantId: loginTenantId,
+                //   partsRequired: itemsPrice.partsRequired,
+                //   labourRequired: itemsPrice.labourRequired,
+                //   miscRequired: itemsPrice.miscRequired,
+                //   serviceRequired: itemsPrice.serviceRequired,
+                //   inclusionExclusion: itemsPrice.inclusionExclusion
+                // }
 
-              let itemPriceObj = {
-                customItemPriceDataId: 0,
-                quantity: parseInt(itemsPrice.quantity),
-                standardJobId: itemsPrice.standardJobId,
-                repairKitId: itemsPrice.repairKitId,
-                templateDescription: itemsPrice.templateDescription,
-                repairOption: itemsPrice.repairOption,
-                additional: itemsPrice.additional,
-                partListId: itemsPrice.partListId,
-                serviceEstimateId: itemsPrice.serviceEstimateId,
-                numberOfEvents: 0,
-                priceMethod: itemsPrice.priceMethod,
-                priceType: itemsPrice.priceType,
-                listPrice: itemsPrice.listPrice,
-                priceEscalation: itemsPrice.priceEscalation,
-                calculatedPrice: itemsPrice.calculatedPrice,
-                flatPrice: itemsPrice.flatPrice,
-                year: itemsPrice.year,
-                noOfYear: parseInt(itemsPrice.noOfYear),
-                sparePartsPrice: itemsPrice.sparePartsPrice,
-                sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                servicePrice: itemsPrice.totalPrice,
-                labourPrice: itemsPrice.labourPrice,
-                labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                miscPrice: itemsPrice.miscPrice,
-                miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                totalPrice: itemsPrice.totalPrice,
-                netService: itemsPrice.netService,
-                additionalPriceType: itemsPrice.additionalPriceType,
-                additionalPriceValue: itemsPrice.additionalPriceValue,
-                discountType: itemsPrice.discountType,
-                discountValue: itemsPrice.discountValue,
-                recommendedValue: itemsPrice.recommendedValue,
-                startUsage: itemsPrice.startUsage,
-                endUsage: itemsPrice.endUsage,
-                sparePartsEscalation: itemsPrice.sparePartsEscalation,
-                labourEscalation: itemsPrice.labourEscalation,
-                miscEscalation: itemsPrice.miscEscalation,
-                serviceEscalation: itemsPrice.serviceEscalation,
-                withBundleService: itemsPrice.withBundleService,
-                customPortfolio: ((portfolioId == 0) ||
-                  (portfolioId == null) ||
-                  (portfolioId == undefined) ||
-                  (portfolioId == "")) ? null : {
-                  portfolioId: portfolioId
-                },
-                // tenantId: itemsPrice.tenantId,
-                tenantId: loginTenantId,
-                partsRequired: itemsPrice.partsRequired,
-                labourRequired: itemsPrice.labourRequired,
-                miscRequired: itemsPrice.miscRequired,
-                serviceRequired: itemsPrice.serviceRequired,
-                inclusionExclusion: itemsPrice.inclusionExclusion
+                // Current item price creation request obj
+                let itemPriceObj = {
+                  customItemPriceDataId: 0,
+                  quantity: parseInt(itemsPrice.quantity),
+                  standardJobId: itemsPrice.standardJobId,
+                  repairKitId: itemsPrice.repairKitId,
+                  templateDescription: itemsPrice.templateDescription,
+                  repairOption: itemsPrice.repairOption,
+                  additional: itemsPrice.additional,
+                  partListId: itemsPrice.partListId,
+                  serviceEstimateId: itemsPrice.serviceEstimateId,
+                  numberOfEvents: 0,
+                  frequency: ((itemsPrice.frequency === "") || (itemsPrice.frequency === null) ||
+                    (itemsPrice.frequency === undefined) || (itemsPrice.frequency === "EMPTY")) ? "CYCLIC" : itemsPrice.frequency,
+                  priceMethod: ((itemsPrice.priceMethod === "") || (itemsPrice.priceMethod === null) ||
+                    (itemsPrice.priceMethod === undefined) || (itemsPrice.priceMethod === "EMPTY")) ? "LIST_PRICE" : itemsPrice.priceMethod,
+                  priceType: ((itemsPrice.priceType === "") || (itemsPrice.priceType === null) ||
+                    (itemsPrice.priceType === undefined) || (itemsPrice.priceType === "EMPTY")) ? "EVENT_BASED" : itemsPrice.priceType,
+                  listPrice: itemsPrice.listPrice,
+                  priceEscalation: itemsPrice.priceEscalation,
+                  calculatedPrice: itemsPrice.calculatedPrice,
+                  flatPrice: itemsPrice.flatPrice,
+                  year: itemsPrice.year,
+                  noOfYear: parseInt(itemsPrice.noOfYear),
+                  sparePartsPrice: itemsPrice.sparePartsPrice,
+                  sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                  servicePrice: itemsPrice.servicePrice,
+                  labourPrice: itemsPrice.labourPrice,
+                  labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  miscPrice: itemsPrice.miscPrice,
+                  miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                  totalPrice: itemsPrice.totalPrice,
+                  netService: itemsPrice.netService,
+                  additionalPriceType: ((itemsPrice.additionalPriceType === "") || (itemsPrice.additionalPriceType === null) ||
+                    (itemsPrice.additionalPriceType === "EMPTY") || (itemsPrice.additionalPriceType === undefined)) ? "ABSOLUTE" : itemsPrice.additionalPriceType,
+                  additionalPriceValue: itemsPrice.additionalPriceValue,
+                  discountType: ((itemsPrice.discountType === "") || (itemsPrice.discountType === null) ||
+                    (itemsPrice.discountType === undefined) || (itemsPrice.discountType === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : itemsPrice.discountType,
+                  discountValue: itemsPrice.discountValue,
+                  recommendedValue: itemsPrice.recommendedValue,
+                  startUsage: itemsPrice.startUsage,
+                  endUsage: itemsPrice.endUsage,
+                  sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                  labourEscalation: itemsPrice.labourEscalation,
+                  miscEscalation: itemsPrice.miscEscalation,
+                  serviceEscalation: itemsPrice.serviceEscalation,
+                  withBundleService: itemsPrice.withBundleService,
+                  sparePartsNOE: itemsPrice.sparePartsNOE,
+                  labourNOE: itemsPrice.labourNOE,
+                  miscNOE: itemsPrice.miscNOE,
+                  recommendedUnit: ((itemsPrice.recommendedUnit === "") || (itemsPrice.recommendedUnit === null) ||
+                    (itemsPrice.recommendedUnit === undefined) || (itemsPrice.recommendedUnit === "EMPTY")) ? "MONTH" : itemsPrice.recommendedUnit,
+                  usageUnit: ((itemsPrice.usageUnit === "") || (itemsPrice.usageUnit === null) ||
+                    (itemsPrice.usageUnit === undefined) || (itemsPrice.usageUnit === "EMPTY")) ? "YEAR" : itemsPrice.usageUnit,
+                  customPortfolio: ((portfolioId === 0) || (portfolioId === null) ||
+                    (portfolioId === undefined) || (portfolioId === "")) ? null : {
+                    portfolioId: portfolioId
+                  },
+                  tenantId: loginTenantId,
+                  partsRequired: itemsPrice.partsRequired,
+                  labourRequired: itemsPrice.labourRequired,
+                  serviceRequired: itemsPrice.miscRequired,
+                  miscRequired: itemsPrice.serviceRequired,
+                  inclusionExclusion: itemsPrice.inclusionExclusion
+                }
+
+                const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
+
+                customItemsIdData.push(createPriceForCustomItem.data)
+                customPriceIdArr.push({
+                  customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+                })
+
+                customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+                repairKitIdIs = createPriceForCustomItem.data.standardJobId;
+                standardJobIdIs = createPriceForCustomItem.data.repairKitId;
               }
 
-              const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
-
-              customItemsIdData.push(createPriceForCustomItem.data)
-              customPriceIdArr.push({
-                customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
-              })
-
-              customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
-              repairKitIdIs = createPriceForCustomItem.data.standardJobId;
-              standardJobIdIs = createPriceForCustomItem.data.repairKitId;
             }
 
           }
         }
 
+        // Previous working request obj for custom Item creation
         // let customItemObj = {
-        //     customItemId: 0,
-        //     itemName: tempBundleService2[i].itemName,
-        //     customItemHeaderModel: {
-        //         customItemHeaderId: 0,
-        //         itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
-        //         bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
-        //         portfolioItemId: currentItemId,
-        //         // portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
-        //         reference: tempBundleService2[i].itemHeaderModel.reference,
-        //         itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
-        //         itemHeaderFamily: tempBundleService2[i].itemHeaderModel.itemHeaderFamily,
-        //         model: tempBundleService2[i].itemHeaderModel.model,
-        //         prefix: tempBundleService2[i].itemHeaderModel.prefix,
-        //         type: tempBundleService2[i].itemHeaderModel.type,
-        //         additional: tempBundleService2[i].itemHeaderModel.additional,
-        //         currency: tempBundleService2[i].itemHeaderModel.currency,
-        //         netPrice: tempBundleService2[i].itemHeaderModel.netPrice,
-        //         itemProductHierarchy: tempBundleService2[i].itemHeaderModel.itemProductHierarchy,
-        //         itemHeaderGeographic: tempBundleService2[i].itemHeaderModel.itemHeaderGeographic,
-        //         responseTime: tempBundleService2[i].itemHeaderModel.responseTime,
-        //         usage: tempBundleService2[i].itemHeaderModel.usage,
-        //         validFrom: tempBundleService2[i].itemHeaderModel.validFrom,
-        //         validTo: tempBundleService2[i].itemHeaderModel.validTo,
-        //         estimatedTime: tempBundleService2[i].itemHeaderModel.estimatedTime,
-        //         servicePrice: tempBundleService2[i].itemHeaderModel.servicePrice,
-        //         status: tempBundleService2[i].itemHeaderModel.status,
-        //         componentCode: tempBundleService2[i].itemHeaderModel.componentCode,
-        //         componentDescription: tempBundleService2[i].itemHeaderModel.componentDescription,
-        //         serialNumber: tempBundleService2[i].itemHeaderModel.serialNumber,
-        //         itemHeaderStrategy: tempBundleService2[i].itemHeaderModel.itemHeaderStrategy,
-        //         variant: tempBundleService2[i].itemHeaderModel.variant,
-        //         itemHeaderCustomerSegment: tempBundleService2[i].itemHeaderModel.itemHeaderCustomerSegment,
-        //         jobCode: tempBundleService2[i].itemHeaderModel.jobCode,
-        //         preparedBy: tempBundleService2[i].itemHeaderModel.preparedBy,
-        //         approvedBy: tempBundleService2[i].itemHeaderModel.approvedBy,
-        //         preparedOn: tempBundleService2[i].itemHeaderModel.preparedOn,
-        //         revisedBy: tempBundleService2[i].itemHeaderModel.revisedBy,
-        //         revisedOn: tempBundleService2[i].itemHeaderModel.revisedOn,
-        //         salesOffice: tempBundleService2[i].itemHeaderModel.salesOffice,
-        //         offerValidity: tempBundleService2[i].itemHeaderModel.offerValidity
-        //     },
-        //     customItemBodyModel: {
-        //         customItemBodyId: 0,
-        //         itemBodyDescription: tempBundleService2[i].itemBodyModel.itemBodyDescription,
-        //         spareParts: tempBundleService2[i].itemBodyModel.spareParts,
-        //         labours: tempBundleService2[i].itemBodyModel.labours,
-        //         miscellaneous: tempBundleService2[i].itemBodyModel.miscellaneous,
-        //         taskType: tempBundleService2[i].itemBodyModel.taskType,
-        //         solutionCode: tempBundleService2[i].itemBodyModel.solutionCode,
-        //         usageIn: tempBundleService2[i].itemBodyModel.usageIn,
-        //         usage: tempBundleService2[i].itemBodyModel.usage,
-        //         year: tempBundleService2[i].itemBodyModel.year,
-        //         avgUsage: tempBundleService2[i].itemBodyModel.avgUsage,
-        //         unit: tempBundleService2[i].itemBodyModel.unit,
-        //         customItemPrices: customPriceIdArr,
-        //     }
+        //   customItemId: 0,
+        //   itemName: itemDetailsById.data.itemName,
+        //   customItemHeaderModel: {
+        //     customItemHeaderId: 0,
+        //     itemHeaderDescription: itemDetailsById.data.itemHeaderModel.itemHeaderDescription,
+        //     bundleFlag: itemDetailsById.data.itemHeaderModel.bundleFlag,
+        //     withBundleService: itemDetailsById.data.itemHeaderModel.withBundleService,
+        //     portfolioItemId: currentItemId,
+        //     reference: itemDetailsById.data.itemHeaderModel.reference,
+        //     itemHeaderMake: itemDetailsById.data.itemHeaderModel.itemHeaderMake,
+        //     itemHeaderFamily: itemDetailsById.data.itemHeaderModel.itemHeaderFamily,
+        //     model: itemDetailsById.data.itemHeaderModel.model,
+        //     prefix: itemDetailsById.data.itemHeaderModel.prefix,
+        //     type: itemDetailsById.data.itemHeaderModel.type,
+        //     additional: itemDetailsById.data.itemHeaderModel.additional,
+        //     currency: itemDetailsById.data.itemHeaderModel.currency,
+        //     netPrice: itemDetailsById.data.itemHeaderModel.netPrice,
+        //     itemProductHierarchy: itemDetailsById.data.itemHeaderModel.itemProductHierarchy,
+        //     itemHeaderGeographic: itemDetailsById.data.itemHeaderModel.itemHeaderGeographic,
+        //     responseTime: itemDetailsById.data.itemHeaderModel.responseTime,
+        //     usage: itemDetailsById.data.itemHeaderModel.usage,
+        //     validFrom: itemDetailsById.data.itemHeaderModel.validFrom,
+        //     validTo: itemDetailsById.data.itemHeaderModel.validTo,
+        //     estimatedTime: itemDetailsById.data.itemHeaderModel.estimatedTime,
+        //     servicePrice: itemDetailsById.data.itemHeaderModel.servicePrice,
+        //     status: itemDetailsById.data.itemHeaderModel.status,
+        //     componentCode: itemDetailsById.data.itemHeaderModel.componentCode,
+        //     componentDescription: itemDetailsById.data.itemHeaderModel.componentDescription,
+        //     serialNumber: itemDetailsById.data.itemHeaderModel.serialNumber,
+        //     itemHeaderStrategy: itemDetailsById.data.itemHeaderModel.itemHeaderStrategy,
+        //     variant: itemDetailsById.data.itemHeaderModel.variant,
+        //     itemHeaderCustomerSegment: itemDetailsById.data.itemHeaderModel.itemHeaderCustomerSegment,
+        //     jobCode: itemDetailsById.data.itemHeaderModel.jobCode,
+        //     preparedBy: itemDetailsById.data.itemHeaderModel.preparedBy,
+        //     approvedBy: itemDetailsById.data.itemHeaderModel.approvedBy,
+        //     preparedOn: itemDetailsById.data.itemHeaderModel.preparedOn,
+        //     revisedBy: itemDetailsById.data.itemHeaderModel.revisedBy,
+        //     revisedOn: itemDetailsById.data.itemHeaderModel.revisedOn,
+        //     salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
+        //     offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
+        //     serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
+        //     serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+        //   },
+        //   customItemBodyModel: {
+        //     customItemBodyId: 0,
+        //     itemBodyDescription: itemDetailsById.data.itemBodyModel.itemBodyDescription,
+        //     spareParts: itemDetailsById.data.itemBodyModel.spareParts,
+        //     labours: itemDetailsById.data.itemBodyModel.labours,
+        //     miscellaneous: itemDetailsById.data.itemBodyModel.miscellaneous,
+        //     taskType: itemDetailsById.data.itemBodyModel.taskType,
+        //     solutionCode: itemDetailsById.data.itemBodyModel.solutionCode,
+        //     usageIn: itemDetailsById.data.itemBodyModel.usageIn,
+        //     usage: itemDetailsById.data.itemBodyModel.usage,
+        //     year: itemDetailsById.data.itemBodyModel.year,
+        //     avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
+        //     unit: itemDetailsById.data.itemBodyModel.unit,
+        //     frequency: itemDetailsById.data.itemBodyModel.frequency,
+        //     customItemPrices: customPriceIdArr
+        //   }
         // }
 
+        // new working request Obj for custom Item creation
         let customItemObj = {
           customItemId: 0,
           itemName: itemDetailsById.data.itemName,
@@ -10791,7 +11524,7 @@ export function CreateCustomPortfolio(props) {
             salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
             offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
             serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
-            serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+            serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional,
           },
           customItemBodyModel: {
             customItemBodyId: 0,
@@ -10805,10 +11538,8 @@ export function CreateCustomPortfolio(props) {
             usage: itemDetailsById.data.itemBodyModel.usage,
             year: itemDetailsById.data.itemBodyModel.year,
             avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
-            unit: itemDetailsById.data.itemBodyModel.unit,
-            frequency: itemDetailsById.data.itemBodyModel.frequency,
             customItemPrices: customPriceIdArr
-          }
+          },
         }
 
         var _selectedSolutionCustomItemsArray = [...selectedSolutionCustomItems];
@@ -10823,25 +11554,27 @@ export function CreateCustomPortfolio(props) {
           createItemsArr.push(customItemIds)
           _selectedSolutionCustomItemsArray.push({ customItemId: itemRes.data.customItemId })
           if (customPriceIdIs != 0) {
+            if (!(((standardJobIdIs === "") || (standardJobIdIs === null)) &&
+              ((repairKitIdIs === "") || (repairKitIdIs === null)))) {
+              var newreqObj = {
+                itemId: itemRes.data.customItemId,
+                standardJobId: standardJobIdIs,
+                repairKitId: repairKitIdIs,
+                itemPriceDataId: customPriceIdIs
+              }
+              if (((standardJobIdIs == "") ||
+                (standardJobIdIs == null)) &&
+                ((repairKitIdIs != "") ||
+                  (repairKitIdIs != null))) {
+                const price_RkIdUpdate = await customPortfolioItemPriceRkId(newreqObj)
+              }
 
-            var newreqObj = {
-              itemId: itemRes.data.customItemId,
-              standardJobId: standardJobIdIs,
-              repairKitId: repairKitIdIs,
-              itemPriceDataId: customPriceIdIs
-            }
-            if (((standardJobIdIs == "") ||
-              (standardJobIdIs == null)) &&
-              ((repairKitIdIs != "") ||
-                (repairKitIdIs != null))) {
-              const price_RkIdUpdate = await customPortfolioItemPriceRkId(newreqObj)
-            }
-
-            if (((repairKitIdIs == "") ||
-              (repairKitIdIs == null)) &&
-              ((standardJobIdIs != "") ||
-                (standardJobIdIs != null))) {
-              const price_SjIdUpdate = await customPortfolioItemPriceSJID(newreqObj)
+              if (((repairKitIdIs == "") ||
+                (repairKitIdIs == null)) &&
+                ((standardJobIdIs != "") ||
+                  (standardJobIdIs != null))) {
+                const price_SjIdUpdate = await customPortfolioItemPriceSJID(newreqObj)
+              }
             }
           }
         }
@@ -10898,50 +11631,46 @@ export function CreateCustomPortfolio(props) {
         setTempBundleService1([])
       }
 
-      if (((itemPriceData.standardJobId == "") ||
-        (itemPriceData.standardJobId == null)) &&
-        ((itemPriceData.repairKitId != "") ||
-          (itemPriceData.repairKitId != null))) {
-        const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+      if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
+        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
+        if (((itemPriceData.standardJobId == "") ||
+          (itemPriceData.standardJobId == null)) &&
+          ((itemPriceData.repairKitId != "") ||
+            (itemPriceData.repairKitId != null))) {
+          const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+        }
+
+        if (((itemPriceData.repairKitId == "") ||
+          (itemPriceData.repairKitId == null)) &&
+          ((itemPriceData.standardJobId != "") ||
+            (itemPriceData.standardJobId != null))) {
+          const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+        }
+
       }
 
-      if (((itemPriceData.repairKitId == "") ||
-        (itemPriceData.repairKitId == null)) &&
-        ((itemPriceData.standardJobId != "") ||
-          (itemPriceData.standardJobId != null))) {
-        const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
-      }
 
       const resPrice = await getCustomItemPriceById(itemPriceData.customItemPriceDataId)
 
       setPriceCalculator({
         ...priceCalculator,
-        priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-          resPrice.data.priceMethod != "" ||
-          resPrice.data.priceMethod != null) ? {
-          label: resPrice.data.priceMethod,
-          value: resPrice.data.priceMethod
-        } : "",
-        priceType: (resPrice.data.priceType != "EMPTY" ||
-          resPrice.data.priceType != "" ||
-          resPrice.data.priceType != null) ? {
-          label: resPrice.data.priceType,
-          value: resPrice.data.priceType
-        } : "",
-        priceAdditionalSelect: {
-          label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
-        },
+        priceMethod: ((resPrice.data.priceMethod === "") ||
+          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+        priceType: ((resPrice.data.priceType === "") ||
+          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
         priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-          resPrice.data.discountType != "" ||
-          resPrice.data.discountType != null) ? {
-          label: resPrice.data.discountType,
-          value: resPrice.data.discountType
-        } : "",
+        discountTypeSelect: ((resPrice.data.discountType === "") ||
+          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
         discountTypeInput: resPrice.data.discountValue,
-        year: {
-          label: resPrice.data.year, value: resPrice.data.year
-        },
+        year: ((resPrice.data.year === "") ||
+          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+          { label: resPrice.data.year, value: resPrice.data.year },
         noOfYear: resPrice.data.noOfYear,
         startUsage: resPrice.data.startUsage,
         endUsage: resPrice.data.endUsage,
@@ -11015,6 +11744,455 @@ export function CreateCustomPortfolio(props) {
 
   }
 
+  const handleAddBundleServiceItemInExpendPortfolioItem = async () => {
+    try {
+      setItemListShowLoading(true);
+      let reqObj = {};
+      var createItemsArr = [];
+      let _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
+      let _selectedBundleServiceItemsOnExpend = [];
+      for (let i = 0; i < tempBundleItems.length; i++) {
+        // createdItemId = tempBundleItems[i].customItemId;
+        if (tempBundleItems[i].customItemId === currentItemId) {
+          reqObj = {
+            itemId: tempBundleItems[i].customItemId,
+            standardJobId: itemPriceData.standardJobId,
+            repairKitId: itemPriceData.repairKitId,
+            itemPriceDataId: itemPriceData.customItemPriceDataId
+          }
+          break;
+        }
+      }
+
+      if (searchedBundleServiceItemsOnExpend.length > 0) {
+        for (let i = 0; i < searchedBundleServiceItemsOnExpend.length; i++) {
+          var customItemsIdData = [];
+          var customPriceIdArr = [];
+          var customPriceIdIs = 0;
+          var repairKitIdIs = "";
+          var standardJobIdIs = "";
+
+          const itemDetailsById = await getItemDataById(searchedBundleServiceItemsOnExpend[i].itemId);
+          if (itemDetailsById.status === 200) {
+            if (itemDetailsById.data.itemBodyModel.itemPrices.length > 0) {
+              for (let j = 0; j < itemDetailsById.data.itemBodyModel.itemPrices.length; j++) {
+                /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+                var itemsPriceReq = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
+                if (itemsPriceReq.status === 200) {
+                  let itemsPrice = itemsPriceReq.data;
+                  // previous Item price creation request Obj
+                  // let itemPriceObj = {
+                  //   customItemPriceDataId: 0,
+                  //   quantity: parseInt(itemsPrice.quantity),
+                  //   standardJobId: itemsPrice.standardJobId,
+                  //   repairKitId: itemsPrice.repairKitId,
+                  //   templateDescription: itemsPrice.templateDescription,
+                  //   repairOption: itemsPrice.repairOption,
+                  //   additional: itemsPrice.additional,
+                  //   partListId: itemsPrice.partListId,
+                  //   serviceEstimateId: itemsPrice.serviceEstimateId,
+                  //   numberOfEvents: 0,
+                  //   priceMethod: itemsPrice.priceMethod,
+                  //   priceType: itemsPrice.priceType,
+                  //   listPrice: itemsPrice.listPrice,
+                  //   priceEscalation: itemsPrice.priceEscalation,
+                  //   calculatedPrice: itemsPrice.calculatedPrice,
+                  //   flatPrice: itemsPrice.flatPrice,
+                  //   year: itemsPrice.year,
+                  //   noOfYear: parseInt(itemsPrice.noOfYear),
+                  //   sparePartsPrice: itemsPrice.sparePartsPrice,
+                  //   sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  //   servicePrice: itemsPrice.totalPrice,
+                  //   labourPrice: itemsPrice.labourPrice,
+                  //   labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  //   miscPrice: itemsPrice.miscPrice,
+                  //   miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  //   totalPrice: itemsPrice.totalPrice,
+                  //   netService: itemsPrice.netService,
+                  //   additionalPriceType: itemsPrice.additionalPriceType,
+                  //   additionalPriceValue: itemsPrice.additionalPriceValue,
+                  //   discountType: itemsPrice.discountType,
+                  //   discountValue: itemsPrice.discountValue,
+                  //   recommendedValue: itemsPrice.recommendedValue,
+                  //   startUsage: itemsPrice.startUsage,
+                  //   endUsage: itemsPrice.endUsage,
+                  //   sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                  //   labourEscalation: itemsPrice.labourEscalation,
+                  //   miscEscalation: itemsPrice.miscEscalation,
+                  //   serviceEscalation: itemsPrice.serviceEscalation,
+                  //   withBundleService: itemsPrice.withBundleService,
+                  //   customPortfolio: ((portfolioId == 0) ||
+                  //     (portfolioId == null) ||
+                  //     (portfolioId == undefined) ||
+                  //     (portfolioId == "")) ? null : {
+                  //     portfolioId: portfolioId
+                  //   },
+                  //   // tenantId: itemsPrice.tenantId,
+                  //   tenantId: loginTenantId,
+                  //   partsRequired: itemsPrice.partsRequired,
+                  //   labourRequired: itemsPrice.labourRequired,
+                  //   miscRequired: itemsPrice.miscRequired,
+                  //   serviceRequired: itemsPrice.serviceRequired,
+                  //   inclusionExclusion: itemsPrice.inclusionExclusion
+                  // }
+
+                  // current item price creation request obj
+                  let itemPriceObj = {
+                    customItemPriceDataId: 0,
+                    quantity: parseInt(itemsPrice.quantity),
+                    standardJobId: itemsPrice.standardJobId,
+                    repairKitId: itemsPrice.repairKitId,
+                    templateDescription: itemsPrice.templateDescription,
+                    repairOption: itemsPrice.repairOption,
+                    additional: itemsPrice.additional,
+                    partListId: itemsPrice.partListId,
+                    serviceEstimateId: itemsPrice.serviceEstimateId,
+                    numberOfEvents: 0,
+                    frequency: ((itemsPrice.frequency === "") || (itemsPrice.frequency === null) ||
+                      (itemsPrice.frequency === undefined) || (itemsPrice.frequency === "EMPTY")) ? "CYCLIC" : itemsPrice.frequency,
+                    priceMethod: ((itemsPrice.priceMethod === "") || (itemsPrice.priceMethod === null) ||
+                      (itemsPrice.priceMethod === undefined) || (itemsPrice.priceMethod === "EMPTY")) ? "LIST_PRICE" : itemsPrice.priceMethod,
+                    priceType: ((itemsPrice.priceType === "") || (itemsPrice.priceType === null) ||
+                      (itemsPrice.priceType === undefined) || (itemsPrice.priceType === "EMPTY")) ? "EVENT_BASED" : itemsPrice.priceType,
+                    listPrice: itemsPrice.listPrice,
+                    priceEscalation: itemsPrice.priceEscalation,
+                    calculatedPrice: itemsPrice.calculatedPrice,
+                    flatPrice: itemsPrice.flatPrice,
+                    year: itemsPrice.year,
+                    noOfYear: parseInt(itemsPrice.noOfYear),
+                    sparePartsPrice: itemsPrice.sparePartsPrice,
+                    sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                    servicePrice: itemsPrice.servicePrice,
+                    labourPrice: itemsPrice.labourPrice,
+                    labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                    miscPrice: itemsPrice.miscPrice,
+                    miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                    totalPrice: itemsPrice.totalPrice,
+                    netService: itemsPrice.netService,
+                    additionalPriceType: ((itemsPrice.additionalPriceType === "") || (itemsPrice.additionalPriceType === null) ||
+                      (itemsPrice.additionalPriceType === "EMPTY") || (itemsPrice.additionalPriceType === undefined)) ? "ABSOLUTE" : itemsPrice.additionalPriceType,
+                    additionalPriceValue: itemsPrice.additionalPriceValue,
+                    discountType: ((itemsPrice.discountType === "") || (itemsPrice.discountType === null) ||
+                      (itemsPrice.discountType === undefined) || (itemsPrice.discountType === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : itemsPrice.discountType,
+                    discountValue: itemsPrice.discountValue,
+                    recommendedValue: itemsPrice.recommendedValue,
+                    startUsage: itemsPrice.startUsage,
+                    endUsage: itemsPrice.endUsage,
+                    sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                    labourEscalation: itemsPrice.labourEscalation,
+                    miscEscalation: itemsPrice.miscEscalation,
+                    serviceEscalation: itemsPrice.serviceEscalation,
+                    withBundleService: itemsPrice.withBundleService,
+                    sparePartsNOE: itemsPrice.sparePartsNOE,
+                    labourNOE: itemsPrice.labourNOE,
+                    miscNOE: itemsPrice.miscNOE,
+                    recommendedUnit: ((itemsPrice.recommendedUnit === "") || (itemsPrice.recommendedUnit === null) ||
+                      (itemsPrice.recommendedUnit === undefined) || (itemsPrice.recommendedUnit === "EMPTY")) ? "MONTH" : itemsPrice.recommendedUnit,
+                    usageUnit: ((itemsPrice.usageUnit === "") || (itemsPrice.usageUnit === null) ||
+                      (itemsPrice.usageUnit === undefined) || (itemsPrice.usageUnit === "EMPTY")) ? "YEAR" : itemsPrice.usageUnit,
+                    customPortfolio: ((portfolioId === 0) || (portfolioId === null) ||
+                      (portfolioId === undefined) || (portfolioId === "")) ? null : {
+                      portfolioId: portfolioId
+                    },
+                    tenantId: loginTenantId,
+                    partsRequired: itemsPrice.partsRequired,
+                    labourRequired: itemsPrice.labourRequired,
+                    serviceRequired: itemsPrice.miscRequired,
+                    miscRequired: itemsPrice.serviceRequired,
+                    inclusionExclusion: itemsPrice.inclusionExclusion
+                  }
+                  const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
+
+                  customItemsIdData.push(createPriceForCustomItem.data)
+                  customPriceIdArr.push({
+                    customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+                  })
+
+                  customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+                  repairKitIdIs = createPriceForCustomItem.data.standardJobId;
+                  standardJobIdIs = createPriceForCustomItem.data.repairKitId;
+                }
+              }
+            }
+          }
+
+          // Previous working request obj for custom Item creation
+          // let customItemObj = {
+          //   customItemId: 0,
+          //   itemName: itemDetailsById.data.itemName,
+          //   customItemHeaderModel: {
+          //     customItemHeaderId: 0,
+          //     itemHeaderDescription: itemDetailsById.data.itemHeaderModel.itemHeaderDescription,
+          //     bundleFlag: itemDetailsById.data.itemHeaderModel.bundleFlag,
+          //     withBundleService: itemDetailsById.data.itemHeaderModel.withBundleService,
+          //     portfolioItemId: currentItemId,
+          //     reference: itemDetailsById.data.itemHeaderModel.reference,
+          //     itemHeaderMake: itemDetailsById.data.itemHeaderModel.itemHeaderMake,
+          //     itemHeaderFamily: itemDetailsById.data.itemHeaderModel.itemHeaderFamily,
+          //     model: itemDetailsById.data.itemHeaderModel.model,
+          //     prefix: itemDetailsById.data.itemHeaderModel.prefix,
+          //     type: itemDetailsById.data.itemHeaderModel.type,
+          //     additional: itemDetailsById.data.itemHeaderModel.additional,
+          //     currency: itemDetailsById.data.itemHeaderModel.currency,
+          //     netPrice: itemDetailsById.data.itemHeaderModel.netPrice,
+          //     itemProductHierarchy: itemDetailsById.data.itemHeaderModel.itemProductHierarchy,
+          //     itemHeaderGeographic: itemDetailsById.data.itemHeaderModel.itemHeaderGeographic,
+          //     responseTime: itemDetailsById.data.itemHeaderModel.responseTime,
+          //     usage: itemDetailsById.data.itemHeaderModel.usage,
+          //     validFrom: itemDetailsById.data.itemHeaderModel.validFrom,
+          //     validTo: itemDetailsById.data.itemHeaderModel.validTo,
+          //     estimatedTime: itemDetailsById.data.itemHeaderModel.estimatedTime,
+          //     servicePrice: itemDetailsById.data.itemHeaderModel.servicePrice,
+          //     status: itemDetailsById.data.itemHeaderModel.status,
+          //     componentCode: itemDetailsById.data.itemHeaderModel.componentCode,
+          //     componentDescription: itemDetailsById.data.itemHeaderModel.componentDescription,
+          //     serialNumber: itemDetailsById.data.itemHeaderModel.serialNumber,
+          //     itemHeaderStrategy: itemDetailsById.data.itemHeaderModel.itemHeaderStrategy,
+          //     variant: itemDetailsById.data.itemHeaderModel.variant,
+          //     itemHeaderCustomerSegment: itemDetailsById.data.itemHeaderModel.itemHeaderCustomerSegment,
+          //     jobCode: itemDetailsById.data.itemHeaderModel.jobCode,
+          //     preparedBy: itemDetailsById.data.itemHeaderModel.preparedBy,
+          //     approvedBy: itemDetailsById.data.itemHeaderModel.approvedBy,
+          //     preparedOn: itemDetailsById.data.itemHeaderModel.preparedOn,
+          //     revisedBy: itemDetailsById.data.itemHeaderModel.revisedBy,
+          //     revisedOn: itemDetailsById.data.itemHeaderModel.revisedOn,
+          //     salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
+          //     offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
+          //     serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
+          //     serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+          //   },
+          //   customItemBodyModel: {
+          //     customItemBodyId: 0,
+          //     itemBodyDescription: itemDetailsById.data.itemBodyModel.itemBodyDescription,
+          //     spareParts: itemDetailsById.data.itemBodyModel.spareParts,
+          //     labours: itemDetailsById.data.itemBodyModel.labours,
+          //     miscellaneous: itemDetailsById.data.itemBodyModel.miscellaneous,
+          //     taskType: itemDetailsById.data.itemBodyModel.taskType,
+          //     solutionCode: itemDetailsById.data.itemBodyModel.solutionCode,
+          //     usageIn: itemDetailsById.data.itemBodyModel.usageIn,
+          //     usage: itemDetailsById.data.itemBodyModel.usage,
+          //     year: itemDetailsById.data.itemBodyModel.year,
+          //     avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
+          //     unit: itemDetailsById.data.itemBodyModel.unit,
+          //     frequency: itemDetailsById.data.itemBodyModel.frequency,
+          //     customItemPrices: customPriceIdArr
+          //   }
+          // }
+
+          // new working request Obj for custom Item creation
+          let customItemObj = {
+            customItemId: 0,
+            itemName: itemDetailsById.data.itemName,
+            customItemHeaderModel: {
+              customItemHeaderId: 0,
+              itemHeaderDescription: itemDetailsById.data.itemHeaderModel.itemHeaderDescription,
+              bundleFlag: itemDetailsById.data.itemHeaderModel.bundleFlag,
+              withBundleService: itemDetailsById.data.itemHeaderModel.withBundleService,
+              portfolioItemId: currentItemId,
+              reference: itemDetailsById.data.itemHeaderModel.reference,
+              itemHeaderMake: itemDetailsById.data.itemHeaderModel.itemHeaderMake,
+              itemHeaderFamily: itemDetailsById.data.itemHeaderModel.itemHeaderFamily,
+              model: itemDetailsById.data.itemHeaderModel.model,
+              prefix: itemDetailsById.data.itemHeaderModel.prefix,
+              type: itemDetailsById.data.itemHeaderModel.type,
+              additional: itemDetailsById.data.itemHeaderModel.additional,
+              currency: itemDetailsById.data.itemHeaderModel.currency,
+              netPrice: itemDetailsById.data.itemHeaderModel.netPrice,
+              itemProductHierarchy: itemDetailsById.data.itemHeaderModel.itemProductHierarchy,
+              itemHeaderGeographic: itemDetailsById.data.itemHeaderModel.itemHeaderGeographic,
+              responseTime: itemDetailsById.data.itemHeaderModel.responseTime,
+              usage: itemDetailsById.data.itemHeaderModel.usage,
+              validFrom: itemDetailsById.data.itemHeaderModel.validFrom,
+              validTo: itemDetailsById.data.itemHeaderModel.validTo,
+              estimatedTime: itemDetailsById.data.itemHeaderModel.estimatedTime,
+              servicePrice: itemDetailsById.data.itemHeaderModel.servicePrice,
+              status: itemDetailsById.data.itemHeaderModel.status,
+              componentCode: itemDetailsById.data.itemHeaderModel.componentCode,
+              componentDescription: itemDetailsById.data.itemHeaderModel.componentDescription,
+              serialNumber: itemDetailsById.data.itemHeaderModel.serialNumber,
+              itemHeaderStrategy: itemDetailsById.data.itemHeaderModel.itemHeaderStrategy,
+              variant: itemDetailsById.data.itemHeaderModel.variant,
+              itemHeaderCustomerSegment: itemDetailsById.data.itemHeaderModel.itemHeaderCustomerSegment,
+              jobCode: itemDetailsById.data.itemHeaderModel.jobCode,
+              preparedBy: itemDetailsById.data.itemHeaderModel.preparedBy,
+              approvedBy: itemDetailsById.data.itemHeaderModel.approvedBy,
+              preparedOn: itemDetailsById.data.itemHeaderModel.preparedOn,
+              revisedBy: itemDetailsById.data.itemHeaderModel.revisedBy,
+              revisedOn: itemDetailsById.data.itemHeaderModel.revisedOn,
+              salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
+              offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
+              serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
+              serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional,
+            },
+            customItemBodyModel: {
+              customItemBodyId: 0,
+              itemBodyDescription: itemDetailsById.data.itemBodyModel.itemBodyDescription,
+              spareParts: itemDetailsById.data.itemBodyModel.spareParts,
+              labours: itemDetailsById.data.itemBodyModel.labours,
+              miscellaneous: itemDetailsById.data.itemBodyModel.miscellaneous,
+              taskType: itemDetailsById.data.itemBodyModel.taskType,
+              solutionCode: itemDetailsById.data.itemBodyModel.solutionCode,
+              usageIn: itemDetailsById.data.itemBodyModel.usageIn,
+              usage: itemDetailsById.data.itemBodyModel.usage,
+              year: itemDetailsById.data.itemBodyModel.year,
+              avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
+              customItemPrices: customPriceIdArr
+            },
+          }
+
+          const itemRes = await customItemCreation(customItemObj)
+          if (itemRes.status === 200) {
+            _selectedSolutionCustomItems.push({ customItemId: itemRes.data.customItemId })
+          }
+
+          if (_selectedSolutionCustomItems.length > 0) {
+            var tempBundleItemsUrl = _selectedSolutionCustomItems.map((data, i) =>
+              `itemIds=${data.customItemId}`
+            ).join('&');
+
+            const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+            let expandAblePortfolioItems = []
+            let expendedBundleServiceItems = [];
+            let _currentExpendableItemRow = { ...currentExpendableItemRow };
+
+            if (tempBundleItemsColumnsData.status === 200) {
+              var tempBundleItemsLength = tempBundleItemsColumnsData.data.length;
+
+              for (let c = 0; c < tempBundleItemsColumnsData.data[tempBundleItemsLength - 1].bundleItems.length; c++) {
+                expendedBundleServiceItems.push(tempBundleItemsColumnsData.data[tempBundleItemsLength - 1].bundleItems[c]);
+              }
+
+              for (let d = 0; d < tempBundleItemsColumnsData.data[tempBundleItemsLength - 1].serviceItems.length; d++) {
+                expendedBundleServiceItems.push(tempBundleItemsColumnsData.data[tempBundleItemsLength - 1].serviceItems[d]);
+              }
+
+              _selectedBundleServiceItemsOnExpend = expendedBundleServiceItems;
+
+              if ('associatedServiceOrBundle' in currentExpendableItemRow) {
+                currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow['associatedServiceOrBundle'], ...expendedBundleServiceItems]
+              } else {
+                currentExpendableItemRow["associatedServiceOrBundle"] = [...expendedBundleServiceItems];
+              }
+
+              // let associatedServiceOrBundleExitsorNot = Boolean(currentExpendableItemRow.find(el => el.associatedServiceOrBundle))
+              // if (associatedServiceOrBundleExitsorNot) {
+              //   currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow?.associatedServiceOrBundle, ...expendedBundleServiceItems];
+              // } else {
+              //   currentExpendableItemRow["associatedServiceOrBundle"] = [...expendedBundleServiceItems];
+              // }
+
+              var _selectedSearchMasterData = [...selectedSearchMasterData]
+              const index = _selectedSearchMasterData.findIndex(object => {
+                return object.itemId === currentExpendableItemRow.itemId;
+              });
+              _selectedSearchMasterData = _selectedSearchMasterData.splice(index, 1, currentExpendableItemRow);
+
+              // setSelectedSearchMasterData(expandAblePortfolioItems)
+              setSelectedSearchMasterData(_selectedSearchMasterData)
+
+            }
+
+          }
+        }
+      }
+
+      // portfolio update request Object
+      let newReqObj = {
+        name: generalComponentData.name,
+        description: generalComponentData.description,
+        customerId: parseInt(customerData.customerID),
+        externalReference: generalComponentData.externalReference,
+        customerGroup: customerData.customerGroup,
+        customerSegment: generalComponentData?.customerSegment != "" ?
+          generalComponentData?.customerSegment?.value : "",
+        template: flagTemplate,
+        visibleInCommerce: flagCommerce,
+
+        validFrom: validityData.fromDate,
+        validTo: validityData.toDate,
+
+        responseTime: stratgyResponseTimeKeyValue?.value ?
+          stratgyResponseTimeKeyValue?.value : "EMPTY",
+        productHierarchy: stratgyHierarchyKeyValue?.value ?
+          stratgyHierarchyKeyValue?.value : "EMPTY",
+        geographic: stratgyGeographicKeyValue?.value ?
+          stratgyGeographicKeyValue?.value : "EMPTY",
+        solutionType: solutionTypeListKeyValue?.value ?
+          solutionTypeListKeyValue?.value : "EMPTY",
+        solutionLevel: solutionLevelListKeyValue?.value ?
+          solutionLevelListKeyValue?.value : "EMPTY",
+
+        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+          ? portfolioPriceDataId : null,
+
+        customCoverages: selectedSolutionCustomCoverages,
+
+        preparedBy: (administrative.preparedBy != null ||
+          administrative.preparedBy != "" ? administrative.preparedBy : ""),
+        approvedBy: (administrative.approvedBy != null ||
+          administrative.approvedBy != "" ? administrative.approvedBy : ""),
+        preparedOn: administrative.preparedOn,
+        revisedBy: (administrative.revisedBy != null ||
+          administrative.revisedBy != "" ? administrative.revisedBy : ""),
+        revisedOn: administrative.revisedOn,
+        salesOffice: (administrative.salesOffice != null ||
+          administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
+        offerValidity: (administrative.offerValidity != null ||
+          administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
+
+        status: value2.value,
+        supportLevel: value3.value,
+        machineType: "EMPTY",
+        searchTerm: "",
+        lubricant: true,
+        strategyTask: "EMPTY",
+        taskType: "EMPTY",
+        usageCategory: "EMPTY",
+        availability: "EMPTY",
+        type: "EMPTY",
+        application: "EMPTY",
+        contractOrSupport: "EMPTY",
+        lifeStageOfMachine: "EMPTY",
+        numberOfEvents: 0,
+        rating: "",
+        startUsage: 0,
+        endUsage: 0,
+        unit: "EMPTY",
+        additionals: "",
+
+        customItems: _selectedSolutionCustomItems,
+      }
+
+      if ((portfolioId !== null) || (portfolioId !== 0) || (portfolioId !== "") || (portfolioId !== undefined)) {
+        const exitingGeneralSolutionUpdate = await updateCustomPortfolio(
+          portfolioId,
+          newReqObj
+        );
+
+        if (exitingGeneralSolutionUpdate.status === 200) {
+          console.log("portfolio update Successfully.");
+        }
+      }
+
+      setItemListShowLoading(false);
+      // setSelectedSolutionCustomItems([...selectedSolutionCustomItems, ...customItemIds]);
+      setSelectedSolutionCustomItems(_selectedSolutionCustomItems);
+      setSelectedBundleServiceItemsOnExpend(_selectedBundleServiceItemsOnExpend)
+      // setAddBundleServiceItem3([...addBundleServiceItem3, ...createdNewCustomItems]);
+      setAddBundleServiceItem1([])
+    } catch (error) {
+      toast(`😐 ` + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
   const handleAddBundleServiceForSolutionItem = async () => {
     let reqObj = {};
     var createItemsArr = [];
@@ -11049,78 +12227,212 @@ export function CreateCustomPortfolio(props) {
 
             /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-            var itemsPrice = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
-            console.log("item price is before : ", itemsPrice)
+            var itemsPriceReq = await itemPriceDataId(itemDetailsById.data.itemBodyModel.itemPrices[j].itemPriceDataId);
 
-            let itemPriceObj = {
-              customItemPriceDataId: 0,
-              quantity: parseInt(itemsPrice.quantity),
-              standardJobId: itemsPrice.standardJobId,
-              repairKitId: itemsPrice.repairKitId,
-              templateDescription: itemsPrice.templateDescription,
-              repairOption: itemsPrice.repairOption,
-              additional: itemsPrice.additional,
-              partListId: itemsPrice.partListId,
-              serviceEstimateId: itemsPrice.serviceEstimateId,
-              numberOfEvents: 0,
-              priceMethod: itemsPrice.priceMethod,
-              priceType: itemsPrice.priceType,
-              listPrice: itemsPrice.listPrice,
-              priceEscalation: itemsPrice.priceEscalation,
-              calculatedPrice: itemsPrice.calculatedPrice,
-              flatPrice: itemsPrice.flatPrice,
-              year: itemsPrice.year,
-              noOfYear: parseInt(itemsPrice.noOfYear),
-              sparePartsPrice: itemsPrice.sparePartsPrice,
-              sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-              servicePrice: itemsPrice.totalPrice,
-              labourPrice: itemsPrice.labourPrice,
-              labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-              miscPrice: itemsPrice.miscPrice,
-              miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-              totalPrice: itemsPrice.totalPrice,
-              netService: itemsPrice.netService,
-              additionalPriceType: itemsPrice.additionalPriceType,
-              additionalPriceValue: itemsPrice.additionalPriceValue,
-              discountType: itemsPrice.discountType,
-              discountValue: itemsPrice.discountValue,
-              recommendedValue: itemsPrice.recommendedValue,
-              startUsage: itemsPrice.startUsage,
-              endUsage: itemsPrice.endUsage,
-              sparePartsEscalation: itemsPrice.sparePartsEscalation,
-              labourEscalation: itemsPrice.labourEscalation,
-              miscEscalation: itemsPrice.miscEscalation,
-              serviceEscalation: itemsPrice.serviceEscalation,
-              withBundleService: itemsPrice.withBundleService,
-              customPortfolio: ((portfolioId == 0) ||
-                (portfolioId == null) ||
-                (portfolioId == undefined) ||
-                (portfolioId == "")) ? null : {
-                portfolioId: portfolioId
-              },
-              // tenantId: itemsPrice.tenantId,
-              tenantId: loginTenantId,
-              partsRequired: itemsPrice.partsRequired,
-              labourRequired: itemsPrice.labourRequired,
-              miscRequired: itemsPrice.miscRequired,
-              serviceRequired: itemsPrice.serviceRequired,
-              inclusionExclusion: itemsPrice.inclusionExclusion
+            console.log("item price is before : ", itemsPriceReq)
+            if (itemsPriceReq.status === 200) {
+              var itemsPrice = itemsPriceReq.data;
+              // previous Item price creation request Obj
+              // let itemPriceObj = {
+              //   customItemPriceDataId: 0,
+              //   quantity: parseInt(itemsPrice.quantity),
+              //   standardJobId: itemsPrice.standardJobId,
+              //   repairKitId: itemsPrice.repairKitId,
+              //   templateDescription: itemsPrice.templateDescription,
+              //   repairOption: itemsPrice.repairOption,
+              //   additional: itemsPrice.additional,
+              //   partListId: itemsPrice.partListId,
+              //   serviceEstimateId: itemsPrice.serviceEstimateId,
+              //   numberOfEvents: 0,
+              //   priceMethod: itemsPrice.priceMethod,
+              //   priceType: itemsPrice.priceType,
+              //   listPrice: itemsPrice.listPrice,
+              //   priceEscalation: itemsPrice.priceEscalation,
+              //   calculatedPrice: itemsPrice.calculatedPrice,
+              //   flatPrice: itemsPrice.flatPrice,
+              //   year: itemsPrice.year,
+              //   noOfYear: parseInt(itemsPrice.noOfYear),
+              //   sparePartsPrice: itemsPrice.sparePartsPrice,
+              //   sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+              //   servicePrice: itemsPrice.totalPrice,
+              //   labourPrice: itemsPrice.labourPrice,
+              //   labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+              //   miscPrice: itemsPrice.miscPrice,
+              //   miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+              //   totalPrice: itemsPrice.totalPrice,
+              //   netService: itemsPrice.netService,
+              //   additionalPriceType: itemsPrice.additionalPriceType,
+              //   additionalPriceValue: itemsPrice.additionalPriceValue,
+              //   discountType: itemsPrice.discountType,
+              //   discountValue: itemsPrice.discountValue,
+              //   recommendedValue: itemsPrice.recommendedValue,
+              //   startUsage: itemsPrice.startUsage,
+              //   endUsage: itemsPrice.endUsage,
+              //   sparePartsEscalation: itemsPrice.sparePartsEscalation,
+              //   labourEscalation: itemsPrice.labourEscalation,
+              //   miscEscalation: itemsPrice.miscEscalation,
+              //   serviceEscalation: itemsPrice.serviceEscalation,
+              //   withBundleService: itemsPrice.withBundleService,
+              //   customPortfolio: ((portfolioId == 0) ||
+              //     (portfolioId == null) ||
+              //     (portfolioId == undefined) ||
+              //     (portfolioId == "")) ? null : {
+              //     portfolioId: portfolioId
+              //   },
+              //   // tenantId: itemsPrice.tenantId,
+              //   tenantId: loginTenantId,
+              //   partsRequired: itemsPrice.partsRequired,
+              //   labourRequired: itemsPrice.labourRequired,
+              //   miscRequired: itemsPrice.miscRequired,
+              //   serviceRequired: itemsPrice.serviceRequired,
+              //   inclusionExclusion: itemsPrice.inclusionExclusion
+              // }
+
+              // current item price creation request obj
+              let itemPriceObj = {
+                customItemPriceDataId: 0,
+                quantity: parseInt(itemsPrice.quantity),
+                standardJobId: itemsPrice.standardJobId,
+                repairKitId: itemsPrice.repairKitId,
+                templateDescription: itemsPrice.templateDescription,
+                repairOption: itemsPrice.repairOption,
+                additional: itemsPrice.additional,
+                partListId: itemsPrice.partListId,
+                serviceEstimateId: itemsPrice.serviceEstimateId,
+                numberOfEvents: 0,
+                frequency: ((itemsPrice.frequency === "") || (itemsPrice.frequency === null) ||
+                  (itemsPrice.frequency === undefined) || (itemsPrice.frequency === "EMPTY")) ? "CYCLIC" : itemsPrice.frequency,
+                priceMethod: ((itemsPrice.priceMethod === "") || (itemsPrice.priceMethod === null) ||
+                  (itemsPrice.priceMethod === undefined) || (itemsPrice.priceMethod === "EMPTY")) ? "LIST_PRICE" : itemsPrice.priceMethod,
+                priceType: ((itemsPrice.priceType === "") || (itemsPrice.priceType === null) ||
+                  (itemsPrice.priceType === undefined) || (itemsPrice.priceType === "EMPTY")) ? "EVENT_BASED" : itemsPrice.priceType,
+                listPrice: itemsPrice.listPrice,
+                priceEscalation: itemsPrice.priceEscalation,
+                calculatedPrice: itemsPrice.calculatedPrice,
+                flatPrice: itemsPrice.flatPrice,
+                year: itemsPrice.year,
+                noOfYear: parseInt(itemsPrice.noOfYear),
+                sparePartsPrice: itemsPrice.sparePartsPrice,
+                sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                servicePrice: itemsPrice.servicePrice,
+                labourPrice: itemsPrice.labourPrice,
+                labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                miscPrice: itemsPrice.miscPrice,
+                miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                totalPrice: itemsPrice.totalPrice,
+                netService: itemsPrice.netService,
+                additionalPriceType: ((itemsPrice.additionalPriceType === "") || (itemsPrice.additionalPriceType === null) ||
+                  (itemsPrice.additionalPriceType === "EMPTY") || (itemsPrice.additionalPriceType === undefined)) ? "ABSOLUTE" : itemsPrice.additionalPriceType,
+                additionalPriceValue: itemsPrice.additionalPriceValue,
+                discountType: ((itemsPrice.discountType === "") || (itemsPrice.discountType === null) ||
+                  (itemsPrice.discountType === undefined) || (itemsPrice.discountType === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : itemsPrice.discountType,
+                discountValue: itemsPrice.discountValue,
+                recommendedValue: itemsPrice.recommendedValue,
+                startUsage: itemsPrice.startUsage,
+                endUsage: itemsPrice.endUsage,
+                sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                labourEscalation: itemsPrice.labourEscalation,
+                miscEscalation: itemsPrice.miscEscalation,
+                serviceEscalation: itemsPrice.serviceEscalation,
+                withBundleService: itemsPrice.withBundleService,
+                sparePartsNOE: itemsPrice.sparePartsNOE,
+                labourNOE: itemsPrice.labourNOE,
+                miscNOE: itemsPrice.miscNOE,
+                recommendedUnit: ((itemsPrice.recommendedUnit === "") || (itemsPrice.recommendedUnit === null) ||
+                  (itemsPrice.recommendedUnit === undefined) || (itemsPrice.recommendedUnit === "EMPTY")) ? "MONTH" : itemsPrice.recommendedUnit,
+                usageUnit: ((itemsPrice.usageUnit === "") || (itemsPrice.usageUnit === null) ||
+                  (itemsPrice.usageUnit === undefined) || (itemsPrice.usageUnit === "EMPTY")) ? "YEAR" : itemsPrice.usageUnit,
+                customPortfolio: ((portfolioId === 0) || (portfolioId === null) ||
+                  (portfolioId === undefined) || (portfolioId === "")) ? null : {
+                  portfolioId: portfolioId
+                },
+                tenantId: loginTenantId,
+                partsRequired: itemsPrice.partsRequired,
+                labourRequired: itemsPrice.labourRequired,
+                serviceRequired: itemsPrice.miscRequired,
+                miscRequired: itemsPrice.serviceRequired,
+                inclusionExclusion: itemsPrice.inclusionExclusion
+              }
+              const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
+
+              customItemsIdData.push(createPriceForCustomItem.data)
+              customPriceIdArr.push({
+                customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+              })
+
+              customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+              repairKitIdIs = createPriceForCustomItem.data.standardJobId;
+              standardJobIdIs = createPriceForCustomItem.data.repairKitId;
             }
-
-            const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
-
-            customItemsIdData.push(createPriceForCustomItem.data)
-            customPriceIdArr.push({
-              customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
-            })
-
-            customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
-            repairKitIdIs = createPriceForCustomItem.data.standardJobId;
-            standardJobIdIs = createPriceForCustomItem.data.repairKitId;
           }
 
         }
       }
+
+      // Previous working request obj for custom Item creation
+      // let customItemObj = {
+      //   customItemId: 0,
+      //   itemName: itemDetailsById.data.itemName,
+      //   customItemHeaderModel: {
+      //     customItemHeaderId: 0,
+      //     itemHeaderDescription: itemDetailsById.data.itemHeaderModel.itemHeaderDescription,
+      //     bundleFlag: itemDetailsById.data.itemHeaderModel.bundleFlag,
+      //     withBundleService: itemDetailsById.data.itemHeaderModel.withBundleService,
+      //     portfolioItemId: currentItemId,
+      //     reference: itemDetailsById.data.itemHeaderModel.reference,
+      //     itemHeaderMake: itemDetailsById.data.itemHeaderModel.itemHeaderMake,
+      //     itemHeaderFamily: itemDetailsById.data.itemHeaderModel.itemHeaderFamily,
+      //     model: itemDetailsById.data.itemHeaderModel.model,
+      //     prefix: itemDetailsById.data.itemHeaderModel.prefix,
+      //     type: itemDetailsById.data.itemHeaderModel.type,
+      //     additional: itemDetailsById.data.itemHeaderModel.additional,
+      //     currency: itemDetailsById.data.itemHeaderModel.currency,
+      //     netPrice: itemDetailsById.data.itemHeaderModel.netPrice,
+      //     itemProductHierarchy: itemDetailsById.data.itemHeaderModel.itemProductHierarchy,
+      //     itemHeaderGeographic: itemDetailsById.data.itemHeaderModel.itemHeaderGeographic,
+      //     responseTime: itemDetailsById.data.itemHeaderModel.responseTime,
+      //     usage: itemDetailsById.data.itemHeaderModel.usage,
+      //     validFrom: itemDetailsById.data.itemHeaderModel.validFrom,
+      //     validTo: itemDetailsById.data.itemHeaderModel.validTo,
+      //     estimatedTime: itemDetailsById.data.itemHeaderModel.estimatedTime,
+      //     servicePrice: itemDetailsById.data.itemHeaderModel.servicePrice,
+      //     status: itemDetailsById.data.itemHeaderModel.status,
+      //     componentCode: itemDetailsById.data.itemHeaderModel.componentCode,
+      //     componentDescription: itemDetailsById.data.itemHeaderModel.componentDescription,
+      //     serialNumber: itemDetailsById.data.itemHeaderModel.serialNumber,
+      //     itemHeaderStrategy: itemDetailsById.data.itemHeaderModel.itemHeaderStrategy,
+      //     variant: itemDetailsById.data.itemHeaderModel.variant,
+      //     itemHeaderCustomerSegment: itemDetailsById.data.itemHeaderModel.itemHeaderCustomerSegment,
+      //     jobCode: itemDetailsById.data.itemHeaderModel.jobCode,
+      //     preparedBy: itemDetailsById.data.itemHeaderModel.preparedBy,
+      //     approvedBy: itemDetailsById.data.itemHeaderModel.approvedBy,
+      //     preparedOn: itemDetailsById.data.itemHeaderModel.preparedOn,
+      //     revisedBy: itemDetailsById.data.itemHeaderModel.revisedBy,
+      //     revisedOn: itemDetailsById.data.itemHeaderModel.revisedOn,
+      //     salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
+      //     offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
+      //     serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
+      //     serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+      //   },
+      //   customItemBodyModel: {
+      //     customItemBodyId: 0,
+      //     itemBodyDescription: itemDetailsById.data.itemBodyModel.itemBodyDescription,
+      //     spareParts: itemDetailsById.data.itemBodyModel.spareParts,
+      //     labours: itemDetailsById.data.itemBodyModel.labours,
+      //     miscellaneous: itemDetailsById.data.itemBodyModel.miscellaneous,
+      //     taskType: itemDetailsById.data.itemBodyModel.taskType,
+      //     solutionCode: itemDetailsById.data.itemBodyModel.solutionCode,
+      //     usageIn: itemDetailsById.data.itemBodyModel.usageIn,
+      //     usage: itemDetailsById.data.itemBodyModel.usage,
+      //     year: itemDetailsById.data.itemBodyModel.year,
+      //     avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
+      //     unit: itemDetailsById.data.itemBodyModel.unit,
+      //     frequency: itemDetailsById.data.itemBodyModel.frequency,
+      //     customItemPrices: customPriceIdArr
+      //   }
+      // }
+
+      // new working request Obj for custom Item creation
       let customItemObj = {
         customItemId: 0,
         itemName: itemDetailsById.data.itemName,
@@ -11163,7 +12475,7 @@ export function CreateCustomPortfolio(props) {
           salesOffice: itemDetailsById.data.itemHeaderModel.salesOffice,
           offerValidity: itemDetailsById.data.itemHeaderModel.offerValidity,
           serviceChargable: itemDetailsById.data.itemHeaderModel.serviceChargable,
-          serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional
+          serviceOptional: itemDetailsById.data.itemHeaderModel.serviceOptional,
         },
         customItemBodyModel: {
           customItemBodyId: 0,
@@ -11177,10 +12489,8 @@ export function CreateCustomPortfolio(props) {
           usage: itemDetailsById.data.itemBodyModel.usage,
           year: itemDetailsById.data.itemBodyModel.year,
           avgUsage: itemDetailsById.data.itemBodyModel.avgUsage,
-          unit: itemDetailsById.data.itemBodyModel.unit,
-          frequency: itemDetailsById.data.itemBodyModel.frequency,
           customItemPrices: customPriceIdArr
-        }
+        },
       }
 
       var _selectedSolutionCustomItemsArray = [...selectedSolutionCustomItems];
@@ -11195,8 +12505,6 @@ export function CreateCustomPortfolio(props) {
         createItemsArr.push(customItemIds)
         _selectedSolutionCustomItemsArray.push({ customItemId: itemRes.data.customItemId })
       }
-
-
     }
 
     setItemListShowLoading(true);
@@ -11233,28 +12541,9 @@ export function CreateCustomPortfolio(props) {
           currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow?.associatedServiceOrBundle, ...newBundleServiceItemsArr];
         } else {
           currentExpendableItemRow["associatedServiceOrBundle"] = [...newBundleServiceItemsArr];
+
         }
-        // currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow?.associatedServiceOrBundle, ...newBundleServiceItemsArr];
 
-        // tempBundleItemsColumnsData.data.map((data, i) => {
-        //   var newBundleServiceItemsArr = [];
-
-        //   for (let c = 0; c < data.bundleItems.length; c++) {
-        //     newBundleServiceItemsArr.push(data.bundleItems[c]);
-        //     expendedBundleServiceItems.push(data.bundleItems[c]);
-        //   }
-
-        //   for (let d = 0; d < data.serviceItems.length; d++) {
-        //     newBundleServiceItemsArr.push(data.serviceItems[d]);
-        //     expendedBundleServiceItems.push(data.serviceItems[d]);
-        //   }
-
-        //   console.log("_currentExpendableItemRow.associatedServiceOrBundle ", _currentExpendableItemRow.associatedServiceOrBundle);
-        //   currentExpendableItemRow.associatedServiceOrBundle = [...currentExpendableItemRow.associatedServiceOrBundle, ...newBundleServiceItemsArr];
-        //   console.log("_currentExpendableItemR ++++++++++++++++  ", currentExpendableItemRow);
-
-        //   // expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: newBundleServiceItemsArr })
-        // })
         var _selectedSearchMasterData = [...selectedSearchMasterData]
 
         const index = _selectedSearchMasterData.findIndex(object => {
@@ -11268,6 +12557,84 @@ export function CreateCustomPortfolio(props) {
 
       }
 
+    }
+
+    // portfolio update request Object
+    let newReqObj = {
+      name: generalComponentData.name,
+      description: generalComponentData.description,
+      customerId: parseInt(customerData.customerID),
+      externalReference: generalComponentData.externalReference,
+      customerGroup: customerData.customerGroup,
+      customerSegment: generalComponentData?.customerSegment != "" ?
+        generalComponentData?.customerSegment?.value : "",
+      template: flagTemplate,
+      visibleInCommerce: flagCommerce,
+
+      validFrom: validityData.fromDate,
+      validTo: validityData.toDate,
+
+      responseTime: stratgyResponseTimeKeyValue?.value ?
+        stratgyResponseTimeKeyValue?.value : "EMPTY",
+      productHierarchy: stratgyHierarchyKeyValue?.value ?
+        stratgyHierarchyKeyValue?.value : "EMPTY",
+      geographic: stratgyGeographicKeyValue?.value ?
+        stratgyGeographicKeyValue?.value : "EMPTY",
+      solutionType: solutionTypeListKeyValue?.value ?
+        solutionTypeListKeyValue?.value : "EMPTY",
+      solutionLevel: solutionLevelListKeyValue?.value ?
+        solutionLevelListKeyValue?.value : "EMPTY",
+
+      portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+        ? portfolioPriceDataId : null,
+
+      customCoverages: selectedSolutionCustomCoverages,
+
+      preparedBy: (administrative.preparedBy != null ||
+        administrative.preparedBy != "" ? administrative.preparedBy : ""),
+      approvedBy: (administrative.approvedBy != null ||
+        administrative.approvedBy != "" ? administrative.approvedBy : ""),
+      preparedOn: administrative.preparedOn,
+      revisedBy: (administrative.revisedBy != null ||
+        administrative.revisedBy != "" ? administrative.revisedBy : ""),
+      revisedOn: administrative.revisedOn,
+      salesOffice: (administrative.salesOffice != null ||
+        administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
+      offerValidity: (administrative.offerValidity != null ||
+        administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
+
+      status: value2.value,
+      supportLevel: value3.value,
+      machineType: "EMPTY",
+      searchTerm: "",
+      lubricant: true,
+      strategyTask: "EMPTY",
+      taskType: "EMPTY",
+      usageCategory: "EMPTY",
+      availability: "EMPTY",
+      type: "EMPTY",
+      application: "EMPTY",
+      contractOrSupport: "EMPTY",
+      lifeStageOfMachine: "EMPTY",
+      numberOfEvents: 0,
+      rating: "",
+      startUsage: 0,
+      endUsage: 0,
+      unit: "EMPTY",
+      additionals: "",
+
+      customItems: _selectedSolutionCustomItemsArray,
+    }
+
+    if ((portfolioId !== null) || (portfolioId !== 0) || (portfolioId !== "") || (portfolioId !== undefined)) {
+      const exitingGeneralSolutionUpdate = await updateCustomPortfolio(
+        portfolioId,
+        newReqObj
+      );
+
+      if (exitingGeneralSolutionUpdate.status === 200) {
+        console.log("portfolio update Successfully.");
+      }
     }
 
     setItemListShowLoading(false);
@@ -11335,78 +12702,211 @@ export function CreateCustomPortfolio(props) {
 
                 /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-                var itemsPrice = await itemPriceDataId(addBundleServiceItem2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
-                console.log("item price is before : ", itemsPrice)
+                var itemsPriceReq = await itemPriceDataId(addBundleServiceItem2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+                console.log("item price is before : ", itemsPriceReq)
+                if (itemsPriceReq.status === 200) {
+                  var itemsPrice = itemsPriceReq.data;
+                  // previous Item price creation request Obj
+                  // let itemPriceObj = {
+                  //   customItemPriceDataId: 0,
+                  //   quantity: parseInt(itemsPrice.quantity),
+                  //   standardJobId: itemsPrice.standardJobId,
+                  //   repairKitId: itemsPrice.repairKitId,
+                  //   templateDescription: itemsPrice.templateDescription,
+                  //   repairOption: itemsPrice.repairOption,
+                  //   additional: itemsPrice.additional,
+                  //   partListId: itemsPrice.partListId,
+                  //   serviceEstimateId: itemsPrice.serviceEstimateId,
+                  //   numberOfEvents: 0,
+                  //   priceMethod: itemsPrice.priceMethod,
+                  //   priceType: itemsPrice.priceType,
+                  //   listPrice: itemsPrice.listPrice,
+                  //   priceEscalation: itemsPrice.priceEscalation,
+                  //   calculatedPrice: itemsPrice.calculatedPrice,
+                  //   flatPrice: itemsPrice.flatPrice,
+                  //   year: itemsPrice.year,
+                  //   noOfYear: parseInt(itemsPrice.noOfYear),
+                  //   sparePartsPrice: itemsPrice.sparePartsPrice,
+                  //   sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  //   servicePrice: itemsPrice.totalPrice,
+                  //   labourPrice: itemsPrice.labourPrice,
+                  //   labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  //   miscPrice: itemsPrice.miscPrice,
+                  //   miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  //   totalPrice: itemsPrice.totalPrice,
+                  //   netService: itemsPrice.netService,
+                  //   additionalPriceType: itemsPrice.additionalPriceType,
+                  //   additionalPriceValue: itemsPrice.additionalPriceValue,
+                  //   discountType: itemsPrice.discountType,
+                  //   discountValue: itemsPrice.discountValue,
+                  //   recommendedValue: itemsPrice.recommendedValue,
+                  //   startUsage: itemsPrice.startUsage,
+                  //   endUsage: itemsPrice.endUsage,
+                  //   sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                  //   labourEscalation: itemsPrice.labourEscalation,
+                  //   miscEscalation: itemsPrice.miscEscalation,
+                  //   serviceEscalation: itemsPrice.serviceEscalation,
+                  //   withBundleService: itemsPrice.withBundleService,
+                  //   customPortfolio: ((portfolioId == 0) ||
+                  //     (portfolioId == null) ||
+                  //     (portfolioId == undefined) ||
+                  //     (portfolioId == "")) ? null : {
+                  //     portfolioId: portfolioId
+                  //   },
+                  //   // tenantId: itemsPrice.tenantId,
+                  //   tenantId: loginTenantId,
+                  //   partsRequired: itemsPrice.partsRequired,
+                  //   labourRequired: itemsPrice.labourRequired,
+                  //   miscRequired: itemsPrice.miscRequired,
+                  //   serviceRequired: itemsPrice.serviceRequired,
+                  //   inclusionExclusion: itemsPrice.inclusionExclusion
+                  // }
 
-                let itemPriceObj = {
-                  customItemPriceDataId: 0,
-                  quantity: parseInt(itemsPrice.quantity),
-                  standardJobId: itemsPrice.standardJobId,
-                  repairKitId: itemsPrice.repairKitId,
-                  templateDescription: itemsPrice.templateDescription,
-                  repairOption: itemsPrice.repairOption,
-                  additional: itemsPrice.additional,
-                  partListId: itemsPrice.partListId,
-                  serviceEstimateId: itemsPrice.serviceEstimateId,
-                  numberOfEvents: 0,
-                  priceMethod: itemsPrice.priceMethod,
-                  priceType: itemsPrice.priceType,
-                  listPrice: itemsPrice.listPrice,
-                  priceEscalation: itemsPrice.priceEscalation,
-                  calculatedPrice: itemsPrice.calculatedPrice,
-                  flatPrice: itemsPrice.flatPrice,
-                  year: itemsPrice.year,
-                  noOfYear: parseInt(itemsPrice.noOfYear),
-                  sparePartsPrice: itemsPrice.sparePartsPrice,
-                  sparePartsPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                  servicePrice: itemsPrice.totalPrice,
-                  labourPrice: itemsPrice.labourPrice,
-                  labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                  miscPrice: itemsPrice.miscPrice,
-                  miscPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                  totalPrice: itemsPrice.totalPrice,
-                  netService: itemsPrice.netService,
-                  additionalPriceType: itemsPrice.additionalPriceType,
-                  additionalPriceValue: itemsPrice.additionalPriceValue,
-                  discountType: itemsPrice.discountType,
-                  discountValue: itemsPrice.discountValue,
-                  recommendedValue: itemsPrice.recommendedValue,
-                  startUsage: itemsPrice.startUsage,
-                  endUsage: itemsPrice.endUsage,
-                  sparePartsEscalation: itemsPrice.sparePartsEscalation,
-                  labourEscalation: itemsPrice.labourEscalation,
-                  miscEscalation: itemsPrice.miscEscalation,
-                  serviceEscalation: itemsPrice.serviceEscalation,
-                  withBundleService: itemsPrice.withBundleService,
-                  customPortfolio: ((portfolioId == 0) ||
-                    (portfolioId == null) ||
-                    (portfolioId == undefined) ||
-                    (portfolioId == "")) ? null : {
-                    portfolioId: portfolioId
-                  },
-                  // tenantId: itemsPrice.tenantId,
-                  tenantId: loginTenantId,
-                  partsRequired: itemsPrice.partsRequired,
-                  labourRequired: itemsPrice.labourRequired,
-                  miscRequired: itemsPrice.miscRequired,
-                  serviceRequired: itemsPrice.serviceRequired,
-                  inclusionExclusion: itemsPrice.inclusionExclusion
+                  // current item price creation request obj
+                  let itemPriceObj = {
+                    customItemPriceDataId: 0,
+                    quantity: parseInt(itemsPrice.quantity),
+                    standardJobId: itemsPrice.standardJobId,
+                    repairKitId: itemsPrice.repairKitId,
+                    templateDescription: itemsPrice.templateDescription,
+                    repairOption: itemsPrice.repairOption,
+                    additional: itemsPrice.additional,
+                    partListId: itemsPrice.partListId,
+                    serviceEstimateId: itemsPrice.serviceEstimateId,
+                    numberOfEvents: 0,
+                    frequency: ((itemsPrice.frequency === "") || (itemsPrice.frequency === null) ||
+                      (itemsPrice.frequency === undefined) || (itemsPrice.frequency === "EMPTY")) ? "CYCLIC" : itemsPrice.frequency,
+                    priceMethod: ((itemsPrice.priceMethod === "") || (itemsPrice.priceMethod === null) ||
+                      (itemsPrice.priceMethod === undefined) || (itemsPrice.priceMethod === "EMPTY")) ? "LIST_PRICE" : itemsPrice.priceMethod,
+                    priceType: ((itemsPrice.priceType === "") || (itemsPrice.priceType === null) ||
+                      (itemsPrice.priceType === undefined) || (itemsPrice.priceType === "EMPTY")) ? "EVENT_BASED" : itemsPrice.priceType,
+                    listPrice: itemsPrice.listPrice,
+                    priceEscalation: itemsPrice.priceEscalation,
+                    calculatedPrice: itemsPrice.calculatedPrice,
+                    flatPrice: itemsPrice.flatPrice,
+                    year: itemsPrice.year,
+                    noOfYear: parseInt(itemsPrice.noOfYear),
+                    sparePartsPrice: itemsPrice.sparePartsPrice,
+                    sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                    servicePrice: itemsPrice.servicePrice,
+                    labourPrice: itemsPrice.labourPrice,
+                    labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                    miscPrice: itemsPrice.miscPrice,
+                    miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                    totalPrice: itemsPrice.totalPrice,
+                    netService: itemsPrice.netService,
+                    additionalPriceType: ((itemsPrice.additionalPriceType === "") || (itemsPrice.additionalPriceType === null) ||
+                      (itemsPrice.additionalPriceType === "EMPTY") || (itemsPrice.additionalPriceType === undefined)) ? "ABSOLUTE" : itemsPrice.additionalPriceType,
+                    additionalPriceValue: itemsPrice.additionalPriceValue,
+                    discountType: ((itemsPrice.discountType === "") || (itemsPrice.discountType === null) ||
+                      (itemsPrice.discountType === undefined) || (itemsPrice.discountType === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : itemsPrice.discountType,
+                    discountValue: itemsPrice.discountValue,
+                    recommendedValue: itemsPrice.recommendedValue,
+                    startUsage: itemsPrice.startUsage,
+                    endUsage: itemsPrice.endUsage,
+                    sparePartsEscalation: itemsPrice.sparePartsEscalation,
+                    labourEscalation: itemsPrice.labourEscalation,
+                    miscEscalation: itemsPrice.miscEscalation,
+                    serviceEscalation: itemsPrice.serviceEscalation,
+                    withBundleService: itemsPrice.withBundleService,
+                    sparePartsNOE: itemsPrice.sparePartsNOE,
+                    labourNOE: itemsPrice.labourNOE,
+                    miscNOE: itemsPrice.miscNOE,
+                    recommendedUnit: ((itemsPrice.recommendedUnit === "") || (itemsPrice.recommendedUnit === null) ||
+                      (itemsPrice.recommendedUnit === undefined) || (itemsPrice.recommendedUnit === "EMPTY")) ? "MONTH" : itemsPrice.recommendedUnit,
+                    usageUnit: ((itemsPrice.usageUnit === "") || (itemsPrice.usageUnit === null) ||
+                      (itemsPrice.usageUnit === undefined) || (itemsPrice.usageUnit === "EMPTY")) ? "YEAR" : itemsPrice.usageUnit,
+                    customPortfolio: ((portfolioId === 0) || (portfolioId === null) ||
+                      (portfolioId === undefined) || (portfolioId === "")) ? null : {
+                      portfolioId: portfolioId
+                    },
+                    tenantId: loginTenantId,
+                    partsRequired: itemsPrice.partsRequired,
+                    labourRequired: itemsPrice.labourRequired,
+                    serviceRequired: itemsPrice.miscRequired,
+                    miscRequired: itemsPrice.serviceRequired,
+                    inclusionExclusion: itemsPrice.inclusionExclusion
+                  }
+
+                  const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
+
+                  customItemsIdData.push(createPriceForCustomItem.data)
+                  customPriceIdArr.push({
+                    customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
+                  })
+
+                  customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
+                  repairKitIdIs = createPriceForCustomItem.data.standardJobId;
+                  standardJobIdIs = createPriceForCustomItem.data.repairKitId;
                 }
-
-                const createPriceForCustomItem = await customPriceCreation(itemPriceObj)
-
-                customItemsIdData.push(createPriceForCustomItem.data)
-                customPriceIdArr.push({
-                  customItemPriceDataId: createPriceForCustomItem.data.customItemPriceDataId
-                })
-
-                customPriceIdIs = createPriceForCustomItem.data.customItemPriceDataId;
-                repairKitIdIs = createPriceForCustomItem.data.standardJobId;
-                standardJobIdIs = createPriceForCustomItem.data.repairKitId;
               }
 
             }
 
+            // Previous working request obj for custom Item creation
+            // let customItemObj = {
+            //   customItemId: 0,
+            //   itemName: addBundleServiceItem2[i].itemName,
+            //   customItemHeaderModel: {
+            //     customItemHeaderId: 0,
+            //     itemHeaderDescription: addBundleServiceItem2[i].itemHeaderModel.itemHeaderDescription,
+            //     bundleFlag: addBundleServiceItem2[i].itemHeaderModel.bundleFlag,
+            //     withBundleService: addBundleServiceItem2[i].itemHeaderModel.withBundleService,
+            //     portfolioItemId: currentItemId,
+            //     reference: addBundleServiceItem2[i].itemHeaderModel.reference,
+            //     itemHeaderMake: addBundleServiceItem2[i].itemHeaderModel.itemHeaderMake,
+            //     itemHeaderFamily: addBundleServiceItem2[i].itemHeaderModel.itemHeaderFamily,
+            //     model: addBundleServiceItem2[i].itemHeaderModel.model,
+            //     prefix: addBundleServiceItem2[i].itemHeaderModel.prefix,
+            //     type: addBundleServiceItem2[i].itemHeaderModel.type,
+            //     additional: addBundleServiceItem2[i].itemHeaderModel.additional,
+            //     currency: addBundleServiceItem2[i].itemHeaderModel.currency,
+            //     netPrice: addBundleServiceItem2[i].itemHeaderModel.netPrice,
+            //     itemProductHierarchy: addBundleServiceItem2[i].itemHeaderModel.itemProductHierarchy,
+            //     itemHeaderGeographic: addBundleServiceItem2[i].itemHeaderModel.itemHeaderGeographic,
+            //     responseTime: addBundleServiceItem2[i].itemHeaderModel.responseTime,
+            //     usage: addBundleServiceItem2[i].itemHeaderModel.usage,
+            //     validFrom: addBundleServiceItem2[i].itemHeaderModel.validFrom,
+            //     validTo: addBundleServiceItem2[i].itemHeaderModel.validTo,
+            //     estimatedTime: addBundleServiceItem2[i].itemHeaderModel.estimatedTime,
+            //     servicePrice: addBundleServiceItem2[i].itemHeaderModel.servicePrice,
+            //     status: addBundleServiceItem2[i].itemHeaderModel.status,
+            //     componentCode: addBundleServiceItem2[i].itemHeaderModel.componentCode,
+            //     componentDescription: addBundleServiceItem2[i].itemHeaderModel.componentDescription,
+            //     serialNumber: addBundleServiceItem2[i].itemHeaderModel.serialNumber,
+            //     itemHeaderStrategy: addBundleServiceItem2[i].itemHeaderModel.itemHeaderStrategy,
+            //     variant: addBundleServiceItem2[i].itemHeaderModel.variant,
+            //     itemHeaderCustomerSegment: addBundleServiceItem2[i].itemHeaderModel.itemHeaderCustomerSegment,
+            //     jobCode: addBundleServiceItem2[i].itemHeaderModel.jobCode,
+            //     preparedBy: addBundleServiceItem2[i].itemHeaderModel.preparedBy,
+            //     approvedBy: addBundleServiceItem2[i].itemHeaderModel.approvedBy,
+            //     preparedOn: addBundleServiceItem2[i].itemHeaderModel.preparedOn,
+            //     revisedBy: addBundleServiceItem2[i].itemHeaderModel.revisedBy,
+            //     revisedOn: addBundleServiceItem2[i].itemHeaderModel.revisedOn,
+            //     salesOffice: addBundleServiceItem2[i].itemHeaderModel.salesOffice,
+            //     offerValidity: addBundleServiceItem2[i].itemHeaderModel.offerValidity,
+            //     serviceChargable: addBundleServiceItem2[i].itemHeaderModel.serviceChargable,
+            //     serviceOptional: addBundleServiceItem2[i].itemHeaderModel.serviceOptional
+            //   },
+            //   customItemBodyModel: {
+            //     customItemBodyId: 0,
+            //     itemBodyDescription: addBundleServiceItem2[i].itemBodyModel.itemBodyDescription,
+            //     spareParts: addBundleServiceItem2[i].itemBodyModel.spareParts,
+            //     labours: addBundleServiceItem2[i].itemBodyModel.labours,
+            //     miscellaneous: addBundleServiceItem2[i].itemBodyModel.miscellaneous,
+            //     taskType: addBundleServiceItem2[i].itemBodyModel.taskType,
+            //     solutionCode: addBundleServiceItem2[i].itemBodyModel.solutionCode,
+            //     usageIn: addBundleServiceItem2[i].itemBodyModel.usageIn,
+            //     usage: addBundleServiceItem2[i].itemBodyModel.usage,
+            //     year: addBundleServiceItem2[i].itemBodyModel.year,
+            //     avgUsage: addBundleServiceItem2[i].itemBodyModel.avgUsage,
+            //     unit: addBundleServiceItem2[i].itemBodyModel.unit,
+            //     frequency: addBundleServiceItem2[i].itemBodyModel.frequency,
+            //     customItemPrices: customPriceIdArr
+            //   }
+            // }
+
+            // new working request Obj for custom Item creation
             let customItemObj = {
               customItemId: 0,
               itemName: addBundleServiceItem2[i].itemName,
@@ -11449,7 +12949,7 @@ export function CreateCustomPortfolio(props) {
                 salesOffice: addBundleServiceItem2[i].itemHeaderModel.salesOffice,
                 offerValidity: addBundleServiceItem2[i].itemHeaderModel.offerValidity,
                 serviceChargable: addBundleServiceItem2[i].itemHeaderModel.serviceChargable,
-                serviceOptional: addBundleServiceItem2[i].itemHeaderModel.serviceOptional
+                serviceOptional: addBundleServiceItem2[i].itemHeaderModel.serviceOptional,
               },
               customItemBodyModel: {
                 customItemBodyId: 0,
@@ -11463,10 +12963,8 @@ export function CreateCustomPortfolio(props) {
                 usage: addBundleServiceItem2[i].itemBodyModel.usage,
                 year: addBundleServiceItem2[i].itemBodyModel.year,
                 avgUsage: addBundleServiceItem2[i].itemBodyModel.avgUsage,
-                unit: addBundleServiceItem2[i].itemBodyModel.unit,
-                frequency: addBundleServiceItem2[i].itemBodyModel.frequency,
                 customItemPrices: customPriceIdArr
-              }
+              },
             }
 
             const itemRes = await customItemCreation(customItemObj)
@@ -14388,128 +15886,177 @@ export function CreateCustomPortfolio(props) {
   };
 
   const getAddPortfolioItemDataFun = async (data) => {
-    console.log("dataaaaa23324442", data)
-    setAddportFolioItem(data);
-    setPriceCalculator({
-      ...priceCalculator,
-      unit: data?.unit,
-      usageType: data?.usageType,
-      frequency: data?.frequency,
-      currency: data?.currency,
-      year: data?.year,
-    })
+    try {
+      console.log("dataaaaa23324442", data)
+      setAddportFolioItem(data);
+      setPriceCalculator({
+        ...priceCalculator,
+        unit: data?.unit,
+        usageType: data?.usageType,
+        frequency: data?.frequency,
+        currency: data?.currency,
+        year: data?.year,
+      })
 
-    // Old Todo 
-    // const rObj = {
-    //     itemPriceDataId: 0,
-    //     quantity: parseInt(data.quantity),
-    //     startUsage: "",
-    //     endUsage: "",
-    //     standardJobId: data.templateId,
-    //     repairKitId: "",
-    //     templateDescription: data.templateDescription?.value,
-    //     repairOption: "",
-    //     additional: "",
-    //     partListId: "",
-    //     serviceEstimateId: "",
-    //     numberOfEvents: parseInt(data.numberOfEvents),
-    //     priceMethod: "LIST_PRICE",
-    //     priceType: "FIXED",
-    //     listPrice: 0,
-    //     priceEscalation: "",
-    //     calculatedPrice: 0,
-    //     flatPrice: 0,
-    //     discountType: "",
-    //     year: data.year,
-    //     noOfYear: data.noOfYear,
-    //     sparePartsPrice: 0,
-    //     sparePartsPriceBreakDownPercentage: 0,
-    //     servicePrice: 0,
-    //     labourPrice: 0,
-    //     labourPriceBreakDownPercentage: 0,
-    //     miscPrice: 0,
-    //     miscPriceBreakDownPercentage: 0,
-    //     totalPrice: 0,
-    //     netService: 0,
-    //     portfolio: {
-    //         portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
-    //     },
-    //     tenantId: 0,
-    //     createdAt: "2022-12-09T13:52:27.880Z",
-    //     partsRequired: true,
-    //     serviceRequired: false,
-    //     labourRequired: true,
-    //     miscRequired: true
-    // };
+      // previous Item price creation request Obj
+      // const rObj = {
+      //   customItemPriceDataId: 0,
+      //   quantity: 0,
+      //   standardJobId: data.templateId,
+      //   repairKitId: data.repairOption,
+      //   templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
+      //   repairOption: "",
+      //   additional: "",
+      //   partListId: "",
+      //   serviceEstimateId: "",
+      //   numberOfEvents: 0,
+      //   priceMethod: "EMPTY",
+      //   priceType: "EMPTY",
+      //   listPrice: 0,
+      //   priceEscalation: "",
+      //   calculatedPrice: 0,
+      //   flatPrice: 0,
+      //   year: data.year?.value,
+      //   noOfYear: parseInt(data.noOfYear),
+      //   sparePartsPrice: 0,
+      //   sparePartsPriceBreakDownPercentage: 0,
+      //   servicePrice: 0,
+      //   labourPrice: 0,
+      //   labourPriceBreakDownPercentage: 0,
+      //   miscPrice: 0,
+      //   miscPriceBreakDownPercentage: 0,
+      //   totalPrice: 0,
+      //   netService: 0,
+      //   additionalPriceType: "ABSOLUTE",
+      //   additionalPriceValue: 0,
+      //   discountType: "EMPTY",
+      //   discountValue: 0,
+      //   recommendedValue: data.recommendedValue,
+      //   startUsage: data.startUsage,
+      //   endUsage: data.endUsage,
+      //   sparePartsEscalation: 0,
+      //   labourEscalation: 0,
+      //   miscEscalation: 0,
+      //   serviceEscalation: 0,
+      //   withBundleService: bundleServiceNeed,
+      //   customPortfolio: ((portfolioId == 0) ||
+      //     (portfolioId == null) ||
+      //     (portfolioId == undefined) ||
+      //     (portfolioId == "")) ? null : {
+      //     portfolioId: portfolioId
+      //   },
+      //   tenantId: loginTenantId,
+      //   partsRequired: true,
+      //   labourRequired: true,
+      //   miscRequired: true,
+      //   serviceRequired: false,
+      //   inclusionExclusion: true
+      // }
 
-    // New Todo
-    const rObj = {
-      customItemPriceDataId: 0,
-      quantity: 0,
-      standardJobId: data.templateId,
-      repairKitId: data.repairOption,
-      templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
-      repairOption: "",
-      additional: "",
-      partListId: "",
-      serviceEstimateId: "",
-      numberOfEvents: 0,
-      priceMethod: "EMPTY",
-      priceType: "EMPTY",
-      listPrice: 0,
-      priceEscalation: "",
-      calculatedPrice: 0,
-      flatPrice: 0,
-      year: data.year?.value,
-      noOfYear: parseInt(data.noOfYear),
-      sparePartsPrice: 0,
-      sparePartsPriceBreakDownPercentage: 0,
-      servicePrice: 0,
-      labourPrice: 0,
-      labourPriceBreakDownPercentage: 0,
-      miscPrice: 0,
-      miscPriceBreakDownPercentage: 0,
-      totalPrice: 0,
-      netService: 0,
-      additionalPriceType: "ABSOLUTE",
-      additionalPriceValue: 0,
-      discountType: "EMPTY",
-      discountValue: 0,
-      recommendedValue: data.recommendedValue,
-      startUsage: data.startUsage,
-      endUsage: data.endUsage,
-      sparePartsEscalation: 0,
-      labourEscalation: 0,
-      miscEscalation: 0,
-      serviceEscalation: 0,
-      withBundleService: bundleServiceNeed,
-      customPortfolio: ((portfolioId == 0) ||
-        (portfolioId == null) ||
-        (portfolioId == undefined) ||
-        (portfolioId == "")) ? null : {
-        portfolioId: portfolioId
-      },
-      tenantId: loginTenantId,
-      partsRequired: true,
-      labourRequired: true,
-      miscRequired: true,
-      serviceRequired: false,
-      inclusionExclusion: true
-    }
+      // current item price creation request obj
+      let rObj = {
+        customItemPriceDataId: ((data.customItemPriceDataId === null) || (data.customItemPriceDataId === undefined) ||
+          (data.customItemPriceDataId === 0)) ? 0 : data.customItemPriceDataId,
+        quantity: 1,
+        standardJobId: data.templateId,
+        repairKitId: data.repairOption,
+        templateDescription: ((data.templateId === "") || (data.templateId === null) ||
+          (data.templateId === "string") || data.templateId === undefined) ? "" : data.templateDescription?.value,
+        repairOption: "",
+        additional: "",
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: 0,
+        frequency: ((data?.frequency === "") || (data?.frequency === null) ||
+          (data?.frequency === undefined) || (data?.frequency === "EMPTY")) ? "CYCLIC" : data?.frequency?.value,
+        priceMethod: "LIST_PRICE",
+        priceType: "EVENT_BASED",
+        listPrice: 0,
+        priceEscalation: "",
+        calculatedPrice: 0,
+        flatPrice: 0,
+        year: data.year?.value,
+        noOfYear: parseInt(data.noOfYear),
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        labourPrice: 0,
+        labourPriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0,
+        netService: 0,
+        additionalPriceType: "ABSOLUTE",
+        additionalPriceValue: 0,
+        discountType: "PORTFOLIO_DISCOUNT",
+        discountValue: 0,
+        recommendedValue: data.recommendedValue,
+        startUsage: data.startUsage,
+        endUsage: data.endUsage,
+        sparePartsEscalation: 0,
+        labourEscalation: 0,
+        miscEscalation: 0,
+        serviceEscalation: 0,
+        withBundleService: bundleServiceNeed,
+        sparePartsNOE: 0,
+        labourNOE: 0,
+        miscNOE: 0,
+        recommendedUnit: ((data?.unit === "") || (data?.unit === null) ||
+          (data?.unit === undefined) || (data?.unit === "EMPTY")) ? "MONTH" : data?.unit?.value === "YEAR" ? "MONTH" : data?.unit?.value,
+        usageUnit: ((data?.unit === "") || (data?.unit === null) ||
+          (data?.unit === undefined) || (data?.unit === "EMPTY")) ? "YEAR" : data?.unit?.value,
+        customPortfolio: ((portfolioId === 0) || (portfolioId === null) ||
+          (portfolioId === undefined) || (portfolioId === "")) ? null : {
+          portfolioId: portfolioId
+        },
+        tenantId: loginTenantId,
+        partsRequired: true,
+        labourRequired: true,
+        serviceRequired: false,
+        miscRequired: true,
+        inclusionExclusion: true
+      }
 
-    const itemPriceDataRes = await customPriceCreation(rObj)
+      if (((data.customItemPriceDataId === null) || (data.customItemPriceDataId === undefined) ||
+        (data.customItemPriceDataId === 0))) {
+        const itemPriceDataRes = await customPriceCreation(rObj)
 
-    if (itemPriceDataRes.status === 200) {
+        if (itemPriceDataRes.status !== 200) {
+          throw "Something Went wrong/ Item not Created"
+        }
+        setItemPriceData(itemPriceDataRes.data)
+        // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
+        // handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        setTempBundleService1([]);
+        setTempBundleService2([]);
+        setTempBundleService3([]);
 
-      setItemPriceData(itemPriceDataRes.data)
-      // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
-      // handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
-      handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
-      setTempBundleService1([]);
-      setTempBundleService2([]);
-      setTempBundleService3([]);
-    } else {
-      toast("😐" + "Something Went wrong/ Item not Created", {
+        if (showAddCustomPortfolioItemModelPopup) {
+          setShowAddCustomPortfolioItemModelPopup(false)
+        }
+
+      } else {
+        const itemPriceDataRes = await updateCustomPriceData(data.customItemPriceDataId, rObj);
+
+        if (itemPriceDataRes.status !== 200) {
+          throw "Something Went wrong/ Item not Created"
+        }
+        setItemPriceData(itemPriceDataRes.data)
+        // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
+        // handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        setTempBundleService1([]);
+        setTempBundleService2([]);
+        setTempBundleService3([]);
+
+        if (showAddCustomPortfolioItemModelPopup) {
+          setShowAddCustomPortfolioItemModelPopup(false)
+        }
+      }
+
+    } catch (error) {
+      toast("😐" + error, {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -14520,10 +16067,6 @@ export function CreateCustomPortfolio(props) {
       });
       return;
     }
-    if (showAddCustomPortfolioItemModelPopup) {
-      setShowAddCustomPortfolioItemModelPopup(false)
-    }
-
   };
 
   const getPriceCalculatorDataFun = (data) => {
@@ -14967,19 +16510,19 @@ export function CreateCustomPortfolio(props) {
             <div className="d-flex align-items-center">
               <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
               <div className="d-flex align-items-center">
-                <a href="#" className="mr-2">
+                <a className="mr-2 cursor">
                   <span><ModeEditOutlineOutlinedIcon /></span>
                 </a>
-                <a href="#" className="mr-2">
+                <a className="mr-2 cursor">
                   <span><ShareOutlinedIcon /></span>
                 </a>
-                <a href="#" className="">
+                <a className="cursor">
                   <span><SearchIcon /></span>
                 </a>
               </div>
             </div>
             <div className="border-left d-flex align-items-center">
-              <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+              <a style={{ whiteSpace: "pre" }} className="btn-sm cursor"><span className="mr-2"><AddIcon /></span>Add</a>
             </div>
           </div>
 
@@ -15425,19 +16968,19 @@ export function CreateCustomPortfolio(props) {
                 <div className="d-flex align-items-center">
                   <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Components</h6>
                   <div className="d-flex align-items-center">
-                    <a href="#" className="mr-2">
+                    <a className="mr-2 cursor">
                       <span><ModeEditOutlineOutlinedIcon /></span>
                     </a>
-                    <a href="#" className="mr-2">
+                    <a className="mr-2 cursor">
                       <span><ShareOutlinedIcon /></span>
                     </a>
-                    <a href="#" className="">
+                    <a className="cursor">
                       <span><SearchIcon /></span>
                     </a>
                   </div>
                 </div>
                 <div className="border-left d-flex align-items-center">
-                  <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+                  <a style={{ whiteSpace: "pre" }} className="btn-sm cursor"><span className="mr-2"><AddIcon /></span>Add</a>
                 </div>
               </div>
               <ul className="mb-0 component-li">
@@ -15483,28 +17026,20 @@ export function CreateCustomPortfolio(props) {
             <div className="d-flex align-items-center">
               <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
               <div className="d-flex align-items-center">
-                <a href="#" className="mr-2">
+                <a className="mr-2 cursor">
                   <span><ModeEditOutlineOutlinedIcon /></span>
                 </a>
-                <a href="#" className="mr-2">
+                <a className="mr-2 cursor">
                   <span><ShareOutlinedIcon /></span>
                 </a>
-                {/* <a href="#" className="">
+                {/* <a className=" cursor">
                   <span><SearchIcon /></span>
                 </a> */}
               </div>
             </div>
             <div className="border-left d-flex align-items-center">
-              <a
-                href={undefined}
-                style={{ whiteSpace: "pre" }}
-                className="btn-sm cursor"
-                onClick={showAddBundleServiceItemPopup}
-              >
-                <span className="mr-2">
-                  <AddIcon />
-                </span>
-                Add
+              <a style={{ whiteSpace: "pre" }} className="btn-sm cursor" onClick={showAddBundleServiceItemPopup}>
+                <span className="mr-2">  <AddIcon /></span> Add
               </a>
             </div>
           </div>
@@ -15519,7 +17054,7 @@ export function CreateCustomPortfolio(props) {
                 // selectableRows
                 expandableRowExpanded={(row) => (row === expendedSolutionSubComponent)}
                 expandOnRowClicked
-                onRowClicked={(row) => setExpendedSolutionSubComponent(row)}
+                onRowClicked={(row) => { setExpendedSolutionSubComponent(row) }}
                 expandableRowsComponent={ExpendSolutionComponentCodeData}
                 onRowExpandToggled={(bool, row) => setExpendedSolutionSubComponent(row)}
                 pagination
@@ -15538,21 +17073,19 @@ export function CreateCustomPortfolio(props) {
             <div className="d-flex align-items-center">
               <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
               <div className="d-flex align-items-center">
-                <a href="#" className="mr-2">
+                <a className="mr-2 cursor">
                   <span><ModeEditOutlineOutlinedIcon /></span>
                 </a>
-                <a href="#" className="mr-2">
+                <a className="mr-2 cursor">
                   <span><ShareOutlinedIcon /></span>
                 </a>
-                {/* <a href="#" className="">
+                {/* <a className="cursor ">
                   <span><SearchIcon /></span>
                 </a> */}
               </div>
             </div>
             <div className="border-left d-flex align-items-center">
-              <a
-                href={undefined}
-                style={{ whiteSpace: "pre" }}
+              <a style={{ whiteSpace: "pre" }}
                 className="btn-sm cursor"
               // onClick={showAddBundleServiceItemPopup}
               >
@@ -15594,23 +17127,22 @@ export function CreateCustomPortfolio(props) {
           <div className="d-flex align-items-center">
             <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Components</h6>
             <div className="d-flex align-items-center">
-              <a href="#" className="mr-2">
+              <a className="mr-2 cursor">
                 <span><ModeEditOutlineOutlinedIcon /></span>
               </a>
-              <a href="#" className="mr-2">
+              <a className="mr-2 cursor">
                 <span><ShareOutlinedIcon /></span>
               </a>
-              {/* <a href="#" className="">
+              {/* <a className="cursor">
                 <span><SearchIcon /></span>
               </a> */}
             </div>
           </div>
           <div className="border-left d-flex align-items-center">
             <a
-              href={undefined}
               style={{ whiteSpace: "pre" }}
               className="btn-sm cursor"
-              onClick={showAddComponentDataPopup}
+              onClick={() => showAddComponentDataPopup(data)}
             >
               <span className="mr-2">
                 <AddIcon />
@@ -15620,44 +17152,16 @@ export function CreateCustomPortfolio(props) {
           </div>
         </div>
         <ul className="mb-0 component-li">
-          {/* {data.itemHeaderModel == undefined ?
-            ((data?.customItemHeaderModel?.componentCode !== "") 
-            || (data?.customItemHeaderModel?.componentCode == null))
-             : ""} */}
-
           <li className="border-bottom p-3">
             <div className="d-flex align-items-center">
               <div class="checkbox mr-3">
                 <input type="checkbox" value=""></input>
               </div>
               <p className="mb-0 font-size-14">
-                {data?.componentCode ? data?.componentCode == "" ? "N/A" : data?.componentCode : "N/A"}
-                {/* {data.itemHeaderModel == undefined ?
-                  data?.customItemHeaderModel?.componentCode :
-                 data?.itemHeaderModel?.componentCode} */}
-                {/* Component Code */}
-                {/* {data?.customItemHeaderModel?.componentCode} */}
+                {(data?.componentCode === "") || ((data?.componentCode === null) || (data?.componentCode === undefined)) ? "N/A" : data?.componentCode}
               </p>
             </div>
           </li>
-          {/* <li className="border-bottom p-3">
-            <div className="d-flex align-items-center">
-              <div class="checkbox mr-3">
-                <input type="checkbox" value=""></input>
-              </div>
-              <p className="mb-0 font-size-14">
-                Component Code
-              </p>
-            </div>
-          </li>
-          <li className="border-bottom p-3">
-            <div className="d-flex align-items-center">
-              <div class="checkbox mr-3">
-                <input type="checkbox" value=""></input>
-              </div>
-              <p className="mb-0 font-size-14">Component Code</p>
-            </div>
-          </li> */}
         </ul>
       </div>
     </div>
@@ -15670,21 +17174,19 @@ export function CreateCustomPortfolio(props) {
           <div className="d-flex align-items-center">
             <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Components</h6>
             <div className="d-flex align-items-center">
-              <a href="#" className="mr-2">
+              <a className="mr-2 cursor">
                 <span><ModeEditOutlineOutlinedIcon /></span>
               </a>
-              <a href="#" className="mr-2">
+              <a className="mr-2 cursor">
                 <span><ShareOutlinedIcon /></span>
               </a>
-              {/* <a href="#" className="">
+              {/* <a className="cursor">
                 <span><SearchIcon /></span>
               </a> */}
             </div>
           </div>
           <div className="border-left d-flex align-items-center">
-            <a
-              href={undefined}
-              style={{ whiteSpace: "pre" }}
+            <a style={{ whiteSpace: "pre" }}
               className="btn-sm cursor"
             // onClick={showAddComponentDataPopup}
             >
@@ -16517,8 +18019,6 @@ export function CreateCustomPortfolio(props) {
   };
 
 
-  console.log("tempBundleItems 16525 ========== ", tempBundleItems);
-
   //Individual machine field value change
   const handleMachineDataChange = (e) => {
     var value = e.target.value;
@@ -16532,12 +18032,12 @@ export function CreateCustomPortfolio(props) {
 
   const handleComponentTabDataSave = async () => {
     try {
-      if (portfolioId === undefined || portfolioId == null) {
+      if ((portfolioId === undefined) || (portfolioId == null) || (portfolioId === "") || (portfolioId === 0)) {
         throw "Please Create Solution First";
       }
 
-      if (currentItemId == null || currentItemId == "") {
-        throw "Please Create Item First";
+      if ((currentItemId === null) || (currentItemId === "") || ((currentItemId === undefined) || (currentItemId == 0))) {
+        throw "Please Create Item First!";
       }
 
       let reqObj = {}
@@ -16630,50 +18130,45 @@ export function CreateCustomPortfolio(props) {
         }
 
         if (Object.keys(reqObj).length !== 0) {
+          if (!(((expendedSolutionSubComponent.standardJobId === "") || (expendedSolutionSubComponent.standardJobId === null)) &&
+            ((expendedSolutionSubComponent.repairKitId === "") || (expendedSolutionSubComponent.repairKitId === null)))) {
 
-          if (((expendedSolutionSubComponent.standardJobId == "") ||
-            (expendedSolutionSubComponent.standardJobId == null)) &&
-            ((expendedSolutionSubComponent.repairKitId != "") ||
-              (expendedSolutionSubComponent.repairKitId != null))) {
-            const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+            if (((expendedSolutionSubComponent.standardJobId == "") ||
+              (expendedSolutionSubComponent.standardJobId == null)) &&
+              ((expendedSolutionSubComponent.repairKitId != "") ||
+                (expendedSolutionSubComponent.repairKitId != null))) {
+              const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+            }
+
+            if (((expendedSolutionSubComponent.repairKitId == "") ||
+              (expendedSolutionSubComponent.repairKitId == null)) &&
+              (expendedSolutionSubComponent.standardJobId != "") ||
+              (expendedSolutionSubComponent.standardJobId != null)) {
+              const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+            }
           }
 
-          if (((expendedSolutionSubComponent.repairKitId == "") ||
-            (expendedSolutionSubComponent.repairKitId == null)) &&
-            (expendedSolutionSubComponent.standardJobId != "") ||
-            (expendedSolutionSubComponent.standardJobId != null)) {
-            const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
-          }
           const res = await getCustomItemPriceById(selectedData.customItemBodyModel.customItemPrices[0].customItemPriceDataId)
 
           setPriceCalculator({
             ...priceCalculator,
-            priceMethod: (res.data.priceMethod != "EMPTY" ||
-              res.data.priceMethod != "" ||
-              res.data.priceMethod != null) ? {
-              label: res.data.priceMethod,
-              value: res.data.priceMethod
-            } : "",
-            priceType: (res.data.priceType != "EMPTY" ||
-              res.data.priceType != "" ||
-              res.data.priceType != null) ? {
-              label: res.data.priceType,
-              value: res.data.priceType
-            } : "",
-            priceAdditionalSelect: {
-              label: res.data.additionalPriceType, value: res.data.additionalPriceType
-            },
+            priceMethod: ((res.data.priceMethod === "") ||
+              (res.data.priceMethod === null) || (res.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === res.data.priceMethod),
+            priceType: ((res.data.priceType === "") ||
+              (res.data.priceType === null) || (res.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === res.data.priceType),
+            priceAdditionalSelect: ((res.data.additionalPriceType === "") ||
+              (res.data.additionalPriceType === null) || (res.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === res.data.additionalPriceType),
             priceAdditionalInput: res.data.additionalPriceValue,
-            discountTypeSelect: (res.data.discountType != "EMPTY" ||
-              res.data.discountType != "" ||
-              res.data.discountType != null) ? {
-              label: res.data.discountType,
-              value: res.data.discountType
-            } : "",
+            discountTypeSelect: ((res.data.discountType === "") ||
+              (res.data.discountType === null) || (res.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === res.data.discountType),
             discountTypeInput: res.data.discountValue,
-            year: {
-              label: res.data.year, value: res.data.year
-            },
+            year: ((res.data.year === "") ||
+              (res.data.year === null) || (res.data.year === "EMPTY")) ? "" :
+              { label: res.data.year, value: res.data.year },
             noOfYear: res.data.noOfYear,
             startUsage: res.data.startUsage,
             endUsage: res.data.endUsage,
@@ -16688,6 +18183,8 @@ export function CreateCustomPortfolio(props) {
 
         if (updateItem.status === 200) {
           setTabs("5")
+        } else {
+          throw "Somthing went wrong."
         }
 
       }
@@ -16790,50 +18287,43 @@ export function CreateCustomPortfolio(props) {
         }
 
         if (Object.keys(reqObj).length !== 0) {
+          if (!(((expendedSolutionSubComponent.standardJobId === "") || (expendedSolutionSubComponent.standardJobId === null)) &&
+            ((expendedSolutionSubComponent.repairKitId === "") || (expendedSolutionSubComponent.repairKitId === null)))) {
+            if (((expendedSolutionSubComponent.standardJobId == "") ||
+              (expendedSolutionSubComponent.standardJobId == null)) &&
+              ((expendedSolutionSubComponent.repairKitId != "") ||
+                (expendedSolutionSubComponent.repairKitId != null))) {
+              const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+            }
 
-          if (((expendedSolutionSubComponent.standardJobId == "") ||
-            (expendedSolutionSubComponent.standardJobId == null)) &&
-            ((expendedSolutionSubComponent.repairKitId != "") ||
-              (expendedSolutionSubComponent.repairKitId != null))) {
-            const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
-          }
-
-          if (((expendedSolutionSubComponent.repairKitId == "") ||
-            (expendedSolutionSubComponent.repairKitId == null)) &&
-            (expendedSolutionSubComponent.standardJobId != "") ||
-            (expendedSolutionSubComponent.standardJobId != null)) {
-            const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+            if (((expendedSolutionSubComponent.repairKitId == "") ||
+              (expendedSolutionSubComponent.repairKitId == null)) &&
+              (expendedSolutionSubComponent.standardJobId != "") ||
+              (expendedSolutionSubComponent.standardJobId != null)) {
+              const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+            }
           }
           const res = await getCustomItemPriceById(selectedData.customItemBodyModel.customItemPrices[0].customItemPriceDataId)
 
           setPriceCalculator({
             ...priceCalculator,
-            priceMethod: (res.data.priceMethod != "EMPTY" ||
-              res.data.priceMethod != "" ||
-              res.data.priceMethod != null) ? {
-              label: res.data.priceMethod,
-              value: res.data.priceMethod
-            } : "",
-            priceType: (res.data.priceType != "EMPTY" ||
-              res.data.priceType != "" ||
-              res.data.priceType != null) ? {
-              label: res.data.priceType,
-              value: res.data.priceType
-            } : "",
-            priceAdditionalSelect: {
-              label: res.data.additionalPriceType, value: res.data.additionalPriceType
-            },
+            priceMethod: ((res.data.priceMethod === "") ||
+              (res.data.priceMethod === null) || (res.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === res.data.priceMethod),
+            priceType: ((res.data.priceType === "") ||
+              (res.data.priceType === null) || (res.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === res.data.priceType),
+            priceAdditionalSelect: ((res.data.additionalPriceType === "") ||
+              (res.data.additionalPriceType === null) || (res.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === res.data.additionalPriceType),
             priceAdditionalInput: res.data.additionalPriceValue,
-            discountTypeSelect: (res.data.discountType != "EMPTY" ||
-              res.data.discountType != "" ||
-              res.data.discountType != null) ? {
-              label: res.data.discountType,
-              value: res.data.discountType
-            } : "",
+            discountTypeSelect: ((res.data.discountType === "") ||
+              (res.data.discountType === null) || (res.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === res.data.discountType),
             discountTypeInput: res.data.discountValue,
-            year: {
-              label: res.data.year, value: res.data.year
-            },
+            year: ((res.data.year === "") ||
+              (res.data.year === null) || (res.data.year === "EMPTY")) ? "" :
+              { label: res.data.year, value: res.data.year },
             noOfYear: res.data.noOfYear,
             startUsage: res.data.startUsage,
             endUsage: res.data.endUsage,
@@ -17098,122 +18588,268 @@ export function CreateCustomPortfolio(props) {
   }
 
   const handleItemPriceCalculatorSave = async () => {
-    setLoadingItem("02")
-    setTabs("6")
+    try {
+      if ((priceCalculator.id === 0) || (priceCalculator.id === null) || (priceCalculator.id === undefined) || (priceCalculator.id === "")) {
+        throw `Please Create Item first`;
+      }
 
-    const updateItemPrice = {
-      customItemPriceDataId: priceCalculator.id,
-      quantity: 0,
-      standardJobId: addPortFolioItem.templateId,
-      repairKitId: addPortFolioItem.repairOption,
-      templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
-      repairOption: "",
-      additional: "",
-      partListId: "",
-      serviceEstimateId: "",
-      numberOfEvents: 0,
-      priceMethod: priceCalculator.priceMethod?.value,
-      priceType: priceCalculator.priceType?.value,
-      listPrice: 0,
-      priceEscalation: "",
-      calculatedPrice: 0,
-      flatPrice: 0,
-      year: priceCalculator?.year?.value,
-      noOfYear: priceCalculator?.noOfYear,
-      sparePartsPrice: 0,
-      sparePartsPriceBreakDownPercentage: 0,
-      servicePrice: 0,
-      labourPrice: 0,
-      labourPriceBreakDownPercentage: 0,
-      miscPrice: 0,
-      miscPriceBreakDownPercentage: 0,
-      totalPrice: 0,
-      netService: 0,
-      additionalPriceType: priceCalculator?.priceAdditionalSelect?.value,
-      additionalPriceValue: priceCalculator?.priceAdditionalInput,
-      discountType: priceCalculator?.discountTypeSelect?.value,
-      discountValue: priceCalculator?.discountTypeInput,
-      recommendedValue: priceCalculator?.recommendedValue,
-      startUsage: priceCalculator?.startUsage,
-      endUsage: priceCalculator?.endUsage,
-      sparePartsEscalation: 0,
-      labourEscalation: 0,
-      miscEscalation: 0,
-      serviceEscalation: 0,
-      withBundleService: true,
-      customPortfolio: ((portfolioId == 0) ||
-        (portfolioId == null) ||
-        (portfolioId == undefined) ||
-        (portfolioId == "")) ? null : {
-        portfolioId: portfolioId
-      },
-      tenantId: loginTenantId,
-      partsRequired: true,
-      labourRequired: true,
-      serviceRequired: true,
-      miscRequired: true,
-      inclusionExclusion: true
+      if (!bundleServiceNeed) {
+        if ((priceCalculator.startUsage == "") ||
+          (priceCalculator.startUsage == undefined)) {
+          throw "Start Usage is a required field, you can’t leave it blank";
+        }
+
+        if ((priceCalculator.endUsage == "") ||
+          (priceCalculator.endUsage == undefined)) {
+          throw "End Usage is a required field, you can’t leave it blank";
+        }
+
+        if (parseInt(priceCalculator.startUsage) > parseInt(priceCalculator.endUsage)) {
+          throw "start Usage must not be greater to End Usage.";
+        }
+
+        if ((priceCalculator.unit == "") ||
+          (priceCalculator.unit == undefined)) {
+          throw "Unit is a required field, you can’t leave it blank";
+        }
+
+        if ((priceCalculator.recommendedValue == "") ||
+          (priceCalculator.recommendedValue == undefined)) {
+          throw "Recommended Value is a required field, you can’t leave it blank";
+        }
+      }
+
+      // Previous item price update reqest obj  
+      // const updateItemPrice = {
+      //   customItemPriceDataId: priceCalculator.id,
+      //   quantity: 0,
+      //   standardJobId: addPortFolioItem.templateId,
+      //   repairKitId: addPortFolioItem.repairOption,
+      //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+      //   repairOption: "",
+      //   additional: "",
+      //   partListId: "",
+      //   serviceEstimateId: "",
+      //   numberOfEvents: 0,
+      //   priceMethod: priceCalculator.priceMethod?.value,
+      //   priceType: priceCalculator.priceType?.value,
+      //   listPrice: 0,
+      //   priceEscalation: "",
+      //   calculatedPrice: 0,
+      //   flatPrice: 0,
+      //   year: priceCalculator?.year?.value,
+      //   noOfYear: priceCalculator?.noOfYear,
+      //   sparePartsPrice: 0,
+      //   sparePartsPriceBreakDownPercentage: 0,
+      //   servicePrice: 0,
+      //   labourPrice: 0,
+      //   labourPriceBreakDownPercentage: 0,
+      //   miscPrice: 0,
+      //   miscPriceBreakDownPercentage: 0,
+      //   totalPrice: 0,
+      //   netService: 0,
+      //   additionalPriceType: priceCalculator?.priceAdditionalSelect?.value,
+      //   additionalPriceValue: priceCalculator?.priceAdditionalInput,
+      //   discountType: priceCalculator?.discountTypeSelect?.value,
+      //   discountValue: priceCalculator?.discountTypeInput,
+      //   recommendedValue: priceCalculator?.recommendedValue,
+      //   startUsage: priceCalculator?.startUsage,
+      //   endUsage: priceCalculator?.endUsage,
+      //   sparePartsEscalation: 0,
+      //   labourEscalation: 0,
+      //   miscEscalation: 0,
+      //   serviceEscalation: 0,
+      //   withBundleService: true,
+      //   customPortfolio: ((portfolioId == 0) ||
+      //     (portfolioId == null) ||
+      //     (portfolioId == undefined) ||
+      //     (portfolioId == "")) ? null : {
+      //     portfolioId: portfolioId
+      //   },
+      //   tenantId: loginTenantId,
+      //   partsRequired: true,
+      //   labourRequired: true,
+      //   serviceRequired: true,
+      //   miscRequired: true,
+      //   inclusionExclusion: true
+      // }
+
+      // current item price update request obj
+      let updateItemPrice = {
+        customItemPriceDataId: priceCalculator.id,
+        quantity: 1,
+        standardJobId: addPortFolioItem.templateId,
+        repairKitId: addPortFolioItem.repairOption,
+        templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+          (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateDescription?.value,
+        repairOption: "",
+        additional: "",
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: 0,
+        frequency: ((addPortFolioItem.frequency === "") || (addPortFolioItem.frequency === null) ||
+          (addPortFolioItem.frequency === "EMPTY") || (addPortFolioItem.frequency === undefined)) ? "CYCLIC" : addPortFolioItem.frequency?.value,
+        priceMethod: ((priceCalculator.priceMethod === "") || ((priceCalculator.priceMethod === null) ||
+          (priceCalculator.priceMethod === "EMPTY") || (priceCalculator.priceMethod === undefined))) ? "LIST_PRICE" : priceCalculator.priceMethod?.value,
+        priceType: ((priceCalculator.priceType === "") || ((priceCalculator.priceType === null) ||
+          (priceCalculator.priceType === "EMPTY") || (priceCalculator.priceType === undefined))) ? "EVENT_BASED" : priceCalculator.priceType?.value,
+        listPrice: 0,
+        priceEscalation: "",
+        calculatedPrice: 0,
+        flatPrice: ((priceCalculator.flatPrice === "") || (priceCalculator.flatPrice === null) ||
+          (priceCalculator.flatPrice === undefined)) ? 0 : priceCalculator.flatPrice,
+        year: priceCalculator?.year?.value,
+        noOfYear: parseInt(priceCalculator?.noOfYear),
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        labourPrice: 0,
+        labourPriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0,
+        netService: 0,
+        additionalPriceType: ((priceCalculator?.priceAdditionalSelect === null) || (priceCalculator?.priceAdditionalSelect === "") ||
+          (priceCalculator?.priceAdditionalSelect === undefined) || (priceCalculator?.priceAdditionalSelect === "EMPTY")) ? "ABSOLUTE" : priceCalculator?.priceAdditionalSelect?.value,
+        additionalPriceValue: priceCalculator?.priceAdditionalInput,
+        discountType: ((priceCalculator?.discountTypeSelect === "") || (priceCalculator?.discountTypeSelect === null) ||
+          (priceCalculator?.discountTypeSelect === undefined) || (priceCalculator?.discountTypeSelect === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : priceCalculator?.discountTypeSelect?.value,
+        discountValue: priceCalculator?.discountTypeInput,
+        recommendedValue: parseInt(priceCalculator?.recommendedValue),
+        startUsage: parseInt(priceCalculator?.startUsage),
+        endUsage: parseInt(priceCalculator?.endUsage),
+        sparePartsEscalation: 0,
+        labourEscalation: 0,
+        miscEscalation: 0,
+        serviceEscalation: 0,
+        withBundleService: true,
+        sparePartsNOE: 0,
+        labourNOE: 0,
+        miscNOE: 0,
+        recommendedUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+          (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "MONTH" :
+          addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+        usageUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+          (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "YEAR" : addPortFolioItem?.unit?.value,
+        customPortfolio: ((portfolioId == "") || (portfolioId == undefined) ||
+          (portfolioId == null) || (portfolioId == 0)) ? null : {
+          portfolioId: portfolioId
+        },
+        tenantId: loginTenantId,
+        partsRequired: true,
+        labourRequired: true,
+        serviceRequired: false,
+        miscRequired: true,
+        inclusionExclusion: false
+      }
+
+      const updatePriceId = await updateCustomPriceData(
+        priceCalculator.id,
+        updateItemPrice
+      );
+
+      if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+        ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+        let newReqObjSJId = {
+          itemId: currentItemId,
+          standardJobId: addPortFolioItem.templateId,
+          repairKitId: addPortFolioItem.repairOption,
+          itemPriceDataId: priceCalculator.id,
+        }
+
+        if (((addPortFolioItem.templateId == "") ||
+          (addPortFolioItem.templateId == null)) &&
+          ((addPortFolioItem.repairOption != "") ||
+            (addPortFolioItem.repairOption != null))) {
+          const price_RkIdUpdate = await customPortfolioItemPriceRkId(newReqObjSJId)
+        }
+
+        if (((addPortFolioItem.repairOption == "") ||
+          (addPortFolioItem.repairOption == null)) &&
+          ((addPortFolioItem.templateId != "") ||
+            (addPortFolioItem.templateId != null))) {
+          const price_SjIdUpdate = await customPortfolioItemPriceSJID(newReqObjSJId)
+        }
+      }
+
+      if (selectedSolutionCustomItems.length > 0) {
+        var tempBundleItemsUrl = selectedSolutionCustomItems.map((data, i) =>
+          // var tempBundleItemsUrl = createItemsArr.map((data, i) =>
+          `itemIds=${data.customItemId}`
+        ).join('&');
+
+        const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+        let expandAblePortfolioItems = []
+        if (tempBundleItemsColumnsData.status === 200) {
+          tempBundleItemsColumnsData.data.map((data, i) => {
+            let expendedBundleServiceItems = [];
+
+            for (let c = 0; c < data.bundleItems.length; c++) {
+              expendedBundleServiceItems.push(data.bundleItems[c]);
+            }
+
+            for (let d = 0; d < data.serviceItems.length; d++) {
+              expendedBundleServiceItems.push(data.serviceItems[d]);
+            }
+
+            expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+          })
+        }
+        // setSelectedSearchMasterData([...selectedSearchMasterData, ...expandAblePortfolioItems]);
+        // setSelectedSearchMasterData(expandAblePortfolioItems);
+        setTempBundleItems(expandAblePortfolioItems)
+
+      }
+
+      const _tempBundleItems = [...tempBundleItems]
+
+
+      // for (let i = 0; i < _tempBundleItems.length; i++) {
+      //   if (currentItemId === _tempBundleItems[i].itemId) {
+      //     for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+
+      //     }
+      //   }
+      // }
+
+
+      // for (let i = 0; i < _tempBundleItems.length; i++) {
+
+      //   if (currentItemId === _tempBundleItems[i].customItemId) {
+      //     if (_tempBundleItems[i].associatedServiceOrBundle) {
+      //       for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+      //         console.log("tempBundleService2", tempBundleService2)
+      //         for (let k = 0; k < tempBundleService2.length; k++) {
+      //           if (_tempBundleItems[i].associatedServiceOrBundle[j].customItemId == tempBundleService3[k].customItemId) {
+      //             tempBundleService2.splice(k, 1)//remove object if already exist
+      //             break;
+      //           }
+      //         }
+      //       }
+      //       _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService3]
+      //     } else {
+      //       _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService3] }
+      //     }
+      //   }
+      //   setTempBundleItems(_tempBundleItems)
+
+      setLoadingItem("02")
+      setTabs("6")
+      setLoadingItem("22")
+      // }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
-
-    const updatePriceId = await updateCustomPriceData(
-      priceCalculator.id,
-      updateItemPrice
-    );
-
-    let newReqObjSJId = {
-      itemId: currentItemId,
-      standardJobId: addPortFolioItem.templateId,
-      repairKitId: addPortFolioItem.repairOption,
-      itemPriceDataId: priceCalculator.id,
-    }
-
-    if (((addPortFolioItem.templateId == "") ||
-      (addPortFolioItem.templateId == null)) &&
-      ((addPortFolioItem.repairOption != "") ||
-        (addPortFolioItem.repairOption != null))) {
-      const price_RkIdUpdate = await customPortfolioItemPriceRkId(newReqObjSJId)
-    }
-
-    if (((addPortFolioItem.repairOption == "") ||
-      (addPortFolioItem.repairOption == null)) &&
-      ((addPortFolioItem.templateId != "") ||
-        (addPortFolioItem.templateId != null))) {
-      const price_SjIdUpdate = await customPortfolioItemPriceSJID(newReqObjSJId)
-    }
-
-    const _tempBundleItems = [...tempBundleItems]
-
-
-    // for (let i = 0; i < _tempBundleItems.length; i++) {
-    //   if (currentItemId === _tempBundleItems[i].itemId) {
-    //     for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
-
-    //     }
-    //   }
-    // }
-
-
-    // for (let i = 0; i < _tempBundleItems.length; i++) {
-
-    //   if (currentItemId === _tempBundleItems[i].customItemId) {
-    //     if (_tempBundleItems[i].associatedServiceOrBundle) {
-    //       for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
-    //         console.log("tempBundleService2", tempBundleService2)
-    //         for (let k = 0; k < tempBundleService2.length; k++) {
-    //           if (_tempBundleItems[i].associatedServiceOrBundle[j].customItemId == tempBundleService3[k].customItemId) {
-    //             tempBundleService2.splice(k, 1)//remove object if already exist
-    //             break;
-    //           }
-    //         }
-    //       }
-    //       _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService3]
-    //     } else {
-    //       _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService3] }
-    //     }
-    //   }
-    //   setTempBundleItems(_tempBundleItems)
-    setLoadingItem("22")
-    // }
   }
 
   const getFormattedDateTimeByTimeStamp = (timeStamp) => {
@@ -17252,6 +18888,139 @@ export function CreateCustomPortfolio(props) {
     var finalDateString = year + "-" + month + "-" + day;
     return finalDateString;
   }
+
+  // function for Click on selected Bundle or Service
+  const handleContinueOfAddedServiceOrBundle = async () => {
+    try {
+      if ((portfolioId === "") || (portfolioId === undefined) || (portfolioId === null) || (portfolioId === 0)) {
+        setItemModelShow(false)
+        throw "Please Create Solution First, then you can Add Items";
+      }
+    } catch (error) {
+      toast.error("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  const handleContinuwOfBundleServiceItemInExpendPortfolioItem = async () => {
+    const _selectedBundleServiceItemsOnExpend = [...selectedBundleServiceItemsOnExpend];
+    setItemListShowLoading(true);
+    setShowAddBundleServiceItemsModelPopup(false)
+    if (selectedSolutionCustomItems.length > 0) {
+
+      var tempBundleItemsUrl = selectedSolutionCustomItems.map((data, i) =>
+        `itemIds=${data.customItemId}`
+      ).join('&');
+
+      // if ((portfolioId !== "" || (portfolioId !== undefined))) {
+      //   tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
+      // }
+
+      const tempBundleItemsColumnsData = await getCustomServiceBundleItemPrices(tempBundleItemsUrl);
+
+      let expandAblePortfolioItems = []
+      if (tempBundleItemsColumnsData.status === 200) {
+        tempBundleItemsColumnsData.data.map((data, i) => {
+          let expendedBundleServiceItems = [];
+
+          for (let c = 0; c < data.bundleItems.length; c++) {
+            expendedBundleServiceItems.push(data.bundleItems[c]);
+          }
+
+          for (let d = 0; d < data.serviceItems.length; d++) {
+            expendedBundleServiceItems.push(data.serviceItems[d]);
+          }
+
+          expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+        })
+      }
+      // setSelectedSearchMasterData([...selectedSearchMasterData, ...expandAblePortfolioItems]);
+      setSelectedSearchMasterData(expandAblePortfolioItems);
+
+      let newReqObj = {
+        name: generalComponentData.name,
+        description: generalComponentData.description,
+        customerId: parseInt(customerData.customerID),
+        externalReference: generalComponentData.externalReference,
+        customerGroup: customerData.customerGroup,
+        customerSegment: generalComponentData?.customerSegment != "" ?
+          generalComponentData?.customerSegment?.value : "",
+        template: flagTemplate,
+        visibleInCommerce: flagCommerce,
+
+        validFrom: validityData.fromDate,
+        validTo: validityData.toDate,
+
+        responseTime: stratgyResponseTimeKeyValue?.value ?
+          stratgyResponseTimeKeyValue?.value : "EMPTY",
+        productHierarchy: stratgyHierarchyKeyValue?.value ?
+          stratgyHierarchyKeyValue?.value : "EMPTY",
+        geographic: stratgyGeographicKeyValue?.value ?
+          stratgyGeographicKeyValue?.value : "EMPTY",
+        solutionType: solutionTypeListKeyValue?.value ?
+          solutionTypeListKeyValue?.value : "EMPTY",
+        solutionLevel: solutionLevelListKeyValue?.value ?
+          solutionLevelListKeyValue?.value : "EMPTY",
+
+        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+          ? portfolioPriceDataId : null,
+
+        customCoverages: selectedSolutionCustomCoverages,
+
+        preparedBy: (administrative.preparedBy != null ||
+          administrative.preparedBy != "" ? administrative.preparedBy : ""),
+        approvedBy: (administrative.approvedBy != null ||
+          administrative.approvedBy != "" ? administrative.approvedBy : ""),
+        preparedOn: administrative.preparedOn,
+        revisedBy: (administrative.revisedBy != null ||
+          administrative.revisedBy != "" ? administrative.revisedBy : ""),
+        revisedOn: administrative.revisedOn,
+        salesOffice: (administrative.salesOffice != null ||
+          administrative.salesOffice != "" ? administrative.salesOffice?.value : ""),
+        offerValidity: (administrative.offerValidity != null ||
+          administrative.offerValidity != "" ? administrative.offerValidity?.value : ""),
+
+        status: value2.value,
+        supportLevel: value3.value,
+        machineType: "EMPTY",
+        searchTerm: "",
+        lubricant: true,
+        strategyTask: "EMPTY",
+        taskType: "EMPTY",
+        usageCategory: "EMPTY",
+        availability: "EMPTY",
+        type: "EMPTY",
+        application: "EMPTY",
+        contractOrSupport: "EMPTY",
+        lifeStageOfMachine: "EMPTY",
+        numberOfEvents: 0,
+        rating: "",
+        startUsage: 0,
+        endUsage: 0,
+        unit: "EMPTY",
+        additionals: "",
+
+        customItems: selectedSolutionCustomItems,
+      }
+
+      // const exitingGeneralSolutionUpdate = await updateCustomPortfolio(
+      //   portfolioId,
+      //   newReqObj
+      // );
+
+
+    }
+
+    setItemListShowLoading(false);
+  }
+
   const handleContinueOfServiceOrBundle = async () => {
     if (showAddBundleServiceItemsModelPopup) {
       setItemListShowLoading(true);
@@ -17929,14 +19698,191 @@ export function CreateCustomPortfolio(props) {
     obj.selectOptions = [];
     tempArray[0] = obj;
     setQuerySearchSelector(tempArray)
+    setCurrentItemId(currentExpendableItemRow.itemId)
+    if ('associatedServiceOrBundle' in currentExpendableItemRow) {
+      setSelectedBundleServiceItemsOnExpend([...currentExpendableItemRow['associatedServiceOrBundle']])
+    } else {
+      setSelectedBundleServiceItemsOnExpend([])
+    }
     setShowAddBundleServiceItemsModelPopup(true);
-    // console.log("13044");
+
     console.log("currentSearchExpendPortfolioItemRow : ", currentExpendableItemRow)
   };
 
-  const showAddComponentDataPopup = () => {
-    // console.log("13048")
+  const showAddComponentDataPopup = (data) => {
+    setItemIdForComponentDataModelPopup(data.itemId)
     setShowAddItemComponentDataModelPopup(true);
+  }
+
+  const handleSaveBundleServiceComponentData = async () => {
+    try {
+      if ((componentData.componentCode === "") || (componentData.componentCode === null) || (componentData.componentCode === undefined)) {
+        throw "Componet code must not be empty"
+      }
+
+      if ((componentData.description === "") || (componentData.description === null) || (componentData.description === undefined)) {
+        throw "Componet descripton must not be empty"
+      }
+
+      let reqObj = {}
+      let itemReqObj = {};
+      // const getBundleServiceDataById = await getCustomItemDataById(expendedSolutionSubComponent.itemId)
+      const getBundleServiceDataById = await getCustomItemDataById(itemIdForComponentDataModelPopup)
+      if (getBundleServiceDataById.status === 200) {
+        const selectedData = getBundleServiceDataById.data;
+        const updateBundleServiceComponent = {
+          customItemId: selectedData.customItemId,
+          itemName: selectedData.itemName,
+          customItemHeaderModel: {
+            customItemHeaderId: selectedData.customItemHeaderModel.customItemHeaderId,
+            itemHeaderDescription: selectedData.customItemHeaderModel.itemHeaderDescription,
+            bundleFlag: selectedData.customItemHeaderModel.bundleFlag,
+            withBundleService: selectedData.customItemHeaderModel.withBundleService,
+            portfolioItemId: selectedData.customItemHeaderModel.portfolioItemId,
+            reference: selectedData.customItemHeaderModel.reference,
+            itemHeaderMake: componentData.make,
+            itemHeaderFamily: componentData.family,
+            model: componentData.model,
+            prefix: componentData.prefix,
+            type: selectedData.customItemHeaderModel.type,
+            additional: selectedData.customItemHeaderModel.additional,
+            currency: selectedData.customItemHeaderModel.currency,
+            netPrice: selectedData.customItemHeaderModel.netPrice,
+            itemProductHierarchy: selectedData.customItemHeaderModel.itemProductHierarchy,
+            itemHeaderGeographic: selectedData.customItemHeaderModel.itemHeaderGeographic,
+            responseTime: selectedData.customItemHeaderModel.responseTime,
+            usage: selectedData.customItemHeaderModel.usage,
+            validFrom: selectedData.customItemHeaderModel.validaFrom,
+            validTo: selectedData.customItemHeaderModel.validTo,
+            estimatedTime: selectedData.customItemHeaderModel.estimatedTime,
+            servicePrice: selectedData.customItemHeaderModel.sservicePrice,
+            status: selectedData.customItemHeaderModel.status,
+            componentCode: componentData.componentCode,
+            componentDescription: componentData.description,
+            serialNumber: selectedData.customItemHeaderModel.serialNumber,
+            itemHeaderStrategy: selectedData.customItemHeaderModel.itemHeaderStrategy,
+            variant: selectedData.customItemHeaderModel.variant,
+            itemHeaderCustomerSegment: selectedData.customItemHeaderModel.itemHeaderCustomerSegment,
+            jobCode: selectedData.customItemHeaderModel.jobcode,
+            preparedBy: selectedData.customItemHeaderModel.preparedBy,
+            approvedBy: selectedData.customItemHeaderModel.approvedBy,
+            preparedOn: selectedData.customItemHeaderModel.preparedOn,
+            revisedBy: selectedData.customItemHeaderModel.revisedBy,
+            revisedOn: selectedData.customItemHeaderModel.revisedOn,
+            salesOffice: selectedData.customItemHeaderModel.salesOffice,
+            offerValidity: selectedData.customItemHeaderModel.offerValidity,
+            serviceChargable: selectedData.customItemHeaderModel.serviceChargable,
+            serviceOptional: selectedData.customItemHeaderModel.serviceOptional
+          },
+          customItemBodyModel: {
+            customItemBodyId: selectedData.customItemBodyModel.customItemBodyId,
+            itemBodyDescription: selectedData.customItemBodyModel.itemBodyDescription,
+            spareParts: selectedData.customItemBodyModel.spareParts,
+            labours: selectedData.customItemBodyModel.labours,
+            miscellaneous: selectedData.customItemBodyModel.miscellaneous,
+            taskType: selectedData.customItemBodyModel.taskType,
+            solutionCode: selectedData.customItemBodyModel.solutionCode,
+            usageIn: selectedData.customItemBodyModel.usageIn,
+            usage: selectedData.customItemBodyModel.usage,
+            year: selectedData.customItemBodyModel.year,
+            avgUsage: selectedData.customItemBodyModel.avgUsage,
+            unit: selectedData.customItemBodyModel.unit,
+            frequency: selectedData.customItemBodyModel.frequency,
+            customItemPrices: selectedData.customItemBodyModel.customItemPrices
+          },
+        }
+
+        if (selectedData.customItemBodyModel.customItemPrices.length > 0) {
+          reqObj = {
+            itemId: expendedSolutionSubComponent.itemId,
+            standardJobId: expendedSolutionSubComponent.standardJobId,
+            repairKitId: expendedSolutionSubComponent.repairKitId,
+            itemPriceDataId: selectedData.customItemBodyModel.customItemPrices[0].customItemPriceDataId
+          }
+        }
+
+        if (Object.keys(reqObj).length !== 0) {
+          if (!(((expendedSolutionSubComponent.standardJobId === "") || (expendedSolutionSubComponent.standardJobId === null)) &&
+            ((expendedSolutionSubComponent.repairKitId === "") || (expendedSolutionSubComponent.repairKitId === null)))) {
+            if (((expendedSolutionSubComponent.standardJobId == "") ||
+              (expendedSolutionSubComponent.standardJobId == null)) &&
+              ((expendedSolutionSubComponent.repairKitId != "") ||
+                (expendedSolutionSubComponent.repairKitId != null))) {
+              const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObj)
+            }
+
+            if (((expendedSolutionSubComponent.repairKitId == "") ||
+              (expendedSolutionSubComponent.repairKitId == null)) &&
+              (expendedSolutionSubComponent.standardJobId != "") ||
+              (expendedSolutionSubComponent.standardJobId != null)) {
+              const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObj)
+            }
+          }
+          const res = await getCustomItemPriceById(selectedData.customItemBodyModel.customItemPrices[0].customItemPriceDataId)
+
+          setPriceCalculator({
+            ...priceCalculator,
+            priceMethod: ((res.data.priceMethod === "") ||
+              (res.data.priceMethod === null) || (res.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === res.data.priceMethod),
+            priceType: ((res.data.priceType === "") ||
+              (res.data.priceType === null) || (res.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === res.data.priceType),
+            priceAdditionalSelect: ((res.data.additionalPriceType === "") ||
+              (res.data.additionalPriceType === null) || (res.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === res.data.additionalPriceType),
+            priceAdditionalInput: res.data.additionalPriceValue,
+            discountTypeSelect: ((res.data.discountType === "") ||
+              (res.data.discountType === null) || (res.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === res.data.discountType),
+            discountTypeInput: res.data.discountValue,
+            year: ((res.data.year === "") ||
+              (res.data.year === null) || (res.data.year === "EMPTY")) ? "" :
+              { label: res.data.year, value: res.data.year },
+            noOfYear: res.data.noOfYear,
+            startUsage: res.data.startUsage,
+            endUsage: res.data.endUsage,
+            recommendedValue: res.data.recommendedValue,
+            netPrice: res.data.netService,
+            totalPrice: res.data.totalPrice,
+            id: res.data.customItemPriceDataId,
+          })
+        }
+
+        // const updateItem = await updateCustomItemData(expendedSolutionSubComponent.itemId, updateBundleServiceComponent);
+        const updateItem = await updateCustomItemData(itemIdForComponentDataModelPopup, updateBundleServiceComponent);
+        if (updateItem.status === 200) {
+          const _currentExpendableItemRow = { ...currentExpendableItemRow };
+          const componentIndex = _currentExpendableItemRow.associatedServiceOrBundle.findIndex(object => {
+            // return object.itemId === expendedSolutionSubComponent.itemId;
+            return object.itemId === itemIdForComponentDataModelPopup;
+          });
+
+          expendedSolutionSubComponent["componentCode"] = componentData.componentCode;
+          expendedSolutionSubComponent["componentDescription"] = componentData.description;
+
+          _currentExpendableItemRow.associatedServiceOrBundle = _currentExpendableItemRow.associatedServiceOrBundle.splice(componentIndex, 1, expendedSolutionSubComponent);
+          var _selectedSearchMasterData = [...selectedSearchMasterData]
+          const index = _selectedSearchMasterData.findIndex(object => {
+            return object.itemId === _currentExpendableItemRow.itemId;
+          });
+
+          _selectedSearchMasterData = _selectedSearchMasterData.splice(index, 1, _currentExpendableItemRow);
+          setSelectedSearchMasterData(_selectedSearchMasterData)
+          setShowAddItemComponentDataModelPopup(false);
+        }
+      }
+    } catch (error) {
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   }
 
 
@@ -18058,24 +20004,22 @@ export function CreateCustomPortfolio(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14" title="Share">
+                <a className="ml-3 cursor font-size-14" title="Share">
                   <img src={shareIcon}></img>
                 </a>
-                <a
-                  href="#"
-                  className="ml-3 font-size-14"
+                <a className="ml-3 cursor font-size-14"
                   title="Items to Review"
                 >
                   <img src={folderaddIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14" title="Upload">
+                <a className="ml-3 font-size-14 cursor" title="Upload">
                   <img src={uploadIcon}></img>
                 </a>
-                {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-                <a href="#" className="ml-3 font-size-14" title="Delete">
+                {/* <a className="ml-3 font-size-14 cursor"><img src={cpqIcon}></img></a> */}
+                <a className="ml-3 font-size-14 cursor" title="Delete">
                   <img src={deleteIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14" title="Copy">
+                <a className="ml-3 font-size-14 cursor" title="Copy">
                   <img src={copyIcon}></img>
                 </a>
                 <DropdownButton
@@ -18102,13 +20046,13 @@ export function CreateCustomPortfolio(props) {
                 <span className="mr-3" style={{ whiteSpace: "pre" }}>
                   {portfolioId ? "Portfolio Details" : "Header"}
                 </span>
-                <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}>
+                <a className="btn-sm cursor" style={{ cursor: "pointer" }}>
                   <i className="fa fa-pencil" aria-hidden="true" onClick={makeHeaderEditable}></i>
                 </a>
-                <a href="#" className="btn-sm">
+                <a className="btn-sm cursor">
                   <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                 </a>
-                <a href="#" className="btn-sm">
+                <a className="btn-sm cursor">
                   <img style={{ width: "14px" }} src={folderaddIcon}></img>
                 </a>
               </div>
@@ -18158,7 +20102,7 @@ export function CreateCustomPortfolio(props) {
                         <div className="col-md-4 col-sm-4">
                           <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
-                              SOLUTION{/*  NAME */} CODE
+                              SOLUTION CODE
                             </label>
                             <input
                               type="text"
@@ -19526,10 +21470,10 @@ export function CreateCustomPortfolio(props) {
                               <span>Price Agreement</span>
                             </h5>
                             <p className=" mb-0">
-                              <a href="#" className="ml-3 ">
+                              <a className="ml-3 cursor">
                                 <img src={editIcon}></img>
                               </a>
-                              <a href="#" className="ml-3 ">
+                              <a className="ml-3 cursor">
                                 <img src={shareIcon}></img>
                               </a>
                             </p>
@@ -19580,7 +21524,6 @@ export function CreateCustomPortfolio(props) {
                                   <td>
                                     <div className="form-group mb-0">
                                       {/* <a
-                href={undefined}
                 className="input-search cursor"
               onClick={() => setModelShowForTemplate(true)}
               ><SearchIcon style={{ fontSize: "30px", paddingTop: "5px" }} /></a> */}
@@ -19642,11 +21585,11 @@ export function CreateCustomPortfolio(props) {
                                   </td>
                                   <td>
                                     <div>
-                                      <a href="#" className="mr-3">
+                                      <a className="mr-3 cursor">
                                         <RemoveRedEyeOutlinedIcon className="font-size-16 mr-2" />
                                         View detail
                                       </a>
-                                      <a href="#" onClick={() => handleRemove(i)} className="">
+                                      <a onClick={() => handleRemove(i)} className="cursor">
                                         <ModeEditIcon className="font-size-16 mr-2" />
                                         View detail
                                       </a>
@@ -19942,7 +21885,7 @@ export function CreateCustomPortfolio(props) {
                           </h6>
                         </div>
                       </div>
-                      {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
+                      {/* <a className="btn btn-primary w-100 cursor" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
                       {/* </div> */}
                     </div>
 
@@ -20346,10 +22289,10 @@ onChange={handleAdministrativreChange}
                         <span style={{ whiteSpace: "pre" }}>Solution Item</span>
                       </h5>
                       <div className="d-flex">
-                        <a href="#" className="mr-2">
+                        <a className="mr-2 cursor">
                           <span><ModeEditOutlineOutlinedIcon /></span>
                         </a>
-                        <a href="#" className="">
+                        <a className="cursor">
                           <span><ShareOutlinedIcon /></span>
                         </a>
                       </div>
@@ -20526,8 +22469,8 @@ onChange={handleAdministrativreChange}
                         }
                       /> */}
                       {/* <div className="input-group-prepend align-items-center cursor">
-                        <a href={undefined}
-                          className="bg-primary btn text-white"
+                        <a
+                          className="bg-primary cursor btn text-white"
                           style={{ zIndex: "0" }}
                           onClick={showSearchPortfolioData}
                         ><span className="mr-2"><SearchIcon /></span>Search</a>
@@ -20553,9 +22496,7 @@ onChange={handleAdministrativreChange}
 
                     </div>
                     <div className="border-left d-flex align-items-center px-2 py-2">
-                      <a
-                        href={undefined}
-                        style={{ whiteSpace: "pre" }}
+                      <a style={{ whiteSpace: "pre" }}
                         className="btn-sm cursor"
                         // onClick={showAddCustomItemPopup} // Current May 21, 2023
                         onClick={handleNewBundleItem}
@@ -20728,25 +22669,25 @@ onChange={handleAdministrativreChange}
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Coverage</h5>
             <div className="d-flex justify-content-center align-items-center">
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={shareIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={folderaddIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={uploadIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={cpqIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={deleteIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={copyIcon}></img>
               </a>
-              <a href="#" className="ml-2">
+              <a className="ml-2 cursor">
                 <MuiMenuComponent options={activityOptions} />
               </a>
             </div>
@@ -20757,20 +22698,20 @@ onChange={handleAdministrativreChange}
                 Table Name
                 <span>
                   {" "}
-                  <a href="#" className="ml-3 font-size-14">
+                  <a className="ml cursor-3 font-size-14">
                     <FontAwesomeIcon icon={faPen} />
                   </a>
                 </span>
               </h6>
               <div>
-                <a href="#" className="btn">
+                <a className="btn cursor">
                   +Add
                 </a>
               </div>
             </div>
             <div className="p-4  row">
               <div className="col-md-6 col-sm-6">
-                <a href="#" className="add-new-recod">
+                <a className="add-new-recod cursor">
                   <div>
                     <FontAwesomeIcon icon={faPlus} />
                     <p className="font-weight-600">Add new record</p>
@@ -20819,34 +22760,34 @@ onChange={handleAdministrativreChange}
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Coverage</h5>
             <div className="d-flex justify-content-center align-items-center">
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={shareIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={folderaddIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={uploadIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={cpqIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={deleteIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={copyIcon}></img>
               </a>
-              <a href="#" className="ml-2">
+              <a className="ml-2 cursor">
                 <MuiMenuComponent options={activityOptions} />
               </a>
             </div>
           </div>
           <div className="card mt-4">
             {/* <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
-                            <h6 className="font-weight-600 text-light mb-0 ml-3">Fleets<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                            <h6 className="font-weight-600 text-light mb-0 ml-3">Fleets<span> <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faPen} /></a></span></h6>
                             <div>
-                                <a href="#" className="btn">+Add</a>
+                                <a className="btn cursor">+Add</a>
                             </div>
                         </div> */}
             <ReactTableNested />
@@ -20897,10 +22838,10 @@ onChange={handleAdministrativreChange}
                                             <FormControlLabel control={<Checkbox defaultChecked />} label="" />
                                         </FormGroup>
                                     </div>
-                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                    <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                    <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                    <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                    <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                    <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                 </div>
                             </div>
 
@@ -20918,10 +22859,10 @@ onChange={handleAdministrativreChange}
                                             <FormControlLabel control={<Checkbox />} label="" />
                                         </FormGroup>
                                     </div>
-                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                    <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                    <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                    <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                    <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                    <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                 </div>
                             </div>
 
@@ -20964,25 +22905,25 @@ onChange={handleAdministrativreChange}
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Coverage</h5>
             <div className="d-flex justify-content-center align-items-center">
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={shareIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={folderaddIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={uploadIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={cpqIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={deleteIcon}></img>
               </a>
-              <a href="#" className="ml-3 font-size-14">
+              <a className="ml-3 cursor font-size-14">
                 <img src={copyIcon}></img>
               </a>
-              <a href="#" className="ml-2">
+              <a className="ml-2 cursor">
                 <MuiMenuComponent options={activityOptions} />
               </a>
             </div>
@@ -20995,10 +22936,10 @@ onChange={handleAdministrativreChange}
                     <span>Coverage123</span>
                   </h5>
                   <p className=" mb-0">
-                    <a href="#" className="ml-3 ">
+                    <a className="ml-3 cursor">
                       <img src={editIcon}></img>
                     </a>
-                    <a href="#" className="ml-3 ">
+                    <a className="ml-3 cursor">
                       <img src={shareIcon}></img>
                     </a>
                   </p>
@@ -21046,7 +22987,7 @@ onChange={handleAdministrativreChange}
               <div className="col-4">
                 <div className="d-flex align-items-center">
                   <div className="col-7 text-center">
-                    <a href="#" className="p-1 more-btn">
+                    <a className="cursor p-1 more-btn">
                       + 3 more
                       <span className="c-btn">C</span>
                       <span className="b-btn">B</span>
@@ -21054,7 +22995,7 @@ onChange={handleAdministrativreChange}
                     </a>
                   </div>
                   <div className="col-5 text-center border-left py-4">
-                    <a href="#" className=" ">
+                    <a className="cursor">
                       + Add Part
                     </a>
                   </div>
@@ -21095,7 +23036,7 @@ onChange={handleAdministrativreChange}
               <div className="d-flex align-items-center">
                 <div className="customselect d-flex ml-3">
                   {/* <span>
-                                        <a href="#" className="btn-sm">+</a>
+                                        <a className="btn-sm cursor">+</a>
                                     </span> */}
                   <Select
                     onChange={handleTypeOfSearchChange}
@@ -21108,7 +23049,7 @@ onChange={handleAdministrativreChange}
                 {typeOfSearch != null ? (
                   <div className="customselect d-flex ml-3">
                     <span>
-                      <a href="#" className="btn-sm">
+                      <a className="btn-sm cursor">
                         +
                       </a>
                     </span>
@@ -21147,14 +23088,11 @@ onChange={handleAdministrativreChange}
               </div>
               <div>
                 <div className="">
-                  <a
-                    href="#"
-                    style={{ cursor: "pointer" }}
-                    className="btn border-left"
+                  <a className="btn cursor border-left"
                   >
                     <span>+</span> Add
                   </a>
-                  <a href="#" className="btn border-left">
+                  <a className="btn cursor border-left">
                     Cancel
                   </a>
                 </div>
@@ -21222,25 +23160,25 @@ onChange={handleAdministrativreChange}
             <div className="d-flex align-items-center justify-content-between mt-2">
               <h5 className="font-weight-600 mb-0">Add Bundle</h5>
               <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={shareIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={folderaddIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={uploadIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={cpqIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={deleteIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={copyIcon}></img>
                 </a>
-                <a href="#" className="ml-2">
+                <a className="ml-2 cursor">
                   <MuiMenuComponent
                     onClick={() => alert()}
                     options={activityOptions}
@@ -21252,13 +23190,13 @@ onChange={handleAdministrativreChange}
               <h5 className="d-flex align-items-center mb-0">
                 <div className="" style={{ display: "contents" }}>
                   <span className="mr-3">Header</span>
-                  <a href="#" className="btn-sm">
+                  <a className="btn-sm cursor">
                     <i className="fa fa-pencil" aria-hidden="true"></i>
                   </a>
-                  <a href="#" className="btn-sm">
+                  <a className="btn-sm cursor">
                     <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                   </a>
-                  <a href="#" className="btn-sm">
+                  <a className="btn-sm cursor">
                     <img style={{ width: "14px" }} src={folderaddIcon}></img>
                   </a>
                 </div>
@@ -21508,7 +23446,7 @@ onChange={handleAdministrativreChange}
                   Bundle Items
                   <span>
                     {" "}
-                    <a href="#" className="ml-3 font-size-14">
+                    <a className="ml-3 font-size-14 cursor">
                       <FontAwesomeIcon icon={faPen} />
                     </a>
                   </span>
@@ -21516,9 +23454,7 @@ onChange={handleAdministrativreChange}
               </div>
               <div className="p-4  row">
                 <div className="col-md-6 col-sm-6">
-                  <a
-                    href="#"
-                    className="add-new-recod"
+                  <a className="add-new-recod cursor"
                     onClick={handleNewBundleItem}
                   >
                     <div>
@@ -21702,7 +23638,7 @@ onChange={handleAdministrativreChange}
                             priceEscalationSelect: e,
                           })
                         }
-                        options={options}
+                        options={priceHeadTypeKeyValue}
                         placeholder="placeholder "
                       />
                       <input
@@ -22048,17 +23984,13 @@ onChange={handleAdministrativreChange}
               </div> */}
             </div>
             <div className="m-3 text-right">
-              <a
-                href="#"
-                onClick={() => setOpen2(false)}
-                className="btn border mr-3 "
+              <a onClick={() => setOpen2(false)}
+                className="btn border mr-3 cursor"
               >
                 {" "}
                 Cancel
               </a>
-              <a
-                href="#"
-                className="btn text-white bg-primary"
+              <a className="btn text-white bg-primary cursor"
                 onClick={
                   serviceOrBundlePrefix === ""
                     ? handleBundleItemSaveAndContinue
@@ -22088,7 +24020,7 @@ onChange={handleAdministrativreChange}
               <h5 className="">Choose what solution you want to build</h5>
             </div>
             {/* <div>
-                        <a href='#' className='btn border-light font-weight-500 bg-light-grey font-size-18'>Explore available solution</a>
+                        <a className='btn border-light font-weight-500 bg-light-grey font-size-18 cursor'>Explore available solution</a>
                     </div> */}
           </div>
           <div className="card mt-4 p-4">
@@ -22191,6 +24123,10 @@ onChange={handleAdministrativreChange}
                 createdBundleItems={createdBundleItems}
                 portfolioDataId={portfolioId}
                 itemModelShow={setItemModelShow}
+                priceMethodDropdownKeyValue={priceMethodKeyValue}
+                priceTypeDropdownKeyValue={priceTypeKeyValue}
+                unitDropdownKeyValue={unitOptionKeyValue}
+                frequencyDropdownKeyValue={frequencyOptionKeyValue}
               />
             </> :
             <>
@@ -22200,6 +24136,10 @@ onChange={handleAdministrativreChange}
                 compoFlag="itemEdit"
                 compoFlagTest="itemEditPort"
                 setBundleServiceNeed={setBundleServiceNeed}
+                priceMethodDropdownKeyValue={priceMethodKeyValue}
+                priceTypeDropdownKeyValue={priceTypeKeyValue}
+                unitDropdownKeyValue={unitOptionKeyValue}
+                frequencyDropdownKeyValue={frequencyOptionKeyValue}
               />
             </>
           }
@@ -22236,7 +24176,8 @@ onChange={handleAdministrativreChange}
                   data={addBundleServiceItem1}
                   customStyles={customStyles}
                   selectableRows
-                  onSelectedRowsChange={(state) => setAddBundleServiceItem2(state.selectedRows)}
+                  // onSelectedRowsChange={(state) => setAddBundleServiceItem2(state.selectedRows)}
+                  onSelectedRowsChange={(state) => setSearchedBundleServiceItemsOnExpend(state.selectedRows)}
                   pagination
                 />
                 {/* {addBundleServiceItem2.length > 0 && ( */}
@@ -22250,9 +24191,10 @@ onChange={handleAdministrativreChange}
                     //     setTempBundleService1([])
                     // }}
                     // onClick={handleCreateCustomItem_SearchResult}
-                    disabled={addBundleServiceItem2.length === 0}
+                    disabled={searchedBundleServiceItemsOnExpend.length === 0}
                     // onClick={handleAddBundleServiceItemsInExpendData}
-                    onClick={handleAddBundleServiceForSolutionItem}
+                    // onClick={handleAddBundleServiceForSolutionItem}
+                    onClick={handleAddBundleServiceItemInExpendPortfolioItem}
                   >
                     Add Selected
                   </button>
@@ -22262,21 +24204,32 @@ onChange={handleAdministrativreChange}
             </>
 
           }
-          {addBundleServiceItem3.length > 0 && <>
+          {selectedBundleServiceItemsOnExpend.length > 0 && <>
             <DataTable
               title=""
-              columns={bundleServiceSelectedItemsColumn}
-              data={addBundleServiceItem3}
+              // columns={bundleServiceSelectedItemsColumn}
+              columns={tempBundleItemColumns1}
+              data={selectedBundleServiceItemsOnExpend}
               customStyles={customStyles}
               expandableRows
               // expandableRowsComponent={ExpandedPriceCalculator}
-              expandableRowsComponent={ExpendCustomItemTablePopup}
+              expandableRowsComponent={(row, i) =>
+                <ExpendCustomItemTablePopup
+                  bundleServiceData={row.data}
+                  priceMethodDropdownKeyValue={priceMethodKeyValue}
+                  priceTypeDropdownKeyValue={priceTypeKeyValue}
+                  unitDropdownKeyValue={unitOptionKeyValue}
+                  frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                  discountTypeDropdownKeyValue={discountTypeOptions}
+                />}
               onRowExpandToggled={handleExpandRowForPriceCalculator}
               pagination
             />
             <div className="row mt-5" style={{ justifyContent: "right" }}>
               <button type="button" className="btn btn-light"
-                onClick={handleContinueOfServiceOrBundle}>Continue</button>
+                // onClick={handleContinueOfServiceOrBundle}
+                onClick={handleContinuwOfBundleServiceItemInExpendPortfolioItem}
+              >Continue</button>
             </div>
           </>}
         </Modal.Body>
@@ -22692,7 +24645,8 @@ onChange={handleAdministrativreChange}
             <div className="row mt-5" style={{ justifyContent: "right" }}>
               <button
                 type="button"
-                onClick={handleComponentDataSave}
+                // onClick={handleComponentDataSave}
+                onClick={handleSaveBundleServiceComponentData}
                 className="btn btn-light"
               >
                 Save and Continue
@@ -23022,9 +24976,7 @@ onChange={handleAdministrativreChange}
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group">
                     <div className="mt-4">
-                      <a
-                        href="#"
-                        className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                      <a className="form-control cursor Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                       >
                         <span className="mr-2">+</span>Add Template / Kit
                       </a>
@@ -23068,9 +25020,7 @@ onChange={handleAdministrativreChange}
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <div className="mt-4">
-                      <a
-                        href="#"
-                        className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                      <a className="form-control cursor Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                       >
                         <span className="mr-2">+</span>Add Repair Option
                       </a>
@@ -23079,9 +25029,7 @@ onChange={handleAdministrativreChange}
                 </div>
               </div>
               <div className="text-right pb-2">
-                <a
-                  href="#"
-                  className="btn border mr-4"
+                <a className="btn border mr-4 cursor"
                   onClick={() => setOpenAddBundleItem(false)}
                 >
                   Cancel
@@ -23498,9 +25446,7 @@ onChange={handleAdministrativreChange}
               </div>
             </div>
             <div className="text-right pb-2">
-              <a
-                href="#"
-                className="btn border mr-4"
+              <a className="btn border mr-4 cursor"
                 onClick={() => setOpenMiniBundleItem(false)}
               >
                 Cancel
@@ -23530,25 +25476,25 @@ onChange={handleAdministrativreChange}
                 ADD {serviceOrBundlePrefix}
               </h5>
               <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={shareIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={folderaddIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={uploadIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={cpqIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={deleteIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 cursor font-size-14">
                   <img src={copyIcon}></img>
                 </a>
-                <a href="#" className="ml-2">
+                <a className="ml-2 cursor">
                   <MuiMenuComponent
                     onClick={() => alert()}
                     options={activityOptions}
@@ -23560,13 +25506,13 @@ onChange={handleAdministrativreChange}
               <h5 className="d-flex align-items-center mb-0">
                 <div className="" style={{ display: "contents" }}>
                   <span className="mr-3">Header</span>
-                  <a href="#" className="btn-sm">
+                  <a className="btn-sm cursor">
                     <i className="fa fa-pencil" aria-hidden="true"></i>
                   </a>
-                  <a href="#" className="btn-sm">
+                  <a className="btn-sm cursor">
                     <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                   </a>
-                  <a href="#" className="btn-sm">
+                  <a className="btn-sm cursor">
                     <img style={{ width: "14px" }} src={folderaddIcon}></img>
                   </a>
                 </div>
@@ -23844,7 +25790,7 @@ onChange={handleAdministrativreChange}
                 </FormGroup>
               </div>
               <div>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 font-size-14 cursor">
                   <img src={deleteIcon}></img>
                 </a>
               </div>
@@ -23899,7 +25845,7 @@ onChange={handleAdministrativreChange}
                 </FormGroup>
               </div>
               <div>
-                <a href="#" className="ml-3 font-size-14">
+                <a className="ml-3 font-size-14 cursor">
                   <img src={deleteIcon}></img>
                 </a>
               </div>
@@ -23953,9 +25899,7 @@ onChange={handleAdministrativreChange}
             </h5>
             <div className="mt-3">
               <h6>
-                <a
-                  href="#"
-                  className="btn-sm text-white mr-2"
+                <a className="btn-sm text-white cursor mr-2"
                   style={{ background: "#79CBA2" }}
                 >
                   Free
@@ -23963,9 +25907,7 @@ onChange={handleAdministrativreChange}
                 50 Point Inspection
               </h6>
               <h6 className="mt-3">
-                <a
-                  href="#"
-                  className="btn-sm text-white mr-2 "
+                <a className="btn-sm cursor text-white mr-2 "
                   style={{ background: "#79CBA2" }}
                 >
                   Free
@@ -23975,14 +25917,14 @@ onChange={handleAdministrativreChange}
             </div>
             <div className=" d-flex justify-content-between mt-4">
               <div>
-                <a href={undefined} className="btn text-violet bg-light-blue" onClick={PopupOptionalShow}>
+                <a className="btn text-violet bg-light-blue cursor" onClick={PopupOptionalShow}>
                   <b>
                     <span className="mr-2">+</span>Add more services
                   </b>
                 </a>
               </div>
               {/* <div>
-                    <a href="#" className="btn text-violet">
+                    <a className="btn text-violet cursor">
                       <b>I Have Parts</b>
                     </a>
                   </div> */}
@@ -24069,7 +26011,7 @@ onChange={handleAdministrativreChange}
                     </FormGroup>
                   </div>
                   <div>
-                    <a href="#" className="ml-3 font-size-14">
+                    <a className="ml-3 font-size-14 cursor">
                       <img src={deleteIcon}></img>
                     </a>
                   </div>
@@ -24126,7 +26068,7 @@ onChange={handleAdministrativreChange}
                     </FormGroup>
                   </div>
                   <div>
-                    <a href="#" className="ml-3 font-size-14">
+                    <a className="ml-3 font-size-14 cursor">
                       <img src={deleteIcon}></img>
                     </a>
                   </div>
@@ -24156,9 +26098,7 @@ onChange={handleAdministrativreChange}
                 </h5>
                 <div className="mt-3">
                   <h6>
-                    <a
-                      href="#"
-                      className="btn-sm text-white mr-2"
+                    <a className="btn-sm cursor text-white mr-2"
                       style={{ background: "#79CBA2" }}
                     >
                       Free
@@ -24166,9 +26106,7 @@ onChange={handleAdministrativreChange}
                     50 Point Inspection
                   </h6>
                   <h6 className="mt-3">
-                    <a
-                      href="#"
-                      className="btn-sm text-white mr-2 "
+                    <a className="btn-sm cursor text-white mr-2 "
                       style={{ background: "#79CBA2" }}
                     >
                       Free
@@ -24178,14 +26116,14 @@ onChange={handleAdministrativreChange}
                 </div>
                 <div className=" d-flex justify-content-between mt-4">
                   <div>
-                    <a href="#" className="btn text-violet bg-light-blue">
+                    <a className="btn cursor text-violet bg-light-blue">
                       <b>
                         <span className="mr-2">+</span>Add more services
                       </b>
                     </a>
                   </div>
                   <div>
-                    <a href="#" className="btn text-violet">
+                    <a className="btn text-violet cursor">
                       <b>I Have Parts</b>
                     </a>
                   </div>
@@ -24210,7 +26148,8 @@ onChange={handleAdministrativreChange}
             <TabContext value={tabs}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList className="custom-tabs-div"
-                  onChange={(e, newValue) => setTabs(newValue)}
+                  // onChange={(e, newValue) => setTabs(newValue)}
+                  onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
@@ -24240,6 +26179,10 @@ onChange={handleAdministrativreChange}
                       createdBundleItems={createdBundleItems}
                       portfolioDataId={portfolioId}
                       itemModelShow={setItemModelShow}
+                      priceMethodDropdownKeyValue={priceMethodKeyValue}
+                      priceTypeDropdownKeyValue={priceTypeKeyValue}
+                      unitDropdownKeyValue={unitOptionKeyValue}
+                      frequencyDropdownKeyValue={frequencyOptionKeyValue}
                     />
                   </> :
                   <>
@@ -24249,6 +26192,10 @@ onChange={handleAdministrativreChange}
                       compoFlag="itemEdit"
                       compoFlagTest="itemEditPort"
                       setBundleServiceNeed={setBundleServiceNeed}
+                      priceMethodDropdownKeyValue={priceMethodKeyValue}
+                      priceTypeDropdownKeyValue={priceTypeKeyValue}
+                      unitDropdownKeyValue={unitOptionKeyValue}
+                      frequencyDropdownKeyValue={frequencyOptionKeyValue}
                     />
                   </>
                 }
@@ -24320,7 +26267,15 @@ onChange={handleAdministrativreChange}
                     customStyles={customStyles}
                     expandableRows
                     // expandableRowsComponent={ExpandedPriceCalculator}
-                    expandableRowsComponent={ExpendCustomItemTablePopup}
+                    expandableRowsComponent={(row, i) =>
+                      <ExpendCustomItemTablePopup
+                        bundleServiceData={row.data}
+                        priceMethodDropdownKeyValue={priceMethodKeyValue}
+                        priceTypeDropdownKeyValue={priceTypeKeyValue}
+                        unitDropdownKeyValue={unitOptionKeyValue}
+                        frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                        discountTypeDropdownKeyValue={discountTypeOptions}
+                      />}
                     onRowExpandToggled={handleExpandRowForPriceCalculator}
                     pagination
                   />
@@ -24337,20 +26292,6 @@ onChange={handleAdministrativreChange}
               <TabPanel value="4">
                 <>
                   <div className="ligt-greey-bg p-3 mb-5">
-                    {/* <div>
-                                            <span className="mr-3">
-                                                <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                                                <span className="ml-2">Related part list(s)</span>
-                                            </span>
-                                            <span className="mr-3">
-                                                <AccessAlarmOutlinedIcon className=" font-size-16" />
-                                                <span className="ml-2">Related template(s)</span>
-                                            </span>
-                                            <span>
-                                                <SellOutlinedIcon className=" font-size-16" />
-                                                <span className="ml-2">Related repair option</span>
-                                            </span>
-                                        </div> */}
                     <div>
                       <span className="mr-3 cursor">
                         <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
@@ -24417,86 +26358,6 @@ onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
-                    {/* <div className="col-md-6 col-sm-6">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500">
-                                                    Make
-                                                </label>
-                                                <div className="customselectsearch">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10 text-primary"
-                                                        name="make"
-                                                        value={componentData.make}
-                                                        onChange={handleComponentChange}
-                                                        autoComplete="off"
-                                                    // disable
-                                                    />
-                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarMake">
-                                                        {componentData.makeSuggestions.map(
-                                                            (currentItem, j) => (
-                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentMakeSuggetionsClick(e, j)}>
-                                                                    {currentItem.make}
-                                                                </li>
-                                                            )
-                                                        )}
-                                                    </ul>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-sm-6">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500">
-                                                    Model
-                                                </label>
-                                                <div className="customselectsearch">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10 text-primary"
-                                                        name="model"
-                                                        value={componentData.model}
-                                                        onChange={handleComponentChange}
-                                                        autoComplete="off"
-                                                    />
-                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarModel">
-                                                        {componentData.modelSuggestions.map(
-                                                            (currentItem, j) => (
-                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentModelSuggetionsClick(e, j)}>
-                                                                    {currentItem.model}
-                                                                </li>
-                                                            )
-                                                        )}
-                                                    </ul>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-sm-6">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500">
-                                                    Serial No.
-                                                </label>
-                                                <div className="customselectsearch">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10 text-primary"
-                                                        name="serialNo"
-                                                        value={componentData.serialNo}
-                                                        onChange={handleComponentChange}
-                                                        autoComplete="off"
-                                                    />
-
-                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrolbarSerialNo">
-                                                        {componentData.serialNoSuggestions.map(
-                                                            (currentItem, j) => (
-                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentSerialNoSuggetionsClick(e, j)}>
-                                                                    {currentItem.family}
-                                                                </li>
-                                                            )
-                                                        )}
-                                                    </ul>}
-                                                </div>
-                                            </div>
-                                        </div> */}
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-12 font-weight-500">
@@ -24590,7 +26451,7 @@ onChange={handleAdministrativreChange}
                               value={componentData.priceAdditionalSelect}
                               name="priceAdditionalSelect"
                               onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
-                              options={options}
+                              options={additionalPriceHeadTypeKeyValue}
                               placeholder="Select"
                               className="text-primary"
                             />
@@ -24621,7 +26482,7 @@ onChange={handleAdministrativreChange}
                             value={componentData.priceEscalationSelect}
                             name="priceEscalationSelect"
                             onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
-                            options={options}
+                            options={priceHeadTypeKeyValue}
                             placeholder="placeholder "
                           />
                           <input
@@ -24688,7 +26549,7 @@ onChange={handleAdministrativreChange}
                               name="discountTypeSelect"
                               onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
                               isClearable={true}
-                              options={options}
+                              options={discountTypeOptions}
                               placeholder="Select"
                               className="text-primary"
                             />
@@ -24756,7 +26617,7 @@ onChange={handleAdministrativreChange}
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceMethod == "" ||
                                 priceCalculator?.priceMethod == undefined)
-                                ? "NA" : priceCalculator?.priceMethod?.value}
+                                ? "NA" : priceCalculator?.priceMethod?.label}
                             </h6>
                           </div>
                         </div>
@@ -24766,7 +26627,7 @@ onChange={handleAdministrativreChange}
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.currency == "" ||
                                 priceCalculator?.currency == undefined)
-                                ? "NA" : priceCalculator?.currency?.value}
+                                ? "NA" : priceCalculator?.currency?.label}
                             </h6>
                           </div>
                         </div>
@@ -24786,7 +26647,7 @@ onChange={handleAdministrativreChange}
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceType == "" ||
                                 priceCalculator?.priceType == undefined)
-                                ? "NA" : priceCalculator?.priceType?.value}
+                                ? "NA" : priceCalculator?.priceType?.label}
                             </h6>
                           </div>
                         </div>
@@ -24796,7 +26657,7 @@ onChange={handleAdministrativreChange}
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceAdditionalSelect == "" ||
                                 priceCalculator?.priceAdditionalSelect == undefined)
-                                ? "NA" : priceCalculator?.priceAdditionalSelect?.value}
+                                ? "NA" : priceCalculator?.priceAdditionalSelect?.label}
                               {(priceCalculator?.priceAdditionalInput == "" ||
                                 priceCalculator?.priceAdditionalInput == undefined)
                                 ? ` NA` : ` ${priceCalculator?.priceAdditionalInput}`}
@@ -24809,7 +26670,7 @@ onChange={handleAdministrativreChange}
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.escalationPriceOptionsValue1 == "" ||
                                 priceCalculator?.escalationPriceOptionsValue1 == undefined)
-                                ? "NA" : priceCalculator?.escalationPriceOptionsValue1?.value}
+                                ? "NA" : priceCalculator?.escalationPriceOptionsValue1?.label}
                               {(priceCalculator?.escalationPriceInputValue == "" ||
                                 priceCalculator?.escalationPriceInputValue == undefined)
                                 ? ` NA` : ` ${priceCalculator?.escalationPriceInputValue}`}
@@ -24841,7 +26702,7 @@ onChange={handleAdministrativreChange}
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.discountTypeSelect == "" ||
                                 priceCalculator?.discountTypeSelect == undefined)
-                                ? "NA" : priceCalculator?.discountTypeSelect?.value}
+                                ? "NA" : priceCalculator?.discountTypeSelect?.label}
                               {(priceCalculator?.discountTypeInput == "" ||
                                 priceCalculator?.discountTypeInput == undefined)
                                 ? ` NA` : ` ${priceCalculator?.discountTypeInput}`}
@@ -24854,7 +26715,7 @@ onChange={handleAdministrativreChange}
                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {(priceCalculator?.priceBreakDownOptionsKeyValue1 == "" ||
                                 priceCalculator?.priceBreakDownOptionsKeyValue1 == undefined)
-                                ? "NA" : priceCalculator?.priceBreakDownOptionsKeyValue1?.value}
+                                ? "NA" : priceCalculator?.priceBreakDownOptionsKeyValue1?.label}
                               {(priceCalculator?.priceBreakDownInputValue == "" ||
                                 priceCalculator?.priceBreakDownInputValue == undefined)
                                 ? ` NA` : ` ${priceCalculator?.priceBreakDownInputValue}`}
@@ -24870,7 +26731,7 @@ onChange={handleAdministrativreChange}
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(priceCalculator?.year == "" ||
                                   priceCalculator?.year == undefined)
-                                  ? "NA" : priceCalculator?.year?.value}
+                                  ? "NA" : priceCalculator?.year?.label}
                               </h6>
                             </div>
                           </div>
@@ -24913,7 +26774,7 @@ onChange={handleAdministrativreChange}
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(addPortFolioItem?.usageType == "" ||
                                   addPortFolioItem?.usageType == undefined)
-                                  ? "NA" : addPortFolioItem?.usageType?.value}
+                                  ? "NA" : addPortFolioItem?.usageType?.label}
                               </h6>
                             </div>
                           </div>
@@ -24923,7 +26784,7 @@ onChange={handleAdministrativreChange}
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(addPortFolioItem?.frequency == "" ||
                                   addPortFolioItem?.frequency == undefined)
-                                  ? "NA" : addPortFolioItem?.frequency?.value}
+                                  ? "NA" : addPortFolioItem?.frequency?.label}
                               </h6>
                             </div>
                           </div>
@@ -24933,7 +26794,7 @@ onChange={handleAdministrativreChange}
                               <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(addPortFolioItem?.unit == "" ||
                                   addPortFolioItem?.unit == undefined)
-                                  ? "NA" : addPortFolioItem?.unit?.value}
+                                  ? "NA" : addPortFolioItem?.unit?.label}
                               </h6>
                             </div>
                           </div>
@@ -25284,61 +27145,62 @@ onChange={handleAdministrativreChange}
                           </div>
                         </div>
                       </div>
-                      <div className="border border-radius-10 mt-3 py-2 px-3">
-                        <div className="row input-fields">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                YEAR
-                              </label>
+                      {!bundleServiceNeed &&
+                        <div className="border border-radius-10 mt-3 py-2 px-3">
+                          <div className="row input-fields">
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  YEAR
+                                </label>
 
 
-                              <Select
-                                // options={[
-                                //   { value: "1", label: "1" },
-                                //   { value: "2", label: "2" },
-                                //   { value: "3", label: "3" },
-                                // ]}
-                                options={yearsOption}
-                                placeholder="Select..."
-                                className="text-primary"
-                                onChange={(e) =>
-                                  setPriceCalculator({
-                                    ...priceCalculator,
-                                    year: e
-                                  })
-                                }
-                                value={priceCalculator.year}
-                              />
+                                <Select
+                                  // options={[
+                                  //   { value: "1", label: "1" },
+                                  //   { value: "2", label: "2" },
+                                  //   { value: "3", label: "3" },
+                                  // ]}
+                                  options={yearsOption}
+                                  placeholder="Select..."
+                                  className="text-primary"
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      year: e
+                                    })
+                                  }
+                                  value={priceCalculator.year}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                NO. OF YEARS
-                              </label>
-                              <input
-                                type="number"
-                                // type="text"
-                                className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                placeholder="No. of Years"
-                                // defaultValue={props?.priceCalculator?.startUsage}
-                                // value={priceCalculator.startUsage}
-                                onChange={(e) =>
-                                  setPriceCalculator({
-                                    ...priceCalculator,
-                                    noOfYear: e.target.value,
-                                  })}
-                                value={priceCalculator.noOfYear}
-                                name="noOfYear"
-                              />
-                              {/* <Select
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  NO. OF YEARS
+                                </label>
+                                <input
+                                  type="number"
+                                  // type="text"
+                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                  placeholder="No. of Years"
+                                  // defaultValue={props?.priceCalculator?.startUsage}
+                                  // value={priceCalculator.startUsage}
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      noOfYear: e.target.value,
+                                    })}
+                                  value={priceCalculator.noOfYear}
+                                  name="noOfYear"
+                                />
+                                {/* <Select
                                   options={[
                                     { value: "1", label: "1" },
                                     { value: "2", label: "2" },
@@ -25351,320 +27213,322 @@ onChange={handleAdministrativreChange}
                                   }
                                   value={addPortFolioItem.noOfYear}
                                 /> */}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
-                        <div className="row input-fields">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                START USAGE
-                              </label>
-                              <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                              >
-                                <input
-                                  type="number"
-                                  // type="text"
-                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                  placeholder="10,000 hours"
-                                  // defaultValue={props?.priceCalculator?.startUsage}
-                                  // value={priceCalculator.startUsage}
+                          <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                          <div className="row input-fields">
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  START USAGE
+                                </label>
+                                <div
+                                  className=" d-flex form-control-date"
+                                  style={{ overflow: "hidden" }}
+                                >
+                                  <input
+                                    type="number"
+                                    // type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                    placeholder="Required*"
+                                    // defaultValue={props?.priceCalculator?.startUsage}
+                                    // value={priceCalculator.startUsage}
+                                    onChange={(e) =>
+                                      setPriceCalculator({
+                                        ...priceCalculator,
+                                        startUsage: e.target.value,
+                                      })}
+                                    value={priceCalculator.startUsage}
+                                    name="startUsage"
+                                  />
+                                  <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                                </div>
+                                <div className="css-w8dmq8">*Mandatory</div>
+                              </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  END USAGE
+                                </label>
+                                <div
+                                  className=" d-flex form-control-date"
+                                  style={{ overflow: "hidden" }}
+                                >
+                                  <input
+                                    type="number"
+                                    // type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                    placeholder="Required*"
+                                    // defaultValue={props?.priceCalculator?.startUsage}
+                                    // value={priceCalculator.startUsage}
+                                    onChange={(e) =>
+                                      setPriceCalculator({
+                                        ...priceCalculator,
+                                        endUsage: e.target.value,
+                                      })}
+                                    value={priceCalculator.endUsage}
+                                    name="endUsage"
+                                  />
+                                  <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
+                                </div>
+                                <div className="css-w8dmq8">*Mandatory</div>
+                              </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  USAGE TYPE
+                                </label>
+                                <Select
+                                  options={usageTypeOption}
+                                  placeholder="Select..."
+                                  className="text-primary"
                                   onChange={(e) =>
                                     setPriceCalculator({
                                       ...priceCalculator,
-                                      startUsage: e.target.value,
-                                    })}
-                                  value={priceCalculator.startUsage}
-                                  name="startUsage"
-                                />
-                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
-                              </div>
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                END USAGE
-                              </label>
-                              <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                              >
-                                <input
-                                  type="number"
-                                  // type="text"
-                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                  placeholder="16,000 hours"
-                                  // defaultValue={props?.priceCalculator?.startUsage}
-                                  // value={priceCalculator.startUsage}
-                                  onChange={(e) =>
-                                    setPriceCalculator({
-                                      ...priceCalculator,
-                                      endUsage: e.target.value,
-                                    })}
-                                  value={priceCalculator.endUsage}
-                                  name="endUsage"
-                                />
-                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
-                              </div>
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                USAGE TYPE
-                              </label>
-                              <Select
-                                options={usageTypeOption}
-                                placeholder="Planned Usage"
-                                className="text-primary"
-                                onChange={(e) =>
-                                  setPriceCalculator({
-                                    ...priceCalculator,
-                                    usageType: e,
-                                  })
-                                }
-                                value={priceCalculator.usageType}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                FREQUENCY
-                              </label>
-                              <Select
-                                options={frequencyOptions}
-                                placeholder="Select....."
-                                className="text-primary"
-                                onChange={(e) =>
-                                  setPriceCalculator({
-                                    ...priceCalculator,
-                                    frequency: e,
-                                  })
-                                }
-                                value={priceCalculator.frequency}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                UNIT
-                              </label>
-                              <Select
-                                options={[
-                                  { value: "per Hr", label: "per Hr" },
-                                  { value: "per Km", label: "per Km" },
-                                  { value: "per Miles", label: "per Miles" },
-                                  { value: "per year", label: "per year" },
-                                  { value: "per month", label: "per month" },
-                                  { value: "per day", label: "per day" },
-                                  { value: "per quarter", label: "per quarter" },
-                                ]}
-                                placeholder="Select..."
-                                className="text-primary"
-                                onChange={(e) =>
-                                  setPriceCalculator({
-                                    ...priceCalculator, unit: e
-                                  })
-                                }
-                                value={priceCalculator.unit}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                RECOMMENDED VALUE
-                              </label>
-                              <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                              >
-                                <input
-                                  type="number"
-                                  // type="text"
-                                  className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                  placeholder="Recommended Value"
-                                  // defaultValue={props?.priceCalculator?.startUsage}
-                                  // value={priceCalculator.startUsage}
-                                  onChange={(e) =>
-                                    setPriceCalculator({
-                                      ...priceCalculator,
-                                      recommendedValue: e.target.value,
-                                    })}
-                                  value={priceCalculator.recommendedValue}
-                                  name="recommendedValue"
-                                // name="startUsage"
-                                // onChange={(e) =>
-                                //   setPriceCalculator({
-                                //     ...priceCalculator,
-                                //     startUsage: e.target.value,
-                                //   })
-                                // }
-                                />
-                                <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.label}</span>
-                              </div>
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group w-100">
-                              <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                                for="exampleInputEmail1"
-                              >
-                                NO. OF EVENTS
-                              </label>
-                              <input
-                                type="number"
-                                className="form-control border-radius-10 text-primary"
-                                placeholder="NO. OF EVENTS"
-                                onChange={(e) =>
-                                  setPriceCalculator({
-                                    ...priceCalculator,
-                                    numberOfEvents: e.target.value,
-                                  })
-                                }
-                                disabled
-                                readOnly
-                                value={priceCalculator.numberOfEvents}
-                              />
-                              <div className="css-w8dmq8">*Mandatory</div>
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div class="form-group mt-1">
-                              <FormGroup>
-                                <FormControlLabel
-                                  style={{
-                                    alignItems: "start",
-                                    marginLeft: 0,
-                                  }}
-                                  control={
-                                    <Switch1
-                                      checked={extWorkData.flatRateIndicator}
-                                      onChange={(e) =>
-                                        setExtWorkData({
-                                          ...extWorkData,
-                                          flatRateIndicator: e.target.checked,
-                                          adjustedPrice: e.target.checked
-                                            ? extWorkData.adjustedPrice
-                                            : 0.0,
-                                        })
-                                      }
-                                    />
+                                      usageType: e,
+                                    })
                                   }
-                                  labelPlacement="top"
-                                  label={
-                                    <span className="text-light-dark font-size-12 font-weight-500">
-                                      SUPRESSION
-                                    </span>
-                                  }
+                                  value={priceCalculator.usageType}
                                 />
-                              </FormGroup>
+                              </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  FREQUENCY
+                                </label>
+                                <Select
+                                  // options={frequencyOptions}
+                                  options={frequencyOptionKeyValue}
+                                  placeholder="Select....."
+                                  className="text-primary"
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      frequency: e,
+                                    })
+                                  }
+                                  value={priceCalculator.frequency}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  UNIT
+                                </label>
+                                <Select
+                                  // options={[
+                                  //   { value: "per Hr", label: "per Hr" },
+                                  //   { value: "per Km", label: "per Km" },
+                                  //   { value: "per Miles", label: "per Miles" },
+                                  //   { value: "per year", label: "per year" },
+                                  //   { value: "per month", label: "per month" },
+                                  //   { value: "per day", label: "per day" },
+                                  //   { value: "per quarter", label: "per quarter" },
+                                  // ]}
+                                  options={unitOptionKeyValue}
+                                  placeholder="Select..."
+                                  className="text-primary"
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator, unit: e
+                                    })
+                                  }
+                                  value={priceCalculator.unit}
+                                />
+                                <div className="css-w8dmq8">*Mandatory</div>
+                              </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-14 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  RECOMMENDED VALUE
+                                </label>
+                                <div
+                                  className=" d-flex form-control-date"
+                                  style={{ overflow: "hidden" }}
+                                >
+                                  <input
+                                    type="number"
+                                    // type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                    placeholder="Recommended Value"
+                                    // defaultValue={props?.priceCalculator?.startUsage}
+                                    // value={priceCalculator.startUsage}
+                                    onChange={(e) =>
+                                      setPriceCalculator({
+                                        ...priceCalculator,
+                                        recommendedValue: e.target.value,
+                                      })}
+                                    value={priceCalculator.recommendedValue}
+                                    name="recommendedValue"
+                                  // name="startUsage"
+                                  // onChange={(e) =>
+                                  //   setPriceCalculator({
+                                  //     ...priceCalculator,
+                                  //     startUsage: e.target.value,
+                                  //   })
+                                  // }
+                                  />
+                                  <span className="hours-div text-primary">{priceCalculator.unit == "" ? "select unit" : priceCalculator.unit?.value === "Year" ? "Month" : priceCalculator.unit?.label}</span>
+                                </div>
+                                <div className="css-w8dmq8">*Mandatory</div>
+                              </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <div className="form-group w-100">
+                                <label
+                                  className="text-light-dark font-size-12 font-weight-500"
+                                  for="exampleInputEmail1"
+                                >
+                                  NO. OF EVENTS
+                                </label>
+                                <input
+                                  type="number"
+                                  className="form-control border-radius-10 text-primary"
+                                  placeholder="NO. OF EVENTS"
+                                  onChange={(e) =>
+                                    setPriceCalculator({
+                                      ...priceCalculator,
+                                      numberOfEvents: e.target.value,
+                                    })
+                                  }
+                                  disabled
+                                  readOnly
+                                  value={priceCalculator.numberOfEvents}
+                                />
+                                <div className="css-w8dmq8">*Mandatory</div>
+                              </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                              <div class="form-group mt-1">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch1
+                                        checked={extWorkData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setExtWorkData({
+                                            ...extWorkData,
+                                            flatRateIndicator: e.target.checked,
+                                            adjustedPrice: e.target.checked
+                                              ? extWorkData.adjustedPrice
+                                              : 0.0,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-500">
+                                        SUPRESSION
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="my-1 d-flex align-items-center justify-content-end">
-                          <Link to="#" className="btn border mr-4">Cancel</Link>
-                          <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
-                            <span className="mr-2 funds">
-                              <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
-                                <g>
+                          <div className="my-1 d-flex align-items-center justify-content-end">
+                            <Link to="#" className="btn border mr-4">Cancel</Link>
+                            <Link to="#" className="btn d-flex align-items-center border bg-primary text-white">
+                              <span className="mr-2 funds">
+                                <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                                   <g>
-                                    <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
+                                    <g>
+                                      <path class="st0" d="M66.3,105.1c-4.5,0.1-8.3-3.7-8.3-8.2c0-4.3,3.6-8,8-8.1c4.5-0.1,8.3,3.7,8.3,8.2
                               C74.2,101.4,70.7,105,66.3,105.1z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M106.8,97.2c-0.1,4.5-4,8.1-8.5,7.9c-4.3-0.2-7.8-4-7.7-8.3c0.1-4.5,4-8.1,8.5-7.9
                               C103.4,89.1,106.9,92.9,106.8,97.2z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M139.4,96.8c0.1,4.5-3.6,8.3-8.1,8.3c-4.3,0-8-3.6-8.1-7.9c-0.1-4.5,3.6-8.3,8.1-8.3
                               C135.6,88.9,139.3,92.5,139.4,96.8z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M74.3,129.6c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.8-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,121.6,74.3,125.2,74.3,129.6z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M106.8,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C103.2,121.5,106.8,125.2,106.8,129.5z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M74.3,162.1c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C70.7,154.1,74.3,157.7,74.3,162.1z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M98.6,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C90.7,157.7,94.3,154.1,98.6,154z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M139.4,129.5c0,4.5-3.8,8.2-8.3,8.1c-4.3-0.1-7.9-3.7-7.9-8.1c0-4.5,3.8-8.2,8.3-8.1
                               C135.8,121.5,139.4,125.2,139.4,129.5z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M131.1,154c4.3-0.1,8.1,3.5,8.2,7.8c0.2,4.5-3.5,8.4-8,8.4c-4.5,0.1-8.3-3.7-8.2-8.2
                               C123.2,157.7,126.8,154.1,131.1,154z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M130.9,195.5H69.1c-25.4,0-46.2-20.7-46.2-46.2V50.6C23,25.2,43.7,4.5,69.1,4.5h61.7
                               c25.4,0,46.2,20.7,46.2,46.2v98.8C177,174.8,156.3,195.5,130.9,195.5z M69.1,16.4c-18.9,0-34.2,15.3-34.2,34.2v98.8
                               c0,18.9,15.3,34.2,34.2,34.2h61.7c18.9,0,34.2-15.3,34.2-34.2V50.6c0-18.9-15.3-34.2-34.2-34.2H69.1z"/>
-                                  </g>
-                                  <g>
-                                    <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
+                                    </g>
+                                    <g>
+                                      <path class="st0" d="M128.7,68.1H71.3C61.2,68.1,53,59.9,53,49.7s8.2-18.4,18.4-18.4h57.4c10.1,0,18.4,8.2,18.4,18.4
                               S138.8,68.1,128.7,68.1z M71.3,43.3c-3.5,0-6.4,2.9-6.4,6.4c0,3.5,2.9,6.4,6.4,6.4h57.4c3.5,0,6.4-2.9,6.4-6.4
                               c0-3.5-2.9-6.4-6.4-6.4H71.3z"/>
+                                    </g>
                                   </g>
-                                </g>
-                              </svg>
-                            </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                                </svg>
+                              </span>Calculate<span className="ml-2"><KeyboardArrowDownIcon /></span></Link>
+                          </div>
                         </div>
-                      </div>
+                      }
                     </>
                   }
 
                   <div className="d-flex align-items-center justify-content-between mt-3">
                     <div className="d-flex align-items-center">
                       <div className="d-block mr-4">
-                        <p className="mb-0 font-size-14 text-grey">NET PRICE</p>
-                        <p className="mb-0 font-size-14 text-black">${priceCalculator.netPrice}</p>
+                        <p className="mb-0 font-size-14 text-grey">TOTAL BASE PRICE</p>
+                        <p className="mb-0 font-size-14 text-black">${priceCalculator.totalPrice}</p>
                       </div>
                       <div className="d-block">
-                        <p className="mb-0 font-size-14 text-grey">TOTAL PRICE</p>
-                        <p className="mb-0 font-size-14 text-black">${priceCalculator.totalPrice}</p>
+                        <p className="mb-0 font-size-14 text-grey">NET PRICE</p>
+                        <p className="mb-0 font-size-14 text-black">${priceCalculator.calculatedPrice}</p>
                       </div>
                     </div>
                     <div className="d-flex align-items-center">
-                      <a
-                        href="#"
-                        className="btn text-white bg-primary"
+                      <a className="btn text-white bg-primary cursor"
                         onClick={handleItemPriceCalculatorSave}
                       >
                         Save
@@ -25672,9 +27536,7 @@ onChange={handleAdministrativreChange}
                     </div>
                   </div>
                   {/* <div className="m-3 text-right">
-                                        <a
-                                            href="#"
-                                            className="btn text-white bg-primary"
+                                        <a className="btn text-white bg-primary cursor"
                                             onClick={handleItemPriceCalculatorSave}
                                         >
                                             Save
@@ -25682,8 +27544,6 @@ onChange={handleAdministrativreChange}
                                     </div> */}
                 </div>
               </TabPanel>
-
-
               <TabPanel value="6">
                 {loadingItem === "02" ? (
                   <div className="d-flex align-items-center justify-content-center">
@@ -25756,25 +27616,25 @@ onChange={handleAdministrativreChange}
                                         <h5 className="font-weight-600 mb-0">
                                         </h5>
                                         <div className="d-flex justify-content-center align-items-center">
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 font-size-14 cursor">
                                                 <img src={shareIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 font-size-14 cursor">
                                                 <img src={folderaddIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 font-size-14 cursor">
                                                 <img src={uploadIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 font-size-14 cursor">
                                                 <img src={cpqIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 font-size-14 cursor">
                                                 <img src={deleteIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 cursor font-size-14">
                                                 <img src={copyIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-2">
+                                            <a className="ml-2 cursor">
                                                 <MuiMenuComponent
                                                     onClick={() => alert()}
                                                     options={activityOptions}
@@ -25786,16 +27646,16 @@ onChange={handleAdministrativreChange}
                                         <h5 className="d-flex align-items-center mb-0">
                                             <div className="" style={{ display: "contents" }}>
                                                 <span className="mr-3">Header</span>
-                                                <a href="#" className="btn-sm">
+                                                <a className="btn-sm cursor">
                                                     <i className="fa fa-pencil" aria-hidden="true"></i>
                                                 </a>
-                                                <a href="#" className="btn-sm">
+                                                <a className="btn-sm cursor">
                                                     <i
                                                         className="fa fa-bookmark-o"
                                                         aria-hidden="true"
                                                     ></i>
                                                 </a>
-                                                <a href="#" className="btn-sm">
+                                                <a className="btn-sm cursor">
                                                     <img
                                                         style={{ width: "14px" }}
                                                         src={folderaddIcon}
@@ -26071,25 +27931,25 @@ onChange={handleAdministrativreChange}
                       {/* ADD {serviceOrBundlePrefix} */}
                     </h5>
                     <div className="d-flex justify-content-center align-items-center">
-                      <a href="#" className="ml-3 font-size-14">
+                      <a className="ml-3 cursor font-size-14">
                         <img src={shareIcon}></img>
                       </a>
-                      <a href="#" className="ml-3 font-size-14">
+                      <a className="ml-3 cursor font-size-14">
                         <img src={folderaddIcon}></img>
                       </a>
-                      <a href="#" className="ml-3 font-size-14">
+                      <a className="ml-3 cursor font-size-14">
                         <img src={uploadIcon}></img>
                       </a>
-                      <a href="#" className="ml-3 font-size-14">
+                      <a className="ml-3 cursor font-size-14">
                         <img src={cpqIcon}></img>
                       </a>
-                      <a href="#" className="ml-3 font-size-14">
+                      <a className="ml-3 cursor font-size-14">
                         <img src={deleteIcon}></img>
                       </a>
-                      <a href="#" className="ml-3 font-size-14">
+                      <a className="ml-3 cursor font-size-14">
                         <img src={copyIcon}></img>
                       </a>
-                      <a href="#" className="ml-2">
+                      <a className="ml-2 cursor">
                         <MuiMenuComponent
                           onClick={() => alert()}
                           options={activityOptions}
@@ -26101,18 +27961,18 @@ onChange={handleAdministrativreChange}
                     <h5 className="d-flex align-items-center mb-0">
                       <div className="" style={{ display: "contents" }}>
                         <span className="mr-3">Header</span>
-                        <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}
+                        <a className="btn-sm cursor" style={{ cursor: "pointer" }}
                         // onClick={() => setBundleAndServiceEditAble(false)}
                         >
                           <i className="fa fa-pencil" aria-hidden="true"></i>
                         </a>
-                        <a href="#" className="btn-sm">
+                        <a className="btn-sm cursor">
                           <i
                             className="fa fa-bookmark-o"
                             aria-hidden="true"
                           ></i>
                         </a>
-                        <a href="#" className="btn-sm">
+                        <a className="btn-sm cursor">
                           <img
                             style={{ width: "14px" }}
                             src={folderaddIcon}
@@ -26489,6 +28349,10 @@ onChange={handleAdministrativreChange}
                   compoFlag="itemEdit"
                   compoFlagTest="itemEditBundle"
                   setBundleTabs={setBundleTabs}
+                  priceMethodDropdownKeyValue={priceMethodKeyValue}
+                  priceTypeDropdownKeyValue={priceTypeKeyValue}
+                  unitDropdownKeyValue={unitOptionKeyValue}
+                  frequencyDropdownKeyValue={frequencyOptionKeyValue}
                 />
                 {/* <AddPortfolioItem
                                     passItemEditRowData={passItemEditRowData}
@@ -26846,6 +28710,10 @@ onChange={handleAdministrativreChange}
             passItemEditRowData={passItemEditRowData}
             handleItemEditSave={handleItemEditSave}
             compoFlag="itemEdit"
+            priceMethodDropdownKeyValue={priceMethodKeyValue}
+            priceTypeDropdownKeyValue={priceTypeKeyValue}
+            unitDropdownKeyValue={unitOptionKeyValue}
+            frequencyDropdownKeyValue={frequencyOptionKeyValue}
           />
         </Modal.Body>
       </Modal>
@@ -26996,19 +28864,16 @@ onChange={handleAdministrativreChange}
             <div class="modal-footer" style={{ display: "unset" }}>
               {quoteDataShow ? <>
                 <div className="mb-2">
-                  <a
-                    href="#"
-                    onClick={() => handleCreate()}
+                  <a onClick={() => handleCreate()}
                     data-dismiss="modal"
-                    className="btn bg-primary d-block text-white"
+                    className="btn bg-primary cursor d-block text-white"
                   >
                     Done
                   </a>
                   {/* <a
-                                    href="#"
                                     data-dismiss="modal"
                                     onClick={() => setQuoteDataShow(false)}
-                                    className="btn bg-primary d-block text-white"
+                                    className="btn bg-primary cursor d-block text-white"
                                 >
                                     Done
                                 </a> */}
@@ -27040,7 +28905,7 @@ onChange={handleAdministrativreChange}
                     <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
                       <h6 className='mb-0'>3 errors found in line items</h6>
                       <div>
-                        <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                        <a className='btn cursor'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
                       </div>
                     </div>
                     <div className=' mt-2'>
@@ -27062,7 +28927,7 @@ onChange={handleAdministrativreChange}
                                 <h6 className="mb-0">2 min ago</h6>
                               </div>
                               <h6 className="mb-0"> Part list header component code</h6>
-                              <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                              <p className="mb-0">Fix <a className="btn cursor">Go to field</a></p>
                             </div>
                           </TabPanel>
                           <TabPanel value="2">Item Two</TabPanel>
@@ -27071,8 +28936,8 @@ onChange={handleAdministrativreChange}
                       </Box>
                       <hr className="mb-0" />
                       <div className="p-3">
-                        <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
-                        <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                        <a className='btn text-light border-light px-2 cursor'>Go Back to Solution</a>
+                        <a className='btn btn-primary float-right px-2 cursor'>Choose the correct portfolio</a>
                       </div>
                     </div>
                   </div>
@@ -27096,7 +28961,7 @@ onChange={handleAdministrativreChange}
                     <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
                       <h6 className='mb-0'>3 errors found in line items</h6>
                       <div>
-                        <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                        <a className='btn cursor'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
                       </div>
                     </div>
                     <div className=' mt-2'>
@@ -27118,7 +28983,7 @@ onChange={handleAdministrativreChange}
                                 <h6 className="mb-0">2 min ago</h6>
                               </div>
                               <h6 className="mb-0"> Part list header component code</h6>
-                              <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                              <p className="mb-0">Fix <a className="btn cursor">Go to field</a></p>
                             </div>
                           </TabPanel>
                           <TabPanel value="2">Item Two</TabPanel>
@@ -27127,8 +28992,8 @@ onChange={handleAdministrativreChange}
                       </Box>
                       <hr className="mb-0" />
                       <div className="p-3">
-                        <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
-                        <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                        <a className='btn text-light border-light px-2 cursor'>Go Back to Solution</a>
+                        <a className='btn btn-primary float-right px-2 cursor'>Choose the correct portfolio</a>
                       </div>
                     </div>
                   </div>
@@ -27686,8 +29551,6 @@ onChange={handleAdministrativreChange}
           {quoteDataShow ? <>
             <div className="mb-2">
               <a
-                // href="#"
-                href={undefined}
                 onClick={() => handleCreate()}
                 data-dismiss="modal"
                 className="btn cursor bg-primary d-block text-white"
@@ -27696,10 +29559,9 @@ onChange={handleAdministrativreChange}
                 Done
               </a>
               {/* <a
-                                    href="#"
                                     data-dismiss="modal"
                                     onClick={() => setQuoteDataShow(false)}
-                                    className="btn bg-primary d-block text-white"
+                                    className="btn bg-primary cursor d-block text-white"
                                 >
                                     Done
                                 </a> */}
