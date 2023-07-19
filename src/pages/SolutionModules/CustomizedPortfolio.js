@@ -477,11 +477,11 @@ export function CustomizedPortfolio(props) {
                     </td>
                     <td>
                         <div>
-                            <a href="#" className="mr-3">
+                            <a className="mr-3 cursor">
                                 <RemoveRedEyeOutlinedIcon className="font-size-16 mr-2" />
                                 View detail
                             </a>
-                            <a href="#" onClick={() => handleRemove(index)} className="">
+                            <a onClick={() => handleRemove(index)} className="cursor">
                                 <ModeEditIcon className="font-size-16 mr-2" />
                                 View detail
                             </a>
@@ -2063,56 +2063,55 @@ export function CustomizedPortfolio(props) {
 
                 /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-                var itemsPrice = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
-                console.log("item price is before : ", itemsPrice)
-
-                let itemPriceObj = {
-
-                    customItemPriceDataId: 0,
-                    quantity: parseInt(itemsPrice.quantity),
-                    startUsage: itemsPrice.startUsage,
-                    endUsage: itemsPrice.endUsage,
-                    standardJobId: itemsPrice.standardJobId,
-                    repairKitId: itemsPrice.repairKitId,
-                    templateDescription: itemsPrice.templateDescription,
-                    repairOption: itemsPrice.repairOption,
-                    frequency: itemsPrice.frequency,
-                    additional: itemsPrice.additional,
-                    recommendedValue: parseInt(itemsPrice.recommendedValue),
-                    partListId: itemsPrice.partListId,
-                    serviceEstimateId: itemsPrice.serviceEstimateId,
-                    numberOfEvents: parseInt(itemsPrice.numberOfEvents),
-                    priceMethod: itemsPrice.priceMethod,
-                    priceType: itemsPrice.priceType,
-                    listPrice: itemsPrice.listPrice,
-                    priceEscalation: itemsPrice.priceEscalation,
-                    calculatedPrice: itemsPrice.calculatedPrice,
-                    flatPrice: itemsPrice.flatPrice,
-                    discountType: itemsPrice.discountType,
-                    year: itemsPrice.year,
-                    noOfYear: itemsPrice.noOfYear,
-                    sparePartsPrice: itemsPrice.sparePartsPrice,
-                    sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
-                    servicePrice: itemsPrice.servicePrice,
-                    labourPrice: itemsPrice.labourPrice,
-                    labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                    miscPrice: itemsPrice.miscPrice,
-                    miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
-                    totalPrice: itemsPrice.totalPrice,
-                    netService: itemsPrice.netService,
-                    customPortfolio: {
-                        portfolioId: 26
-                    },
-                    // tenantId: itemsPrice.tenantId,
-                    tenantId: loginTenantId,
-                    partsRequired: itemsPrice.partsRequired,
-                    labourRequired: itemsPrice.labourRequired,
-                    serviceRequired: itemsPrice.serviceRequired,
-                    miscRequired: itemsPrice.miscRequired
+                var itemsPriceReq = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+                console.log("item price is before : ", itemsPriceReq)
+                if (itemsPriceReq.status === 200) {
+                    var itemsPrice = itemsPriceReq.data;
+                    let itemPriceObj = {
+                        customItemPriceDataId: 0,
+                        quantity: parseInt(itemsPrice.quantity),
+                        startUsage: itemsPrice.startUsage,
+                        endUsage: itemsPrice.endUsage,
+                        standardJobId: itemsPrice.standardJobId,
+                        repairKitId: itemsPrice.repairKitId,
+                        templateDescription: itemsPrice.templateDescription,
+                        repairOption: itemsPrice.repairOption,
+                        frequency: itemsPrice.frequency,
+                        additional: itemsPrice.additional,
+                        recommendedValue: parseInt(itemsPrice.recommendedValue),
+                        partListId: itemsPrice.partListId,
+                        serviceEstimateId: itemsPrice.serviceEstimateId,
+                        numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                        priceMethod: itemsPrice.priceMethod,
+                        priceType: itemsPrice.priceType,
+                        listPrice: itemsPrice.listPrice,
+                        priceEscalation: itemsPrice.priceEscalation,
+                        calculatedPrice: itemsPrice.calculatedPrice,
+                        flatPrice: itemsPrice.flatPrice,
+                        discountType: itemsPrice.discountType,
+                        year: itemsPrice.year,
+                        noOfYear: itemsPrice.noOfYear,
+                        sparePartsPrice: itemsPrice.sparePartsPrice,
+                        sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                        servicePrice: itemsPrice.servicePrice,
+                        labourPrice: itemsPrice.labourPrice,
+                        labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                        miscPrice: itemsPrice.miscPrice,
+                        miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                        totalPrice: itemsPrice.totalPrice,
+                        netService: itemsPrice.netService,
+                        customPortfolio: {
+                            portfolioId: 26
+                        },
+                        // tenantId: itemsPrice.tenantId,
+                        tenantId: loginTenantId,
+                        partsRequired: itemsPrice.partsRequired,
+                        labourRequired: itemsPrice.labourRequired,
+                        serviceRequired: itemsPrice.serviceRequired,
+                        miscRequired: itemsPrice.miscRequired
+                    }
+                    customItemsIdData.push(itemPriceObj)
                 }
-
-                customItemsIdData.push(itemPriceObj)
-
             }
 
             for (let p = 0; p < customItemsIdData.length; p++) {
@@ -4220,21 +4219,21 @@ export function CustomizedPortfolio(props) {
                             Solution Configurato
                         </h5>
                         <div className="d-flex justify-content-center align-items-center">
-                            <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                            <a className="ml-3 cursor font-size-14"><img src={shareIcon}></img></a>
+                            <a className="ml-3 cursor font-size-14"><img src={folderaddIcon}></img></a>
+                            <a className="ml-3 cursor font-size-14"><img src={uploadIcon}></img></a>
+                            <a className="ml-3 cursor font-size-14"><img src={cpqIcon}></img></a>
+                            <a className="ml-3 cursor font-size-14"><img src={deleteIcon}></img></a>
+                            <a className="ml-3 cursor font-size-14"><img src={copyIcon}></img></a>
+                            {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
 
                         </div>
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0">
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a className="btn-sm cursor"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a className="btn-sm cursor"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                                <a className="btn-sm cursor"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
                             <div class="input-group icons border-radius-10 border">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
@@ -5344,10 +5343,10 @@ export function CustomizedPortfolio(props) {
                                                         <span>Price Agreement</span>
                                                     </h5>
                                                     <p className=" mb-0">
-                                                        <a href="#" className="ml-3 ">
+                                                        <a className="ml-3 cursor">
                                                             <img src={editIcon}></img>
                                                         </a>
-                                                        <a href="#" className="ml-3 ">
+                                                        <a className="ml-3 cursor">
                                                             <img src={shareIcon}></img>
                                                         </a>
                                                     </p>
@@ -5658,7 +5657,7 @@ export function CustomizedPortfolio(props) {
                                                 </h6>
                                             </div>
                                         </div>
-                                        {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
+                                        {/* <a className="btn btn-primary w-100 cursor" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
                                         {/* </div> */}
                                     </div>
 
@@ -5746,7 +5745,7 @@ export function CustomizedPortfolio(props) {
                                 <span>Portfolio Items</span>
                                 </h5>
                                 <p className="ml-2 mb-0">
-                                <a href="#" className="ml-3">
+                                <a className="ml-3 cursor">
                                     <FontAwesomeIcon icon={faPen} />
                                 </a>
                                 </p>
@@ -5851,8 +5850,8 @@ export function CustomizedPortfolio(props) {
                                 <div className="d-flex ">
                                     <h5 className="mr-4 mb-0"><span>Bundle Item</span></h5>
                                     <p className="ml-4 mb-0">
-                                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                                        <a className="ml-3 cursor"><img src={editIcon}></img></a>
+                                        <a className="ml-3 cursor"><img src={shareIcon}></img></a>
                                     </p>
                                 </div>
                             </div>
@@ -5889,14 +5888,14 @@ export function CustomizedPortfolio(props) {
                             <div className="col-3">
                                 <div className="d-flex align-items-center">
                                     <div className="col-8 text-center">
-                                        <a href="#" className="p-1 more-btn">+ 3 more
+                                        <a className="p-1 cursor more-btn">+ 3 more
                                             <span className="c-btn">C</span>
                                             <span className="b-btn">B</span>
                                             <span className="a-btn">A</span>
                                         </a>
                                     </div>
                                     <div className="col-4 text-center border-left py-4">
-                                        <a href="#" className="p-1 ">+ Add Part</a>
+                                        <a className="p-1 cursor ">+ Add Part</a>
                                     </div>
                                 </div>
                             </div>
@@ -5936,26 +5935,26 @@ export function CustomizedPortfolio(props) {
                             <div className="d-flex align-items-center justify-content-between mt-2">
                                 <h5 className="font-weight-600 mb-0">Coverage</h5>
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                                    {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                    <a className="ml-3 cursor font-size-14"><img src={shareIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={folderaddIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={uploadIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={cpqIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={deleteIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={copyIcon}></img></a>
+                                    {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
 
                                 </div>
                             </div>
                             <div className="card mt-4">
                                 <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
-                                    <h6 className="font-weight-600 text-light mb-0 ml-3">Table Name<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                                    <h6 className="font-weight-600 text-light mb-0 ml-3">Table Name<span> <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faPen} /></a></span></h6>
                                     <div>
-                                        <a href="#" className="btn">+Add</a>
+                                        <a className="btn cursor">+Add</a>
                                     </div>
                                 </div>
                                 <div className="p-4  row">
                                     <div className="col-md-6 col-sm-6">
-                                        <a href="#" className="add-new-recod">
+                                        <a className="add-new-recod cursor">
                                             <div>
                                                 <FontAwesomeIcon icon={faPlus} />
                                                 <p className="font-weight-600">Add new record</p>
@@ -6005,10 +6004,10 @@ export function CustomizedPortfolio(props) {
                                                     <FormControlLabel control={<Checkbox defaultChecked />} label="" />
                                                 </FormGroup>
                                             </div>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faUpload} /></a>
+                                            {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
                                         </div>
                                     </div>
 
@@ -6026,10 +6025,10 @@ export function CustomizedPortfolio(props) {
                                                     <FormControlLabel control={<Checkbox />} label="" />
                                                 </FormGroup>
                                             </div>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faUpload} /></a>
+                                            {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
                                         </div>
                                     </div>
 
@@ -6061,13 +6060,13 @@ export function CustomizedPortfolio(props) {
                             <div className="d-flex align-items-center justify-content-between mt-2">
                                 <h5 className="font-weight-600 mb-0">Coverage</h5>
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                                    {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                    <a className="ml-3 cursor font-size-14"><img src={shareIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={folderaddIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={uploadIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={cpqIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={deleteIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={copyIcon}></img></a>
+                                    {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
 
                                 </div>
                             </div>
@@ -6077,8 +6076,8 @@ export function CustomizedPortfolio(props) {
                                         <div className="d-flex ">
                                             <h5 className=" mb-0"><span>Coverage123</span></h5>
                                             <p className=" mb-0">
-                                                <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                                <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                                                <a className="ml-3 cursor"><img src={editIcon}></img></a>
+                                                <a className="ml-3 cursor"><img src={shareIcon}></img></a>
                                             </p>
                                         </div>
                                     </div>
@@ -6113,14 +6112,14 @@ export function CustomizedPortfolio(props) {
                                     <div className="col-4">
                                         <div className="d-flex align-items-center">
                                             <div className="col-7 text-center">
-                                                <a href="#" className="p-1 more-btn">+ 3 more
+                                                <a className="cursor p-1 more-btn">+ 3 more
                                                     <span className="c-btn">C</span>
                                                     <span className="b-btn">B</span>
                                                     <span className="a-btn">A</span>
                                                 </a>
                                             </div>
                                             <div className="col-5 text-center border-left py-4">
-                                                <a href="#" className=" ">+ Add Part</a>
+                                                <a className="cursor">+ Add Part</a>
                                             </div>
                                         </div>
                                     </div>
@@ -6788,9 +6787,7 @@ export function CustomizedPortfolio(props) {
                                         </div>
                                     </div>
                                     <div className="m-3 text-right">
-                                        <a
-                                            href="#"
-                                            className="btn text-white bg-primary"
+                                        <a className="btn text-white bg-primary cursor"
                                             onClick={handleItemPriceCalculatorSave}
                                         >
                                             Save
@@ -6871,25 +6868,25 @@ export function CustomizedPortfolio(props) {
                                             ADD {serviceOrBundlePrefix}
                                         </h5>
                                         <div className="d-flex justify-content-center align-items-center">
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 cursor font-size-14">
                                                 <img src={shareIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 cursor font-size-14">
                                                 <img src={folderaddIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 cursor font-size-14">
                                                 <img src={uploadIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 cursor font-size-14">
                                                 <img src={cpqIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 cursor font-size-14">
                                                 <img src={deleteIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-3 font-size-14">
+                                            <a className="ml-3 cursor font-size-14">
                                                 <img src={copyIcon}></img>
                                             </a>
-                                            <a href="#" className="ml-2">
+                                            <a className="ml-2 cursor">
                                                 <MuiMenuComponent
                                                     onClick={() => alert()}
                                                     options={activityOptions}
@@ -6901,16 +6898,16 @@ export function CustomizedPortfolio(props) {
                                         <h5 className="d-flex align-items-center mb-0">
                                             <div className="" style={{ display: "contents" }}>
                                                 <span className="mr-3">Header</span>
-                                                <a href="#" className="btn-sm">
+                                                <a className="btn-sm cursor">
                                                     <i className="fa fa-pencil" aria-hidden="true"></i>
                                                 </a>
-                                                <a href="#" className="btn-sm">
+                                                <a className="btn-sm cursor">
                                                     <i
                                                         className="fa fa-bookmark-o"
                                                         aria-hidden="true"
                                                     ></i>
                                                 </a>
-                                                <a href="#" className="btn-sm">
+                                                <a className="btn-sm cursor">
                                                     <img
                                                         style={{ width: "14px" }}
                                                         src={folderaddIcon}

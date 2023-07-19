@@ -140,7 +140,7 @@ export const getPortfolio = (portfolioId) => {
         .get(PORTFOLIO_URL() + "/" + portfolioId, { headers: headersData })
         .then((res) => {
           console.log("getPortfolio > axios res=", res);
-          resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getPortfolio > axios err=", err);

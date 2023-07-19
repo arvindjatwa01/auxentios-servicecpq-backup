@@ -458,18 +458,20 @@ const handleChangedrop2 = (event) => {
     if (editAblePriceData.length > 0) {
       // console.log("hello")
       for (let y = 0; y < editAblePriceData.length; y++) {
-        var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
-        console.log("y is : ", getCustomPriceData);
-
-        getCustomPriceData.partsRequired = partsRequired;
-        getCustomPriceData.labourRequired = labourRequired;
-        getCustomPriceData.serviceRequired = serviceRequired;
-        getCustomPriceData.miscRequired = miscRequired;
-
-        // console.log("updated y is : ", getCustomPriceData)
-
-        var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
-
+        var getCustomPriceDataReq = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
+        if (getCustomPriceDataReq.status === 200) {
+          var getCustomPriceData = getCustomPriceDataReq.data;
+          console.log("y is : ", getCustomPriceData);
+  
+          getCustomPriceData.partsRequired = partsRequired;
+          getCustomPriceData.labourRequired = labourRequired;
+          getCustomPriceData.serviceRequired = serviceRequired;
+          getCustomPriceData.miscRequired = miscRequired;
+  
+          // console.log("updated y is : ", getCustomPriceData)
+  
+          var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
+        }
       }
     } else {
       console.log("empty");

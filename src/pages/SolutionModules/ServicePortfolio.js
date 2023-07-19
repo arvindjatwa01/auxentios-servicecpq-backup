@@ -1276,17 +1276,19 @@ export function ServicePortfolio(props) {
         if (portfolioId != null) {
             getPortfolio(portfolioId)
                 .then((res) => {
-                    const portfolioDetails = res;
-                    console.log("portfolioDetails", portfolioDetails);
-                    if (portfolioDetails.portfolioId != null) {
-                        setGeneralComponentData({
-                            ...generalComponentData,
-                            name: portfolioDetails.name,
-                            description: portfolioDetails.description,
-                            externalReference: portfolioDetails.externalReference,
-                            customerSegment: portfolioDetails.customerSegment,
-                            // serviceProgramDescription: "",
-                        });
+                    if (res.status === 200) {
+                        const portfolioDetails = res.data;
+                        console.log("portfolioDetails", portfolioDetails);
+                        if (portfolioDetails.portfolioId != null) {
+                            setGeneralComponentData({
+                                ...generalComponentData,
+                                name: portfolioDetails.name,
+                                description: portfolioDetails.description,
+                                externalReference: portfolioDetails.externalReference,
+                                customerSegment: portfolioDetails.customerSegment,
+                                // serviceProgramDescription: "",
+                            });
+                        }
                     }
                 })
                 .catch((err) => {

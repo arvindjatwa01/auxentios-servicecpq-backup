@@ -1124,62 +1124,58 @@ export function CreatedCustomPortfolioTemplate(props) {
 
                 for (let j = 0; j < tempBundleService2[i].itemBodyModel.itemPrices.length; j++) {
 
-
-
                     /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-                    var itemsPrice = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
-                    console.log("item price is before : ", itemsPrice)
-
-                    let itemPriceObj = {
-
-                        customItemPriceDataId: 0,
-                        quantity: parseInt(itemsPrice.quantity),
-                        startUsage: itemsPrice.startUsage,
-                        endUsage: itemsPrice.endUsage,
-                        standardJobId: itemsPrice.standardJobId,
-                        repairKitId: itemsPrice.repairKitId,
-                        templateDescription: itemsPrice.templateDescription,
-                        repairOption: itemsPrice.repairOption,
-                        frequency: itemsPrice.frequency,
-                        additional: itemsPrice.additional,
-                        recommendedValue: parseInt(itemsPrice.recommendedValue),
-                        partListId: itemsPrice.partListId,
-                        serviceEstimateId: itemsPrice.serviceEstimateId,
-                        numberOfEvents: parseInt(itemsPrice.numberOfEvents),
-                        priceMethod: itemsPrice.priceMethod,
-                        priceType: itemsPrice.priceType,
-                        listPrice: itemsPrice.listPrice,
-                        priceEscalation: itemsPrice.priceEscalation,
-                        calculatedPrice: itemsPrice.calculatedPrice,
-                        flatPrice: itemsPrice.flatPrice,
-                        discountType: itemsPrice.discountType,
-                        year: itemsPrice.year,
-                        noOfYear: itemsPrice.noOfYear,
-                        sparePartsPrice: itemsPrice.sparePartsPrice,
-                        sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
-                        servicePrice: itemsPrice.servicePrice,
-                        labourPrice: itemsPrice.labourPrice,
-                        labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                        miscPrice: itemsPrice.miscPrice,
-                        miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
-                        totalPrice: itemsPrice.totalPrice,
-                        netService: itemsPrice.netService,
-                        customPortfolio: {
-                            portfolioId: portfolioId
-                        },
-                        // tenantId: itemsPrice.tenantId,
-                        tenantId: loginTenantId,
-                        partsRequired: itemsPrice.partsRequired,
-                        labourRequired: itemsPrice.labourRequired,
-                        serviceRequired: itemsPrice.serviceRequired,
-                        miscRequired: itemsPrice.miscRequired
+                    var itemsPriceReq = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+                    console.log("item price is before : ", itemsPriceReq)
+                    if (itemsPriceReq.status === 200) {
+                        var itemsPrice = itemsPriceReq.data;
+                        let itemPriceObj = {
+                            customItemPriceDataId: 0,
+                            quantity: parseInt(itemsPrice.quantity),
+                            startUsage: itemsPrice.startUsage,
+                            endUsage: itemsPrice.endUsage,
+                            standardJobId: itemsPrice.standardJobId,
+                            repairKitId: itemsPrice.repairKitId,
+                            templateDescription: itemsPrice.templateDescription,
+                            repairOption: itemsPrice.repairOption,
+                            frequency: itemsPrice.frequency,
+                            additional: itemsPrice.additional,
+                            recommendedValue: parseInt(itemsPrice.recommendedValue),
+                            partListId: itemsPrice.partListId,
+                            serviceEstimateId: itemsPrice.serviceEstimateId,
+                            numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                            priceMethod: itemsPrice.priceMethod,
+                            priceType: itemsPrice.priceType,
+                            listPrice: itemsPrice.listPrice,
+                            priceEscalation: itemsPrice.priceEscalation,
+                            calculatedPrice: itemsPrice.calculatedPrice,
+                            flatPrice: itemsPrice.flatPrice,
+                            discountType: itemsPrice.discountType,
+                            year: itemsPrice.year,
+                            noOfYear: itemsPrice.noOfYear,
+                            sparePartsPrice: itemsPrice.sparePartsPrice,
+                            sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                            servicePrice: itemsPrice.servicePrice,
+                            labourPrice: itemsPrice.labourPrice,
+                            labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                            miscPrice: itemsPrice.miscPrice,
+                            miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                            totalPrice: itemsPrice.totalPrice,
+                            netService: itemsPrice.netService,
+                            customPortfolio: {
+                                portfolioId: portfolioId
+                            },
+                            // tenantId: itemsPrice.tenantId,
+                            tenantId: loginTenantId,
+                            partsRequired: itemsPrice.partsRequired,
+                            labourRequired: itemsPrice.labourRequired,
+                            serviceRequired: itemsPrice.serviceRequired,
+                            miscRequired: itemsPrice.miscRequired
+                        }
+                        customItemsIdData.push(itemPriceObj)
                     }
-
-                    customItemsIdData.push(itemPriceObj)
-
                 }
-
 
                 let customItemObj = {
                     customItemId: 0,
@@ -2029,11 +2025,11 @@ export function CreatedCustomPortfolioTemplate(props) {
                     </td>
                     <td>
                         <div>
-                            <a href="#" className="mr-3">
+                            <a className="mr-3 cursor">
                                 <RemoveRedEyeOutlinedIcon className="font-size-16 mr-2" />
                                 View detail
                             </a>
-                            <a href="#" onClick={() => handleRemove(index)} className="">
+                            <a onClick={() => handleRemove(index)} className="cursor">
                                 <ModeEditIcon className="font-size-16 mr-2" />
                                 View detail
                             </a>
@@ -7593,19 +7589,19 @@ export function CreatedCustomPortfolioTemplate(props) {
                         <div className="d-flex align-items-center">
                             <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Item tree</h6>
                             <div className="d-flex align-items-center">
-                                <a href="#" className="mr-2">
+                                <a className="mr-2 cursor">
                                     <span><ModeEditOutlineOutlinedIcon /></span>
                                 </a>
-                                <a href="#" className="mr-2">
+                                <a className="mr-2 cursor">
                                     <span><ShareOutlinedIcon /></span>
                                 </a>
-                                <a href="#" className="">
+                                <a className="cursor">
                                     <span><SearchIcon /></span>
                                 </a>
                             </div>
                         </div>
                         <div className="border-left d-flex align-items-center">
-                            <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+                            <a style={{ whiteSpace: "pre" }} className="btn-sm cursor"><span className="mr-2"><AddIcon /></span>Add</a>
                         </div>
                     </div>
 
@@ -8051,19 +8047,19 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 <div className="d-flex align-items-center">
                                     <h6 className="mb-0 font-weight-600 font-size-14 mr-3">Components</h6>
                                     <div className="d-flex align-items-center">
-                                        <a href="#" className="mr-2">
+                                        <a className="mr-2 cursor">
                                             <span><ModeEditOutlineOutlinedIcon /></span>
                                         </a>
-                                        <a href="#" className="mr-2">
+                                        <a className="mr-2 cursor">
                                             <span><ShareOutlinedIcon /></span>
                                         </a>
-                                        <a href="#" className="">
+                                        <a className="cursor">
                                             <span><SearchIcon /></span>
                                         </a>
                                     </div>
                                 </div>
                                 <div className="border-left d-flex align-items-center">
-                                    <a href="#" style={{ whiteSpace: "pre" }} className="btn-sm"><span className="mr-2"><AddIcon /></span>Add</a>
+                                    <a style={{ whiteSpace: "pre" }} className="btn-sm cursor"><span className="mr-2"><AddIcon /></span>Add</a>
                                 </div>
                             </div>
                             <ul className="mb-0 component-li">
@@ -8209,24 +8205,22 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 </React.Fragment>
                             </div>
                             <div className="d-flex justify-content-center align-items-center">
-                                <a href="#" className="ml-3 font-size-14" title="Share">
+                                <a className="ml-3 font-size-14 cursor" title="Share">
                                     <img src={shareIcon}></img>
                                 </a>
-                                <a
-                                    href="#"
-                                    className="ml-3 font-size-14"
+                                <a className="ml-3 font-size-14 cursor"
                                     title="Items to Review"
                                 >
                                     <img src={folderaddIcon}></img>
                                 </a>
-                                <a href="#" className="ml-3 font-size-14" title="Upload">
+                                <a className="ml-3 font-size-14 cursor" title="Upload">
                                     <img src={uploadIcon}></img>
                                 </a>
-                                {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-                                <a href="#" className="ml-3 font-size-14" title="Delete">
+                                {/* <a className="ml-3 font-size-14 cursor"><img src={cpqIcon}></img></a> */}
+                                <a className="ml-3 font-size-14 cursor" title="Delete">
                                     <img src={deleteIcon}></img>
                                 </a>
-                                <a href="#" className="ml-3 font-size-14" title="Copy">
+                                <a className="ml-3 font-size-14 cursor" title="Copy">
                                     <img src={copyIcon}></img>
                                 </a>
                                 <DropdownButton
@@ -8247,20 +8241,20 @@ export function CreatedCustomPortfolioTemplate(props) {
                             </div>
                         </div>
                         {/* <div className="d-flex justify-content-center align-items-center">
-                            <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                            <a className="ml-3 font-size-14 cursor"><img src={shareIcon}></img></a>
+                            <a className="ml-3 font-size-14 cursor"><img src={folderaddIcon}></img></a>
+                            <a className="ml-3 font-size-14 cursor"><img src={uploadIcon}></img></a>
+                            <a className="ml-3 font-size-14 cursor"><img src={cpqIcon}></img></a>
+                            <a className="ml-3 font-size-14 cursor"><img src={deleteIcon}></img></a>
+                            <a className="ml-3 font-size-14 cursor"><img src={copyIcon}></img></a>
                             
                         </div> */}
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0">
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a className="btn-sm cursor"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a className="btn-sm cursor"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                                <a className="btn-sm cursor"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
                             {/* <div class="input-group icons border-radius-10 border">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
@@ -9182,10 +9176,10 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                         <span>Price Agreement</span>
                                                     </h5>
                                                     <p className=" mb-0">
-                                                        <a href="#" className="ml-3 ">
+                                                        <a className="ml-3 cursor">
                                                             <img src={editIcon}></img>
                                                         </a>
-                                                        <a href="#" className="ml-3 ">
+                                                        <a className="ml-3 cursor">
                                                             <img src={shareIcon}></img>
                                                         </a>
                                                     </p>
@@ -9494,7 +9488,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </h6>
                                             </div>
                                         </div>
-                                        {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
+                                        {/* <a className="btn btn-primary w-100 cursor" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
                                         {/* </div> */}
                                     </div>
 
@@ -9913,7 +9907,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </FormGroup>
                                             </div>
                                             {/* <div>
-                                                <a href="#" className="ml-3 font-size-14">
+                                                <a className="ml-3 font-size-14 cursor">
                                                     <img src={deleteIcon}></img>
                                                 </a>
                                             </div> */}
@@ -9972,7 +9966,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </FormGroup>
                                             </div>
                                             {/* <div>
-                                                <a href="#" className="ml-3 font-size-14">
+                                                <a className="ml-3 font-size-14 cursor">
                                                     <img src={deleteIcon}></img>
                                                 </a>
                                             </div> */}
@@ -10005,9 +9999,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </h5>
                                         <div className="mt-3">
                                             <h6>
-                                                <a
-                                                    // href="#"
-                                                    className="btn-sm text-white mr-2"
+                                                <a className="btn-sm cursor text-white mr-2"
                                                     style={{ background: "#79CBA2", cursor: "pointer" }}
                                                 >
                                                     Free
@@ -10015,9 +10007,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 50 Point Inspection
                                             </h6>
                                             <h6 className="mt-3">
-                                                <a
-                                                    // href="#"
-                                                    className="btn-sm text-white mr-2 "
+                                                <a  className="btn-sm text-white mr-2 cursor"
                                                     style={{ background: "#79CBA2", cursor: "pointer" }}
                                                 >
                                                     Free
@@ -10027,7 +10017,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </div>
                                         <div className=" d-flex justify-content-between mt-4">
                                             {/* <div>
-                                                <a href="#" className="btn text-violet bg-light-blue">
+                                                <a className="btn text-violet bg-light-blue cursor">
                                                     <b>
                                                         <span className="mr-2">+</span>Add more services
                                                     </b>
@@ -10038,7 +10028,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 {/* <div className="btn text-violet" style={{cusrsor: "pointer"}}>
                                                     <b>Save</b>
                                                 </div> */}
-                                                {/* <a href="#" className="btn text-violet">
+                                                {/* <a className="btn text-violet cursor">
                                                     <b>I Have Parts</b>
                                                 </a> */}
                                             </div>
@@ -10056,26 +10046,26 @@ export function CreatedCustomPortfolioTemplate(props) {
                             <div className="d-flex align-items-center justify-content-between mt-2">
                                 <h5 className="font-weight-600 mb-0">Coverage</h5>
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                                    {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                    <a className="ml-3 cursor font-size-14"><img src={shareIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={folderaddIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={uploadIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={cpqIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={deleteIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={copyIcon}></img></a>
+                                    {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
 
                                 </div>
                             </div>
                             <div className="card mt-4">
                                 <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
-                                    <h6 className="font-weight-600 text-light mb-0 ml-3">Table Name<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                                    <h6 className="font-weight-600 text-light mb-0 ml-3">Table Name<span> <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
                                     <div>
-                                        <a href="#" className="btn">+Add</a>
+                                        <a className="btn cursor">+Add</a>
                                     </div>
                                 </div>
                                 <div className="p-4  row">
                                     <div className="col-md-6 col-sm-6">
-                                        <a href="#" className="add-new-recod">
+                                        <a className="add-new-recod cursor">
                                             <div>
                                                 <FontAwesomeIcon icon={faPlus} />
                                                 <p className="font-weight-600">Add new record</p>
@@ -10125,9 +10115,9 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <FormControlLabel control={<Checkbox defaultChecked />} label="" />
                                                 </FormGroup>
                                             </div>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faUpload} /></a>
                                         </div>
                                     </div>
 
@@ -10145,9 +10135,9 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <FormControlLabel control={<Checkbox />} label="" />
                                                 </FormGroup>
                                             </div>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                            <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faUpload} /></a>
                                         </div>
                                     </div>
 
@@ -11401,9 +11391,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     </div>
                                                 </div>
                                                 <div className="d-flex align-items-center">
-                                                    <a
-                                                        href="#"
-                                                        className="btn text-white bg-primary"
+                                                    <a className="btn text-white bg-primary cursor"
                                                         onClick={handleItemPriceCalculatorSave}
                                                     >
                                                         Save
@@ -11411,9 +11399,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </div>
                                             </div>
                                             {/* <div className="m-3 text-right">
-                                        <a
-                                            href="#"
-                                            className="btn text-white bg-primary"
+                                        <a className="btn text-white bg-primary cursor"
                                             onClick={handleItemPriceCalculatorSave}
                                         >
                                             Save
@@ -11608,19 +11594,16 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 <div class="modal-footer" style={{ display: "unset" }}>
                                     {quoteDataShow ? <>
                                         <div className="mb-2">
-                                            <a
-                                                href="#"
-                                                onClick={() => handleCreate()}
+                                            <a onClick={() => handleCreate()}
                                                 data-dismiss="modal"
-                                                className="btn bg-primary d-block text-white"
+                                                className="btn bg-primary cursor d-block text-white"
                                             >
                                                 Done
                                             </a>
                                             {/* <a
-                                    href="#"
                                     data-dismiss="modal"
                                     onClick={() => setQuoteDataShow(false)}
-                                    className="btn bg-primary d-block text-white"
+                                    className="btn bg-primary cursor d-block text-white"
                                 >
                                     Done
                                 </a> */}
@@ -11652,7 +11635,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
                                                     <h6 className='mb-0'>3 errors found in line items</h6>
                                                     <div>
-                                                        <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                                                        <a className='btn cursor'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
                                                     </div>
                                                 </div>
                                                 <div className=' mt-2'>
@@ -11674,7 +11657,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                         <h6 className="mb-0">2 min ago</h6>
                                                                     </div>
                                                                     <h6 className="mb-0"> Part list header component code</h6>
-                                                                    <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                                                                    <p className="mb-0">Fix <a className="btn cursor">Go to field</a></p>
                                                                 </div>
                                                             </TabPanel>
                                                             <TabPanel value="2">Item Two</TabPanel>
@@ -11683,8 +11666,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     </Box>
                                                     <hr className="mb-0" />
                                                     <div className="p-3">
-                                                        <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
-                                                        <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                                                        <a className='btn text-light border-light px-2 cursor'>Go Back to Solution</a>
+                                                        <a className='btn btn-primary float-right px-2 cursor'>Choose the correct portfolio</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -11708,7 +11691,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
                                                     <h6 className='mb-0'>3 errors found in line items</h6>
                                                     <div>
-                                                        <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                                                        <a className='btn cursor'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
                                                     </div>
                                                 </div>
                                                 <div className=' mt-2'>
@@ -11730,7 +11713,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                         <h6 className="mb-0">2 min ago</h6>
                                                                     </div>
                                                                     <h6 className="mb-0"> Part list header component code</h6>
-                                                                    <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                                                                    <p className="mb-0">Fix <a className="btn cursor">Go to field</a></p>
                                                                 </div>
                                                             </TabPanel>
                                                             <TabPanel value="2">Item Two</TabPanel>
@@ -11739,8 +11722,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     </Box>
                                                     <hr className="mb-0" />
                                                     <div className="p-3">
-                                                        <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
-                                                        <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                                                        <a className='btn text-light border-light px-2 cursor'>Go Back to Solution</a>
+                                                        <a className='btn btn-primary float-right px-2 cursor'>Choose the correct portfolio</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -11760,13 +11743,13 @@ export function CreatedCustomPortfolioTemplate(props) {
                             <div className="d-flex align-items-center justify-content-between mt-2">
                                 <h5 className="font-weight-600 mb-0">Coverage</h5>
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                                    {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                    <a className="ml-3 cursor font-size-14"><img src={shareIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={folderaddIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={uploadIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={cpqIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={deleteIcon}></img></a>
+                                    <a className="ml-3 cursor font-size-14"><img src={copyIcon}></img></a>
+                                    {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
 
                                 </div>
                             </div>
@@ -11776,8 +11759,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         <div className="d-flex ">
                                             <h5 className=" mb-0"><span>Coverage123</span></h5>
                                             <p className=" mb-0">
-                                                <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                                <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                                                <a className="ml-3 cursor"><img src={editIcon}></img></a>
+                                                <a className="ml-3 cursor"><img src={shareIcon}></img></a>
                                             </p>
                                         </div>
                                     </div>
@@ -11812,14 +11795,14 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     <div className="col-4">
                                         <div className="d-flex align-items-center">
                                             <div className="col-7 text-center">
-                                                <a href="#" className="p-1 more-btn">+ 3 more
+                                                <a className="p-1 cursor more-btn">+ 3 more
                                                     <span className="c-btn">C</span>
                                                     <span className="b-btn">B</span>
                                                     <span className="a-btn">A</span>
                                                 </a>
                                             </div>
                                             <div className="col-5 text-center border-left py-4">
-                                                <a href="#" className=" ">+ Add Part</a>
+                                                <a className="cursor">+ Add Part</a>
                                             </div>
                                         </div>
                                     </div>
@@ -12310,25 +12293,25 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     {/* ADD {serviceOrBundlePrefix} */}
                                                 </h5>
                                                 <div className="d-flex justify-content-center align-items-center">
-                                                    <a href="#" className="ml-3 font-size-14">
+                                                    <a className="ml-3 cursor font-size-14">
                                                         <img src={shareIcon}></img>
                                                     </a>
-                                                    <a href="#" className="ml-3 font-size-14">
+                                                    <a className="ml-3 cursor font-size-14">
                                                         <img src={folderaddIcon}></img>
                                                     </a>
-                                                    <a href="#" className="ml-3 font-size-14">
+                                                    <a className="ml-3 cursor font-size-14">
                                                         <img src={uploadIcon}></img>
                                                     </a>
-                                                    <a href="#" className="ml-3 font-size-14">
+                                                    <a className="ml-3 cursor font-size-14">
                                                         <img src={cpqIcon}></img>
                                                     </a>
-                                                    <a href="#" className="ml-3 font-size-14">
+                                                    <a className="ml-3 cursor font-size-14">
                                                         <img src={deleteIcon}></img>
                                                     </a>
-                                                    <a href="#" className="ml-3 font-size-14">
+                                                    <a className="ml-3 cursor font-size-14">
                                                         <img src={copyIcon}></img>
                                                     </a>
-                                                    <a href="#" className="ml-2">
+                                                    <a className="ml-2 cursor">
                                                         <MuiMenuComponent
                                                             onClick={() => alert()}
                                                             options={activityOptions}
@@ -12340,18 +12323,18 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <h5 className="d-flex align-items-center mb-0">
                                                     <div className="" style={{ display: "contents" }}>
                                                         <span className="mr-3">Header</span>
-                                                        <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}
+                                                        <a className="btn-sm cursor" style={{ cursor: "pointer" }}
                                                         // onClick={() => setBundleAndServiceEditAble(false)}
                                                         >
                                                             <i className="fa fa-pencil" aria-hidden="true"></i>
                                                         </a>
-                                                        <a href="#" className="btn-sm">
+                                                        <a className="btn-sm cursor">
                                                             <i
                                                                 className="fa fa-bookmark-o"
                                                                 aria-hidden="true"
                                                             ></i>
                                                         </a>
-                                                        <a href="#" className="btn-sm">
+                                                        <a className="btn-sm cursor">
                                                             <img
                                                                 style={{ width: "14px" }}
                                                                 src={folderaddIcon}

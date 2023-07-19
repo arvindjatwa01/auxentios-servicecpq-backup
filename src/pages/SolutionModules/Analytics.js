@@ -597,7 +597,6 @@ export const Analytics = () => {
 
       try {
          const portfolioToCustomPortfolioCopy = await copyPortfolioICustomPortfolio(`portfolioIds=${id}`);
-
          if (portfolioToCustomPortfolioCopy.status != 200) {
             throw `Solution ${portName} already exits,Please select another Portfolio.`;
          } else {
@@ -607,13 +606,12 @@ export const Analytics = () => {
                type: "fetch",
             };
             history.push({
-               pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+               // pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+               pathname: SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE,
                state: solutionPortfolioDetails,
             });
          }
-
       } catch (error) {
-         // toast.error("😐" + error, {
          toast("😐" + error, {
             position: "top-right",
             autoClose: 3000,
@@ -678,7 +676,8 @@ export const Analytics = () => {
             type: "fetch",
          };
          history.push({
-            pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+            // pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+            pathname: SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE,
             state: solutionPortfolioDetails,
             // selectedTemplateItems: createdCustomItems,
             // solutionValueIs: solutionValue,
@@ -3011,9 +3010,9 @@ export const Analytics = () => {
          format: (row) => row.action,
          cell: (row) => (
             <div>
-               <a href={undefined} onClick={() =>
+               <a className="cursor" onClick={() =>
                   makePortfolioEditableEditable(row)
-               } style={{ cursor: "pointer" }}>
+               }>
 
                   <img className="mr-2" src={penIcon} />
                </a>
@@ -3068,10 +3067,10 @@ export const Analytics = () => {
                <div className="d-flex align-items-center justify-content-between mt-2">
                   <h5 className="font-weight-600 mb-0">Solution Builder</h5>
                   <div>
-                     {/* <a href="#" onClick={handleShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                     {/* <a onClick={handleShow} style={{ cursor: 'pointer' }} className="btn bg-primary cursor text-white">
                         <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
                      </a> */}
-                     <a href={undefined} onClick={PopupModelBoxShow} style={{ cursor: 'pointer' }} className="btn cursor bg-primary text-white">
+                     <a onClick={PopupModelBoxShow} className="btn cursor bg-primary text-white">
                         <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
                      </a>
                   </div>
@@ -3105,23 +3104,13 @@ export const Analytics = () => {
                                                 <FormControlLabel control={index === 0 ? <Checkbox defaultChecked /> : <Checkbox />} label="" />
                                              </FormGroup>
                                           </div> */}
-                                                   <a
-                                                      href={undefined}
-                                                      className="btn-sm"
-                                                      style={{ cursor: "pointer" }}
-                                                   >
-                                                      <i
-                                                         className="fa fa-pencil"
-                                                         aria-hidden="true"
-                                                         onClick={() =>
-                                                            makePortfolioEditableEditable(solutionData)
-                                                         }
-                                                      ></i>
+                                                   <a className="btn-sm cursor">
+                                                      <i className="fa fa-pencil" aria-hidden="true" onClick={() => makePortfolioEditableEditable(solutionData)}></i>
                                                    </a>
-                                                   <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                                   <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                                   <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                                   {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                                                   <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                                   <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                                   <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                                   {/* <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a> */}
                                                 </div>
                                              </div>
 
@@ -3152,10 +3141,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox defaultChecked />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3175,10 +3164,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3198,10 +3187,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3221,10 +3210,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3244,10 +3233,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3267,10 +3256,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3297,10 +3286,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox defaultChecked />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3320,10 +3309,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3343,10 +3332,10 @@ export const Analytics = () => {
                                              <FormControlLabel control={<Checkbox />} label="" />
                                           </FormGroup>
                                        </div>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                       <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                       <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                       <a className="ml-3 cursor font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                       <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                  </div>
 
@@ -3370,10 +3359,10 @@ export const Analytics = () => {
                            <div className="d-flex mr-2" style={{ whiteSpace: 'pre' }}>
                               <h5 className="mr-2 mb-0 text-white"><span>Search</span></h5>
                               <p className="ml-4 mb-0">
-                                 <a href="#" className="ml-3 text-white">
+                                 <a className="ml-3 text-white cursor">
                                     <EditOutlinedIcon />
                                  </a>
-                                 <a href="#" className="ml-3 text-white">
+                                 <a className="ml-3 text-white cursor">
                                     <ShareOutlinedIcon />
                                  </a>
                               </p>
@@ -3658,8 +3647,8 @@ export const Analytics = () => {
                         <div className='d-flex align-items-center justify-content-between'>
                            <div></div>
                            <div>
-                              <a href='#' className='btn border-left'>+ Add</a>
-                              <a href='#' className='btn border-left'>Cancel</a>
+                              <a className='btn border-left cursor'>+ Add</a>
+                              <a className='btn border-left cursor'>Cancel</a>
                            </div>
                         </div>
                      </div>
@@ -3671,7 +3660,7 @@ export const Analytics = () => {
                            <div class="contain-slider mt-3">
                               <OwlCarousel items={3} className='owl-theme' loop margin={10} nav>
                                  <div class='item'>
-                                    <a href='#' className='bg-yellow text-white btn'>CV agreement</a>
+                                    <a className='cursor bg-yellow text-white btn'>CV agreement</a>
                                     <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                     <ul className='mt-3' style={{ paddingLeft: '20px' }}>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
@@ -3680,7 +3669,7 @@ export const Analytics = () => {
                                     <Link to="/service/new" className="btn bg-primary text-white Choose-btn">Choose</Link>
                                  </div>
                                  <div class='item'>
-                                    <a href='#' className='bg-primary  text-white btn'>Repair {querySearchSelectItem.length > 0 ? querySearchSelectItem[0].itemType.label : ""}</a>
+                                    <a className='cursor bg-primary  text-white btn'>Repair {querySearchSelectItem.length > 0 ? querySearchSelectItem[0].itemType.label : ""}</a>
                                     <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                     <ul className='mt-3' style={{ paddingLeft: '20px' }}>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
@@ -3689,7 +3678,7 @@ export const Analytics = () => {
                                     <Link to="/service/new" className="btn bg-primary text-white Choose-btn">Choose</Link>
                                  </div>
                                  <div class='item'>
-                                    <a href='#' className='bg-green-light text-white btn'>Maintenence {querySearchSelectItem.length > 0 ? querySearchSelectItem[0].itemType.label : ""}</a>
+                                    <a className='cursor bg-green-light text-white btn'>Maintenence {querySearchSelectItem.length > 0 ? querySearchSelectItem[0].itemType.label : ""}</a>
                                     <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                     <ul className='mt-3' style={{ paddingLeft: '20px' }}>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
@@ -3712,7 +3701,7 @@ export const Analytics = () => {
                            </div>
 
                            <div>
-                              <a href='#' onClick={CantFindgoback} className='btn'>I can't find what i need</a>
+                              <a onClick={CantFindgoback} className='btn cursor'>I can't find what i need</a>
                            </div>
                         </div>
                      </div>
@@ -3762,7 +3751,7 @@ export const Analytics = () => {
                         </div>
                         <div className="m-2 text-right">
                            {/* <input className="btn text-white bg-primary" value="+ Add Selected" disabled={!flagIs} /> */}
-                           <a href="#" className="btn text-white bg-primary">+ Add Selected</a>
+                           <a className="btn text-white cursor bg-primary">+ Add Selected</a>
 
                         </div>
                      </div>
@@ -3827,7 +3816,7 @@ export const Analytics = () => {
                               className="btn text-white bg-primary"
                               value="+ Add Selected"
                               disabled={!flagIs} />
-                           {/* <a href="#" className="btn text-white bg-primary">+ Add Selected</a> */}
+                           {/* <a className="btn cursor text-white bg-primary">+ Add Selected</a> */}
 
                         </div>
                      </> : <></>}
@@ -4391,8 +4380,8 @@ export const Analytics = () => {
                         <div className="maintableheader bg-white border-radius-10 p-2 h-100">
                            <p>Search Existing Templates</p>
                            <div className="existing-template-div d-flex justify-content-end">
-                              <a href="#" className={solutionValue == 0 ? "btn text-white mr-2 active" : "btn text-white bg-primary mr-2"} onClick={(e) => handleTypeOfTemplateSolutionBtn(e, 0)}>Portfolio</a>
-                              <a href="#" className={solutionValue == 1 ? "btn text-white ml-0 active" : "btn text-white bg-primary ml-0"} onClick={(e) => handleTypeOfTemplateSolutionBtn(e, 1)}>Solution</a>
+                              <a className={`${solutionValue == 0 ? "btn text-white mr-2 active" : "btn text-white bg-primary mr-2"}` cursor} onClick={(e) => handleTypeOfTemplateSolutionBtn(e, 0)}>Portfolio</a>
+                              <a className={`${solutionValue == 1 ? "btn text-white ml-0 active" : "btn text-white bg-primary ml-0"}` cursor} onClick={(e) => handleTypeOfTemplateSolutionBtn(e, 1)}>Solution</a>
                            </div>
                         </div>
                      </div>
@@ -4477,9 +4466,6 @@ export const Analytics = () => {
                      </>
 
                   }
-
-                  {/* Portfolio Templates Search Result Master & Selected Data Starting */}
-                  {/* {console.log("222222222222222222221: ", portfolioTempMasterData)} */}
                   {solutionValue == 0 ? <>
 
                      {loadingStatus === "01" ? ("loading") :
