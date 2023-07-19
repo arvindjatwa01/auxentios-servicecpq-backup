@@ -26,7 +26,7 @@ const GRID_STYLE = {
   "& .MuiDataGrid-columnHeaders": {
     // backgroundColor: "#872ff7",
     color: "gray",
-    fontSize: 16,
+    fontSize: 14,
   },
   "& .MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel": {
     marginTop: "1em",
@@ -230,6 +230,7 @@ const DataGridContainer = (props) => (
       width: "95%",
       display: "flex",
       justifyContent: "center",
+      padding: 2
     }}
   >
     {props.children}
