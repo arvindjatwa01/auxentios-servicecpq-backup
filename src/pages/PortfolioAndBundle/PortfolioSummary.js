@@ -3687,9 +3687,8 @@ export const PortfolioSummary = () => {
         itemPriceDataId: itemPriceData.itemPriceDataId
       }
 
-      if (((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null) &&
-        (itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null))) {
-      } else {
+      if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
+        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
         if (((itemPriceData.standardJobId == "") ||
           (itemPriceData.standardJobId == null)) &&
           ((itemPriceData.repairKitId != "") || (itemPriceData.repairKitId != null))) {
@@ -3826,9 +3825,8 @@ export const PortfolioSummary = () => {
           itemPriceDataId: itemPriceData.itemPriceDataId
         }
 
-        if (((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null) &&
-          (itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null))) {
-        } else {
+        if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
+          ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
           if (((itemPriceData.standardJobId == "") ||
             (itemPriceData.standardJobId == null)) &&
             ((itemPriceData.repairKitId != "") || (itemPriceData.repairKitId != null))) {
@@ -4219,17 +4217,21 @@ export const PortfolioSummary = () => {
           itemPriceDataId: itemPriceData?.itemPriceDataId
         }
 
-        if ((data.templateId == "") ||
-          (data.templateId == null) ||
-          data.repairOption != "") {
-          const updateRkId = portfolioItemPriceRkId(rObj);
+        if (!(((data.templateId === "") || (data.templateId === null)) &&
+          ((data.repairOption === "") || (data.repairOption === null)))) {
+          if ((data.templateId == "") ||
+            (data.templateId == null) ||
+            data.repairOption != "") {
+            const updateRkId = portfolioItemPriceRkId(rObj);
+          }
+
+          if ((data.repairOption == "") ||
+            (data.repairOption == null) ||
+            data.templateId != "") {
+            const updateSjId = portfolioItemPriceSjid(rObj);
+          }
         }
 
-        if ((data.repairOption == "") ||
-          (data.repairOption == null) ||
-          data.templateId != "") {
-          const updateSjId = portfolioItemPriceSjid(rObj);
-        }
 
       }
 
@@ -4343,28 +4345,34 @@ export const PortfolioSummary = () => {
 
           // current working bundle/service price update request obj
           let priceUpdateData = {
-            itemPriceDataId: data.id ? data.id : 0,
+            itemPriceDataId: ((data.id === "") || (data.id === null) ||
+              (data.id === undefined) || (data.id === 0)) ? 0 : data.id,
             quantity: 1,
-            standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
-            repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
-            templateDescription: (addPortFolioItem.repairOption && addPortFolioItem.templateId != "") ? addPortFolioItem.templateDescription?.value : "",
+            standardJobId: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+              (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateId,
+            repairKitId: ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) ||
+              (addPortFolioItem.repairOption === undefined)) ? "" : addPortFolioItem.repairOption,
+            templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+              (addPortFolioItem.templateId === undefined)) ? "" : (typeof addPortFolioItem.templateDescription === "object") ?
+              addPortFolioItem.templateDescription?.value : addPortFolioItem.templateDescription,
             repairOption: "",
             additional: "",
             partListId: "",
             serviceEstimateId: "",
             numberOfEvents: 0,
-            frequency: data?.frequency !== "" ? data?.frequency?.value : "CYCLIC",
-            priceMethod: (data.priceMethod === "EMPTY"
-              || data.priceMethod === "" ||
-              data.priceMethod === null) ?
-              "LIST_PRICE" : data.priceMethod?.value,
-            priceType: (data.priceType === "EMPTY" ||
-              data.priceType === "" ||
-              data.priceType === null) ? "EVENT_BASED" : data.priceType?.value,
+            frequency: ((data?.frequency === "") || (data?.frequency === null) ||
+              (data?.frequency === undefined) || (data?.frequency === "EMPTY")) ? "CYCLIC" :
+              (typeof data?.frequency === "object") ? data?.frequency?.value : data?.frequency,
+            priceMethod: ((data.priceMethod === "EMPTY") || (data.priceMethod === "") ||
+              (data.priceMethod === null)) ? "LIST_PRICE" : data.priceMethod?.value,
+            priceType: ((data.priceType === "EMPTY") || (data.priceType === "") ||
+              (data.priceType === null)) ? "EVENT_BASED" : data.priceType?.value,
             listPrice: 0,
-            priceEscalation: data.escalationPriceOptionsValue != "" ? data.escalationPriceOptionsValue : "",
+            priceEscalation: ((data.escalationPriceOptionsValue === "") || (data.escalationPriceOptionsValue === null) ||
+              (data.escalationPriceOptionsValue === undefined)) ? "" : data.escalationPriceOptionsValue,
             calculatedPrice: 0,
-            flatPrice: data.flatPrice ? parseInt(data.flatPrice) : 0,
+            flatPrice: ((data.flatPrice === "") || (data.flatPrice === null) || (data.flatPrice === undefined) ||
+              (data.flatPrice === 0)) ? 0 : parseInt(data.flatPrice),
             year: data.year?.value,
             noOfYear: parseInt(data.noOfYear),
             sparePartsPrice: 0,
@@ -4382,16 +4390,15 @@ export const PortfolioSummary = () => {
               data.priceBreakDownInputValue : 0),
             totalPrice: 0,
             netService: 0,
-            additionalPriceType: (data?.priceAdditionalSelect != "EMPTY" ||
-              data?.priceAdditionalSelect != "" ||
-              data?.priceAdditionalSelect != null) ?
-              data?.priceAdditionalSelect?.value : "ABSOLUTE",
+            additionalPriceType: ((data?.priceAdditionalSelect === "EMPTY") ||
+              (data?.priceAdditionalSelect === "") ||
+              (data?.priceAdditionalSelect === null)) ? "ABSOLUTE" : data?.priceAdditionalSelect?.value,
             additionalPriceValue: data?.priceAdditionalInput,
-            discountType: (data?.discountTypeSelect != "EMPTY" ||
-              data?.discountTypeSelect != "" ||
-              data?.discountTypeSelect != null) ? data?.discountTypeSelect?.value : "PORTFOLIO_DISCOUNT",
+            discountType: ((data?.discountTypeSelect === "EMPTY") ||
+              (data?.discountTypeSelect === "") ||
+              (data?.discountTypeSelect === null)) ? "PORTFOLIO_DISCOUNT" : data?.discountTypeSelect?.value,
             discountValue: data?.discountTypeInput,
-            recommendedValue: parseInt(data.recommendedValue),
+            recommendedValue: parseInt(data?.recommendedValue),
             startUsage: parseInt(data.startUsage),
             endUsage: parseInt(data.endUsage),
             sparePartsEscalation: ((data.escalationPriceOptionsValue != "") &&
@@ -4409,19 +4416,23 @@ export const PortfolioSummary = () => {
             sparePartsNOE: 0,
             labourNOE: 0,
             miscNOE: 0,
-            recommendedUnit: data?.unit?.value === "YEAR" ? "MONTH" : data?.unit?.value,
-            usageUnit: data?.unit != "" ? data?.unit?.value : "YEAR",
+            recommendedUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+              (data.unit === "EMPTY")) ? "MONTH" : (typeof data.unit === "object") ?
+              data.unit?.value === "YEAR" ? "MONTH" : data.unit?.value : data.unit,
+            usageUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+              (data.unit === "EMPTY")) ? "YEAR" : (typeof data.unit === "object") ? data.unit?.value : data.unit,
             withBundleService: false,
-            portfolio: (data.portfolioDataId != 0) ? {
+            portfolio: ((data.portfolioDataId === 0) || (data.portfolioDataId === null) || (data.portfolioDataId === "") ||
+              (data.portfolioDataId === undefined)) ? null : {
               portfolioId: data.portfolioDataId
-            } : null,
+            },
             tenantId: loginTenantId,
-            inclusionExclusion: false,
+            inclusionExclusion: true,
             partsRequired: true,
             labourRequired: true,
-            serviceRequired: false,
-            miscRequired: true
-          }
+            miscRequired: true,
+            serviceRequired: false
+          };
           if (data.id) {
             const updatePriceId = await updateItemPriceData(
               data.id,
@@ -4435,18 +4446,21 @@ export const PortfolioSummary = () => {
                 itemPriceDataId: data.id
               }
 
-              if (((addPortFolioItem.templateId == "") ||
-                (addPortFolioItem.templateId == null)) &&
-                (addPortFolioItem.repairOption != "") ||
-                (addPortFolioItem.repairOption != null)) {
-                const updateRkId = portfolioItemPriceRkId(rObj);
-              }
+              if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+                ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+                if (((addPortFolioItem.templateId == "") ||
+                  (addPortFolioItem.templateId == null)) &&
+                  (addPortFolioItem.repairOption != "") ||
+                  (addPortFolioItem.repairOption != null)) {
+                  const updateRkId = portfolioItemPriceRkId(rObj);
+                }
 
-              if (((addPortFolioItem.repairOption == "") ||
-                (addPortFolioItem.repairOption == null)) &&
-                ((addPortFolioItem.templateId != "") ||
-                  (addPortFolioItem.templateId != null))) {
-                const updateSjId = portfolioItemPriceSjid(rObj);
+                if (((addPortFolioItem.repairOption == "") ||
+                  (addPortFolioItem.repairOption == null)) &&
+                  ((addPortFolioItem.templateId != "") ||
+                    (addPortFolioItem.templateId != null))) {
+                  const updateSjId = portfolioItemPriceSjid(rObj);
+                }
               }
             }
             setBundleTabs("bundleServiceAdministrative")
@@ -4583,28 +4597,34 @@ export const PortfolioSummary = () => {
 
         // current working bundle item update reqObj
         let priceUpdateData = {
-          itemPriceDataId: 0,
+          itemPriceDataId: ((data.id === "") || (data.id === null) ||
+            (data.id === undefined) || (data.id === 0)) ? 0 : data.id,
           quantity: 1,
-          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
-          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
-          templateDescription: (addPortFolioItem.repairOption && addPortFolioItem.templateId != "") ? addPortFolioItem.templateDescription?.value : "",
+          standardJobId: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+            (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateId,
+          repairKitId: ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) ||
+            (addPortFolioItem.repairOption === undefined)) ? "" : addPortFolioItem.repairOption,
+          templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+            (addPortFolioItem.templateId === undefined)) ? "" : (typeof addPortFolioItem.templateDescription === "object") ?
+            addPortFolioItem.templateDescription?.value : addPortFolioItem.templateDescription,
           repairOption: "",
           additional: "",
           partListId: "",
           serviceEstimateId: "",
           numberOfEvents: 0,
-          frequency: data?.frequency !== "" ? data?.frequency?.value : "CYCLIC",
-          priceMethod: (data.priceMethod === "EMPTY"
-            || data.priceMethod === "" ||
-            data.priceMethod === null) ?
-            "LIST_PRICE" : data.priceMethod?.value,
-          priceType: (data.priceType === "EMPTY" ||
-            data.priceType === "" ||
-            data.priceType === null) ? "EVENT_BASED" : data.priceType?.value,
+          frequency: ((data?.frequency === "") || (data?.frequency === null) ||
+            (data?.frequency === undefined) || (data?.frequency === "EMPTY")) ? "CYCLIC" :
+            (typeof data?.frequency === "object") ? data?.frequency?.value : data?.frequency,
+          priceMethod: ((data.priceMethod === "EMPTY") || (data.priceMethod === "") ||
+            (data.priceMethod === null)) ? "LIST_PRICE" : data.priceMethod?.value,
+          priceType: ((data.priceType === "EMPTY") || (data.priceType === "") ||
+            (data.priceType === null)) ? "EVENT_BASED" : data.priceType?.value,
           listPrice: 0,
-          priceEscalation: data.escalationPriceOptionsValue != "" ? data.escalationPriceOptionsValue : "",
+          priceEscalation: ((data.escalationPriceOptionsValue === "") || (data.escalationPriceOptionsValue === null) ||
+            (data.escalationPriceOptionsValue === undefined)) ? "" : data.escalationPriceOptionsValue,
           calculatedPrice: 0,
-          flatPrice: data.flatPrice ? parseInt(data.flatPrice) : 0,
+          flatPrice: ((data.flatPrice === "") || (data.flatPrice === null) || (data.flatPrice === undefined) ||
+            (data.flatPrice === 0)) ? 0 : parseInt(data.flatPrice),
           year: data.year?.value,
           noOfYear: parseInt(data.noOfYear),
           sparePartsPrice: 0,
@@ -4622,16 +4642,15 @@ export const PortfolioSummary = () => {
             data.priceBreakDownInputValue : 0),
           totalPrice: 0,
           netService: 0,
-          additionalPriceType: (data?.priceAdditionalSelect != "EMPTY" ||
-            data?.priceAdditionalSelect != "" ||
-            data?.priceAdditionalSelect != null) ?
-            data?.priceAdditionalSelect?.value : "ABSOLUTE",
+          additionalPriceType: ((data?.priceAdditionalSelect === "EMPTY") ||
+            (data?.priceAdditionalSelect === "") ||
+            (data?.priceAdditionalSelect === null)) ? "ABSOLUTE" : data?.priceAdditionalSelect?.value,
           additionalPriceValue: data?.priceAdditionalInput,
-          discountType: (data?.discountTypeSelect != "EMPTY" ||
-            data?.discountTypeSelect != "" ||
-            data?.discountTypeSelect != null) ? data?.discountTypeSelect?.value : "PORTFOLIO_DISCOUNT",
+          discountType: ((data?.discountTypeSelect === "EMPTY") ||
+            (data?.discountTypeSelect === "") ||
+            (data?.discountTypeSelect === null)) ? "PORTFOLIO_DISCOUNT" : data?.discountTypeSelect?.value,
           discountValue: data?.discountTypeInput,
-          recommendedValue: parseInt(data.recommendedValue),
+          recommendedValue: parseInt(data?.recommendedValue),
           startUsage: parseInt(data.startUsage),
           endUsage: parseInt(data.endUsage),
           sparePartsEscalation: ((data.escalationPriceOptionsValue != "") &&
@@ -4649,19 +4668,23 @@ export const PortfolioSummary = () => {
           sparePartsNOE: 0,
           labourNOE: 0,
           miscNOE: 0,
-          recommendedUnit: data?.unit?.value === "YEAR" ? "MONTH" : data?.unit?.value,
-          usageUnit: data?.unit != "" ? data?.unit?.value : "YEAR",
+          recommendedUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+            (data.unit === "EMPTY")) ? "MONTH" : (typeof data.unit === "object") ?
+            data.unit?.value === "YEAR" ? "MONTH" : data.unit?.value : data.unit,
+          usageUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+            (data.unit === "EMPTY")) ? "YEAR" : (typeof data.unit === "object") ? data.unit?.value : data.unit,
           withBundleService: false,
-          portfolio: (data.portfolioDataId != 0) ? {
+          portfolio: ((data.portfolioDataId === 0) || (data.portfolioDataId === null) || (data.portfolioDataId === "") ||
+            (data.portfolioDataId === undefined)) ? null : {
             portfolioId: data.portfolioDataId
-          } : null,
+          },
           tenantId: loginTenantId,
-          inclusionExclusion: false,
+          inclusionExclusion: true,
           partsRequired: true,
           labourRequired: true,
-          serviceRequired: false,
-          miscRequired: true
-        }
+          miscRequired: true,
+          serviceRequired: false
+        };
         const itemPriceData = await createItemPriceData(priceUpdateData)
         if (itemPriceData.status === 200) {
           setItemPriceData(itemPriceData.data);
@@ -4673,17 +4696,21 @@ export const PortfolioSummary = () => {
               itemPriceDataId: itemPriceData.data.itemPriceDataId,
             }
 
-            if ((addPortFolioItem.templateId == "") ||
-              (addPortFolioItem.templateId == null) ||
-              addPortFolioItem.repairOption != "") {
-              const updateRkId = portfolioItemPriceRkId(rObj);
+            if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+              ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+              if ((addPortFolioItem.templateId == "") ||
+                (addPortFolioItem.templateId == null) ||
+                addPortFolioItem.repairOption != "") {
+                const updateRkId = portfolioItemPriceRkId(rObj);
+              }
+
+              if ((addPortFolioItem.repairOption == "") ||
+                (addPortFolioItem.repairOption == null) ||
+                addPortFolioItem.templateId != "") {
+                const updateSjId = portfolioItemPriceSjid(rObj);
+              }
             }
 
-            if ((addPortFolioItem.repairOption == "") ||
-              (addPortFolioItem.repairOption == null) ||
-              addPortFolioItem.templateId != "") {
-              const updateSjId = portfolioItemPriceSjid(rObj);
-            }
           }
           setBundleTabs("bundleServiceAdministrative")
         }
@@ -4789,28 +4816,34 @@ export const PortfolioSummary = () => {
 
         // new price update request Obj
         let priceUpdateData = {
-          itemPriceDataId: data.id,
+          itemPriceDataId: ((data.id === "") || (data.id === null) ||
+            (data.id === undefined) || (data.id === 0)) ? 0 : data.id,
           quantity: 1,
-          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
-          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
-          templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+          standardJobId: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+            (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateId,
+          repairKitId: ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) ||
+            (addPortFolioItem.repairOption === undefined)) ? "" : addPortFolioItem.repairOption,
+          templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+            (addPortFolioItem.templateId === undefined)) ? "" : (typeof addPortFolioItem.templateDescription === "object") ?
+            addPortFolioItem.templateDescription?.value : addPortFolioItem.templateDescription,
           repairOption: "",
           additional: "",
           partListId: "",
           serviceEstimateId: "",
           numberOfEvents: 0,
-          frequency: data?.frequency !== "" ? data?.frequency?.value : "CYCLIC",
-          priceMethod: (data.priceMethod === "EMPTY"
-            || data.priceMethod === "" ||
-            data.priceMethod === null) ?
-            "LIST_PRICE" : data.priceMethod?.value,
-          priceType: (data.priceType === "EMPTY" ||
-            data.priceType === "" ||
-            data.priceType === null) ? "EVENT_BASED" : data.priceType?.value,
+          frequency: ((data?.frequency === "") || (data?.frequency === null) ||
+            (data?.frequency === undefined) || (data?.frequency === "EMPTY")) ? "CYCLIC" :
+            (typeof data?.frequency === "object") ? data?.frequency?.value : data?.frequency,
+          priceMethod: ((data.priceMethod === "EMPTY") || (data.priceMethod === "") ||
+            (data.priceMethod === null)) ? "LIST_PRICE" : data.priceMethod?.value,
+          priceType: ((data.priceType === "EMPTY") || (data.priceType === "") ||
+            (data.priceType === null)) ? "EVENT_BASED" : data.priceType?.value,
           listPrice: 0,
-          priceEscalation: data.escalationPriceOptionsValue != "" ? data.escalationPriceOptionsValue : "",
+          priceEscalation: ((data.escalationPriceOptionsValue === "") || (data.escalationPriceOptionsValue === null) ||
+            (data.escalationPriceOptionsValue === undefined)) ? "" : data.escalationPriceOptionsValue,
           calculatedPrice: 0,
-          flatPrice: data.flatPrice ? parseInt(data.flatPrice) : 0,
+          flatPrice: ((data.flatPrice === "") || (data.flatPrice === null) || (data.flatPrice === undefined) ||
+            (data.flatPrice === 0)) ? 0 : parseInt(data.flatPrice),
           year: data.year?.value,
           noOfYear: parseInt(data.noOfYear),
           sparePartsPrice: 0,
@@ -4828,16 +4861,15 @@ export const PortfolioSummary = () => {
             data.priceBreakDownInputValue : 0),
           totalPrice: 0,
           netService: 0,
-          additionalPriceType: (data?.priceAdditionalSelect === "EMPTY" ||
-            data?.priceAdditionalSelect === "" ||
-            data?.priceAdditionalSelect === null) ?
-            "ABSOLUTE" : data?.priceAdditionalSelect?.value,
+          additionalPriceType: ((data?.priceAdditionalSelect === "EMPTY") ||
+            (data?.priceAdditionalSelect === "") ||
+            (data?.priceAdditionalSelect === null)) ? "ABSOLUTE" : data?.priceAdditionalSelect?.value,
           additionalPriceValue: data?.priceAdditionalInput,
           discountType: ((data?.discountTypeSelect === "EMPTY") ||
             (data?.discountTypeSelect === "") ||
-           ( data?.discountTypeSelect === null)) ? "PORTFOLIO_DISCOUNT" : data?.discountTypeSelect?.value,
+            (data?.discountTypeSelect === null)) ? "PORTFOLIO_DISCOUNT" : data?.discountTypeSelect?.value,
           discountValue: data?.discountTypeInput,
-          recommendedValue: parseInt(data.recommendedValue),
+          recommendedValue: parseInt(data?.recommendedValue),
           startUsage: parseInt(data.startUsage),
           endUsage: parseInt(data.endUsage),
           sparePartsEscalation: ((data.escalationPriceOptionsValue != "") &&
@@ -4855,57 +4887,63 @@ export const PortfolioSummary = () => {
           sparePartsNOE: 0,
           labourNOE: 0,
           miscNOE: 0,
-          recommendedUnit: data?.unit?.value === "YEAR" ? "MONTH" : data?.unit?.value,
-          usageUnit: data?.unit != "" ? data?.unit?.value : "YEAR",
+          recommendedUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+            (data.unit === "EMPTY")) ? "MONTH" : (typeof data.unit === "object") ?
+            data.unit?.value === "YEAR" ? "MONTH" : data.unit?.value : data.unit,
+          usageUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+            (data.unit === "EMPTY")) ? "YEAR" : (typeof data.unit === "object") ? data.unit?.value : data.unit,
           withBundleService: false,
-          portfolio: ((data.portfolioDataId == null) || (data.portfolioDataId == 0) ||
-            (data.portfolioDataId == undefined) || (data.portfolioDataId == "")) ? null : {
+          portfolio: ((data.portfolioDataId === 0) || (data.portfolioDataId === null) || (data.portfolioDataId === "") ||
+            (data.portfolioDataId === undefined)) ? null : {
             portfolioId: data.portfolioDataId
           },
           tenantId: loginTenantId,
-          inclusionExclusion: false,
+          inclusionExclusion: true,
           partsRequired: true,
           labourRequired: true,
-          serviceRequired: false,
-          miscRequired: true
-        }
+          miscRequired: true,
+          serviceRequired: false
+        };
         // console.log("priceUpdateData is 23452345 ", priceUpdateData)
-        if ((data.id != "") ||
-          (data.id != null) ||
-          (data.id != undefined)) {
+        if ((data.id !== "") ||
+          (data.id !== null) ||
+          (data.id !== undefined)) {
           const updatePriceId = await updateItemPriceData(
             data.id,
             priceUpdateData
           );
 
-          if(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-          ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null))){
-          }else{
+          if (((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+            ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null))) {
+          } else {
             const rObj = {
               standardJobId: addPortFolioItem.templateId,
               repairKitId: addPortFolioItem.repairOption,
               itemId: createdServiceData.itemId,
               itemPriceDataId: data.id
             }
-  
-            if (((addPortFolioItem.templateId == "") ||
-              (addPortFolioItem.templateId == null)) &&
-              ((addPortFolioItem.repairOption != "") ||
-                (addPortFolioItem.repairOption != null))) {
-              const updateRkId = portfolioItemPriceRkId(rObj);
+
+            if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+              ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+              if (((addPortFolioItem.templateId == "") ||
+                (addPortFolioItem.templateId == null)) &&
+                ((addPortFolioItem.repairOption != "") ||
+                  (addPortFolioItem.repairOption != null))) {
+                const updateRkId = portfolioItemPriceRkId(rObj);
+              }
+
+              if (((addPortFolioItem.repairOption == "") ||
+                (addPortFolioItem.repairOption == null)) &&
+                (addPortFolioItem.templateId != "" ||
+                  (addPortFolioItem.templateId != null))) {
+                const updateSjId = portfolioItemPriceSjid(rObj);
+              }
             }
-  
-            if (((addPortFolioItem.repairOption == "") ||
-              (addPortFolioItem.repairOption == null)) &&
-              (addPortFolioItem.templateId != "" ||
-                (addPortFolioItem.templateId != null))) {
-              const updateSjId = portfolioItemPriceSjid(rObj);
-            }
+
           }
         }
         setBundleTabs("bundleServiceAdministrative")
       }
-
     } else {
       console.log("data 123456789 : ", data)
       setPriceCalculator(data);
@@ -4913,8 +4951,6 @@ export const PortfolioSummary = () => {
       setBundleTabs("bundleServiceHeader")
       saveAddNewServiceOrBundle();//bundle/service creation API called
     }
-
-
   };
 
   const handleCreateChange = (e) => {
@@ -7067,7 +7103,7 @@ export const PortfolioSummary = () => {
                 </TabList> */}
 
                 <TabList className="custom-tabs-div"
-                  onChange={(e, newValue) => setBundleTabs(newValue)}
+                  onChange={(e, newValue) => bundleAndServiceEditAble && setBundleTabs(newValue)}
                   aria-label="lab API tabs example"
                 >
 

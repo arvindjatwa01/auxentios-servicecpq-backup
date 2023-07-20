@@ -2301,7 +2301,7 @@ const AddPortfolioItem = (props) => {
 
   const calculateItemPrice = async () => {
     try {
-      if ((props.compoFlag === "ITEM")) {
+      // if ((props.compoFlag === "ITEM")) {
 
         if ((props.portfolioDataId == "") ||
           (props.portfolioDataId == undefined)) {
@@ -2470,7 +2470,7 @@ const AddPortfolioItem = (props) => {
           }
         }
 
-      }
+      // }
 
     } catch (error) {
       toast("😐" + error, {

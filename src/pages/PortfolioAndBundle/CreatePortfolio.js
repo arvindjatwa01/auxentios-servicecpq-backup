@@ -8655,7 +8655,7 @@ export function CreatePortfolio(props) {
     if (portfolioId != null) {
       getPortfolio(portfolioId)
         .then((res) => {
-          if(res.status === 200){
+          if (res.status === 200) {
             const portfolioDetails = res.data;
             if (portfolioDetails.portfolioId != null) {
               setGeneralComponentData({
@@ -9176,7 +9176,7 @@ export function CreatePortfolio(props) {
       setHeaderLoading(true);
       await getPortfolio(PortfolioId)
         .then((result) => {
-          if(result.status === 200){
+          if (result.status === 200) {
             populateHeader(result?.data);
           }
         })
@@ -23069,8 +23069,8 @@ export function CreatePortfolio(props) {
             <TabContext value={tabs}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList className="custom-tabs-div"
-                  onChange={(e, newValue) => setTabs(newValue)}
-                  // onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
+                  // onChange={(e, newValue) => setTabs(newValue)}
+                  onChange={(e, newValue) => { portfolioItemDataEditable && setTabs(newValue) }}
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
@@ -24862,7 +24862,7 @@ export function CreatePortfolio(props) {
             <TabContext value={bundleTabs}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                 <TabList className="custom-tabs-div"
-                  onChange={(e, newValue) => setBundleTabs(newValue)}
+                  onChange={(e, newValue) => !bundleOrServiceEditOrNot && setBundleTabs(newValue)}
                   aria-label="lab API tabs example"
                 >
                   <Tab label={`${serviceOrBundlePrefix} HEADER`} value="bundleServiceHeader" />
