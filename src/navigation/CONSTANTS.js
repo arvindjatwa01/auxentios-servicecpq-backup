@@ -94,3 +94,6 @@ export const SOLUTION_BUILDER_PORRTFOLIO_TEMP = SOLUTION_BUILDER + "/portfolioTe
 export const SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT = SOLUTION_BUILDER + "/solutionTemplate";
 export const SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE = SOLUTION_BUILDER + "/create";
 export const CREATED_CUSTOM_PORTFOLIO_DETAILS = SOLUTION_BUILDER + "/customPortfolioTemplate";
+
+// equipment-master
+export const EQUIPMENT_MASTER = "/eqipment-master"
