@@ -4028,5 +4028,54 @@ input[type="checkbox"]:checked:after {
 .modal-backdrop.show:nth-last-child(6) {
   z-index: 1000;
 }
-
+.bg-grey{
+  background: #d9d9d961;
+}
 /* .rdt_TableCol{ width: 100px !important;} */
+.equipment-select .customselect {
+  border: 1px solid #872ff759 !important;
+  background: transparent !important;
+  border-radius: 8px;
+}
+.equipment-select .customselectsearch{
+  border-left: 2px solid #00000011 !important;
+}
+.equipment-select .custom-input-sleact {
+  background: transparent;
+  padding: 5px;
+  border-left: none !important;
+  color: #000 !important;
+}
+.equipment-select .css-14el2xx-placeholder {
+  color: #000000;
+}
+.equipment-select .css-6j8wv5-Input{
+  color: #000000;
+}
+.equipment-select .css-1gtu0rj-indicatorContainer{
+  color: #872ff7 !important;
+}
+
+.equipment-select .custom-input-sleact::placeholder {
+  color: #000000 !important;
+}
+.br-bl{
+  border-bottom: 2px solid #00000015 !important;
+}
+.equipment-master-ul{}
+.equipment-master-ul ul li{
+  background: #00000015;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 4px 0 #00000025;
+  margin-top: 18px;
+}
+.equipment-master-ul li img{
+  width: 80px;
+}
+.text-light-60{
+  color: #00000060;
+}
+.equipment-master-ul ul li.active{
+  background: #ffffff;
+}
