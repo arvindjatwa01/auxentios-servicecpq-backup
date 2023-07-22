@@ -1,15 +1,165 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Select from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import Pagination from "@mui/material/Pagination";
+import { Card, Divider, Grid } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import StatusStackedChart from "../Dashboard/StatusStackedChart";
 
 const EquipmentMaster = () => {
+  const lifeCycleStatusData = [
+    {
+      month: "Jan",
+      draft: 400,
+      waiting: 240,
+      ready: 247,
+      running: 325,
+      done: 100,
+    },
+    {
+      month: "Feb",
+      draft: 300,
+      waiting: 139,
+      ready: 221,
+      running: 325,
+      done: 100,
+    },
+    {
+      month: "March",
+      draft: 200,
+      waiting: 980,
+      ready: 229,
+      running: 325,
+      done: 100,
+    },
+    {
+      month: "Apr",
+      draft: 278,
+      waiting: 390,
+      ready: 200,
+      running: 325,
+      done: 100,
+    },
+    {
+      month: "May",
+      draft: 189,
+      waiting: 480,
+      ready: 218,
+      running: 325,
+      done: 100,
+    },
+    {
+      month: "June",
+      draft: 239,
+      waiting: 380,
+      ready: 250,
+      running: 100,
+      done: 100,
+    },
+    {
+      month: "July",
+      draft: 349,
+      waiting: 430,
+      ready: 210,
+      running: 140,
+      done: 100,
+    },
+    {
+      month: "Aug",
+      draft: 349,
+      waiting: 430,
+      ready: 210,
+      running: 231,
+      done: 100,
+    },
+    {
+      month: "Sept",
+      draft: 349,
+      waiting: 430,
+      ready: 210,
+      running: 300,
+      done: 100,
+    },
+    {
+      month: "Oct",
+      draft: 349,
+      waiting: 430,
+      ready: 210,
+      running: 175,
+      done: 100,
+    },
+    {
+      month: "Nov",
+      draft: 349,
+      waiting: 430,
+      ready: 210,
+      running: 250,
+      done: 100,
+    },
+    {
+      month: "Dec",
+      draft: 349,
+      waiting: 430,
+      ready: 210,
+      running: 325,
+      done: 100,
+    },
+  ];
+
+  const [searchSelector, setSearchSelector] = useState([
+    {
+      id: 0,
+      selectFamily: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+      itemType: { label: "", value: "" },
+      itemTypeOperator: "",
+      selectedKeyValue: "",
+    },
+  ]);
+
+  const addMoreSearchCritria = () => {
+    const _searchSelector = [...searchSelector];
+    _searchSelector.push({
+      id: searchSelector.length + 1,
+      selectOperator: "",
+      selectFamily: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    });
+    if (_searchSelector.length <= 2) {
+      setSearchSelector(_searchSelector);
+    }
+
+    // if (searchSelector.length < 2) {
+    //   setSearchSelector([
+    //     ...searchSelector,
+    //     {
+    //       id: searchSelector.length,
+    //       selectOperator: "",
+    //       selectFamily: "",
+    //       inputSearch: "",
+    //       selectOptions: [],
+    //       selectedOption: "",
+    //     },
+    //   ]);
+    // }
+  };
+
+  const removeSearchCritria = () => {
+    setSearchSelector([]);
+  };
+
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-lg-5">
+          <div className="col-lg-5 border-50">
             <h5 className="font-weight-600 mb-0">Equipment Master</h5>
             <div className="bg-grey border-radius-10 p-3 mt-4">
               <p className="mb-1">Select the search criteria</p>
@@ -17,39 +167,60 @@ const EquipmentMaster = () => {
                 <div className="d-flex justify-content-between align-items-center w-100 border-radius-10">
                   <div className="d-flex justify-content-between align-items-center border-radius-10 w-100">
                     <div className="row align-items-center m-0">
-                      <div className="customselect d-flex align-items-center mr-3">
-                        <div>
-                          <Select
-                            // isClearable={true}
-                            options={[{ label: "A", value: "a" }]}
-                            placeholder="Search By"
-                            // onChange={(e) => handleFamily(e, i)}
-                            // value={obj.selectFamily}
-                            // isOptionDisabled={(option) => checkForDisabled(option)}
-                          />
-                        </div>
-                        <div className="customselectsearch pl-2">
-                          <SearchIcon className="text-primary" />
-                          <input
-                            className="custom-input-sleact"
-                            type="text"
-                            placeholder="Search Parts"
-                            // value={obj.inputSearch}
-                            // onChange={(e) =>
-                            //     handleInputSearch(e, i)
-                            // }
-                            // id={"inputSearch-" + i}
-                            autoComplete="off"
-                          />
-                        </div>
-                      </div>
+                      {searchSelector.length > 0 &&
+                        searchSelector.map((searchFiled, i) => (
+                          <div
+                            className={`customselect d-flex align-items-center mr-3${
+                              i > 0 ? " mt-1" : ""
+                            }`}
+                          >
+                            {i > 0 && (
+                              <Select
+                                defaultValue={{ label: "And", value: "AND" }}
+                                options={[
+                                  { label: "And", value: "AND", id: i },
+                                  { label: "Or", value: "OR", id: i },
+                                ]}
+                                placeholder="AND/OR"
+                                // value={searchFiled.selectOperator}
+                              />
+                            )}
+                            <div>
+                              <Select
+                                options={[{ label: "A", value: "a" }]}
+                                placeholder="Search By"
+                                // isOptionDisabled={(option) => checkForDisabled(option)}
+                              />
+                            </div>
+                            <div className="customselectsearch pl-2">
+                              <SearchIcon className="text-primary" />
+                              <input
+                                className="custom-input-sleact"
+                                type="text"
+                                placeholder="Search Parts"
+                                // value={obj.inputSearch}
+                                // onChange={(e) =>
+                                //     handleInputSearch(e, i)
+                                // }
+                                // id={"inputSearch-" + i}
+                                autoComplete="off"
+                              />
+                            </div>
+                          </div>
+                        ))}
                       <div>
-                        <Link className="btn-sm cursor p-0 font-size-16 mr-2 bg-white text-violet">
+                        <Link
+                          className="btn-sm cursor p-0 font-size-16 mr-2 bg-white text-violet"
+                          onClick={addMoreSearchCritria}
+                        >
                           +
                         </Link>
                       </div>
                       <div>
-                        <Link to="#" className="p-1 bg-white">
+                        <Link
+                          onClick={removeSearchCritria}
+                          className="p-1 bg-white cursor"
+                        >
                           <svg
                             width="14"
                             height="14"
@@ -110,12 +281,20 @@ const EquipmentMaster = () => {
                         className=" img-fluid"
                       />
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">ZCT01096</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CHAIN EXCAVATOR - 336D2 L</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
                       </div>
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">336D2 L</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CATERPILLAR</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CATERPILLAR
+                        </p>
                       </div>
                       <div>
                         <ArrowForwardIosIcon className="text-primary font-size-36" />
@@ -130,12 +309,20 @@ const EquipmentMaster = () => {
                         className=" img-fluid"
                       />
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">ZCT01096</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CHAIN EXCAVATOR - 336D2 L</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
                       </div>
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">336D2 L</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CATERPILLAR</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CATERPILLAR
+                        </p>
                       </div>
                       <div>
                         <ArrowForwardIosIcon className="text-primary font-size-36" />
@@ -150,12 +337,20 @@ const EquipmentMaster = () => {
                         className=" img-fluid"
                       />
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">ZCT01096</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CHAIN EXCAVATOR - 336D2 L</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
                       </div>
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">336D2 L</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CATERPILLAR</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CATERPILLAR
+                        </p>
                       </div>
                       <div>
                         <ArrowForwardIosIcon className="text-primary font-size-36" />
@@ -170,12 +365,76 @@ const EquipmentMaster = () => {
                         className=" img-fluid"
                       />
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">ZCT01096</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CHAIN EXCAVATOR - 336D2 L</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
                       </div>
                       <div className="d-block">
-                        <h6 className="font-size-14 font-weight-500 text-primary m-0">336D2 L</h6>
-                        <p className="font-size-14 text-light-60 font-weight-500 m-0">CATERPILLAR</p>
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CATERPILLAR
+                        </p>
+                      </div>
+                      <div>
+                        <ArrowForwardIosIcon className="text-primary font-size-36" />
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <img
+                        src="../assets/images/jcb-equipment.png"
+                        alt="jcb"
+                        className=" img-fluid"
+                      />
+                      <div className="d-block">
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
+                      </div>
+                      <div className="d-block">
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CATERPILLAR
+                        </p>
+                      </div>
+                      <div>
+                        <ArrowForwardIosIcon className="text-primary font-size-36" />
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <img
+                        src="../assets/images/jcb-equipment.png"
+                        alt="jcb"
+                        className=" img-fluid"
+                      />
+                      <div className="d-block">
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
+                      </div>
+                      <div className="d-block">
+                        <h6 className="font-size-14 font-weight-500 text-primary m-0">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-14 text-light-60 font-weight-500 m-0">
+                          CATERPILLAR
+                        </p>
                       </div>
                       <div>
                         <ArrowForwardIosIcon className="text-primary font-size-36" />
@@ -186,7 +445,104 @@ const EquipmentMaster = () => {
               </div>
             </div>
           </div>
-          <div className="col-lg-7"></div>
+          <div className="col-lg-7 equipment-master-chart">
+            <div className="bg-white p-3 border-radius-10">
+              <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                <h5 className="font-weight-600 mb-0">
+                  CHAIN EXCAVATOR - 336D2 L
+                </h5>
+                <Pagination count={5} />
+              </div>
+              <div className="d-block mt-3">
+                <h6 className="text-primary font-weight-600">ZCT01096</h6>
+                <p className="text-light-60 font-size-12 mb-0">
+                  336D2 L - 2015
+                </p>
+              </div>
+              <div className="row align-items-end">
+                <div className="col-lg-4">
+                  <div className="d-block">
+                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                      Manufacturer
+                    </p>
+                    <p className="text-primary font-size-12 mt-1 font-weight-500">
+                      Caterpillar
+                    </p>
+                  </div>
+                </div>
+                <div className="col-lg-4">
+                  <div className="d-block">
+                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                      Model
+                    </p>
+                    <p className="text-primary font-size-12 mt-1 font-weight-500">
+                      336D2 L
+                    </p>
+                  </div>
+                </div>
+                <div className="col-lg-4">
+                  <img
+                    src="../assets/images/chain-excavator.png"
+                    alt="jcb"
+                    className=" img-fluid w-100"
+                  />
+                </div>
+                <div className="col-lg-4 mt-4">
+                  <div className="d-block">
+                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                      Engine Model
+                    </p>
+                    <p className="text-primary font-size-12 mt-1 font-weight-500">
+                      C9 ACERT
+                    </p>
+                  </div>
+                </div>
+                <div className="col-lg-4 mt-4">
+                  <div className="d-block">
+                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                      Operating Weight
+                    </p>
+                    <p className="text-primary font-size-12 mt-1 font-weight-500">
+                      80648 lb
+                    </p>
+                  </div>
+                </div>
+                <div className="col-lg-4 mt-4">
+                  <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                    Net Flywheel Power
+                  </p>
+                  <p className="text-primary font-size-12 mt-1 font-weight-500">
+                    268 HP
+                  </p>
+                </div>
+              </div>
+            </div>
+            <Grid item md={9} xs={12} container>
+              <Card
+                elevation={10}
+                sx={{ width: "97%", borderRadius: 4, mx: 2, my: 1 }}
+              >
+                <div className="m-3 d-flex align-items-center justify-content-between">
+                  <h5 className="font-weight-600 mb-0">
+                    Condition of Chain Excavator - 336D2 L
+                  </h5>
+                  <div className="d-flex align-items-center equipment-master-btn-select">
+                    <div className=" mr-2">
+                      <Select
+                        options={[{ label: "1 Year", value: "a" }]}
+                        placeholder="Last 6 months"
+                      />
+                    </div>
+                    <a href="#" className="btn">
+                      Update
+                    </a>
+                  </div>
+                </div>
+                <Divider />
+                <StatusStackedChart data={lifeCycleStatusData} />
+              </Card>
+            </Grid>
+          </div>
         </div>
       </div>
     </div>
