@@ -4064,7 +4064,7 @@ input[type="checkbox"]:checked:after {
 }
 .equipment-master-ul{}
 .equipment-master-ul ul li{
-  background: #00000015;
+  background: #00000010;
   padding: 12px;
   border-radius: 10px;
   box-shadow: 0 4px 4px 0 #00000025;
@@ -4079,3 +4079,35 @@ input[type="checkbox"]:checked:after {
 .equipment-master-ul ul li.active{
   background: #ffffff;
 }
+.equipment-pagination .css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root.Mui-disabled {
+  opacity: 0;
+}
+.equipment-pagination .css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root{
+  border-radius: 0;
+}
+.equipment-master-chart .css-t17bhq-MuiPaper-root-MuiCard-root {
+  border-radius: 4px;
+  box-shadow: none;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 10px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 22px;
+  margin-bottom: 8px;
+}
+.equipment-master-chart .css-1hyjym-MuiGrid-root{
+  max-width: 100%;
+}
+.equipment-master-btn-select .css-1s2u09g-control, .equipment-master-btn-select .css-1pahdxg-control, .equipment-master-btn-select .css-1s2u09g-control:hover{
+  border: 1px solid #872FF750 !important;
+  border-radius: 10px !important;
+}
+.equipment-master-btn-select .css-tlfecz-indicatorContainer {
+  color: #872FF7 !important;
+}
+.equipment-master-btn-select .btn{
+  border-radius: 10px;
+  border: 1px solid #872FF750;
+}
+.border-50{ border-right: 1px solid #00000015;}
