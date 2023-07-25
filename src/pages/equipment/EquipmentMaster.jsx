@@ -4,107 +4,48 @@ import Select from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "@mui/material/Pagination";
-import { Card, Divider, Grid } from "@mui/material";
+import { Card, Divider, Grid, Stack } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import StatusStackedChart from "../Dashboard/StatusStackedChart";
-
+import PaginationStackedChart from "./PaginationStackedChart";
+import DataTable from "react-data-table-component";
 const EquipmentMaster = () => {
+  const [bundleItems, setBundleItems] = useState([]);
   const lifeCycleStatusData = [
     {
       month: "Jan",
-      draft: 400,
-      waiting: 240,
-      ready: 247,
-      running: 325,
-      done: 100,
+      maintenance: 400,
+      repair: 240,
+      parts: 247,
     },
     {
       month: "Feb",
-      draft: 300,
-      waiting: 139,
-      ready: 221,
-      running: 325,
-      done: 100,
+      maintenance: 300,
+      repair: 139,
+      parts: 221,
     },
     {
       month: "March",
-      draft: 200,
-      waiting: 980,
-      ready: 229,
-      running: 325,
-      done: 100,
+      maintenance: 200,
+      repair: 980,
+      parts: 229,
     },
     {
       month: "Apr",
-      draft: 278,
-      waiting: 390,
-      ready: 200,
-      running: 325,
-      done: 100,
+      maintenance: 278,
+      repair: 390,
+      parts: 200,
     },
     {
       month: "May",
-      draft: 189,
-      waiting: 480,
-      ready: 218,
-      running: 325,
-      done: 100,
+      maintenance: 189,
+      repair: 480,
+      parts: 218,
     },
     {
       month: "June",
-      draft: 239,
-      waiting: 380,
-      ready: 250,
-      running: 100,
-      done: 100,
-    },
-    {
-      month: "July",
-      draft: 349,
-      waiting: 430,
-      ready: 210,
-      running: 140,
-      done: 100,
-    },
-    {
-      month: "Aug",
-      draft: 349,
-      waiting: 430,
-      ready: 210,
-      running: 231,
-      done: 100,
-    },
-    {
-      month: "Sept",
-      draft: 349,
-      waiting: 430,
-      ready: 210,
-      running: 300,
-      done: 100,
-    },
-    {
-      month: "Oct",
-      draft: 349,
-      waiting: 430,
-      ready: 210,
-      running: 175,
-      done: 100,
-    },
-    {
-      month: "Nov",
-      draft: 349,
-      waiting: 430,
-      ready: 210,
-      running: 250,
-      done: 100,
-    },
-    {
-      month: "Dec",
-      draft: 349,
-      waiting: 430,
-      ready: 210,
-      running: 325,
-      done: 100,
+      parts: 250,
+      repair: 380,
+      maintenance: 239,
     },
   ];
 
@@ -121,6 +62,11 @@ const EquipmentMaster = () => {
       selectedKeyValue: "",
     },
   ]);
+  const [equipmentmasterpagination, setEquipmentmasterpagination] =
+    React.useState(1);
+  const equipmentPaginationChange = (event, value) => {
+    setEquipmentmasterpagination(value);
+  };
 
   const addMoreSearchCritria = () => {
     const _searchSelector = [...searchSelector];
@@ -154,12 +100,145 @@ const EquipmentMaster = () => {
   const removeSearchCritria = () => {
     setSearchSelector([]);
   };
+  const bundleItemColumns = [
+    {
+      name: (
+        <>
+          <div>Contract Id</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Contract Name</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+
+    {
+      name: (
+        <>
+          <div>Type</div>
+        </>
+      ),
+      selector: (row) => row?.itemDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.itemDescription,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Value</div>
+        </>
+      ),
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.itemHeaderStrategy,
+    },
+    {
+      name: (
+        <>
+          <div>Start Date</div>
+        </>
+      ),
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>End Date</div>
+        </>
+      ),
+      selector: (row) => row?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => (row?.quantity !== undefined ? row?.quantity : 1),
+    },
+    {
+      name: (
+        <>
+          <div>Start Usage</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>End Usage</div>
+        </>
+      ),
+      selector: (row) => row?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row?.bundleFlag,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.bundleFlag,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        ></div>
+      ),
+    },
+  ];
+  const customStyles = {
+    rows: {
+      style: {
+        minHeight: "72px", 
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: "8px", 
+        paddingRight: "8px",
+        backgroundColor: "#872ff7",
+        color: "#fff",
+        borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: "8px", 
+        paddingRight: "8px",
+        borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+    },
+  };
 
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-lg-5 border-50">
+          <div className="col-xl-5 col-lg-6 col-md-12 col-sm-12 border-50">
             <h5 className="font-weight-600 mb-0">Equipment Master</h5>
             <div className="bg-grey border-radius-10 p-3 mt-4">
               <p className="mb-1">Select the search criteria</p>
@@ -445,103 +524,290 @@ const EquipmentMaster = () => {
               </div>
             </div>
           </div>
-          <div className="col-lg-7 equipment-master-chart">
-            <div className="bg-white p-3 border-radius-10">
-              <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                <h5 className="font-weight-600 mb-0">
-                  CHAIN EXCAVATOR - 336D2 L
-                </h5>
-                <Pagination count={5} />
-              </div>
-              <div className="d-block mt-3">
-                <h6 className="text-primary font-weight-600">ZCT01096</h6>
-                <p className="text-light-60 font-size-12 mb-0">
-                  336D2 L - 2015
-                </p>
-              </div>
-              <div className="row align-items-end">
-                <div className="col-lg-4">
-                  <div className="d-block">
-                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                      Manufacturer
-                    </p>
-                    <p className="text-primary font-size-12 mt-1 font-weight-500">
-                      Caterpillar
-                    </p>
-                  </div>
-                </div>
-                <div className="col-lg-4">
-                  <div className="d-block">
-                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                      Model
-                    </p>
-                    <p className="text-primary font-size-12 mt-1 font-weight-500">
-                      336D2 L
-                    </p>
-                  </div>
-                </div>
-                <div className="col-lg-4">
-                  <img
-                    src="../assets/images/chain-excavator.png"
-                    alt="jcb"
-                    className=" img-fluid w-100"
-                  />
-                </div>
-                <div className="col-lg-4 mt-4">
-                  <div className="d-block">
-                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                      Engine Model
-                    </p>
-                    <p className="text-primary font-size-12 mt-1 font-weight-500">
-                      C9 ACERT
-                    </p>
-                  </div>
-                </div>
-                <div className="col-lg-4 mt-4">
-                  <div className="d-block">
-                    <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                      Operating Weight
-                    </p>
-                    <p className="text-primary font-size-12 mt-1 font-weight-500">
-                      80648 lb
-                    </p>
-                  </div>
-                </div>
-                <div className="col-lg-4 mt-4">
-                  <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                    Net Flywheel Power
-                  </p>
-                  <p className="text-primary font-size-12 mt-1 font-weight-500">
-                    268 HP
-                  </p>
-                </div>
-              </div>
-            </div>
-            <Grid item md={9} xs={12} container>
-              <Card
-                elevation={10}
-                sx={{ width: "97%", borderRadius: 4, mx: 2, my: 1 }}
-              >
-                <div className="m-3 d-flex align-items-center justify-content-between">
+          <div className="col-xl-7 col-lg-6 col-md-12 col-sm-12 equipment-master-chart">
+            <div className="">
+              <div className="bg-white p-3 border-radius-10 ">
+                <div className="d-flex align-items-center justify-content-between equipment-pagination">
                   <h5 className="font-weight-600 mb-0">
-                    Condition of Chain Excavator - 336D2 L
+                    CHAIN EXCAVATOR - 336D2 L
                   </h5>
-                  <div className="d-flex align-items-center equipment-master-btn-select">
-                    <div className=" mr-2">
-                      <Select
-                        options={[{ label: "1 Year", value: "a" }]}
-                        placeholder="Last 6 months"
+                  <Stack spacing={2}>
+                    <Pagination
+                      boundaryCount={0}
+                      siblingCount={0}
+                      count={6}
+                      page={equipmentmasterpagination}
+                      onChange={equipmentPaginationChange}
+                    />
+                  </Stack>
+                </div>
+                <div className="d-block mt-3">
+                  <h6 className="text-primary font-weight-600">ZCT01096</h6>
+                  <p className="text-light-60 font-size-12 mb-0">
+                    336D2 L - 2015
+                  </p>
+                </div>
+              </div>
+
+              {equipmentmasterpagination === 1 && (
+                <>
+                  <div className="bg-white p-3 border-radius-10 ">
+                    <div className="row align-items-end">
+                      <div className="col-lg-4">
+                        <div className="d-block">
+                          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                            Manufacturer
+                          </p>
+                          <p className="text-primary font-size-12 mt-1 font-weight-500">
+                            Caterpillar
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-lg-4">
+                        <div className="d-block">
+                          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                            Model
+                          </p>
+                          <p className="text-primary font-size-12 mt-1 font-weight-500">
+                            336D2 L
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-lg-4">
+                        <img
+                          src="../assets/images/chain-excavator.png"
+                          alt="jcb"
+                          className=" img-fluid w-100"
+                        />
+                      </div>
+                      <div className="col-lg-4 mt-4">
+                        <div className="d-block">
+                          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                            Engine Model
+                          </p>
+                          <p className="text-primary font-size-12 mt-1 font-weight-500">
+                            C9 ACERT
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-lg-4 mt-4">
+                        <div className="d-block">
+                          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                            Operating Weight
+                          </p>
+                          <p className="text-primary font-size-12 mt-1 font-weight-500">
+                            80648 lb
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-lg-4 mt-4">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Net Flywheel Power
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          268 HP
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <Grid item md={9} xs={12} container className="mt-3">
+                    <Card
+                      elevation={10}
+                      sx={{ width: "97%", borderRadius: 4, mx: 2, my: 1 }}
+                    >
+                      <div className="m-3 d-flex align-items-center justify-content-between">
+                        <h5 className="font-weight-600 mb-0">
+                          Condition of Chain Excavator - 336D2 L
+                        </h5>
+                        <div className="d-flex align-items-center equipment-master-btn-select">
+                          <div className=" mr-2">
+                            <Select
+                              options={[{ label: "1 Year", value: "a" }]}
+                              placeholder="Last 6 months"
+                            />
+                          </div>
+                          <a href="#" className="btn">
+                            Update
+                          </a>
+                        </div>
+                      </div>
+                      <Divider />
+                      <PaginationStackedChart data={lifeCycleStatusData} />
+                    </Card>
+                  </Grid>
+                </>
+              )}
+              {equipmentmasterpagination === 2 && (
+                <>
+                  <h5 className="font-weight-500 mt-4 ">Customer Details</h5>
+                  <div className="bg-white p-3 border-radius-10 mt-3">
+                    <div className="row">
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Id
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Caterpillar
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Name
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          336D2 L
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Contact Type
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          268 HP
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Email Id
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          C9 ACERT
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Group
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          80648 lb
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Segment
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          268 HP
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <h5 className="font-weight-500 mt-5 ">Site Details</h5>
+                  <div className="bg-white p-3 border-radius-10 mt-3">
+                    <div className="row">
+                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Contact Address
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          8501 Willow Avenue, Los Angeles, CA 90037
+                        </p>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Primary Contact
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Olive Serrano
+                        </p>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Geo codes
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Latitude: 34.051480 Longitude: -117.973470
+                        </p>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Distribution Channel
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Online
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              {equipmentmasterpagination === 3 && (
+                <>
+                  <div className="table-responsive">
+                    <div
+                      className="custom-table  card table-child"
+                      style={{ minHeight: 200, height: "auto", width: "100%" }}
+                    >
+                      <DataTable
+                        title=""
+                        columns={bundleItemColumns}
+                        data={bundleItems}
+                        customStyles={customStyles}
+                        // pagination
                       />
                     </div>
-                    <a href="#" className="btn">
-                      Update
-                    </a>
                   </div>
-                </div>
-                <Divider />
-                <StatusStackedChart data={lifeCycleStatusData} />
-              </Card>
-            </Grid>
+                </>
+              )}
+              {equipmentmasterpagination === 4 && (
+                <>
+                  <h5 className="font-weight-500 mt-4 ">ERP Details</h5>
+                  <div className="bg-white p-3 border-radius-10 mt-3">
+                    <div className="row">
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Purchase Date
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Caterpillar
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Year of Manufacture
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          336D2 L
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Make
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          268 HP
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Family
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          C9 ACERT
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Model
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          80648 lb
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Prefix
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          268 HP
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              {equipmentmasterpagination === 5 && <>hello5</>}
+            </div>
           </div>
         </div>
       </div>
