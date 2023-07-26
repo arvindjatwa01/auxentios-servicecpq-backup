@@ -681,7 +681,11 @@ function ServiceOnlyTemplates(props) {
     });
     setSelectedCoverageData(updated);
   };
-
+  const recentList = () => {
+    history.push({
+      pathname: "/standard-job",
+    });
+  }
   // Search Customer with customer ID
   const handleCustSearch = async (searchText) => {
     setSearchCustResults([]);
@@ -1049,6 +1053,15 @@ function ServiceOnlyTemplates(props) {
           {activeElement.name === "header" && (
             <React.Fragment>
               <div className="card p-4 mt-5">
+              <div className="row px-3 pb-1" style={{ justifyContent: "right" }}>
+                  <button
+                    type="button"
+                    className="btn btn-light bg-primary text-white"
+                    onClick={() => recentList()}
+                  >
+                    Back
+                  </button>
+                </div>
                 <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
                   <div className="" style={{ display: "contents" }}>
                     <span
