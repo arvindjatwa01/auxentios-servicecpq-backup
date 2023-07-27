@@ -4111,3 +4111,6 @@ input[type="checkbox"]:checked:after {
   border: 1px solid #872FF750;
 }
 .border-50{ border-right: 1px solid #00000015;}
+.bg-gl{
+  background: #F2F2F2;
+}

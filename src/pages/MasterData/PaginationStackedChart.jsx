@@ -6,6 +6,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  CartesianGrid,
 } from "recharts";
 
 export default function PaginationStackedChart(props) {
@@ -23,6 +24,7 @@ export default function PaginationStackedChart(props) {
         }}
         barSize={20}
       >
+        {/* <CartesianGrid strokeDasharray="3 3" /> */}
         <XAxis dataKey="month" tickLine={false} />
         <YAxis tickLine={false} />
         <Tooltip cursor={{ fill: "transparent" }} />
