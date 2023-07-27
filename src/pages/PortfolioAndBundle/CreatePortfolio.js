@@ -5534,7 +5534,6 @@ export function CreatePortfolio(props) {
 
   //  Convert To :- Quotes function onClick Create
 
-
   const handleCreateQuote = async () => {
     // alert("hello");
 
@@ -7916,6 +7915,7 @@ export function CreatePortfolio(props) {
       [name]: value,
     });
   };
+
   const handleCoverageInputChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -8541,7 +8541,6 @@ export function CreatePortfolio(props) {
 
   }
 
-
   const handleWithSparePartsCheckBox = (e, selectToggle) => {
     if (selectToggle == "with") {
       setPartsRequired(e.target.checked)
@@ -8558,6 +8557,7 @@ export function CreatePortfolio(props) {
   const handleWithServiceCheckBox = (e) => {
     setServiceRequired(e.target.checked)
   }
+
   const handleNeedOnlySparePartsCheckBox = (e) => {
     if (e.target.checked) {
       setPartsRequired(true)
@@ -9234,6 +9234,7 @@ export function CreatePortfolio(props) {
     setStratgyTaskUsageKeyValue(e);
     dispatch(taskActions.updateTask(e.value));
   };
+
   const initBeforeUnLoad = (showExitPrompt) => {
     window.onbeforeunload = (event) => {
       // Show prompt based on state
@@ -9468,6 +9469,13 @@ export function CreatePortfolio(props) {
     setTempBundleService1([])
   }
 
+
+  // goTo Recent Portfolio/Bundles/Service
+  const recentPortfolios = () => {
+    history.push({
+      pathname: "/portfolio/summary",
+    });
+  }
 
   // Create New Service/Bundle
 
@@ -17516,8 +17524,8 @@ export function CreatePortfolio(props) {
             </div>
           </div>
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0">
-              <div className="" style={{ display: "contents" }}>
+            <h5 className="d-flex justify-content-between align-items-center mb-0">
+              <div className="d-flex align-items-center">
                 <span className="mr-3" style={{ whiteSpace: "pre" }}>
                   {portfolioId ? "Portfolio Details" : "New Portfolio*"}
                 </span>
@@ -17532,6 +17540,7 @@ export function CreatePortfolio(props) {
                   <img style={{ width: "14px" }} src={folderaddIcon}></img>
                 </a>
               </div>
+              <button onClick={() => recentPortfolios()} className="btn bg-primary text-white cursor">Back</button>
               {/* <div className="input-group icons border-radius-10 border">
                 <div className="input-group-prepend">
                   <span

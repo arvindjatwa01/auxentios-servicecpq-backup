@@ -733,7 +733,7 @@ const PriceCalculator = (props) => {
         additional: "",
         partListId: "",
         serviceEstimateId: "",
-        numberOfEvents: 0,
+        numberOfEvents: (priceCalculator.priceType?.value === "FIXED") ? priceCalculator.numberOfEvents : 0,
         frequency: priceCalculator?.frequency !== "" ? priceCalculator?.frequency?.value : "CYCLIC",
         priceMethod: (priceCalculator.priceMethod === "EMPTY"
           || priceCalculator.priceMethod === "" ||
@@ -1788,8 +1788,9 @@ const PriceCalculator = (props) => {
                           })
                         }
                         value={priceCalculator.numberOfEvents}
-                        disabled
-                        readOnly
+                        disabled={priceCalculator.priceType?.value === "FIXED" ? false : true}
+                      // disabled
+                      // readOnly
                       />
                       <div className="css-w8dmq8">*Mandatory</div>
                     </div>
