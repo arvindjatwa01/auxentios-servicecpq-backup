@@ -2303,176 +2303,179 @@ const AddPortfolioItem = (props) => {
     try {
       // if ((props.compoFlag === "ITEM")) {
 
+      if ((props.compoFlag === "ITEM")) {
         if ((props.portfolioDataId == "") ||
           (props.portfolioDataId == undefined)) {
           props.itemModelShow(false)
           throw "Please Create Portfolio First, then you can Add Item";
         }
+      }
 
-        if ((addPortFolioItem.startUsage == "") ||
-          (addPortFolioItem.startUsage == undefined)) {
-          throw "Start Usage is a required field, you can’t leave it blank";
+      if ((addPortFolioItem.startUsage == "") ||
+        (addPortFolioItem.startUsage == undefined)) {
+        throw "Start Usage is a required field, you can’t leave it blank";
+      }
+
+      if ((addPortFolioItem.endUsage == "") ||
+        (addPortFolioItem.endUsage == undefined)) {
+        throw "End Usage is a required field, you can’t leave it blank";
+      }
+
+      if (parseInt(addPortFolioItem.startUsage) > parseInt(addPortFolioItem.endUsage)) {
+        throw "start Usage must not be greater to End Usage.";
+      }
+
+      if ((addPortFolioItem.unit == "") ||
+        (addPortFolioItem.unit == undefined)) {
+        throw "Unit is a required field, you can’t leave it blank";
+      }
+
+      if ((addPortFolioItem.recommendedValue == "") ||
+        (addPortFolioItem.recommendedValue == undefined)) {
+        throw "Recommended Value is a required field, you can’t leave it blank";
+      }
+
+      //  Old working Price creation request Obj
+      // let newPriceObj = {
+      //   itemPriceDataId: 0,
+      //   quantity: 1,
+      //   standardJobId: addPortFolioItem.templateId,
+      //   repairKitId: addPortFolioItem.repairOption,
+      //   templateDescription: "",
+      //   repairOption: "",
+      //   additional: "",
+      //   partListId: "",
+      //   serviceEstimateId: "",
+      //   numberOfEvents: 0,
+      //   frequency: (addPortFolioItem?.frequency === "" || addPortFolioItem?.frequency?.value === undefined) ? "CYCLIC" : addPortFolioItem?.frequency?.value,
+      //   priceMethod: "LIST_PRICE",
+      //   priceType: "EVENT_BASED",
+      //   listPrice: 0,
+      //   priceEscalation: "",
+      //   calculatedPrice: 0,
+      //   flatPrice: 0,
+      //   year: addPortFolioItem.year?.value === "" || addPortFolioItem.year?.value === undefined ? "" : addPortFolioItem.year?.value,
+      //   noOfYear: parseInt(addPortFolioItem.noOfYear),
+      //   sparePartsPrice: 0,
+      //   sparePartsPriceBreakDownPercentage: 0,
+      //   servicePrice: 0,
+      //   labourPrice: 0,
+      //   labourPriceBreakDownPercentage: 0,
+      //   miscPrice: 0,
+      //   miscPriceBreakDownPercentage: 0,
+      //   totalPrice: 0,
+      //   netService: 0,
+      //   additionalPriceType: "ABSOLUTE",
+      //   additionalPriceValue: 0,
+      //   discountType: "PORTFOLIO_DISCOUNT",
+      //   discountValue: 0,
+      //   recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+      //   startUsage: parseInt(addPortFolioItem.startUsage),
+      //   endUsage: parseInt(addPortFolioItem.endUsage),
+      //   sparePartsEscalation: 0,
+      //   labourEscalation: 0,
+      //   miscEscalation: 0,
+      //   serviceEscalation: 0,
+      //   sparePartsNOE: 0,
+      //   labourNOE: 0,
+      //   miscNOE: 0,
+      //   recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+      //   usageUnit: addPortFolioItem?.unit?.value,
+      //   withBundleService: true,
+      //   portfolio: null,
+      //   tenantId: loginTenantId,
+      //   partsRequired: true,
+      //   labourRequired: true,
+      //   serviceRequired: false,
+      //   miscRequired: true,
+      //   inclusionExclusion: false
+      // }
+
+      // new price creation request obj
+      let newPriceObj = {
+        itemPriceDataId: 0,
+        quantity: 1,
+        standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
+        repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
+        templateDescription: addPortFolioItem.templateId === "" ? "" : addPortFolioItem.templateDescription?.value,
+        repairOption: "",
+        additional: "",
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: 0,
+        frequency: addPortFolioItem?.frequency === "" ? "CYCLIC" : addPortFolioItem?.frequency?.value,
+        priceMethod: "LIST_PRICE",
+        priceType: "EVENT_BASED",
+        listPrice: 0,
+        priceEscalation: "",
+        calculatedPrice: 0,
+        flatPrice: 0,
+        year: addPortFolioItem.year?.value,
+        noOfYear: parseInt(addPortFolioItem.noOfYear),
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        labourPrice: 0,
+        labourPriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0,
+        netService: 0,
+        additionalPriceType: "ABSOLUTE",
+        additionalPriceValue: 0,
+        discountType: "PORTFOLIO_DISCOUNT",
+        discountValue: 0,
+        recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+        startUsage: parseInt(addPortFolioItem.startUsage),
+        endUsage: parseInt(addPortFolioItem.endUsage),
+        sparePartsEscalation: 0,
+        labourEscalation: 0,
+        miscEscalation: 0,
+        serviceEscalation: 0,
+        sparePartsNOE: 0,
+        labourNOE: 0,
+        miscNOE: 0,
+        recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+        usageUnit: addPortFolioItem?.unit === "" ? "" : addPortFolioItem?.unit?.value,
+        withBundleService: false,
+        portfolio: ((props.portfolioDataId == "") ||
+          (props.portfolioDataId == undefined) ||
+          (props.portfolioDataId == null) ||
+          (props.portfolioDataId == 0)) ? null : {
+          portfolioId: props.portfolioDataId
+        },
+        tenantId: loginTenantId,
+        inclusionExclusion: false,
+        partsRequired: true,
+        labourRequired: true,
+        serviceRequired: false,
+        miscRequired: true
+      }
+
+      if (addPortFolioItem.itemPriceId === null) {
+        const itemPriceData = await createItemPriceData(newPriceObj);
+        if (itemPriceData.status === 200) {
+          setAddPortFolioItem({
+            ...addPortFolioItem,
+            numberOfEvents: itemPriceData.data.numberOfEvents,
+            itemPriceId: itemPriceData.data.itemPriceDataId,
+          })
         }
-
-        if ((addPortFolioItem.endUsage == "") ||
-          (addPortFolioItem.endUsage == undefined)) {
-          throw "End Usage is a required field, you can’t leave it blank";
+      } else {
+        const itemPriceData = await updateItemPriceData(addPortFolioItem.itemPriceId, newPriceObj);
+        if (itemPriceData.status === 200) {
+          setAddPortFolioItem({
+            ...addPortFolioItem,
+            numberOfEvents: itemPriceData.data.numberOfEvents,
+            itemPriceId: itemPriceData.data.itemPriceDataId,
+          })
         }
-
-        if (parseInt(addPortFolioItem.startUsage) > parseInt(addPortFolioItem.endUsage)) {
-          throw "start Usage must not be greater to End Usage.";
-        }
-
-        if ((addPortFolioItem.unit == "") ||
-          (addPortFolioItem.unit == undefined)) {
-          throw "Unit is a required field, you can’t leave it blank";
-        }
-
-        if ((addPortFolioItem.recommendedValue == "") ||
-          (addPortFolioItem.recommendedValue == undefined)) {
-          throw "Recommended Value is a required field, you can’t leave it blank";
-        }
-
-        //  Old working Price creation request Obj
-        // let newPriceObj = {
-        //   itemPriceDataId: 0,
-        //   quantity: 1,
-        //   standardJobId: addPortFolioItem.templateId,
-        //   repairKitId: addPortFolioItem.repairOption,
-        //   templateDescription: "",
-        //   repairOption: "",
-        //   additional: "",
-        //   partListId: "",
-        //   serviceEstimateId: "",
-        //   numberOfEvents: 0,
-        //   frequency: (addPortFolioItem?.frequency === "" || addPortFolioItem?.frequency?.value === undefined) ? "CYCLIC" : addPortFolioItem?.frequency?.value,
-        //   priceMethod: "LIST_PRICE",
-        //   priceType: "EVENT_BASED",
-        //   listPrice: 0,
-        //   priceEscalation: "",
-        //   calculatedPrice: 0,
-        //   flatPrice: 0,
-        //   year: addPortFolioItem.year?.value === "" || addPortFolioItem.year?.value === undefined ? "" : addPortFolioItem.year?.value,
-        //   noOfYear: parseInt(addPortFolioItem.noOfYear),
-        //   sparePartsPrice: 0,
-        //   sparePartsPriceBreakDownPercentage: 0,
-        //   servicePrice: 0,
-        //   labourPrice: 0,
-        //   labourPriceBreakDownPercentage: 0,
-        //   miscPrice: 0,
-        //   miscPriceBreakDownPercentage: 0,
-        //   totalPrice: 0,
-        //   netService: 0,
-        //   additionalPriceType: "ABSOLUTE",
-        //   additionalPriceValue: 0,
-        //   discountType: "PORTFOLIO_DISCOUNT",
-        //   discountValue: 0,
-        //   recommendedValue: parseInt(addPortFolioItem.recommendedValue),
-        //   startUsage: parseInt(addPortFolioItem.startUsage),
-        //   endUsage: parseInt(addPortFolioItem.endUsage),
-        //   sparePartsEscalation: 0,
-        //   labourEscalation: 0,
-        //   miscEscalation: 0,
-        //   serviceEscalation: 0,
-        //   sparePartsNOE: 0,
-        //   labourNOE: 0,
-        //   miscNOE: 0,
-        //   recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
-        //   usageUnit: addPortFolioItem?.unit?.value,
-        //   withBundleService: true,
-        //   portfolio: null,
-        //   tenantId: loginTenantId,
-        //   partsRequired: true,
-        //   labourRequired: true,
-        //   serviceRequired: false,
-        //   miscRequired: true,
-        //   inclusionExclusion: false
-        // }
-
-        // new price creation request obj
-        let newPriceObj = {
-          itemPriceDataId: 0,
-          quantity: 1,
-          standardJobId: addPortFolioItem.templateId ? addPortFolioItem.templateId : "",
-          repairKitId: addPortFolioItem.repairOption ? addPortFolioItem.repairOption : "",
-          templateDescription: addPortFolioItem.templateId === "" ? "" : addPortFolioItem.templateDescription?.value,
-          repairOption: "",
-          additional: "",
-          partListId: "",
-          serviceEstimateId: "",
-          numberOfEvents: 0,
-          frequency: addPortFolioItem?.frequency === "" ? "CYCLIC" : addPortFolioItem?.frequency?.value,
-          priceMethod: "LIST_PRICE",
-          priceType: "EVENT_BASED",
-          listPrice: 0,
-          priceEscalation: "",
-          calculatedPrice: 0,
-          flatPrice: 0,
-          year: addPortFolioItem.year?.value,
-          noOfYear: parseInt(addPortFolioItem.noOfYear),
-          sparePartsPrice: 0,
-          sparePartsPriceBreakDownPercentage: 0,
-          servicePrice: 0,
-          labourPrice: 0,
-          labourPriceBreakDownPercentage: 0,
-          miscPrice: 0,
-          miscPriceBreakDownPercentage: 0,
-          totalPrice: 0,
-          netService: 0,
-          additionalPriceType: "ABSOLUTE",
-          additionalPriceValue: 0,
-          discountType: "PORTFOLIO_DISCOUNT",
-          discountValue: 0,
-          recommendedValue: parseInt(addPortFolioItem.recommendedValue),
-          startUsage: parseInt(addPortFolioItem.startUsage),
-          endUsage: parseInt(addPortFolioItem.endUsage),
-          sparePartsEscalation: 0,
-          labourEscalation: 0,
-          miscEscalation: 0,
-          serviceEscalation: 0,
-          sparePartsNOE: 0,
-          labourNOE: 0,
-          miscNOE: 0,
-          recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
-          usageUnit: addPortFolioItem?.unit === "" ? "" : addPortFolioItem?.unit?.value,
-          withBundleService: false,
-          portfolio: ((props.portfolioDataId == "") ||
-            (props.portfolioDataId == undefined) ||
-            (props.portfolioDataId == null) ||
-            (props.portfolioDataId == 0)) ? null : {
-            portfolioId: props.portfolioDataId
-          },
-          tenantId: loginTenantId,
-          inclusionExclusion: false,
-          partsRequired: true,
-          labourRequired: true,
-          serviceRequired: false,
-          miscRequired: true
-        }
-
-        if (addPortFolioItem.itemPriceId === null) {
-          const itemPriceData = await createItemPriceData(newPriceObj);
-          if (itemPriceData.status === 200) {
-            setAddPortFolioItem({
-              ...addPortFolioItem,
-              numberOfEvents: itemPriceData.data.numberOfEvents,
-              itemPriceId: itemPriceData.data.itemPriceDataId,
-            })
-          }
-        } else {
-          const itemPriceData = await updateItemPriceData(addPortFolioItem.itemPriceId, newPriceObj);
-          if (itemPriceData.status === 200) {
-            setAddPortFolioItem({
-              ...addPortFolioItem,
-              numberOfEvents: itemPriceData.data.numberOfEvents,
-              itemPriceId: itemPriceData.data.itemPriceDataId,
-            })
-          }
-        }
+      }
 
       // }
 
     } catch (error) {
+      console.log("error ------ ", error);
       toast("😐" + error, {
         position: "top-right",
         autoClose: 3000,
@@ -2755,7 +2758,7 @@ const AddPortfolioItem = (props) => {
                 value={addPortFolioItem.numberOfEvents}
                 // disabled={editable}
                 disabled
-                readonly
+                readOnly
               />
             </div>
           </div>
@@ -3810,7 +3813,7 @@ const AddPortfolioItem = (props) => {
                           }
                           value={addPortFolioItem.numberOfEvents}
                           disabled
-                          readonly
+                          readOnly
                         />
                         <div className="css-w8dmq8">*Mandatory</div>
                       </div>
@@ -4661,13 +4664,13 @@ const AddPortfolioItem = (props) => {
                     className="btn cursor bg-primary text-white border mr-4"
                     onClick={handleAddPortfolioSave}
                   >
-                    {props.bundleOrServiceEditOrNot ? "Next" :
+                    {editable ? "Next" : props.compoFlag === "itemEdit"
+                      ? "Save Changes"
+                      : "Save & Continue"}
+                    {/* {props.bundleOrServiceEditOrNot ? "Next" :
                       props.compoFlag === "itemEdit"
                         ? "Save Changes"
-                        : "Save & Continue"}
-                    {/* {props.compoFlag === "itemEdit"
-                      ? "Save Changes"
-                      : "Save & Continue"} */}
+                        : "Save & Continue"} */}
                   </Link>
                 </div>
               </>}
@@ -4684,7 +4687,8 @@ const AddPortfolioItem = (props) => {
               className="btn cursor bg-primary text-white border mr-4"
               onClick={handleSummaryAndTemplateTabs}
             >
-              {props.bundleOrServiceEditOrNot ? "Next" : "Save & Next"}
+              {editable ? "Next" : "Save & Next"}
+              {/* {props.bundleOrServiceEditOrNot ? "Next" : "Save & Next"} */}
             </Link>
           </div>
         ) : ("")}
