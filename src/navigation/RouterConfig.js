@@ -82,7 +82,7 @@ import QuoteSparepartsTemplate from "pages/Repair/quote/QuoteSparepartsTemplate"
 import QuoteSparepartsReviewed from "pages/Repair/quote/QuoteSparepartsReviewed";
 import { HomePage } from "pages/Dashboard/Home";
 import Insights from "pages/Insights/Insights";
-import EquipmentMaster from "pages/equipment/EquipmentMaster";
+import EquipmentMaster from "pages/MasterData/EquipmentMaster";
 
  
 
