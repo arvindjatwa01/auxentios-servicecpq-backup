@@ -4133,8 +4133,8 @@ export const PortfolioSummary = () => {
     // console.log("==========data ", data);
     // console.log("==========priceDataEditOrNot ", priceDataEditOrNot);
     // console.log("==========createdServiceData ", createdServiceData);
-    
-    // console.log("==========addPortFolioItem ", addPortFolioItem);
+
+    console.log("==========addPortFolioItem ", editableServiceOrBundleData, editBundleService, createdBundleItems);
     setPriceCalculatorTabEditAble(priceDataEditOrNot);
     setAddPortFolioItem({
       ...addPortFolioItem,
@@ -4809,7 +4809,7 @@ export const PortfolioSummary = () => {
             const rObj = {
               standardJobId: addPortFolioItem.templateId,
               repairKitId: addPortFolioItem.repairOption,
-              itemId: createdBundleItems.itemId,
+              itemId: editBundleService ? editableServiceOrBundleData?.itemId : createdBundleItems.itemId,
               // itemId: createdServiceData.itemId,
               // itemId: addPortFolioItem.id,
               itemPriceDataId: data.id

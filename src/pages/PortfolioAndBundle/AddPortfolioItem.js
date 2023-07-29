@@ -40,6 +40,7 @@ import {
   portfolioItemPriceSjid,
   getPortfolioAndSolutionCommonConfig,
   updateItemPriceData,
+  portfolioItemPriceRkId,
 } from "../../services/index";
 import $ from "jquery";
 import {
@@ -2299,6 +2300,34 @@ const AddPortfolioItem = (props) => {
     }
   }
 
+  const updatePriceSjRkIdData = (itemPriceDataId) => {
+    try {
+      if (!((addPortFolioItem?.id === 0) || (addPortFolioItem?.id === undefined) || (addPortFolioItem?.id === null))) {
+        const rObj = {
+          standardJobId: addPortFolioItem.templateId,
+          repairKitId: addPortFolioItem.repairOption,
+          itemId: addPortFolioItem?.id,
+          itemPriceDataId: itemPriceDataId
+        }
+        if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+          ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+
+          if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
+            ((addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null))) {
+            const updateRkId = portfolioItemPriceRkId(rObj);
+          }
+
+          if (((addPortFolioItem.repairOption == "") || (addPortFolioItem.repairOption == null)) &&
+            ((addPortFolioItem.templateId != "") || (addPortFolioItem.templateId != null))) {
+            const updateSjId = portfolioItemPriceSjid(rObj);
+          }
+        }
+      }
+    } catch (error) {
+      console.log("sj rk id update Error", error);
+    }
+  }
+
   const calculateItemPrice = async () => {
     try {
       // if ((props.compoFlag === "ITEM")) {
@@ -2460,6 +2489,7 @@ const AddPortfolioItem = (props) => {
             numberOfEvents: itemPriceData.data.numberOfEvents,
             itemPriceId: itemPriceData.data.itemPriceDataId,
           })
+          updatePriceSjRkIdData(itemPriceData.data.itemPriceDataId)
         }
       } else {
         const itemPriceData = await updateItemPriceData(addPortFolioItem.itemPriceId, newPriceObj);
@@ -2469,6 +2499,7 @@ const AddPortfolioItem = (props) => {
             numberOfEvents: itemPriceData.data.numberOfEvents,
             itemPriceId: itemPriceData.data.itemPriceDataId,
           })
+          updatePriceSjRkIdData(itemPriceData.data.itemPriceDataId)
         }
       }
 
