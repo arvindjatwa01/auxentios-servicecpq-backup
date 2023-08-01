@@ -4060,18 +4060,18 @@ input[type="checkbox"]:checked:after {
   color: #000000 !important;
 }
 .br-bl{
-  border-bottom: 2px solid #00000015 !important;
+  border-bottom: 1px solid #00000015 !important;
 }
 .equipment-master-ul{}
 .equipment-master-ul ul li{
   background: #00000010;
-  padding: 12px;
+  padding: 8px 10px;
   border-radius: 10px;
   box-shadow: 0 4px 4px 0 #00000025;
   margin-top: 18px;
 }
 .equipment-master-ul li img{
-  width: 80px;
+  width: 65px;
 }
 .text-light-60{
   color: #00000060;
