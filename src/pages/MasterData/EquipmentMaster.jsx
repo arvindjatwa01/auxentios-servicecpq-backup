@@ -682,7 +682,7 @@ const EquipmentMaster = () => {
                   searchSelector.map((searchFiled, i) => (
                     <div
                       className={`customselect py-1 d-flex align-items-center mr-3${
-                        i > 0 ? " mt-0" : ""
+                        i > 0 ? " customselect-margin" : ""
                       }`}
                     >
                       {i > 0 && (
@@ -738,7 +738,7 @@ const EquipmentMaster = () => {
                   ))}
                 <div
                   className={`d-flex align-items-center mr-3 ${
-                    searchSelector.length > 1 ? "mt-2" : ""
+                    searchSelector.length > 1 ? "add-delete-mt" : ""
                   }`}
                 >
                   <div>
@@ -815,7 +815,7 @@ const EquipmentMaster = () => {
                       <img
                         src="../assets/images/jcb-equipment.png"
                         alt="jcb"
-                        className=" img-fluid"
+                        className=" img-fluid px-1"
                       />
                       <div className="d-block px-1">
                         <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
@@ -834,7 +834,147 @@ const EquipmentMaster = () => {
                         </p>
                       </div>
                       <div>
-                        <ArrowForwardIosIcon className="text-primary font-size-36" />
+                        <ArrowForwardIosIcon className="text-primary font-size-20" />
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <img
+                        src="../assets/images/jcb-equipment.png"
+                        alt="jcb"
+                        className=" img-fluid px-1"
+                      />
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
+                      </div>
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CATERPILLAR
+                        </p>
+                      </div>
+                      <div>
+                        <ArrowForwardIosIcon className="text-primary font-size-20" />
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <img
+                        src="../assets/images/jcb-equipment.png"
+                        alt="jcb"
+                        className=" img-fluid px-1"
+                      />
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
+                      </div>
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CATERPILLAR
+                        </p>
+                      </div>
+                      <div>
+                        <ArrowForwardIosIcon className="text-primary font-size-20" />
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <img
+                        src="../assets/images/jcb-equipment.png"
+                        alt="jcb"
+                        className=" img-fluid px-1"
+                      />
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
+                      </div>
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CATERPILLAR
+                        </p>
+                      </div>
+                      <div>
+                        <ArrowForwardIosIcon className="text-primary font-size-20" />
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <img
+                        src="../assets/images/jcb-equipment.png"
+                        alt="jcb"
+                        className=" img-fluid px-1"
+                      />
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
+                      </div>
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CATERPILLAR
+                        </p>
+                      </div>
+                      <div>
+                        <ArrowForwardIosIcon className="text-primary font-size-20" />
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <img
+                        src="../assets/images/jcb-equipment.png"
+                        alt="jcb"
+                        className=" img-fluid px-1"
+                      />
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          ZCT01096
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CHAIN EXCAVATOR - 336D2 L
+                        </p>
+                      </div>
+                      <div className="d-block px-1">
+                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                          336D2 L
+                        </h6>
+                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          CATERPILLAR
+                        </p>
+                      </div>
+                      <div>
+                        <ArrowForwardIosIcon className="text-primary font-size-20" />
                       </div>
                     </div>
                   </li>
@@ -842,7 +982,7 @@ const EquipmentMaster = () => {
               </div>
             </div>
           </div>
-          <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart">
+          <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">
             <div className="">
               <div className="bg-white p-3 border-radius-10 ">
                 <div className="d-flex align-items-center justify-content-between equipment-pagination">
@@ -869,9 +1009,9 @@ const EquipmentMaster = () => {
 
               {equipmentmasterpagination === 1 && (
                 <>
-                  <div className="bg-white p-3 border-radius-10 ">
+                  <div className="bg-white p-3 border-radius-10 overflow-hidden">
                     <div className="row align-items-end">
-                      <div className="col-lg-4">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
                             Manufacturer
@@ -881,7 +1021,7 @@ const EquipmentMaster = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="col-lg-4">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
                             Model
@@ -891,14 +1031,14 @@ const EquipmentMaster = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="col-lg-4">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                         <img
                           src="../assets/images/chain-excavator.png"
                           alt="jcb"
                           className=" img-fluid w-100"
                         />
                       </div>
-                      <div className="col-lg-4 mt-4">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
                             Engine Model
@@ -908,7 +1048,7 @@ const EquipmentMaster = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="col-lg-4 mt-4">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
                             Operating Weight
@@ -918,7 +1058,7 @@ const EquipmentMaster = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="col-lg-4 mt-4">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Net Flywheel Power
                         </p>
@@ -934,7 +1074,7 @@ const EquipmentMaster = () => {
                       sx={{ width: "97%", borderRadius: 4, mx: 2, my: 1 }}
                     >
                       <div className="m-3 d-flex align-items-center justify-content-between">
-                        <h5 className="font-weight-600 mb-0">
+                        <h5 className="font-weight-600 mb-0 pr-2 text-truncate">
                           Condition of Chain Excavator - 336D2 L
                         </h5>
                         <div className="d-flex align-items-center equipment-master-btn-select">
@@ -960,7 +1100,7 @@ const EquipmentMaster = () => {
                   <h5 className="font-weight-500 mt-4 ">Customer Details</h5>
                   <div className="bg-white p-3 border-radius-10 mt-3">
                     <div className="row">
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Customer Id
                         </p>
@@ -968,7 +1108,7 @@ const EquipmentMaster = () => {
                           Caterpillar
                         </p>
                       </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Customer Name
                         </p>
@@ -976,7 +1116,7 @@ const EquipmentMaster = () => {
                           336D2 L
                         </p>
                       </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Contact Type
                         </p>
@@ -984,7 +1124,7 @@ const EquipmentMaster = () => {
                           268 HP
                         </p>
                       </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Email Id
                         </p>
@@ -992,7 +1132,7 @@ const EquipmentMaster = () => {
                           C9 ACERT
                         </p>
                       </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Customer Group
                         </p>
@@ -1000,7 +1140,7 @@ const EquipmentMaster = () => {
                           80648 lb
                         </p>
                       </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Customer Segment
                         </p>
@@ -1011,9 +1151,9 @@ const EquipmentMaster = () => {
                     </div>
                   </div>
                   <h5 className="font-weight-500 mt-5 ">Site Details</h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3">
+                  <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
                     <div className="row">
-                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Contact Address
                         </p>
@@ -1021,7 +1161,7 @@ const EquipmentMaster = () => {
                           8501 Willow Avenue, Los Angeles, CA 90037
                         </p>
                       </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Primary Contact
                         </p>
@@ -1029,7 +1169,7 @@ const EquipmentMaster = () => {
                           Olive Serrano
                         </p>
                       </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Geo codes
                         </p>
@@ -1037,7 +1177,7 @@ const EquipmentMaster = () => {
                           Latitude: 34.051480 Longitude: -117.973470
                         </p>
                       </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 mt-3">
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
                           Distribution Channel
                         </p>
@@ -1052,7 +1192,7 @@ const EquipmentMaster = () => {
               {equipmentmasterpagination === 3 && (
                 <>
                   <h5 className="font-weight-500 mt-4 ">Contract Details</h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3">
+                  <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
                     <div className="row align-items-center">
                       <div className="col-lg-9 col-md-9">
                         <div className="d-flex align-items-center">

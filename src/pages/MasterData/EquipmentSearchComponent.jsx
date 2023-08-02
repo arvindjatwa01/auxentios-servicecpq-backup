@@ -64,6 +64,7 @@ const EquipmentSearchComponent = ({ searchOptions, searchPlaceholder }) => {
               >
                 {i > 0 && (
                   <Select
+                  className="width-ao"
                     defaultValue={{
                       label: "And",
                       value: "AND",
@@ -76,7 +77,7 @@ const EquipmentSearchComponent = ({ searchOptions, searchPlaceholder }) => {
                     // value={searchFiled.selectOperator}
                   />
                 )}
-                <div>
+                <div className="width-search-by">
                   <Select
                     options={searchOptions}
                     placeholder="Search By"
@@ -130,7 +131,7 @@ const EquipmentSearchComponent = ({ searchOptions, searchPlaceholder }) => {
             ))}
 
           <div
-            className={`d-flex align-items-center ${
+            className={`d-flex align-items-center mt-right-search ${
               searchSelector.length > 1 ? "mt-2" : ""
             }`}
           >
