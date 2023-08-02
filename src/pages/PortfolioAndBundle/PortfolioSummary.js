@@ -1010,8 +1010,6 @@ export const PortfolioSummary = () => {
         }
       }
 
-      console.log("portfolio search searchStr : ", searchStr);
-
       if (selectedItemType === "PORTFOLIO") {
         var newArr = [];
         const res2 = await portfolioSearchTableDataList(searchStr)
@@ -1064,13 +1062,9 @@ export const PortfolioSummary = () => {
         // console.log("res1 is fsfnasjkvna", res1.data);
         // console.log(res1)
 
-      }
-      else if (selectedItemType === "SERVICE") {
+      } else if (selectedItemType === "SERVICE") {
         // searchStr = "bundleFlag:SERVICE AND " + searchStr;
-        searchStr = "bundleFlag:SERVICE AND " + searchStr;
-        // const res1 = await itemSearch(searchStr);
         const res1 = await getServiceBundleItemPrices(searchStr);
-
         var serviceItemsArr = [];
         if (res1.status === 200) {
           if (res1.data.length > 0) {
@@ -1079,7 +1073,7 @@ export const PortfolioSummary = () => {
                 serviceItemsArr.push(data.serviceItems[d]);
               }
             })
-            setBundleServiceItemData(bundleItemsArr);
+            setBundleServiceItemData(serviceItemsArr);
           } else {
             throw "No information is found for your search, change the search criteria";
           }
@@ -1087,10 +1081,7 @@ export const PortfolioSummary = () => {
         } else {
           throw "No information is found for your search, change the search criteria";
         }
-        // console.log(res1)
-
       }
-
     } catch (error) {
       toast("😐" + error, {
         position: "top-right",
