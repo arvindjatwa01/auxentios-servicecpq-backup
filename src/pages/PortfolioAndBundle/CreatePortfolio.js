@@ -452,6 +452,7 @@ export function CreatePortfolio(props) {
   const [optionalServicesData, setOptionalServicesData] = useState([])
   const [inclusionExclusionService, setInclusionExclusionService] = useState([])
   const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false)
+  const [selectedInclusionExclusionServices, setSelectedInclusionExclusionServices] = useState([])
 
   const [partsRequired, setPartsRequired] = useState(true);
   const [labourRequired, setlabourRequired] = useState(true);
@@ -489,33 +490,48 @@ export function CreatePortfolio(props) {
   }
 
   const handleSelectOptionalService = (event, serviceName, serviceData) => {
-    // console.log("======== serviceData ", serviceData);
-
     const _inclusionExclusionService = [...inclusionExclusionService];
-    // let a = ['SRV_752A540', 'NEW_SERVICE_NAME_24', '126'];
-
-    // console.log("============ a to = ", a.toString())
-
     if (event.target.checked) {
-      setOptionalServicesData([...optionalServicesData, serviceName]);
-      // setInclusionExclusionService()
-      _inclusionExclusionService.push(serviceData);
 
+      setSelectedInclusionExclusionServices([...selectedInclusionExclusionServices, serviceName])
+      // setOptionalServicesData([...optionalServicesData, serviceName]);
+      _inclusionExclusionService.push(serviceData);
       _inclusionExclusionService.forEach(object => {
         object.checked = false;
       });
       setInclusionExclusionService(_inclusionExclusionService);
-
     } else {
-      const _optionalServicesData = [...optionalServicesData];
-      const x = _optionalServicesData.splice(_optionalServicesData.indexOf(serviceName), 1);
-      setOptionalServicesData(_optionalServicesData);
+      // const _optionalServicesData = [...optionalServicesData];
+      // const x = _optionalServicesData.splice(_optionalServicesData.indexOf(serviceName), 1);
+      // // setOptionalServicesData(_optionalServicesData);
+      const _selectedInclusionExclusionServices = [...selectedInclusionExclusionServices];
+      const x = _selectedInclusionExclusionServices.splice(_selectedInclusionExclusionServices.indexOf(serviceName), 1);
+      // setOptionalServicesData(_optionalServicesData);
+      setSelectedInclusionExclusionServices(_selectedInclusionExclusionServices)
 
       _inclusionExclusionService.splice(_inclusionExclusionService.indexOf(serviceData.itemId), 1)
       setInclusionExclusionService(_inclusionExclusionService);
     }
+  }
 
-    console.log("============= ", _inclusionExclusionService);
+  const handleAddSelectOptionalServices = () => {
+    try {
+      if (selectedInclusionExclusionServices.length === 0) {
+        throw "Please Select at least One Service."
+      }
+      setOptionalServicesData([...selectedInclusionExclusionServices])
+      setOptionalPopup(false);
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   }
 
   const [strategyData, setStrategyData] = useState({
@@ -1770,6 +1786,11 @@ export function CreatePortfolio(props) {
 
         validFrom: validityData.fromDate,
         validTo: validityData.toDate,
+        startUsage: validityData.fromInput,
+        endUsage: validityData.toInput,
+        unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+          ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
         usageCategory: categoryUsageKeyValue1.value
           ? categoryUsageKeyValue1.value : "EMPTY",
@@ -1837,9 +1858,9 @@ export function CreatePortfolio(props) {
         lifeStageOfMachine: "EMPTY",
         numberOfEvents: 0,
         rating: "",
-        startUsage: 0,
-        endUsage: 0,
-        unit: "EMPTY",
+        // startUsage: 0,
+        // endUsage: 0,
+        // unit: "EMPTY",
         additionals: "",
         template: true,
         visibleInCommerce: true
@@ -2340,6 +2361,11 @@ export function CreatePortfolio(props) {
 
         validFrom: validityData.fromDate,
         validTo: validityData.toDate,
+        startUsage: validityData.fromInput,
+        endUsage: validityData.toInput,
+        unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+          ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
         usageCategory: categoryUsageKeyValue1.value
           ? categoryUsageKeyValue1.value : "EMPTY",
@@ -2387,9 +2413,9 @@ export function CreatePortfolio(props) {
         lifeStageOfMachine: "NEW_BREAKIN",
         numberOfEvents: 0,
         rating: "",
-        startUsage: 0,
-        endUsage: 0,
-        unit: "HOURS",
+        // startUsage: 0,
+        // endUsage: 0,
+        // unit: "HOURS",
         additionals: "",
         template: true,
         visibleInCommerce: true
@@ -3311,6 +3337,14 @@ export function CreatePortfolio(props) {
           responseTime: stratgyResponseTimeKeyValue.value,
           productHierarchy: stratgyHierarchyKeyValue.value,
           geographic: stratgyGeographicKeyValue.value,
+
+          validFrom: validityData.fromDate,
+          validTo: validityData.toDate,
+          startUsage: validityData.fromInput,
+          endUsage: validityData.toInput,
+          unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+            ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
         };
         console.log("request obj for update:", obj);
         if (generalComponentData.portfolioId) {
@@ -5853,6 +5887,10 @@ export function CreatePortfolio(props) {
 
             validFrom: validityData.fromDate,
             validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
 
             usageCategory: categoryUsageKeyValue1.value
               ? categoryUsageKeyValue1.value : "EMPTY",
@@ -5908,16 +5946,13 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
-            startUsage: 0,
-            endUsage: 0,
-            // unit: "HOURS",
-            unit: "EMPTY",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "EMPTY",
             additionals: "",
             template: true,
             visibleInCommerce: true
           }
-
-
           const exitsPortfolioUpdate = await updatePortfolio(
             portfolioId,
             reqObj
@@ -6011,6 +6046,11 @@ export function CreatePortfolio(props) {
 
               validFrom: validityData.fromDate,
               validTo: validityData.toDate,
+              startUsage: validityData.fromInput,
+              endUsage: validityData.toInput,
+              unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+                ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
               usageCategory: categoryUsageKeyValue1.value
                 ? categoryUsageKeyValue1.value : "EMPTY",
@@ -6079,9 +6119,9 @@ export function CreatePortfolio(props) {
               lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
-              startUsage: 0,
-              endUsage: 0,
-              unit: "EMPTY",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "EMPTY",
               additionals: "",
               template: true,
               visibleInCommerce: true
@@ -6140,6 +6180,10 @@ export function CreatePortfolio(props) {
               // validTo: validityData.toDate.toISOString().substring(0, 10),
               validFrom: validityData.fromDate,
               validTo: validityData.toDate,
+              startUsage: validityData?.fromInput,
+              endUsage: validityData?.toInput,
+              unit: ((validityData?.from === "") || (validityData?.from === null) || (validityData?.from === undefined)) ? "EMPTY" :
+                ((typeof validityData?.from === "object") ? validityData?.from?.value : validityData?.from),
             };
           } else {
             throw "Please fill date fields";
@@ -6250,6 +6294,13 @@ export function CreatePortfolio(props) {
               : "EMPTY",
             searchTerm: "EMPTY",
 
+            validFrom: validityData.fromDate,
+            validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
             supportLevel: value3.value,
             status: value2.value,
 
@@ -6309,6 +6360,7 @@ export function CreatePortfolio(props) {
           }
 
         } else {
+
           // Old Todo Obj
           // let reqObj = {
           //   portfolioId: portfolioId,
@@ -6388,6 +6440,10 @@ export function CreatePortfolio(props) {
 
             validFrom: validityData.fromDate,
             validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
 
             usageCategory: categoryUsageKeyValue1.value
               ? categoryUsageKeyValue1.value : "EMPTY",
@@ -6455,9 +6511,9 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
-            startUsage: 0,
-            endUsage: 0,
-            unit: "EMPTY",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "EMPTY",
             additionals: "",
             template: true,
             visibleInCommerce: true
@@ -6504,7 +6560,6 @@ export function CreatePortfolio(props) {
         // }
 
         if (state && state.type === "new") {
-          console.log("new ---")
           if (portfolioId == "") {
             throw "Please Create portfolio first";
           } else {
@@ -6564,6 +6619,10 @@ export function CreatePortfolio(props) {
 
                 validFrom: validityData.fromDate,
                 validTo: validityData.toDate,
+                startUsage: validityData.fromInput,
+                endUsage: validityData.toInput,
+                unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+                  ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
 
                 usageCategory: categoryUsageKeyValue1.value
                   ? categoryUsageKeyValue1.value : "EMPTY",
@@ -6630,9 +6689,9 @@ export function CreatePortfolio(props) {
                 lifeStageOfMachine: "EMPTY",
                 numberOfEvents: 0,
                 rating: "",
-                startUsage: 0,
-                endUsage: 0,
-                unit: "EMPTY",
+                // startUsage: 0,
+                // endUsage: 0,
+                // unit: "EMPTY",
                 additionals: "",
                 template: true,
                 visibleInCommerce: true
@@ -6756,6 +6815,14 @@ export function CreatePortfolio(props) {
                   : "EMPTY",
                 searchTerm: "EMPTY",
 
+                validFrom: validityData.fromDate,
+                validTo: validityData.toDate,
+                startUsage: validityData.fromInput,
+                endUsage: validityData.toInput,
+                unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+                  ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
+
                 // supportLevel: "PREMIUM",
                 supportLevel: value3.value,
                 status: value2.value,
@@ -6781,10 +6848,10 @@ export function CreatePortfolio(props) {
                 geographic: stratgyGeographicKeyValue.value,
                 numberOfEvents: 0,
                 rating: "",
-                startUsage: "",
-                endUsage: "",
-                // unit: "HOURS",
-                unit: "EMPTY",
+                // startUsage: "",
+                // endUsage: "",
+                // // unit: "HOURS",
+                // unit: "EMPTY",
                 additionals: "",
 
                 preparedBy: administrative.preparedBy,
@@ -6879,6 +6946,10 @@ export function CreatePortfolio(props) {
 
               validFrom: validityData.fromDate,
               validTo: validityData.toDate,
+              startUsage: validityData.fromInput,
+              endUsage: validityData.toInput,
+              unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+                ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
 
               usageCategory: categoryUsageKeyValue1.value
                 ? categoryUsageKeyValue1.value : "EMPTY",
@@ -6945,9 +7016,9 @@ export function CreatePortfolio(props) {
               lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
-              startUsage: 0,
-              endUsage: 0,
-              unit: "EMPTY",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "EMPTY",
               additionals: "",
               template: true,
               visibleInCommerce: true
@@ -7030,6 +7101,11 @@ export function CreatePortfolio(props) {
 
               validFrom: validityData.fromDate,
               validTo: validityData.toDate,
+              startUsage: validityData.fromInput,
+              endUsage: validityData.toInput,
+              unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+                ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
               usageCategory: categoryUsageKeyValue1.value
                 ? categoryUsageKeyValue1.value : "EMPTY",
@@ -7103,9 +7179,9 @@ export function CreatePortfolio(props) {
               lifeStageOfMachine: "EMPTY",
               numberOfEvents: 0,
               rating: "",
-              startUsage: 0,
-              endUsage: 0,
-              unit: "EMPTY",
+              // startUsage: 0,
+              // endUsage: 0,
+              // unit: "EMPTY",
               additionals: "",
               template: true,
               visibleInCommerce: true
@@ -7260,6 +7336,14 @@ export function CreatePortfolio(props) {
               ? generalComponentData.customerGroup
               : "EMPTY",
             searchTerm: "EMPTY",
+
+            validFrom: validityData.fromDate,
+            validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
             status: value2.value,
@@ -7437,6 +7521,11 @@ export function CreatePortfolio(props) {
 
             validFrom: validityData.fromDate,
             validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
             usageCategory: categoryUsageKeyValue1.value
               ? categoryUsageKeyValue1.value : "EMPTY",
@@ -7502,9 +7591,9 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
-            startUsage: 0,
-            endUsage: 0,
-            unit: "EMPTY",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "EMPTY",
             additionals: "",
             template: true,
             visibleInCommerce: true
@@ -7632,6 +7721,13 @@ export function CreatePortfolio(props) {
               : "EMPTY",
             searchTerm: "EMPTY",
 
+            validFrom: validityData.fromDate,
+            validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
             supportLevel: value3.value,
             status: value2.value,
 
@@ -7643,9 +7739,9 @@ export function CreatePortfolio(props) {
             geographic: stratgyGeographicKeyValue.value,
             numberOfEvents: 0,
             rating: "",
-            startUsage: "",
-            endUsage: "",
-            unit: "EMPTY",
+            // startUsage: "",
+            // endUsage: "",
+            // unit: "EMPTY",
             additionals: "",
 
             preparedBy: administrative.preparedBy,
@@ -7775,6 +7871,11 @@ export function CreatePortfolio(props) {
 
             validFrom: validityData.fromDate,
             validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
             usageCategory: categoryUsageKeyValue1.value
               ? categoryUsageKeyValue1.value : "EMPTY",
@@ -7842,9 +7943,9 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "EMPTY",
             numberOfEvents: 0,
             rating: "",
-            startUsage: 0,
-            endUsage: 0,
-            unit: "EMPTY",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "EMPTY",
             additionals: "",
             template: true,
             visibleInCommerce: true
@@ -8125,6 +8226,7 @@ export function CreatePortfolio(props) {
       if (result.optionalServices != "") {
         let optionalServicesIs = result.optionalServices.split(",");
         setOptionalServicesData(optionalServicesIs);
+        setSelectedInclusionExclusionServices(optionalServicesIs);
       }
     }
 
@@ -8167,10 +8269,10 @@ export function CreatePortfolio(props) {
     setValidityData({
       fromDate: result.validFrom,
       toDate: result.validTo,
-      from: null,
+      from: ((result.unit === "") || (result.unit === null) || (result.unit === undefined) || (result.unit === "EMPTY")) ? "" : { label: result.unit, value: result.unit },
       to: null,
-      fromInput: "",
-      toInput: "",
+      fromInput: result.startUsage,
+      toInput: result.endUsage,
       inputFlag: false,
       dateFlag: true,
       inputFlag: false,
@@ -8753,10 +8855,20 @@ export function CreatePortfolio(props) {
 
     getValidityKeyValue()
       .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
+
+        const options = []
+        res.map((d) => {
+          if (d.key !== "EMPTY") {
+            options.push({
+              value: d.key,
+              label: d.value,
+            })
+          }
+        });
+        // const options = res.map((d) => ({
+        //   value: d.key,
+        //   label: d.value,
+        // }));
         setValidityKeyValue(options);
       })
       .catch((err) => {
@@ -9829,6 +9941,11 @@ export function CreatePortfolio(props) {
 
       validFrom: validityData.fromDate,
       validTo: validityData.toDate,
+      startUsage: validityData.fromInput,
+      endUsage: validityData.toInput,
+      unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+        ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
       usageCategory: categoryUsageKeyValue1.value
         ? categoryUsageKeyValue1.value : "EMPTY",
@@ -9895,9 +10012,9 @@ export function CreatePortfolio(props) {
       lifeStageOfMachine: "EMPTY",
       numberOfEvents: 0,
       rating: "",
-      startUsage: 0,
-      endUsage: 0,
-      unit: "EMPTY",
+      // startUsage: 0,
+      // endUsage: 0,
+      // unit: "EMPTY",
       additionals: "",
       template: true,
       visibleInCommerce: true
@@ -16882,6 +16999,11 @@ export function CreatePortfolio(props) {
 
         validFrom: validityData.fromDate,
         validTo: validityData.toDate,
+        startUsage: validityData.fromInput,
+        endUsage: validityData.toInput,
+        unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+          ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
 
         usageCategory: categoryUsageKeyValue1.value
           ? categoryUsageKeyValue1.value : "EMPTY",
@@ -16948,9 +17070,9 @@ export function CreatePortfolio(props) {
         lifeStageOfMachine: "EMPTY",
         numberOfEvents: 0,
         rating: "",
-        startUsage: 0,
-        endUsage: 0,
-        unit: "EMPTY",
+        // startUsage: 0,
+        // endUsage: 0,
+        // unit: "EMPTY",
         additionals: "",
         template: true,
         visibleInCommerce: true
@@ -18125,14 +18247,20 @@ export function CreatePortfolio(props) {
                             >
                               OPTIONALS
                             </label>
-                            <input
-                              // type="text"
-                              className="cursor form-control border-radius-10 text-primary"
-                              // id="exampleInputEmail1"
-                              onClick={PopupOptionalShow}
-                              placeholder="Click here"
-                            // value={stratgyOptionalsKeyValue}
-                            />
+                            {/* {optionalServicesData.length === 0 ? */}
+                              <input
+                                // type="text"
+                                className="cursor form-control border-radius-10 text-primary"
+                                // id="exampleInputEmail1"
+                                onClick={PopupOptionalShow}
+                                placeholder="Click here"
+                              // value={stratgyOptionalsKeyValue}
+                              />
+                            {/* //   :
+                            //   <h6 onClick={PopupOptionalShow} className="font-weight-500 cursor text-uppercase text-primary font-size-17 text-truncate">
+                            //     {optionalServicesData.join(", ")}
+                            //   </h6>
+                            // } */}
                           </div>
                           {/* <div className="form-group">
                             <label
@@ -26281,8 +26409,11 @@ export function CreatePortfolio(props) {
       <Modal show={optionalPopup} onHide={() => setOptionalPopup(false)} size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered>
-        <Modal.Header className="border-none align-items-center">
-          <Modal.Title><b>Select Optional Services</b></Modal.Title>
+        <Modal.Header className="border-none d-flex justify-content-between align-items-center align-items-center">
+          {/* <Modal.Title> */}
+          <h4><b>Select Optional Services</b></h4>
+          <button className="btn btn-primary mr-2" onClick={handleAddSelectOptionalServices} disabled={selectedInclusionExclusionServices.length === 0}> + Add Selected</button>
+          {/* </Modal.Title> */}
         </Modal.Header>
         <Modal.Body>
           {optionalServiceListLoading ?
@@ -26291,6 +26422,9 @@ export function CreatePortfolio(props) {
             </div>
             :
             <>
+              {/* <div className="card">
+                <div className="card-body"></div>
+              </div> */}
               <div className=' p-2'>
                 <div className="row">
                   {
@@ -26304,29 +26438,21 @@ export function CreatePortfolio(props) {
                                   <input
                                     type="checkbox"
                                     value=""
-                                    checked={optionalServicesData.includes(serviceData.itemName)}
+                                    // checked={optionalServicesData.includes(serviceData.itemName)}
+                                    checked={selectedInclusionExclusionServices.includes(serviceData.itemName)}
                                     onChange={(e) => handleSelectOptionalService(e, serviceData.itemName, serviceData)}
                                   />
                                 </div>
                                 <div className="mt-1">
                                   <p className="mb-0 font-size-16 text-black">
-                                    {/* <b>AIR FILTER REPLACEMENT</b> */}
                                     <b>{serviceData.itemName}</b>
                                   </p>
                                   <p className=" mt-1 mb-0 font-size-14">
-                                    {/* The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service. */}
                                     {serviceData.itemHeaderDescription}
                                   </p>
                                 </div>
-
                               </div>
                             </div>
-                            {/* <div className="px-2">
-                              <p className="mb-0 font-size-14">
-                                The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service.
-                                {serviceData.itemHeaderDescription}
-                              </p>
-                            </div> */}
                           </div>
                         )}
                         <Pagination
@@ -26340,66 +26466,6 @@ export function CreatePortfolio(props) {
                           // color="#872ff7"
                           className="optional-services-pagination"
                         />
-                        {/* <ResponsivePagination
-                          current={optionalServiceListData.currentPage}
-                          total={optionalServiceListData.totalPages}
-                          onPageChange={(newPage) => handleOptionalServicePageClick(newPage)}
-                          className="optional-services-pagination"
-                          activeItemClassName="optional-services-pagination-active"
-                          navClassName="optional-nav-class"
-                        /> */}
-                        {/* <ReactPaginate
-                          breakLabel="..."
-                          nextLabel="next >"
-                          onPageChange={handleOptionalServicePageClick}
-                          pageRangeDisplayed={6}
-                          pageCount={optionalServicesTotalPages}
-                          previousLabel="< previous"
-                          renderOnZeroPageCount={null}
-                          className="optional-services-pagination"
-                          activeClassName="optional-services-pagination-active"
-                          previousLinkClassName="optional-service-previous-button"
-                          nextLinkClassName="optional-service-next-button"
-                        /> */}
-                        {/* <div className="col-md-6 col-sm-6">
-                <div className="card p-4">
-                  <div className="d-flex align-items-center ">
-                    <div class="checkbox mr-3">
-                      <input type="checkbox" value=""></input>
-                    </div>
-                    <p className="mb-0 font-size-16 text-black"><b>AIR FILTER REPLACEMENT</b></p>
-                  </div>
-                </div>
-                <div className="px-2">
-                  <p className="mb-0 font-size-14">The air filter is recommended to be repplaced once every 12 to 18 months, and often done in tandum with this service.</p>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="card p-4">
-                  <div className="d-flex align-items-center ">
-                    <div class="checkbox mr-3">
-                      <input type="checkbox" value=""></input>
-                    </div>
-                    <p className="mb-0 font-size-16 text-black"><b>ROTATE TIRES</b></p>
-                  </div>
-                </div>
-                <div className="px-2">
-                  <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="card mt-4 p-4">
-                  <div className="d-flex align-items-center ">
-                    <div class="checkbox mr-3">
-                      <input type="checkbox" value=""></input>
-                    </div>
-                    <p className="mb-0 font-size-16 text-black"><b>CABIN AIR FILTER REPLACEMENT</b></p>
-                  </div>
-                </div>
-                <div className="px-2">
-                  <p className="mb-0 font-size-14">Tire rotation is recommended every 7,500 miles to maintain even tread wear and extend the life of your wheels.</p>
-                </div>
-              </div> */}
                       </>
                       :
                       <>
