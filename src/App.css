@@ -4069,6 +4069,7 @@ input[type="checkbox"]:checked:after {
   border-radius: 10px;
   box-shadow: 0 4px 4px 0 #00000025;
   margin-top: 18px;
+  overflow: hidden;
 }
 .equipment-master-ul li img{
   width: 65px;
@@ -4113,4 +4114,7 @@ input[type="checkbox"]:checked:after {
 .border-50{ border-right: 1px solid #00000015;}
 .bg-gl{
   background: #F2F2F2;
+}
+.equipment-master-ul .text-truncate {
+  max-width: 100px;
 }

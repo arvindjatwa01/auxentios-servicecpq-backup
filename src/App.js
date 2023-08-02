@@ -5,6 +5,7 @@ import "utils/dropConsole";
 import "fontsource-roboto";
 import { RouterConfig } from "navigation/RouterConfig";
 import "./App.css";
+import "./Responsive.css";
 import { ProvideAuth } from "navigation/Auth/ProvideAuth";
 import LoaderComponent from "pages/Common/LoaderComponent";
 const App= () => {

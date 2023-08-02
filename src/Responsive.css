@@ -1,0 +1,30 @@
+@media (max-width:1274px){
+    .mt-right-search{
+        margin-top: 8px;
+    }
+}
+@media (max-width:1250px){
+    .width-ao .css-1s2u09g-control {
+        width: 70px !important;
+        max-width: 70px !important;
+    }
+    .width-search-by .css-1s2u09g-control {
+        width: 100px !important;
+        max-width: 100px !important;
+    }
+  }
+@media (max-width:1033px){
+    .add-delete-mt{
+      margin-top: 6px;
+    }
+  }
+  @media (max-width:991px){
+    .mt-custom{
+        margin-top: 15px;
+    }
+  }
+  @media (max-width:962px){
+    .customselect-margin{
+      margin-top: 5px;
+    }
+  }
