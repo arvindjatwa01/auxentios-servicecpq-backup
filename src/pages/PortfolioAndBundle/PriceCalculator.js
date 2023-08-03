@@ -151,10 +151,6 @@ const PriceCalculator = (props) => {
       setDisable(false);
     }
 
-
-    // console.log("props.createdBundleItems 114 : ", props.createdBundleItems)
-    // console.log("props.createdBundleItems != 114 : ", props.createdBundleItems != "")
-    // console.log("props.createdBundleItems != null : ", props.createdBundleItems != undefined)
     // if (props.serviceOrBundlePrefix !== "SERVICE") {
     if (props.serviceOrBundlePrefix === "SERVICE" && props.priceCompFlagIs === "editAble") {
       if (props.priceCalculator) {
@@ -187,178 +183,173 @@ const PriceCalculator = (props) => {
   // }, [])
 
   const portfolioItemPriceSjIdFun = async () => {
+    try {
+      const rObjId = props.priceCalculator.itemPriceDataId;
+      if (!((rObjId === "") || (rObjId === null) || (rObjId === 0) || (rObjId === undefined))) {
+        const res = await getItemPriceData(rObjId)
+        const fetchItemDetailsById = await getItemDataById(props.createdBundleItems.itemId);
+        // const rObj={
+        //   standardJobId: "SJ000002",
+        //   repairKitId: "string",
+        //   itemId: 1,
+        //   itemPriceDataId: 25
+        // }
 
-    const rObjId = props.priceCalculator.itemPriceDataId;
+        if (fetchItemDetailsById.status === 200) {
+          // const bundleOrServiceData = await getItemDataById(props.createdBundleItems.itemId);
+          const bundleOrServiceData = fetchItemDetailsById.data;
+          setPriceCalculator({
+            ...priceCalculator,
+            itemPriceId: res.data.itemPriceDataId,
+            priceMethod: ((res.data.priceMethod === "") || (res.data.priceMethod === null) || (res.data.priceMethod === "EMPTY")) ? "" :
+              props.priceMethodDropdownKeyValue.find(o => o.value === res.data.priceMethod),
+            priceType: ((res.data.priceType === "") || (res.data.priceType === null) || (res.data.priceType === "EMPTY")) ? "" :
+              props.priceTypeDropdownKeyValue.find(o => o.value === res.data.priceType),
+            // priceType: (res.data.priceType != "EMPTY" ||
+            //   res.data.priceType != "" ||
+            //   res.data.priceType != null) ? priceTypeKeyValue.find(o => o.value === res.data.priceType) : "",
+            // priceAdditionalSelect: {
+            //   label: (res.data.additionalPriceType != "" ||
+            //     res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE",
+            //   value: (res.data.additionalPriceType != "" ||
+            //     res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE"
+            // },
+            priceAdditionalSelect: (res.data.additionalPriceType != "" ||
+              res.data.additionalPriceType != null) ? additionalPriceHeadTypeKeyValue.find(o => o.value === res.data.additionalPriceType) :
+              { label: "Surcharge $", value: "ABSOLUTE", },
 
-    const res = await getItemPriceData(rObjId)
+            priceAdditionalInput: res.data.additionalPriceValue,
+            discountTypeSelect: ((res.data.discountType === "") || (res.data.discountType === null) || (res.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === res.data.discountType),
+            discountTypeInput: res.data.discountValue,
+            // year: {
+            //   label: (res.data.year != "" ||
+            //     res.data.year != null) ? res.data.year : "1",
+            //   value: (res.data.year != "" ||
+            //     res.data.year != null) ? res.data.year : "1"
+            // },
+            // noOfYear: (res.data.noOfYear != null ||
+            //   res.data.noOfYear != 0) ? res.data.noOfYear : 1,
+            year: res.data.year != "" ? {
+              label: res.data.year,
+              value: res.data.year,
+            } : "",
+            noOfYear: res.data.noOfYear,
+            startUsage: res.data.startUsage,
+            endUsage: res.data.endUsage,
+            recommendedValue: res.data.recommendedValue,
+            // netPrice: res.data.netService,
+            totalPrice: res.data.totalPrice,
+            calculatedPrice: res.data.calculatedPrice,
+            id: res.data.itemPriceDataId,
+            numberOfEvents: res.data.numberOfEvents,
+            portfolioDataId: (res.data?.portfolio != undefined ||
+              res.data?.portfolio != null) ?
+              res.data?.portfolio?.portfolioId : null,
 
-    console.log("res data ", res)
+            flatPrice: res.data.flatPrice ? parseInt(res.data.flatPrice) : 0,
 
-    const fetchItemDetailsById = await getItemDataById(props.createdBundleItems.itemId);
+            escalationPriceOptionsValue1: (res.data.priceEscalation != "" ? {
+              label: res.data.priceEscalation,
+              value: res.data.priceEscalation,
+            } : ""),
+            escalationPriceOptionsValue: (res.data.priceEscalation != "" ?
+              res.data.priceEscalation : ""),
+            escalationPriceInputValue: (res.data.priceEscalation == "" ? "" :
+              res.data.priceEscalation === "PARTS" ? res.data.sparePartsEscalation :
+                res.data.priceEscalation === "LABOR" ? res.data.labourEscalation :
+                  res.data.priceEscalation === "MISCELLANEOUS" ? res.data.miscEscalation :
+                    res.data.priceEscalation === "SERVICE" ? res.data.serviceEscalation : ""),
 
+            priceBreakDownOptionsKeyValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
+              "PARTS" : res.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                res.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+            priceBreakDownInputValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
+              res.data.sparePartsPriceBreakDownPercentage :
+              res.data.labourPriceBreakDownPercentage != 0 ?
+                res.data.labourPriceBreakDownPercentage :
+                res.data.miscPriceBreakDownPercentage != 0 ?
+                  res.data.miscPriceBreakDownPercentage : 0,
+            // : res.data.miscPriceBreakDownPercentage != 0 ? {
+            //   label: "PARTS",
+            //   value: "PARTS",
+            // } : 
+            priceBreakDownOptionsKeyValue1: res.data.sparePartsPriceBreakDownPercentage != 0 ? {
+              label: "PARTS",
+              value: "PARTS",
+            } : res.data.labourPriceBreakDownPercentage != 0 ? {
+              label: "LABOR",
+              value: "LABOR",
+            } : res.data.miscPriceBreakDownPercentage != 0 ? {
+              label: "MISCELLANEOUS",
+              value: "MISCELLANEOUS",
+            } : "",
 
+            currency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemHeaderModel?.currency) &&
+              (bundleOrServiceData?.itemHeaderModel?.currency != "")) ? {
+              label: bundleOrServiceData?.itemHeaderModel?.currency,
+              value: bundleOrServiceData?.itemHeaderModel?.currency
+            } : "",
+            unit: (((props.createdBundleItems === "") || ((props.createdBundleItems?.unit === "") || (props.createdBundleItems?.unit === null) ||
+              (props.createdBundleItems?.unit === undefined))) ? (((res.data?.usageUnit === "") || (res.data?.usageUnit === null) ||
+                (res.data?.usageUnit === undefined)) ? "" :
+                props.unitDropdownKeyValue.find(o => o.value === res.data.usageUnit)) : props.createdBundleItems?.unit),
 
-    // const rObj={
-    //   standardJobId: "SJ000002",
-    //   repairKitId: "string",
-    //   itemId: 1,
-    //   itemPriceDataId: 25
-    // }
+            frequency: (((props.createdBundleItems === "") || ((props.createdBundleItems?.frequency === "") || (props.createdBundleItems?.frequency === null) ||
+              (props.createdBundleItems?.frequency === undefined))) ? (((res.data?.frequency === "") || (res.data?.frequency === null) ||
+                (res.data?.frequency === undefined)) ? "" :
+                props.frequencyDropdownKeyValue.find(o => o.value === res.data.frequency)) : props.createdBundleItems?.frequency),
 
-    if (fetchItemDetailsById.status === 200) {
-      // const bundleOrServiceData = await getItemDataById(props.createdBundleItems.itemId);
-      const bundleOrServiceData = fetchItemDetailsById.data;
-      setPriceCalculator({
-        ...priceCalculator,
-        itemPriceId: res.data.itemPriceDataId,
-        priceMethod: ((res.data.priceMethod === "") || (res.data.priceMethod === null) || (res.data.priceMethod === "EMPTY")) ? "" :
-          props.priceMethodDropdownKeyValue.find(o => o.value === res.data.priceMethod),
-        priceType: ((res.data.priceType === "") || (res.data.priceType === null) || (res.data.priceType === "EMPTY")) ? "" :
-          props.priceTypeDropdownKeyValue.find(o => o.value === res.data.priceType),
-        // priceType: (res.data.priceType != "EMPTY" ||
-        //   res.data.priceType != "" ||
-        //   res.data.priceType != null) ? priceTypeKeyValue.find(o => o.value === res.data.priceType) : "",
-        // priceAdditionalSelect: {
-        //   label: (res.data.additionalPriceType != "" ||
-        //     res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE",
-        //   value: (res.data.additionalPriceType != "" ||
-        //     res.data.additionalPriceType != null) ? res.data.additionalPriceType : "ABSOLUTE"
-        // },
-        priceAdditionalSelect: (res.data.additionalPriceType != "" ||
-          res.data.additionalPriceType != null) ? additionalPriceHeadTypeKeyValue.find(o => o.value === res.data.additionalPriceType) :
-          { label: "Surcharge $", value: "ABSOLUTE", },
+            //   ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.unit) &&
+            //     (bundleOrServiceData?.itemBodyModel?.unit != "")) ? {
+            //   label: bundleOrServiceData?.itemBodyModel?.unit,
+            //   value: bundleOrServiceData?.itemBodyModel?.unit
+            // } : "",
 
-        priceAdditionalInput: res.data.additionalPriceValue,
-        discountTypeSelect: ((res.data.discountType === "") || (res.data.discountType === null) || (res.data.discountType === "EMPTY")) ? "" :
-          discountTypeOptions.find(o => o.value === res.data.discountType),
-        discountTypeInput: res.data.discountValue,
-        // year: {
-        //   label: (res.data.year != "" ||
-        //     res.data.year != null) ? res.data.year : "1",
-        //   value: (res.data.year != "" ||
-        //     res.data.year != null) ? res.data.year : "1"
-        // },
-        // noOfYear: (res.data.noOfYear != null ||
-        //   res.data.noOfYear != 0) ? res.data.noOfYear : 1,
-        year: res.data.year != "" ? {
-          label: res.data.year,
-          value: res.data.year,
-        } : "",
-        noOfYear: res.data.noOfYear,
-        startUsage: res.data.startUsage,
-        endUsage: res.data.endUsage,
-        recommendedValue: res.data.recommendedValue,
-        // netPrice: res.data.netService,
-        totalPrice: res.data.totalPrice,
-        calculatedPrice: res.data.calculatedPrice,
-        id: res.data.itemPriceDataId,
-        numberOfEvents: res.data.numberOfEvents,
-        portfolioDataId: (res.data?.portfolio != undefined ||
-          res.data?.portfolio != null) ?
-          res.data?.portfolio?.portfolioId : null,
+            // frequency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.frequency) &&
+            //   bundleOrServiceData?.itemBodyModel?.frequency != "") ? {
+            //   label: bundleOrServiceData?.itemBodyModel?.frequency,
+            //   value: bundleOrServiceData?.itemBodyModel?.frequency
+            // } : "",
+            usageType: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.usage) &&
+              (bundleOrServiceData?.itemBodyModel?.usage != "")) ? {
+              label: bundleOrServiceData?.itemBodyModel?.usage,
+              value: bundleOrServiceData?.itemBodyModel?.usage
+            } : "",
+          })
+        }
 
-        flatPrice: res.data.flatPrice ? parseInt(res.data.flatPrice) : 0,
+        setPriceBreakDownFieldsValue({
+          ...priceBreakDownFieldsValue,
+          parts: res.data.sparePartsNOE,
+          labor: res.data.labourNOE,
+          miscellaneous: res.data.miscNOE,
+          service: res.data.servicePrice,
+        })
 
-        escalationPriceOptionsValue1: (res.data.priceEscalation != "" ? {
-          label: res.data.priceEscalation,
-          value: res.data.priceEscalation,
-        } : ""),
-        escalationPriceOptionsValue: (res.data.priceEscalation != "" ?
-          res.data.priceEscalation : ""),
-        escalationPriceInputValue: (res.data.priceEscalation == "" ? "" :
-          res.data.priceEscalation === "PARTS" ? res.data.sparePartsEscalation :
-            res.data.priceEscalation === "LABOR" ? res.data.labourEscalation :
-              res.data.priceEscalation === "MISCELLANEOUS" ? res.data.miscEscalation :
-                res.data.priceEscalation === "SERVICE" ? res.data.serviceEscalation : ""),
+        setExtWorkData({
+          ...extWorkData,
+          flatRateIndicator: res.data.flatPrice || res.data.flatPrice != 0 ? true : false,
+        })
 
-        priceBreakDownOptionsKeyValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
-          "PARTS" : res.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
-            res.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
-        priceBreakDownInputValue: res.data.sparePartsPriceBreakDownPercentage != 0 ?
-          res.data.sparePartsPriceBreakDownPercentage :
-          res.data.labourPriceBreakDownPercentage != 0 ?
-            res.data.labourPriceBreakDownPercentage :
-            res.data.miscPriceBreakDownPercentage != 0 ?
-              res.data.miscPriceBreakDownPercentage : 0,
-        // : res.data.miscPriceBreakDownPercentage != 0 ? {
-        //   label: "PARTS",
-        //   value: "PARTS",
-        // } : 
-        priceBreakDownOptionsKeyValue1: res.data.sparePartsPriceBreakDownPercentage != 0 ? {
-          label: "PARTS",
-          value: "PARTS",
-        } : res.data.labourPriceBreakDownPercentage != 0 ? {
-          label: "LABOR",
-          value: "LABOR",
-        } : res.data.miscPriceBreakDownPercentage != 0 ? {
-          label: "MISCELLANEOUS",
-          value: "MISCELLANEOUS",
-        } : "",
+        // setPriceCalculator({
+        //   ...priceCalculator,
+        //   priceMethod: res.data.priceMethod,
+        //   listPrice: res.data.listPrice,
+        //   calculatedPrice: res.data.calculatedPrice,
+        //   flatPrice: res.data.flatPrice,
+        //   priceYear: res.data.year,
+        //   startUsage: res.data.startUsage,
+        //   endUsage: res.data.endUsage,
+        //   totalPrice: res.data.totalPrice,
+        //   netPrice: res.data.netService
+        // })
 
-        currency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemHeaderModel?.currency) &&
-          (bundleOrServiceData?.itemHeaderModel?.currency != "")) ? {
-          label: bundleOrServiceData?.itemHeaderModel?.currency,
-          value: bundleOrServiceData?.itemHeaderModel?.currency
-        } : "",
-        unit: (((props.createdBundleItems === "") || ((props.createdBundleItems?.unit === "") || (props.createdBundleItems?.unit === null) ||
-          (props.createdBundleItems?.unit === undefined))) ? (((res.data?.usageUnit === "") || (res.data?.usageUnit === null) ||
-            (res.data?.usageUnit === undefined)) ? "" :
-            props.unitDropdownKeyValue.find(o => o.value === res.data.usageUnit)) : props.createdBundleItems?.unit),
-
-        frequency: (((props.createdBundleItems === "") || ((props.createdBundleItems?.frequency === "") || (props.createdBundleItems?.frequency === null) ||
-          (props.createdBundleItems?.frequency === undefined))) ? (((res.data?.frequency === "") || (res.data?.frequency === null) ||
-            (res.data?.frequency === undefined)) ? "" :
-            props.frequencyDropdownKeyValue.find(o => o.value === res.data.frequency)) : props.createdBundleItems?.frequency),
-
-        //   ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.unit) &&
-        //     (bundleOrServiceData?.itemBodyModel?.unit != "")) ? {
-        //   label: bundleOrServiceData?.itemBodyModel?.unit,
-        //   value: bundleOrServiceData?.itemBodyModel?.unit
-        // } : "",
-
-        // frequency: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.frequency) &&
-        //   bundleOrServiceData?.itemBodyModel?.frequency != "") ? {
-        //   label: bundleOrServiceData?.itemBodyModel?.frequency,
-        //   value: bundleOrServiceData?.itemBodyModel?.frequency
-        // } : "",
-        usageType: ((props.createdBundleItems != "") && (bundleOrServiceData?.itemBodyModel?.usage) &&
-          (bundleOrServiceData?.itemBodyModel?.usage != "")) ? {
-          label: bundleOrServiceData?.itemBodyModel?.usage,
-          value: bundleOrServiceData?.itemBodyModel?.usage
-        } : "",
-      })
+        // console.log("response",res)
+      }
+    } catch (error) {
+      console.log(error);
     }
-
-    setPriceBreakDownFieldsValue({
-      ...priceBreakDownFieldsValue,
-      parts: res.data.sparePartsNOE,
-      labor: res.data.labourNOE,
-      miscellaneous: res.data.miscNOE,
-      service: res.data.servicePrice,
-    })
-
-    setExtWorkData({
-      ...extWorkData,
-      flatRateIndicator: res.data.flatPrice || res.data.flatPrice != 0 ? true : false,
-    })
-
-
-
-    // setPriceCalculator({
-    //   ...priceCalculator,
-    //   priceMethod: res.data.priceMethod,
-    //   listPrice: res.data.listPrice,
-    //   calculatedPrice: res.data.calculatedPrice,
-    //   flatPrice: res.data.flatPrice,
-    //   priceYear: res.data.year,
-    //   startUsage: res.data.startUsage,
-    //   endUsage: res.data.endUsage,
-    //   totalPrice: res.data.totalPrice,
-    //   netPrice: res.data.netService
-    // })
-
-
-    // console.log("response",res)
   }
 
   useEffect(() => {
@@ -883,7 +874,8 @@ const PriceCalculator = (props) => {
         <div className="ligt-greey-bg p-3">
           <div>
             <span className="mr-3 cursor"
-              onClick={() => { setDisable(!disable) }}
+              // onClick={() => { setDisable(!disable) }}
+              onClick={() => setDisable(false)}
             >
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
@@ -2081,7 +2073,8 @@ const PriceCalculator = (props) => {
                     : handleBundlePriceSave
                 }
               >
-                {props.bundleOrServiceEditOrNot ? "Save" : "Save & Next"}
+                {/* {props.bundleOrServiceEditOrNot ? "Next" : "Save & Next"} */}
+                {props.bundleOrServiceEditOrNot && disable ? "Next" : "Save & Next"}
               </a>
             </div>
           </div>

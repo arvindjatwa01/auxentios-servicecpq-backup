@@ -3566,8 +3566,8 @@ export const PortfolioSummary = () => {
         itemPriceDataId: itemPriceData.itemPriceDataId
       }
 
-      if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
-        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
+      if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null) || (itemPriceData.standardJobId === undefined)) &&
+        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null) || (itemPriceData.repairKitId === undefined)))) {
         if (((itemPriceData.standardJobId == "") || (itemPriceData.standardJobId == null)) &&
           ((itemPriceData.repairKitId != "") || (itemPriceData.repairKitId != null))) {
           const updateRkId = portfolioItemPriceRkId(rObj);
@@ -3702,8 +3702,8 @@ export const PortfolioSummary = () => {
           itemPriceDataId: itemPriceData.itemPriceDataId
         }
 
-        if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
-          ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
+        if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null) || (itemPriceData.standardJobId === undefined)) &&
+          ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null) || (itemPriceData.repairKitId === undefined)))) {
 
           if (((itemPriceData.standardJobId == "") ||
             (itemPriceData.standardJobId == null)) &&
@@ -4096,8 +4096,8 @@ export const PortfolioSummary = () => {
           itemPriceDataId: itemPriceData?.itemPriceDataId
         }
 
-        if (!(((data.templateId === "") || (data.templateId === null)) &&
-          ((data.repairOption === "") || (data.repairOption === null)))) {
+        if (!(((data.templateId === "") || (data.templateId === null) || (data.templateId === undefined)) &&
+          ((data.repairOption === "") || (data.repairOption === null) || (data.repairOption === undefined)))) {
 
           if (((data.templateId == "") || (data.templateId == null)) &&
             ((data.repairOption != "") || (data.repairOption != null))) {
@@ -4331,8 +4331,8 @@ export const PortfolioSummary = () => {
                 itemPriceDataId: data.id
               }
 
-              if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-                ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+              if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+                ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
 
                 if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
                   (addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null)) {
@@ -4578,8 +4578,8 @@ export const PortfolioSummary = () => {
               itemPriceDataId: itemPriceData.data.itemPriceDataId,
             }
 
-            if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-              ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+            if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+              ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
 
               if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
                 ((addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null))) {
@@ -4806,8 +4806,8 @@ export const PortfolioSummary = () => {
               itemPriceDataId: data.id
             }
 
-            if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-              ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+            if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+              ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
 
               if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
                 ((addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null))) {
@@ -7546,6 +7546,7 @@ export const PortfolioSummary = () => {
                       priceTypeDropdownKeyValue={priceTypeKeyValue}
                       unitDropdownKeyValue={unitOptionKeyValue}
                       frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                      discountTypeDropdownKeyValue={discountTypeOptions}
                     />
                   </> : <>
                     <AddPortfolioItem
@@ -7573,6 +7574,7 @@ export const PortfolioSummary = () => {
                       priceTypeDropdownKeyValue={priceTypeKeyValue}
                       unitDropdownKeyValue={unitOptionKeyValue}
                       frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                      discountTypeDropdownKeyValue={discountTypeOptions}
                     />
                   </> :
                     <>
@@ -7588,6 +7590,7 @@ export const PortfolioSummary = () => {
                         priceTypeDropdownKeyValue={priceTypeKeyValue}
                         unitDropdownKeyValue={unitOptionKeyValue}
                         frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                        discountTypeDropdownKeyValue={discountTypeOptions}
                       />
                     </>
                 }
