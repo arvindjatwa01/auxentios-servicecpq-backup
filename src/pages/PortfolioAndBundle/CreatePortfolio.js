@@ -23242,6 +23242,7 @@ export function CreatePortfolio(props) {
                       priceTypeDropdownKeyValue={priceTypeKeyValue}
                       unitDropdownKeyValue={unitOptionKeyValue}
                       frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                      discountTypeDropdownKeyValue={discountTypeOptions}
                     />
                   </> :
                   <>
@@ -23256,6 +23257,7 @@ export function CreatePortfolio(props) {
                       priceTypeDropdownKeyValue={priceTypeKeyValue}
                       unitDropdownKeyValue={unitOptionKeyValue}
                       frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                      discountTypeDropdownKeyValue={discountTypeOptions}
                     />
                   </>}
               </TabPanel>
@@ -23359,6 +23361,7 @@ export function CreatePortfolio(props) {
                         priceTypeDropdownKeyValue={priceTypeKeyValue}
                         unitDropdownKeyValue={unitOptionKeyValue}
                         frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                        discountTypeDropdownKeyValue={discountTypeOptions}
                       />}
                     onRowExpandToggled={handleExpandRowForPriceCalculator}
                     //onRowExpandToggled={(bool, row) => setCurrentRow(row)}
@@ -25534,6 +25537,7 @@ export function CreatePortfolio(props) {
                       priceTypeDropdownKeyValue={priceTypeKeyValue}
                       unitDropdownKeyValue={unitOptionKeyValue}
                       frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                      discountTypeDropdownKeyValue={discountTypeOptions}
                     />
                   </> : <>
                     <AddPortfolioItem
@@ -25548,6 +25552,7 @@ export function CreatePortfolio(props) {
                       priceTypeDropdownKeyValue={priceTypeKeyValue}
                       unitDropdownKeyValue={unitOptionKeyValue}
                       frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                      discountTypeDropdownKeyValue={discountTypeOptions}
                     /></>
                 }
               </TabPanel>
@@ -25568,6 +25573,7 @@ export function CreatePortfolio(props) {
                       priceTypeDropdownKeyValue={priceTypeKeyValue}
                       unitDropdownKeyValue={unitOptionKeyValue}
                       frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                      discountTypeDropdownKeyValue={discountTypeOptions}
                     />
                   </> :
                     <>
@@ -25584,6 +25590,7 @@ export function CreatePortfolio(props) {
                         priceTypeDropdownKeyValue={priceTypeKeyValue}
                         unitDropdownKeyValue={unitOptionKeyValue}
                         frequencyDropdownKeyValue={frequencyOptionKeyValue}
+                        discountTypeDropdownKeyValue={discountTypeOptions}
                       />
                     </>
                 }
@@ -25929,6 +25936,7 @@ export function CreatePortfolio(props) {
             priceMethodDropdownKeyValue={priceMethodKeyValue}
             priceTypeDropdownKeyValue={priceTypeKeyValue}
             unitDropdownKeyValue={unitOptionKeyValue}
+            discountTypeDropdownKeyValue={discountTypeOptions}
             frequencyDropdownKeyValue={frequencyOptionKeyValue}
           // handleSavePrices={handleSavePrices}
           />
@@ -25949,6 +25957,7 @@ export function CreatePortfolio(props) {
             priceMethodDropdownKeyValue={priceMethodKeyValue}
             priceTypeDropdownKeyValue={priceTypeKeyValue}
             unitDropdownKeyValue={unitOptionKeyValue}
+            discountTypeDropdownKeyValue={discountTypeOptions}
             frequencyDropdownKeyValue={frequencyOptionKeyValue}
           />
         </Modal.Body>

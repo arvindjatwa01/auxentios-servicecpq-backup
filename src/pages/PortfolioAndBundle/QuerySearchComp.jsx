@@ -82,132 +82,138 @@ const QuerySearchComp = (props) => {
   const handleInputSearch = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
-
-    if (props.compoFlag === "coverage") {
-      getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-        .then((res) => {
-          console.log("response coverage ", res);
-          obj.selectOptions = res;
-          tempArray[id] = obj;
-          setQuerySearchSelector([...tempArray]);
-          $(`.scrollbar-${id}`).css("display", "block");
-        })
-        .catch((err) => {
-          console.log("err in api call", err);
-        });
-      obj.inputSearch = e.target.value;
-    } else if (props.compoFlag === "solutionTempItemSearch") {
-      obj.inputSearch = e.target.value;
-      setQuerySearchSelector([...tempArray]);
-    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
-      if (props.compoFlag === "bundleSearch") {
-        var SearchResArr = [];
-        //  var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}`;
-        var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
-        var SearchResArr = [];
-
-        var coverageSearchArr = [];
-
-        var newSearchStr = `${tempArray[id].selectFamily.value}/${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
-        // itemSearchDropdown(bundleServiceSearch)
-
-        console.log("tempArray[id].selectFamily ", tempArray[id].selectFamily);
-
-       
-
-
-        itemSearchDropdown(newSearchStr)
+    console.log("evemt value is :- ", e.target.value);
+    if (e.target.value.length > 0) {
+      if (props.compoFlag === "coverage") {
+        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
           .then((res) => {
-            console.log("ressss ", res);
-            if (res.status === 200) {
-              for (let i = 0; i < res.data.length; i++) {
-                // SearchResArr.push(res.data[i].value)
-                SearchResArr.push(res.data[i].key)
-              }
-            }
-            // console.log("===== SearchResArr ======== ", SearchResArr);
-            obj.selectOptions = SearchResArr;
+            console.log("response coverage ", res);
+            obj.selectOptions = res;
             tempArray[id] = obj;
             setQuerySearchSelector([...tempArray]);
             $(`.scrollbar-${id}`).css("display", "block");
           })
           .catch((err) => {
-            // alert(err)
             console.log("err in api call", err);
-            return
           });
+        obj.inputSearch = e.target.value;
+      } else if (props.compoFlag === "solutionTempItemSearch") {
+        obj.inputSearch = e.target.value;
+        setQuerySearchSelector([...tempArray]);
+      } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
+        if (props.compoFlag === "bundleSearch") {
+          var SearchResArr = [];
+          //  var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}`;
+          var bundleServiceSearch = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${tempArray[id].selectFamily.value}~${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
+          var SearchResArr = [];
 
-        // itemSearch(bundleServiceSearch)
+          var coverageSearchArr = [];
+
+          var newSearchStr = `${tempArray[id].selectFamily.value}/${e.target.value}?bundle_flag=${querySearchSelector[0]?.itemType.value}`;
+          // itemSearchDropdown(bundleServiceSearch)
+
+          console.log("tempArray[id].selectFamily ", tempArray[id].selectFamily);
+
+
+
+
+          itemSearchDropdown(newSearchStr)
+            .then((res) => {
+              console.log("ressss ", res);
+              if (res.status === 200) {
+                for (let i = 0; i < res.data.length; i++) {
+                  // SearchResArr.push(res.data[i].value)
+                  SearchResArr.push(res.data[i].key)
+                }
+              }
+              // console.log("===== SearchResArr ======== ", SearchResArr);
+              obj.selectOptions = SearchResArr;
+              tempArray[id] = obj;
+              setQuerySearchSelector([...tempArray]);
+              $(`.scrollbar-${id}`).css("display", "block");
+            })
+            .catch((err) => {
+              // alert(err)
+              console.log("err in api call", err);
+              return
+            });
+
+          // itemSearch(bundleServiceSearch)
+          //   .then((res) => {
+          //     if (res.data.length > 0) {
+          //       // console.log("bundleServiceSearch  response: ", res.data)
+          //       // console.log("tempArray[id].selectFamily.value ", tempArray[id].selectFamily.value)
+          //       if (tempArray[id].selectFamily.value == "itemName") {
+          //         for (let i = 0; i < res.data.length; i++) {
+          //           SearchResArr.push(res.data[i].itemName)
+          //         }
+          //       } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
+          //         for (let i = 0; i < res.data.length; i++) {
+          //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
+          //         }
+          //       } else if (tempArray[id].selectFamily.value == "itemHeaderMake") {
+          //         for (let i = 0; i < res.data.length; i++) {
+          //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
+          //         }
+          //       } else if (tempArray[id].selectFamily.value == "model") {
+          //         for (let i = 0; i < res.data.length; i++) {
+          //           SearchResArr.push(res.data[i].itemHeaderModel.model)
+          //         }
+          //       } else if (tempArray[id].selectFamily.value == "itemHeaderFamily") {
+          //         for (let i = 0; i < res.data.length; i++) {
+          //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
+          //         }
+          //       } else if (tempArray[id].selectFamily.value == "prefix") {
+          //         for (let i = 0; i < res.data.length; i++) {
+          //           SearchResArr.push(res.data[i].itemHeaderModel.prefix)
+          //         }
+          //       }
+          //       // obj.selectOptions = SearchResArr;
+          //       // tempArray[id] = obj;
+          //       // setQuerySearchSelector([...tempArray]);
+          //       // $(`.scrollbar-${id}`).css("display", "block");
+          //     }
+
+          //     // console.log("SearchResArr DAta is : ", SearchResArr)
+
+          //     obj.selectOptions = SearchResArr;
+          //     tempArray[id] = obj;
+          //     setQuerySearchSelector([...tempArray]);
+          //     $(`.scrollbar-${id}`).css("display", "block");
+          //     // obj.selectOptions = [...res];
+
+          //     // tempArray[id] = obj;
+          //     // setQuerySearchSelector([...tempArray]);
+          //     // $(`.scrollbar-${id}`).css("display", "block");
+          //   })
+          //   .catch((err) => {
+          //     alert(err)
+          //     console.log("err in api call", err);
+          //     return
+          //   });
+        }
+
+
+        // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
         //   .then((res) => {
-        //     if (res.data.length > 0) {
-        //       // console.log("bundleServiceSearch  response: ", res.data)
-        //       // console.log("tempArray[id].selectFamily.value ", tempArray[id].selectFamily.value)
-        //       if (tempArray[id].selectFamily.value == "itemName") {
-        //         for (let i = 0; i < res.data.length; i++) {
-        //           SearchResArr.push(res.data[i].itemName)
-        //         }
-        //       } else if (tempArray[id].selectFamily.value == "itemHeaderDescription") {
-        //         for (let i = 0; i < res.data.length; i++) {
-        //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderDescription)
-        //         }
-        //       } else if (tempArray[id].selectFamily.value == "itemHeaderMake") {
-        //         for (let i = 0; i < res.data.length; i++) {
-        //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderMake)
-        //         }
-        //       } else if (tempArray[id].selectFamily.value == "model") {
-        //         for (let i = 0; i < res.data.length; i++) {
-        //           SearchResArr.push(res.data[i].itemHeaderModel.model)
-        //         }
-        //       } else if (tempArray[id].selectFamily.value == "itemHeaderFamily") {
-        //         for (let i = 0; i < res.data.length; i++) {
-        //           SearchResArr.push(res.data[i].itemHeaderModel.itemHeaderFamily)
-        //         }
-        //       } else if (tempArray[id].selectFamily.value == "prefix") {
-        //         for (let i = 0; i < res.data.length; i++) {
-        //           SearchResArr.push(res.data[i].itemHeaderModel.prefix)
-        //         }
-        //       }
-        //       // obj.selectOptions = SearchResArr;
-        //       // tempArray[id] = obj;
-        //       // setQuerySearchSelector([...tempArray]);
-        //       // $(`.scrollbar-${id}`).css("display", "block");
-        //     }
-
-        //     // console.log("SearchResArr DAta is : ", SearchResArr)
-
-        //     obj.selectOptions = SearchResArr;
+        //     // obj.selectOptions = [...res];
         //     tempArray[id] = obj;
         //     setQuerySearchSelector([...tempArray]);
         //     $(`.scrollbar-${id}`).css("display", "block");
-        //     // obj.selectOptions = [...res];
-
-        //     // tempArray[id] = obj;
-        //     // setQuerySearchSelector([...tempArray]);
-        //     // $(`.scrollbar-${id}`).css("display", "block");
         //   })
         //   .catch((err) => {
         //     alert(err)
         //     console.log("err in api call", err);
         //     return
         //   });
+        obj.inputSearch = e.target.value;
+        setQuerySearchSelector([...tempArray]);
+
       }
-
-
-      // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
-      //   .then((res) => {
-      //     // obj.selectOptions = [...res];
-      //     tempArray[id] = obj;
-      //     setQuerySearchSelector([...tempArray]);
-      //     $(`.scrollbar-${id}`).css("display", "block");
-      //   })
-      //   .catch((err) => {
-      //     alert(err)
-      //     console.log("err in api call", err);
-      //     return
-      //   });
-      obj.inputSearch = e.target.value;
+    } else {
+      obj.selectOptions = [];
+      tempArray[id] = obj;
       setQuerySearchSelector([...tempArray]);
-
     }
 
   };
@@ -223,7 +229,7 @@ const QuerySearchComp = (props) => {
     obj.inputSearch = currentItem;
     obj.selectedOption = currentItem;
 
-    
+
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
     $(`.scrollbar-${id}`).css("display", "none");
