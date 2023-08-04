@@ -156,6 +156,12 @@ export const PortfolioSummary = () => {
   const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
   const [priceTypeKeyValue, setPriceTypeKeyValue] = useState([]);
 
+  const discountTypeOptions = [
+    { value: "PROGRAM_DISCOUNT", label: "Program" },
+    { value: "CUSTOMER_DISCOUNT", label: "Customer" },
+    { value: "PORTFOLIO_DISCOUNT", label: "Portfolio" },
+  ]
+
   const handleOption2 = (e) => {
     console.log(e);
     // if (editBundleService) {
