@@ -1430,11 +1430,11 @@ const AddPortfolioItem = (props) => {
       if (tabs == "itemSummary") {
         if ((props.compoFlag === "ITEM")) {
 
-          // if ((props.portfolioDataId == "") ||
-          //   (props.portfolioDataId == undefined)) {
-          //   props.itemModelShow(false)
-          //   throw "Please Create Portfolio First, then you can Add Item";
-          // }
+          if ((props.portfolioDataId == "") ||
+            (props.portfolioDataId == undefined)) {
+            props.itemModelShow(false)
+            throw "Please Create Portfolio First, then you can Add Item";
+          }
 
           if ((addPortFolioItem.name == "") ||
             (addPortFolioItem.name == undefined)) {

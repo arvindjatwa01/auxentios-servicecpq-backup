@@ -1503,6 +1503,7 @@ export function CreatePortfolio(props) {
       //   }
       // }
 
+      console.log("generalComponentData 1506 ============= ", generalComponentData);
       let reqObj = {
         itemId: 0,
         itemName: itemData.name,
@@ -1528,8 +1529,10 @@ export function CreatePortfolio(props) {
           responseTime: stratgyResponseTimeKeyValue.value ?
             stratgyResponseTimeKeyValue.value : "EMPTY",
           usage: itemData?.usageType != "" ? itemData?.usageType?.value : "",
-          validFrom: generalComponentData.validFrom,
-          validTo: generalComponentData.validTo,
+          // validFrom: generalComponentData.validFrom,
+          // validTo: generalComponentData.validTo,
+          validFrom: new Date(),
+          validTo: new Date(),
           estimatedTime: "",
           servicePrice: 0,
           status: "DRAFT",
@@ -1566,6 +1569,7 @@ export function CreatePortfolio(props) {
         },
       }
 
+      console.log("reqObj 1570 ============= ", reqObj);
       const itemRes = await itemCreation(reqObj);
 
       if (itemRes.status !== 200) {
@@ -2144,8 +2148,10 @@ export function CreatePortfolio(props) {
           responseTime: stratgyResponseTimeKeyValue.value ?
             stratgyResponseTimeKeyValue.value : "EMPTY",
           usage: data?.usageType != "" ? data?.usageType?.value : "",
-          validFrom: generalComponentData.validFrom,
-          validTo: generalComponentData.validTo,
+          // validFrom: generalComponentData.validFrom,
+          // validTo: generalComponentData.validTo,
+          validFrom: new Date(),
+          validTo: new Date(),
           estimatedTime: "",
           servicePrice: 0,
           status: "DRAFT",
@@ -3161,8 +3167,10 @@ export function CreatePortfolio(props) {
           itemHeaderGeographic: generalComponentData.geographic,
           responseTime: generalComponentData.responseTime,
           usage: "",
-          validFrom: generalComponentData.validFrom,
-          validTo: generalComponentData.validTo,
+          // validFrom: generalComponentData.validFrom,
+          // validTo: generalComponentData.validTo,
+          validFrom: new Date(),
+          validTo: new Date(),
           estimatedTime: "",
           servicePrice: 0,
           status: "NEW",
@@ -4067,8 +4075,10 @@ export function CreatePortfolio(props) {
           itemHeaderGeographic: generalComponentData.geographic,
           responseTime: generalComponentData.responseTime,
           usage: addPortFolioItem?.usageType ? typeof addPortFolioItem?.usageType === "object" ? addPortFolioItem?.usageType?.value : addPortFolioItem?.usageType : "",
-          validFrom: generalComponentData.validFrom,
-          validTo: generalComponentData.validTo,
+          // validFrom: generalComponentData.validFrom,
+          // validTo: generalComponentData.validTo,
+          validFrom: new Date(),
+          validTo: new Date(),
           estimatedTime: "",
           servicePrice: 0,
           status: "NEW",
@@ -6167,8 +6177,8 @@ export function CreatePortfolio(props) {
             validityData.inputFlag
           ) {
             reqData = {
-              validFrom: validityData.fromInput + validityData.from,
-              validTo: validityData.toInput + validityData.from,
+              validFrom: validityData.fromInput + (typeof validityData.from === "object" ? validityData.from?.value : validityData.from),
+              validTo: validityData.toInput + (typeof validityData.from === "object" ? validityData.from?.value : validityData.from),
             };
           } else if (
             validityData.fromDate &&
@@ -6194,6 +6204,9 @@ export function CreatePortfolio(props) {
           ...generalComponentData,
           ...reqData,
         });
+
+        console.log("validityData data for ----------- ", validityData);
+        console.log("generalComponentData data for ----------- ", { ...generalComponentData, ...reqData });
         setNameIsNotEditAble(true);
         setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: true });
         toast(`👏 Portfolio <${generalComponentData.name}> Updated Successfully`, {
@@ -18248,14 +18261,14 @@ export function CreatePortfolio(props) {
                               OPTIONALS
                             </label>
                             {/* {optionalServicesData.length === 0 ? */}
-                              <input
-                                // type="text"
-                                className="cursor form-control border-radius-10 text-primary"
-                                // id="exampleInputEmail1"
-                                onClick={PopupOptionalShow}
-                                placeholder="Click here"
-                              // value={stratgyOptionalsKeyValue}
-                              />
+                            <input
+                              // type="text"
+                              className="cursor form-control border-radius-10 text-primary"
+                              // id="exampleInputEmail1"
+                              onClick={PopupOptionalShow}
+                              placeholder="Click here"
+                            // value={stratgyOptionalsKeyValue}
+                            />
                             {/* //   :
                             //   <h6 onClick={PopupOptionalShow} className="font-weight-500 cursor text-uppercase text-primary font-size-17 text-truncate">
                             //     {optionalServicesData.join(", ")}
