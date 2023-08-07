@@ -4118,3 +4118,10 @@ input[type="checkbox"]:checked:after {
 .equipment-master-ul .text-truncate {
   max-width: 100px;
 }
+.equipment-switch .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
+  background-color: transparent !important;
+  border: 1px solid #872ff7 !important;
+}
+.equipment-switch .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked {
+  color: #872ff7 !important;
+}

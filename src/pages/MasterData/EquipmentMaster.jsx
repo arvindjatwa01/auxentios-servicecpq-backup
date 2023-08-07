@@ -11,6 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import EquipmentSearchComponent from "./EquipmentSearchComponent";
+import Switch from "@mui/material/Switch";
 import $ from "jquery";
 
 const searchOptions = [
@@ -141,6 +142,7 @@ const EquipmentMaster = () => {
       maintenance: 239,
     },
   ];
+  const label = { inputProps: { "aria-label": "Switch demo" } };
 
   const [searchSelector, setSearchSelector] = useState([
     {
@@ -397,6 +399,84 @@ const EquipmentMaster = () => {
       wrap: true,
       sortable: true,
       format: (row) => row?.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      // selector: (row) => row?.bundleFlag,
+      wrap: true,
+      sortable: true,
+      // format: (row) => row?.bundleFlag,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <EditOutlinedIcon className="mr-1" />
+          <DeleteOutlineOutlinedIcon />
+        </div>
+      ),
+    },
+  ];
+  const erpWarrentyItemColumns = [
+    {
+      name: (
+        <>
+          <div>Component ID</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemDescription,
+    },
+
+    {
+      name: (
+        <>
+          <div>Serial Number </div>
+        </>
+      ),
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.itemHeaderStrategy,
+    },
+    {
+      name: (
+        <>
+          <div>Warranty</div>
+        </>
+      ),
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Warranty Code</div>
+        </>
+      ),
+      selector: (row) => row?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.quantity,
     },
     {
       name: (
@@ -1118,7 +1198,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Contact Type
+                          Contact Person
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           268 HP
@@ -1126,7 +1206,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Email Id
+                          Customer Group
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           C9 ACERT
@@ -1134,7 +1214,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Customer Group
+                          Customer Segment
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           80648 lb
@@ -1142,7 +1222,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Customer Segment
+                          Last Owner
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           268 HP
@@ -1155,18 +1235,18 @@ const EquipmentMaster = () => {
                     <div className="row">
                       <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Contact Address
+                          Fleet number
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          8501 Willow Avenue, Los Angeles, CA 90037
+                          20
                         </p>
                       </div>
                       <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Primary Contact
+                          Contact Address
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          Olive Serrano
+                          8501 Willow Avenue, Los Angeles, CA 90037
                         </p>
                       </div>
                       <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
@@ -1179,10 +1259,42 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Distribution Channel
+                          Primary Contact
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          Online
+                          Olive Serrano
+                        </p>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Moved In/Out
+                        </p>
+                        <div className="equipment-switch">
+                          <Switch {...label} defaultChecked />
+                        </div>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Previous Location
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          8501 Willow Avenue, Los Angeles, CA 90037
+                        </p>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          New Location
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          8501 Willow Avenue, Los Angeles, CA 90037
+                        </p>
+                      </div>
+                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Moved In Date
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          02/08/2023
                         </p>
                       </div>
                     </div>
@@ -1282,7 +1394,7 @@ const EquipmentMaster = () => {
                     <div className="row">
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Purchase Date
+                          ERP ID
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           Caterpillar
@@ -1290,7 +1402,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Year of Manufacture
+                          ERP Description
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           336D2 L
@@ -1298,7 +1410,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Make
+                          Technical Asset Number
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           268 HP
@@ -1306,7 +1418,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Family
+                          Fleet Number
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           C9 ACERT
@@ -1314,7 +1426,7 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Model
+                          Purchase Date
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           80648 lb
@@ -1322,11 +1434,59 @@ const EquipmentMaster = () => {
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Prefix
+                          Serial Number
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
                           268 HP
                         </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Functional Location
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          268 HP
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white p-3 border-radius-10 mt-5 mb-4">
+                    <div className="row align-items-center">
+                      <div className="col-lg-9 col-md-9">
+                        <div className="d-flex align-items-center">
+                          <h6 className="font-weight-500 mb-0 mr-3">
+                            Warranty
+                          </h6>
+                          <EquipmentSearchComponent
+                            searchOptions={searchOptions}
+                            searchPlaceholder="Warranty"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-lg-3 col-md-3 text-right">
+                        <a href="#" className="btn bg-primary text-white">
+                          <span className="mr-1">
+                            <AddIcon />
+                          </span>
+                          Upload
+                        </a>
+                      </div>
+                    </div>
+                    <div className="table-responsive mt-3">
+                      <div
+                        className="custom-table  table-child"
+                        style={{
+                          height: "auto",
+                          width: "100%",
+                        }}
+                      >
+                        <DataTable
+                          title=""
+                          columns={erpWarrentyItemColumns}
+                          data={warrentyItems}
+                          customStyles={customStyles}
+                          // pagination
+                        />
                       </div>
                     </div>
                   </div>

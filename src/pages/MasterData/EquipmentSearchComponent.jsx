@@ -77,7 +77,7 @@ const EquipmentSearchComponent = ({ searchOptions, searchPlaceholder }) => {
                     // value={searchFiled.selectOperator}
                   />
                 )}
-                <div className="width-search-by">
+                <div className="">
                   <Select
                     options={searchOptions}
                     placeholder="Search By"
