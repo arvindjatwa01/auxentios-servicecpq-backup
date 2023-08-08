@@ -70,7 +70,8 @@ const RecentSparePartQuote = () => {
         setRecentQuotesLoading(false);
       })
       .catch((e) => {
-        handleSnack("error", "Error occurred while fetching spare parts quotes!");
+        if(e.message !== "Quote(s) is/are not found")
+          handleSnack("error", "Error occurred while fetching spare parts quotes!");
         setRecentQuotesLoading(false);
       });
   };

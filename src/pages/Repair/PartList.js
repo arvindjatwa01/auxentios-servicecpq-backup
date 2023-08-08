@@ -392,7 +392,7 @@ function PartList(props) {
     setPageSize(rowsPerPage);
     let sort = sortDetail.sortColumn
       ? `&sortColumn=${sortDetail.sortColumn}&orderBY=${sortDetail.orderBy}`
-      : "";
+      : "&sortColumn=createdAt&orderBY=ASC";
     let filter = filterQuery ? `&search=${filterQuery}` : "";
     const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
     await fetchPartsFromPartlist(partlistId, query)
@@ -1465,6 +1465,27 @@ function PartList(props) {
     []
   );
 
+  const refreshData = (builderId, version) => {
+    setHeaderLoading(true);
+      fetchBuilderVersionDet(builderId, version)
+        .then((result) => {
+          populateHeader(result);
+          setHeaderLoading(false);
+          // fetchPartlist(result.id);
+          fetchPartsOfPartlist(
+            partListNo,
+            page,
+            pageSize
+          );
+        })
+        .catch((err) => {
+          setHeaderLoading(false);
+          handleSnack(
+            "error",
+            "Error occurred while fetching the version details"
+          );
+        });
+  }
   // Updates the bulk edits
   const bulkUpdateParts = async () => {
     setConfirmationOpen(false);
@@ -1476,7 +1497,8 @@ function PartList(props) {
           handleSnack("success", `👏 Parts have been updated!`);
           setRowsToUpdate([]);
           if (result) {
-            fetchAllDetails(builderId, generalData.version);
+            // fetchAllDetails(builderId, generalData.version);
+            refreshData(builderId, generalData.version);
           }
           // fetchPartsOfPartlist(partListNo, page, pageSize);
         })
