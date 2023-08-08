@@ -4125,3 +4125,6 @@ input[type="checkbox"]:checked:after {
 .equipment-switch .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked {
   color: #872ff7 !important;
 }
+.width-75{
+  width: 75% !important;
+}
