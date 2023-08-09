@@ -96,4 +96,5 @@ export const SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE = SOLUTION_BUILDER + "/cre
 export const CREATED_CUSTOM_PORTFOLIO_DETAILS = SOLUTION_BUILDER + "/customPortfolioTemplate";
 
 // equipment-master
-export const EQUIPMENT_MASTER = "/eqipment-master"
+export const EQUIPMENT_MASTER = "/eqipment-master";
+export const PARTS_360 = "/parts-360"

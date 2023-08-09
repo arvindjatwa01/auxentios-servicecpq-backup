@@ -1721,7 +1721,7 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/PriceMaintenance" className="border-radius-50">
+                <NavLink to="/parts-360" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-de246da4-4706-4310-b3d5-ffa9f8d22cd2"
