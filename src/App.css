@@ -350,6 +350,10 @@ h5 {
   font-size: 12px;
 }
 
+.font-size-13 {
+  font-size: 13px;
+}
+
 .font-size-14 {
   font-size: 14px !important;
 }
@@ -770,16 +774,16 @@ nav.main-menu.expanded {
 
 .main-menu li:hover>a,
 nav.main-menu li.active>a span {
-  color: #fff !important;
+  color: #872ff7 !important;
 }
 
 .main-menu li:hover>a,
 nav.main-menu li.hover>a span {
-  color: #fff !important;
+  color: #872ff7 !important;
 }
 
 .main-menu li:hover>a span {
-  color: #fff !important;
+  color: #872ff7 !important;
 }
 
 .main-menu:hover>ul {}
@@ -787,27 +791,33 @@ nav.main-menu li.hover>a span {
 .main-menu:hover>ul>li {}
 
 .main-menu:hover>ul>li a {
-  opacity: 25%;
+  /* opacity: 70%; */
 }
 
 .main-menu:hover>ul>li>ul {}
 
+
 .main-menu:hover>ul>li>ul>li {}
 
 .main-menu:hover>li>ul>li a {
-  opacity: 50%;
+  /* opacity: 80%; */
+}
+
+.main-menu>ul>li>ul>li a {
+  padding-left: 11px;
 }
 
 .main-menu ul li.active a {
-  opacity: 25%;
+  /* opacity: 70%; */
 }
 
 .main-menu ul li ul li.active a {
-  opacity: 50%;
+  /* opacity: 80%; */
+  padding-left: 15px;
 }
 
 .main-menu ul li ul li ul li.active a {
-  opacity: 75%;
+  /* opacity: 90%; */
 }
 
 .main-menu ul li ul li ul li ul li a.active {
@@ -838,18 +848,19 @@ nav.main-menu li.hover>a span {
 }
 
 .main-menu li>a.active {
-  color: #fff;
-  background-color: #872ff7;
+  color: #872ff7;
+  background-color: #f3eafe;
 }
 
 .main-menu li>a.active svg {
-  fill: #fff;
+  fill: #872ff7;
 }
+
 
 .main-menu li>a.active .nav-text {}
 
 .main-menu li>a.active .nav-text span {
-  color: #fff !important;
+  color: #872ff7 !important;
 }
 
 .main-menu .nav-icon {
@@ -907,7 +918,12 @@ nav li {
 }
 
 .main-menu li:hover>a,
-nav.main-menu li.active>a,
+nav.main-menu li.active>a {
+  color: #872ff7;
+  background-color: #f3eafe;
+  margin: 4px 0;
+}
+
 .dropdown-menu>li>a:hover,
 .dropdown-menu>li>a:focus,
 .dropdown-menu>.active>a,
@@ -947,22 +963,22 @@ nav.main-menu li.active>a,
 .main-menu:hover li ul li ul li ul li {}
 
 .main-menu:hover li ul li ul li ul li a {
-  padding-left: 45px;
+  /* padding-left: 45px; */
 }
 
 .main-menu:hover li ul li ul li ul li a.active {
-  background-color: #872ff7;
-  color: #fff;
+  background-color: #f3eafe;
+  color: #872ff7;
 }
 
 .main-menu:hover li ul li ul li ul li a.active svg {
-  fill: #fff;
+  fill: #872ff7;
 }
 
 .main-menu:hover li ul li ul li ul li a.active .nav-text {}
 
 .main-menu:hover li ul li ul li ul li a.active .nav-text span {
-  color: #fff !important;
+  color: #872ff7 !important;
 }
 
 .area {
@@ -1080,7 +1096,7 @@ nav.main-menu li.active>a,
   position: relative;
   display: table-cell;
   width: 60px;
-  height: 60px;
+  height: 40px;
   text-align: center;
   vertical-align: middle;
   font-size: 20px;
@@ -1088,15 +1104,15 @@ nav.main-menu li.active>a,
 
 .main-menu .span-icon svg {
   width: 20px;
-  fill: #872ff7;
+  /* fill: #872ff7; */
 }
 
 .main-menu li.active>a svg {
-  fill: #fff;
+  fill: #872ff7;
 }
 
 .main-menu li:hover>a svg {
-  fill: #fff;
+  fill: #872ff7;
 }
 
 .sub-li {

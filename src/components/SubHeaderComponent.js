@@ -1104,7 +1104,7 @@ export function SubHeaderComponent(props) {
                       </li>
 
                       <li className="cursor mr-2">
-                        <a href="#" data-original-title="" title="">
+                        <a href="/insights" data-original-title="" title="">
                           <span className="mr-2 insight">
                             <svg
                               class="insight"
