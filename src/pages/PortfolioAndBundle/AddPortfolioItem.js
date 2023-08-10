@@ -1584,11 +1584,11 @@ const AddPortfolioItem = (props) => {
               throw "Please Create Portfolio First, then you can Add Item";
             }
             if (noNeedBundleService) {
-              props.setTabs("5");
-              props.getAddPortfolioItemDataFun(addPortFolioItem);
+              // props.setTabs("5");
+              props.getAddPortfolioItemDataFun(addPortFolioItem, "5");
             } else {
-              props.setTabs("2");
-              props.getAddPortfolioItemDataFun(addPortFolioItem);
+              // props.setTabs("2");
+              props.getAddPortfolioItemDataFun(addPortFolioItem, "2");
             }
             // props.setTabs("relatedTemplate");
           }
@@ -1790,206 +1790,7 @@ const AddPortfolioItem = (props) => {
         progress: undefined,
       });
     }
-
-    // ================== Old Method with Conditions Start ================ //
-
-    // if (tabs == 1) {
-    //   if ((props.compoFlag === "ITEM") &&
-    //     (addPortFolioItem.name == "" ||
-    //       addPortFolioItem.headerdescription == "" ||
-    //       addPortFolioItem.usageIn == "" ||
-    //       addPortFolioItem.taskType == "" ||
-    //       addPortFolioItem.quantity == "")) {
-    //     toast("😐" + "Please fill mandatory fields", {
-    //       position: "top-right",
-    //       autoClose: 3000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-    //   } else if ((props.compoFlag === "BUNDLE") &&
-    //     (addPortFolioItem.usageIn == "" ||
-    //       addPortFolioItem.taskType == "" ||
-    //       addPortFolioItem.quantity == "")) {
-    //     toast("😐" + "Please fill mandatory fields", {
-    //       position: "top-right",
-    //       autoClose: 3000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
-
-    //   } else {
-    //     if (props.compoFlag == "itemEdit") {
-    //       setTabs((prev) => `${parseInt(prev) + 1}`)
-    //     } else {
-    //       setTabs((prev) => `${parseInt(prev) + 1}`)
-    //       setAddPortFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
-    //     }
-    //   }
-    // } else if (tabs == 2 && addPortFolioItem.templateId == "") {
-    //   // if(&& props.compoFlag === "ITEM")
-    //   setTabs((prev) => `${parseInt(prev) + 1}`)
-    // } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
-    //   if (props.compoFlag === "ITEM") {
-    //     // const rObj = {
-    //     //   itemPriceDataId: 0,
-    //     //   quantity: addPortFolioItem.quantity,
-    //     //   startUsage: "",
-    //     //   endUsage: "",
-    //     //   standardJobId: addPortFolioItem.templateId,
-    //     //   repairKitId: "",
-    //     //   templateDescription: addPortFolioItem.templateDescription?.value,
-    //     //   repairOption: "",
-    //     //   additional: "",
-    //     //   partListId: "",
-    //     //   serviceEstimateId: "",
-    //     //   numberOfEvents: 0,
-    //     //   priceMethod: "LIST_PRICE",
-    //     //   priceType: "FIXED",
-    //     //   listPrice: 0,
-    //     //   priceEscalation: "",
-    //     //   calculatedPrice: 0,
-    //     //   flatPrice: 0,
-    //     //   discountType: "",
-    //     //   year: "",
-    //     //   noOfYear: 0,
-    //     //   sparePartsPrice: 0,
-    //     //   sparePartsPriceBreakDownPercentage: 0,
-    //     //   servicePrice: 0,
-    //     //   labourPrice: 0,
-    //     //   labourPriceBreakDownPercentage: 0,
-    //     //   miscPrice: 0,
-    //     //   miscPriceBreakDownPercentage: 0,
-    //     //   totalPrice: 0,
-    //     //   netService: 0,
-    //     //   portfolio: {
-    //     //     portfolioId: 1
-    //     //   },
-    //     //   tenantId: loginTenantId,
-    //     //   createdAt: "2022-12-09T13:52:27.880Z",
-    //     //   partsRequired: true,
-    //     //   serviceRequired: true,
-    //     //   labourRequired: true,
-    //     //   miscRequired: true
-    //     // }
-    //     // const itemPriceData = await createItemPriceData(rObj)
-    //     props.setTabs("2");
-    //     props.getAddPortfolioItemDataFun(addPortFolioItem);
-    //     // if (props.compoFlag === "itemEdit") {
-    //     //   props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
-    //     // } else {
-    //     // }
-    //   } else if (props.compoFlag === "BUNDLE") {
-    //     const rObj = {
-    //       itemPriceDataId: 0,
-    //       quantity: addPortFolioItem.quantity,
-    //       startUsage: "",
-    //       endUsage: "",
-    //       standardJobId: addPortFolioItem.templateId,
-    //       repairKitId: "",
-    //       templateDescription: addPortFolioItem.templateDescription?.value,
-    //       repairOption: "",
-    //       additional: "",
-    //       partListId: "",
-    //       serviceEstimateId: "",
-    //       numberOfEvents: addPortFolioItem?.numberOfEvents,
-    //       priceMethod: "LIST_PRICE",
-    //       priceType: "FIXED",
-    //       listPrice: 0,
-    //       priceEscalation: "",
-    //       calculatedPrice: 0,
-    //       flatPrice: 0,
-    //       discountType: "",
-    //       year: "",
-    //       noOfYear: 0,
-    //       sparePartsPrice: 0,
-    //       sparePartsPriceBreakDownPercentage: 0,
-    //       servicePrice: 0,
-    //       labourPrice: 0,
-    //       labourPriceBreakDownPercentage: 0,
-    //       miscPrice: 0,
-    //       miscPriceBreakDownPercentage: 0,
-    //       totalPrice: 0,
-    //       netService: 0,
-    //       portfolio: {
-    //         portfolioId: 1
-    //       },
-    //       tenantId: loginTenantId,
-    //       createdAt: "2022-12-09T13:52:27.880Z",
-    //       partsRequired: true,
-    //       serviceRequired: false,
-    //       labourRequired: true,
-    //       miscRequired: true
-    //     }
-    //     console.log("props.compoFlag Test :", rObj)
-    //     console.log("addPortFolioItem Test :", addPortFolioItem)
-    //     const itemPriceData = await createItemPriceData(rObj)
-    //     // props.setBundleTabs("3");
-    //     props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data);
-    //   } else {
-    //     if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
-    //       props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-    //     } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
-    //       props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-    //     } else {
-    //       const rObj = {
-    //         itemPriceDataId: 0,
-    //         quantity: addPortFolioItem.quantity,
-    //         startUsage: "",
-    //         endUsage: "",
-    //         standardJobId: addPortFolioItem.templateId,
-    //         repairKitId: "",
-    //         templateDescription: addPortFolioItem.templateDescription?.value,
-    //         repairOption: "",
-    //         additional: "",
-    //         partListId: "",
-    //         serviceEstimateId: "",
-    //         numberOfEvents: 0,
-    //         priceMethod: "LIST_PRICE",
-    //         priceType: "FIXED",
-    //         listPrice: 0,
-    //         priceEscalation: "",
-    //         calculatedPrice: 0,
-    //         flatPrice: 0,
-    //         discountType: "",
-    //         year: "",
-    //         noOfYear: 0,
-    //         sparePartsPrice: 0,
-    //         sparePartsPriceBreakDownPercentage: 0,
-    //         servicePrice: 0,
-    //         labourPrice: 0,
-    //         labourPriceBreakDownPercentage: 0,
-    //         miscPrice: 0,
-    //         miscPriceBreakDownPercentage: 0,
-    //         totalPrice: 0,
-    //         netService: 0,
-    //         portfolio: {
-    //           portfolioId: 1
-    //         },
-    //         tenantId: loginTenantId,
-    //         createdAt: "2022-12-09T13:52:27.880Z",
-    //         partsRequired: true,
-    //         serviceRequired: false,
-    //         labourRequired: true,
-    //         miscRequired: true
-    //       }
-    //       const itemPriceData = await createItemPriceData(rObj);
-    //       props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
-    //     }
-
-    //     // props.setBundleTabs("3");
-    //   }
-    // }
-
-    // ================== Old Method with Conditions End ================ //
-
-    // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
-  }
+}
 
   const handleAddPortfolioSave = async () => {
 
@@ -2014,14 +1815,13 @@ const AddPortfolioItem = (props) => {
           throw "Please Create Portfolio First, then you can Add Item";
         }
         if (noNeedBundleService) {
-          props.setTabs("5");
-          props.getAddPortfolioItemDataFun(addPortFolioItem);
+          // props.setTabs("5");
+          props.getAddPortfolioItemDataFun(addPortFolioItem, "5");
         } else {
-          props.setTabs("2");
-          props.getAddPortfolioItemDataFun(addPortFolioItem);
+          // props.setTabs("2");
+          props.getAddPortfolioItemDataFun(addPortFolioItem, "2");
         }
-        // props.setTabs("2");
-        // props.getAddPortfolioItemDataFun(addPortFolioItem);
+   
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditPort")) {
         props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
@@ -2159,82 +1959,6 @@ const AddPortfolioItem = (props) => {
       });
       return;
     }
-
-    // if (props.compoFlag === "ITEM") {
-    //   props.setTabs("relatedTemplate");
-    //   props.getAddPortfolioItemDataFun(addPortFolioItem);
-    // } else {
-    //   if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
-    //     props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-    //   } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
-    //     props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
-    //   } else {
-
-    //     if (addPortFolioItem.repairOption == "") {
-    //       toast("😐" + "Please fill related Kit field", {
-    //         position: "top-right",
-    //         autoClose: 3000,
-    //         hideProgressBar: false,
-    //         closeOnClick: true,
-    //         pauseOnHover: true,
-    //         draggable: true,
-    //         progress: undefined,
-    //       });
-    //     } else {
-
-    //       const rObj = {
-    //         itemPriceDataId: 0,
-    //         quantity: addPortFolioItem.quantity,
-    //         startUsage: "",
-    //         endUsage: "",
-    //         standardJobId: addPortFolioItem.templateId,
-    //         repairKitId: addPortFolioItem.repairOption,
-    //         templateDescription: addPortFolioItem.templateDescription,
-    //         repairOption: "",
-    //         additional: "",
-    //         partListId: "",
-    //         serviceEstimateId: "",
-    //         numberOfEvents: 0,
-    //         priceMethod: "LIST_PRICE",
-    //         priceType: "FIXED",
-    //         listPrice: 0,
-    //         priceEscalation: "",
-    //         calculatedPrice: 0,
-    //         flatPrice: 0,
-    //         discountType: "",
-    //         year: "",
-    //         noOfYear: 0,
-    //         sparePartsPrice: 0,
-    //         sparePartsPriceBreakDownPercentage: 0,
-    //         servicePrice: 0,
-    //         labourPrice: 0,
-    //         labourPriceBreakDownPercentage: 0,
-    //         miscPrice: 0,
-    //         miscPriceBreakDownPercentage: 0,
-    //         totalPrice: 0,
-    //         netService: 0,
-    //         portfolio: {
-    //           portfolioId: 1
-    //         },
-    //         tenantId: loginTenantId,
-    //         createdAt: "2022-12-09T13:52:27.880Z",
-    //         partsRequired: true,
-    //         serviceRequired: false,
-    //         labourRequired: true,
-    //         miscRequired: true
-    //       }
-
-    //       const itemPriceData = await createItemPriceData(rObj)
-    //       props.getAddPortfolioItemData(addPortFolioItem, itemPriceData.data)
-    //       props.setBundleTabs("3");
-    //     }
-    //   }
-    //   // alert("hello");
-
-
-    // }
-
-
   };
 
   const makeTemplateEditable = (selectedTemplate) => {

@@ -113,6 +113,28 @@ export const getServiceItemsList = (payLoad) => {
   });
 };
 
+export const getServicesDetailsList = (payLoad) => {
+  console.log("portfolioItemService > getServicesDetailsList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_PORTFOLIO_ITEM() + "/services-details?" + payLoad, { headers: headersData })
+        .then((res) => {
+          console.log("getServicesDetailsList > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getServicesDetailsList > axios err=", err);
+          reject("Error in getServicesDetailsList axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > getServicesDetailsList, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
 export const itemSearchSuggestion = (family, familyValue) => {
   console.log("portfolioItemService > itemSearchSuggestion called...");
   return new Promise((resolve, reject) => {
@@ -155,7 +177,6 @@ export const itemSearch = (searchStr) => {
     }
   });
 };
-
 
 export const itemSearchDropdown = (searchStr) => {
   console.log("portfolioItemService > itemSearchDropdown called...");
