@@ -4141,6 +4141,25 @@ input[type="checkbox"]:checked:after {
 .equipment-switch .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked {
   color: #872ff7 !important;
 }
+
+.optionl-service-input{
+  border: 1px solid #ced4da;
+  padding: 7px 9px;
+}
+.font-size-30{
+  font-size: 30px !important;
+}
+.selected-services{
+  border: 1px solid #ced4da;
+  padding: 5px 9px;
+}
+.select-services-scroll {
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: scroll;
+  width: 100%;
+  margin: 0;
+}
 .width-75{
   width: 75% !important;
 }

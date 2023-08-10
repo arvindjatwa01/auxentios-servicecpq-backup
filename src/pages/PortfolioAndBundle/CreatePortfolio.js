@@ -9,6 +9,9 @@ import {
 } from "react-bootstrap";
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { DataGrid } from "@mui/x-data-grid";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import FormGroup from "@mui/material/FormGroup";
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { ToastContainer, toast } from "react-toastify";
@@ -136,6 +139,7 @@ import {
   getServiceBundleItemPrices,
   linkItemToPortfolio,
   getPortfolioAndSolutionCommonConfig,
+  getServicesDetailsList,
 } from "../../services/index";
 
 import {
@@ -449,7 +453,12 @@ export function CreatePortfolio(props) {
   const [modelIncludedData, setModelIncludedData] = useState([]);
 
   const [editAblePriceData, setEditAblePriceData] = useState([]);
-  const [optionalServicesData, setOptionalServicesData] = useState([])
+  const [optionalServicesData, setOptionalServicesData] = useState([]);
+
+  const [checkedService, setCheckedService] = useState([])
+  const [selectedService, setSelectedService] = useState([])
+  const [inclusionService, setInclusionService] = useState([])
+
   const [inclusionExclusionService, setInclusionExclusionService] = useState([])
   const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false)
   const [selectedInclusionExclusionServices, setSelectedInclusionExclusionServices] = useState([])
@@ -481,12 +490,102 @@ export function CreatePortfolio(props) {
   });
 
   const [optionalPopup, setOptionalPopup] = useState(false)
+  const [viewSelectedService, setViewSelectedService] = useState(false)
+
   const PopupOptionalShow = async () => {
 
     // const optionalServicesList = await getServiceItemsList();
     // console.log("optionalServicesList ", optionalServicesList)
+    setViewSelectedService(false)
     setOptionalPopup(true)
     setOptionalServiceCurrentPage(1)
+  }
+
+  // Optional Service Select
+  const handleCheckUncheckService = (e, serviceObj) => {
+    try {
+      const { checked } = e.target;
+      const _checkedService = [...checkedService];
+      if (checked) {
+        _checkedService.push({ ...serviceObj, checked: true });
+      }
+
+      if (!checked) {
+        const serviceIndex = _checkedService.findIndex(obj => obj.itemId === serviceObj.itemId);
+        _checkedService.splice(serviceIndex, 1);
+      }
+      setCheckedService(_checkedService);
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Handle Select Checked optional Services
+  const handleSelectCheckedServices = () => {
+    try {
+      if (checkedService.length === 0) {
+        throw "Please Select at least One Service."
+      }
+      setSelectedService([...checkedService]);
+      // setOptionalServicesData([...selectedInclusionExclusionServices])
+      setOptionalPopup(false);
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
+
+  // Handle Remove Selected Service 
+  const handleRemoveService = (service) => {
+    const _selectedService = [...selectedService];
+    const _checkedService = [...checkedService];
+
+    // remove from selected
+    const serviceIndex = _selectedService.findIndex(obj => obj.itemId === service.itemId);
+    _selectedService.splice(serviceIndex, 1);
+    setSelectedService(_selectedService);
+
+    // remove from checked list
+    const checkedServiceIndex = _checkedService.findIndex(obj => obj.itemId === service.itemId);
+    _checkedService.splice(checkedServiceIndex, 1);
+    setCheckedService(_checkedService);
+  }
+
+  // toggle Inclusion-Exclusion optional services
+  const handleToggleExclusionService = (e, serviceObj) => {
+    let _selectedService = [...selectedService];
+    let _checkedService = [...checkedService];
+
+    // check-uncheck in selected services
+    _selectedService.forEach(obj => {
+      if (obj.itemId === serviceObj.itemId) {
+        obj.checked = e.target.checked;
+      }
+    });
+    setSelectedService(_selectedService);
+
+    // check -uncheck in checked services
+    _checkedService.forEach(obj => {
+      if (obj.itemId === serviceObj.itemId) {
+        obj.checked = e.target.checked;
+      }
+    });
+    setCheckedService(_checkedService);
+  }
+
+  const handleSelectExclusionItemData = (e, data) => {
+    const _inclusionExclusionService = [...inclusionExclusionService];
+    const selectItemId = _inclusionExclusionService.findIndex((obj => obj.itemId === data.itemId));
+    _inclusionExclusionService[selectItemId]["checked"] = e.target.checked
+    setInclusionExclusionService(_inclusionExclusionService)
   }
 
   const handleSelectOptionalService = (event, serviceName, serviceData) => {
@@ -494,19 +593,14 @@ export function CreatePortfolio(props) {
     if (event.target.checked) {
 
       setSelectedInclusionExclusionServices([...selectedInclusionExclusionServices, serviceName])
-      // setOptionalServicesData([...optionalServicesData, serviceName]);
       _inclusionExclusionService.push(serviceData);
       _inclusionExclusionService.forEach(object => {
         object.checked = false;
       });
       setInclusionExclusionService(_inclusionExclusionService);
     } else {
-      // const _optionalServicesData = [...optionalServicesData];
-      // const x = _optionalServicesData.splice(_optionalServicesData.indexOf(serviceName), 1);
-      // // setOptionalServicesData(_optionalServicesData);
       const _selectedInclusionExclusionServices = [...selectedInclusionExclusionServices];
       const x = _selectedInclusionExclusionServices.splice(_selectedInclusionExclusionServices.indexOf(serviceName), 1);
-      // setOptionalServicesData(_optionalServicesData);
       setSelectedInclusionExclusionServices(_selectedInclusionExclusionServices)
 
       _inclusionExclusionService.splice(_inclusionExclusionService.indexOf(serviceData.itemId), 1)
@@ -543,6 +637,7 @@ export function CreatePortfolio(props) {
     productHierarchy: null,
     geographic: null,
   });
+  
   const [administrative, setAdministrative] = useState({
     preparedBy: null,
     approvedBy: null,
@@ -1424,7 +1519,7 @@ export function CreatePortfolio(props) {
   };
 
   // AddPortfolio Item (Portfolio Item Create)
-  const handlePortfolioItemSaveAndContinue = async (itemData, itemPriceData) => {
+  const handlePortfolioItemSaveAndContinue = async (itemData, itemPriceData, tabsData) => {
     try {
 
       if ((portfolioId == "") ||
@@ -1743,7 +1838,7 @@ export function CreatePortfolio(props) {
       var _itemArrData = [...portfolioItems];
       _itemArrData.push({ itemId: itemRes.data.itemId })
       setPortfolioItems(_itemArrData);
-
+      setTabs(tabsData);
       if (_itemArrData.length > 0) {
         var tempBundleItemsUrl = _itemArrData.map((data, i) =>
           `itemIds=${data.itemId}`
@@ -1819,7 +1914,8 @@ export function CreatePortfolio(props) {
 
         portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
           ? portfolioPriceDataId : null,
-        optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+        // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+        optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
         // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
         //   ? portfolioAdditionalPriceDataId : null,
@@ -5926,7 +6022,8 @@ export function CreatePortfolio(props) {
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
 
-            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
             // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -5997,7 +6094,8 @@ export function CreatePortfolio(props) {
               supportLevel: value3.value,
               status: value2.value,
 
-              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
               // strategyTask: "PREVENTIVE_MAINTENANCE",
               // taskType: "PM1",
@@ -6085,7 +6183,8 @@ export function CreatePortfolio(props) {
 
               portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
                 ? portfolioPriceDataId : null,
-              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
               // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
               //   ? portfolioAdditionalPriceDataId : null,
@@ -6334,7 +6433,8 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -6481,7 +6581,8 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -6660,7 +6761,8 @@ export function CreatePortfolio(props) {
 
                 portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
                   ? portfolioPriceDataId : null,
-                optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+                // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+                optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
                 // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
                 //   ? portfolioAdditionalPriceDataId : null,
                 // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -6843,7 +6945,8 @@ export function CreatePortfolio(props) {
                 portfolioPrice: {
                   portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
                 },
-                optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+                // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+                optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
                 // additionalPrice: null,
                 // escalationPrice: null,
                 // additionalPrice: {
@@ -6987,7 +7090,8 @@ export function CreatePortfolio(props) {
 
               portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
                 ? portfolioPriceDataId : null,
-              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
               // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
               //   ? portfolioAdditionalPriceDataId : null,
               // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -7144,7 +7248,8 @@ export function CreatePortfolio(props) {
               portfolioPrice: {
                 portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
               },
-              optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+              optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
               // additionalPrice: {
               //   additionalPriceId: additionalPrice.data.additionalPriceId,
@@ -7367,7 +7472,8 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -7767,7 +7873,8 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -7913,7 +8020,8 @@ export function CreatePortfolio(props) {
 
             portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
               ? portfolioPriceDataId : null,
-            optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
 
             // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
             //   ? portfolioAdditionalPriceDataId : null,
@@ -8234,14 +8342,18 @@ export function CreatePortfolio(props) {
       coverageViewOnly: true,
     });
 
-    // Optional Services
-    if (result.optionalServices != null) {
-      if (result.optionalServices != "") {
-        let optionalServicesIs = result.optionalServices.split(",");
-        setOptionalServicesData(optionalServicesIs);
-        setSelectedInclusionExclusionServices(optionalServicesIs);
-      }
+    // get Optional Services List
+    if (!(result.optionalServices === null) || (result.optionalServices === "")) {
+      let optionalService = result.optionalServices.split(",");
+      getOptionalServiceData(optionalService);
     }
+    // if (result.optionalServices != null) {
+    //   if (result.optionalServices != "") {
+    //     let optionalServicesIs = result.optionalServices.split(",");
+    //     setOptionalServicesData(optionalServicesIs);
+    //     setSelectedInclusionExclusionServices(optionalServicesIs);
+    //   }
+    // }
 
     // For set Status state 
     var statusVal, statusLabel;
@@ -8587,11 +8699,59 @@ export function CreatePortfolio(props) {
 
 
   }
-  // console.log("generalComponentData ---- : ", generalComponentData)
 
+  // handle get all optional services data
+  const getOptionalServiceData = async (service) => {
+    var serviceDetailsUrl = service.map(data => `itemIds=${data}`).join('&');
+    var rUrl = serviceDetailsUrl + "&bundle_flag=SERVICE";
+    const servicesList = await getServicesDetailsList(rUrl);
+    if (servicesList.status === 200) {
+      let _servicesList = servicesList.data.map(service => { return { ...service, checked: true } })
+      setSelectedService(_servicesList)
+      setCheckedService(_servicesList)
+      // setOptionalServicesData(optionalServicesIs);
+      // setSelectedInclusionExclusionServices(optionalServicesIs);
+    }
+  }
+
+  // Link Portfolio-to-items
+  const handleLinkPortfolioToItem = async () => {
+    try {
+      // var payloadUrl = `portfolio_id=${portfolioId}&portfolio_item_id=${portfolioItemIdIs}&`
+      var rUrl = `portfolio_id=${portfolioId}&portfolio_item_id=${portfolioItemIdIs}&`
+      const _selectedService = [...selectedService];
+
+      if (_selectedService.length === 0) {
+        throw "Please Select optional Service Items First.";
+      }
+
+      if (_selectedService.length > 0) {
+        const checkedData = _selectedService.filter(service => service.checked === true);
+
+        if (checkedData.length === 0) {
+          throw "Please toggle at least one Item";
+        }
+        var tempBundleItemsUrl = checkedData.map(service => `item_id=${service.itemId}`).join('&');
+        rUrl = rUrl + tempBundleItemsUrl;
+
+        const linkPortfolioItems = await linkItemToPortfolio(rUrl)
+      }
+      setShowInclusionExclusionModal(false)
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+  }
 
   const getBundleServiceItemPriceList = async (_itemArrData, itemsArr, portfolioId) => {
-
     if (_itemArrData.length > 0) {
       var tempBundleItemsUrl = _itemArrData.map((data, i) =>
         `itemIds=${data.itemId}`
@@ -8689,82 +8849,7 @@ export function CreatePortfolio(props) {
     setMiscRequired(e.target.checked)
   }
 
-  const handleSelectExclusionItemData = (e, data) => {
-    const _inclusionExclusionService = [...inclusionExclusionService];
 
-    const selectItemId = _inclusionExclusionService.findIndex((obj => obj.itemId === data.itemId));
-    _inclusionExclusionService[selectItemId]["checked"] = e.target.checked
-    setInclusionExclusionService(_inclusionExclusionService)
-  }
-
-  const UpdatePriceInclusionExclusion = async () => {
-    try {
-      var payloadUrl = `portfolio_id=${portfolioId}&portfolio_item_id=${portfolioItemIdIs}&`
-      // item_id=1&portfolio_item_id=1&portfolio_id=1
-      // portfolioItemIdIs
-      const _inclusionExclusionService = [...inclusionExclusionService];
-      if (_inclusionExclusionService.length === 0) {
-        throw "Please Select optional Service Items First"
-      }
-
-      if (_inclusionExclusionService.length > 0) {
-        const checkedData = _inclusionExclusionService.filter(person => person.checked === true);
-        if (checkedData.length === 0) {
-          throw "Please toggle at least one Item";
-        }
-
-        if (checkedData.length > 0) {
-          var tempBundleItemsUrl = checkedData.map((data, i) =>
-            `item_id=${data.itemId}`
-          ).join('&');
-
-          payloadUrl = payloadUrl + tempBundleItemsUrl;
-          const linkPortfolioItems = await linkItemToPortfolio(payloadUrl)
-        }
-      }
-      setShowInclusionExclusionModal(false)
-      // if (editAblePriceData.length > 0) {
-      //   for (let y = 0; y < editAblePriceData.length; y++) {
-      //     var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
-      //     console.log("y is : ", getCustomPriceData);
-
-      //     getCustomPriceData.partsRequired = partsRequired;
-      //     getCustomPriceData.labourRequired = labourRequired;
-      //     getCustomPriceData.serviceRequired = serviceRequired;
-      //     getCustomPriceData.miscRequired = miscRequired;
-
-      //     // console.log("updated y is : ", getCustomPriceData)
-
-      //     var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
-
-      //   }
-
-      //   console.log("editAblePriceData ============== ", editAblePriceData);
-      // }
-
-    } catch (error) {
-
-    }
-    // if (editAblePriceData.length > 0) {
-    //   // console.log("hello")
-    //   for (let y = 0; y < editAblePriceData.length; y++) {
-    //     var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
-    //     console.log("y is : ", getCustomPriceData);
-
-    //     getCustomPriceData.partsRequired = partsRequired;
-    //     getCustomPriceData.labourRequired = labourRequired;
-    //     getCustomPriceData.serviceRequired = serviceRequired;
-    //     getCustomPriceData.miscRequired = miscRequired;
-
-    //     // console.log("updated y is : ", getCustomPriceData)
-
-    //     var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
-
-    //   }
-    // } else {
-    //   console.log("empty");
-    // }
-  }
 
   const getPortfolioDetails = (portfolioId) => {
     if (portfolioId != null) {
@@ -9983,7 +10068,8 @@ export function CreatePortfolio(props) {
 
       portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
         ? portfolioPriceDataId : null,
-      optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+      // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+      optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
       // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
       //   ? portfolioAdditionalPriceDataId : null,
       // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -13255,7 +13341,7 @@ export function CreatePortfolio(props) {
     setEditItemShow(true);
   };
 
-  const getAddPortfolioItemDataFun = async (data) => {
+  const getAddPortfolioItemDataFun = async (data, tabsData) => {
     console.log("my data is: ", data)
     setAddportFolioItem(data);
     setPriceCalculator({
@@ -13452,7 +13538,7 @@ export function CreatePortfolio(props) {
         setItemPriceData(itemPriceDataRes.data)
 
         // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
-        handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
         setTempBundleService1([]);
         setTempBundleService2([]);
         setTempBundleService3([]);
@@ -13474,7 +13560,7 @@ export function CreatePortfolio(props) {
       if (itemPriceDataRes.status === 200) {
         setItemPriceData(itemPriceDataRes.data)
         // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
-        handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
         setTempBundleService1([]);
         setTempBundleService2([]);
         setTempBundleService3([]);
@@ -17041,7 +17127,8 @@ export function CreatePortfolio(props) {
 
         portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
           ? portfolioPriceDataId : null,
-        optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+        // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+        optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
         // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
         //   ? portfolioAdditionalPriceDataId : null,
         // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
@@ -18260,20 +18347,25 @@ export function CreatePortfolio(props) {
                             >
                               OPTIONALS
                             </label>
-                            {/* {optionalServicesData.length === 0 ? */}
-                            <input
-                              // type="text"
+                            {/* <input
+                              type="text"
                               className="cursor form-control border-radius-10 text-primary"
-                              // id="exampleInputEmail1"
+                              id="exampleInputEmail1"
                               onClick={PopupOptionalShow}
-                              placeholder="Click here"
-                            // value={stratgyOptionalsKeyValue}
-                            />
-                            {/* //   :
-                            //   <h6 onClick={PopupOptionalShow} className="font-weight-500 cursor text-uppercase text-primary font-size-17 text-truncate">
-                            //     {optionalServicesData.join(", ")}
-                            //   </h6>
-                            // } */}
+                              placeholder={`${selectedService.length !== 0 ? selectedService.length + "Services Selected" + <VisibilityOutlinedIcon /> : "Add"}`}
+                            value={stratgyOptionalsKeyValue}
+                            /> */}
+                            <div className="optionl-service-input bg-white border-radius-10 d-flex align-items-center justify-content-between">
+                              {selectedService.length !== 0 ?
+                                <>
+                                  <h6 className="text-primary m-0 font-size-17 font-weight-500">{selectedService.length} Services Selected</h6>
+                                  <RemoveRedEyeIcon className="text-primary font-size-30 cursor" onClick={() => setViewSelectedService(true)} />
+                                </> :
+                                <>
+                                  <h6 className="text-primary m-0 font-size-17 font-weight-500">Add Services</h6>
+                                  <AddCircleOutlineIcon className="text-primary font-size-30 cursor" onClick={PopupOptionalShow} />
+                                </>}
+                            </div>
                           </div>
                           {/* <div className="form-group">
                             <label
@@ -18414,6 +18506,12 @@ export function CreatePortfolio(props) {
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            OPTIONALS
+                          </p>
+                          <h6 className="cursor font-weight-500 text-uppercase text-primary font-size-17">{selectedService.length !== 0 ? selectedService.length + " Service Selected" : "No Service Selected"}</h6>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
                             <p className="font-size-12 font-weight-500 mb-2">
                               RESPONSE TIME
@@ -18460,13 +18558,6 @@ export function CreatePortfolio(props) {
                               {/* {stratgyGeographicKeyValue.value} */}
                             </h6>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            OPTIONALS
-                          </p>
-                          <h6 onClick={PopupOptionalShow} className="cursor font-weight-500 text-uppercase text-primary font-size-17">Click here</h6>
-
                         </div>
                       </div>
                     </>}
@@ -22934,39 +23025,14 @@ export function CreatePortfolio(props) {
               <div className="hr"></div>
             </h5>
             <FormGroup>
-              {/* {console.log("optionalServicesData ========   = ", optionalServicesData)} */}
-
-              {inclusionExclusionService.length > 0 &&
-                inclusionExclusionService.map((data, i) => {
-                  return (
-                    <FormControlLabel
-                      control={<Switch />}
-                      checked={data?.checked}
-                      onChange={(e) => handleSelectExclusionItemData(e, data)}
-                      label={data.itemName}
-                    />
-                  )
-                })}
-              {/* {optionalServicesData.length > 0 &&
-                    optionalServicesData.map((data, i) => {
-                      return (
-                        <FormControlLabel
-                          control={<Switch />}
-                          label={data}
-                        />
-                      )
-                    })} */}
-              {/* <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Air Filter Replacement"
-                  />
-                  <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Cabin Air Filter"
-                  />
-                  <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Rotete Tires" /> */}
+              {selectedService.length > 0 && selectedService.map((data, i) => <FormControlLabel
+                control={<Switch />}
+                checked={(data.checked === true ? true : false)}
+                onChange={(e) => handleToggleExclusionService(e, data)}
+                label={data.itemName}
+                key={i}
+              />
+              )}
             </FormGroup>
             <h5 className="d-flex align-items-center mb-0">
               <div className="" style={{ display: "contents" }}>
@@ -23000,214 +23066,14 @@ export function CreatePortfolio(props) {
                   </b>
                 </a>
               </div>
-              {/* <div>
-                    <a className="btn text-violet cursor">
-                      <b>I Have Parts</b>
-                    </a>
-                  </div> */}
             </div>
             <div>
-              <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} ><b>Save Changes</b></button>
+              <button className="btn text-violet mt-2" onClick={handleLinkPortfolioToItem} ><b>Save Changes</b></button>
             </div>
           </div>
         </Modal.Body>
 
       </Modal>
-
-      {/* <div
-        className="modal right fade"
-        id="myModal12"
-        tabIndex="-1"
-        role="dialog"
-        aria-labelledby="myModalLabel2"
-      >
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header d-block">
-              <button
-                type="button"
-                className="close"
-                data-dismiss="modal"
-                aria-label="Close"
-              >
-                <span aria-hidden="true">&times;</span>
-              </button>
-              <h4 className="modal-title" id="myModalLabel2">
-                Inclusion/Exclusion
-              </h4>
-            </div>
-            <div className="modal-body p-0">
-              <div className="bg-light-blue p-3">
-                <h5 className="font-weight-normal text-violet mb-0">
-                  CHOICE OF SPARE PARTS
-                </h5>
-              </div>
-              <div className="bg-white p-3">
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Switch disabled={needOnlyParts} />}
-                    label="With Spare Parts"
-                    onChange={(e) => handleWithSparePartsCheckBox(e, "with")}
-                    checked={partsRequired}
-                  />
-                  <FormControlLabel
-                    control={<Switch disabled={needOnlyParts} />}
-                    onChange={(e) => handleWithSparePartsCheckBox(e, "without")}
-                    label="I have Spare Parts"
-                    checked={!partsRequired && !needOnlyParts}
-                  />
-                  <FormControlLabel
-                    control={<Switch />}
-                    label="I need only Spare Parts"
-                    onChange={(e) => handleNeedOnlySparePartsCheckBox(e)}
-                    checked={needOnlyParts}
-                  />
-                </FormGroup>
-              </div>
-              <div className="bg-light-blue p-3">
-                <h5 className="font-weight-normal text-violet mb-0">
-                  CHOICE OF LABOR
-                </h5>
-              </div>
-              <div className="bg-white p-3">
-                <div className=" d-flex justify-content-between ">
-                  <div>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Switch disabled={needOnlyParts} />}
-                        label="With Labor"
-                        onChange={(e) => handleWithLabourCheckBox(e)}
-                        checked={labourRequired}
-
-                      />
-                      <FormControlLabel
-                        control={<Switch disabled />}
-                        label="Without Labor"
-                      />
-                    </FormGroup>
-                  </div>
-                  <div>
-                    <a className="ml-3 font-size-14 cursor">
-                      <img src={deleteIcon}></img>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-light-blue p-3">
-                <h5 className="font-weight-normal text-violet mb-0">
-                  CHOICE MISC.
-                </h5>
-              </div>
-              <div className="bg-white p-3">
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Switch disabled />}
-                    label=" Lubricants" />
-                  <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Travel Expenses"
-                  />
-                  <FormControlLabel
-                    control={<Switch disabled />}
-                    label="Tools" />
-                  <FormControlLabel
-                    control={<Switch disabled={needOnlyParts} />}
-                    label="External Work"
-                    onChange={(e) => handleWithMiscCheckBox(e)}
-                    checked={miscRequired}
-                  />
-                </FormGroup>
-                <h5 className="d-flex align-items-center mb-0">
-                  <div className="" style={{ display: "contents" }}>
-                    <span className="mr-3 white-space">Includes</span>
-                  </div>
-                  <div className="hr"></div>
-                </h5>
-              </div>
-              <div className="bg-light-blue p-3">
-                <h5 className="font-weight-normal text-violet mb-0">
-                  SERVICES
-                </h5>
-              </div>
-              <div className="bg-white p-3">
-                <div className=" d-flex justify-content-between align-items-center">
-                  <div>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Switch disabled={needOnlyParts} />}
-                        label=" Changee Oil and Filter"
-                        onChange={(e) => handleWithServiceCheckBox(e)}
-                        checked={serviceRequired}
-                      />
-                    </FormGroup>
-                  </div>
-                  <div>
-                    <a className="ml-3 font-size-14 cursor">
-                      <img src={deleteIcon}></img>
-                    </a>
-                  </div>
-                </div>
-                <h5 className="d-flex align-items-center mb-0">
-                  <div className="" style={{ display: "contents" }}>
-                    <span className="mr-3 white-space">Optianal services</span>
-                  </div>
-                  <div className="hr"></div>
-                </h5>
-                <FormGroup>
-                {inclusionExclusionService.length > 0 &&
-                    inclusionExclusionService.map((data, i) => {
-                      return (
-                        <FormControlLabel
-                          control={<Switch />}
-                          checked={data?.checked}
-                          onChange={(e) => handleSelectExclusionItemData(e, data)}
-                          label={data.itemName}
-                        />
-                      )
-                    })}
-                 
-                </FormGroup>
-                <h5 className="d-flex align-items-center mb-0">
-                  <div className="" style={{ display: "contents" }}>
-                    <span className="mr-3 white-space">Includes</span>
-                  </div>
-                  <div className="hr"></div>
-                </h5>
-                <div className="mt-3">
-                  <h6>
-                    <a className="btn-sm text-white mr-2 cursor"
-                      style={{ background: "#79CBA2" }}
-                    >
-                      Free
-                    </a>{" "}
-                    50 Point Inspection
-                  </h6>
-                  <h6 className="mt-3">
-                    <a className="btn-sm text-white mr-2 cursor"
-                      style={{ background: "#79CBA2" }}
-                    >
-                      Free
-                    </a>{" "}
-                    50 Point Inspection
-                  </h6>
-                </div>
-                <div className=" d-flex justify-content-between mt-4">
-                  <div>
-                    <a href={undefined} className="btn text-violet bg-light-blue" onClick={PopupOptionalShow}>
-                      <b>
-                        <span className="mr-2">+</span>Add more services
-                      </b>
-                    </a>
-                  </div>
-                </div>
-                <div>
-                  <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} ><b>Save Changes</b></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
 
       <Modal
         size="xl"
@@ -26428,14 +26294,15 @@ export function CreatePortfolio(props) {
                     <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button> */}
         </Modal.Footer>
       </Modal>
+
+      {/* Optional Service Modal View */}
       <Modal show={optionalPopup} onHide={() => setOptionalPopup(false)} size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered>
         <Modal.Header className="border-none d-flex justify-content-between align-items-center align-items-center">
-          {/* <Modal.Title> */}
           <h4><b>Select Optional Services</b></h4>
-          <button className="btn btn-primary mr-2" onClick={handleAddSelectOptionalServices} disabled={selectedInclusionExclusionServices.length === 0}> + Add Selected</button>
-          {/* </Modal.Title> */}
+          {/* <button className="btn btn-primary mr-2" onClick={handleAddSelectOptionalServices} disabled={selectedInclusionExclusionServices.length === 0}> + Add Selected</button> */}
+          <button className="btn btn-primary mr-2" onClick={handleSelectCheckedServices} disabled={checkedService.length === 0}> + Add Selected</button>
         </Modal.Header>
         <Modal.Body>
           {optionalServiceListLoading ?
@@ -26444,54 +26311,48 @@ export function CreatePortfolio(props) {
             </div>
             :
             <>
-              {/* <div className="card">
-                <div className="card-body"></div>
-              </div> */}
               <div className=' p-2'>
                 <div className="row">
                   {
-                    optionalServiceListData.message === undefined ?
-                      <>
-                        {optionalServiceListData?.data.map((serviceData, i) =>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="card p-4">
-                              <div className="d-flex align-items-center ">
-                                <div class="checkbox mr-3">
-                                  <input
-                                    type="checkbox"
-                                    value=""
-                                    // checked={optionalServicesData.includes(serviceData.itemName)}
-                                    checked={selectedInclusionExclusionServices.includes(serviceData.itemName)}
-                                    onChange={(e) => handleSelectOptionalService(e, serviceData.itemName, serviceData)}
-                                  />
-                                </div>
-                                <div className="mt-1">
-                                  <p className="mb-0 font-size-16 text-black">
-                                    <b>{serviceData.itemName}</b>
-                                  </p>
-                                  <p className=" mt-1 mb-0 font-size-14">
-                                    {serviceData.itemHeaderDescription}
-                                  </p>
-                                </div>
+                    <>
+                      {optionalServiceListData.data.length !== 0 && optionalServiceListData?.data.map((serviceData, i) =>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="card p-4">
+                            <div className="d-flex align-items-center ">
+                              <div class="checkbox mr-3">
+                                <input
+                                  type="checkbox"
+                                  id={serviceData.itemName + "-" + i}
+                                  // checked={selectedInclusionExclusionServices.includes(serviceData.itemName)}
+                                  // onChange={(e) => handleSelectOptionalService(e, serviceData.itemName, serviceData)}
+                                  checked={checkedService.some(obj => obj.itemName === serviceData.itemName)}
+                                  onChange={(e) => handleCheckUncheckService(e, serviceData)}
+                                />
+                              </div>
+                              <div className="mt-1">
+                                <p className="mb-0 font-size-16 text-black">
+                                  <b>{serviceData.itemName}</b>
+                                </p>
+                                <p className=" mt-1 mb-0 font-size-14">
+                                  {serviceData.itemHeaderDescription}
+                                </p>
                               </div>
                             </div>
                           </div>
-                        )}
-                        <Pagination
-                          count={optionalServiceListData.totalPages}
-                          page={optionalServiceCurrentPage}
-                          onChange={handleOptionalServicePageClick}
-                          shape="rounded"
-                          hidePrevButton
-                          hideNextButton
-                          size="large"
-                          // color="#872ff7"
-                          className="optional-services-pagination"
-                        />
-                      </>
-                      :
-                      <>
-                      </>
+                        </div>
+                      )}
+                      <Pagination
+                        count={optionalServiceListData.totalPages}
+                        page={optionalServiceCurrentPage}
+                        onChange={handleOptionalServicePageClick}
+                        shape="rounded"
+                        hidePrevButton
+                        hideNextButton
+                        size="large"
+                        // color="#872ff7"
+                        className="optional-services-pagination"
+                      />
+                    </>
                   }
                 </div>
                 {/* <p className="mb-0 font-size-14 text-black"><b>AIR FILTER REPLACEMENT</b></p> */}
@@ -26512,6 +26373,23 @@ export function CreatePortfolio(props) {
           </Button>
         </Modal.Footer> */}
       </Modal >
+
+      {/* Selected Optional Service */}
+      <Modal show={viewSelectedService} onHide={() => setViewSelectedService(false)} size="md" centered={true}>
+        <div className="p-3 bg-light-blue">
+          <h6 className="m-0 font-weight-600">Selected Optional Services</h6>
+        </div>
+        <div className="bg-white p-3 select-services-scroll">
+          {selectedService.length !== 0 && selectedService.map((service, i) => <div key={i} className="d-flex align-items-center mt-2 justify-content-between selected-services border-radius-10">
+            <p className="m-0">{service.itemName}</p>
+            <CancelOutlinedIcon className="text-primary cursor" onClick={() => handleRemoveService(service)} />
+          </div>)}
+        </div>
+        <Modal.Footer className="justify-content-between">
+          <Button variant="primary" onClick={() => setViewSelectedService(false)}> Cancel</Button>
+          <Button variant="primary" onClick={PopupOptionalShow}>Add More +</Button>
+        </Modal.Footer>
+      </Modal>
 
       <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
         <div class="modal-dialog" role="document">
