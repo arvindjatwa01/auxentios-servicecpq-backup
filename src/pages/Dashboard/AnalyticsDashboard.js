@@ -258,17 +258,14 @@ export const AnalyticsDashboard = () => {
                   (quote) =>
                     quote.status !== "Total Sales" && (
                       <>
-                        <div style={{ display: "flex" }}>
+                        <div style={{ display: "flex", marginInline: 15 }}>
                           <Typography
                             variant="caption"
-                            sx={{ ml: 2, flexGrow: 1 }}
+                            sx={{ flexGrow: 1 }}
                           >
                             {quote.status}
                           </Typography>
-                          <Typography
-                            variant="body1"
-                            sx={{ mr: 2, fontWeight: 600 }}
-                          >
+                          <Typography style={{ fontSize: 15, fontWeight: 600 }}>
                             {quote.quantity}
                           </Typography>
                         </div>

@@ -847,9 +847,14 @@ nav.main-menu li.hover>a span {
 
 }
 
-.main-menu li>a.active {
+.main-menu>ul>li>a.active {
   color: #872ff7;
   background-color: #f3eafe;
+}
+
+.main-menu>ul>li>ul>li>a.active {
+  color: #872ff7;
+  background-color: #E7D5FD;
 }
 
 .main-menu li>a.active svg {
@@ -917,10 +922,17 @@ nav li {
   padding: 0;
 }
 
-.main-menu li:hover>a,
-nav.main-menu li.active>a {
+.main-menu>ul>li:hover>a,
+nav.main-menu>ul>li.active>a {
   color: #872ff7;
   background-color: #f3eafe;
+  margin: 4px 0;
+}
+
+.main-menu>ul>li>ul>li:hover>a,
+nav.main-menu>ul>li>ul>li.active>a {
+  color: #872ff7;
+  background-color: #E7D5FD;
   margin: 4px 0;
 }
 
