@@ -742,7 +742,7 @@ button:focus {
 
 .main-menu:hover,
 nav.main-menu.expanded {
-  width: 288px;
+  width: 265px;
   overflow: visible;
 }
 
@@ -769,7 +769,7 @@ nav.main-menu.expanded {
 .main-menu li {
   position: relative;
   display: block;
-  width: 285px;
+  width: 265px;
 }
 
 .main-menu li:hover>a,
@@ -877,7 +877,7 @@ nav.main-menu li.hover>a span {
   position: relative;
   display: table-cell;
   vertical-align: middle;
-  width: 190px;
+  width: 170px;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
 }
 
@@ -1096,7 +1096,7 @@ nav.main-menu li.active>a {
   position: relative;
   display: table-cell;
   width: 60px;
-  height: 40px;
+  height: 25px;
   text-align: center;
   vertical-align: middle;
   font-size: 20px;

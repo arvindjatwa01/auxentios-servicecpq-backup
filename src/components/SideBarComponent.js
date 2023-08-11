@@ -591,7 +591,9 @@ export function SideBarComponent(props) {
                   id="Layer_1"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 37 27.3"
-                  className="width-24"
+                  // className="width-24"
+                  height={12}
+                  width={12}
                 >
                   <g>
                     <g>
@@ -621,7 +623,7 @@ export function SideBarComponent(props) {
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Home
                   </span>
                 </span>
@@ -639,6 +641,8 @@ export function SideBarComponent(props) {
                   id="uuid-c05174b0-733e-42a0-8a41-26f820ee4aba"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 107.79136 107.79136"
+                  height={13}
+                  width={13}
                 >
                   <path
                     className="uuid-aedeb60b-b298-4c08-abdd-280bb25795c7"
@@ -648,7 +652,7 @@ export function SideBarComponent(props) {
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Analytics
                   </span>
                 </span>
@@ -667,6 +671,8 @@ export function SideBarComponent(props) {
                   id="Layer_1"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 37 39.6"
+                  height={13}
+                  width={13}
                 >
                   <path
                     className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
@@ -674,14 +680,12 @@ export function SideBarComponent(props) {
             C10.6,37.2,8.2,39.6,5.3,39.6z M5.3,21c-1.5,0-2.8,1.3-2.8,2.8v10.4c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8V23.8
             C8.1,22.3,6.8,21,5.3,21z"
                   />
-
                   <path
                     className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
                     d="M18.5,39.6c-2.9,0-5.3-2.4-5.3-5.3v-29c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v29
             C23.8,37.2,21.4,39.6,18.5,39.6z M18.5,2.5c-1.5,0-2.8,1.3-2.8,2.8v29c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8v-29
             C21.3,3.8,20,2.5,18.5,2.5z"
                   />
-
                   <path
                     className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
                     d="M31.7,39.6c-2.9,0-5.3-2.4-5.3-5.3V16.6c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v17.6
@@ -692,7 +696,7 @@ export function SideBarComponent(props) {
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Insights
                   </span>
                 </span>
@@ -710,6 +714,8 @@ export function SideBarComponent(props) {
                   id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 88.43799 91.96899"
+                  height={13}
+                  width={13}
                 >
                   <path
                     className="uuid-0a55bafd-419d-477c-878d-be91a3e45155"
@@ -731,7 +737,7 @@ export function SideBarComponent(props) {
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Overview
                   </span>
                 </span>
@@ -750,6 +756,8 @@ export function SideBarComponent(props) {
                       id="uuid-80f962bf-0984-4652-b8d6-016aa47e6fca"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 115.09342 118.44688"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-6dddf708-4d26-4520-b06c-bac58072bbf4"
@@ -767,7 +775,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Dashboard
                       </span>
                     </span>
@@ -785,6 +793,8 @@ export function SideBarComponent(props) {
                       id="uuid-2339a07b-c6d4-4b85-897c-b6ee6a6101ee"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 110.29999 145.5706"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-e32578ab-2aa2-47d9-8df4-2b8a18d4a5e3"
@@ -806,7 +816,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Reports
                       </span>
                     </span>
@@ -827,6 +837,8 @@ export function SideBarComponent(props) {
                   id="uuid-0b37c72c-fd44-4acc-9628-08cba1263678"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 94.25342 91.96899"
+                  height={13}
+                  width={13}
                 >
                   <path
                     className="uuid-69931b71-db43-4993-b706-df8786023ed7"
@@ -844,7 +856,7 @@ export function SideBarComponent(props) {
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Build
                   </span>
                 </span>
@@ -871,7 +883,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Repair and Parts
                       </span>
                     </span>
@@ -913,7 +925,7 @@ export function SideBarComponent(props) {
                           className="ml-2 "
                           style={{ display: "inline-grid" }}
                         >
-                          <span className="font-size-13 font-weight-600 text-dark">
+                          <span className="font-size-13 font-weight-400 text-dark">
                             Repair Options
                           </span>
                         </span>
@@ -931,6 +943,8 @@ export function SideBarComponent(props) {
                       id="uuid-7dbd4a75-0a07-4ebd-ae99-a9c37850cf3f"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 112.19978 112.19978"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-094be2a2-bdd0-48f2-946c-8c4d79ac75bb"
@@ -975,7 +989,7 @@ export function SideBarComponent(props) {
                       className="ml-2 "
                       style={{ display: "inline-grid" }}
                     >
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Repair Option
                       </span>
                     </span>
@@ -993,6 +1007,8 @@ export function SideBarComponent(props) {
                       id="uuid-f3f687df-4645-4e7f-87f1-5ccb3e8264e2"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 112.19978 112.19978"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c"
@@ -1037,7 +1053,7 @@ export function SideBarComponent(props) {
                       className="ml-2 "
                       style={{ display: "inline-grid" }}
                     >
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Service Estimate
                       </span>
                     </span>
@@ -1058,6 +1074,8 @@ export function SideBarComponent(props) {
                       id="uuid-ae0f5633-9fa9-459c-9052-9dfe57b47331"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 107.9045 107.90369"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-ee13792e-286e-4dc4-8c1d-5f54ef7c9559"
@@ -1094,7 +1112,7 @@ export function SideBarComponent(props) {
                       className="ml-2 "
                       style={{ display: "inline-grid" }}
                     >
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Part Lists
                       </span>
                     </span>
@@ -1145,7 +1163,7 @@ export function SideBarComponent(props) {
                           className="ml-2 "
                           style={{ display: "inline-grid" }}
                         >
-                          <span className="font-size-13 font-weight-600 text-dark">
+                          <span className="font-size-13 font-weight-400 text-dark">
                             Templates
                           </span>
                         </span>
@@ -1164,6 +1182,8 @@ export function SideBarComponent(props) {
                       id="uuid-71879914-eb74-479f-b04a-3a9b28cfee15"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 124.97439 124.67789"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
@@ -1184,7 +1204,7 @@ export function SideBarComponent(props) {
                       className="ml-2 "
                       style={{ display: "inline-grid" }}
                     >
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Templates
                       </span>
                     </span>
@@ -1203,6 +1223,8 @@ export function SideBarComponent(props) {
                       id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 108.98463 118.98497"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
@@ -1227,7 +1249,7 @@ export function SideBarComponent(props) {
                       className="ml-2 "
                       style={{ display: "inline-grid" }}
                     >
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Kits
                       </span>
                     </span>
@@ -1270,7 +1292,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Solution
                       </span>
                     </span>
@@ -1284,6 +1306,8 @@ export function SideBarComponent(props) {
                       id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 119.30736 133.59966"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
@@ -1296,7 +1320,7 @@ export function SideBarComponent(props) {
                       className="ml-2 "
                       style={{ display: "inline-grid" }}
                     >
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Portfolio and Bundles
                       </span>
                     </span>
@@ -1315,6 +1339,8 @@ export function SideBarComponent(props) {
                       id="uuid-adbb1b3a-fca6-467b-8c3d-db09204755c3"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 81.62979 116.87821"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-322628f2-10a6-44ac-aa71-55f4711f8daf"
@@ -1331,8 +1357,8 @@ export function SideBarComponent(props) {
                       className="ml-2 "
                       style={{ display: "inline-grid" }}
                     >
-                      <span className="font-size-13 font-weight-600 text-dark">
-                        Solution Builder
+                      <span className="font-size-13 font-weight-400 text-dark">
+                        Solutions
                       </span>
                     </span>
                   </span>
@@ -1342,7 +1368,7 @@ export function SideBarComponent(props) {
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
-                        <span className="font-size-13 font-weight-600 text-dark">Reports Dashboard</span>
+                        <span className="font-size-13 font-weight-400 text-dark">Reports Dashboard</span>
                       </span>
                     </span>
                   </a>
@@ -1363,6 +1389,8 @@ export function SideBarComponent(props) {
                   id="uuid-44f21729-ee7f-4ae1-a13f-50d052182172"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 80.7229 111.22266"
+                  height={13}
+                  width={13}
                 >
                   <path
                     className="uuid-fb12aa24-59f9-42ce-94c6-88f0d5606902"
@@ -1388,7 +1416,7 @@ export function SideBarComponent(props) {
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Quote
                   </span>
                 </span>
@@ -1402,6 +1430,8 @@ export function SideBarComponent(props) {
                       id="uuid-e1f64c88-ce49-4df1-a848-c28d42dd73fb"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 125.60411 105.11994"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-ca01be9e-9dab-4294-845e-2b0def34245b"
@@ -1415,7 +1445,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Solution Quote
                       </span>
                     </span>
@@ -1429,6 +1459,8 @@ export function SideBarComponent(props) {
                       id="uuid-ca4af1ef-6b2a-43ba-b263-14c9653fee82"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 129.35077 128.95926"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-272d570e-c4ca-4b12-a836-c20f74794781"
@@ -1446,7 +1478,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Repair Quote
                       </span>
                     </span>
@@ -1460,6 +1492,8 @@ export function SideBarComponent(props) {
                       id="uuid-fff7022f-e3d4-42a4-9d61-a33e4511768e"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 143.57476 126.95366"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-4208680f-df00-457f-87d6-d89dccaaeaab"
@@ -1509,7 +1543,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Spare Parts Quote
                       </span>
                     </span>
@@ -1529,6 +1563,8 @@ export function SideBarComponent(props) {
                   id="uuid-9ce0e2a9-dce3-4e3c-9203-296e2dedc338"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 88.73024 106.83911"
+                  height={14}
+                  width={14}
                 >
                   <path
                     className="uuid-eb24abed-0470-43cd-88a6-7d59d606a7f0"
@@ -1542,7 +1578,7 @@ export function SideBarComponent(props) {
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Price
                   </span>
                 </span>
@@ -1556,6 +1592,8 @@ export function SideBarComponent(props) {
                       id="uuid-a5522de4-b158-4b69-af44-ca862042c87a"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 134.19385 134.19303"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-ac280b54-7eaa-476b-be59-35cdcfb4422d"
@@ -1569,7 +1607,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Price setting
                       </span>
                     </span>
@@ -1580,7 +1618,7 @@ export function SideBarComponent(props) {
                          <span className="span-icon"><svg id="uuid-3337f03f-ae30-46ad-aa89-7f955beb1314" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.58682 129.58764"><path className="uuid-fa759d65-7e4f-40c6-bbf4-39ebb38c6b83" d="M110.60941,18.97823C98.37137,6.74117,82.0994-.00004,64.793-.00004S31.21464,6.73946,18.97757,18.97823C6.73954,31.21553,.00004,47.48653,.00004,64.79293s6.7395,33.57935,18.97754,45.81641c12.23706,12.23877,28.5083,18.97827,45.81543,18.97827s33.57837-6.7395,45.81641-18.97827c12.23779-12.23706,18.97754-28.51001,18.97754-45.81641s-6.73975-33.57739-18.97754-45.8147Zm10.47534,41.65332c-.01465-.00024-.02808-.00439-.04297-.00439h-13.19116c-.80103-8.35474-4.02197-16.5166-9.65381-23.34473l9.31689-9.31641c.0105-.01025,.01709-.02295,.02734-.0332,7.95703,9.19971,12.66504,20.56592,13.5437,32.69873ZM37.27884,98.20137c6.66553,5.50977,14.7373,8.85303,23.34668,9.67017v13.17114c0,.01465,.00415,.02808,.00439,.04272-12.13135-.87915-23.49683-5.5874-32.69653-13.54321,.0105-.0105,.02319-.01709,.03345-.02759l9.31201-9.31323Zm31.68164,22.84131v-13.17114c8.60938-.81714,16.6814-4.1604,23.34668-9.67017l9.31274,9.31323c.0105,.0105,.02295,.01709,.03345,.02734-9.2002,7.9563-20.56543,12.66431-32.69727,13.54346,.00024-.01465,.00439-.02808,.00439-.04272Zm20.54102-31.53955c-13.62476,13.62256-35.79468,13.62427-49.41626,0-13.62427-13.62549-13.62427-35.79297-.00073-49.4187,6.81201-6.81128,15.76074-10.21851,24.7085-10.21851s17.89648,3.40723,24.70776,10.21851c13.62427,13.62573,13.62427,35.79321,.00073,49.4187Zm2.80542-58.11719c-6.66528-5.50952-14.73706-8.85254-23.34644-9.66992V8.54512c0-.01465-.00415-.02832-.00439-.04297,12.13184,.87939,23.49731,5.5874,32.69775,13.54395-.0105,.01001-.02295,.0166-.0332,.02686l-9.31372,9.31299ZM60.62552,8.54512v13.1709c-8.60938,.81738-16.68091,4.1604-23.34644,9.66992l-9.31299-9.31299c-.01025-.01025-.02271-.01685-.0332-.0271,9.19995-7.9563,20.56567-12.66431,32.69702-13.5437-.00024,.01465-.00439,.02832-.00439,.04297ZM22.04593,27.93282c.01025,.01025,.0166,.02295,.0271,.0332l9.31641,9.31641c-5.63208,6.82812-8.85303,14.98999-9.65405,23.34473H8.54423c-.0144,0-.02759,.00415-.04199,.00415,.87866-12.13257,5.58667-23.49878,13.5437-32.69849Zm-13.54346,41.02515c.01416,0,.02734,.00415,.04175,.00415h13.19116c.80127,8.35376,4.02197,16.51465,9.65308,23.3418l-9.31616,9.31763c-.01025,.01001-.0166,.02246-.02686,.03271-7.95581-9.19995-12.66357-20.56494-13.54297-32.69629Zm99.03882,32.69629c-.01001-.01025-.0166-.02271-.02661-.03271l-9.31689-9.31763c5.63086-6.82739,8.85156-14.98828,9.65283-23.3418h13.19116c.01465,0,.02808-.00415,.04272-.00439-.87939,12.13159-5.58716,23.49658-13.54321,32.69653Z"/><path className="uuid-fa759d65-7e4f-40c6-bbf4-39ebb38c6b83" d="M70.36942,60.97383h-1.40894v-9.22705h5.6001c2.30176,0,4.16748-1.86548,4.16748-4.16748,0-2.30176-1.86572-4.16748-4.16748-4.16748h-5.6001v-5.83447c0-2.30176-1.86572-4.16748-4.16748-4.16748s-4.16748,1.86572-4.16748,4.16748v5.83447h-1.40894c-7.14014,0-12.94849,5.80859-12.94849,12.94849s5.80835,12.94849,12.94849,12.94849h1.40894v9.22876h-8.62061c-2.302,0-4.16748,1.86548-4.16748,4.16748s1.86548,4.16748,4.16748,4.16748h8.62061v5.1377c0,2.302,1.86572,4.16748,4.16748,4.16748s4.16748-1.86548,4.16748-4.16748v-5.1377h1.40894c7.14014,0,12.94849-5.80835,12.94849-12.94849s-5.80835-12.9502-12.94849-12.9502Zm-15.76636-4.61353c0-2.54443,2.06982-4.61353,4.61353-4.61353h1.40894v9.22705h-1.40894c-2.5437,0-4.61353-2.06909-4.61353-4.61353Zm15.76636,22.17725h-1.40894v-9.22876h1.40894c2.5437,0,4.61353,2.0708,4.61353,4.61523s-2.06982,4.61353-4.61353,4.61353Z"/></svg></span>
                         <span className="nav-text">
                         <span className="ml-2 " style={{display:'inline-grid'}}>
-                            <span className="font-size-13 font-weight-600 text-dark">Configuration</span>
+                            <span className="font-size-13 font-weight-400 text-dark">Configuration</span>
                         </span>
                         </span>
                         </Link>
@@ -1592,6 +1630,8 @@ export function SideBarComponent(props) {
                       id="uuid-de246da4-4706-4310-b3d5-ffa9f8d22cd2"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 118.97439 128.67789"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
@@ -1609,7 +1649,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Maintenace
                       </span>
                     </span>
@@ -1623,6 +1663,8 @@ export function SideBarComponent(props) {
                       id="uuid-123364d5-ff3a-4fe6-9baa-8783f1001abc"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 106.47681 131.57696"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-54238ec0-141f-4fe0-b5dd-ff9ae01b5add"
@@ -1652,7 +1694,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Computation
                       </span>
                     </span>
@@ -1669,13 +1711,15 @@ export function SideBarComponent(props) {
               aria-expanded="false"
             >
               <span className="span-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90" 
+                height={13}
+                width={13}>
                   <path d="M37.801.799c-.92.745-2.167 2.224-2.63 3.119-.487.942-.886 2.487-1.01 3.909-.221 2.546-.661 3.09-3.405 4.211-2.522 1.03-3.404.917-5.219-.672-3.099-2.71-7.434-3.186-11.171-1.227-1.526.801-3.426 2.701-4.227 4.227-1.961 3.741-1.488 8.031 1.233 11.171 1.583 1.827 1.694 2.701.666 5.219-1.121 2.744-1.665 3.184-4.211 3.405-1.422.124-2.967.523-3.909 1.01-.913.472-2.384 1.721-3.127 2.655L0 38.819v10.722l.791.993c.743.934 2.214 2.183 3.127 2.655.942.487 2.487.886 3.909 1.01 2.546.221 3.09.661 4.211 3.405 1.03 2.522.917 3.404-.672 5.219-2.71 3.099-3.186 7.434-1.227 11.171.801 1.526 2.701 3.426 4.227 4.227 3.741 1.961 8.031 1.488 11.171-1.233 1.827-1.583 2.701-1.694 5.219-.666 2.748 1.123 3.184 1.663 3.407 4.226.079.913.291 1.991.523 2.658 1.003 2.883 3.549 5.273 6.596 6.193 1.313.396 4.483.396 5.796 0 3.047-.92 5.593-3.31 6.596-6.193.232-.667.444-1.745.523-2.658.223-2.563.659-3.103 3.407-4.226 2.518-1.028 3.392-.917 5.219.666 3.14 2.721 7.43 3.194 11.171 1.233 1.526-.801 3.426-2.701 4.227-4.227 1.961-3.741 1.488-8.031-1.233-11.171-1.583-1.827-1.694-2.701-.666-5.219 1.121-2.744 1.665-3.184 4.211-3.405 1.616-.141 3.108-.561 4.162-1.173a10.399 10.399 0 0 0 4.704-5.954c.396-1.305.396-4.477 0-5.79-.92-3.047-3.31-5.593-6.193-6.596-.667-.232-1.745-.444-2.658-.523-2.563-.223-3.103-.659-4.226-3.407-1.03-2.522-.917-3.404.672-5.219 2.71-3.099 3.186-7.434 1.227-11.171-.801-1.526-2.701-3.426-4.227-4.227-3.741-1.961-8.031-1.488-11.171 1.233-1.827 1.583-2.701 1.694-5.219.666-2.744-1.121-3.184-1.665-3.405-4.211-.124-1.422-.523-2.967-1.01-3.909-.472-.913-1.721-2.384-2.655-3.127L49.541 0l-5.383.006-5.383.006-.974.787m8.117 4.732c1.029.539 1.659 1.562 1.78 2.889.181 1.996.42 2.94 1.103 4.359.734 1.522 1.895 2.886 3.212 3.773.916.617 4.66 2.205 5.872 2.491 2.842.67 6.202-.191 8.542-2.189 1.401-1.197 1.857-1.392 3.072-1.315.788.051 1.133.161 1.659.531 1.072.753 1.588 1.62 1.663 2.791.077 1.215-.118 1.671-1.315 3.072-1.998 2.34-2.859 5.7-2.189 8.542.286 1.212 1.874 4.956 2.491 5.872 1.721 2.555 4.399 3.977 8.132 4.315 2.051.187 3.25 1.484 3.25 3.518s-1.199 3.331-3.25 3.518c-1.996.181-2.94.42-4.359 1.103-1.522.734-2.886 1.895-3.773 3.212-.617.916-2.205 4.66-2.491 5.872-.67 2.842.191 6.202 2.189 8.542 1.197 1.401 1.392 1.857 1.315 3.072-.075 1.171-.591 2.038-1.663 2.791-.526.37-.871.48-1.659.531-1.215.077-1.671-.118-3.072-1.315-2.34-1.998-5.7-2.859-8.542-2.189-1.212.286-4.956 1.874-5.872 2.491-2.555 1.721-3.977 4.399-4.315 8.132-.187 2.051-1.484 3.25-3.518 3.25s-3.331-1.199-3.518-3.25c-.181-1.996-.42-2.94-1.103-4.359-.734-1.522-1.895-2.886-3.212-3.773-.916-.617-4.66-2.205-5.872-2.491-2.842-.67-6.202.191-8.542 2.189-1.401 1.197-1.857 1.392-3.072 1.315-.788-.051-1.133-.161-1.659-.531-1.072-.753-1.588-1.62-1.663-2.791-.077-1.211.118-1.669 1.298-3.057 2.016-2.371 2.877-5.711 2.206-8.557-.286-1.212-1.874-4.956-2.491-5.872-1.721-2.555-4.399-3.977-8.132-4.315-1.331-.121-2.347-.75-2.9-1.795-.319-.601-.366-.881-.322-1.906.045-1.04.116-1.293.527-1.879.634-.902 1.463-1.345 2.73-1.459 1.956-.177 2.911-.42 4.324-1.1 1.522-.734 2.886-1.895 3.773-3.212.617-.916 2.205-4.66 2.491-5.872.67-2.842-.191-6.202-2.189-8.542-1.197-1.401-1.392-1.857-1.315-3.072.075-1.171.591-2.038 1.663-2.791.526-.37.871-.48 1.659-.531 1.215-.077 1.671.118 3.072 1.315 2.34 1.998 5.7 2.859 8.542 2.189 1.212-.286 4.956-1.874 5.872-2.491 1.665-1.121 3.134-3.107 3.825-5.17.14-.417.327-1.467.416-2.332.182-1.775.502-2.561 1.284-3.158.751-.573 1.169-.701 2.323-.712.788-.008 1.196.076 1.723.351m-5.669 16.727c-1.166.124-3.363.613-4.294.957-.733.27-5.788 2.365-5.868 2.431-.039.033 3.216 3.353 7.235 7.378 4.24 4.247 7.318 7.449 7.335 7.631.068.733-.074.971-1.378 2.311-1.385 1.425-2.138 1.918-2.654 1.74-.156-.053-3.576-3.38-7.601-7.394-4.025-4.013-7.345-7.264-7.378-7.225-.062.075-2.132 5.064-2.435 5.868-.36.958-.81 3.183-.974 4.818-.458 4.556.942 9.628 3.75 13.59 1.01 1.424 3.301 3.674 4.856 4.766 2.58 1.815 5.676 3.11 8.68 3.634 2.055.359 5.283.223 7.399-.311l1.566-.395 2.585 2.561c1.422 1.409 2.811 2.674 3.087 2.811 1.404.702 3.433-.262 4.262-2.024.685-1.457.335-2.248-2.11-4.765-1.009-1.039-1.769-1.89-1.688-1.89.24 0 2.931-2.579 3.582-3.432l.6-.787 1.862 1.808c2.392 2.323 3.237 2.728 4.546 2.182 1.318-.551 2.466-2.03 2.466-3.178 0-.375-.113-.908-.251-1.183-.137-.276-1.421-1.681-2.853-3.121l-2.602-2.62.267-1.297c.529-2.564.658-4.384.454-6.362-.508-4.924-2.243-8.796-5.508-12.29-2.579-2.759-5.971-4.743-9.705-5.675-2.55-.637-4.753-.8-7.233-.537m6.032 6.961c4.588 1.329 8.011 4.75 9.44 9.431.379 1.242.421 1.619.421 3.807 0 2.188-.042 2.564-.421 3.806-1.227 4.022-3.938 7.128-7.829 8.972-2.558 1.211-5.843 1.546-8.466.863-4.599-1.197-8.477-4.747-9.985-9.142-.613-1.787-1.01-4.499-.658-4.499.063 0 1.808 1.684 3.878 3.743 2.683 2.668 3.989 3.856 4.547 4.134 2.41 1.203 5.232 1.201 7.509-.005 1.066-.565 5.047-4.546 5.612-5.612 1.206-2.279 1.208-5.108.003-7.509-.278-.554-1.521-1.922-4.252-4.68l-3.858-3.897 1.351.097c.743.054 1.962.274 2.708.491" />
                 </svg>
               </span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-13 font-weight-600 text-dark">
+                  <span className="font-size-13 font-weight-400 text-dark">
                     Master Data
                   </span>
                 </span>
@@ -1686,7 +1730,9 @@ export function SideBarComponent(props) {
                 <NavLink to="/eqipment-master" className="border-radius-50">
                   <span className="span-icon">
                     <svg xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 297 297">
+                      viewBox="0 0 297 297"
+                      height={13}
+                      width={13}>
 
                       <path d="M211.357,71.437c1.261,0.216,2.523,0.322,3.777,0.322c4.534,0,8.949-1.396,12.725-4.068
 		c4.82-3.412,8.023-8.497,9.019-14.317c0.996-5.821-0.335-11.682-3.746-16.502c-3.412-4.82-8.497-8.023-14.317-9.019
@@ -1727,7 +1773,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Equipment 360
                       </span>
                     </span>
@@ -1737,14 +1783,16 @@ export function SideBarComponent(props) {
               <li>
                 <NavLink to="/parts-360" className="border-radius-50">
                   <span className="span-icon">
-                    <svg viewBox="0 0 45 45" xmlns="http://www.w3.org/2000/svg">
+                    <svg viewBox="0 0 45 45" xmlns="http://www.w3.org/2000/svg"
+                    height={13}
+                    width={13}>
                       <path d="m21.044 7.821-.812 2.404-.429.137c-.235.075-.784.299-1.22.498l-.791.361-2.243-1.118-2.243-1.117-2.215 2.215-2.214 2.214 1.119 2.243 1.119 2.243-.34.737c-.188.405-.406.948-.487 1.206l-.146.47-2.092.688c-1.15.378-2.214.722-2.363.764l-.27.075V28.14l2.397.81 2.396.81.228.641c.124.352.353.903.507 1.224l.281.583-1.12 2.243-1.12 2.243 2.215 2.215 2.214 2.214 2.243-1.119 2.243-1.119.737.34c.405.188.948.406 1.206.487l.47.146.688 2.092c.378 1.15.722 2.214.764 2.363l.075.27h3.163c1.739 0 3.163-.016 3.163-.036 0-.029.912-2.974 1.424-4.599.072-.229.161-.29.725-.495.353-.128.905-.353 1.226-.499l.583-.265 2.243 1.121 2.242 1.121 2.215-2.215 2.215-2.215-1.117-2.238-1.116-2.237.379-.909c.208-.5.424-1.049.478-1.221l.099-.313 2.368-.77 2.368-.771.001-3.141V21.76l-2.357-.764-2.356-.765-.226-.636c-.124-.35-.352-.899-.506-1.22l-.281-.583 1.12-2.243 1.12-2.243-2.215-2.215-2.214-2.214-2.243 1.118-2.242 1.119-.654-.298a17.19 17.19 0 0 0-1.209-.492l-.554-.193-.687-2.086a164.89 164.89 0 0 1-.762-2.357l-.075-.271h-6.302l-.813 2.404m5.505 2.887.679 2.082.824.216c1.185.311 2.543.892 3.722 1.593l.316.188 1.942-.97 1.941-.97.59.59.59.59-.97 1.941-.97 1.942.188.316c.701 1.179 1.282 2.537 1.593 3.722l.216.824 2.082.679 2.083.68v1.738l-2.083.68-2.084.68-.219.867a12.412 12.412 0 0 1-1.288 3.144c-.248.432-.451.817-.451.856 0 .04.428.928.952 1.974l.952 1.903-.59.59-.591.59-1.941-.97-1.942-.97-.316.188c-1.227.73-2.518 1.286-3.68 1.585l-.865.222-.68 2.084-.68 2.083h-1.738l-.68-2.083-.68-2.084-.865-.222c-1.162-.299-2.453-.855-3.68-1.585l-.316-.188-1.942.97-1.941.97-.59-.59-.59-.59.97-1.941.97-1.942-.188-.316c-.701-1.179-1.282-2.537-1.593-3.722l-.216-.824-2.082-.679-2.083-.68v-1.738l2.083-.68 2.084-.68.219-.867a12.412 12.412 0 0 1 1.288-3.144c.248-.432.451-.817.451-.856 0-.04-.428-.928-.952-1.974l-.952-1.903.59-.59.591-.59 1.941.97 1.942.97.316-.188c1.179-.701 2.537-1.282 3.722-1.593l.824-.216.638-1.957c.352-1.077.665-2.025.696-2.107.051-.131.156-.146.911-.125l.853.024.679 2.083m-3.132 4.827c-.878.157-1.272.272-2.084.605-3.606 1.484-5.916 4.943-5.916 8.86A9.538 9.538 0 0 0 25 34.583c3.093 0 5.877-1.408 7.743-3.917 2.787-3.746 2.366-9.182-.965-12.46-1.287-1.267-3.009-2.213-4.695-2.58-.849-.185-2.862-.235-3.666-.091m3.315 3.306c1.058.268 1.871.754 2.768 1.655 1.344 1.351 1.849 2.579 1.849 4.504 0 1.772-.499 3.092-1.625 4.301-.936 1.004-1.77 1.523-3.027 1.881-.93.265-2.464.265-3.394 0-1.26-.359-2.089-.875-3.037-1.89-1.118-1.198-1.615-2.517-1.615-4.292 0-1.928.508-3.166 1.845-4.504 1.115-1.114 2.185-1.65 3.655-1.829.739-.089 1.831-.016 2.581.174" />
                     </svg>
 
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Parts Master
                       </span>
                     </span>
@@ -1758,6 +1806,8 @@ export function SideBarComponent(props) {
                       id="uuid-de246da4-4706-4310-b3d5-ffa9f8d22cd2"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 124.97439 124.67789"
+                      height={13}
+                      width={13}
                     >
                       <path
                         className="uuid-e6a75694-9e2b-4a4c-8f31-e708d1f611e7"
@@ -1775,7 +1825,7 @@ export function SideBarComponent(props) {
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Labor & Service Master
                       </span>
                     </span>
@@ -1786,13 +1836,15 @@ export function SideBarComponent(props) {
                 <NavLink to="/customer-master" className="border-radius-50">
                   <span className="span-icon">
 
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" 
+                    height={13}
+                    width={13}>
                       <path d="M49.801.986c-1.08 1.768-1.865 5.055-2.363 9.89-.475 4.612-.531 4.832-1.957 7.815-2.936 6.14-4.737 12.829-5.473 20.333-.435 4.435-.203 12.494.482 16.724l.505 3.119-.977 1.113c-2.246 2.558-3.826 7.704-3.47 11.303.634 6.409 3.768 14.59 7.476 19.514 1.526 2.025 4.157 4.456 6.009 5.55.51.301.927.723.927.937 0 .732 1.74 5.415 2.968 7.988 1.438 3.012 4.169 7.25 6.382 9.906l1.57 1.882v8.792l-.986.741c-1.574 1.183-4.947 2.758-8.872 4.143-12.48 4.403-18.58 7.824-24.603 13.797-4.866 4.827-7.7 9.379-9.636 15.475-1.53 4.823-1.857 7.37-1.848 14.409.005 3.587.103 6.76.217 7.052.198.504 4.045.531 74.848.531 70.802 0 74.65-.027 74.85-.531.116-.292.21-3.534.208-7.204-.003-5.812-.093-7.084-.697-9.858-2.714-12.468-9.844-21.546-21.888-27.869-3.969-2.083-6.06-2.984-12.814-5.518-5.13-1.925-7.979-3.245-9.553-4.427l-.986-.741v-8.82l1.331-1.565c2.13-2.504 5.204-7.226 6.577-10.104 1.295-2.712 3.012-7.342 3.012-8.119 0-.237.47-.722 1.045-1.077.575-.356 2.001-1.669 3.167-2.918 2.558-2.739 4.793-7.04 6.705-12.905 3.657-11.218 3.166-17.635-1.688-22.072l-1.73-1.581.691-5.797c1.329-11.162.332-19.037-3.333-26.324-4.059-8.07-11.786-14.402-21.575-17.679-3.563-1.193-7.401-1.933-15.283-2.948-7.7-.99-15.843-2.321-20.324-3.321C76.221.066 74.878.013 63.194.007L50.403 0l-.602.986m19.163 13.858a240.886 240.886 0 0 0 28.103 5.018c6.1.72 9.25 1.315 12.285 2.322 3.915 1.299 6.332 2.751 8.973 5.394 2.439 2.439 3.781 4.762 4.713 8.159.733 2.675.866 8.391.295 12.721-1.209 9.174-1.186 13.717.085 16.59.684 1.547 2.53 3.67 3.732 4.291 1.121.58 1.099 1.077-.238 5.307-1.213 3.837-2.457 6.743-3.334 7.79-.335.4-1.78 1.115-3.453 1.71l-2.877 1.023-.67 3.544c-1.503 7.955-3.653 12.168-9.745 19.104l-2.822 3.212.092 9.475.092 9.474 1.14 2.388c.862 1.805 1.676 2.918 3.337 4.562 3.788 3.75 7.32 5.685 17.211 9.431 7.069 2.677 10.021 4.072 13.525 6.388 5.595 3.7 9.361 9.437 10.293 15.679l.215 1.441H32.096l.218-1.58c.394-2.867 1.975-6.86 3.752-9.477 1.196-1.761 4.473-4.803 6.958-6.459 2.989-1.992 7.131-3.877 14.022-6.381 6.236-2.265 8.952-3.545 12.35-5.818 4.246-2.84 6.76-5.872 8.01-9.661.482-1.459.551-2.787.551-10.584v-8.915l-2.806-3.194c-6.075-6.915-8.227-11.137-9.729-19.085l-.67-3.544-2.821-1.008c-1.552-.554-3.272-1.35-3.821-1.769-1.901-1.45-3.812-5.147-4.976-9.629l-.579-2.229 1.749-1.684c3.01-2.9 3.613-6.287 2.402-13.492-1.226-7.293-1.089-15.195.374-21.536.784-3.398 1.094-4.234 3.316-8.949 1.68-3.564 2.675-6.865 2.696-8.948.013-1.216.313-2.275.645-2.275.148 0 2.5.537 5.227 1.194" />
                     </svg>
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Customer Master
                       </span>
                     </span>
@@ -1803,24 +1855,24 @@ export function SideBarComponent(props) {
                 <NavLink to="/consumable-master" className="border-radius-50">
                   <span className="span-icon">
                     <svg viewBox="0 0 106.47681 131.57696"
-                      xmlns="http://www.w3.org/2000/svg">
+                      xmlns="http://www.w3.org/2000/svg"
+                      height={14}
+                      width={14}>
                       <path d="M43.041 1.262c-7.545.67-15.059 3.296-21.292 7.442C10.514 16.175 3.236 27.857 1.502 41.203c-.337 2.59-.051 3.612 1.185 4.242 1.314.671 3.091.583 3.978-.196.628-.551.899-1.36 1.168-3.49.835-6.61 3.513-13.11 7.692-18.671 1.407-1.872 4.292-4.878 6.247-6.511 5.402-4.51 12.118-7.544 19.196-8.674 2.162-.345 7.901-.476 10.143-.232 5.658.617 10.637 2.206 15.264 4.87 7.042 4.054 11.894 9.058 15.711 16.201 1.301 2.434 1.968 3.214 3.252 3.802 1.708.782 3.599.642 5.162-.38.967-.632 1.551-1.362 2.036-2.542l.36-.874.004-10.541c.003-9.165-.028-10.616-.239-11.121-.363-.867-.825-1.272-1.765-1.545-1.539-.448-3.025-.028-3.853 1.09-.322.433-.329.601-.371 8.655-.028 5.197-.099 8.214-.196 8.214-.084 0-.153-.064-.153-.143 0-.078-.598-1.033-1.33-2.122C78.11 10.992 66.804 3.724 54.677 1.744c-3.72-.608-8.152-.791-11.636-.482m-3.796 25.537c-7.924.092-7.785.08-9.704.884-2.632 1.102-5.117 3.632-6.213 6.325-.857 2.105-.846 1.922-.846 15.185 0 11.151.025 12.397.271 13.353 1.111 4.319 4.382 7.59 8.701 8.701.963.248 2.316.271 15.546.271 16.268 0 15.422.056 17.938-1.172a11.798 11.798 0 0 0 5.408-5.408c1.215-2.489 1.172-1.917 1.171-15.901l-.001-12.455-.439-1.41c-.872-2.798-2.463-4.911-4.993-6.631-.983-.668-2.794-1.377-4.044-1.584-1.229-.203-12.303-.28-22.795-.158m4.653 11.78c.046 5.426.053 5.533.402 6.093.414.666 1.139 1.053 2.213 1.18 1.659.197 3.115-.563 3.46-1.805.092-.334.159-2.748.159-5.792l.001-5.22 5.445.05 5.444.05.976.451c1.134.524 2.246 1.624 2.756 2.727l.341.739v24.126l-.411.862c-.527 1.103-1.55 2.128-2.644 2.646l-.862.409H32.822l-.862-.406c-1.099-.519-2.13-1.55-2.649-2.649l-.406-.862V49.115c0-12.032.001-12.065.339-12.796.694-1.503 2.284-2.797 3.792-3.088.399-.076 2.996-.147 5.771-.157l5.045-.017.046 5.522m44.146 9.876c-.943.499-1.225 1.138-1.589 3.598-.892 6.036-2.534 10.697-5.506 15.627-1.99 3.301-5.709 7.543-8.788 10.026a39.817 39.817 0 0 1-20.884 8.626c-2.338.245-7.743.117-10.074-.239C30.362 84.44 20.421 78.102 14.36 68.98c-.56-.844-1.525-2.487-2.142-3.65-1.257-2.368-2.009-3.256-3.288-3.885-.743-.365-1.056-.423-2.272-.423-1.227 0-1.525.057-2.303.438-1.113.547-2.183 1.712-2.662 2.898l-.361.894v21.15l.352.715c.419.85 1.175 1.332 2.332 1.485.984.131 2.358-.232 2.826-.746.768-.843.752-.662.835-9.257l.078-8.115 1.274 1.934c6.916 10.496 18.229 17.829 30.608 19.841 7.602 1.235 14.779.673 22.09-1.73 15.177-4.988 26.82-17.871 30.294-33.521.786-3.539 1.056-6.237.716-7.139-.576-1.524-3.066-2.274-4.693-1.414" />
                     </svg>
                   </span>
                   <span className="nav-text">
                     <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-600 text-dark">
+                      <span className="font-size-13 font-weight-400 text-dark">
                         Consumable Master
                       </span>
                     </span>
                   </span>
                 </NavLink>
               </li>
-
             </ul>
           </li>
         </ul>
-
         <ul className="logout" style={{ display: "none" }}>
           <div className="logout-li">
             <li>
