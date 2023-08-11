@@ -4128,3 +4128,10 @@ input[type="checkbox"]:checked:after {
 .width-75{
   width: 75% !important;
 }
+.master-input-fields .css-1s2u09g-control{
+  border-radius: 10px !important;
+  border: 1px solid #872FF750 !important;
+}
+.border-light-blue{
+  border: 1px solid #872FF750 !important;
+}

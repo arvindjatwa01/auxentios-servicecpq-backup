@@ -4,13 +4,17 @@ import Select from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "@mui/material/Pagination";
-import { Card, Divider, Grid, Stack } from "@mui/material";
-import PaginationStackedChart from "./PaginationStackedChart";
+import { Stack } from "@mui/material";
 import DataTable from "react-data-table-component";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import EquipmentSearchComponent from "./EquipmentSearchComponent";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 import Switch from "@mui/material/Switch";
 import $ from "jquery";
 
@@ -104,44 +108,21 @@ const warrentydata = [
 const Parts360 = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
   const [warrentyItems, setWarrentyItems] = useState([...warrentydata]);
-  const lifeCycleStatusData = [
+
+  const [value, setValue] = React.useState("1");
+  const searchList = [
+    { A: "5365377", B: "HOSE AS.", C: "3620656", D: "CATERPILLAR" },
+    { A: "1L1118", B: "FITTING", C: "3620656", D: "Description" },
+    { A: "0R6158", B: "Full Core Deposit", C: "992K", D: "Description" },
+    { A: "3J0634", B: "SEAL", C: "3620656", D: "Description" },
     {
-      month: "Jan",
-      maintenance: 400,
-      repair: 240,
-      parts: 247,
-    },
-    {
-      month: "Feb",
-      maintenance: 300,
-      repair: 139,
-      parts: 221,
-    },
-    {
-      month: "March",
-      maintenance: 200,
-      repair: 980,
-      parts: 229,
-    },
-    {
-      month: "Apr",
-      maintenance: 278,
-      repair: 390,
-      parts: 200,
-    },
-    {
-      month: "May",
-      maintenance: 189,
-      repair: 480,
-      parts: 218,
-    },
-    {
-      month: "June",
-      parts: 250,
-      repair: 380,
-      maintenance: 239,
+      A: "F198300020130",
+      B: "PRESSURE WASHER",
+      C: "3620656",
+      D: "Description",
     },
   ];
+
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
   const [searchSelector, setSearchSelector] = useState([
@@ -176,20 +157,6 @@ const Parts360 = () => {
     if (_searchSelector.length <= 2) {
       setSearchSelector(_searchSelector);
     }
-
-    // if (searchSelector.length < 2) {
-    //   setSearchSelector([
-    //     ...searchSelector,
-    //     {
-    //       id: searchSelector.length,
-    //       selectOperator: "",
-    //       selectFamily: "",
-    //       inputSearch: "",
-    //       selectOptions: [],
-    //       selectedOption: "",
-    //     },
-    //   ]);
-    // }
   };
 
   const removeSearchCritria = () => {
@@ -206,11 +173,15 @@ const Parts360 = () => {
     $(`.scrollbar-${id}`).css("display", "none");
   };
 
-  const bundleItemColumns = [
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const replpacedItemColumns = [
     {
       name: (
         <>
-          <div>Contract Id</div>
+          <div>Replaced By</div>
         </>
       ),
       selector: (row) => row.itemName,
@@ -221,7 +192,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Contract Name</div>
+          <div>Replaced Quantity</div>
         </>
       ),
       selector: (row) => row.itemDescription,
@@ -233,7 +204,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Type</div>
+          <div>Availability</div>
         </>
       ),
       selector: (row) => row?.itemHeaderStrategy,
@@ -246,7 +217,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Value</div>
+          <div>Total Available</div>
         </>
       ),
       selector: (row) => row?.taskType,
@@ -257,7 +228,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Start Date</div>
+          <div>Sales Unit</div>
         </>
       ),
       selector: (row) => row?.quantity,
@@ -268,35 +239,13 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>End Date</div>
+          <div>Price</div>
         </>
       ),
       selector: (row) => row?.recommendedValue,
       wrap: true,
       sortable: true,
       format: (row) => row?.recommendedValue,
-    },
-    {
-      name: (
-        <>
-          <div>Start Usage</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
-    },
-    {
-      name: (
-        <>
-          <div>End Usage</div>
-        </>
-      ),
-      selector: (row) => row?.bundleFlag,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.bundleFlag,
     },
     {
       name: (
@@ -319,11 +268,189 @@ const Parts360 = () => {
       ),
     },
   ];
-  const warrentyItemColumns = [
+  const alternateItemColumns = [
     {
       name: (
         <>
-          <div>Category</div>
+          <div>Alternate Part #</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemDescription,
+    },
+
+    {
+      name: (
+        <>
+          <div>Availability</div>
+        </>
+      ),
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.itemHeaderStrategy,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Total Available</div>
+        </>
+      ),
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Sales Unit</div>
+        </>
+      ),
+      selector: (row) => row?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Price</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      wrap: true,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <EditOutlinedIcon className="mr-1" />
+          <DeleteOutlineOutlinedIcon />
+        </div>
+      ),
+    },
+  ];
+  const remanItemColumns = [
+    {
+      name: (
+        <>
+          <div>Reman Part #</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Refurbished Part #</div>
+        </>
+      ),
+      selector: (row) => row.itemDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemDescription,
+    },
+
+    {
+      name: (
+        <>
+          <div>Availability</div>
+        </>
+      ),
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.itemHeaderStrategy,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Total Available</div>
+        </>
+      ),
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Sales Unit</div>
+        </>
+      ),
+      selector: (row) => row?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Price</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      wrap: true,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <EditOutlinedIcon className="mr-1" />
+          <DeleteOutlineOutlinedIcon />
+        </div>
+      ),
+    },
+  ];
+  const priceItemColumns = [
+    {
+      name: (
+        <>
+          <div>Group#</div>
         </>
       ),
       selector: (row) => row.itemName,
@@ -346,7 +473,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Title</div>
+          <div>Part #</div>
         </>
       ),
       selector: (row) => row?.itemHeaderStrategy,
@@ -359,7 +486,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Start Date</div>
+          <div>Sales Unit</div>
         </>
       ),
       selector: (row) => row?.taskType,
@@ -370,7 +497,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>End Date</div>
+          <div>Quantity</div>
         </>
       ),
       selector: (row) => row?.quantity,
@@ -381,7 +508,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Start Usage</div>
+          <div>Price</div>
         </>
       ),
       selector: (row) => row?.recommendedValue,
@@ -392,13 +519,24 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>End Usage</div>
+          <div>Valid From</div>
         </>
       ),
-      selector: (row) => row?.servicePrice,
+      selector: (row) => row?.recommendedValue,
       wrap: true,
       sortable: true,
-      format: (row) => row?.servicePrice,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Valid To</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
     },
     {
       name: (
@@ -406,10 +544,8 @@ const Parts360 = () => {
           <div>Actions</div>
         </>
       ),
-      // selector: (row) => row?.bundleFlag,
       wrap: true,
       sortable: true,
-      // format: (row) => row?.bundleFlag,
       cell: (row) => (
         <div
           className="d-flex justify-content-center align-items-center row-svg-div"
@@ -421,11 +557,11 @@ const Parts360 = () => {
       ),
     },
   ];
-  const erpWarrentyItemColumns = [
+  const erpDetailsItemColumns = [
     {
       name: (
         <>
-          <div>Component ID</div>
+          <div>ERP Condition</div>
         </>
       ),
       selector: (row) => row.itemName,
@@ -436,7 +572,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Description</div>
+          <div>ERP Amount</div>
         </>
       ),
       selector: (row) => row.itemDescription,
@@ -448,85 +584,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Serial Number </div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-    },
-    {
-      name: (
-        <>
-          <div>Warranty</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
-    },
-    {
-      name: (
-        <>
-          <div>Warranty Code</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
-      wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon className="mr-1" />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
-    },
-  ];
-  const serviceItemColumns = [
-    {
-      name: (
-        <>
-          <div>Service Id</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Service Name</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
-
-    {
-      name: (
-        <>
-          <div>Type</div>
+          <div>ERP Cost Price</div>
         </>
       ),
       selector: (row) => row?.itemHeaderStrategy,
@@ -539,7 +597,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Value</div>
+          <div>ERP Margin</div>
         </>
       ),
       selector: (row) => row?.taskType,
@@ -550,7 +608,7 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>Start Date</div>
+          <div>Last Priced Date </div>
         </>
       ),
       selector: (row) => row?.quantity,
@@ -561,168 +619,13 @@ const Parts360 = () => {
     {
       name: (
         <>
-          <div>End Date</div>
+          <div>Price Change Date</div>
         </>
       ),
       selector: (row) => row?.recommendedValue,
       wrap: true,
       sortable: true,
       format: (row) => row?.recommendedValue,
-    },
-    {
-      name: (
-        <>
-          <div>Start Usage</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
-    },
-    {
-      name: (
-        <>
-          <div>End Usage</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
-      wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon className="mr-1" />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
-    },
-  ];
-  const usageItemColumns = [
-    {
-      name: (
-        <>
-          <div>Contract Id</div>
-        </>
-      ),
-      selector: (row) => row.itemName,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemName,
-    },
-    {
-      name: (
-        <>
-          <div>Contract Name</div>
-        </>
-      ),
-      selector: (row) => row.itemDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemDescription,
-    },
-
-    {
-      name: (
-        <>
-          <div>Type</div>
-        </>
-      ),
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-      // minWidth: "150px",
-      // maxWidth: "150px",
-    },
-    {
-      name: (
-        <>
-          <div>Value</div>
-        </>
-      ),
-      selector: (row) => row?.taskType,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.taskType,
-    },
-    {
-      name: (
-        <>
-          <div>Start Date</div>
-        </>
-      ),
-      selector: (row) => row?.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>End Date</div>
-        </>
-      ),
-      selector: (row) => row?.recommendedValue,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.recommendedValue,
-    },
-    {
-      name: (
-        <>
-          <div>Start Usage</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
-    },
-    {
-      name: (
-        <>
-          <div>End Usage</div>
-        </>
-      ),
-      selector: (row) => row?.servicePrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.servicePrice,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      // selector: (row) => row?.bundleFlag,
-      wrap: true,
-      sortable: true,
-      // format: (row) => row?.bundleFlag,
-      cell: (row) => (
-        <div
-          className="d-flex justify-content-center align-items-center row-svg-div"
-          style={{ minWidth: "180px !important" }}
-        >
-          <EditOutlinedIcon className="mr-1" />
-          <DeleteOutlineOutlinedIcon />
-        </div>
-      ),
     },
   ];
   const customStyles = {
@@ -873,15 +776,7 @@ const Parts360 = () => {
               </div>
             </div>
             <div className="">
-              <Link
-                to="#"
-                className="btn bg-primary text-white"
-                // onClick={
-                //   props.compoFlag === "bundleSearch"
-                //     ? handleBundleSearch
-                //     : handleQuerySearchClick
-                // }
-              >
+              <Link to="#" className="btn bg-primary text-white">
                 <span className="ml-1">Search</span>
               </Link>
             </div>
@@ -892,244 +787,42 @@ const Parts360 = () => {
             <div className="bg-grey border-radius-10 p-3">
               <div className="equipment-master-ul">
                 <ul>
-                  <li className="active">
-                    <div className="row align-items-center">
-                      <div className="col-lg-3 col-md-3 col-sm-3 col-3">
-                        <img
-                          src="../assets/images/spare-parts-sm.png"
-                          alt="jcb"
-                          className=" img-fluid"
-                        />
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-4">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          5365377
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          HOSE AS.
-                        </p>
-                      </div>
-                      <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-block pr-1">
-                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                              3620656
-                            </h6>
-                            <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                              CATERPILLAR
-                            </p>
-                          </div>
-                          <div>
-                            <ArrowForwardIosIcon className="text-primary font-size-20" />
+                  {searchList.map((Data, i) => (
+                    <li className={`${i === 0 ? "active" : ""}`}>
+                      <div className="row align-items-center">
+                        <div className="col-lg-3 col-md-3 col-sm-3 col-3">
+                          <img
+                            src="../assets/images/spare-parts-sm.png"
+                            alt="jcb"
+                            className=" img-fluid"
+                          />
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-4">
+                          <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                            {Data.A}
+                          </h6>
+                          <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                            {Data.B}
+                          </p>
+                        </div>
+                        <div className="col-lg-5 col-md-5 col-sm-5 col-5">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-block pr-1">
+                              <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                                {Data.C}
+                              </h6>
+                              <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                                {Data.D}
+                              </p>
+                            </div>
+                            <div>
+                              <ArrowForwardIosIcon className="text-primary font-size-20" />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="row align-items-center">
-                      <div className="col-lg-3 col-md-3 col-sm-3 col-3">
-                        <img
-                          src="../assets/images/spare-parts-sm.png"
-                          alt="jcb"
-                          className=" img-fluid"
-                        />
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-4">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          1L1118
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          FITTING
-                        </p>
-                      </div>
-                      <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-block pr-1">
-                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                              3620656
-                            </h6>
-                            <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                              CATERPILLAR
-                            </p>
-                          </div>
-                          <div>
-                            <ArrowForwardIosIcon className="text-primary font-size-20" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="row align-items-center">
-                      <div className="col-lg-3 col-md-3 col-sm-3 col-3">
-                        <img
-                          src="../assets/images/spare-parts-sm.png"
-                          alt="jcb"
-                          className=" img-fluid"
-                        />
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-4">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          0R6158
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          Full Core Deposit
-                        </p>
-                      </div>
-                      <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-block pr-1">
-                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                              992K
-                            </h6>
-                            <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                              CATERPILLAR
-                            </p>
-                          </div>
-                          <div>
-                            <ArrowForwardIosIcon className="text-primary font-size-20" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="row align-items-center">
-                      <div className="col-lg-3 col-md-3 col-sm-3 col-3">
-                        <img
-                          src="../assets/images/spare-parts-sm.png"
-                          alt="jcb"
-                          className=" img-fluid"
-                        />
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-4">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          3J0634
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          SEAL
-                        </p>
-                      </div>
-                      <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-block pr-1">
-                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                              3620656
-                            </h6>
-                            <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                              CATERPILLAR
-                            </p>
-                          </div>
-                          <div>
-                            <ArrowForwardIosIcon className="text-primary font-size-20" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="row align-items-center">
-                      <div className="col-lg-3 col-md-3 col-sm-3 col-3">
-                        <img
-                          src="../assets/images/spare-parts-sm.png"
-                          alt="jcb"
-                          className=" img-fluid"
-                        />
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-4">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          F198300020130
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          PRESSURE WASHER
-                        </p>
-                      </div>
-                      <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-block pr-1">
-                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                              2A4429
-                            </h6>
-                            <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                              CATERPILLAR
-                            </p>
-                          </div>
-                          <div>
-                            <ArrowForwardIosIcon className="text-primary font-size-20" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="row align-items-center">
-                      <div className="col-lg-3 col-md-3 col-sm-3 col-3">
-                        <img
-                          src="../assets/images/spare-parts-sm.png"
-                          alt="jcb"
-                          className=" img-fluid"
-                        />
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-4">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          2A4429
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          LOCK
-                        </p>
-                      </div>
-                      <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-block pr-1">
-                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                              3620656
-                            </h6>
-                            <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                              CATERPILLAR
-                            </p>
-                          </div>
-                          <div>
-                            <ArrowForwardIosIcon className="text-primary font-size-20" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="row align-items-center">
-                      <div className="col-lg-3 col-md-3 col-sm-3 col-3">
-                        <img
-                          src="../assets/images/spare-parts-sm.png"
-                          alt="jcb"
-                          className=" img-fluid"
-                        />
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-4">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          3681P053
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          MANIFOLD COVER GASKET
-                        </p>
-                      </div>
-                      <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-block pr-1">
-                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                              3620656
-                            </h6>
-                            <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                              CATERPILLAR
-                            </p>
-                          </div>
-                          <div>
-                            <ArrowForwardIosIcon className="text-primary font-size-20" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -1329,143 +1022,21 @@ const Parts360 = () => {
               )}
               {equipmentmasterpagination === 2 && (
                 <>
-                  <h5 className="font-weight-500 mt-4 ">Customer Details</h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3">
-                    <div className="row">
-                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Customer Id
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          Caterpillar
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Customer Name
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          336D2 L
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Contact Person
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          268 HP
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Customer Group
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          C9 ACERT
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Customer Segment
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          80648 lb
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Last Owner
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          268 HP
-                        </p>
-                      </div>
+                  <h5 className="font-weight-500 mt-4 ">Substitute Details</h5>
+                  <div className="d-flex align-items-center">
+                    <h6 className="m-0 mr-2 font-weight-600">Replaced By</h6>
+                    <div className="equipment-switch">
+                      <Switch {...label} defaultChecked size="small" />
                     </div>
                   </div>
-                  <h5 className="font-weight-500 mt-5 ">Site Details</h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
-                    <div className="row">
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Fleet number
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          20
-                        </p>
-                      </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Contact Address
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          8501 Willow Avenue, Los Angeles, CA 90037
-                        </p>
-                      </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Geo codes
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          Latitude: 34.051480 Longitude: -117.973470
-                        </p>
-                      </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Primary Contact
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          Olive Serrano
-                        </p>
-                      </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Moved In/Out
-                        </p>
-                        <div className="equipment-switch">
-                          <Switch {...label} defaultChecked />
-                        </div>
-                      </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Previous Location
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          8501 Willow Avenue, Los Angeles, CA 90037
-                        </p>
-                      </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          New Location
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          8501 Willow Avenue, Los Angeles, CA 90037
-                        </p>
-                      </div>
-                      <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Moved In Date
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          02/08/2023
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-              {equipmentmasterpagination === 3 && (
-                <>
-                  <h5 className="font-weight-500 mt-4 ">Contract Details</h5>
                   <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
                     <div className="row align-items-center">
                       <div className="col-lg-9 col-md-9">
                         <div className="d-flex align-items-center">
-                          <h6 className="font-weight-500 mb-0 mr-3">
-                            Contracts
-                          </h6>
+                          <h6 className="font-weight-500 mb-0 mr-3">Parts</h6>
                           <EquipmentSearchComponent
                             searchOptions={searchOptions}
-                            searchPlaceholder="Contracts"
+                            searchPlaceholder="Parts"
                           />
                         </div>
                       </div>
@@ -1488,7 +1059,7 @@ const Parts360 = () => {
                       >
                         <DataTable
                           title=""
-                          columns={bundleItemColumns}
+                          columns={replpacedItemColumns}
                           data={bundleItems}
                           customStyles={customStyles}
                           // pagination
@@ -1496,17 +1067,22 @@ const Parts360 = () => {
                       </div>
                     </div>
                   </div>
-                  <h5 className="font-weight-500 mt-5 ">Warranty Details</h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3 mb-4">
+                  <div className="d-flex align-items-center mt-4">
+                    <h6 className="m-0 mr-2 font-weight-600">
+                      Alternate Parts
+                    </h6>
+                    <div className="equipment-switch">
+                      <Switch {...label} defaultChecked size="small" />
+                    </div>
+                  </div>
+                  <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
                     <div className="row align-items-center">
                       <div className="col-lg-9 col-md-9">
                         <div className="d-flex align-items-center">
-                          <h6 className="font-weight-500 mb-0 mr-3">
-                            Warranty
-                          </h6>
+                          <h6 className="font-weight-500 mb-0 mr-3">Parts</h6>
                           <EquipmentSearchComponent
                             searchOptions={searchOptions}
-                            searchPlaceholder="Warranty"
+                            searchPlaceholder="Parts"
                           />
                         </div>
                       </div>
@@ -1529,8 +1105,54 @@ const Parts360 = () => {
                       >
                         <DataTable
                           title=""
-                          columns={warrentyItemColumns}
-                          data={warrentyItems}
+                          columns={alternateItemColumns}
+                          data={bundleItems}
+                          customStyles={customStyles}
+                          // pagination
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="d-flex align-items-center mt-4">
+                    <h6 className="m-0 mr-2 font-weight-600">
+                      AReman or Refurb Option
+                    </h6>
+                    <div className="equipment-switch">
+                      <Switch {...label} defaultChecked size="small" />
+                    </div>
+                  </div>
+                  <div className="bg-white p-3 border-radius-10 mt-3 mb-5 overflow-hidden">
+                    <div className="row align-items-center">
+                      <div className="col-lg-9 col-md-9">
+                        <div className="d-flex align-items-center">
+                          <h6 className="font-weight-500 mb-0 mr-3">Parts</h6>
+                          <EquipmentSearchComponent
+                            searchOptions={searchOptions}
+                            searchPlaceholder="Parts"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-lg-3 col-md-3 text-right">
+                        <a href="#" className="btn bg-primary text-white">
+                          <span className="mr-1">
+                            <AddIcon />
+                          </span>
+                          Upload
+                        </a>
+                      </div>
+                    </div>
+                    <div className="table-responsive mt-3">
+                      <div
+                        className="custom-table  table-child"
+                        style={{
+                          height: "auto",
+                          width: "100%",
+                        }}
+                      >
+                        <DataTable
+                          title=""
+                          columns={remanItemColumns}
+                          data={bundleItems}
                           customStyles={customStyles}
                           // pagination
                         />
@@ -1539,236 +1161,124 @@ const Parts360 = () => {
                   </div>
                 </>
               )}
-              {equipmentmasterpagination === 4 && (
+              {equipmentmasterpagination === 3 && (
                 <>
-                  <h5 className="font-weight-500 mt-4 ">ERP Details</h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3">
-                    <div className="row">
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          ERP ID
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          Caterpillar
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          ERP Description
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          336D2 L
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Technical Asset Number
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          268 HP
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Fleet Number
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          C9 ACERT
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Purchase Date
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          80648 lb
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Serial Number
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          268 HP
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Functional Location
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          268 HP
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white p-3 border-radius-10 mt-5 mb-4">
-                    <div className="row align-items-center">
-                      <div className="col-lg-9 col-md-9">
-                        <div className="d-flex align-items-center">
-                          <h6 className="font-weight-500 mb-0 mr-3">
-                            Warranty
+                  <Box
+                    className="mt-3"
+                    sx={{ width: "100%", typography: "body1" }}
+                  >
+                    <TabContext value={value}>
+                      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                        <TabList
+                          onChange={handleChange}
+                          aria-label="lab API tabs example"
+                        >
+                          <Tab label="Price" value="1" />
+                          <Tab label="Discount" value="2" />
+                        </TabList>
+                      </Box>
+                      <TabPanel value="1" className="px-0">
+                        <div className="bg-white p-3 border-radius-10">
+                          <div className="row">
+                            <div className="col-lg-6 col-md-6 col-sm-6 master-input-fields">
+                              <div className="form-group">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  Select a combination
+                                </label>
+                                <Select
+                                  className="text-primary"
+                                  // value={generalComponentData.customerSegment}
+                                  // options={customerSegmentKeyValue}
+                                  placeholder="Customer Segment"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-12 font-weight-500"
+                                  htmlFor="exampleInputEmail1"
+                                >
+                                  Enter respective values
+                                </label>
+                                <input
+                                  className="form-control border-light-blue text-primary border-radius-10"
+                                  placeholder="Marine"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-12 font-weight-500"
+                                  htmlFor="exampleInputEmail1"
+                                >
+                                  Select Price Method
+                                </label>
+                                <input
+                                  className="form-control border-light-blue border-radius-10 text-primary"
+                                  placeholder="List Price"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-white p-3 border-radius-10 mt-4 overflow-hidden">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <h6 className="font-weight-600 mb-0 mr-3">
+                              Price Details
+                            </h6>
+                            <a href="#" className="btn bg-primary text-white">
+                              Add New
+                            </a>
+                          </div>
+                          <div className="table-responsive mt-3">
+                            <div
+                              className="custom-table  table-child"
+                              style={{
+                                height: "auto",
+                                width: "100%",
+                              }}
+                            >
+                              <DataTable
+                                title=""
+                                columns={priceItemColumns}
+                                data={bundleItems}
+                                customStyles={customStyles}
+                                // pagination
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <h6 className="font-weight-500 pl-2 mt-5">
+                            ERP Price
                           </h6>
-                          <EquipmentSearchComponent
-                            searchOptions={searchOptions}
-                            searchPlaceholder="Warranty"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-lg-3 col-md-3 text-right">
-                        <a href="#" className="btn bg-primary text-white">
-                          <span className="mr-1">
-                            <AddIcon />
-                          </span>
-                          Upload
-                        </a>
-                      </div>
-                    </div>
-                    <div className="table-responsive mt-3">
-                      <div
-                        className="custom-table  table-child"
-                        style={{
-                          height: "auto",
-                          width: "100%",
-                        }}
-                      >
-                        <DataTable
-                          title=""
-                          columns={erpWarrentyItemColumns}
-                          data={warrentyItems}
-                          customStyles={customStyles}
-                          // pagination
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-              {equipmentmasterpagination === 5 && (
-                <>
-                  <h5 className="font-weight-500 mt-4 ">Service Report</h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3 mb-4">
-                    <div className="row align-items-center">
-                      <div className="col-lg-9 col-md-9">
-                        <div className="d-flex align-items-center">
-                          <h6 className="font-weight-500 mb-0 mr-3">Service</h6>
-                          <EquipmentSearchComponent
-                            searchOptions={searchOptions}
-                            searchPlaceholder="reports"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-lg-3 col-md-3 text-right">
-                        <a href="#" className="btn bg-primary text-white">
-                          <span className="mr-1">
-                            <AddIcon />
-                          </span>
-                          Upload
-                        </a>
-                      </div>
-                    </div>
-                    <div className="table-responsive mt-3">
-                      <div
-                        className="custom-table  table-child"
-                        style={{
-                          height: "auto",
-                          width: "100%",
-                        }}
-                      >
-                        <DataTable
-                          title=""
-                          columns={serviceItemColumns}
-                          data={warrentyItems}
-                          customStyles={customStyles}
-                          // pagination
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <h5 className="font-weight-500 mt-5 ">Failure report </h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3 mb-4">
-                    <div className="row align-items-center">
-                      <div className="col-lg-9 col-md-9">
-                        <div className="d-flex align-items-center">
-                          <h6 className="font-weight-500 mb-0 mr-3">
-                            Failures
+                        <div className="bg-white p-3 mt-3 border-radius-10 mb-5 overflow-hidden">
+                          <h6 className="font-weight-600 mb-0 mr-3">
+                            ERP Price
                           </h6>
-                          <EquipmentSearchComponent
-                            searchOptions={searchOptions}
-                            searchPlaceholder="reports"
-                          />
+                          <div className="table-responsive mt-3">
+                            <div
+                              className="custom-table  table-child"
+                              style={{
+                                height: "auto",
+                                width: "100%",
+                              }}
+                            >
+                              <DataTable
+                                title=""
+                                columns={erpDetailsItemColumns}
+                                data={bundleItems}
+                                customStyles={customStyles}
+                                // pagination
+                              />
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-lg-3 col-md-3 text-right">
-                        <a href="#" className="btn bg-primary text-white">
-                          <span className="mr-1">
-                            <AddIcon />
-                          </span>
-                          Upload
-                        </a>
-                      </div>
-                    </div>
-                    <div className="table-responsive mt-3">
-                      <div
-                        className="custom-table  table-child"
-                        style={{
-                          height: "auto",
-                          width: "100%",
-                        }}
-                      >
-                        <DataTable
-                          title=""
-                          columns={warrentyItemColumns}
-                          data={warrentyItems}
-                          customStyles={customStyles}
-                          // pagination
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-              {equipmentmasterpagination === 6 && (
-                <>
-                  <h5 className="font-weight-500 mt-4 ">Usage Details </h5>
-                  <div className="bg-white p-3 border-radius-10 mt-3 mb-4">
-                    <div className="row align-items-center">
-                      <div className="col-lg-9 col-md-9">
-                        <div className="d-flex align-items-center">
-                          <h6 className="font-weight-500 mb-0 mr-3">Usage</h6>
-                          <EquipmentSearchComponent
-                            searchOptions={searchOptions}
-                            searchPlaceholder="details"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-lg-3 col-md-3 text-right">
-                        <a href="#" className="btn bg-primary text-white">
-                          <span className="mr-1">
-                            <AddIcon />
-                          </span>
-                          Upload
-                        </a>
-                      </div>
-                    </div>
-                    <div className="table-responsive mt-3">
-                      <div
-                        className="custom-table  table-child"
-                        style={{
-                          height: "auto",
-                          width: "100%",
-                        }}
-                      >
-                        <DataTable
-                          title=""
-                          columns={usageItemColumns}
-                          data={warrentyItems}
-                          customStyles={customStyles}
-                          // pagination
-                        />
-                      </div>
-                    </div>
-                  </div>
+                      </TabPanel>
+                      <TabPanel value="2">Item Two</TabPanel>
+                    </TabContext>
+                  </Box>
                 </>
               )}
             </div>
