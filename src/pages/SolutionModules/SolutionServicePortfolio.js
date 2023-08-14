@@ -413,7 +413,7 @@ export function SolutionServicePortfolio(props) {
                     //     quoteDate: generalDetails.quoteDate,
                     //     description: generalDetails.description,
                     //     reference: generalDetails.reference,
-                    //     validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                    //     validity: generalDetails.validity != "" ? generalDetails.validity?.value : "FIFTEEN_DAYS",
                     //     version: generalDetails.version,
                     //     netPrice: 0,
                     //     priceDate: "",
@@ -421,7 +421,7 @@ export function SolutionServicePortfolio(props) {
                     //     priceMethod: "LIST_PRICE",
                     //     adjustedPrice: 0,
                     //     currency: "",
-                    //     status: "PENDING_ACTIVE",
+                    //     status: "DRAFT",
                     //     tenantId: loginTenantId,
                     //     sbQuoteItems: subQuotesIds,
                     //     rbQuoteItems: [],
@@ -478,36 +478,44 @@ export function SolutionServicePortfolio(props) {
                         preparedOn: estimateDetails.preparedOn,
                         revisedBy: estimateDetails.revisedBy,
                         revisedOn: estimateDetails.revisedOn,
-                        salesOffice: estimateDetails.salesOffice != ""
-                            ? estimateDetails.salesOffice?.value : "",
+                        salesOffice: ((estimateDetails.salesOffice === "") || (estimateDetails.salesOffice === null) || (estimateDetails.salesOffice === undefined)) ? "" :
+                            typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice,
                         quoteDate: generalDetails.quoteDate,
                         description: generalDetails.description,
                         reference: generalDetails.reference,
-                        validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                        version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
-                        paymentTerms: quoteBillingData.paymentTerms,
-                        billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
-                        billingType: quoteBillingData.billingType,
-                        deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
-                        deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                        validity: ((generalDetails.validity === "") || (generalDetails.validity === null) || (generalDetails.validity === undefined)) ? "EMPTY" :
+                            typeof generalDetails.validity === "object" ? generalDetails.validity?.value : generalDetails.validity,
+                        version: ((generalDetails.version === "") || (generalDetails.version === null) || (generalDetails.version === undefined)) ? "EMPTY" :
+                            typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version,
+                        paymentTerms: ((quoteBillingData.paymentTerms === "") || (quoteBillingData.paymentTerms === null) || (quoteBillingData.paymentTerms === undefined)) ? "EMPTY" :
+                            typeof quoteBillingData.paymentTerms === "object" ? quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms,
+                        billingFrequency: ((quoteBillingData.billingFrequency === "") || (quoteBillingData.billingFrequency === null) || (quoteBillingData.billingFrequency === undefined)) ? "EMPTY" :
+                            typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency,
+                        billingType: ((shippingBillingDetails.billingType === "") || (shippingBillingDetails.billingType === null) || (shippingBillingDetails.billingType === undefined)) ? "EMPTY" :
+                            typeof shippingBillingDetails.billingType === "object" ? shippingBillingDetails.billingType?.value : shippingBillingDetails.billingType,
+                        deliveryType: ((shippingBillingDetails.deliveryType === "") || (shippingBillingDetails.deliveryType === null) || (shippingBillingDetails.deliveryType === undefined)) ? "EMPTY" :
+                            typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType,
+                        deliveryPriority: ((shippingBillingDetails.deliveryPriority === "") || (shippingBillingDetails.deliveryPriority === null) || (shippingBillingDetails.deliveryPriority === undefined)) ? "EMPTY" :
+                            typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority,
                         leadTime: shippingBillingDetails.leadTime,
                         serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
                         priceDate: quoteBillingData.priceDate,
                         priceMethod: "LIST_PRICE",
-                        currency: quoteBillingData.currency,
+                        currency: ((quoteBillingData.currency === "") || (quoteBillingData.currency === null) || (quoteBillingData.currency === undefined)) ? "INR" :
+                            typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency,
                         partsPrice: 0,
                         servicePrice: 0,
                         laborPrice: 0,
                         miscPrice: 0,
-                        environmentalPrice: environmentalPrice,
-                        tax: taxTaxPrice,
+                        environmentalPrice: parseInt(environmentalPrice),
+                        tax: parseInt(taxTaxPrice),
                         costPrice: 0,
                         totalPrice: 0,
-                        margin: quoteBillingData.margin,
-                        discount: quoteBillingData.discount,
+                        margin: parseInt(quoteBillingData.margin),
+                        discount: parseInt(quoteBillingData.discount),
                         netPrice: 0,
-                        adjustedPrice: flatAdjustPrice,
-                        status: "PENDING_ACTIVE",
+                        adjustedPrice: parseInt(flatAdjustPrice),
+                        status: "DRAFT",
                         tenantId: loginTenantId,
                         sbQuoteItems: subQuotesIds,
                         rbQuoteItems: [],
@@ -515,7 +523,7 @@ export function SolutionServicePortfolio(props) {
                         payers: payerListArray,
                         priceEstimates: [],
                         sbPriceEstimates: [],
-                        otherItemPrice: 0,
+                        otherItemPrice: 0
                     }
 
                     const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -553,7 +561,7 @@ export function SolutionServicePortfolio(props) {
                     //     quoteDate: generalDetails.quoteDate,
                     //     description: generalDetails.description,
                     //     reference: generalDetails.reference,
-                    //     validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                    //     validity: generalDetails.validity != "" ? generalDetails.validity : "FIFTEEN_DAYS",
                     //     version: generalDetails.version,
                     //     netPrice: 0,
                     //     priceDate: "",
@@ -561,7 +569,7 @@ export function SolutionServicePortfolio(props) {
                     //     priceMethod: "LIST_PRICE",
                     //     adjustedPrice: 0,
                     //     currency: "",
-                    //     status: "PENDING_ACTIVE",
+                    //     status: "DRAFT",
                     //     tenantId: loginTenantId,
                     //     sbQuoteItems: subQuotesIds,
                     //     rbQuoteItems: [],
@@ -618,36 +626,44 @@ export function SolutionServicePortfolio(props) {
                         preparedOn: estimateDetails.preparedOn,
                         revisedBy: estimateDetails.revisedBy,
                         revisedOn: estimateDetails.revisedOn,
-                        salesOffice: estimateDetails.salesOffice != ""
-                            ? estimateDetails.salesOffice?.value : "",
+                        salesOffice: ((estimateDetails.salesOffice === "") || (estimateDetails.salesOffice === null) || (estimateDetails.salesOffice === undefined)) ? "" :
+                            typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice,
                         quoteDate: generalDetails.quoteDate,
                         description: generalDetails.description,
                         reference: generalDetails.reference,
-                        validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                        version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
-                        paymentTerms: quoteBillingData.paymentTerms,
-                        billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
-                        billingType: quoteBillingData.billingType,
-                        deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
-                        deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                        validity: ((generalDetails.validity === "") || (generalDetails.validity === null) || (generalDetails.validity === undefined)) ? "EMPTY" :
+                            typeof generalDetails.validity === "object" ? generalDetails.validity?.value : generalDetails.validity,
+                        version: ((generalDetails.version === "") || (generalDetails.version === null) || (generalDetails.version === undefined)) ? "EMPTY" :
+                            typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version,
+                        paymentTerms: ((quoteBillingData.paymentTerms === "") || (quoteBillingData.paymentTerms === null) || (quoteBillingData.paymentTerms === undefined)) ? "EMPTY" :
+                            typeof quoteBillingData.paymentTerms === "object" ? quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms,
+                        billingFrequency: ((quoteBillingData.billingFrequency === "") || (quoteBillingData.billingFrequency === null) || (quoteBillingData.billingFrequency === undefined)) ? "EMPTY" :
+                            typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency,
+                        billingType: ((shippingBillingDetails.billingType === "") || (shippingBillingDetails.billingType === null) || (shippingBillingDetails.billingType === undefined)) ? "EMPTY" :
+                            typeof shippingBillingDetails.billingType === "object" ? shippingBillingDetails.billingType?.value : shippingBillingDetails.billingType,
+                        deliveryType: ((shippingBillingDetails.deliveryType === "") || (shippingBillingDetails.deliveryType === null) || (shippingBillingDetails.deliveryType === undefined)) ? "EMPTY" :
+                            typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType,
+                        deliveryPriority: ((shippingBillingDetails.deliveryPriority === "") || (shippingBillingDetails.deliveryPriority === null) || (shippingBillingDetails.deliveryPriority === undefined)) ? "EMPTY" :
+                            typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority,
                         leadTime: shippingBillingDetails.leadTime,
                         serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
                         priceDate: quoteBillingData.priceDate,
                         priceMethod: "LIST_PRICE",
-                        currency: quoteBillingData.currency,
+                        currency: ((quoteBillingData.currency === "") || (quoteBillingData.currency === null) || (quoteBillingData.currency === undefined)) ? "INR" :
+                            typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency,
                         partsPrice: 0,
                         servicePrice: 0,
                         laborPrice: 0,
                         miscPrice: 0,
-                        environmentalPrice: environmentalPrice,
-                        tax: taxTaxPrice,
+                        environmentalPrice: parseInt(environmentalPrice),
+                        tax: parseInt(taxTaxPrice),
                         costPrice: 0,
                         totalPrice: 0,
-                        margin: quoteBillingData.margin,
-                        discount: quoteBillingData.discount,
+                        margin: parseInt(quoteBillingData.margin),
+                        discount: parseInt(quoteBillingData.discount),
                         netPrice: 0,
-                        adjustedPrice: flatAdjustPrice,
-                        status: "PENDING_ACTIVE",
+                        adjustedPrice: parseInt(flatAdjustPrice),
+                        status: "DRAFT",
                         tenantId: loginTenantId,
                         sbQuoteItems: subQuotesIds,
                         rbQuoteItems: [],
@@ -655,7 +671,7 @@ export function SolutionServicePortfolio(props) {
                         payers: payerListArray,
                         priceEstimates: [],
                         sbPriceEstimates: [],
-                        otherItemPrice: 0,
+                        otherItemPrice: 0
                     }
 
                     const solutionRes = await solutionQuoteCreation(solutionQuoteObj);
@@ -706,7 +722,7 @@ export function SolutionServicePortfolio(props) {
                 //     quoteDate: generalDetails.quoteDate,
                 //     description: generalDetails.description,
                 //     reference: generalDetails.reference,
-                //     validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
+                //     validity: generalDetails.validity != "" ? generalDetails.validity?.value : "FIFTEEN_DAYS",
                 //     version: generalDetails.version,
                 //     netPrice: 0,
                 //     priceDate: "",
@@ -714,7 +730,7 @@ export function SolutionServicePortfolio(props) {
                 //     priceMethod: "LIST_PRICE",
                 //     adjustedPrice: 0,
                 //     currency: "",
-                //     status: "PENDING_ACTIVE",
+                //     status: "DRAFT",
                 //     tenantId: loginTenantId,
                 //     sbQuoteItems: subQuotesIds,
                 //     rbQuoteItems: [],
@@ -771,36 +787,44 @@ export function SolutionServicePortfolio(props) {
                     preparedOn: estimateDetails.preparedOn,
                     revisedBy: estimateDetails.revisedBy,
                     revisedOn: estimateDetails.revisedOn,
-                    salesOffice: estimateDetails.salesOffice != ""
-                        ? estimateDetails.salesOffice?.value : "",
+                    salesOffice: ((estimateDetails.salesOffice === "") || (estimateDetails.salesOffice === null) || (estimateDetails.salesOffice === undefined)) ? "" :
+                        typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice,
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
-                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
-                    paymentTerms: quoteBillingData.paymentTerms,
-                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
-                    billingType: quoteBillingData.billingType,
-                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
-                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    validity: ((generalDetails.validity === "") || (generalDetails.validity === null) || (generalDetails.validity === undefined)) ? "EMPTY" :
+                        typeof generalDetails.validity === "object" ? generalDetails.validity?.value : generalDetails.validity,
+                    version: ((generalDetails.version === "") || (generalDetails.version === null) || (generalDetails.version === undefined)) ? "EMPTY" :
+                        typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version,
+                    paymentTerms: ((quoteBillingData.paymentTerms === "") || (quoteBillingData.paymentTerms === null) || (quoteBillingData.paymentTerms === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.paymentTerms === "object" ? quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms,
+                    billingFrequency: ((quoteBillingData.billingFrequency === "") || (quoteBillingData.billingFrequency === null) || (quoteBillingData.billingFrequency === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency,
+                    billingType: ((shippingBillingDetails.billingType === "") || (shippingBillingDetails.billingType === null) || (shippingBillingDetails.billingType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.billingType === "object" ? shippingBillingDetails.billingType?.value : shippingBillingDetails.billingType,
+                    deliveryType: ((shippingBillingDetails.deliveryType === "") || (shippingBillingDetails.deliveryType === null) || (shippingBillingDetails.deliveryType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType,
+                    deliveryPriority: ((shippingBillingDetails.deliveryPriority === "") || (shippingBillingDetails.deliveryPriority === null) || (shippingBillingDetails.deliveryPriority === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority,
                     leadTime: shippingBillingDetails.leadTime,
                     serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
                     priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    currency: quoteBillingData.currency,
+                    currency: ((quoteBillingData.currency === "") || (quoteBillingData.currency === null) || (quoteBillingData.currency === undefined)) ? "INR" :
+                        typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency,
                     partsPrice: 0,
                     servicePrice: 0,
                     laborPrice: 0,
                     miscPrice: 0,
-                    environmentalPrice: environmentalPrice,
-                    tax: taxTaxPrice,
+                    environmentalPrice: parseInt(environmentalPrice),
+                    tax: parseInt(taxTaxPrice),
                     costPrice: 0,
                     totalPrice: 0,
-                    margin: quoteBillingData.margin,
-                    discount: quoteBillingData.discount,
+                    margin: parseInt(quoteBillingData.margin),
+                    discount: parseInt(quoteBillingData.discount),
                     netPrice: 0,
-                    adjustedPrice: flatAdjustPrice,
-                    status: "PENDING_ACTIVE",
+                    adjustedPrice: parseInt(flatAdjustPrice),
+                    status: "DRAFT",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
@@ -808,7 +832,7 @@ export function SolutionServicePortfolio(props) {
                     payers: payerListArray,
                     priceEstimates: [],
                     sbPriceEstimates: [],
-                    otherItemPrice: 0,
+                    otherItemPrice: 0
                 }
 
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -858,7 +882,7 @@ export function SolutionServicePortfolio(props) {
                 //     quoteDate: generalDetails.quoteDate,
                 //     description: generalDetails.description,
                 //     reference: generalDetails.reference,
-                //     validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                //     validity: generalDetails.validity != "" ? generalDetails.validity : "FIFTEEN_DAYS",
                 //     version: generalDetails.version,
                 //     netPrice: 0,
                 //     priceDate: "",
@@ -866,7 +890,7 @@ export function SolutionServicePortfolio(props) {
                 //     priceMethod: "LIST_PRICE",
                 //     adjustedPrice: 0,
                 //     currency: "",
-                //     status: "PENDING_ACTIVE",
+                //     status: "DRAFT",
                 //     tenantId: loginTenantId,
                 //     sbQuoteItems: subQuotesIds,
                 //     rbQuoteItems: [],
@@ -922,36 +946,44 @@ export function SolutionServicePortfolio(props) {
                     preparedOn: estimateDetails.preparedOn,
                     revisedBy: estimateDetails.revisedBy,
                     revisedOn: estimateDetails.revisedOn,
-                    salesOffice: estimateDetails.salesOffice != ""
-                        ? estimateDetails.salesOffice?.value : "",
+                    salesOffice: ((estimateDetails.salesOffice === "") || (estimateDetails.salesOffice === null) || (estimateDetails.salesOffice === undefined)) ? "" :
+                        typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice,
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
-                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
-                    paymentTerms: quoteBillingData.paymentTerms,
-                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
-                    billingType: quoteBillingData.billingType,
-                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
-                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    validity: ((generalDetails.validity === "") || (generalDetails.validity === null) || (generalDetails.validity === undefined)) ? "EMPTY" :
+                        typeof generalDetails.validity === "object" ? generalDetails.validity?.value : generalDetails.validity,
+                    version: ((generalDetails.version === "") || (generalDetails.version === null) || (generalDetails.version === undefined)) ? "EMPTY" :
+                        typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version,
+                    paymentTerms: ((quoteBillingData.paymentTerms === "") || (quoteBillingData.paymentTerms === null) || (quoteBillingData.paymentTerms === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.paymentTerms === "object" ? quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms,
+                    billingFrequency: ((quoteBillingData.billingFrequency === "") || (quoteBillingData.billingFrequency === null) || (quoteBillingData.billingFrequency === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency,
+                    billingType: ((shippingBillingDetails.billingType === "") || (shippingBillingDetails.billingType === null) || (shippingBillingDetails.billingType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.billingType === "object" ? shippingBillingDetails.billingType?.value : shippingBillingDetails.billingType,
+                    deliveryType: ((shippingBillingDetails.deliveryType === "") || (shippingBillingDetails.deliveryType === null) || (shippingBillingDetails.deliveryType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType,
+                    deliveryPriority: ((shippingBillingDetails.deliveryPriority === "") || (shippingBillingDetails.deliveryPriority === null) || (shippingBillingDetails.deliveryPriority === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority,
                     leadTime: shippingBillingDetails.leadTime,
                     serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
                     priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    currency: quoteBillingData.currency,
+                    currency: ((quoteBillingData.currency === "") || (quoteBillingData.currency === null) || (quoteBillingData.currency === undefined)) ? "INR" :
+                        typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency,
                     partsPrice: 0,
                     servicePrice: 0,
                     laborPrice: 0,
                     miscPrice: 0,
-                    environmentalPrice: environmentalPrice,
-                    tax: taxTaxPrice,
+                    environmentalPrice: parseInt(environmentalPrice),
+                    tax: parseInt(taxTaxPrice),
                     costPrice: 0,
                     totalPrice: 0,
-                    margin: quoteBillingData.margin,
-                    discount: quoteBillingData.discount,
+                    margin: parseInt(quoteBillingData.margin),
+                    discount: parseInt(quoteBillingData.discount),
                     netPrice: 0,
-                    adjustedPrice: flatAdjustPrice,
-                    status: "PENDING_ACTIVE",
+                    adjustedPrice: parseInt(flatAdjustPrice),
+                    status: "DRAFT",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
@@ -959,7 +991,7 @@ export function SolutionServicePortfolio(props) {
                     payers: payerListArray,
                     priceEstimates: [],
                     sbPriceEstimates: [],
-                    otherItemPrice: 0,
+                    otherItemPrice: 0
                 }
 
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -1008,7 +1040,7 @@ export function SolutionServicePortfolio(props) {
                 //     quoteDate: generalDetails.quoteDate,
                 //     description: generalDetails.description,
                 //     reference: generalDetails.reference,
-                //     validity: generalDetails.validity != "" ? generalDetails.validity : "ALLOWED",
+                //     validity: generalDetails.validity != "" ? generalDetails.validity : "FIFTEEN_DAYS",
                 //     version: generalDetails.version,
                 //     netPrice: 0,
                 //     priceDate: "",
@@ -1016,7 +1048,7 @@ export function SolutionServicePortfolio(props) {
                 //     priceMethod: "LIST_PRICE",
                 //     adjustedPrice: 0,
                 //     currency: "",
-                //     status: "PENDING_ACTIVE",
+                //     status: "DRAFT",
                 //     tenantId: loginTenantId,
                 //     sbQuoteItems: subQuotesIds,
                 //     rbQuoteItems: [],
@@ -1073,36 +1105,44 @@ export function SolutionServicePortfolio(props) {
                     preparedOn: estimateDetails.preparedOn,
                     revisedBy: estimateDetails.revisedBy,
                     revisedOn: estimateDetails.revisedOn,
-                    salesOffice: estimateDetails.salesOffice != ""
-                        ? estimateDetails.salesOffice?.value : "",
+                    salesOffice: ((estimateDetails.salesOffice === "") || (estimateDetails.salesOffice === null) || (estimateDetails.salesOffice === undefined)) ? "" :
+                        typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice,
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
-                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
-                    paymentTerms: quoteBillingData.paymentTerms,
-                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
-                    billingType: quoteBillingData.billingType,
-                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
-                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    validity: ((generalDetails.validity === "") || (generalDetails.validity === null) || (generalDetails.validity === undefined)) ? "EMPTY" :
+                        typeof generalDetails.validity === "object" ? generalDetails.validity?.value : generalDetails.validity,
+                    version: ((generalDetails.version === "") || (generalDetails.version === null) || (generalDetails.version === undefined)) ? "EMPTY" :
+                        typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version,
+                    paymentTerms: ((quoteBillingData.paymentTerms === "") || (quoteBillingData.paymentTerms === null) || (quoteBillingData.paymentTerms === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.paymentTerms === "object" ? quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms,
+                    billingFrequency: ((quoteBillingData.billingFrequency === "") || (quoteBillingData.billingFrequency === null) || (quoteBillingData.billingFrequency === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency,
+                    billingType: ((shippingBillingDetails.billingType === "") || (shippingBillingDetails.billingType === null) || (shippingBillingDetails.billingType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.billingType === "object" ? shippingBillingDetails.billingType?.value : shippingBillingDetails.billingType,
+                    deliveryType: ((shippingBillingDetails.deliveryType === "") || (shippingBillingDetails.deliveryType === null) || (shippingBillingDetails.deliveryType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType,
+                    deliveryPriority: ((shippingBillingDetails.deliveryPriority === "") || (shippingBillingDetails.deliveryPriority === null) || (shippingBillingDetails.deliveryPriority === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority,
                     leadTime: shippingBillingDetails.leadTime,
                     serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
                     priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    currency: quoteBillingData.currency,
+                    currency: ((quoteBillingData.currency === "") || (quoteBillingData.currency === null) || (quoteBillingData.currency === undefined)) ? "INR" :
+                        typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency,
                     partsPrice: 0,
                     servicePrice: 0,
                     laborPrice: 0,
                     miscPrice: 0,
-                    environmentalPrice: environmentalPrice,
-                    tax: taxTaxPrice,
+                    environmentalPrice: parseInt(environmentalPrice),
+                    tax: parseInt(taxTaxPrice),
                     costPrice: 0,
                     totalPrice: 0,
-                    margin: quoteBillingData.margin,
-                    discount: quoteBillingData.discount,
+                    margin: parseInt(quoteBillingData.margin),
+                    discount: parseInt(quoteBillingData.discount),
                     netPrice: 0,
-                    adjustedPrice: flatAdjustPrice,
-                    status: "PENDING_ACTIVE",
+                    adjustedPrice: parseInt(flatAdjustPrice),
+                    status: "DRAFT",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
@@ -1110,7 +1150,7 @@ export function SolutionServicePortfolio(props) {
                     payers: payerListArray,
                     priceEstimates: [],
                     sbPriceEstimates: [],
-                    otherItemPrice: 0,
+                    otherItemPrice: 0
                 }
 
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -1177,44 +1217,52 @@ export function SolutionServicePortfolio(props) {
                     preparedOn: estimateDetails.preparedOn,
                     revisedBy: estimateDetails.revisedBy,
                     revisedOn: estimateDetails.revisedOn,
-                    salesOffice: estimateDetails.salesOffice != ""
-                        ? estimateDetails.salesOffice?.value : "",
+                    salesOffice: ((estimateDetails.salesOffice === "") || (estimateDetails.salesOffice === null) || (estimateDetails.salesOffice === undefined)) ? "" :
+                        typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice,
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
-                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
-                    paymentTerms: quoteBillingData.paymentTerms,
-                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
-                    billingType: quoteBillingData.billingType,
-                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
-                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    validity: ((generalDetails.validity === "") || (generalDetails.validity === null) || (generalDetails.validity === undefined)) ? "EMPTY" :
+                        typeof generalDetails.validity === "object" ? generalDetails.validity?.value : generalDetails.validity,
+                    version: ((generalDetails.version === "") || (generalDetails.version === null) || (generalDetails.version === undefined)) ? "EMPTY" :
+                        typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version,
+                    paymentTerms: ((quoteBillingData.paymentTerms === "") || (quoteBillingData.paymentTerms === null) || (quoteBillingData.paymentTerms === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.paymentTerms === "object" ? quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms,
+                    billingFrequency: ((quoteBillingData.billingFrequency === "") || (quoteBillingData.billingFrequency === null) || (quoteBillingData.billingFrequency === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency,
+                    billingType: ((shippingBillingDetails.billingType === "") || (shippingBillingDetails.billingType === null) || (shippingBillingDetails.billingType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.billingType === "object" ? shippingBillingDetails.billingType?.value : shippingBillingDetails.billingType,
+                    deliveryType: ((shippingBillingDetails.deliveryType === "") || (shippingBillingDetails.deliveryType === null) || (shippingBillingDetails.deliveryType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType,
+                    deliveryPriority: ((shippingBillingDetails.deliveryPriority === "") || (shippingBillingDetails.deliveryPriority === null) || (shippingBillingDetails.deliveryPriority === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority,
                     leadTime: shippingBillingDetails.leadTime,
                     serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
                     priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    currency: quoteBillingData.currency,
+                    currency: ((quoteBillingData.currency === "") || (quoteBillingData.currency === null) || (quoteBillingData.currency === undefined)) ? "INR" :
+                        typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency,
                     partsPrice: 0,
                     servicePrice: 0,
                     laborPrice: 0,
                     miscPrice: 0,
-                    environmentalPrice: environmentalPrice,
-                    tax: taxTaxPrice,
+                    environmentalPrice: parseInt(environmentalPrice),
+                    tax: parseInt(taxTaxPrice),
                     costPrice: 0,
                     totalPrice: 0,
-                    margin: quoteBillingData.margin,
-                    discount: quoteBillingData.discount,
+                    margin: parseInt(quoteBillingData.margin),
+                    discount: parseInt(quoteBillingData.discount),
                     netPrice: 0,
-                    adjustedPrice: flatAdjustPrice,
-                    status: "PENDING_ACTIVE",
+                    adjustedPrice: parseInt(flatAdjustPrice),
+                    status: "DRAFT",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
                     plQuoteItems: [],
-                    payers: _payerListArray,
+                    payers: payerListArray,
                     priceEstimates: [],
                     sbPriceEstimates: [],
-                    otherItemPrice: 0,
+                    otherItemPrice: 0
                 }
 
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
@@ -1288,36 +1336,44 @@ export function SolutionServicePortfolio(props) {
                     preparedOn: estimateDetails.preparedOn,
                     revisedBy: estimateDetails.revisedBy,
                     revisedOn: estimateDetails.revisedOn,
-                    salesOffice: estimateDetails.salesOffice != ""
-                        ? estimateDetails.salesOffice?.value : "",
+                    salesOffice: ((estimateDetails.salesOffice === "") || (estimateDetails.salesOffice === null) || (estimateDetails.salesOffice === undefined)) ? "" :
+                        typeof estimateDetails.salesOffice === "object" ? estimateDetails.salesOffice?.value : estimateDetails.salesOffice,
                     quoteDate: generalDetails.quoteDate,
                     description: generalDetails.description,
                     reference: generalDetails.reference,
-                    validity: generalDetails.validity != "" ? generalDetails.validity?.value : "ALLOWED",
-                    version: generalDetails.version !== "" ? generalDetails.version?.value : "EMPTY",
-                    paymentTerms: quoteBillingData.paymentTerms,
-                    billingFrequency: quoteBillingData.billingFrequency != "" ? quoteBillingData.billingFrequency?.value : "EMPTY",
-                    billingType: quoteBillingData.billingType,
-                    deliveryType: shippingBillingDetails.deliveryType != "" ? shippingBillingDetails.deliveryType?.value : "EMPTY",
-                    deliveryPriority: shippingBillingDetails.deliveryPriority != "" ? shippingBillingDetails.deliveryPriority?.value : "EMPTY",
+                    validity: ((generalDetails.validity === "") || (generalDetails.validity === null) || (generalDetails.validity === undefined)) ? "EMPTY" :
+                        typeof generalDetails.validity === "object" ? generalDetails.validity?.value : generalDetails.validity,
+                    version: ((generalDetails.version === "") || (generalDetails.version === null) || (generalDetails.version === undefined)) ? "EMPTY" :
+                        typeof generalDetails.version === "object" ? generalDetails.version?.value : generalDetails.version,
+                    paymentTerms: ((quoteBillingData.paymentTerms === "") || (quoteBillingData.paymentTerms === null) || (quoteBillingData.paymentTerms === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.paymentTerms === "object" ? quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms,
+                    billingFrequency: ((quoteBillingData.billingFrequency === "") || (quoteBillingData.billingFrequency === null) || (quoteBillingData.billingFrequency === undefined)) ? "EMPTY" :
+                        typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency,
+                    billingType: ((shippingBillingDetails.billingType === "") || (shippingBillingDetails.billingType === null) || (shippingBillingDetails.billingType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.billingType === "object" ? shippingBillingDetails.billingType?.value : shippingBillingDetails.billingType,
+                    deliveryType: ((shippingBillingDetails.deliveryType === "") || (shippingBillingDetails.deliveryType === null) || (shippingBillingDetails.deliveryType === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryType === "object" ? shippingBillingDetails.deliveryType?.value : shippingBillingDetails.deliveryType,
+                    deliveryPriority: ((shippingBillingDetails.deliveryPriority === "") || (shippingBillingDetails.deliveryPriority === null) || (shippingBillingDetails.deliveryPriority === undefined)) ? "EMPTY" :
+                        typeof shippingBillingDetails.deliveryPriority === "object" ? shippingBillingDetails.deliveryPriority?.value : shippingBillingDetails.deliveryPriority,
                     leadTime: shippingBillingDetails.leadTime,
                     serviceRecipentAddress: shippingBillingDetails.serviceRecipentAddress,
                     priceDate: quoteBillingData.priceDate,
                     priceMethod: "LIST_PRICE",
-                    currency: quoteBillingData.currency,
+                    currency: ((quoteBillingData.currency === "") || (quoteBillingData.currency === null) || (quoteBillingData.currency === undefined)) ? "INR" :
+                        typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency,
                     partsPrice: 0,
                     servicePrice: 0,
                     laborPrice: 0,
                     miscPrice: 0,
-                    environmentalPrice: environmentalPrice,
-                    tax: taxTaxPrice,
+                    environmentalPrice: parseInt(environmentalPrice),
+                    tax: parseInt(taxTaxPrice),
                     costPrice: 0,
                     totalPrice: 0,
-                    margin: quoteBillingData.margin,
-                    discount: quoteBillingData.discount,
+                    margin: parseInt(quoteBillingData.margin),
+                    discount: parseInt(quoteBillingData.discount),
                     netPrice: 0,
-                    adjustedPrice: flatAdjustPrice,
-                    status: "PENDING_ACTIVE",
+                    adjustedPrice: parseInt(flatAdjustPrice),
+                    status: "DRAFT",
                     tenantId: loginTenantId,
                     sbQuoteItems: subQuotesIds,
                     rbQuoteItems: [],
@@ -1325,7 +1381,7 @@ export function SolutionServicePortfolio(props) {
                     payers: payerListArray,
                     priceEstimates: [],
                     sbPriceEstimates: [],
-                    otherItemPrice: 0,
+                    otherItemPrice: 0
                 }
                 const solutionRes = await updateSolutionQuoteData(quoteIdIs, solutionQuoteObj);
                 if (solutionRes.status === 200) {
@@ -2110,100 +2166,109 @@ export function SolutionServicePortfolio(props) {
         });
 
         // Estimate Details Tab Data 
+        let salesOfficeObj = salesOfficeOptions.find(obj => obj.value === result.salesOffice)
         setEstimateDetails({
             preparedBy: result.preparedBy,
             approvedBy: result.approvedBy,
             preparedOn: result.preparedOn,
             revisedBy: result.revisedBy,
             revisedOn: result.revisedOn,
-            salesOffice: result.salesOffice === null || result.salesOffice === "" ? "" :
-                { label: result.salesOffice, value: result.salesOffice },
+            salesOffice: ((result.salesOffice === null) || (result.salesOffice === "") ||
+                (result.salesOffice === "EMPTY") || (result.salesOffice === undefined)) ? "" :
+                salesOfficeObj === undefined ? "" : salesOfficeObj,
         });
 
         // General Details Tab Data 
+        let validityObj = generalValidityOptions.find(obj => obj.value === result.validity);
+        let versionObj = generalVersionOptions.find(obj => obj.value === result.version);
         setGeneralDetails({
             quoteDate: result.quoteDate,
             quoteName: result.quoteName,
             description: result.description,
             reference: result.reference,
-            validity: result.validity === "" || result.validity === null ? "" : {
-                label: result.validity, value: result.validity
-            },
-            version: result.version === "" || result.version === null ? "" : {
-                label: result.version, value: result.version
-            },
+            validity: ((result.validity === null) || (result.validity === "") ||
+                (result.validity === "EMPTY") || (result.validity === undefined)) ? "" :
+                validityObj === undefined ? "" : validityObj,
+            version: ((result.validity === null) || (result.validity === "") ||
+                (result.validity === "EMPTY") || (result.validity === undefined)) ? "" :
+                versionObj === undefined ? "" : versionObj,
             // salesOffice: result.,
         });
 
         setQuoteVersionIs(result.version)
 
         // General Details Tab Data 
+        let paymentTermsObj = paymentTermsOptions.find(obj => obj.value === result.paymentTerms)
         setShippingBillingDetails({
-            deliveryType: result.deliveryType === "" || result.deliveryType === null ? "" : {
+            deliveryType: ((result.deliveryType === "") || (result.deliveryType === null) ||
+                (result.deliveryType === undefined) || (result.deliveryType === "EMPTY")) ? "" : {
                 label: result.deliveryType, value: result.deliveryType
             },
-            deliveryPriority: result.deliveryPriority === "" || result.deliveryPriority === null ? "" : {
+            deliveryPriority: ((result.deliveryPriority === "") || (result.deliveryPriority === null) ||
+                (result.deliveryPriority === undefined) || (result.deliveryPriority === "EMPTY")) ? "" : {
                 label: result.deliveryPriority, value: result.deliveryPriority
             },
-            paymentTerms: result.paymentTerms,
-            billingFrequency: result.billingFrequency,
+            paymentTerms: ((result.paymentTerms === "") || (result.paymentTerms === null) ||
+                (result.paymentTerms === undefined) || (result.paymentTerms === "EMPTY")) ? "" : {
+                label: result.paymentTerms, value: result.paymentTerms
+            },
+            billingFrequency: ((result.billingFrequency === "") || (result.billingFrequency === null) ||
+                (result.billingFrequency === undefined) || (result.billingFrequency === "EMPTY")) ? "" : {
+                label: result.billingFrequency, value: result.billingFrequency
+            },
             payer: result.payers,
             split: result.split,
             netPayAble: result.netPayable,
             leadTime: result.leadTime,
-            serviceRecipentAddress: ((result.serviceRecipentAddress === "") ||
-                (result.serviceRecipentAddress === null)) ? customerAddressAre : result.serviceRecipentAddress,
+            serviceRecipentAddress: ((result.serviceRecipentAddress === "") || (result.serviceRecipentAddress === null) ||
+                (result.serviceRecipentAddress === undefined)) ? customerAddressAre : result.serviceRecipentAddress,
         });
 
         // Price as Billing Tab Data
         setQuoteBillingData({
-            paymentTerms: result.paymentTerms,
-            currency: result.currency,
-            priceDate: result.priceDate == "" ||
-                result.priceDate == null ||
-                result.priceDate == undefined ||
-                result.priceDate == "string" ?
-                new Date() : result.priceDate,
-            billingType: result.billingType,
-            billingFrequency: result.billingFrequency,
+            paymentTerms: ((result.paymentTerms === "") || (result.paymentTerms === null) ||
+                (result.paymentTerms === undefined) || (result.paymentTerms === "EMPTY")) ? "" : {
+                label: result.paymentTerms, value: result.paymentTerms
+            },
+            currency: ((result.currency === "") || (result.currency === null) ||
+                (result.currency === undefined) || (result.currency === "EMPTY")) ? "" : {
+                label: result.currency, value: result.currency
+            },
+            priceDate: ((result.priceDate === "") || (result.priceDate === null) ||
+                (result.priceDate === undefined) || (result.priceDate == "string")) ? new Date() : result.priceDate,
+            billingType: ((result.billingType === "") || (result.billingType === null) ||
+                (result.billingType === undefined) || (result.billingType === "EMPTY")) ? "" : {
+                label: result.billingType, value: result.billingType
+            },
+            billingFrequency: ((result.billingFrequency === "") || (result.billingFrequency === null) ||
+                (result.billingFrequency === undefined) || (result.billingFrequency === "EMPTY")) ? "" : {
+                label: result.billingFrequency, value: result.billingFrequency
+            },
             netPrice: result.netPrice,
             margin: result.margin,
             discount: result.discount,
         })
 
-        if (result.paymentTerms == "" ||
-            result.paymentTerms == null ||
-            result.paymentTerms == undefined ||
-            result.paymentTerms == "string") {
-        } else {
+        if (!((result.paymentTerms === "") || (result.paymentTerms === null) ||
+            (result.paymentTerms === undefined) || (result.paymentTerms === "string") ||
+            (result.paymentTerms === "EMPTY"))) {
             setBillingPaymentTermsKeyValue({ label: result.paymentTerms, value: result.paymentTerms })
-
         }
 
-        if (result.currency == "" ||
-            result.currency == null ||
-            result.currency == undefined ||
-            result.currency == "string") {
-        } else {
+        if (!((result.currency === "") || (result.currency === null) ||
+            (result.currency === undefined) || (result.currency === "string") ||
+            (result.currency === "EMPTY"))) {
             setBillingCurrencyKeyValue({ label: result.currency, value: result.currency })
         }
 
-        if (result.billingType == "" ||
-            result.billingType == null ||
-            result.billingType == undefined ||
-            result.billingType == "string") {
-        } else {
+        if (!((result.billingType === "") || (result.billingType === null) || (result.billingType === undefined) ||
+            (result.billingType === "string") || (result.billingType === "EMPTY"))) {
             setBillingBillingTypeKeyValue({ label: result.billingType, value: result.billingType })
-
         }
 
-        if (result.billingFrequency == "" ||
-            result.billingFrequency == null ||
-            result.billingFrequency == undefined ||
-            result.billingFrequency == "string") {
-        } else {
+        if (!(result.billingFrequency === "") || (result.billingFrequency === null) || (result.billingFrequency === undefined) ||
+            (result.billingFrequency === "string") || (result.billingFrequency === "EMPTY")) {
             setBillingBillingFrequencyKeyValue({ label: result.billingFrequency, value: result.billingFrequency })
-
         }
 
         let subQuotesData = [];
@@ -2231,11 +2296,7 @@ export function SolutionServicePortfolio(props) {
             setAddPayerData(addPayerTableData)
             setPayerListArray(addPayerSaveData)
         }
-
     }
-
-
-    console.log("QuoteItemsMaster---- ", quoteItemsMaster);
 
     // Go To Solutions Function 
     const goToSolution = () => {

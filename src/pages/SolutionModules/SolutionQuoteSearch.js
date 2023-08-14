@@ -128,59 +128,63 @@ const SolutionQuoteSearch = () => {
     var searchText = `SOLUTION_QUOTE&field_name=${tempArray[id].selectFamily.value}&field_value=${e.target.value}`;
     var searchStr = `quoteType:SOLUTION_QUOTE AND ${tempArray[id].selectFamily.value + "~" + e.target.value}`;
     var SearchResArr = [];
-    getQuoteSearchDropdown(searchText)
-      .then((res) => {
-        if (res.status == 200) {
-          if (tempArray[id].selectFamily.value === "preparedBy") {
-            for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].preparedBy)
-            }
+    if (e.target.value.length !== 0) {
+      getQuoteSearchDropdown(searchText)
+        .then((res) => {
+          if (res.status == 200) {
+            if (tempArray[id].selectFamily.value === "preparedBy") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].preparedBy)
+              }
 
-          } else if (tempArray[id].selectFamily.value == "customerId") {
-            for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].customerId)
+            } else if (tempArray[id].selectFamily.value == "customerId") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].customerId)
+              }
+            } else if (tempArray[id].selectFamily.value == "model") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].model)
+              }
+            } else if (tempArray[id].selectFamily.value == "serialNumber") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].serialNumber)
+              }
+            } else if (tempArray[id].selectFamily.value == "quoteId") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].quoteId)
+              }
+            } else if (tempArray[id].selectFamily.value == "description") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].description)
+              }
             }
-          } else if (tempArray[id].selectFamily.value == "model") {
-            for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].model)
-            }
-          } else if (tempArray[id].selectFamily.value == "serialNumber") {
-            for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].serialNumber)
-            }
-          } else if (tempArray[id].selectFamily.value == "quoteId") {
-            for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].quoteId)
-            }
-          } else if (tempArray[id].selectFamily.value == "description") {
-            for (let i = 0; i < res.data.length; i++) {
-              SearchResArr.push(res.data[i].description)
-            }
+            obj.selectOptions = SearchResArr;
+
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+          } else {
+            toast("😐" + res.data.message, {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
           }
-          obj.selectOptions = SearchResArr;
+        })
+        .catch((err) => {
+          console.log("err in api call", err);
+        });
+    } else {
+      obj.selectOptions = [];
+      tempArray[id] = obj;
+      setQuerySearchSelector([...tempArray]);
+    }
 
-          tempArray[id] = obj;
-          setQuerySearchSelector([...tempArray]);
-          $(`.scrollbar-${id}`).css("display", "block");
-        } else {
-          toast("😐" + res.data.message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
-
-
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
-
-    obj.inputSearch = e.target.value;
+    obj.inputSearch = e.target.value; // working new cmt
 
     // getSearchQuoteData(searchStr)
     //   .then((res) => {
