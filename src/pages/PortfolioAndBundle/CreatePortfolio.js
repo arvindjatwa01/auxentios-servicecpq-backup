@@ -637,7 +637,7 @@ export function CreatePortfolio(props) {
     productHierarchy: null,
     geographic: null,
   });
-  
+
   const [administrative, setAdministrative] = useState({
     preparedBy: null,
     approvedBy: null,
@@ -7379,7 +7379,7 @@ export function CreatePortfolio(props) {
               serialNumber: selectedMasterData[i].associatedIncludedModelData[0].serialNumber?.value,
               startSerialNumber: "",
               endSerialNumber: "",
-              serialNumberPrefix: "",
+              serialNumberPrefix: selectedMasterData[i].prefix,
               family: selectedMasterData[i].family,
               make: selectedMasterData[i].make,
               fleet: "",
@@ -7540,7 +7540,7 @@ export function CreatePortfolio(props) {
               serialNumber: "",
               startSerialNumber: "",
               endSerialNumber: "",
-              serialNumberPrefix: "",
+              serialNumberPrefix: selectedMasterData[i].prefix,
               family: selectedMasterData[i].family,
               make: selectedMasterData[i].make,
               fleet: "",
@@ -12413,14 +12413,29 @@ export function CreatePortfolio(props) {
             onSelect={handleModelSelect}
             noOptions={noCoverageOptionSerial}
           /> */}
-          <Select
+
+          <SearchBox
+            value={row.serialNumber}
+            // onChange={(e) =>
+            //   handleSearchSerialNumber(
+            //     "serialNo",
+            //     row.model,
+            //     e.target.value
+            //   )
+            // }
+            type="equipmentNumber"
+            result={searchCoverageSerialResults}
+            onSelect={handleModelSelect}
+            noOptions={noCoverageOptionSerial}
+          />
+          {/* <Select
             className="customselect"
             maxMenuHeight={80}
             onChange={(e) => handleIncludedeSerialNoSelectChange(e, i, row)}
             value={row.serialNumber}
             options={coverageSerialResultList}
           // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
-          />
+          /> */}
         </div>
       ),
     },
@@ -12454,7 +12469,7 @@ export function CreatePortfolio(props) {
               className="form-controldate border-radius-10 mr-3"
               label=""
               // value={row.serialNumber}
-              // value={row.startDate}
+              value={row.startDate}
               onChange={(e) => handleIncludedSerialNoStartDataChange(e, i, row)}
             />
           </MuiPickersUtilsProvider>
@@ -12481,7 +12496,7 @@ export function CreatePortfolio(props) {
               format="dd/MM/yyyy"
               className="form-controldate border-radius-10"
               label=""
-              // value={row.endDate}
+              value={row.endDate}
               onChange={(e) => handleIncludedSerialNoEndDataChange(e, i, row)}
             // value={validityData.fromDate}
             />
@@ -13028,10 +13043,10 @@ export function CreatePortfolio(props) {
         ...obj, associatedIncludedModelData: [{
           family: dataRow.family,
           model: dataRow.model,
-          noSeriese: "0JAPA000470",
+          noSeriese: "",
           location: "LIMA",
-          startDate: "08/04/2017",
-          endDate: "08/04/2017",
+          startDate: new Date(),
+          endDate: new Date(),
           serialNumber: ""
         }]
       }
@@ -13132,10 +13147,10 @@ export function CreatePortfolio(props) {
       ...obj, associatedIncludedModelData: [...obj.associatedIncludedModelData, {
         family: rowItem.family,
         model: rowItem.model,
-        noSeriese: "0JAPA000470",
+        noSeriese: "",
         location: "LIMA",
-        startDate: "08/04/20017",
-        endDate: "08/04/20017",
+        startDate: new Date(),
+        endDate: new Date(),
         serialNumber: ""
       }]
     }
@@ -13186,11 +13201,10 @@ export function CreatePortfolio(props) {
 
   }
 
-  const handleIncludedSerialNoStartDataChange = (e, i, row) => {
 
+  const handleIncludedSerialNoStartDataChange = (e, i, row) => {
     let _selectedMasterData = [...selectedMasterData]
     let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
-
     tempObj = { ...tempObj, startDate: e }
     _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
     setSelectedMasterData(_selectedMasterData)
