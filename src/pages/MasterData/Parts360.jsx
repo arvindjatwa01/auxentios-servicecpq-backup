@@ -628,6 +628,75 @@ const Parts360 = () => {
       format: (row) => row?.recommendedValue,
     },
   ];
+  const warrentyItemColumns = [
+    {
+      name: (
+        <>
+          <div>Warranty Type</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Warranty Duration</div>
+        </>
+      ),
+      selector: (row) => row.itemDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemDescription,
+    },
+
+    {
+      name: (
+        <>
+          <div>Date Of Sale</div>
+        </>
+      ),
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.itemHeaderStrategy,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Date Of Installation</div>
+        </>
+      ),
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      // selector: (row) => row?.bundleFlag,
+      wrap: true,
+      sortable: true,
+      // format: (row) => row?.bundleFlag,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <EditOutlinedIcon className="mr-1" />
+          <DeleteOutlineOutlinedIcon />
+        </div>
+      ),
+    },
+  ];
   const customStyles = {
     rows: {
       style: {
@@ -693,12 +762,7 @@ const Parts360 = () => {
                         <input
                           className="custom-input-sleact"
                           type="text"
-                          placeholder="Search Equipments"
-                          // value={obj.inputSearch}
-                          // onChange={(e) =>
-                          //     handleInputSearch(e, i)
-                          // }
-                          // id={"inputSearch-" + i}
+                          placeholder="Search Parts"
                           autoComplete="off"
                         />
                         {
@@ -836,7 +900,7 @@ const Parts360 = () => {
                     <Pagination
                       boundaryCount={0}
                       siblingCount={0}
-                      count={6}
+                      count={4}
                       page={equipmentmasterpagination}
                       onChange={equipmentPaginationChange}
                     />
@@ -1250,9 +1314,7 @@ const Parts360 = () => {
                             </div>
                           </div>
                         </div>
-                        <h6 className="font-weight-500 pl-2 mt-5">
-                            ERP Price
-                          </h6>
+                        <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
                         <div className="bg-white p-3 mt-3 border-radius-10 mb-5 overflow-hidden">
                           <h6 className="font-weight-600 mb-0 mr-3">
                             ERP Price
@@ -1276,9 +1338,137 @@ const Parts360 = () => {
                           </div>
                         </div>
                       </TabPanel>
-                      <TabPanel value="2">Item Two</TabPanel>
+                      <TabPanel value="2" className="px-0">
+                        <div className="bg-white p-3 border-radius-10">
+                          <div className="row">
+                            <div className="col-lg-6 col-md-6 col-sm-6 master-input-fields">
+                              <div className="form-group">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  Select a combination
+                                </label>
+                                <Select
+                                  className="text-primary"
+                                  // value={generalComponentData.customerSegment}
+                                  // options={customerSegmentKeyValue}
+                                  placeholder="Customer Segment"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-12 font-weight-500"
+                                  htmlFor="exampleInputEmail1"
+                                >
+                                  Enter respective values
+                                </label>
+                                <input
+                                  className="form-control border-light-blue text-primary border-radius-10"
+                                  placeholder="Marine"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-md-6 col-sm-6">
+                              <div className="form-group">
+                                <label
+                                  className="text-light-dark font-size-12 font-weight-500"
+                                  htmlFor="exampleInputEmail1"
+                                >
+                                  Select Price Method
+                                </label>
+                                <input
+                                  className="form-control border-light-blue border-radius-10 text-primary"
+                                  placeholder="List Price"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-white p-3 border-radius-10 mt-4 overflow-hidden">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <h6 className="font-weight-600 mb-0 mr-3">
+                              Price Details
+                            </h6>
+                            <a href="#" className="btn bg-primary text-white">
+                              Add New
+                            </a>
+                          </div>
+                          <div className="table-responsive mt-3">
+                            <div
+                              className="custom-table  table-child"
+                              style={{
+                                height: "auto",
+                                width: "100%",
+                              }}
+                            >
+                              <DataTable
+                                title=""
+                                columns={priceItemColumns}
+                                data={bundleItems}
+                                customStyles={customStyles}
+                                // pagination
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
+                        <div className="bg-white p-3 mt-3 border-radius-10 mb-5 overflow-hidden">
+                          <h6 className="font-weight-600 mb-0 mr-3">
+                            ERP Price
+                          </h6>
+                          <div className="table-responsive mt-3">
+                            <div
+                              className="custom-table  table-child"
+                              style={{
+                                height: "auto",
+                                width: "100%",
+                              }}
+                            >
+                              <DataTable
+                                title=""
+                                columns={erpDetailsItemColumns}
+                                data={bundleItems}
+                                customStyles={customStyles}
+                                // pagination
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </TabPanel>
                     </TabContext>
                   </Box>
+                </>
+              )}
+              {equipmentmasterpagination === 4 && (
+                <>
+                  <h5 className="font-weight-500 mt-5 ">Warranty</h5>
+                  <div className="bg-white p-3 border-radius-10 mt-3 mb-4">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <h6 className="font-weight-600 mb-0 mr-3">
+                        Warranty Details
+                      </h6>
+                      <a href="#" className="btn bg-primary text-white">
+                        Add New
+                      </a>
+                    </div>
+                    <div className="table-responsive mt-3">
+                      <div
+                        className="custom-table  table-child"
+                        style={{
+                          height: "auto",
+                          width: "100%",
+                        }}
+                      >
+                        <DataTable
+                          title=""
+                          columns={warrentyItemColumns}
+                          data={warrentyItems}
+                          customStyles={customStyles}
+                          // pagination
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </>
               )}
             </div>
