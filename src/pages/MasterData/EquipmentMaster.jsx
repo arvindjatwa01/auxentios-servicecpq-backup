@@ -142,6 +142,16 @@ const EquipmentMaster = () => {
       maintenance: 239,
     },
   ];
+  const searchList = [
+    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
+    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
+    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
+    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
+    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
+    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
+    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
+    
+  ];
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
   const [searchSelector, setSearchSelector] = useState([
@@ -789,11 +799,6 @@ const EquipmentMaster = () => {
                           className="custom-input-sleact"
                           type="text"
                           placeholder="Search Parts"
-                          // value={obj.inputSearch}
-                          // onChange={(e) =>
-                          //     handleInputSearch(e, i)
-                          // }
-                          // id={"inputSearch-" + i}
                           autoComplete="off"
                         />
                         {
@@ -885,179 +890,47 @@ const EquipmentMaster = () => {
             </div>
           </div>
         </div>
-        <div className="row mt-3">
+        <div className="row mt-3 mb-5">
           <div className="col-xl-4 col-lg-5 col-md-12 col-sm-12 border-50">
-            <div className="bg-grey border-radius-10 p-3">
+            <div className="bg-grey border-radius-10 p-3 h-100">
               <div className="equipment-master-ul">
                 <ul>
-                  <li className="active">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <img
-                        src="../assets/images/jcb-equipment.png"
-                        alt="jcb"
-                        className=" img-fluid px-1"
-                      />
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          ZCT01096
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CHAIN EXCAVATOR - 336D2 L
-                        </p>
+                  {searchList.map((Data, i) => (
+                    <li className={`${i === 0 ? "active" : ""}`}>
+                      <div className="row align-items-center">
+                        <div className="col-lg-3 col-md-3 col-sm-3 col-3">
+                          <img
+                            src="../assets/images/jcb-equipment.png"
+                            alt="jcb"
+                            className=" img-fluid"
+                          />
+                        </div>
+                        <div className="col-lg-4 col-md-4 col-4">
+                          <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                            {Data.A}
+                          </h6>
+                          <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                            {Data.B}
+                          </p>
+                        </div>
+                        <div className="col-lg-5 col-md-5 col-sm-5 col-5">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-block pr-1">
+                              <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                                {Data.C}
+                              </h6>
+                              <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                                {Data.D}
+                              </p>
+                            </div>
+                            <div>
+                              <ArrowForwardIosIcon className="text-primary font-size-20" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          336D2 L
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CATERPILLAR
-                        </p>
-                      </div>
-                      <div>
-                        <ArrowForwardIosIcon className="text-primary font-size-20" />
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex align-items-center justify-content-between">
-                      <img
-                        src="../assets/images/jcb-equipment.png"
-                        alt="jcb"
-                        className=" img-fluid px-1"
-                      />
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          ZCT01096
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CHAIN EXCAVATOR - 336D2 L
-                        </p>
-                      </div>
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          336D2 L
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CATERPILLAR
-                        </p>
-                      </div>
-                      <div>
-                        <ArrowForwardIosIcon className="text-primary font-size-20" />
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex align-items-center justify-content-between">
-                      <img
-                        src="../assets/images/jcb-equipment.png"
-                        alt="jcb"
-                        className=" img-fluid px-1"
-                      />
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          ZCT01096
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CHAIN EXCAVATOR - 336D2 L
-                        </p>
-                      </div>
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          336D2 L
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CATERPILLAR
-                        </p>
-                      </div>
-                      <div>
-                        <ArrowForwardIosIcon className="text-primary font-size-20" />
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex align-items-center justify-content-between">
-                      <img
-                        src="../assets/images/jcb-equipment.png"
-                        alt="jcb"
-                        className=" img-fluid px-1"
-                      />
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          ZCT01096
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CHAIN EXCAVATOR - 336D2 L
-                        </p>
-                      </div>
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          336D2 L
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CATERPILLAR
-                        </p>
-                      </div>
-                      <div>
-                        <ArrowForwardIosIcon className="text-primary font-size-20" />
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex align-items-center justify-content-between">
-                      <img
-                        src="../assets/images/jcb-equipment.png"
-                        alt="jcb"
-                        className=" img-fluid px-1"
-                      />
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          ZCT01096
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CHAIN EXCAVATOR - 336D2 L
-                        </p>
-                      </div>
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          336D2 L
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CATERPILLAR
-                        </p>
-                      </div>
-                      <div>
-                        <ArrowForwardIosIcon className="text-primary font-size-20" />
-                      </div>
-                    </div>
-                  </li>
-                  <li>
-                    <div className="d-flex align-items-center justify-content-between">
-                      <img
-                        src="../assets/images/jcb-equipment.png"
-                        alt="jcb"
-                        className=" img-fluid px-1"
-                      />
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          ZCT01096
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CHAIN EXCAVATOR - 336D2 L
-                        </p>
-                      </div>
-                      <div className="d-block px-1">
-                        <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                          336D2 L
-                        </h6>
-                        <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                          CATERPILLAR
-                        </p>
-                      </div>
-                      <div>
-                        <ArrowForwardIosIcon className="text-primary font-size-20" />
-                      </div>
-                    </div>
-                  </li>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
