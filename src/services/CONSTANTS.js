@@ -320,3 +320,5 @@ export const FETCH_PROPENSITY_TO_BUY = "https://do7wm3sbgg.execute-api.us-east-2
 export const FETCH_PROPENSITY_TO_BUY_DET = (propensityLevel, transLevel) => `https://vlup8cemj1.execute-api.us-east-2.amazonaws.com/propensity_table?propensity_level=${propensityLevel}&transaction_level=${transLevel}`;
 export const FETCH_GAP_TO_ENTITLEMENT = `https://yr2btg0lie.execute-api.us-east-2.amazonaws.com/gap-to-entitlement`;
 
+// Master Equipment 
+export const validate_Coverage_Get_Url =  DATA_SERVICE_URI + "equipment/validate-coverage" 
