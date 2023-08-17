@@ -146,6 +146,7 @@ import {
   customerSearch,
   machineSearch,
   sparePartSearch,
+  getValidateCoverage
 } from "../../services/searchServices";
 
 import {
@@ -872,6 +873,7 @@ export function CreatePortfolio(props) {
     taskType: "",
   });
   const [showRelatedModel, setShowRelatedModel] = useState(false);
+  const [showSerialNoSearchModal, setShowSerialNoSearchModal] = useState(false)
   const [showEditIncludeSerialNoModel, setShowEditIncludeSerialNoModel] = useState(false);
   const [editSerialNo, setEditSerialNo] = useState({
     coverageId: "",
@@ -12413,21 +12415,7 @@ export function CreatePortfolio(props) {
             onSelect={handleModelSelect}
             noOptions={noCoverageOptionSerial}
           /> */}
-
-          <SearchBox
-            value={row.serialNumber}
-            // onChange={(e) =>
-            //   handleSearchSerialNumber(
-            //     "serialNo",
-            //     row.model,
-            //     e.target.value
-            //   )
-            // }
-            type="equipmentNumber"
-            result={searchCoverageSerialResults}
-            onSelect={handleModelSelect}
-            noOptions={noCoverageOptionSerial}
-          />
+          <span className="cursor" onClick={() => { setShowSerialNoSearchModal(true); setShowRelatedModel(false) }}>{row.serialNumber ? row.serialNumber : "Click to Add"}</span>
           {/* <Select
             className="customselect"
             maxMenuHeight={80}
@@ -13139,6 +13127,23 @@ export function CreatePortfolio(props) {
     // setShowRelatedModel(true);
     // setOpenModelBoxDataId(dataRow);
   };
+
+  const handleSerialNoSearch = async (e) => {
+    console.log("event ", e);
+    let reqObj = {
+      family: selectedMasterData[includedModelIndex].family,
+      make: selectedMasterData[includedModelIndex].make,
+      model: selectedMasterData[includedModelIndex].model,
+      prefix: selectedMasterData[includedModelIndex].prefix,
+      searchString: e.target.value
+    }
+
+    const searchedSerialNo = await getValidateCoverage(reqObj);
+    console.log("searchedSerialNo ========= ", searchedSerialNo);
+
+
+    console.log("------------ ", selectedMasterData[includedModelIndex]);
+  }
 
   const AddNewRowData = (rowItem) => {
     let _selectedMasterData = [...selectedMasterData]
@@ -16696,13 +16701,10 @@ export function CreatePortfolio(props) {
       }
 
       if (portfolioItems.length > 0) {
-        var tempBundleItemsUrl = portfolioItems.find((data, i) => {
-          if (data.itemId !== undefined) {
-            return `itemIds=${data.itemId}`
-          }
-        }).join('&');
 
-
+        var tempBundleItemsUrl = portfolioItems.map((data, i) =>
+          `itemIds=${data.itemId}`
+        ).join('&');
 
         if (state && state.type === "fetch") {
           if ((portfolioId !== "" || (portfolioId !== undefined))) {
@@ -16736,7 +16738,7 @@ export function CreatePortfolio(props) {
 
       }
 
-      setLoadingItem("02")
+      // setLoadingItem("02")
       setTabs("6")
       // const _tempBundleItems = [...tempBundleItems]
       // for (let i = 0; i < _tempBundleItems.length; i++) {
@@ -16804,13 +16806,16 @@ export function CreatePortfolio(props) {
         }
       }
 
-      if (Object.keys(reqObj).length === 0) {
-        throw "Please Create an Item first, then you can add Bundle/Service";
-      }
+      // if (Object.keys(reqObj).length === 0) {
+      //   throw "Please Create an Item first, then you can add Bundle/Service";
+      // }
 
       if (((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
         ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null))) {
       } else {
+        if (Object.keys(reqObj).length === 0) {
+          throw "Please Create an Item first, then you can add Bundle/Service";
+        }
         if ((((itemPriceData.standardJobId == "") ||
           (itemPriceData.standardJobId == null))) &&
           ((itemPriceData.repairKitId != "") ||
@@ -22177,8 +22182,41 @@ export function CreatePortfolio(props) {
           <Button variant="primary" onClick={() => handleIncludeSerialNumberSaveChanges(selectedMasterData[includedModelIndex])}>Save changes</Button>
         </Modal.Footer>
       </Modal>
-
       {/* Model Box For Update/Edit Coverage Data */}
+
+      {/* Modal for Add Serial No in included Serial no Search by Customer Id */}
+      <Modal
+        show={showSerialNoSearchModal}
+        onHide={() => { setShowSerialNoSearchModal(false); setShowRelatedModel(true) }}
+        centered
+      >
+        <Modal.Header className="align-items-center">
+          <Modal.Title>Search</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="included_table">
+          <div className="w-100">
+            <div className="d-flex align-items-center bg-light-dark w-100 border-radius-10">
+              <div className="d-flex justify-content-between align-items-center p-3 border-radius-10 w-100 border-right">
+                <div className="w-100">
+                  <input
+                    className="p-2 w-100"
+                    // className="custom-input-sleact p-2 w-100"
+                    type="text"
+                    placeholder="Search by Customer Id"
+                    // value={(props.compoFlag === "bundleSearch") ? obj.inputSearch === "" ? "" : obj.inputSearch.split("#")[1] : obj.inputSearch}
+                    onChange={(e) => handleSerialNoSearch(e)}
+                    // id={"inputSearch-" + i}
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="searched-serial-number">
+
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
 
       <Modal
         show={showEditIncludeSerialNoModel}

@@ -4182,3 +4182,6 @@ input[type="checkbox"]:checked:after {
 .border-light-blue{
   border: 1px solid #872FF750 !important;
 }
+.searched-serial-number {    min-height: 400px;
+  max-height: 400px;
+  overflow-y: scroll;}

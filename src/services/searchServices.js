@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_EXTWORK, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_SPAREPART_MARGIN, SEARCH_VENDOR } from "./CONSTANTS";
+import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_EXTWORK, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_SPAREPART_MARGIN, SEARCH_VENDOR, validate_Coverage_Get_Url } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -245,3 +245,24 @@ export const getExtWork = (query) => {
     }
   });
 };
+
+export const getValidateCoverage = (rObj) => {
+  console.log("SearchService > getValidateCoverage called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(validate_Coverage_Get_Url, { params: rObj, headers: headersData })
+        .then((res) => {
+          console.log("getValidateCoverage > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getValidateCoverage > axios err=", err);
+          reject("Error in getValidateCoverage axios!");
+        });
+    } catch (error) {
+      console.error("in SearchService > getValidateCoverage, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+}
