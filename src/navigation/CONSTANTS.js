@@ -97,4 +97,5 @@ export const CREATED_CUSTOM_PORTFOLIO_DETAILS = SOLUTION_BUILDER + "/customPortf
 
 // equipment-master
 export const EQUIPMENT_MASTER = "/eqipment-master";
-export const PARTS_360 = "/parts-360"
+export const PARTS_360 = "/parts-360";
+export const SERVICE_MASTER = "/service-master";
