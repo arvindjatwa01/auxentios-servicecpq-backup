@@ -4111,7 +4111,7 @@ input[type="checkbox"]:checked:after {
 .equipment-pagination .css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root{
   border-radius: 0;
 }
-.equipment-master-chart .css-t17bhq-MuiPaper-root-MuiCard-root {
+.equipment-master-chart .equipment-card {
   border-radius: 4px;
   box-shadow: none;
   overflow: hidden;
@@ -4122,9 +4122,9 @@ input[type="checkbox"]:checked:after {
   margin-top: 22px;
   margin-bottom: 8px;
 }
-.equipment-master-chart .css-1hyjym-MuiGrid-root{
+/* .equipment-master-chart .css-1hyjym-MuiGrid-root{
   max-width: 100%;
-}
+} */
 .equipment-master-btn-select .css-1s2u09g-control, .equipment-master-btn-select .css-1pahdxg-control, .equipment-master-btn-select .css-1s2u09g-control:hover{
   border: 1px solid #872FF750 !important;
   border-radius: 10px !important;
@@ -4242,11 +4242,23 @@ input[type="checkbox"]:checked:after {
   cursor: pointer;
 }
 
-
 /* To hide the default eye icon on password field */
 input::-ms-reveal,
 input::-ms-clear {
   display: none;
 }
 
+.image-reset{
+  margin-right: -180px;
+  z-index: 1000;
+  }
+
+  
+@media (max-width: 1033px) {
+  .image-reset{
+    margin-right: -80px;
+    z-index: 1000;
+  }
+
+  } 
 /* Login fields styling - End */

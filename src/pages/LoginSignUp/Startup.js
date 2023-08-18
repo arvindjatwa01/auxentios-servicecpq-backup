@@ -23,7 +23,21 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 export const Startup = () => {
     // let auth = useAuth();
     // const steps = ["Register", "Verification", "Get Started"];
-
+    const [severity, setSeverity] = useState("");
+    const [openSnack, setOpenSnack] = useState(false);
+    const [snackMessage, setSnackMessage] = useState("");
+    const handleSnackBarClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenSnack(false);
+    };
+    // To display the notifications
+    const handleSnack = (snackSeverity, snackMessage) => {
+        setSnackMessage(snackMessage);
+        setSeverity(snackSeverity);
+        setOpenSnack(true);
+    };
     const [loginErr, setLoginErr] = useState({
         isLoggedIn: false,
         logging: false,
@@ -122,21 +136,7 @@ export const Startup = () => {
     }, []);
 
     console.log("LoginErr : ", loginErr)
-    const [severity, setSeverity] = useState("");
-    const [openSnack, setOpenSnack] = useState(false);
-    const [snackMessage, setSnackMessage] = useState("");
-    const handleSnackBarClose = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-        setOpenSnack(false);
-    };
-    // To display the notifications
-    const handleSnack = (snackSeverity, snackMessage) => {
-        setSnackMessage(snackMessage);
-        setSeverity(snackSeverity);
-        setOpenSnack(true);
-    };
+
     return (
         <>
             <CustomizedSnackbar
@@ -194,7 +194,7 @@ export const Startup = () => {
                                             {/* <div className="row"> */}
                                             <div className="col-md-12 col-sm-12 mt-2 text-right">
                                                 <a
-                                                    href="/reset"
+                                                    href="/forgot-password"
                                                     className="text-white text-decoration-line text-underline-offset"
                                                 >
                                                     Forgot Password?

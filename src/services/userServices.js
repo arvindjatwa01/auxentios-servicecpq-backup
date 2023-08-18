@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL } from "./CONSTANTS";
+import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -80,6 +80,35 @@ export const signIn = (data) => {
   });
 };
 
+/**
+ * Function to login the users.
+ */
+export const forgotPassword = (data) => {
+  console.log("userServices > forgotPassword called...");
+  return new Promise((resolve, reject) => {
+    try {
+      // do an SDK, DB call or API endpoint axios call here and return the promise.
+      axios
+        .post(USER_SERVICE_FORGOT_PASSWORD(), data, { headers: headersData })
+        .then((res) => {
+          if (res.status === 200) {
+            resolve(res);          
+          } else {
+            reject(res);
+          }
+          console.log("forgotPassword > axios res=", res);
+          
+        })
+        .catch((err) => {
+          console.log("forgotPassword > axios err=", err);
+          reject("Error in forgotPassword axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > signIn, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 
 /**

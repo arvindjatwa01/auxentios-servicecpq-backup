@@ -15,11 +15,14 @@ import Switch from "@mui/material/Switch";
 import $ from "jquery";
 
 const searchOptions = [
-  { value: "chocolate", label: "Construction-Heavy" },
-  { value: "strawberry", label: "Construction-Low" },
-  { value: "vanilla", label: "Construction-Medium" },
-  { value: "Construction", label: "Construction" },
+  { value: "A", label: "Serial No" },
+  { value: "B", label: "Model" },
+  { value: "C", label: "Family" },
+  { value: "D", label: "Equipment Id" },
+  { value: "E", label: "Manufacturer" },
+  { value: "F", label: "Description" },
 ];
+
 const tempdata = [
   {
     itemName: "2276044",
@@ -1021,10 +1024,10 @@ const EquipmentMaster = () => {
                       </div>
                     </div>
                   </div>
-                  <Grid item md={9} xs={12} container className="mt-3">
-                    <Card
-                      elevation={10}
-                      sx={{ width: "97%", borderRadius: 4, mx: 2, my: 1 }}
+                  <Grid item md={12} xs={12} container className="mt-3" sx={{width: '100%'}}>
+                    <div
+                      className="card equipment-card"
+                      // sx={{ width: "97%", borderRadius: 4, mx: 2, my: 1 }}
                     >
                       <div className="m-3 d-flex align-items-center justify-content-between">
                         <h5 className="font-weight-600 mb-0 pr-2 text-truncate">
@@ -1044,7 +1047,7 @@ const EquipmentMaster = () => {
                       </div>
                       <Divider />
                       <PaginationStackedChart data={lifeCycleStatusData} />
-                    </Card>
+                    </div>
                   </Grid>
                 </>
               )}

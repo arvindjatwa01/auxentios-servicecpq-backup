@@ -8,7 +8,8 @@ export const LOGIN = "/login";
 export const INSIGHTS ="/insights";
 
 export const PORTFOLIO_SUMMARY = "/portfolio/summary";
-export const RESET = "/reset";
+export const RESET = "/reset-password";
+export const FORGOT_PASSWORD = "/forgot-password";
 export const PERMISSION = "/permission";
 export const PERMISSION_SETTING = "/permission/settings";
 export const DASHBOARD = "/dashboard";

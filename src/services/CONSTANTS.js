@@ -71,6 +71,7 @@ export const GET_SEARCH_STANDARD_JOB_ID = REPAIR_BUILDER_URI + "standard-job/sea
 //User Service
 export const USER_SERVICE_SIGNUP_URL = () => USER_SERVICE_URI + "signup";
 export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "root-login";
+export const USER_SERVICE_FORGOT_PASSWORD = () => USER_SERVICE_URI + "forgot-password";
 
 // Audit Service
 

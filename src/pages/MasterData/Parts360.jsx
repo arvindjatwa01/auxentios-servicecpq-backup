@@ -19,11 +19,14 @@ import Switch from "@mui/material/Switch";
 import $ from "jquery";
 
 const searchOptions = [
-  { value: "chocolate", label: "Construction-Heavy" },
-  { value: "strawberry", label: "Construction-Low" },
-  { value: "vanilla", label: "Construction-Medium" },
-  { value: "Construction", label: "Construction" },
+  { value: "A", label: "Part Number" },
+  { value: "B", label: "Group Number" },
+  { value: "C", label: "Part Group" },
+  { value: "D", label: "BEC Code" },
+  { value: "E", label: "ERP Material Group" },
+  { value: "F", label: "ERP Material Number" },
 ];
+
 const tempdata = [
   {
     itemName: "2276044",
