@@ -1,3 +1,4 @@
 export { Startup } from "./Startup";
-export { ResetPassword } from "./ResetPassword";
+export { ForgotPassword } from "./ForgotPassword";
 export { VerifyEmail } from "./VerifyEmail";
+ 

@@ -9,7 +9,7 @@ import newLogoIcon from '../../assets/icons/svg/NewLogoIcon.svg';
 import { Grid } from '@mui/material'
 import { forgotPassword } from "services/userServices";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-export const ResetPassword = () => {
+export const ForgotPassword = () => {
     // let auth = useAuth();
     const [severity, setSeverity] = useState("");
     const [openSnack, setOpenSnack] = useState(false);
@@ -26,23 +26,16 @@ export const ResetPassword = () => {
         setSeverity(snackSeverity);
         setOpenSnack(true);
     };
-    const [isShowPassword, setIsShowPassword] = useState(false);
 
-    const togglePassword = () => {
-      setIsShowPassword(prevState => !prevState);
-    }
-  
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('')
+    const [emailId, setEmailId] = useState('')
     const handleForgotPassword = async () => {
-        var dict = { password: password, uuid: "testuuid" };
+        var dict = { "emailId": emailId }
         await forgotPassword(dict).then(res => {
             handleSnack('success', "A password reset email has been sent to your email address")
         }).catch(err => {
             handleSnack('error', "Error occurred while sending the email!")
         })
     }
-    
 
     return (
         <>
@@ -55,8 +48,8 @@ export const ResetPassword = () => {
             <div style={{ height: '100vh' }}>
                 <div className="d-flex justify-content-between h-100">
                     <Grid container className="bg-white">
-                        <Grid item xs={12} md={5} sx={{ display: { xs: "none", md: "block" }, height: "100%" }}>
-                            <Box display="flex" justifyContent="flex-end" className="h-100" alignItems={'center'}>
+                        <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "block" }, height: "100%" }}>
+                            <Box display="flex" justifyContent="flex-end" className="h-100">
                                 {/* <div className="text-center">
                                         <img src={newLogoIcon}></img>
                                     </div>
@@ -67,43 +60,32 @@ export const ResetPassword = () => {
                                         <p className="text-white mt-2">If you don’t have access to your email anymore, you can try <a href="#" className="text-white text-decoration-line text-underline-offset">account recovery.</a>
                                         </p>
                                     </div> */}
-                                <img src={'../assets/images/reset-password.png'} width="100%" height="70%" alt="Reset" className="image-reset"/>
+                                <img src={'../assets/images/ResetPassword.svg'} width="90%" height="100%" alt="Reset" />
                             </Box>
                         </Grid>
-                        <Grid item xs={12} md={7} container justifyContent={'center'}>
-                            <Box className="bg-violet h-100" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: "100%"}}>
-                                <div style={{ width: "50%" }}>
-                                    <h2 className="text-white font-weight-600 text-center my-4">Reset Password</h2>
+                        <Grid item xs={12} md={4} container justifyContent={'center'}>
+                            <Box className="bg-white h-100" style={{ display: 'flex', alignItems: 'center' }}>
+                                <div style={{ width: "90%" }}>
+                                    <h2 className="text-primary font-weight-600 text-center my-4">Forgot Password?</h2>
                                     <div className="row m-0" >
                                         <div className="col-md-12 col-sm-12">
-                                            <div className="form-group mt-3 login-input-v-icons">
-                                                <i class="fa fa-lock login-v-icon"></i>
+                                            <div className="form-group mt-3 login-input-icons">
+                                                <i class="fa fa-envelope login-icon"></i>
                                                 <input
-                                                    type={isShowPassword? "text" : "password"}
-                                                    className="form-control login-field-violet border-radius-10"
-                                                    placeholder="New Password"
-                                                    value={password}
-                                                    onChange={(e) => setPassword( e.target.value)}
-                                                />
-                                                <i onClick={togglePassword} className={`fa ${isShowPassword ? "fa-eye-slash" : "fa-eye" } eye-icon text-white`}></i>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div className="form-group mt-3 login-input-v-icons">
-                                                <i class="fa fa-lock login-v-icon"></i>
-                                                <input
-                                                    type={"password"}
-                                                    className="form-control login-field-violet border-radius-10"
-                                                    placeholder="Confirm New Password"
-                                                    value={confirmPassword}
-                                                    onChange={(e) => setConfirmPassword( e.target.value)}
+                                                    type="email"
+                                                    className="form-control login-field border-radius-10"
+                                                    id="loginInputEmail"
+                                                    placeholder="Email Address"
+                                                    name="emailId"
+                                                    value={emailId}
+                                                    onChange={(e) => setEmailId(e.target.value)}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group mt-3">
-                                                <a href={undefined} className="btn bg-white text-primary d-block font-weight-600"
-                                                    style={{ paddingBlock: 10 }} onClick={handleForgotPassword}>Update</a>
+                                                <a href={undefined} className="btn bg-violet text-white d-block font-weight-600"
+                                                    style={{ paddingBlock: 10 }} onClick={handleForgotPassword}>Send</a>
                                             </div>
                                         </div>
                                         {/* <div className="col-md-6 col-sm-6">
@@ -115,6 +97,9 @@ export const ResetPassword = () => {
                                     </div>
                                 </div>
                             </Box>
+                        </Grid>
+                        <Grid item xs={12} md={2} className="bg-white" sx={{ display: { xs: "none", md: "block" }, height: "100%" }}>
+
                         </Grid>
                     </Grid>
                 </div>

@@ -50,14 +50,14 @@ function* handleLogin(payload: LoginPayload) {
       localStorage.setItem('user_roles', res.data.roles);
       localStorage.setItem('user_planId', res.data.planId);
       localStorage.setItem('user_logIn_Status', true);
-      if (res.data.planId == null || res.data.planId == "FREE") {
-        // yield put(push('/LandingPageLogin'));
-        // window.location.reload();
-        window.location.href = "/LandingPageLogin";
-      } else {
+      // if (res.data.planId == null || res.data.planId == "FREE") {
+      //   // yield put(push('/LandingPageLogin'));
+      //   // window.location.reload();
+      //   window.location.href = "/LandingPageLogin";
+      // } else {
         // yield put(push('/'));
         window.location.href = "/";
-      }
+      // }
       // console.log("Login Success");
     } else {
       yield put(

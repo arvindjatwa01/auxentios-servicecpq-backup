@@ -575,7 +575,7 @@ function WithSparePartsHeader(props) {
     console.log(data);
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      alert("Please enter the email address in correct format");
+      handleSnack("error","Please enter the email address in correct format");
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {

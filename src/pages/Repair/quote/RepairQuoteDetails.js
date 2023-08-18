@@ -959,7 +959,7 @@ const RepairQuoteDetails = (props) => {
     setShippingDetail({ ...shippingDetail, serviceRecipientAddress });
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      alert("Please enter the email address in correct format");
+      handleSnack("error","Please enter the email address in correct format");
     } else {
       updateQuoteHeader(quoteId, data)
         .then((result) => {

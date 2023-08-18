@@ -1115,7 +1115,7 @@ nav.main-menu>ul>li>ul>li.active>a {
 }
 
 .main-menu .span-icon svg {
-  width: 20px;
+  width: 15px;
   /* fill: #872ff7; */
 }
 
@@ -2380,10 +2380,6 @@ nav.main-menu>ul>li>ul>li.active>a {
   text-underline-offset: 5px;
 }
 
-.text-decoration-line {
-  text-decoration-line: underline;
-}
-
 .css-6hp17o-MuiList-root-MuiMenu-list hr {
   display: none !important;
 }
@@ -3251,7 +3247,8 @@ button.bg-primary:hover {
   width: 100%;
   margin-top: 0.25rem;
   font-size: 12px;
-  color: #ff5e5e;
+  color: #fff;
+  /* color: #ff5e5e; */
   font-weight: 500
 }
 
@@ -4114,7 +4111,7 @@ input[type="checkbox"]:checked:after {
 .equipment-pagination .css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root{
   border-radius: 0;
 }
-.equipment-master-chart .css-t17bhq-MuiPaper-root-MuiCard-root {
+.equipment-master-chart .equipment-card {
   border-radius: 4px;
   box-shadow: none;
   overflow: hidden;
@@ -4125,9 +4122,9 @@ input[type="checkbox"]:checked:after {
   margin-top: 22px;
   margin-bottom: 8px;
 }
-.equipment-master-chart .css-1hyjym-MuiGrid-root{
+/* .equipment-master-chart .css-1hyjym-MuiGrid-root{
   max-width: 100%;
-}
+} */
 .equipment-master-btn-select .css-1s2u09g-control, .equipment-master-btn-select .css-1pahdxg-control, .equipment-master-btn-select .css-1s2u09g-control:hover{
   border: 1px solid #872FF750 !important;
   border-radius: 10px !important;
@@ -4182,3 +4179,86 @@ input[type="checkbox"]:checked:after {
 .border-light-blue{
   border: 1px solid #872FF750 !important;
 }
+.searched-serial-number {    
+  min-height: 400px;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+  
+/* Login fields styling - start */
+.login-field-violet,
+.login-field-violet:-webkit-autofill,
+.login-field-violet:-webkit-autofill:hover, 
+.login-field-violet:-webkit-autofill:focus, 
+.login-field-violet:-webkit-autofill:active  {
+  padding-inline: 40px;
+  background-color: #872FF7 !important;
+  -webkit-text-fill-color: #fff !important;;
+  -webkit-box-shadow: 0 0 0px 1000px #872FF7 inset !important;
+  color: #fff !important;
+  padding-block: 25px;
+}
+
+.login-field,
+.login-field:-webkit-autofill,
+.login-field:-webkit-autofill:hover, 
+.login-field:-webkit-autofill:focus, 
+.login-field:-webkit-autofill:active  {
+  padding-inline: 40px;
+  background-color: #fff !important;
+  -webkit-text-fill-color: #00000075 !important;;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  color: #00000075 !important;
+  padding-block: 25px;
+}
+
+.login-input-icons i , .login-input-v-icons i{
+  position: absolute;
+}
+
+.login-input-icons, .login-input-v-icons{
+  width: 100%;
+  margin-bottom: 10px;
+  text-align: start;
+}
+
+.login-icon {
+  padding: 19px 12px;
+  min-width: 40px;
+}
+
+.login-v-icon {
+  padding: 19px 12px;
+  min-width: 40px;
+  color: #ffffff
+}
+
+.eye-icon {
+  width: 25px;
+  height: 25px;
+  z-index: 200;
+  top: 35px;
+  right: 20px;
+  cursor: pointer;
+}
+
+/* To hide the default eye icon on password field */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+.image-reset{
+  margin-right: -180px;
+  z-index: 1000;
+  }
+
+  
+@media (max-width: 1033px) {
+  .image-reset{
+    margin-right: -80px;
+    z-index: 1000;
+  }
+
+  } 
+/* Login fields styling - End */

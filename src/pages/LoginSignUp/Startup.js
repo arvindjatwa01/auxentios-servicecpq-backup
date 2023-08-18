@@ -1,68 +1,66 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepButton from "@mui/material/StepButton";
 import auxentionlogo from "../../assets/icons/png/auxentionlogo.png";
 import logoIcon from '../../assets/icons/svg/Logo.svg';
+// import LoginImage from '../assets/images/1.jpg';
 import newLogoIcon from '../../assets/icons/svg/NewLogoIcon.svg';
+import newLogoIcon1 from '../../assets/icons/svg/latest-logo.svg';
+
 import erroricon from "../../assets/icons/png/error.png";
-import { signIn } from "../../services/index";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import { signUpActions } from "../../features/auth/signUpSlice";
 import type { SignUpPayload, EmailVerifyPayLoad } from "../../features/auth/signUpSlice";
 import { ToastMessageHandler } from "../../components/Common/ToastMessageHandler";
-import { SignUp } from "./SignUp";
 import { authActions } from "../../features/auth/authSlice";
 import { history } from "../../utils";
 import { useLocation } from "react-router-dom";
-
 import Validator from "../../utils/validator";
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { SignUp } from "./SignUp";
+import { Grid } from '@mui/material';
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 
 export const Startup = () => {
     // let auth = useAuth();
-    const steps = ["Register", "Verification", "Get Started"];
-
+    // const steps = ["Register", "Verification", "Get Started"];
+    const [severity, setSeverity] = useState("");
+    const [openSnack, setOpenSnack] = useState(false);
+    const [snackMessage, setSnackMessage] = useState("");
+    const handleSnackBarClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenSnack(false);
+    };
+    // To display the notifications
+    const handleSnack = (snackSeverity, snackMessage) => {
+        setSnackMessage(snackMessage);
+        setSeverity(snackSeverity);
+        setOpenSnack(true);
+    };
     const [loginErr, setLoginErr] = useState({
         isLoggedIn: false,
         logging: false,
         currentUser: undefined,
     });
-
-
-
     const dispatch = useDispatch();
     const result = useSelector((state) => state.signUp);
-    console.log("result of user ", result.activeStep)
+    // console.log("result of user ", result.activeStep)
 
     const LoginRes = useSelector((state) => state.loginSuccess);
 
     console.log("result of login failed/success : ", LoginRes)
-
-
-    // console.log("result signup ", result)
-
-    // console.log("dispatch : ", dispatch);
     const { search } = useLocation();
     const queryString = new URLSearchParams(search);
 
-    const [signUpInputData, setSignUpInputData] = useState({
-        firstName: "",
-        lastName: "",
-        workEmail: "",
-        password: "",
-    });
     const [signInInputData, setSignInInputData] = useState({
         emailId: "",
         password: "",
     });
 
-    const handleStep = (step) => {
-        // setActiveStep(step);
-    };
+    // const handleStep = (step) => {
+    //      setActiveStep(step);
+    // };
 
     const handleLoginInput = (e) => {
         const name = e.target.name;
@@ -89,34 +87,39 @@ export const Startup = () => {
         const validator = new Validator();
 
         if (!validator.emailValidation(signInInputData.emailId)) {
-            alert("Please enter the email address in correct format");
+            handleSnack("error", "Please enter the email address in correct format");
         } else if (!validator.passwordValidation(signInInputData.password)) {
-            alert("Please enter the password");
+            handleSnack("error", "Please enter the password");
         } else {
             const dispa = dispatch(authActions.login(dict));
-
             console.log("object ", dispa);
-
-            // dispatch(authActions.login(dict));
-            // alert("login error ?")
         }
-
         setLoginErr({
             isLoggedIn: LoginRes.isLoggedIn,
             logging: LoginRes.logging,
             currentUser: LoginRes.currentUser,
         });
+        // if (loginErr.currentUser && loginErr.currentUser.status === 500) {
+        //     handleSnack('error', "Please enter a valid email id and password")
+        //     setLoginErr({
+        //         isLoggedIn: false,
+        //         logging: false,
+        //         currentUser: undefined,
+        //     });
+        // }
+
         console.log("signInResponse");
-
         console.log("dict is : ", dict);
-
-        // dispatch(authActions.login(dict));
-        // history.push('/')
     };
 
     const handleSendVerification = () => {
         dispatch(signUpActions.verifyEmail());
     };
+    const [isShowLoginPassword, setIsShowLoginPassword] = useState(false);
+
+    const togglePassword = () => {
+        setIsShowLoginPassword(prevState => !prevState);
+    }
 
     useEffect(() => {
         const uuid = queryString.get('uuid')
@@ -135,137 +138,102 @@ export const Startup = () => {
     console.log("LoginErr : ", loginErr)
 
     return (
-        <div className="content-body" style={{ minHeight: "884px" }}>
-            <div className="container mt-4">
-                <div className="row">
-                    <div className="col-md-8 col-sm-12 mx-auto">
-                        <Box sx={{ width: "100%" }}>
-                            <Stepper activeStep={result.activeStep} alternativeLabel>
-                                {steps.map((label, index) => (
-                                    <Step key={label} onClick={() => handleStep(index)}>
-                                        <StepButton color="inherit">{label}</StepButton>
-                                    </Step>
-                                ))}
-                            </Stepper>
-                        </Box>
-                    </div>
-                </div>
-                <div className="card overflow-hidden mt-5">
-                    {result.activeStep == 2 ? (
-                        <div className="row">
-                            <div className="col-md-4 col-sm-4">
-                                <div className="bg-violet py-4 px-4 h-100">
-                                    <div className="text-center">
-                                        <img src={newLogoIcon}></img>
-                                    </div>
-                                    <div className="mt-4">
-                                        <p className="text-white mt-2">
-                                            <b>To:</b>our users
-                                        </p>
-                                    </div>
-                                    <div className="mt-4">
-                                        <p className="text-white mt-2">
-                                            <b>Subject:</b> Welcome to <b>Auxentios</b>
-                                        </p>
-                                    </div>
-                                    <div className="mt-4">
-                                        <p className="text-white mt-2">
-                                            Need an Auxentios account?
-                                            <br />
-                                            <a
-                                                // onClick={() => setActiveStep(0)}
-                                                onClick={() => dispatch(signUpActions.registration())} style={{ cursor: "pointer" }}
-                                                className="text-white text-decoration-line text-underline-offset cursor"
-                                            >
-                                                Create an account
-                                                <span className="ml-2">
-                                                    <img style={{ width: "25px" }} src={erroricon}></img>
-                                                </span>
-                                            </a>
-                                        </p>
-                                    </div>
-                                    <div className="mt-4">
-                                        <p className="text-white mt-2">
-                                            Forgot your user id?
-                                            <br />
-                                            <a
-                                                href="/reset"
-                                                className="text-white text-decoration-line text-underline-offset"
-                                            >
-                                                Forgot your password?
-                                            </a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-md-8 col-sm-8">
-                                <div className="pt-5">
-                                    <h4 className="ml-3">Log In</h4>
-                                    <div className="row m-0">
-                                        <div className="col-md-12 col-sm-12">
-                                            <div className="form-group mt-3">
-                                                <label
-                                                    className="text-light-dark font-size-12 font-weight-600"
-                                                    htmlFor="loginInputEmail"
-                                                >
-                                                    USER ID
-                                                </label>
-                                                <input
-                                                    type="email"
-                                                    className="form-control border-radius-10"
-                                                    id="loginInputEmail"
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Email Address"
-                                                    name="emailId"
-                                                    value={signInInputData.emailId}
-                                                    onChange={handleLoginInput}
-                                                />
+        <>
+            <CustomizedSnackbar
+                handleClose={handleSnackBarClose}
+                open={openSnack}
+                severity={severity}
+                message={snackMessage}
+            />
+            <div style={{ height: '100vh' }}>
+                <div className="d-flex justify-content-between h-100">
+                    {result.activeStep === 2 ? (
+                        <Grid container className="h-100 bg-white">
+                            <Grid container item xs={12} md={5} alignItems={'center'}>
+                                <div className="bg-violet pt-5 px-5 h-100" style={{ display: 'flex', alignItems: 'center' }} >
+                                    <div>
+                                        {/* <div className="text-center">
+                                        <img src={newLogoIcon} width={"20%"} alt="Logo"></img>
+                                    </div> */}
+                                        <h2 className="text-white font-weight-600 text-center mt-3">Log In</h2>
+                                        <div className="row m-5">
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group mt-3 login-input-v-icons">
+                                                    <i class="fa fa-user login-v-icon"></i>
+                                                    <input
+                                                        type="email"
+                                                        className="form-control login-field-violet border-radius-10"
+                                                        id="loginInputEmail"
+                                                        placeholder="Email Address"
+                                                        name="emailId"
+                                                        value={signInInputData.emailId}
+                                                        onChange={handleLoginInput}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div className="form-group mt-3">
-                                                <label
-                                                    className="text-light-dark font-size-12 font-weight-600"
-                                                    htmlFor="loginInputPassword"
-                                                >
-                                                    PASSWORD
-                                                </label>
-                                                <input
-                                                    type="password"
-                                                    className="form-control border-radius-10"
-                                                    id="loginInputPassword"
-                                                    aria-describedby="emailHelp"
-                                                    placeholder="Password"
-                                                    name="password"
-                                                    value={signInInputData.password}
-                                                    onChange={handleLoginInput}
-                                                />
-                                                {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
-                                                    <div class="invlaid-email-password">
-                                                        Please enter a valid email or password.
-                                                    </div>
-                                                )}
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group mt-3 login-input-v-icons">
+                                                    <i class="fa fa-lock login-v-icon"></i>
+                                                    <input
+                                                        type={isShowLoginPassword ? "text" : "password"}
+                                                        className="form-control login-field-violet border-radius-10"
+                                                        id="loginInputPassword"
+                                                        placeholder="Password"
+                                                        name="password"
+                                                        value={signInInputData.password}
+                                                        onChange={handleLoginInput}
+                                                    />
+                                                    <i onClick={togglePassword} className={`fa ${isShowLoginPassword ? "fa-eye-slash" : "fa-eye"} eye-icon text-white`}></i>
+                                                    {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
+                                                        <div class="invlaid-email-password">
+                                                            Please enter a valid email or password.
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div className="form-group mt-3">
+                                            {/* <div className="row"> */}
+                                            <div className="col-md-12 col-sm-12 mt-2 text-right">
                                                 <a
-                                                    onClick={handleLogin}
-                                                    className="btn bg-violet text-white d-block cursor"
+                                                    href="/forgot-password"
+                                                    className="text-white text-decoration-line text-underline-offset"
                                                 >
-                                                    Log in
+                                                    Forgot Password?
                                                 </a>
                                             </div>
-                                        </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            <div className="form-group mt-3">
-                                                <p>Keep me logged in</p>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group mt-3">
+                                                    <a
+                                                        onClick={handleLogin}
+                                                        className="btn bg-white d-block cursor text-primary font-weight-600"
+                                                        style={{ paddingBlock: 10 }}
+                                                    >
+                                                        Login
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-12 col-sm-12 text-center">
+                                                <div className="form-group mt-3 text-white">
+                                                    <p>Don't have an account? <a
+                                                        // onClick={() => setActiveStep(0)}
+                                                        onClick={() => dispatch(signUpActions.registration())}
+                                                        className="text-white text-decoration-line text-underline-offset cursor"
+                                                    >
+                                                        Create an account
+                                                        {/* <span className="ml-2">
+                                                        <img style={{ width: "25px" }} src={erroricon}></img>
+                                                    </span> */}
+                                                    </a></p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                            </Grid>
+                            <Grid container item xs={7} alignItems={'center'}
+                                sx={{ display: { xs: "none", md: "block" }, py: 5 }}>
+                                <img src={'../assets/images/login.jpg'} width="90%" height="90%" />
+                            </Grid>
+                        </Grid>
                     ) : (
                         <></>
                     )}
@@ -361,13 +329,12 @@ export const Startup = () => {
                     ) : (
                         <></>
                     )}
-                    {result.activeStep == 0 ? (
-                        <div className="row">
-                            <div className="col-md-4 col-sm-4">
-                                <div className="bg-violet py-4 px-4 h-100">
-                                    <div className="text-center">
-                                        <img src={newLogoIcon}></img>
-                                    </div>
+                    {result.activeStep === 0 ? (
+                        <Grid container>
+                            <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "block" } }}>
+                                <div className="h-100">
+                                    <img src='../assets/images/signup.jpg' width='100%' height='100%' />
+
                                     {/* <div className="mt-4">
                                         <div>
                                             <img src={erroricon}></img>
@@ -380,7 +347,7 @@ export const Startup = () => {
                                             </a>
                                         </p>
                                     </div> */}
-                                    <div className="mt-4">
+                                    {/* <div className="mt-4">
                                         <div>
                                             <img src={erroricon}></img>
                                         </div>
@@ -416,85 +383,39 @@ export const Startup = () => {
                                             You can access the product by clciking on the link for 30
                                             days.
                                         </p>
-                                    </div>
+                                    </div> */}
                                 </div>
-                            </div>
-                            <div className="col-md-8 col-sm-8">
-                                {/*<div className="pt-5">*/}
-                                {/*    <h4 className="ml-3">Sign up</h4>*/}
-                                {/*    <div className="row m-0">*/}
-                                {/*        <div className="col-md-6 col-sm-6">*/}
-                                {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">FIRST NAME</label>*/}
-                                {/*                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="John" value={signUpInputData.firstName} onChange={(e) => setSignUpInputData({*/}
-                                {/*                    ...signUpInputData,*/}
-                                {/*                    firstName: e.target.value*/}
-                                {/*                })} />*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="col-md-6 col-sm-6">*/}
-                                {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">LAST NAME</label>*/}
-                                {/*                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Doe" value={signUpInputData.lastName} onChange={(e) => setSignUpInputData({*/}
-                                {/*                    ...signUpInputData,*/}
-                                {/*                    lastName: e.target.value*/}
-                                {/*                })} />*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="col-md-6 col-sm-6">*/}
-                                {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">WORK EMAIL</label>*/}
-                                {/*                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" value={signUpInputData.workEmail} onChange={(e) => setSignUpInputData({*/}
-                                {/*                    ...signUpInputData,*/}
-                                {/*                    workEmail: e.target.value*/}
-                                {/*                })} />*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="col-md-12 col-sm-12">*/}
-                                {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">CREATE PASSWORD</label>*/}
-                                {/*                <input type="password" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder=" Create Password" value={signUpInputData.password} onChange={(e) => setSignUpInputData({*/}
-                                {/*                    ...signUpInputData,*/}
-                                {/*                    password: e.target.value*/}
-                                {/*                })} />*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="col-md-12 col-sm-12">*/}
-                                {/*            <div className="form-group mt-3">*/}
-                                {/*                <a onClick={handleSignUp} className="btn bg-violet text-white d-block cursor">Sign Up</a>*/}
-                                {/*            </div>*/}
-                                {/*        </div>*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
+                            </Grid>
+                            <Grid item xs={12} md={6} display={'flex'} alignItems={'center'} sx={{ px: 6, backgroundColor: "#ffffff" }}>
                                 <SignUp id={1} />
-                            </div>
-                        </div>
+                            </Grid>
+                        </Grid>
                     ) : (
                         <></>
                     )}
                 </div>
-            </div>
-            {result.isLoggedIn &&
-                result.currentUser &&
-                result.currentUser.status === 200 && (
+                {result.isLoggedIn &&
+                    result.currentUser &&
+                    result.currentUser.status === 200 && (
+                        <ToastMessageHandler
+                            status={200}
+                            message={"you have registered successfully!!! \n Please varify Email"}
+                        />
+                    )}
+                {result.currentUser && result.currentUser.status === 400 && (
                     <ToastMessageHandler
-                        status={200}
-                        message={"you have registered successfully!!! \n Please varify Email"}
+                        status={400}
+                        message={"Error While Registering User"}
                     />
                 )}
-            {result.currentUser && result.currentUser.status === 400 && (
-                <ToastMessageHandler
-                    status={400}
-                    message={"Error While Registering User"}
-                />
-            )}
-            {/* {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
+                {/* {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
                 <ToastMessageHandler
                     status={400}
                     message={"Invalid email or password.!!! \n Please try Again"}
                 />
             )} */}
-            {/*<ToastContainer />*/}
-        </div>
+                {/*<ToastContainer />*/}
+            </div>
+        </>
     );
 };

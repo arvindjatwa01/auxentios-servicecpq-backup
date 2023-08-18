@@ -755,7 +755,7 @@ function PartList(props) {
     };
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      alert("Please enter the email address in correct format");
+      handleSnack("error","Please enter the email address in correct format");
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
@@ -930,7 +930,8 @@ function PartList(props) {
         else
           handleSnack("success", `👏 Selected part detail has been updated!`);
         if (result) {
-          fetchAllDetails(builderId, generalData.version);
+          // fetchAllDetails(builderId, generalData.version);
+          refreshData(builderId, generalData.version);
         }
         // fetchPartsOfPartlist(partListNo, page, pageSize);
       })
