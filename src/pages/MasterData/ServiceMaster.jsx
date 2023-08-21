@@ -5,17 +5,66 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Link } from "react-router-dom";
+import Pagination from "@mui/material/Pagination";
+import { Stack } from "@mui/material";
 import Select from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import DataTable from "react-data-table-component";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import $ from "jquery";
 
+const tempdata = [
+  {
+    itemName: "2276044",
+    itemDescription: "New",
+    itemHeaderStrategy: "SEAL-O-RING",
+    taskType: "1757896",
+    quantity: "1",
+    recommendedValue: "PC",
+    servicePrice: "9.92",
+    bundleFlag: "9.92",
+  },
+  {
+    itemName: "3734828",
+    itemDescription: "Reman",
+    itemHeaderStrategy: "Full Core Deposit",
+    taskType: "10R4469",
+    quantity: "1",
+    recommendedValue: "PC",
+    servicePrice: "94886.38",
+    bundleFlag: "94886.38",
+  },
+  {
+    itemName: "3620656",
+    itemDescription: "New",
+    itemHeaderStrategy: "Spacer",
+    taskType: "6I6123",
+    quantity: "1",
+    recommendedValue: "PC",
+    servicePrice: "40.69",
+    bundleFlag: "40.69",
+  },
+  {
+    itemName: "3598761",
+    itemDescription: "Refurbish",
+    itemHeaderStrategy: "Full Core Deposit",
+    taskType: "10R5474",
+    quantity: "1",
+    recommendedValue: "PC",
+    servicePrice: "5879.24",
+    bundleFlag: "5879.24",
+  },
+];
 const ServiceMaster = () => {
+  const [bundleItems, setBundleItems] = useState([...tempdata]);
   const [value, setValue] = React.useState("1");
   const searchOptions = [
-    { value: "chocolate", label: "Construction-Heavy" },
-    { value: "strawberry", label: "Construction-Low" },
-    { value: "vanilla", label: "Construction-Medium" },
-    { value: "Construction", label: "Construction" },
+    { value: "A", label: "By internal or external" },
+    { value: "B", label: "Service code," },
+    { value: "C", label: "Description" },
+    { value: "D", label: "Labor type" },
   ];
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -59,7 +108,196 @@ const ServiceMaster = () => {
   const removeSearchCritria = () => {
     setSearchSelector([]);
   };
+  const [labormasterpagination, setLabormasterpagination] = React.useState(1);
+  const laborPaginationChange = (event, value) => {
+    setLabormasterpagination(value);
+  };
+  const globalsearchList = [
+    { A: "S012", B: "Internal", C: "Inspection", D: "Field Service" },
+    { A: "S006", B: "Internal", C: "Analysis", D: "Field Service" },
+    { A: "S014", B: "External", C: "Inspection", D: "Special Service" },
+    { A: "3J0634", B: "3620656", C: "SEAL", D: "CATERPILLAR" },
+    {
+      A: "F198300020130",
+      B: "3620656",
+      C: "PRESSURE WASHER",
+      D: "CATERPILLAR",
+    },
+    { A: "2A4429", B: "3620656", C: "LOCK", D: "CATERPILLAR" },
+    {
+      A: "3681P053",
+      B: "3620656",
+      C: "MANIFOLD COVER GASKET",
+      D: "CATERPILLAR",
+    },
+  ];
+  const priceLaborColumns = [
+    {
+      name: (
+        <>
+          <div>Charge Code</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Labor Code</div>
+        </>
+      ),
+      selector: (row) => row.itemDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemDescription,
+    },
 
+    {
+      name: (
+        <>
+          <div>Labor Type</div>
+        </>
+      ),
+      selector: (row) => row?.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.itemHeaderStrategy,
+      // minWidth: "150px",
+      // maxWidth: "150px",
+    },
+    {
+      name: (
+        <>
+          <div>Service Type</div>
+        </>
+      ),
+      selector: (row) => row?.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Of Measure</div>
+        </>
+      ),
+      selector: (row) => row?.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Currency</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Start Date</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>End Date</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Effective From</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Last Updated</div>
+        </>
+      ),
+      selector: (row) => row?.recommendedValue,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.recommendedValue,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      wrap: true,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
+        >
+          <EditOutlinedIcon className="mr-1" />
+          <DeleteOutlineOutlinedIcon />
+        </div>
+      ),
+    },
+  ];
+  const customStyles = {
+    rows: {
+      style: {
+        minHeight: "72px",
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+        backgroundColor: "#872ff7",
+        color: "#fff",
+        borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+        borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+    },
+  };
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div className="container-fluid">
@@ -199,6 +437,247 @@ const ServiceMaster = () => {
                     <Link to="#" className="btn bg-primary text-white">
                       <span className="ml-1">Search</span>
                     </Link>
+                  </div>
+                </div>
+              </div>
+              <div className="row mt-3">
+                <div className="col-xl-4 col-lg-5 col-md-12 col-sm-12 border-50">
+                  <div className="bg-grey border-radius-10 p-3">
+                    <div className="equipment-master-ul">
+                      <ul>
+                        {globalsearchList.map((Data, i) => (
+                          <li className={`${i === 0 ? "active" : ""}`}>
+                            <div className="row align-items-center">
+                              <div className="col-lg-3 col-md-3 col-sm-3 col-3">
+                                <img
+                                  src="../assets/images/spare-parts-sm.png"
+                                  alt="jcb"
+                                  className=" img-fluid"
+                                />
+                              </div>
+                              <div className="col-lg-4 col-md-4 col-4">
+                                <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                                  {Data.A}
+                                </h6>
+                                <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                                  {Data.B}
+                                </p>
+                              </div>
+                              <div className="col-lg-5 col-md-5 col-sm-5 col-5">
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div className="d-block pr-1">
+                                    <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                                      {Data.C}
+                                    </h6>
+                                    <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                                      {Data.D}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <ArrowForwardIosIcon className="text-primary font-size-20" />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-xl-8 col-lg-7 col-md-12 col-sm-12 equipment-master-chart mt-custom">
+                  <div className="">
+                    <div className="bg-white p-3 border-radius-10 ">
+                      <div className="d-flex align-items-center justify-content-between equipment-pagination">
+                        <h5 className="font-weight-600 mb-0">Inspection</h5>
+                        <Stack spacing={2}>
+                          <Pagination
+                            boundaryCount={0}
+                            siblingCount={0}
+                            count={2}
+                            page={labormasterpagination}
+                            onChange={laborPaginationChange}
+                          />
+                        </Stack>
+                      </div>
+                      <div className="d-block mt-3">
+                        <h6 className="text-primary font-weight-600">S014</h6>
+                        <p className="text-light-60 font-size-12 mb-0">
+                          External - Special Service
+                        </p>
+                      </div>
+                    </div>
+
+                    {labormasterpagination === 1 && (
+                      <>
+                        <div className="bg-white p-3 border-radius-10 overflow-hidden br-t">
+                          <div className="row align-items-end">
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                              <div className="d-block">
+                                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                  Service Code
+                                </p>
+                                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                  Full Core Deposit
+                                </p>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                              <div className="d-block">
+                                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                  Service Description
+                                </p>
+                                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                  Reman
+                                </p>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                              <div className="d-block">
+                                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                  Service Type
+                                </p>
+                                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                  Active
+                                </p>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                              <div className="d-block">
+                                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                  Labor Type
+                                </p>
+                                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                  Caterpillar
+                                </p>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                Charge Code
+                              </p>
+                              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                336D2 L
+                              </p>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                              <div className="d-block">
+                                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                  Labor Code
+                                </p>
+                                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                  3620656
+                                </p>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                              <div className="d-block">
+                                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                  Recommended Duration
+                                </p>
+                                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                  REMAN
+                                </p>
+                              </div>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                Actual duration
+                              </p>
+                              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                1PB
+                              </p>
+                            </div>
+                            <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                              <div className="d-block">
+                                <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                  Estimated Duration
+                                </p>
+                                <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                  3620656
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="bg-white p-3 border-radius-10 mt-4 mb-5">
+                          <div className="row">
+                            <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                Model
+                              </p>
+                              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                AA: 0S1619
+                              </p>
+                            </div>
+                            <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                Family
+                              </p>
+                              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                AA: 0S1619
+                              </p>
+                            </div>
+                            <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                Customer
+                              </p>
+                              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                AA: 0S1619
+                              </p>
+                            </div>
+                            <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                Related Job Code
+                              </p>
+                              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                $ 90534
+                              </p>
+                            </div>
+                            <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                              <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                                Related Component Code
+                              </p>
+                              <p className="text-primary font-size-12 mt-1 font-weight-500">
+                                Stock
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {labormasterpagination === 2 && (
+                      <>
+                        <h6 className="font-weight-500 pl-2 mt-5">Price</h6>
+                        <div className="bg-white p-3 border-radius-10 overflow-hidden">
+                          <div className="d-flex align-items-center justify-content-between">
+                            <h6 className="font-weight-600 mb-0 mr-3">
+                              Price Details
+                            </h6>
+                            <a href="#" className="btn bg-primary text-white">
+                              Add New
+                            </a>
+                          </div>
+                          <div className="table-responsive mt-3">
+                            <div
+                              className="custom-table  table-child"
+                              style={{
+                                height: "auto",
+                                width: "100%",
+                              }}
+                            >
+                              <DataTable
+                                title=""
+                                columns={priceLaborColumns}
+                                data={bundleItems}
+                                customStyles={customStyles}
+                                // pagination
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
