@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD } from "./CONSTANTS";
+import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD, USER_SERVICE_RESET_PASSWORD } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -81,7 +81,7 @@ export const signIn = (data) => {
 };
 
 /**
- * Function to login the users.
+ * API to send email for forgot password
  */
 export const forgotPassword = (data) => {
   console.log("userServices > forgotPassword called...");
@@ -104,12 +104,42 @@ export const forgotPassword = (data) => {
           reject("Error in forgotPassword axios!");
         });
     } catch (error) {
-      console.error("in userServices > signIn, Err===", error);
+      console.error("in userServices > forgotPassword, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
 };
 
+
+/**
+ * API to reset password
+ */
+export const resetPassword = (data) => {
+  console.log("userServices > resetPassword called...");
+  return new Promise((resolve, reject) => {
+    try {
+      // do an SDK, DB call or API endpoint axios call here and return the promise.
+      axios
+        .post(USER_SERVICE_RESET_PASSWORD(), data, { headers: headersData })
+        .then((res) => {
+          if (res.status === 200) {
+            resolve(res);          
+          } else {
+            reject(res);
+          }
+          console.log("resetPassword > axios res=", res);
+          
+        })
+        .catch((err) => {
+          console.log("resetPassword > axios err=", err);
+          reject("Error in resetPassword axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > resetPassword, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 /**
  * Function to fetch all the users.
