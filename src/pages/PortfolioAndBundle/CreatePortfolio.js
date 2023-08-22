@@ -981,6 +981,7 @@ export function CreatePortfolio(props) {
     machine: "",
     additional: "",
     estimatedTime: "",
+    prePortfolioIds: [],
   });
   const [bundleAndServiceEditAble, setBundleAndServiceEditAble] = useState(false);
   const [selectedCustomerSegmentOption, setSelectedCustomerSegmentOption] = useState("");
@@ -1609,7 +1610,7 @@ export function CreatePortfolio(props) {
           itemHeaderDescription: itemData.headerdescription,
           bundleFlag: "PORTFOLIO",
           withBundleService: (!bundleServiceNeed),
-          portfolioItemId: 0,
+          portfolioItemIds: [],
           reference: generalComponentData.externalReference,
           itemHeaderMake: componentData?.make,
           itemHeaderFamily: componentData?.family,
@@ -2229,7 +2230,7 @@ export function CreatePortfolio(props) {
           itemHeaderDescription: data.headerdescription,
           bundleFlag: "PORTFOLIO",
           withBundleService: (!bundleServiceNeed),
-          portfolioItemId: 0,
+          portfolioItemIds: [],
           reference: generalComponentData.externalReference,
           itemHeaderMake: data?.make,
           itemHeaderFamily: data?.family,
@@ -2733,8 +2734,8 @@ export function CreatePortfolio(props) {
                 bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" :
                   serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
                 withBundleService: false,
-                portfolioItemId: ((currentItemId === null) || (currentItemId === undefined) ||
-                  (currentItemId === 0) || (currentItemId === "")) ? 0 : currentItemId,
+                portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
+                  (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
                 reference: createServiceOrBundle.reference,
                 itemHeaderMake: createServiceOrBundle?.make,
                 itemHeaderFamily: createServiceOrBundle?.family,
@@ -3001,8 +3002,8 @@ export function CreatePortfolio(props) {
               bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" :
                 serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
               withBundleService: false,
-              portfolioItemId: ((currentItemId === null) || (currentItemId === undefined) ||
-                (currentItemId === 0) || (currentItemId === "")) ? 0 : currentItemId,
+              portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
+                (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
               reference: createServiceOrBundle.reference,
               itemHeaderMake: createServiceOrBundle?.make,
               itemHeaderFamily: createServiceOrBundle?.family,
@@ -3596,8 +3597,8 @@ export function CreatePortfolio(props) {
             bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" :
               serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
             withBundleService: false,
-            portfolioItemId: ((currentItemId === null) || (currentItemId === undefined) ||
-              (currentItemId === 0) || (currentItemId === "")) ? 0 : currentItemId,
+            portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
+              (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
             reference: createServiceOrBundle.reference,
             itemHeaderMake: createServiceOrBundle?.make,
             itemHeaderFamily: createServiceOrBundle?.family,
@@ -3860,8 +3861,8 @@ export function CreatePortfolio(props) {
             bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" :
               serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
             withBundleService: false,
-            portfolioItemId: ((currentItemId === null) || (currentItemId === undefined) ||
-              (currentItemId === 0) || (currentItemId === "")) ? 0 : currentItemId,
+            portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
+              (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
             reference: createServiceOrBundle.reference,
             itemHeaderMake: createServiceOrBundle?.make,
             itemHeaderFamily: createServiceOrBundle?.family,
@@ -4328,7 +4329,8 @@ export function CreatePortfolio(props) {
         itemHeaderDescription: createServiceOrBundle.description,
         bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
         withBundleService: false,
-        portfolioItemId: currentItemId != null ? currentItemId : 0,
+        // portfolioItemId: currentItemId != null ? currentItemId : 0,
+        portfolioItemIds: currentItemId != null ? [currentItemId] : [],
         reference: createServiceOrBundle.reference,
         itemHeaderMake: createServiceOrBundle.make,
         itemHeaderFamily: createServiceOrBundle.family,
@@ -4677,8 +4679,82 @@ export function CreatePortfolio(props) {
           setBundleOrServiceItemPriceData(resPrice.data)
         }
 
+        // let reqObj = {
+        //   itemId: parseInt(addPortFolioItem.id),
+        //   itemName: addPortFolioItem.name,
+        //   itemHeaderModel: {
+        //     itemHeaderId: passItemEditRowData?.itemHeaderModel?.itemHeaderId,
+        //     itemHeaderDescription: addPortFolioItem.description,
+        //     bundleFlag: compoFlagData,
+        //     withBundleService: passItemEditRowData?.itemHeaderModel?.withBundleService,
+        //     portfolioItemId: bundleServicePortfolioItemId,
+        //     reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
+        //     itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
+        //     itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
+        //     model: createServiceOrBundle?.model ? createServiceOrBundle?.model : "",
+        //     prefix: createServiceOrBundle?.prefix?.value ? createServiceOrBundle?.prefix?.value : "",
+        //     type: passItemEditRowData?.itemHeaderModel?.type,
+        //     additional: createServiceOrBundle?.additional?.value ? createServiceOrBundle?.additional?.value : "",
+        //     currency: passItemEditRowData?.itemHeaderModel?.currency,
+        //     netPrice: passItemEditRowData?.itemHeaderModel?.netPrice,
+        //     itemProductHierarchy: passItemEditRowData?.itemHeaderModel?.itemProductHierarchy,
+        //     itemHeaderGeographic: passItemEditRowData?.itemHeaderModel?.itemHeaderGeographic,
+        //     responseTime: passItemEditRowData?.itemHeaderModel?.responseTime,
+        //     usage: passItemEditRowData?.itemHeaderModel?.usage,
+        //     validFrom: passItemEditRowData?.itemHeaderModel?.validFrom,
+        //     validTo: passItemEditRowData?.itemHeaderModel?.validTo,
+        //     estimatedTime: passItemEditRowData?.itemHeaderModel?.estimatedTime,
+        //     servicePrice: passItemEditRowData?.itemHeaderModel?.servicePrice,
+        //     status: passItemEditRowData?.itemHeaderModel?.status,
+        //     componentCode: passItemEditRowData?.itemHeaderModel?.componentCode,
+        //     componentDescription: passItemEditRowData?.itemHeaderModel?.componentDescription,
+        //     serialNumber: passItemEditRowData?.itemHeaderModel?.serialNumber,
+        //     itemHeaderStrategy: addPortFolioItem?.strategyTask != "" ?
+        //       addPortFolioItem?.strategyTask : "EMPTY",
+        //     variant: passItemEditRowData?.itemHeaderModel?.variant,
+        //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != ""
+        //       ? createServiceOrBundle.customerSegment?.value : "EMPTY",
+        //     jobCode: passItemEditRowData?.itemHeaderModel?.jobCode,
+        //     preparedBy: bundleOrServiceAdministrative?.preparedBy ? bundleOrServiceAdministrative?.preparedBy : "",
+        //     approvedBy: bundleOrServiceAdministrative?.approvedBy ? bundleOrServiceAdministrative?.approvedBy : "",
+        //     preparedOn: bundleOrServiceAdministrative?.preparedOn ? bundleOrServiceAdministrative?.preparedOn : "",
+        //     revisedBy: bundleOrServiceAdministrative?.revisedBy ? bundleOrServiceAdministrative?.revisedBy : "",
+        //     revisedOn: bundleOrServiceAdministrative?.revisedOn ? bundleOrServiceAdministrative?.revisedOn : "",
+        //     salesOffice: bundleOrServiceAdministrative.salesOffice?.value ? bundleOrServiceAdministrative.salesOffice?.value : "",
+        //     offerValidity: bundleOrServiceAdministrative.offerValidity?.value ? bundleOrServiceAdministrative.offerValidity?.value : "",
+        //     serviceChargable: passItemEditRowData.itemHeaderModel.serviceChargable,
+        //     serviceOptional: passItemEditRowData.itemHeaderModel.serviceOptional,
+        //   },
+        //   itemBodyModel: {
+        //     itemBodyId: passItemEditRowData?.itemBodyModel?.itemBodyId,
+        //     itemBodyDescription: addPortFolioItem.description,
+        //     spareParts: passItemEditRowData?.itemBodyModel?.spareParts,
+        //     labours: passItemEditRowData?.itemBodyModel?.labours,
+        //     miscellaneous: passItemEditRowData?.itemBodyModel?.miscellaneous,
+        //     taskType: addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["EMPTY"],
+        //     solutionCode: "",
+        //     usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "EMPTY",
+        //     usage: passItemEditRowData?.itemBodyModel?.usage,
+        //     year: ((addPortFolioItem.year === "") || (addPortFolioItem.year === null) ||
+        //       (addPortFolioItem.year === undefined)) ? "" : (typeof addPortFolioItem.year === "object") ? addPortFolioItem.year?.value : addPortFolioItem.year,
+        //     avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
+        //     unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
+        //     frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "",
+        //     // recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+        //     itemPrices: (
+        //       (editAbleItemPriceData?.itemPriceDataId == "") ||
+        //       (editAbleItemPriceData?.itemPriceDataId == null) ||
+        //       (editAbleItemPriceData?.itemPriceDataId == undefined)
+        //     ) ? [] : [
+        //       {
+        //         itemPriceDataId: editAbleItemPriceData.itemPriceDataId
+        //       }
+        //     ],
+        //   },
+        // }
         let reqObj = {
-          itemId: parseInt(addPortFolioItem.id),
+          itemId: ((addPortFolioItem.id === 0) || (addPortFolioItem.id === null) ||
+            (addPortFolioItem.id === undefined) || addPortFolioItem.id === "") ? 0 : parseInt(addPortFolioItem.id),
           itemName: addPortFolioItem.name,
           itemHeaderModel: {
             itemHeaderId: passItemEditRowData?.itemHeaderModel?.itemHeaderId,
@@ -4729,24 +4805,30 @@ export function CreatePortfolio(props) {
             spareParts: passItemEditRowData?.itemBodyModel?.spareParts,
             labours: passItemEditRowData?.itemBodyModel?.labours,
             miscellaneous: passItemEditRowData?.itemBodyModel?.miscellaneous,
-            taskType: addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["EMPTY"],
+            taskType: ((addPortFolioItem.taskType === "") || (addPortFolioItem.taskType === null) ||
+              (addPortFolioItem.taskType === undefined) || (addPortFolioItem.taskType === "EMPTY")) ? ["EMPTY"] : [addPortFolioItem.taskType?.value],
             solutionCode: "",
-            usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "EMPTY",
-            usage: passItemEditRowData?.itemBodyModel?.usage,
-            year: addPortFolioItem.year?.value ? addPortFolioItem.year?.value : "",
+            usageIn: ((addPortFolioItem.usageIn?.value === "") || (addPortFolioItem.usageIn?.value === null) ||
+              (addPortFolioItem.usageIn?.value === undefined) || (addPortFolioItem.usageIn?.value === "EMPTY")) ? "" : addPortFolioItem.usageIn?.value,
+            usage: ((addPortFolioItem.usageType?.value === "") || (addPortFolioItem.usageType?.value === null) ||
+              (addPortFolioItem.usageType?.value === undefined) || (addPortFolioItem.usageType?.value === "EMPTY")) ? "" : addPortFolioItem.usageType?.value,
+            year: ((addPortFolioItem.year === "") || (addPortFolioItem.year === null) ||
+              (addPortFolioItem.year === undefined)) ? "" : (typeof addPortFolioItem.year === "object") ? addPortFolioItem.year?.value : addPortFolioItem.year,
             avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
-            unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
-            frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "",
+            // unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
+            // frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "",
             // recommendedValue: parseInt(addPortFolioItem.recommendedValue),
-            itemPrices: (
-              (editAbleItemPriceData?.itemPriceDataId == "") ||
-              (editAbleItemPriceData?.itemPriceDataId == null) ||
-              (editAbleItemPriceData?.itemPriceDataId == undefined)
-            ) ? [] : [
-              {
-                itemPriceDataId: editAbleItemPriceData.itemPriceDataId
-              }
-            ],
+            itemPrices: ((editAbleItemPriceData?.itemPriceDataId === "") || (editAbleItemPriceData?.itemPriceDataId === null) ||
+              (editAbleItemPriceData?.itemPriceDataId === undefined) ||
+              (editAbleItemPriceData?.itemPriceDataId === 0)) ? [] : serviceOrBundlePrefix === "BUNDLE" ? [
+                {
+                  itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+                }
+              ] : serviceOrBundlePrefix === "SERVICE" ? [
+                {
+                  itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+                }
+              ] : [],
           },
         }
 
@@ -5122,11 +5204,11 @@ export function CreatePortfolio(props) {
               (addPortFolioItem.id === undefined) || addPortFolioItem.id === "") ? 0 : parseInt(addPortFolioItem.id),
             itemName: addPortFolioItem.name,
             itemHeaderModel: {
-              itemHeaderId: passItemEditRowData?.itemHeaderModel?.itemHeaderId,
+              itemHeaderId: passItemEditRowData?.itemHeaderModel?.itemHeaderIds,
               itemHeaderDescription: addPortFolioItem.description,
               bundleFlag: compoFlagData,
               withBundleService: (bundleServiceNeed ? false : true),
-              portfolioItemId: passItemEditRowData?.itemHeaderModel?.portfolioItemId,
+              portfolioItemIds: passItemEditRowData?.itemHeaderModel?.portfolioItemIds,
               reference: createServiceOrBundle?.reference,
               itemHeaderMake: componentData?.make,
               itemHeaderFamily: componentData?.family,
@@ -5192,7 +5274,7 @@ export function CreatePortfolio(props) {
               usage: ((addPortFolioItem.usageType?.value === "") || (addPortFolioItem.usageType?.value === null) ||
                 (addPortFolioItem.usageType?.value === undefined) || (addPortFolioItem.usageType?.value === "EMPTY")) ? "" : addPortFolioItem.usageType?.value,
               year: ((addPortFolioItem.year === "") || (addPortFolioItem.year === null) ||
-                (addPortFolioItem.year === undefined)) ? "" : (typeof (addPortFolioItem.year === "")) === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year,
+                (addPortFolioItem.year === undefined)) ? "" : (typeof addPortFolioItem.year === "object") ? addPortFolioItem.year?.value : addPortFolioItem.year,
               avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
               itemPrices: ((editAbleItemPriceData?.itemPriceDataId === "") || (editAbleItemPriceData?.itemPriceDataId === null) ||
                 (editAbleItemPriceData?.itemPriceDataId === undefined) ||
@@ -12673,7 +12755,7 @@ export function CreatePortfolio(props) {
                     itemHeaderDescription: createServiceOrBundle.description,
                     bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
                     withBundleService: passItemEditRowData?.itemHeaderModel?.withBundleService,
-                    portfolioItemId: passItemEditRowData?.itemHeaderModel?.portfolioItemId,
+                    portfolioItemIds: passItemEditRowData?.itemHeaderModel?.portfolioItemIds,
                     reference: createServiceOrBundle?.reference,
                     itemHeaderMake: createServiceOrBundle?.make,
                     itemHeaderFamily: createServiceOrBundle?.family,
@@ -12739,7 +12821,7 @@ export function CreatePortfolio(props) {
                     usage: ((addPortFolioItem.usageType?.value === "") || (addPortFolioItem.usageType?.value === null) ||
                       (addPortFolioItem.usageType?.value === undefined) || (addPortFolioItem.usageType?.value === "EMPTY")) ? "" : addPortFolioItem.usageType?.value,
                     year: ((addPortFolioItem.year === "") || (addPortFolioItem.year === null) ||
-                      (addPortFolioItem.year === undefined)) ? "" : (typeof (addPortFolioItem.year === "")) === "object" ? addPortFolioItem.year?.value : addPortFolioItem.year,
+                      (addPortFolioItem.year === undefined)) ? "" : (typeof addPortFolioItem.year === "object") ? addPortFolioItem.year?.value : addPortFolioItem.year,
                     avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
                     itemPrices: bundleServiceItemPriceData.length > 0 ? bundleServiceItemPriceData : [],
                   },
@@ -12855,7 +12937,7 @@ export function CreatePortfolio(props) {
               itemHeaderDescription: createServiceOrBundle.description,
               bundleFlag: "SERVICE",
               withBundleService: false,
-              portfolioItemId: currentItemId != null ? currentItemId : 0,
+              portfolioItemIds: currentItemId != null ? [currentItemId] : [],
               reference: createServiceOrBundle.reference,
               itemHeaderMake: createServiceOrBundle.make,
               itemHeaderFamily: createServiceOrBundle.family,
@@ -15375,6 +15457,7 @@ export function CreatePortfolio(props) {
         machine: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
         additional: "",
         machineComponent: { label: newData.itemHeaderModel.type, value: newData.itemHeaderModel.type },
+        prePortfolioIds: newData["itemHeaderModel"]["portfolioItemIds"],
       });
 
       setSelectedPrefixOption({ label: newData.itemHeaderModel.prefix, value: newData.itemHeaderModel.prefix });
@@ -16055,7 +16138,7 @@ export function CreatePortfolio(props) {
           itemHeaderDescription: itemReqObj.itemHeaderModel.itemHeaderDescription,
           bundleFlag: itemReqObj.itemHeaderModel.bundleFlag,
           withBundleService: (bundleServiceNeed ? false : true),
-          portfolioItemId: itemReqObj.itemHeaderModel.portfolioItemId,
+          portfolioItemIds: itemReqObj.itemHeaderModel.portfolioItemIds,
           reference: itemReqObj.itemHeaderModel.reference,
           itemHeaderMake: componentData.make,
           itemHeaderFamily: componentData?.family,
@@ -17455,6 +17538,7 @@ export function CreatePortfolio(props) {
 
         var UpdatedBundleService3Data = [];
         for (let a = 0; a < tempBundleService3.length; a++) {
+          var portfolioItemsIdsData = tempBundleService3[a].itemHeaderModel
           var reqObjUpdatebundleService = {
             itemId: tempBundleService3[a].itemId,
             itemName: tempBundleService3[a].itemName,
@@ -17462,7 +17546,7 @@ export function CreatePortfolio(props) {
               itemHeaderId: tempBundleService3[a].itemHeaderModel.itemHeaderId,
               itemHeaderDescription: tempBundleService3[a].itemHeaderModel.itemHeaderDescription,
               bundleFlag: tempBundleService3[a].itemHeaderModel.bundleFlag,
-              portfolioItemId: currentItemId,
+              portfolioItemIds: [...portfolioItemsIdsData["portfolioItemIds"], currentItemId],
               reference: tempBundleService3[a].itemHeaderModel.reference,
               itemHeaderMake: tempBundleService3[a].itemHeaderModel.itemHeaderMake,
               itemHeaderFamily: tempBundleService3[a].itemHeaderModel.itemHeaderFamily,
@@ -23293,6 +23377,7 @@ export function CreatePortfolio(props) {
                         unitDropdownKeyValue={unitOptionKeyValue}
                         frequencyDropdownKeyValue={frequencyOptionKeyValue}
                         discountTypeDropdownKeyValue={discountTypeOptions}
+                        currentItemId={currentItemId}
                       />}
                     onRowExpandToggled={handleExpandRowForPriceCalculator}
                     //onRowExpandToggled={(bool, row) => setCurrentRow(row)}

@@ -748,7 +748,7 @@ const ExpendTablePopup = (props) => {
                     //     const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
 
                     // }
-                    
+
                     let reqRkOrSjIdObj = {
                         standardJobId: addPortFolioItem.templateId,
                         repairKitId: addPortFolioItem.repairOption,
@@ -772,6 +772,7 @@ const ExpendTablePopup = (props) => {
 
             }
 
+            var portfolioIdsData = [...rowData["itemHeaderModel"]["portfolioItemIds"]]
             let reqItemUpdateObj = {
                 itemId: parseInt(addPortFolioItem.id),
                 itemName: addPortFolioItem.name,
@@ -779,7 +780,7 @@ const ExpendTablePopup = (props) => {
                     itemHeaderId: 0,
                     itemHeaderDescription: addPortFolioItem.description,
                     bundleFlag: rowData.itemHeaderModel.bundleFlag,
-                    portfolioItemId: rowData.itemHeaderModel.portfolioItemId,
+                    portfolioItemIds: [...portfolioIdsData, props.currentItemId],
                     reference: rowData.itemHeaderModel?.reference,
                     itemHeaderMake: rowData.itemHeaderModel?.itemHeaderMake,
                     itemHeaderFamily: rowData.itemHeaderModel?.itemHeaderFamily,
