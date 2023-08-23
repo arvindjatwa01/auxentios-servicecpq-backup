@@ -949,7 +949,8 @@ const AddCustomPortfolioItem = (props) => {
             props.handleItemEditSave(
               addPortFolioItem,
               editAbleItemPrice,
-              bundleFlagType
+              bundleFlagType,
+              editable
             );
           }
 
@@ -958,7 +959,8 @@ const AddCustomPortfolioItem = (props) => {
             props.handleItemEditSave(
               addPortFolioItem,
               editAbleItemPrice,
-              bundleFlagType
+              bundleFlagType,
+              editable
             );
           }
 
@@ -1161,10 +1163,10 @@ const AddCustomPortfolioItem = (props) => {
 
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditPort")) {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditBundle")) {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
       } else {
 
         // Previous item price creation request obj 
@@ -2420,7 +2422,7 @@ const AddCustomPortfolioItem = (props) => {
           <Link className="btn cursor bg-primary text-white border mr-4 cursor"
             onClick={handleAddPortfolioSave}
           >
-            {props.compoFlag === "itemEdit"
+            {editable ? "Next" : props.compoFlag === "itemEdit"
               ? "Save Changes"
               : "Save & Continue"}
           </Link>
@@ -3801,16 +3803,16 @@ const AddCustomPortfolioItem = (props) => {
                       )}
                     </div>
                   </> : <></>}
-                <div className="text-right pb-2">
-                  <Link className="btn cursor bg-primary text-white border mr-4 cursor"
-                    onClick={handleAddPortfolioSave}
-                  >
-                    {props.compoFlag === "itemEdit"
-                      ? "Save Changes"
-                      : "Save & Continue"}
-                  </Link>
-                </div>
               </>}
+            <div className="text-right pb-2">
+              <Link className="btn cursor bg-primary text-white border mr-4 cursor"
+                onClick={handleAddPortfolioSave}
+              >
+                {editable ? "Next" : props.compoFlag === "itemEdit"
+                  ? "Save Changes"
+                  : "Save & Continue"}
+              </Link>
+            </div>
           </TabPanel>
         </TabContext>
         {(tabs == "itemSummary") ||
@@ -3821,7 +3823,7 @@ const AddCustomPortfolioItem = (props) => {
               className="btn cursor bg-primary text-white border mr-4"
               onClick={handleSummaryAndTemplateTabs}
             >
-              Save & Next
+              {editable ? "Next" : "Save & Next"}
             </Link>
           </div>
         ) : ("")}
@@ -3833,7 +3835,7 @@ const AddCustomPortfolioItem = (props) => {
               // }}
               onClick={handleSummaryAndTemplateTabs}
             >
-              Save & Next
+              {editable ? "Next" : "Save & Next"}
             </Link>
           </div>
         )}
