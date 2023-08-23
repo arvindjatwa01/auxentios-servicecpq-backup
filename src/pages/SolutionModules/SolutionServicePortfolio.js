@@ -382,7 +382,7 @@ export function SolutionServicePortfolio(props) {
             });
     }
 
-
+    console.log("state ================ state ", state);
     // Handle Save & Next Click
     const handleNextClick = async (e) => {
         try {
@@ -2300,11 +2300,22 @@ export function SolutionServicePortfolio(props) {
 
     // Go To Solutions Function 
     const goToSolution = () => {
-        let portfolioDetails = {
-            portfolioId: "",
-            type: "new",
-        };
+        var portfolioDetails = {};
         // history.push("/portfolioBuilder/new")
+
+        if (state) {
+            if (state.portfolioId === undefined) {
+                portfolioDetails = {
+                    portfolioId: "",
+                    type: "new",
+                };
+            } else {
+                portfolioDetails = {
+                    portfolioId: state.portfolioId,
+                    type: "fetch",
+                };
+            }
+        }
         history.push({
             pathname: "/solutionBuilder/create",
             state: portfolioDetails,
@@ -2848,7 +2859,7 @@ export function SolutionServicePortfolio(props) {
                             </div> */}
 
                             <div className="d-flex justify-content-center align-items-center">
-                                <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>GO TO SOLUTION</a>
+                                <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>Go to Solution</a>
                                 <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                                 <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
                                 <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>

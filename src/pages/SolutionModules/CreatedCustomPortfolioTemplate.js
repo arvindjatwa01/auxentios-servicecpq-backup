@@ -10007,7 +10007,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 50 Point Inspection
                                             </h6>
                                             <h6 className="mt-3">
-                                                <a  className="btn-sm text-white mr-2 cursor"
+                                                <a className="btn-sm text-white mr-2 cursor"
                                                     style={{ background: "#79CBA2", cursor: "pointer" }}
                                                 >
                                                     Free
@@ -11487,14 +11487,16 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     Quote Type
                                                 </label>
                                                 <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="Cyclical"
+                                                    defaultValue={{ label: "Solution", value: "SOLUTION" }}
+                                                    value={selectedOption}
+                                                    onChange={(e) => setSelectedOption(e)}
+                                                    // options={options}
+                                                    options={[{ label: "Solution", value: "SOLUTION" }]}
+                                                    placeholder="Select..."
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-md-12 col-sm-12">
+                                        {/* <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -11515,7 +11517,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     disabled={true}
                                                 />
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <label
@@ -11565,13 +11567,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     </h6>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12 col-sm-12">
+                                            {/* <div class="col-md-12 col-sm-12">
                                                 <div class="form-group mt-3">
                                                     <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
-                                                    {/* <h6 class="font-weight-500">SB12345</h6> */}
                                                     <h6 class="font-weight-500">{quoteData.contact}</h6>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div class="col-md-12 col-sm-12">
                                                 <div class="form-group mt-3">
                                                     <p class="font-size-12 font-weight-500 mb-2">

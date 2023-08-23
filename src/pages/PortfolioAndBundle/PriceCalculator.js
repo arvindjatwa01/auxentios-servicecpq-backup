@@ -621,6 +621,7 @@ const PriceCalculator = (props) => {
   const handleItemPriceSave = () => {
     // props.setTabs("6")
     props.setTabs("4"); // previous flow
+    let priceEditorNot = (props.bundleOrServiceEditOrNot && disable) ? false : true;
     props.getPriceCalculatorDataFun(priceCalculator);
     // props.handleSavePrices(); //called it at getPriceCalculatorDataFun
   };
@@ -631,9 +632,10 @@ const PriceCalculator = (props) => {
       console.log("props ---------- ", props, disable)
       if (props.bundleOrServiceEditOrNot) {
         // if (disable) {
+        let priceEditorNot = (props.bundleOrServiceEditOrNot && disable) ? false : true;
         let priceDataEditableOrNot = ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
           (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) ? "noEditAble" : "editAble";
-        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, disable);
+        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, disable, priceEditorNot);
         // props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, disable);
         // }
       } else {
@@ -660,9 +662,11 @@ const PriceCalculator = (props) => {
           (priceCalculator.recommendedValue == undefined)) {
           throw "Recommended Value is a required field, you can’t leave it blank";
         }
+
+        let priceEditorNot = (props.bundleOrServiceEditOrNot && disable) ? false : true;
         let priceDataEditableOrNot = ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
           (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) ? "noEditAble" : "editAble";
-        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, false);
+        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, false, priceEditorNot);
         // props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, false);
 
       }

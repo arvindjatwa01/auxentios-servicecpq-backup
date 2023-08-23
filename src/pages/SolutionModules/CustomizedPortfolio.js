@@ -4216,7 +4216,7 @@ export function CustomizedPortfolio(props) {
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0">
                             {/* Custom Portfolio */}
-                            Solution Configurato
+                            Solution Configurator
                         </h5>
                         <div className="d-flex justify-content-center align-items-center">
                             <a className="ml-3 cursor font-size-14"><img src={shareIcon}></img></a>
