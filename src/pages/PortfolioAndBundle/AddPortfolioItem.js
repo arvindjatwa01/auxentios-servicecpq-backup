@@ -1790,7 +1790,7 @@ const AddPortfolioItem = (props) => {
         progress: undefined,
       });
     }
-}
+  }
 
   const handleAddPortfolioSave = async () => {
 
@@ -1821,7 +1821,7 @@ const AddPortfolioItem = (props) => {
           // props.setTabs("2");
           props.getAddPortfolioItemDataFun(addPortFolioItem, "2");
         }
-   
+
       } else if ((props.compoFlag === "itemEdit") &&
         (props.compoFlagTest === "itemEditPort")) {
         props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType, editable);
@@ -4413,24 +4413,22 @@ const AddPortfolioItem = (props) => {
                       )}
                     </div>
                   </> : <></>}
-                <div className="text-right pb-2">
-                  <Link
-                    to="#"
-                    className="btn cursor bg-primary text-white border mr-4"
-                    onClick={handleAddPortfolioSave}
-                  >
-                    {editable ? "Next" : props.compoFlag === "itemEdit"
-                      ? "Save Changes"
-                      : "Save & Continue"}
-                    {/* {props.bundleOrServiceEditOrNot ? "Next" :
+              </>}
+            <div className="text-right pb-2">
+              <Link
+                to="#"
+                className="btn cursor bg-primary text-white border mr-4"
+                onClick={handleAddPortfolioSave}
+              >
+                {editable ? "Next" : props.compoFlag === "itemEdit"
+                  ? "Save Changes"
+                  : "Save & Continue"}
+                {/* {props.bundleOrServiceEditOrNot ? "Next" :
                       props.compoFlag === "itemEdit"
                         ? "Save Changes"
                         : "Save & Continue"} */}
-                  </Link>
-                </div>
-              </>}
-
-
+              </Link>
+            </div>
           </TabPanel>
         </TabContext>
         {/* {tabs} */}
@@ -4457,7 +4455,7 @@ const AddPortfolioItem = (props) => {
               // }}
               onClick={handleSummaryAndTemplateTabs}
             >
-              Save & Next
+              {editable ? "Next" : "Save & Next"}
             </Link>
           </div>
         )}
