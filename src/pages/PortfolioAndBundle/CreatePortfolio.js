@@ -4480,7 +4480,7 @@ export function CreatePortfolio(props) {
 
     }
   }
-
+  console.log("object");
   const handleItemEditSave = async (addPortFolioItem, editAbleItemPriceData, compoFlagData, EditableOrNot) => {
 
     try {
