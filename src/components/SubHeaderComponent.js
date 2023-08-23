@@ -937,7 +937,7 @@ export function SubHeaderComponent(props) {
             <div className="headerbottom" style={{width: "100%", marginLeft: 0, zIndex: 21}}>
               <div className="header-content clearfix">
                 <div className="row h-100">
-                  <div className="col-6 h-100">
+                  {/* <div className="col-6 h-100">
                     <ul className="justify-content-start">
                       <li className="cursor mr-2">
                         <a
@@ -1037,9 +1037,9 @@ export function SubHeaderComponent(props) {
                         </a>
                       </li>
                     </ul>
-                  </div>
-                  <div className="col-6 h-100">
-                    <ul className="justify-content-end">
+                  </div> */}
+                  <div className="col-12 h-100">
+                    <ul className="justify-content-start">
                       {/* <li className="cursor"><a href="#" data-toggle="modal" data-target="#Versionhistory"><img src={repeateIcon}></img></a></li> */}
                       {/* <li className="cursor"><a href="#" onClick={toggleDrawer(anchor, true, false)}><img src={repeateIcon}></img></a></li>
                       <li className="cursor"><a href="#" data-original-title="" title="" onClick={toggleDrawer(anchor, true, true)}><img src={peopleIcon}></img></a></li> */}
@@ -1102,8 +1102,75 @@ export function SubHeaderComponent(props) {
                           Version history
                         </a>
                       </li>
-
                       <li className="cursor mr-2">
+                        <a
+                          href="#"
+                          data-original-title=""
+                          title=""
+                          onClick={toggleDrawer(anchor, true, true)}
+                        >
+                          <span className="mr-2 collab">
+                            <svg
+                              style={{ width: "20px" }}
+                              id="Layer_1"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 182.79509 172.72537"
+                            >
+                              <defs></defs>
+                              <g>
+                                <circle
+                                  class="cls-1"
+                                  cx="92.89864"
+                                  cy="100.88062"
+                                  r="66.05457"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M92.89924,172.72537c-39.61397,0-71.84386-32.22989-71.84386-71.84499S53.28527,29.03652,92.89924,29.03652s71.84386,32.22876,71.84386,71.84386-32.22989,71.84499-71.84386,71.84499Zm0-132.10952c-33.22951,0-60.26453,27.03502-60.26453,60.26453s27.03502,60.26566,60.26453,60.26566,60.26453-27.03502,60.26453-60.26566-27.03502-60.26453-60.26453-60.26453Z"
+                                />
+                              </g>
+                              <g>
+                                <circle
+                                  class="cls-1"
+                                  cx="92.89864"
+                                  cy="34.82605"
+                                  r="29.03653"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M92.89924,69.65238c-19.20314,0-34.82619-15.62305-34.82619-34.82619S73.6961,0,92.89924,0s34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z"
+                                />
+                              </g>
+                              <g>
+                                <circle
+                                  class="cls-1"
+                                  cx="34.82558"
+                                  cy="135.471"
+                                  r="29.03653"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M34.82619,170.29755c-19.20314,0-34.82619-15.62305-34.82619-34.82619s15.62305-34.82619,34.82619-34.82619,34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z"
+                                />
+                              </g>
+                              <g>
+                                <circle
+                                  class="cls-1"
+                                  cx="147.96849"
+                                  cy="135.471"
+                                  r="29.03653"
+                                />
+                                <path
+                                  class="cls-2"
+                                  d="M147.9689,170.29755c-19.20314,0-34.82619-15.62305-34.82619-34.82619s15.62305-34.82619,34.82619-34.82619,34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z"
+                                />
+                              </g>
+                            </svg>
+                          </span>
+                          Collaborators
+                        </a>
+                      </li>
+                      {/* <li className="cursor mr-2">
                         <a href="/insights" data-original-title="" title="">
                           <span className="mr-2 insight">
                             <svg
@@ -1142,7 +1209,7 @@ export function SubHeaderComponent(props) {
                           </span>
                           Insights{" "}
                         </a>
-                      </li>
+                      </li> */}
                       <li className="cursor">
                         <a
                           href="#"

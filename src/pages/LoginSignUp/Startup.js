@@ -49,7 +49,7 @@ export const Startup = () => {
 
     const LoginRes = useSelector((state) => state.loginSuccess);
 
-    console.log("result of login failed/success : ", LoginRes)
+    // console.log("result of login failed/success : ", LoginRes)
     const { search } = useLocation();
     const queryString = new URLSearchParams(search);
 
@@ -94,12 +94,13 @@ export const Startup = () => {
             const dispa = dispatch(authActions.login(dict));
             console.log("object ", dispa);
         }
+        // console.log("CurrentUser", LoginRes.currentUser)
         setLoginErr({
             isLoggedIn: LoginRes.isLoggedIn,
             logging: LoginRes.logging,
             currentUser: LoginRes.currentUser,
         });
-        // if (loginErr.currentUser && loginErr.currentUser.status === 500) {
+        // if (!LoginRes.logging && LoginRes.currentUser && LoginRes.currentUser.status === 500) {
         //     handleSnack('error', "Please enter a valid email id and password")
         //     setLoginErr({
         //         isLoggedIn: false,
@@ -184,10 +185,17 @@ export const Startup = () => {
                                                         onChange={handleLoginInput}
                                                     />
                                                     <i onClick={togglePassword} className={`fa ${isShowLoginPassword ? "fa-eye-slash" : "fa-eye"} eye-icon text-white`}></i>
-                                                    {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
-                                                        <div class="invlaid-email-password">
-                                                            Please enter a valid email or password.
-                                                        </div>
+                                                    {!LoginRes.logging && LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
+                                                        <CustomizedSnackbar
+                                                            autoHideDuration={600}
+
+                                                            open={true}
+                                                            severity={'error'}
+                                                            message={"Incorrect Email id or password"}
+                                                        />
+                                                        // <div className="invlaid-email-password">
+                                                        //     Please enter a valid email or password.
+                                                        // </div>
                                                     )}
                                                 </div>
                                             </div>
@@ -237,7 +245,7 @@ export const Startup = () => {
                     ) : (
                         <></>
                     )}
-                    {result.activeStep == 1 ? (
+                    {/* {result.activeStep == 1 ? (
                         <div className="row">
                             <div className="col-md-4 col-sm-4">
                                 <div className="bg-violet py-4 px-4 h-100">
@@ -288,47 +296,21 @@ export const Startup = () => {
                                     <h4 className="ml-3">Verification</h4>
                                     <div className="row m-0">
                                         <div className="col-md-12 col-sm-12">
-                                            <div className="form-group mt-3">
-                                                {/* <label
-                          className="text-light-dark font-size-12 font-weight-600"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Email Address"
-                        /> */}
+                                            <div className="form-group mt-3">                              
                                                 <p>Varification Successfull</p>
-                                                <div onClick={() => dispatch(signUpActions.getStarted())} style={{ cursor: "pointer" }}>Let's Get Started</div>
-                                                {/* <div onClick={}>GetS Started</div> */}
-                                                {/* <a href="#">please verify email address using email sent on registered email</a> */}
+                                                <div onClick={() => dispatch(signUpActions.getStarted())} style={{ cursor: "pointer" }}>Let's Get Started</div>                                                
                                             </div>
                                         </div>
-                                        <div className="col-md-12 col-sm-12">
-                                            {/* <div className="form-group mt-3">
-                                                <a
-                                                    //   onClick={handleSendVerification}
-                                                    className="btn bg-violet text-white d-block cursor"
-                                                >
-                                                    Send
-                                                </a>
-                                            </div> */}
+                                        <div className="col-md-12 col-sm-12">                                           
                                         </div>
                                     </div>
-                                    {/* <p>Mail sent to your registered email addrss. Click the url provided in the email to complete registration.</p>
-                                    <div className="text-right">
-                                        <a href="#" className="btn bg-violet text-white">Click here if already completed</a>
-                                    </div> */}
+                                    
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <></>
-                    )}
+                    )} */}
                     {result.activeStep === 0 ? (
                         <Grid container>
                             <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "block" } }}>
@@ -387,7 +369,7 @@ export const Startup = () => {
                                 </div>
                             </Grid>
                             <Grid item xs={12} md={6} display={'flex'} alignItems={'center'} sx={{ px: 6, backgroundColor: "#ffffff" }}>
-                                <SignUp id={1} />
+                                <SignUp id={1} handleSnack={handleSnack} />
                             </Grid>
                         </Grid>
                     ) : (

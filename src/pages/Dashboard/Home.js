@@ -226,7 +226,7 @@ export const HomePage = () => {
     <div>
       {/* <CommanComponents /> */}
       <div className="content-body bg-white" style={{ minHeight: "884px" }}>
-        <div className="container-fluid p-32-60 mt-3">
+        <div className="container-fluid mt-3">
           <h4 className="mb-3">Home</h4>
 
           <Grid
@@ -236,19 +236,20 @@ export const HomePage = () => {
               backgroundColor: "#f3eafe",
               borderRadius: 5,
               marginBlock: 5,
+              paddingInline: 3,
+              paddingBlock: 2
             }}
           >
             {/* <div
             className="row ml-0"
             style={{ backgroundColor: "#f3eafe", borderRadius: 5 }}
           > */}
-            <Grid item xs={9}>
-              <h5 className="ml-3 mt-3">Work List</h5>
+            <Grid item xs={12} md={9} sx={{pl: 2, pr: 3, py: 2}}>              
               <WorkListDash/>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={12} md={3}>
               <h5 className="ml-1 mt-3">Today's Tasks</h5>
-              <Card className="mr-2" sx={{borderRadius:4, marginTop: 7, height: 400}} variant="outlined">
+              <Card className="" sx={{borderRadius:4, marginTop: 2, height: 400}} variant="outlined">
                 {[
                   { taskName: "Submission A", submittedAt: "09:00 AM" },
                   { taskName: "Planning", submittedAt: "05:00 AM" },
@@ -386,7 +387,7 @@ export const HomePage = () => {
             <Grid item xs={12}>
               <div
                 className="card border"
-                style={{ height: "400px", marginInline: 24, marginBlock: 34 }}
+                style={{ height: "400px", marginInline: 24, marginBlock: 34, borderRadius: 20 }}
               >
                 <div className="activity-div p-3 border-bottom">
                   <div className="d-flex justify-content-between align-items-center">

@@ -26,7 +26,7 @@ export default function Insights(props) {
               sx={{ padding: 2, marginBlock: 2, display: "flex", width: "100%" }}
             >
               <Typography variant="h6" sx={{ mr: 10 }}>
-                Dashboard
+                Insight
               </Typography>
               <FormControl sx={{ m: 1, minWidth: 300 }} size="small">
                 {/* <InputLabel id="demo-select-small-label">Insights</InputLabel> */}
