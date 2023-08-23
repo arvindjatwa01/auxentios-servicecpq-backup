@@ -7,10 +7,14 @@ import auxentionlogo from '../../assets/icons/png/auxentionlogo.png'
 import logoIcon from '../../assets/icons/svg/Logo.svg';
 import newLogoIcon from '../../assets/icons/svg/NewLogoIcon.svg';
 import { Grid } from '@mui/material'
-import { forgotPassword } from "services/userServices";
+import { forgotPassword, resetPassword } from "services/userServices";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { useLocation } from "react-router-dom";
+
 export const ResetPassword = () => {
     // let auth = useAuth();
+    const location = useLocation().search;
+    const uuid= new URLSearchParams(location).get("uuid");
     const [severity, setSeverity] = useState("");
     const [openSnack, setOpenSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
@@ -31,16 +35,20 @@ export const ResetPassword = () => {
     const togglePassword = () => {
       setIsShowPassword(prevState => !prevState);
     }
-  
+ 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('')
     const handleForgotPassword = async () => {
-        var dict = { password: password, uuid: "testuuid" };
-        await forgotPassword(dict).then(res => {
-            handleSnack('success', "A password reset email has been sent to your email address")
-        }).catch(err => {
-            handleSnack('error', "Error occurred while sending the email!")
-        })
+        var dict = { newPassword: password, uuid };
+        if(password !== confirmPassword){
+            handleSnack('error', "Confirm password should be same as the password");
+        } else {
+            await resetPassword(dict).then(res => {
+                handleSnack('success', "Password has been updated")
+            }).catch(err => {
+                handleSnack('error', "Error occurred while updating the password!")
+            })
+        }
     }
     
 
@@ -102,8 +110,13 @@ export const ResetPassword = () => {
                                         </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group mt-3">
-                                                <a href={undefined} className="btn bg-white text-primary d-block font-weight-600"
-                                                    style={{ paddingBlock: 10 }} onClick={handleForgotPassword}>Update</a>
+                                                <button className="btn bg-white text-primary font-weight-600"
+                                                    style={{ paddingBlock: 10, width: '100%' }} 
+                                                    onClick={handleForgotPassword}
+                                                    disabled={!(password && confirmPassword)}
+                                                >
+                                                        Update
+                                                </button>
                                             </div>
                                         </div>
                                         {/* <div className="col-md-6 col-sm-6">

@@ -25,18 +25,21 @@ export const SignUp = (props) => {
       lastName: signUpInputData.lastName,
       email: signUpInputData.workEmail,
       password: signUpInputData.password,
+      isApproved: true,
+      type: "TENANT_ADMIN",
+      roles: []
     };
     const validator = new Validator();
     if (!validator.firstNameValidation(signUpInputData.firstName)) {
-      alert("Please enter the first name");
+      props.handleSnack("error", "Please enter the first name");
     } else if (!validator.lastNameValidation(signUpInputData.lastName)) {
-      alert("Please enter the last name");
+      props.handleSnack("error", "Please enter the last name");
     } else if (!validator.emailValidation(signUpInputData.workEmail)) {
-      alert("Please enter the email address in correct format");
+      props.handleSnack("error", "Please enter the email address in correct format");
     } else if (!validator.passwordValidation(signUpInputData.password)) {
-      alert("Please enter the password");
+      props.handleSnack("error", "Please enter the password");
     } else if (signUpInputData.password !== signUpInputData.confirmPassword) {
-      alert("Confirm password should be same as password");
+      props.handleSnack("error", "Confirm password should be same as password");
     } else {
       dispatch(signUpActions.signUp(dict));
     }

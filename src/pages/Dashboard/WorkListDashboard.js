@@ -1,4 +1,4 @@
-import { Tooltip } from "@mui/material";
+import { Tooltip, Box } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
@@ -265,17 +265,24 @@ export function WorkListDash(props) {
 
   return (
     <>
-      <div class="container-fluid">
-        <div className="row justify-content-end mr-2">
-          <a
-            href={undefined}
-            className="pb-2 text-primary cursor"
-            onClick={() => setCreateWorlistShow(true)}
-          >
-            + Create Worklist
-          </a>
+      <Box>
+        <div className="row justify-content-end mr-2 mb-2">
+          <div className="col-md-6 col-sm-6">
+              <h5 className="">Work List</h5>
+          </div>
+          <div className="col-md-6 col-sm-6">
+            <div className="row justify-content-end">
+            <a
+              href={undefined}
+              className="text-primary cursor"
+              onClick={() => setCreateWorlistShow(true)}
+            >
+              + Create Worklist
+            </a>
+            </div>
+          </div>
         </div>
-        <div className="row mt-1 mb-5">
+        <div className="row mt-1">
           {/* <DataTable
               title=""
               // selectableRows
@@ -294,7 +301,7 @@ export function WorkListDash(props) {
             // autoHeight
           />
         </div>
-      </div>
+      </Box>
       <Modal
         show={createWorklistShow}
         onHide={() => setCreateWorlistShow(!createWorklistShow)}
