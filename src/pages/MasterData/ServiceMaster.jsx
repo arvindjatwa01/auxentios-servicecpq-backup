@@ -57,8 +57,39 @@ const tempdata = [
     bundleFlag: "5879.24",
   },
 ];
+const erpservicedata = [
+  {
+    itemName: "2276044",
+    itemDescription: "New",
+    itemHeaderStrategy: "1757896",
+    taskType: "PC",
+    quantity: "9.92",
+  },
+  {
+    itemName: "3734828",
+    itemDescription: "Reman",
+    itemHeaderStrategy: "10R4469",
+    taskType: "PC",
+    quantity: "94886.38",
+  },
+  {
+    itemName: "3620656",
+    itemDescription: "New",
+    itemHeaderStrategy: "6I6123",
+    taskType: "PC",
+    quantity: "40.69",
+  },
+  {
+    itemName: "3598761",
+    itemDescription: "Refurbish",
+    itemHeaderStrategy: "10R5474",
+    taskType: "PC",
+    quantity: "5879.24",
+  },
+];
 const ServiceMaster = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
+  const [erpItemsService, setErpItemsService] = useState([...erpservicedata]);
   const [value, setValue] = React.useState("1");
   const searchOptions = [
     { value: "A", label: "By internal or external" },
@@ -1269,7 +1300,7 @@ const ServiceMaster = () => {
                               <DataTable
                                 title=""
                                 columns={erpLaborColumns}
-                                data={bundleItems}
+                                data={erpItemsService}
                                 customStyles={customStyles}
                                 // pagination
                               />
