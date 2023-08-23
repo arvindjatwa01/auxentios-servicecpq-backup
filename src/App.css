@@ -4262,3 +4262,6 @@ input::-ms-clear {
 
   } 
 /* Login fields styling - End */
+.br-t{
+  border-top: 1px solid #00000015 !important;
+}
