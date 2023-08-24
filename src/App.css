@@ -1116,8 +1116,22 @@ nav.main-menu>ul>li>ul>li.active>a {
 
 .main-menu .span-icon svg {
   width: 15px;
-  /* fill: #872ff7; */
+  fill: #00000099;
 }
+
+/* To resize few sidebar icons - Start */
+.main-menu .span-icon .tempRepair {
+  width: 18px !important
+}
+
+.main-menu .span-icon .tempTemplate {
+  height: 18px !important
+}
+
+.main-menu .span-icon .tempSolutions {
+  width: 13px !important
+}
+/* To resize few sidebar icons - End */
 
 .main-menu li.active>a svg {
   fill: #872ff7;
@@ -3555,15 +3569,26 @@ button.bg-primary:hover {
 }
 
 .version-history .cls-2 {
-  fill: #872ff7;
+  /* fill: #872ff7; */
+  fill: #00000080;
 }
+
+a:hover .version-history .cls-2 {
+  fill: #872ff7; 
+}
+
 
 .collab .cls-1 {
   fill: #fff;
 }
 
 .collab .cls-2 {
-  fill: #872ff7;
+  /* fill: #872ff7; */
+  fill: #00000080;
+}
+
+a:hover .collab .cls-2 {
+  fill: #872ff7; 
 }
 
 .insight .st0 {
@@ -3587,7 +3612,12 @@ button.bg-primary:hover {
 }
 
 .notes .cls-1 {
-  fill: #872ff7;
+  /* fill: #872ff7; */
+  fill: #00000080;
+}
+
+a:hover .notes .cls-1 {
+  fill: #872ff7; 
 }
 
 .insight {
