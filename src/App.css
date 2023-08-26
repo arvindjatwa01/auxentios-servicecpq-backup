@@ -4143,13 +4143,13 @@ input[type="checkbox"]:checked:after {
 .equipment-master-ul .text-truncate {
   max-width: 100px;
 }
-.equipment-switch .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
+/* .equipment-switch .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
   background-color: transparent !important;
   border: 1px solid #872ff7 !important;
 }
 .equipment-switch .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked {
   color: #872ff7 !important;
-}
+} */
 
 .optionl-service-input{
   border: 1px solid #ced4da;
@@ -4264,4 +4264,11 @@ input::-ms-clear {
 /* Login fields styling - End */
 .br-t{
   border-top: 1px solid #00000015 !important;
+}
+.equipment-switch .MuiSwitch-thumb{
+  color: #872ff7 !important;
+}
+.equipment-switch .MuiSwitch-track{
+  background: transparent !important;
+  border: 1px solid #872ff7 !important;
 }
