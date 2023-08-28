@@ -1744,7 +1744,7 @@ export const Analytics = () => {
          // console.log("this is Solution Portfolio Solution")
       } else {
          // alert("Portfolio ?")
-         // history.push('/portfolioBuilder/new');
+         // history.push('/portfolio/new');
          setOpenTemplatesSearchModelBox(true)
          setSolutionsPopup(false)
       }
@@ -1857,7 +1857,7 @@ export const Analytics = () => {
          portfolioId: "",
          type: "new",
       };
-      // history.push("/portfolioBuilder/new")
+      // history.push("/portfolio/new")
       history.push({
          pathname: "/solutionBuilder/create",
          state: portfolioDetails,

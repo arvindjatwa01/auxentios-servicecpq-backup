@@ -7,7 +7,7 @@ export const REPORTS = "/reports";
 export const LOGIN = "/login";
 export const INSIGHTS ="/insights";
 
-export const PORTFOLIO_SUMMARY = "/portfolio/summary";
+export const PORTFOLIO_SUMMARY = "/portfolio";
 export const RESET = "/reset-password";
 export const FORGOT_PASSWORD = "/forgot-password";
 export const PERMISSION = "/permission";
@@ -82,7 +82,7 @@ export const SOLUTION_BUILDER = "/solutionBuilder";
 export const PORTFOLIO_AND_BUILDER = "/portfolioBuilder";
 export const SOLUTION_TEMPLATES= "/SolutionTemplates";
 
-export const PORTFOLIO_AND_BUILDER_NEW = "/portfolioBuilder/new";
+export const PORTFOLIO_AND_BUILDER_NEW = "/portfolio/new";
 export const SERVICE_NEW = "/service/new";
 export const TEST_REACT_TABLE_NESTED = "/react-table-nested";
 

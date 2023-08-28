@@ -1001,6 +1001,8 @@ export function CreatePortfolio(props) {
   const [itemModelShow, setItemModelShow] = useState(false);
   const [loadingItem, setLoadingItem] = useState("");
   const [tempBundleItems, setTempBundleItems] = useState([]);
+  const [previewReviewItemList, setPreviewReviewItemList] = useState([])
+  const [previewItemsList, setPreviewItemsList] = useState([])
   const [valueOfUseCase, setValueOfUseCase] = useState(3);
   const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
   const [bundleTabs, setBundleTabs] = useState("bundleServiceHeader");
@@ -1020,6 +1022,9 @@ export function CreatePortfolio(props) {
   const [tempBundleService1, setTempBundleService1] = useState([]);
   const [tempBundleService2, setTempBundleService2] = useState([]);
   const [tempBundleService3, setTempBundleService3] = useState([]);
+  const [checkForExpendItemStatus, setCheckForExpendItemStatus] = useState([])
+  const [bundleServiceEditModeOn, setBundleServiceEditModeOn] = useState(false)
+  const [viewBundleServiceItemList, setViewBundleServiceItemList] = useState([])
   const [closeExpendPopupTable, setCloseExpendPopupTable] = useState(false)
   const [componentData, setComponentData] = useState({
     componentCode: "",
@@ -1843,9 +1848,15 @@ export function CreatePortfolio(props) {
       setPortfolioItems(_itemArrData);
       setTabs(tabsData);
       if (_itemArrData.length > 0) {
-        var tempBundleItemsUrl = _itemArrData.map((data, i) =>
+
+        const filterPortfolioItems = getFilterPortfolioItems(_itemArrData);
+
+        var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
           `itemIds=${data.itemId}`
         ).join('&');
+        // var tempBundleItemsUrl = _itemArrData.map((data, i) =>
+        //   `itemIds=${data.itemId}`
+        // ).join('&');
 
         if (state && state.type === "fetch") {
           if ((portfolioId !== "" || (portfolioId !== undefined))) {
@@ -1853,30 +1864,31 @@ export function CreatePortfolio(props) {
           }
         }
 
-        const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+        if (filterPortfolioItems.length > 0) {
+          const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
-        console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
+          console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
 
-        let expandAblePortfolioItems = []
-        let expendedBundleServiceItems = [];
-        if (tempBundleItemsColumnsData.status === 200) {
-          tempBundleItemsColumnsData.data.map((data, i) => {
+          let expandAblePortfolioItems = []
+          let expendedBundleServiceItems = [];
+          if (tempBundleItemsColumnsData.status === 200) {
+            tempBundleItemsColumnsData.data.map((data, i) => {
 
-            for (let c = 0; c < data.bundleItems.length; c++) {
-              expendedBundleServiceItems.push(data.bundleItems[c]);
-            }
+              for (let c = 0; c < data.bundleItems.length; c++) {
+                expendedBundleServiceItems.push(data.bundleItems[c]);
+              }
 
-            for (let d = 0; d < data.serviceItems.length; d++) {
-              expendedBundleServiceItems.push(data.serviceItems[d]);
-            }
+              for (let d = 0; d < data.serviceItems.length; d++) {
+                expendedBundleServiceItems.push(data.serviceItems[d]);
+              }
 
-            expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
-          })
+              expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+            })
 
-          // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
-          setTempBundleItems(expandAblePortfolioItems);
+            // setTempBundleItems([...tempBundleItems, ...expandAblePortfolioItems]);
+            setTempBundleItems(expandAblePortfolioItems);
+          }
         }
-
       }
 
       let obj = {
@@ -2550,9 +2562,14 @@ export function CreatePortfolio(props) {
 
 
       if (_itemArrData.length > 0) {
-        var tempBundleItemsUrl = _itemArrData.map((data, i) =>
+        const filterPortfolioItems = getFilterPortfolioItems(_itemArrData);
+
+        var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
           `itemIds=${data.itemId}`
         ).join('&');
+        // var tempBundleItemsUrl = _itemArrData.map((data, i) =>
+        //   `itemIds=${data.itemId}`
+        // ).join('&');
 
         if (state && state.type === "fetch") {
           if ((portfolioId !== "" || (portfolioId !== undefined))) {
@@ -2837,9 +2854,14 @@ export function CreatePortfolio(props) {
 
               if (_portfolioItems.length > 0) {
                 var tempBundleItemsUrl = "";
-                var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+                const filterPortfolioItems = getFilterPortfolioItems(_portfolioItems);
+
+                var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
                   `itemIds=${data.itemId}`
                 ).join('&');
+                // var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+                //   `itemIds=${data.itemId}`
+                // ).join('&');
 
                 const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
                 let expandAblePortfolioItems = []
@@ -3106,9 +3128,14 @@ export function CreatePortfolio(props) {
 
             if (_portfolioItems.length > 0) {
               var tempBundleItemsUrl = "";
-              var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+              const filterPortfolioItems = getFilterPortfolioItems(_portfolioItems);
+
+              var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
                 `itemIds=${data.itemId}`
               ).join('&');
+              // var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+              //   `itemIds=${data.itemId}`
+              // ).join('&');
 
               const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
               let expandAblePortfolioItems = []
@@ -3703,9 +3730,15 @@ export function CreatePortfolio(props) {
 
           if (_portfolioItems.length > 0) {
             var tempBundleItemsUrl = "";
-            var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+            const filterPortfolioItems = getFilterPortfolioItems(_portfolioItems);
+
+            var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
               `itemIds=${data.itemId}`
             ).join('&');
+
+            // var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+            //   `itemIds=${data.itemId}`
+            // ).join('&');
 
             const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
             let expandAblePortfolioItems = []
@@ -3970,9 +4003,14 @@ export function CreatePortfolio(props) {
 
           if (_portfolioItems.length > 0) {
             var tempBundleItemsUrl = "";
-            var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+            const filterPortfolioItems = getFilterPortfolioItems(_portfolioItems);
+
+            var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
               `itemIds=${data.itemId}`
             ).join('&');
+            // var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+            //   `itemIds=${data.itemId}`
+            // ).join('&');
 
             const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
             let expandAblePortfolioItems = []
@@ -4426,9 +4464,14 @@ export function CreatePortfolio(props) {
 
       if (_portfolioItems.length > 0) {
         var tempBundleItemsUrl = "";
-        var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+        const filterPortfolioItems = getFilterPortfolioItems(_portfolioItems);
+
+        var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
           `itemIds=${data.itemId}`
         ).join('&');
+        // var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+        //   `itemIds=${data.itemId}`
+        // ).join('&');
 
         const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
         let expandAblePortfolioItems = []
@@ -5428,6 +5471,7 @@ export function CreatePortfolio(props) {
   const handleEditPortfolioItem = async (e, row) => {
 
     const fetchItemDetailsById = await getItemDataById(row.itemId);
+    setCurrentItemId(row.itemId);
     if (fetchItemDetailsById.status === 200) {
 
       const newRowData = fetchItemDetailsById.data;
@@ -5589,8 +5633,11 @@ export function CreatePortfolio(props) {
           },
         });
       }
-
+      setBundleServiceEditModeOn(true);
+      setViewBundleServiceItemList(row.associatedServiceOrBundle)
       setTempBundleService3(row.associatedServiceOrBundle)
+      setPreviewReviewItemList(row.associatedServiceOrBundle)
+      setPreviewItemsList(portfolioItems)
 
       // setComponentData({
       //   ...componentData,
@@ -5631,6 +5678,8 @@ export function CreatePortfolio(props) {
 
     setTabs("1");
     setItemModelShow(true);
+    setBundleServiceEditModeOn(false);
+    setViewBundleServiceItemList([]);
 
     setPriceBreakDownFieldsValue({
       ...priceBreakDownFieldsValue,
@@ -8248,7 +8297,7 @@ export function CreatePortfolio(props) {
 
     console.log("portfolioDetails ==== ", portfolioDetails);
     history.push({
-      pathname: "/portfolioBuilder/new",
+      pathname: "/portfolio/new",
       state: portfolioDetails,
     });
     setNewVersionStatus(true);
@@ -8620,6 +8669,7 @@ export function CreatePortfolio(props) {
         }
         setBundleItems(itemsArrData);
         setTempBundleItems(itemsArrData);
+        // setPreviewReviewItemList(itemsArrData);
       }
     }
 
@@ -8684,7 +8734,8 @@ export function CreatePortfolio(props) {
     for (let i = 0; i < result.items.length; i++) {
       customItemArr.push({ itemId: result.items[i].itemId })
     }
-    setPortfolioItems(customItemArr)
+    setPortfolioItems(customItemArr);
+    setPreviewItemsList(customItemArr)
 
     if (customItemArr.length > 0) {
       getBundleServiceItemPriceList(customItemArr, result.items, result.portfolioId);
@@ -8846,6 +8897,11 @@ export function CreatePortfolio(props) {
 
   const getBundleServiceItemPriceList = async (_itemArrData, itemsArr, portfolioId) => {
     if (_itemArrData.length > 0) {
+      const filterPortfolioItems = getFilterPortfolioItems(_itemArrData);
+
+      // var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
+      //   `itemIds=${data.itemId}`
+      // ).join('&');
       var tempBundleItemsUrl = _itemArrData.map((data, i) =>
         `itemIds=${data.itemId}`
       ).join('&');
@@ -8877,6 +8933,11 @@ export function CreatePortfolio(props) {
     }
 
     if (itemsArr.length > 0) {
+      const filterPortfolioItems = getFilterPortfolioItems(itemsArr);
+
+      // var tempItemsUrl = filterPortfolioItems.map((data, i) =>
+      //   `itemIds=${data.itemId}`
+      // ).join('&');
       var tempItemsUrl = itemsArr.map((data, i) =>
         `itemIds=${data.itemId}`
       ).join('&');
@@ -9736,6 +9797,85 @@ export function CreatePortfolio(props) {
     })
 
     if (selectedBundleServiceArr.length > 0) {
+
+      for (let a = 0; a < selectedBundleServiceArr.length; a++) {
+        let updateAbleItemId = selectedBundleServiceArr[a];
+        const fetchItemDetailsById = await getItemDataById(updateAbleItemId.itemId);
+        if (fetchItemDetailsById.status === 200) {
+          let selectBundleServiceData = fetchItemDetailsById.data;
+          let selectBundleServiceHeaderData = selectBundleServiceData["itemHeaderModel"];
+          let selectBundleServiceBodyData = selectBundleServiceData["itemBodyModel"];
+          let updateAbleObj = {
+            itemId: selectBundleServiceData.itemId,
+            itemName: selectBundleServiceData.itemName,
+            itemHeaderModel: {
+              itemHeaderId: selectBundleServiceHeaderData.itemHeaderId,
+              itemHeaderDescription: selectBundleServiceHeaderData.itemHeaderDescription,
+              bundleFlag: selectBundleServiceHeaderData.bundleFlag,
+              withBundleService: selectBundleServiceHeaderData.withBundleService,
+              portfolioItemIds: [...selectBundleServiceHeaderData["portfolioItemIds"], currentItemId],
+              reference: selectBundleServiceHeaderData.reference,
+              itemHeaderMake: selectBundleServiceHeaderData.itemHeaderMake,
+              itemHeaderFamily: selectBundleServiceHeaderData.itemHeaderFamily,
+              model: selectBundleServiceHeaderData.model,
+              prefix: selectBundleServiceHeaderData.prefix,
+              type: selectBundleServiceHeaderData.type,
+              additional: selectBundleServiceHeaderData.additional,
+              currency: selectBundleServiceHeaderData.currency,
+              netPrice: selectBundleServiceHeaderData.netPrice,
+              itemProductHierarchy: selectBundleServiceHeaderData.itemProductHierarchy,
+              itemHeaderGeographic: selectBundleServiceHeaderData.itemHeaderGeographic,
+              responseTime: selectBundleServiceHeaderData.responseTime,
+              usage: selectBundleServiceHeaderData.usage,
+              validFrom: selectBundleServiceHeaderData.validFrom,
+              validTo: selectBundleServiceHeaderData.validTo,
+              estimatedTime: selectBundleServiceHeaderData.estimatedTime,
+              servicePrice: selectBundleServiceHeaderData.servicePrice,
+              status: selectBundleServiceHeaderData.status,
+              componentCode: selectBundleServiceHeaderData.componentCode,
+              componentDescription: selectBundleServiceHeaderData.componentDescription,
+              serialNumber: selectBundleServiceHeaderData.serialNumber,
+              itemHeaderStrategy: selectBundleServiceHeaderData.itemHeaderStrategy,
+              variant: selectBundleServiceHeaderData.variant,
+              itemHeaderCustomerSegment: selectBundleServiceHeaderData.itemHeaderCustomerSegment,
+              jobCode: selectBundleServiceHeaderData.jobCode,
+              preparedBy: selectBundleServiceHeaderData.preparedBy,
+              approvedBy: selectBundleServiceHeaderData.approvedBy,
+              preparedOn: selectBundleServiceHeaderData.preparedOn,
+              revisedBy: selectBundleServiceHeaderData.revisedBy,
+              revisedOn: selectBundleServiceHeaderData.revisedOn,
+              salesOffice: selectBundleServiceHeaderData.salesOffice,
+              offerValidity: selectBundleServiceHeaderData.offerValidity,
+              serviceChargable: selectBundleServiceHeaderData.serviceChargable,
+              serviceOptional: selectBundleServiceHeaderData.serviceOptional
+            },
+            itemBodyModel: {
+              itemBodyId: selectBundleServiceBodyData.itemBodyId,
+              itemBodyDescription: selectBundleServiceBodyData.itemBodyDescription,
+              spareParts: selectBundleServiceBodyData.spareParts,
+              labours: selectBundleServiceBodyData.labours,
+              miscellaneous: selectBundleServiceBodyData.miscellaneous,
+              taskType: selectBundleServiceBodyData.taskType,
+              solutionCode: selectBundleServiceBodyData.solutionCode,
+              usageIn: selectBundleServiceBodyData.usageIn,
+              usage: selectBundleServiceBodyData.usage,
+              year: selectBundleServiceBodyData.year,
+              avgUsage: selectBundleServiceBodyData.avgUsage,
+              itemPrices: selectBundleServiceBodyData.itemPrices
+            },
+          };
+
+          const res = await updateItemData(updateAbleItemId.itemId, updateAbleObj)
+        }
+
+        // const res = await updateItemData(createServiceOrBundle.id, reqObj);
+      }
+
+      const filterPortfolioItems = getFilterPortfolioItems(selectedBundleServiceArr);
+
+      // var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
+      //   `itemIds=${data.itemId}`
+      // ).join('&');
       var tempBundleItemsUrl = selectedBundleServiceArr.map((data, i) =>
         `itemIds=${data.itemId}`
       ).join('&');
@@ -9765,9 +9905,6 @@ export function CreatePortfolio(props) {
         setTempBundleService3([...tempBundleService3, ...expendedBundleServiceItems]);
       }
     }
-
-    // console.log("createdItemsIdData : ", createdItemsIdData);
-
     // setTempBundleService3([...tempBundleService3, ...cloneArr])
     setTempBundleService1([])
   }
@@ -9776,7 +9913,7 @@ export function CreatePortfolio(props) {
   // goTo Recent Portfolio/Bundles/Service
   const recentPortfolios = () => {
     history.push({
-      pathname: "/portfolio/summary",
+      pathname: "/portfolio",
     });
   }
 
@@ -10026,208 +10163,521 @@ export function CreatePortfolio(props) {
   };
 
   const addTempItemIntobundleItem = async () => {
-    setLoadingItem(true);
-    setItemModelShow(false);
-    let temp = [];
-    let itemsData = [];
-    for (let key1 in tempBundleItemCheckList) {
-      for (let i = 0; i < tempBundleItems.length; i++) {
-        if (
-          (tempBundleItems[i].itemId == key1 &&
-            tempBundleItemCheckList[key1]) ||
-          tempBundleItems[i].itemId == tempBundleItemCheckList.selectedId
-        ) {
-          itemsData.push({ itemId: tempBundleItems[i].itemId });
-          for (let k = 0; k < tempBundleItems[i].associatedServiceOrBundle.length; k++) {
-            itemsData.push({ itemId: tempBundleItems[i].associatedServiceOrBundle[k].itemId })
+    const filterPortfolioItems = getFilterPortfolioItems(portfolioItems);
+    const numberOfProperties = Object.keys(tempBundleItemCheckList).length;
+    if (numberOfProperties > 0) {
+      if (filterPortfolioItems.length > previewItemsList.length) {
+        setLoadingItem(true);
+        setItemModelShow(false);
+        let temp = [];
+        let itemsData = [];
+        for (let key1 in tempBundleItemCheckList) {
+          for (let i = 0; i < tempBundleItems.length; i++) {
+            if (
+              (tempBundleItems[i].itemId == key1 &&
+                tempBundleItemCheckList[key1]) ||
+              tempBundleItems[i].itemId == tempBundleItemCheckList.selectedId
+            ) {
+              itemsData.push({ itemId: tempBundleItems[i].itemId });
+              for (let k = 0; k < tempBundleItems[i].associatedServiceOrBundle.length; k++) {
+                itemsData.push({ itemId: tempBundleItems[i].associatedServiceOrBundle[k].itemId })
+              }
+              temp.push(tempBundleItems[i]);
+              break;
+            }
           }
-          temp.push(tempBundleItems[i]);
-          break;
         }
+        console.log("temp record is : ", temp);
+        console.log("itemsData is : ", itemsData);
+        setPortfolioItems(itemsData);
+
+        // const { portfolioId, ...res } = generalComponentData;
+        // let obj = {
+        //   ...res,
+        //   visibleInCommerce: true,
+        //   customerId: 0,
+        //   lubricant: true,
+        //   customerSegment: generalComponentData.customerSegment
+        //     ? generalComponentData.customerSegment.value
+        //     : "EMPTY",
+        //   machineType: generalComponentData.machineType
+        //     ? generalComponentData.machineType
+        //     : "EMPTY",
+        //   status: generalComponentData.status
+        //     ? generalComponentData.status
+        //     : "EMPTY",
+        //   strategyTask: generalComponentData.strategyTask
+        //     ? generalComponentData.strategyTask
+        //     : "EMPTY",
+        //   taskType: generalComponentData.taskType
+        //     ? generalComponentData.taskType
+        //     : "EMPTY",
+        //   usageCategory: generalComponentData.usageCategory
+        //     ? generalComponentData.usageCategory
+        //     : "EMPTY",
+        //   productHierarchy: generalComponentData.productHierarchy
+        //     ? generalComponentData.productHierarchy
+        //     : "EMPTY",
+        //   geographic: generalComponentData.geographic
+        //     ? generalComponentData.geographic
+        //     : "EMPTY",
+        //   availability: generalComponentData.availability
+        //     ? generalComponentData.availability
+        //     : "EMPTY",
+        //   responseTime: generalComponentData.responseTime
+        //     ? generalComponentData.responseTime
+        //     : "EMPTY",
+        //   type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+        //   application: generalComponentData.application
+        //     ? generalComponentData.application
+        //     : "EMPTY",
+        //   contractOrSupport: generalComponentData.contractOrSupport
+        //     ? generalComponentData.contractOrSupport
+        //     : "EMPTY",
+        //   lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+        //     ? generalComponentData.lifeStageOfMachine
+        //     : "EMPTY",
+        //   supportLevel: generalComponentData.supportLevel
+        //     ? generalComponentData.supportLevel
+        //     : "EMPTY",
+        //   customerGroup: generalComponentData.customerGroup
+        //     ? generalComponentData.customerGroup
+        //     : "EMPTY",
+        //   searchTerm: "EMPTY",
+        //   supportLevel: "EMPTY",
+        //   // portfolioPrice: {},
+        //   // additionalPrice: {},
+        //   // escalationPrice: {},
+        //   items: itemsData,
+        //   coverages: portfolioCoverage,
+        //   usageCategory: categoryUsageKeyValue1.value,
+        //   taskType: stratgyTaskTypeKeyValue.value,
+        //   strategyTask: stratgyTaskUsageKeyValue.value,
+        //   responseTime: stratgyResponseTimeKeyValue.value,
+        //   productHierarchy: stratgyHierarchyKeyValue.value,
+        //   geographic: stratgyGeographicKeyValue.value,
+        //   preparedBy: administrative.preparedBy,
+        //   approvedBy: administrative.approvedBy,
+        //   preparedOn: administrative.preparedOn,
+        //   revisedBy: administrative.revisedBy,
+        //   revisedOn: administrative.revisedOn,
+        //   salesOffice: administrative.salesOffice?.value,
+        //   offerValidity: administrative.offerValidity?.value,
+        // };
+        let obj = {
+          portfolioId: portfolioId,
+          name: generalComponentData.name,
+          description: generalComponentData.description,
+          externalReference: generalComponentData.externalReference,
+          customerSegment: generalComponentData.customerSegment?.value,
+
+          validFrom: validityData.fromDate,
+          validTo: validityData.toDate,
+          startUsage: validityData.fromInput,
+          endUsage: validityData.toInput,
+          unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+            ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
+
+          usageCategory: categoryUsageKeyValue1.value
+            ? categoryUsageKeyValue1.value : "EMPTY",
+          strategyTask: stratgyTaskUsageKeyValue.value ?
+            stratgyTaskUsageKeyValue.value : "EMPTY",
+          taskType: stratgyTaskTypeKeyValue.value ?
+            stratgyTaskTypeKeyValue.value : "EMPTY",
+          responseTime: stratgyResponseTimeKeyValue.value ?
+            stratgyResponseTimeKeyValue.value : "EMPTY",
+          productHierarchy: stratgyHierarchyKeyValue.value ?
+            stratgyHierarchyKeyValue.value : "EMPTY",
+          geographic: stratgyGeographicKeyValue.value ?
+            stratgyGeographicKeyValue.value : "EMPTY",
+
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          offerValidity: administrative.offerValidity?.value,
+          salesOffice: administrative.salesOffice?.value,
+
+          portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+            ? portfolioPriceDataId : null,
+          // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+          optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
+          // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+          //   ? portfolioAdditionalPriceDataId : null,
+          // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+          //   ? portfolioEscalationPriceDataId : null,
+
+          supportLevel: value3.value,
+          status: value2.value,
+
+          // items: portfolioItems,
+          items: itemsData,
+          coverages: portfolioCoverage,
+
+          // machineType: "NEW",
+          // searchTerm: "",
+          // lubricant: true,
+          // customerId: 0,
+          // customerGroup: "",
+          // availability: "AVAILABILITY_GREATER_95",
+          // type: "MACHINE",
+          // application: "HILL",
+          // contractOrSupport: "LEVEL_I",
+          // lifeStageOfMachine: "NEW_BREAKIN",
+          // numberOfEvents: 0,
+          // rating: "",
+          // startUsage: 0,
+          // endUsage: 0,
+          // unit: "HOURS",
+          // additionals: "",
+          // template: true,
+          // visibleInCommerce: true
+          machineType: "EMPTY",
+          searchTerm: "",
+          lubricant: true,
+          customerId: 0,
+          customerGroup: "",
+          availability: "EMPTY",
+          type: "EMPTY",
+          application: "EMPTY",
+          contractOrSupport: "EMPTY",
+          lifeStageOfMachine: "EMPTY",
+          numberOfEvents: 0,
+          rating: "",
+          // startUsage: 0,
+          // endUsage: 0,
+          // unit: "EMPTY",
+          additionals: "",
+          template: true,
+          visibleInCommerce: true
+        }
+
+        if ((portfolioId !== "") || (portfolioId !== undefined)) {
+          const updatePortfolioRes = await updatePortfolio(
+            portfolioId,
+            obj
+          );
+        }
+        // if (generalComponentData.portfolioId) {
+        //   const updatePortfolioRes = await updatePortfolio(
+        //     generalComponentData.portfolioId,
+        //     obj
+        //   );
+        // }
+        setBundleItems(temp);
+        setItemModelShow(false);
+        setLoadingItem(false);
+        setTabs("1");
+      } else {
+        setItemModelShow(false);
+        setLoadingItem(false);
+        setTabs("1");
+      }
+    } else {
+      let temp = [];
+      let itemsData = [];
+      const foundObject = tempBundleItems.find(obj => obj.itemId === currentItemId);
+      if (foundObject) {
+        itemsData.push({ itemId: foundObject.itemId });
+        for (let k = 0; k < foundObject.associatedServiceOrBundle.length; k++) {
+          itemsData.push({ itemId: foundObject.associatedServiceOrBundle[k].itemId })
+        }
+        setPortfolioItems(itemsData);
+        temp.push(foundObject);
+        if (filterPortfolioItems.length > previewItemsList.length) {
+          let obj = {
+            portfolioId: portfolioId,
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            externalReference: generalComponentData.externalReference,
+            customerSegment: generalComponentData.customerSegment?.value,
+
+            validFrom: validityData.fromDate,
+            validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
+
+            usageCategory: categoryUsageKeyValue1.value
+              ? categoryUsageKeyValue1.value : "EMPTY",
+            strategyTask: stratgyTaskUsageKeyValue.value ?
+              stratgyTaskUsageKeyValue.value : "EMPTY",
+            taskType: stratgyTaskTypeKeyValue.value ?
+              stratgyTaskTypeKeyValue.value : "EMPTY",
+            responseTime: stratgyResponseTimeKeyValue.value ?
+              stratgyResponseTimeKeyValue.value : "EMPTY",
+            productHierarchy: stratgyHierarchyKeyValue.value ?
+              stratgyHierarchyKeyValue.value : "EMPTY",
+            geographic: stratgyGeographicKeyValue.value ?
+              stratgyGeographicKeyValue.value : "EMPTY",
+
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            offerValidity: administrative.offerValidity?.value,
+            salesOffice: administrative.salesOffice?.value,
+
+            portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+              ? portfolioPriceDataId : null,
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
+            // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+            //   ? portfolioAdditionalPriceDataId : null,
+            // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+            //   ? portfolioEscalationPriceDataId : null,
+
+            supportLevel: value3.value,
+            status: value2.value,
+
+            items: portfolioItems,
+            coverages: portfolioCoverage,
+
+            machineType: "EMPTY",
+            searchTerm: "",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: "",
+            availability: "EMPTY",
+            type: "EMPTY",
+            application: "EMPTY",
+            contractOrSupport: "EMPTY",
+            lifeStageOfMachine: "EMPTY",
+            numberOfEvents: 0,
+            rating: "",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "EMPTY",
+            additionals: "",
+            template: true,
+            visibleInCommerce: true
+          }
+
+          if ((portfolioId !== "") || (portfolioId !== undefined)) {
+            const updatePortfolioRes = await updatePortfolio(
+              portfolioId,
+              obj
+            );
+          }
+        }
+        setBundleItems(temp)
+        setItemModelShow(false);
+        setLoadingItem(false);
+        setTabs("1");
+      } else {
+        setItemModelShow(false);
+        setLoadingItem(false);
+        setTabs("1");
       }
     }
-    console.log("temp record is : ", temp);
-    console.log("itemsData is : ", itemsData);
-    setPortfolioItems(itemsData);
 
-    // const { portfolioId, ...res } = generalComponentData;
+    // setLoadingItem(true);
+    // setItemModelShow(false);
+    // let temp = [];
+    // let itemsData = [];
+    // for (let key1 in tempBundleItemCheckList) {
+    //   for (let i = 0; i < tempBundleItems.length; i++) {
+    //     if (
+    //       (tempBundleItems[i].itemId == key1 &&
+    //         tempBundleItemCheckList[key1]) ||
+    //       tempBundleItems[i].itemId == tempBundleItemCheckList.selectedId
+    //     ) {
+    //       itemsData.push({ itemId: tempBundleItems[i].itemId });
+    //       for (let k = 0; k < tempBundleItems[i].associatedServiceOrBundle.length; k++) {
+    //         itemsData.push({ itemId: tempBundleItems[i].associatedServiceOrBundle[k].itemId })
+    //       }
+    //       temp.push(tempBundleItems[i]);
+    //       break;
+    //     }
+    //   }
+    // }
+    // console.log("temp record is : ", temp);
+    // console.log("itemsData is : ", itemsData);
+    // setPortfolioItems(itemsData);
+
+    // // const { portfolioId, ...res } = generalComponentData;
+    // // let obj = {
+    // //   ...res,
+    // //   visibleInCommerce: true,
+    // //   customerId: 0,
+    // //   lubricant: true,
+    // //   customerSegment: generalComponentData.customerSegment
+    // //     ? generalComponentData.customerSegment.value
+    // //     : "EMPTY",
+    // //   machineType: generalComponentData.machineType
+    // //     ? generalComponentData.machineType
+    // //     : "EMPTY",
+    // //   status: generalComponentData.status
+    // //     ? generalComponentData.status
+    // //     : "EMPTY",
+    // //   strategyTask: generalComponentData.strategyTask
+    // //     ? generalComponentData.strategyTask
+    // //     : "EMPTY",
+    // //   taskType: generalComponentData.taskType
+    // //     ? generalComponentData.taskType
+    // //     : "EMPTY",
+    // //   usageCategory: generalComponentData.usageCategory
+    // //     ? generalComponentData.usageCategory
+    // //     : "EMPTY",
+    // //   productHierarchy: generalComponentData.productHierarchy
+    // //     ? generalComponentData.productHierarchy
+    // //     : "EMPTY",
+    // //   geographic: generalComponentData.geographic
+    // //     ? generalComponentData.geographic
+    // //     : "EMPTY",
+    // //   availability: generalComponentData.availability
+    // //     ? generalComponentData.availability
+    // //     : "EMPTY",
+    // //   responseTime: generalComponentData.responseTime
+    // //     ? generalComponentData.responseTime
+    // //     : "EMPTY",
+    // //   type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+    // //   application: generalComponentData.application
+    // //     ? generalComponentData.application
+    // //     : "EMPTY",
+    // //   contractOrSupport: generalComponentData.contractOrSupport
+    // //     ? generalComponentData.contractOrSupport
+    // //     : "EMPTY",
+    // //   lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+    // //     ? generalComponentData.lifeStageOfMachine
+    // //     : "EMPTY",
+    // //   supportLevel: generalComponentData.supportLevel
+    // //     ? generalComponentData.supportLevel
+    // //     : "EMPTY",
+    // //   customerGroup: generalComponentData.customerGroup
+    // //     ? generalComponentData.customerGroup
+    // //     : "EMPTY",
+    // //   searchTerm: "EMPTY",
+    // //   supportLevel: "EMPTY",
+    // //   // portfolioPrice: {},
+    // //   // additionalPrice: {},
+    // //   // escalationPrice: {},
+    // //   items: itemsData,
+    // //   coverages: portfolioCoverage,
+    // //   usageCategory: categoryUsageKeyValue1.value,
+    // //   taskType: stratgyTaskTypeKeyValue.value,
+    // //   strategyTask: stratgyTaskUsageKeyValue.value,
+    // //   responseTime: stratgyResponseTimeKeyValue.value,
+    // //   productHierarchy: stratgyHierarchyKeyValue.value,
+    // //   geographic: stratgyGeographicKeyValue.value,
+    // //   preparedBy: administrative.preparedBy,
+    // //   approvedBy: administrative.approvedBy,
+    // //   preparedOn: administrative.preparedOn,
+    // //   revisedBy: administrative.revisedBy,
+    // //   revisedOn: administrative.revisedOn,
+    // //   salesOffice: administrative.salesOffice?.value,
+    // //   offerValidity: administrative.offerValidity?.value,
+    // // };
     // let obj = {
-    //   ...res,
-    //   visibleInCommerce: true,
-    //   customerId: 0,
-    //   lubricant: true,
-    //   customerSegment: generalComponentData.customerSegment
-    //     ? generalComponentData.customerSegment.value
-    //     : "EMPTY",
-    //   machineType: generalComponentData.machineType
-    //     ? generalComponentData.machineType
-    //     : "EMPTY",
-    //   status: generalComponentData.status
-    //     ? generalComponentData.status
-    //     : "EMPTY",
-    //   strategyTask: generalComponentData.strategyTask
-    //     ? generalComponentData.strategyTask
-    //     : "EMPTY",
-    //   taskType: generalComponentData.taskType
-    //     ? generalComponentData.taskType
-    //     : "EMPTY",
-    //   usageCategory: generalComponentData.usageCategory
-    //     ? generalComponentData.usageCategory
-    //     : "EMPTY",
-    //   productHierarchy: generalComponentData.productHierarchy
-    //     ? generalComponentData.productHierarchy
-    //     : "EMPTY",
-    //   geographic: generalComponentData.geographic
-    //     ? generalComponentData.geographic
-    //     : "EMPTY",
-    //   availability: generalComponentData.availability
-    //     ? generalComponentData.availability
-    //     : "EMPTY",
-    //   responseTime: generalComponentData.responseTime
-    //     ? generalComponentData.responseTime
-    //     : "EMPTY",
-    //   type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-    //   application: generalComponentData.application
-    //     ? generalComponentData.application
-    //     : "EMPTY",
-    //   contractOrSupport: generalComponentData.contractOrSupport
-    //     ? generalComponentData.contractOrSupport
-    //     : "EMPTY",
-    //   lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-    //     ? generalComponentData.lifeStageOfMachine
-    //     : "EMPTY",
-    //   supportLevel: generalComponentData.supportLevel
-    //     ? generalComponentData.supportLevel
-    //     : "EMPTY",
-    //   customerGroup: generalComponentData.customerGroup
-    //     ? generalComponentData.customerGroup
-    //     : "EMPTY",
-    //   searchTerm: "EMPTY",
-    //   supportLevel: "EMPTY",
-    //   // portfolioPrice: {},
-    //   // additionalPrice: {},
-    //   // escalationPrice: {},
-    //   items: itemsData,
-    //   coverages: portfolioCoverage,
-    //   usageCategory: categoryUsageKeyValue1.value,
-    //   taskType: stratgyTaskTypeKeyValue.value,
-    //   strategyTask: stratgyTaskUsageKeyValue.value,
-    //   responseTime: stratgyResponseTimeKeyValue.value,
-    //   productHierarchy: stratgyHierarchyKeyValue.value,
-    //   geographic: stratgyGeographicKeyValue.value,
+    //   portfolioId: portfolioId,
+    //   name: generalComponentData.name,
+    //   description: generalComponentData.description,
+    //   externalReference: generalComponentData.externalReference,
+    //   customerSegment: generalComponentData.customerSegment?.value,
+
+    //   validFrom: validityData.fromDate,
+    //   validTo: validityData.toDate,
+    //   startUsage: validityData.fromInput,
+    //   endUsage: validityData.toInput,
+    //   unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+    //     ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
+
+    //   usageCategory: categoryUsageKeyValue1.value
+    //     ? categoryUsageKeyValue1.value : "EMPTY",
+    //   strategyTask: stratgyTaskUsageKeyValue.value ?
+    //     stratgyTaskUsageKeyValue.value : "EMPTY",
+    //   taskType: stratgyTaskTypeKeyValue.value ?
+    //     stratgyTaskTypeKeyValue.value : "EMPTY",
+    //   responseTime: stratgyResponseTimeKeyValue.value ?
+    //     stratgyResponseTimeKeyValue.value : "EMPTY",
+    //   productHierarchy: stratgyHierarchyKeyValue.value ?
+    //     stratgyHierarchyKeyValue.value : "EMPTY",
+    //   geographic: stratgyGeographicKeyValue.value ?
+    //     stratgyGeographicKeyValue.value : "EMPTY",
+
     //   preparedBy: administrative.preparedBy,
     //   approvedBy: administrative.approvedBy,
     //   preparedOn: administrative.preparedOn,
     //   revisedBy: administrative.revisedBy,
     //   revisedOn: administrative.revisedOn,
-    //   salesOffice: administrative.salesOffice?.value,
     //   offerValidity: administrative.offerValidity?.value,
-    // };
-    let obj = {
-      portfolioId: portfolioId,
-      name: generalComponentData.name,
-      description: generalComponentData.description,
-      externalReference: generalComponentData.externalReference,
-      customerSegment: generalComponentData.customerSegment?.value,
+    //   salesOffice: administrative.salesOffice?.value,
 
-      validFrom: validityData.fromDate,
-      validTo: validityData.toDate,
-      startUsage: validityData.fromInput,
-      endUsage: validityData.toInput,
-      unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
-        ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+    //   portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+    //     ? portfolioPriceDataId : null,
+    //   // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+    //   optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
+    //   // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+    //   //   ? portfolioAdditionalPriceDataId : null,
+    //   // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+    //   //   ? portfolioEscalationPriceDataId : null,
 
+    //   supportLevel: value3.value,
+    //   status: value2.value,
 
-      usageCategory: categoryUsageKeyValue1.value
-        ? categoryUsageKeyValue1.value : "EMPTY",
-      strategyTask: stratgyTaskUsageKeyValue.value ?
-        stratgyTaskUsageKeyValue.value : "EMPTY",
-      taskType: stratgyTaskTypeKeyValue.value ?
-        stratgyTaskTypeKeyValue.value : "EMPTY",
-      responseTime: stratgyResponseTimeKeyValue.value ?
-        stratgyResponseTimeKeyValue.value : "EMPTY",
-      productHierarchy: stratgyHierarchyKeyValue.value ?
-        stratgyHierarchyKeyValue.value : "EMPTY",
-      geographic: stratgyGeographicKeyValue.value ?
-        stratgyGeographicKeyValue.value : "EMPTY",
+    //   items: portfolioItems,
+    //   coverages: portfolioCoverage,
 
-      preparedBy: administrative.preparedBy,
-      approvedBy: administrative.approvedBy,
-      preparedOn: administrative.preparedOn,
-      revisedBy: administrative.revisedBy,
-      revisedOn: administrative.revisedOn,
-      offerValidity: administrative.offerValidity?.value,
-      salesOffice: administrative.salesOffice?.value,
+    //   // machineType: "NEW",
+    //   // searchTerm: "",
+    //   // lubricant: true,
+    //   // customerId: 0,
+    //   // customerGroup: "",
+    //   // availability: "AVAILABILITY_GREATER_95",
+    //   // type: "MACHINE",
+    //   // application: "HILL",
+    //   // contractOrSupport: "LEVEL_I",
+    //   // lifeStageOfMachine: "NEW_BREAKIN",
+    //   // numberOfEvents: 0,
+    //   // rating: "",
+    //   // startUsage: 0,
+    //   // endUsage: 0,
+    //   // unit: "HOURS",
+    //   // additionals: "",
+    //   // template: true,
+    //   // visibleInCommerce: true
+    //   machineType: "EMPTY",
+    //   searchTerm: "",
+    //   lubricant: true,
+    //   customerId: 0,
+    //   customerGroup: "",
+    //   availability: "EMPTY",
+    //   type: "EMPTY",
+    //   application: "EMPTY",
+    //   contractOrSupport: "EMPTY",
+    //   lifeStageOfMachine: "EMPTY",
+    //   numberOfEvents: 0,
+    //   rating: "",
+    //   // startUsage: 0,
+    //   // endUsage: 0,
+    //   // unit: "EMPTY",
+    //   additionals: "",
+    //   template: true,
+    //   visibleInCommerce: true
+    // }
 
-      portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
-        ? portfolioPriceDataId : null,
-      // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
-      optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
-      // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
-      //   ? portfolioAdditionalPriceDataId : null,
-      // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
-      //   ? portfolioEscalationPriceDataId : null,
-
-      supportLevel: value3.value,
-      status: value2.value,
-
-      items: portfolioItems,
-      coverages: portfolioCoverage,
-
-      // machineType: "NEW",
-      // searchTerm: "",
-      // lubricant: true,
-      // customerId: 0,
-      // customerGroup: "",
-      // availability: "AVAILABILITY_GREATER_95",
-      // type: "MACHINE",
-      // application: "HILL",
-      // contractOrSupport: "LEVEL_I",
-      // lifeStageOfMachine: "NEW_BREAKIN",
-      // numberOfEvents: 0,
-      // rating: "",
-      // startUsage: 0,
-      // endUsage: 0,
-      // unit: "HOURS",
-      // additionals: "",
-      // template: true,
-      // visibleInCommerce: true
-      machineType: "EMPTY",
-      searchTerm: "",
-      lubricant: true,
-      customerId: 0,
-      customerGroup: "",
-      availability: "EMPTY",
-      type: "EMPTY",
-      application: "EMPTY",
-      contractOrSupport: "EMPTY",
-      lifeStageOfMachine: "EMPTY",
-      numberOfEvents: 0,
-      rating: "",
-      // startUsage: 0,
-      // endUsage: 0,
-      // unit: "EMPTY",
-      additionals: "",
-      template: true,
-      visibleInCommerce: true
-    }
-
-    if ((portfolioId !== "") || (portfolioId !== undefined)) {
-      const updatePortfolioRes = await updatePortfolio(
-        portfolioId,
-        obj
-      );
-    }
-    // if (generalComponentData.portfolioId) {
+    // if ((portfolioId !== "") || (portfolioId !== undefined)) {
     //   const updatePortfolioRes = await updatePortfolio(
-    //     generalComponentData.portfolioId,
+    //     portfolioId,
     //     obj
     //   );
     // }
-    setBundleItems(temp);
-    setItemModelShow(false);
-    setLoadingItem(false);
-    setTabs("1");
+    // // if (generalComponentData.portfolioId) {
+    // //   const updatePortfolioRes = await updatePortfolio(
+    // //     generalComponentData.portfolioId,
+    // //     obj
+    // //   );
+    // // }
+    // setBundleItems(temp);
+    // setItemModelShow(false);
+    // setLoadingItem(false);
+    // setTabs("1");
   };
 
   const makeHeaderEditable = () => {
@@ -11505,6 +11955,7 @@ export function CreatePortfolio(props) {
               name="selectedId"
               className="cursor"
               value={row.itemId}
+              checked={tempBundleItemCheckList[row.itemId] ? true : row.itemId === currentItemId ? true : false}
               onChange={(e) => handleTempbundleItemSelection(e, row.id)}
               style={{ border: "1px solid #000" }}
             />
@@ -13033,9 +13484,15 @@ export function CreatePortfolio(props) {
 
             if (_portfolioItems.length > 0) {
               var tempBundleItemsUrl = "";
-              var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+              const filterPortfolioItems = getFilterPortfolioItems(_portfolioItems);
+
+              var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
                 `itemIds=${data.itemId}`
               ).join('&');
+
+              // var tempBundleItemsUrl = _portfolioItems.map((data, i) =>
+              //   `itemIds=${data.itemId}`
+              // ).join('&');
 
               const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
               let expandAblePortfolioItems = []
@@ -13456,245 +13913,260 @@ export function CreatePortfolio(props) {
   };
 
   const getAddPortfolioItemDataFun = async (data, tabsData) => {
-    console.log("my data is: ", data)
-    setAddportFolioItem(data);
-    setPriceCalculator({
-      ...priceCalculator,
-      unit: data?.unit,
-      usageType: data?.usageType,
-      frequency: data?.frequency,
-      currency: data?.currency,
-      year: data?.year,
-    })
-    // console.log("data------ : ", data)
-
-
-    // const newPriceObj = {
-    //   itemPriceDataId: 0,
-    //   quantity: 1,
-    //   standardJobId: data.templateId,
-    //   repairKitId: data.repairOption,
-    //   templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
-    //   repairOption: "",
-    //   additional: "",
-    //   partListId: "",
-    //   serviceEstimateId: "",
-    //   numberOfEvents: 0,
-    //   priceMethod: "EMPTY",
-    //   priceType: "EMPTY",
-    //   listPrice: 0,
-    //   priceEscalation: "",
-    //   calculatedPrice: 0,
-    //   flatPrice: 0,
-    //   year: data.year?.value,
-    //   noOfYear: parseInt(data.noOfYear),
-    //   sparePartsPrice: 0,
-    //   sparePartsPriceBreakDownPercentage: 0,
-    //   servicePrice: 0,
-    //   labourPrice: 0,
-    //   labourPriceBreakDownPercentage: 0,
-    //   miscPrice: 0,
-    //   miscPriceBreakDownPercentage: 0,
-    //   totalPrice: 0,
-    //   netService: 0,
-    //   additionalPriceType: "ABSOLUTE",
-    //   additionalPriceValue: 0,
-    //   discountType: "EMPTY",
-    //   discountValue: 0,
-    //   recommendedValue: parseInt(data.recommendedValue),
-    //   startUsage: parseInt(data.startUsage),
-    //   endUsage: parseInt(data.endUsage),
-    //   sparePartsEscalation: 0,
-    //   labourEscalation: 0,
-    //   miscEscalation: 0,
-    //   serviceEscalation: 0,
-    //   withBundleService: (bundleServiceNeed ? false : true),
-    //   portfolio: ((portfolioId == 0) || (portfolioId == null) || (portfolioId == undefined)) ? null : {
-    //     portfolioId: portfolioId
-    //   },
-    //   tenantId: loginTenantId,
-    //   partsRequired: true,
-    //   labourRequired: true,
-    //   serviceRequired: false,
-    //   miscRequired: true,
-    //   inclusionExclusion: true
-    // }
-
-    // Old Working Price Obj
-    // const newPriceObj = {
-    //   itemPriceDataId: 0,
-    //   quantity: 1,
-    //   standardJobId: data.templateId,
-    //   repairKitId: data.repairOption,
-    //   templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
-    //   repairOption: "",
-    //   additional: "",
-    //   partListId: "",
-    //   serviceEstimateId: "",
-    //   numberOfEvents: 0,
-    //   frequency: data?.frequency !== "" ? data?.frequency?.value : "CYCLIC",
-    //   priceMethod: "LIST_PRICE",
-    //   priceType: "EVENT_BASED",
-    //   listPrice: 0,
-    //   priceEscalation: "",
-    //   calculatedPrice: 0,
-    //   flatPrice: 0,
-    //   year: data.year?.value,
-    //   noOfYear: parseInt(data.noOfYear),
-    //   sparePartsPrice: 0,
-    //   sparePartsPriceBreakDownPercentage: 0,
-    //   servicePrice: 0,
-    //   labourPrice: 0,
-    //   labourPriceBreakDownPercentage: 0,
-    //   miscPrice: 0,
-    //   miscPriceBreakDownPercentage: 0,
-    //   totalPrice: 0,
-    //   netService: 0,
-    //   additionalPriceType: "ABSOLUTE",
-    //   additionalPriceValue: 0,
-    //   discountType: "PORTFOLIO_DISCOUNT",
-    //   discountValue: 0,
-    //   recommendedValue: parseInt(data.recommendedValue),
-    //   startUsage: parseInt(data.startUsage),
-    //   endUsage: parseInt(data.endUsage),
-    //   sparePartsEscalation: 0,
-    //   labourEscalation: 0,
-    //   miscEscalation: 0,
-    //   serviceEscalation: 0,
-    //   sparePartsNOE: 0,
-    //   labourNOE: 0,
-    //   miscNOE: 0,
-    //   recommendedUnit: data?.unit?.value === "YEAR" ? "MONTH" : data?.unit?.value,
-    //   usageUnit: data?.unit?.value,
-    //   withBundleService: bundleServiceNeed,
-    //   portfolio: ((portfolioId == 0) || (portfolioId == null) || (portfolioId == undefined)) ? null : {
-    //     portfolioId: portfolioId
-    //   },
-    //   tenantId: loginTenantId,
-    //   partsRequired: true,
-    //   labourRequired: true,
-    //   serviceRequired: false,
-    //   miscRequired: true,
-    //   inclusionExclusion: true
-    // }
-
-    // Current Price Obj
-    let newPriceObj = {
-      itemPriceDataId: ((data.itemPriceId === "") || (data.itemPriceId === null) ||
-        (data.itemPriceId === undefined) || (data.itemPriceId === 0)) ? 0 : data.itemPriceId,
-      quantity: 1,
-      standardJobId: data.templateId,
-      repairKitId: data.repairOption,
-      templateDescription: ((data.templateId === "") || (data.templateId === null) ||
-        (data.templateId === undefined)) ? "" : (typeof data.templateDescription === "object") ?
-        data.templateDescription?.value : data.templateDescription,
-      repairOption: "",
-      additional: "",
-      partListId: "",
-      serviceEstimateId: "",
-      numberOfEvents: 0,
-      frequency: ((data?.frequency === "") || (data?.frequency === null) ||
-        (data?.frequency === undefined) || (data?.frequency === "EMPTY")) ? "CYCLIC" :
-        (typeof data?.frequency === "object") ? data?.frequency?.value : data?.frequency,
-      priceMethod: "LIST_PRICE",
-      priceType: "EVENT_BASED",
-      listPrice: 0,
-      priceEscalation: "",
-      calculatedPrice: 0,
-      flatPrice: 0,
-      year: data.year?.value,
-      noOfYear: parseInt(data.noOfYear),
-      sparePartsPrice: 0,
-      sparePartsPriceBreakDownPercentage: 0,
-      servicePrice: 0,
-      labourPrice: 0,
-      labourPriceBreakDownPercentage: 0,
-      miscPrice: 0,
-      miscPriceBreakDownPercentage: 0,
-      totalPrice: 0,
-      netService: 0,
-      additionalPriceType: "ABSOLUTE",
-      additionalPriceValue: 0,
-      discountType: "PORTFOLIO_DISCOUNT",
-      discountValue: 0,
-      recommendedValue: parseInt(data?.recommendedValue),
-      startUsage: parseInt(data.startUsage),
-      endUsage: parseInt(data.endUsage),
-      sparePartsEscalation: 0,
-      labourEscalation: 0,
-      miscEscalation: 0,
-      serviceEscalation: 0,
-      sparePartsNOE: 0,
-      labourNOE: 0,
-      miscNOE: 0,
-      recommendedUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
-        (data.unit === "EMPTY")) ? "MONTH" : (typeof data.unit === "object") ?
-        data.unit?.value === "YEAR" ? "MONTH" : data.unit?.value : data.unit,
-      usageUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
-        (data.unit === "EMPTY")) ? "YEAR" : (typeof data.unit === "object") ? data.unit?.value : data.unit,
-      withBundleService: true,
-      portfolio: ((portfolioId === 0) || (portfolioId === null) || (portfolioId === "") ||
-        (portfolioId === undefined)) ? null : {
-        portfolioId: portfolioId
-      },
-      tenantId: loginTenantId,
-      inclusionExclusion: true,
-      partsRequired: true,
-      labourRequired: true,
-      miscRequired: true,
-      serviceRequired: false
-    };
-
-    if ((data.itemPriceId === null) || (data.itemPriceId === undefined) ||
-      (data.itemPriceId === 0)) {
-      const itemPriceDataRes = await createItemPriceData(newPriceObj)
-      if (itemPriceDataRes.status === 200) {
-        setItemPriceData(itemPriceDataRes.data)
-
-        // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
-        handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
-        setTempBundleService1([]);
-        setTempBundleService2([]);
-        setTempBundleService3([]);
-        console.log("addPortfolioItem : ", addPortFolioItem);
-      } else {
-        toast("😐" + "Something Went wrong/ Item not Created", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        return;
+    try {
+      if ((portfolioId == "") || (portfolioId == undefined) || (portfolioId == null) || (portfolioId == 0)) {
+        throw "Please Create Portfolio First, then you can Add Item";
       }
-    } else {
-      const itemPriceDataRes = await updateItemPriceData(data.itemPriceId, newPriceObj)
-      if (itemPriceDataRes.status === 200) {
-        setItemPriceData(itemPriceDataRes.data)
-        // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
-        handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
-        setTempBundleService1([]);
-        setTempBundleService2([]);
-        setTempBundleService3([]);
-        console.log("addPortfolioItem : ", addPortFolioItem);
+
+      console.log("my data is: ", data)
+      setAddportFolioItem(data);
+      setPriceCalculator({
+        ...priceCalculator,
+        unit: data?.unit,
+        usageType: data?.usageType,
+        frequency: data?.frequency,
+        currency: data?.currency,
+        year: data?.year,
+      })
+      // console.log("data------ : ", data)
+
+
+      // const newPriceObj = {
+      //   itemPriceDataId: 0,
+      //   quantity: 1,
+      //   standardJobId: data.templateId,
+      //   repairKitId: data.repairOption,
+      //   templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
+      //   repairOption: "",
+      //   additional: "",
+      //   partListId: "",
+      //   serviceEstimateId: "",
+      //   numberOfEvents: 0,
+      //   priceMethod: "EMPTY",
+      //   priceType: "EMPTY",
+      //   listPrice: 0,
+      //   priceEscalation: "",
+      //   calculatedPrice: 0,
+      //   flatPrice: 0,
+      //   year: data.year?.value,
+      //   noOfYear: parseInt(data.noOfYear),
+      //   sparePartsPrice: 0,
+      //   sparePartsPriceBreakDownPercentage: 0,
+      //   servicePrice: 0,
+      //   labourPrice: 0,
+      //   labourPriceBreakDownPercentage: 0,
+      //   miscPrice: 0,
+      //   miscPriceBreakDownPercentage: 0,
+      //   totalPrice: 0,
+      //   netService: 0,
+      //   additionalPriceType: "ABSOLUTE",
+      //   additionalPriceValue: 0,
+      //   discountType: "EMPTY",
+      //   discountValue: 0,
+      //   recommendedValue: parseInt(data.recommendedValue),
+      //   startUsage: parseInt(data.startUsage),
+      //   endUsage: parseInt(data.endUsage),
+      //   sparePartsEscalation: 0,
+      //   labourEscalation: 0,
+      //   miscEscalation: 0,
+      //   serviceEscalation: 0,
+      //   withBundleService: (bundleServiceNeed ? false : true),
+      //   portfolio: ((portfolioId == 0) || (portfolioId == null) || (portfolioId == undefined)) ? null : {
+      //     portfolioId: portfolioId
+      //   },
+      //   tenantId: loginTenantId,
+      //   partsRequired: true,
+      //   labourRequired: true,
+      //   serviceRequired: false,
+      //   miscRequired: true,
+      //   inclusionExclusion: true
+      // }
+
+      // Old Working Price Obj
+      // const newPriceObj = {
+      //   itemPriceDataId: 0,
+      //   quantity: 1,
+      //   standardJobId: data.templateId,
+      //   repairKitId: data.repairOption,
+      //   templateDescription: data.templateId != "" ? data.templateDescription?.value : "",
+      //   repairOption: "",
+      //   additional: "",
+      //   partListId: "",
+      //   serviceEstimateId: "",
+      //   numberOfEvents: 0,
+      //   frequency: data?.frequency !== "" ? data?.frequency?.value : "CYCLIC",
+      //   priceMethod: "LIST_PRICE",
+      //   priceType: "EVENT_BASED",
+      //   listPrice: 0,
+      //   priceEscalation: "",
+      //   calculatedPrice: 0,
+      //   flatPrice: 0,
+      //   year: data.year?.value,
+      //   noOfYear: parseInt(data.noOfYear),
+      //   sparePartsPrice: 0,
+      //   sparePartsPriceBreakDownPercentage: 0,
+      //   servicePrice: 0,
+      //   labourPrice: 0,
+      //   labourPriceBreakDownPercentage: 0,
+      //   miscPrice: 0,
+      //   miscPriceBreakDownPercentage: 0,
+      //   totalPrice: 0,
+      //   netService: 0,
+      //   additionalPriceType: "ABSOLUTE",
+      //   additionalPriceValue: 0,
+      //   discountType: "PORTFOLIO_DISCOUNT",
+      //   discountValue: 0,
+      //   recommendedValue: parseInt(data.recommendedValue),
+      //   startUsage: parseInt(data.startUsage),
+      //   endUsage: parseInt(data.endUsage),
+      //   sparePartsEscalation: 0,
+      //   labourEscalation: 0,
+      //   miscEscalation: 0,
+      //   serviceEscalation: 0,
+      //   sparePartsNOE: 0,
+      //   labourNOE: 0,
+      //   miscNOE: 0,
+      //   recommendedUnit: data?.unit?.value === "YEAR" ? "MONTH" : data?.unit?.value,
+      //   usageUnit: data?.unit?.value,
+      //   withBundleService: bundleServiceNeed,
+      //   portfolio: ((portfolioId == 0) || (portfolioId == null) || (portfolioId == undefined)) ? null : {
+      //     portfolioId: portfolioId
+      //   },
+      //   tenantId: loginTenantId,
+      //   partsRequired: true,
+      //   labourRequired: true,
+      //   serviceRequired: false,
+      //   miscRequired: true,
+      //   inclusionExclusion: true
+      // }
+
+      // Current Price Obj
+      let newPriceObj = {
+        itemPriceDataId: ((data.itemPriceId === "") || (data.itemPriceId === null) ||
+          (data.itemPriceId === undefined) || (data.itemPriceId === 0)) ? 0 : data.itemPriceId,
+        quantity: 1,
+        standardJobId: data.templateId,
+        repairKitId: data.repairOption,
+        templateDescription: ((data.templateId === "") || (data.templateId === null) ||
+          (data.templateId === undefined)) ? "" : (typeof data.templateDescription === "object") ?
+          data.templateDescription?.value : data.templateDescription,
+        repairOption: "",
+        additional: "",
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: 0,
+        frequency: ((data?.frequency === "") || (data?.frequency === null) ||
+          (data?.frequency === undefined) || (data?.frequency === "EMPTY")) ? "CYCLIC" :
+          (typeof data?.frequency === "object") ? data?.frequency?.value : data?.frequency,
+        priceMethod: "LIST_PRICE",
+        priceType: "EVENT_BASED",
+        listPrice: 0,
+        priceEscalation: "",
+        calculatedPrice: 0,
+        flatPrice: 0,
+        year: data.year?.value,
+        noOfYear: parseInt(data.noOfYear),
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        labourPrice: 0,
+        labourPriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0,
+        netService: 0,
+        additionalPriceType: "ABSOLUTE",
+        additionalPriceValue: 0,
+        discountType: "PORTFOLIO_DISCOUNT",
+        discountValue: 0,
+        recommendedValue: parseInt(data?.recommendedValue),
+        startUsage: parseInt(data.startUsage),
+        endUsage: parseInt(data.endUsage),
+        sparePartsEscalation: 0,
+        labourEscalation: 0,
+        miscEscalation: 0,
+        serviceEscalation: 0,
+        sparePartsNOE: 0,
+        labourNOE: 0,
+        miscNOE: 0,
+        recommendedUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+          (data.unit === "EMPTY")) ? "MONTH" : (typeof data.unit === "object") ?
+          data.unit?.value === "YEAR" ? "MONTH" : data.unit?.value : data.unit,
+        usageUnit: ((data.unit === "") || (data.unit === null) || (data.unit === undefined) ||
+          (data.unit === "EMPTY")) ? "YEAR" : (typeof data.unit === "object") ? data.unit?.value : data.unit,
+        withBundleService: true,
+        portfolio: ((portfolioId === 0) || (portfolioId === null) || (portfolioId === "") ||
+          (portfolioId === undefined)) ? null : {
+          portfolioId: portfolioId
+        },
+        tenantId: loginTenantId,
+        inclusionExclusion: true,
+        partsRequired: true,
+        labourRequired: true,
+        miscRequired: true,
+        serviceRequired: false
+      };
+
+      if ((data.itemPriceId === null) || (data.itemPriceId === undefined) ||
+        (data.itemPriceId === 0)) {
+        const itemPriceDataRes = await createItemPriceData(newPriceObj)
+        if (itemPriceDataRes.status === 200) {
+          setItemPriceData(itemPriceDataRes.data)
+
+          // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
+          handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
+          setTempBundleService1([]);
+          setTempBundleService2([]);
+          setTempBundleService3([]);
+          console.log("addPortfolioItem : ", addPortFolioItem);
+        } else {
+          toast("😐" + "Something Went wrong/ Item not Created", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return;
+        }
       } else {
-        toast("😐" + "Something Went wrong/ Item not Created", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        return;
+        const itemPriceDataRes = await updateItemPriceData(data.itemPriceId, newPriceObj)
+        if (itemPriceDataRes.status === 200) {
+          setItemPriceData(itemPriceDataRes.data)
+          // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
+          handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
+          setTempBundleService1([]);
+          setTempBundleService2([]);
+          setTempBundleService3([]);
+          console.log("addPortfolioItem : ", addPortFolioItem);
+        } else {
+          toast("😐" + "Something Went wrong/ Item not Created", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return;
+        }
       }
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
-
-
-
   };
 
 
@@ -16657,223 +17129,293 @@ export function CreatePortfolio(props) {
     }
   }
 
+  const getFilterPortfolioItems = (itemArr) => {
+    const filterPortfolioItems = [];
+
+    const unique = itemArr.filter(element => {
+      const isDuplicate = filterPortfolioItems.includes(element.itemId);
+
+      if (!isDuplicate) {
+        filterPortfolioItems.push(element.itemId);
+        return true;
+      }
+      return false;
+    });
+    return unique;
+  }
+
   const handleItemPriceCalculatorSave = async () => {
     try {
+      if (portfolioItemPriceEditable) {
+        if (portfolioItems.length > 0) {
 
-      if ((priceCalculator.id === 0) || (priceCalculator.id === null) || (priceCalculator.id === undefined) || (priceCalculator.id === "")) {
-        throw `Please Create Item first`;
-      }
+          // var filterPortfolioItems = portfolioItems.filter((item,index) => portfolioItems.indexOf(item) === index)
 
-      if (!bundleServiceNeed) {
-        if ((priceCalculator.startUsage == "") ||
-          (priceCalculator.startUsage == undefined)) {
-          throw "Start Usage is a required field, you can’t leave it blank";
-        }
+          const filterPortfolioItems = getFilterPortfolioItems(portfolioItems);
 
-        if ((priceCalculator.endUsage == "") ||
-          (priceCalculator.endUsage == undefined)) {
-          throw "End Usage is a required field, you can’t leave it blank";
-        }
+          var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
+            `itemIds=${data.itemId}`
+          ).join('&');
+          // var tempBundleItemsUrl = portfolioItems.map((data, i) =>
+          //   `itemIds=${data.itemId}`
+          // ).join('&');
 
-        if (parseInt(priceCalculator.startUsage) > parseInt(priceCalculator.endUsage)) {
-          throw "start Usage must not be greater to End Usage.";
-        }
-
-        if ((priceCalculator.unit == "") ||
-          (priceCalculator.unit == undefined)) {
-          throw "Unit is a required field, you can’t leave it blank";
-        }
-
-        if ((priceCalculator.recommendedValue == "") ||
-          (priceCalculator.recommendedValue == undefined)) {
-          throw "Recommended Value is a required field, you can’t leave it blank";
-        }
-      }
-
-      let updateItemPrice = {
-        itemPriceDataId: ((priceCalculator.id === "") || (priceCalculator.id === null) ||
-          (priceCalculator.id === undefined) || (priceCalculator.id === 0)) ? 0 : priceCalculator.id,
-        quantity: 1,
-        standardJobId: addPortFolioItem.templateId,
-        repairKitId: addPortFolioItem.repairOption,
-        templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
-          (addPortFolioItem.templateId === undefined)) ? "" : (typeof addPortFolioItem.templateDescription === "object") ?
-          addPortFolioItem.templateDescription?.value : addPortFolioItem.templateDescription,
-        repairOption: "",
-        additional: "",
-        partListId: "",
-        serviceEstimateId: "",
-        numberOfEvents: 0,
-        frequency: ((priceCalculator?.frequency === "") || (priceCalculator?.frequency === null) ||
-          (priceCalculator?.frequency === undefined) || (priceCalculator?.frequency === "EMPTY")) ? "CYCLIC" :
-          (typeof priceCalculator?.frequency === "object") ? priceCalculator?.frequency?.value : priceCalculator?.frequency,
-        priceMethod: ((priceCalculator?.priceMethod === "EMPTY") || (priceCalculator?.priceMethod === "") ||
-          (priceCalculator?.priceMethod === null)) ? "LIST_PRICE" :
-          (typeof priceCalculator?.priceMethod === "object") ? priceCalculator?.priceMethod?.value : priceCalculator?.priceMethod,
-        priceType: ((priceCalculator?.priceType === "EMPTY") || (priceCalculator?.priceType === "") ||
-          (priceCalculator?.priceType === null)) ? "EVENT_BASED" :
-          (typeof priceCalculator?.priceType === "object") ? priceCalculator?.priceType?.value : priceCalculator?.priceType,
-        listPrice: 0,
-        priceEscalation: 0,
-        calculatedPrice: 0,
-        flatPrice: ((priceCalculator.flatPrice === "") || (priceCalculator.flatPrice === null) ||
-          (priceCalculator.flatPrice === undefined) || (priceCalculator.flatPrice === 0)) ? 0 : parseInt(priceCalculator.flatPrice),
-        year: priceCalculator.year?.value,
-        noOfYear: parseInt(priceCalculator.noOfYear),
-        sparePartsPrice: 0,
-        sparePartsPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
-          (priceCalculator.priceBreakDownOptionsKeyValue == "PARTS") ?
-          priceCalculator.priceBreakDownInputValue : 0),
-        servicePrice: 0,
-        labourPrice: 0,
-        labourPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
-          (priceCalculator.priceBreakDownOptionsKeyValue == "LABOR") ?
-          priceCalculator.priceBreakDownInputValue : 0),
-        miscPrice: 0,
-        miscPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
-          (priceCalculator.priceBreakDownOptionsKeyValue == "MISCELLANEOUS") ?
-          priceCalculator.priceBreakDownInputValue : 0),
-        totalPrice: 0,
-        netService: 0,
-        additionalPriceType: ((priceCalculator?.priceAdditionalSelect === "EMPTY") ||
-          (priceCalculator?.priceAdditionalSelect === "") ||
-          (priceCalculator?.priceAdditionalSelect === null) || (priceCalculator?.priceAdditionalSelect === undefined)) ?
-          "ABSOLUTE" : (typeof priceCalculator?.priceAdditionalSelect === "object") ? priceCalculator?.priceAdditionalSelect?.value : priceCalculator?.priceAdditionalSelect,
-        additionalPriceValue: priceCalculator?.priceAdditionalInput,
-        discountType: ((priceCalculator?.discountTypeSelect === "EMPTY") ||
-          (priceCalculator?.discountTypeSelect === "") ||
-          (priceCalculator?.discountTypeSelect === null) || (priceCalculator?.discountTypeSelect === undefined)) ?
-          "PORTFOLIO_DISCOUNT" : (typeof priceCalculator?.discountTypeSelect === "object") ? priceCalculator?.discountTypeSelect?.value : priceCalculator?.discountTypeSelect,
-        discountValue: priceCalculator?.discountTypeInput,
-        recommendedValue: parseInt(priceCalculator?.recommendedValue),
-        startUsage: parseInt(priceCalculator.startUsage),
-        endUsage: parseInt(priceCalculator.endUsage),
-        sparePartsEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
-          (priceCalculator.escalationPriceOptionsValue == "PARTS") ?
-          priceCalculator.escalationPriceInputValue : 0),
-        labourEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
-          (priceCalculator.escalationPriceOptionsValue == "LABOR") ?
-          priceCalculator.escalationPriceInputValue : 0),
-        miscEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
-          (priceCalculator.escalationPriceOptionsValue == "MISCELLANEOUS") ?
-          priceCalculator.escalationPriceInputValue : 0),
-        serviceEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
-          (priceCalculator.escalationPriceOptionsValue == "SERVICE") ?
-          priceCalculator.escalationPriceInputValue : 0),
-        sparePartsNOE: 0,
-        labourNOE: 0,
-        miscNOE: 0,
-        recommendedUnit: ((priceCalculator.unit === "") || (priceCalculator.unit === null) || (priceCalculator.unit === undefined) ||
-          (priceCalculator.unit === "EMPTY")) ? "MONTH" : (typeof priceCalculator.unit === "object") ?
-          priceCalculator.unit?.value === "YEAR" ? "MONTH" : priceCalculator.unit?.value : priceCalculator.unit,
-        usageUnit: ((priceCalculator.unit === "") || (priceCalculator.unit === null) || (priceCalculator.unit === undefined) ||
-          (priceCalculator.unit === "EMPTY")) ? "YEAR" : (typeof priceCalculator.unit === "object") ? priceCalculator.unit?.value : priceCalculator.unit,
-        withBundleService: (bundleServiceNeed ? false : true),
-        portfolio: ((portfolioId === 0) || (portfolioId === null) || (portfolioId === "") ||
-          (portfolioId === undefined)) ? null : {
-          portfolioId: portfolioId
-        },
-        tenantId: loginTenantId,
-        inclusionExclusion: false,
-        partsRequired: true,
-        labourRequired: true,
-        miscRequired: true,
-        serviceRequired: false
-      }
-
-      const updatePriceId = await updateItemPriceData(
-        priceCalculator.id,
-        updateItemPrice
-      );
-      if (updatePriceId.status === 200) {
-        if (((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-          ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null))) {
-        } else {
-          const rObjSJRkId = {
-            standardJobId: addPortFolioItem.templateId,
-            repairKitId: addPortFolioItem.repairOption,
-            // itemId: addPortFolioItem.id,
-            itemId: currentItemId,
-            itemPriceDataId: priceCalculator.id
+          if (state && state.type === "fetch") {
+            if ((portfolioId !== "" || (portfolioId !== undefined))) {
+              tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
+            }
           }
 
-          if (((addPortFolioItem.templateId == "") ||
-            (addPortFolioItem.templateId == null)) &&
-            ((addPortFolioItem.repairOption != "") ||
-              (addPortFolioItem.repairOption != null))) {
-            const updateRkId = portfolioItemPriceRkId(rObjSJRkId);
-          }
+          const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
-          if (((addPortFolioItem.repairOption == "") ||
-            (addPortFolioItem.repairOption == null)) &&
-            ((addPortFolioItem.templateId != "") ||
-              (addPortFolioItem.templateId != null))) {
-            const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
+          console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
+
+          let expandAblePortfolioItems = []
+          let expendedBundleServiceItems = [];
+          if (tempBundleItemsColumnsData.status === 200) {
+            tempBundleItemsColumnsData.data.map((data, i) => {
+
+              for (let c = 0; c < data.bundleItems.length; c++) {
+                expendedBundleServiceItems.push(data.bundleItems[c]);
+              }
+
+              for (let d = 0; d < data.serviceItems.length; d++) {
+                expendedBundleServiceItems.push(data.serviceItems[d]);
+              }
+
+              if (data.portfolioItem !== null) {
+                expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+              }
+            })
+
+            const objectsWithNullValue = expandAblePortfolioItems.filter(obj => obj.portfolioItem !== null);
+
+            setTempBundleItems(objectsWithNullValue);
+            setLoadingItem("22")
           }
         }
-      }
+        setTabs("6")
+      } else {
 
-      if (portfolioItems.length > 0) {
+        if ((priceCalculator.id === 0) || (priceCalculator.id === null) || (priceCalculator.id === undefined) || (priceCalculator.id === "")) {
+          throw `Please Create Item first`;
+        }
 
-        var tempBundleItemsUrl = portfolioItems.map((data, i) =>
-          `itemIds=${data.itemId}`
-        ).join('&');
+        if (!bundleServiceNeed) {
+          if ((priceCalculator.startUsage == "") ||
+            (priceCalculator.startUsage == undefined)) {
+            throw "Start Usage is a required field, you can’t leave it blank";
+          }
 
-        if (state && state.type === "fetch") {
-          if ((portfolioId !== "" || (portfolioId !== undefined))) {
-            tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
+          if ((priceCalculator.endUsage == "") ||
+            (priceCalculator.endUsage == undefined)) {
+            throw "End Usage is a required field, you can’t leave it blank";
+          }
+
+          if (parseInt(priceCalculator.startUsage) > parseInt(priceCalculator.endUsage)) {
+            throw "start Usage must not be greater to End Usage.";
+          }
+
+          if ((priceCalculator.unit == "") ||
+            (priceCalculator.unit == undefined)) {
+            throw "Unit is a required field, you can’t leave it blank";
+          }
+
+          if ((priceCalculator.recommendedValue == "") ||
+            (priceCalculator.recommendedValue == undefined)) {
+            throw "Recommended Value is a required field, you can’t leave it blank";
           }
         }
 
-        const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+        let updateItemPrice = {
+          itemPriceDataId: ((priceCalculator.id === "") || (priceCalculator.id === null) ||
+            (priceCalculator.id === undefined) || (priceCalculator.id === 0)) ? 0 : priceCalculator.id,
+          quantity: 1,
+          standardJobId: addPortFolioItem.templateId,
+          repairKitId: addPortFolioItem.repairOption,
+          templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+            (addPortFolioItem.templateId === undefined)) ? "" : (typeof addPortFolioItem.templateDescription === "object") ?
+            addPortFolioItem.templateDescription?.value : addPortFolioItem.templateDescription,
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          frequency: ((priceCalculator?.frequency === "") || (priceCalculator?.frequency === null) ||
+            (priceCalculator?.frequency === undefined) || (priceCalculator?.frequency === "EMPTY")) ? "CYCLIC" :
+            (typeof priceCalculator?.frequency === "object") ? priceCalculator?.frequency?.value.toUpperCase() : priceCalculator?.frequency.toUpperCase(),
+          priceMethod: ((priceCalculator?.priceMethod === "EMPTY") || (priceCalculator?.priceMethod === "") ||
+            (priceCalculator?.priceMethod === null)) ? "LIST_PRICE" :
+            (typeof priceCalculator?.priceMethod === "object") ? priceCalculator?.priceMethod?.value : priceCalculator?.priceMethod,
+          priceType: ((priceCalculator?.priceType === "EMPTY") || (priceCalculator?.priceType === "") ||
+            (priceCalculator?.priceType === null)) ? "EVENT_BASED" :
+            (typeof priceCalculator?.priceType === "object") ? priceCalculator?.priceType?.value : priceCalculator?.priceType,
+          listPrice: 0,
+          priceEscalation: 0,
+          calculatedPrice: 0,
+          flatPrice: ((priceCalculator.flatPrice === "") || (priceCalculator.flatPrice === null) ||
+            (priceCalculator.flatPrice === undefined) || (priceCalculator.flatPrice === 0)) ? 0 : parseInt(priceCalculator.flatPrice),
+          year: priceCalculator.year?.value,
+          noOfYear: parseInt(priceCalculator.noOfYear),
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+            (priceCalculator.priceBreakDownOptionsKeyValue == "PARTS") ?
+            priceCalculator.priceBreakDownInputValue : 0),
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+            (priceCalculator.priceBreakDownOptionsKeyValue == "LABOR") ?
+            priceCalculator.priceBreakDownInputValue : 0),
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+            (priceCalculator.priceBreakDownOptionsKeyValue == "MISCELLANEOUS") ?
+            priceCalculator.priceBreakDownInputValue : 0),
+          totalPrice: 0,
+          netService: 0,
+          additionalPriceType: ((priceCalculator?.priceAdditionalSelect === "EMPTY") ||
+            (priceCalculator?.priceAdditionalSelect === "") ||
+            (priceCalculator?.priceAdditionalSelect === null) || (priceCalculator?.priceAdditionalSelect === undefined)) ?
+            "ABSOLUTE" : (typeof priceCalculator?.priceAdditionalSelect === "object") ? priceCalculator?.priceAdditionalSelect?.value : priceCalculator?.priceAdditionalSelect,
+          additionalPriceValue: priceCalculator?.priceAdditionalInput,
+          discountType: ((priceCalculator?.discountTypeSelect === "EMPTY") ||
+            (priceCalculator?.discountTypeSelect === "") ||
+            (priceCalculator?.discountTypeSelect === null) || (priceCalculator?.discountTypeSelect === undefined)) ?
+            "PORTFOLIO_DISCOUNT" : (typeof priceCalculator?.discountTypeSelect === "object") ? priceCalculator?.discountTypeSelect?.value : priceCalculator?.discountTypeSelect,
+          discountValue: priceCalculator?.discountTypeInput,
+          recommendedValue: parseInt(priceCalculator?.recommendedValue),
+          startUsage: parseInt(priceCalculator.startUsage),
+          endUsage: parseInt(priceCalculator.endUsage),
+          sparePartsEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+            (priceCalculator.escalationPriceOptionsValue == "PARTS") ?
+            priceCalculator.escalationPriceInputValue : 0),
+          labourEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+            (priceCalculator.escalationPriceOptionsValue == "LABOR") ?
+            priceCalculator.escalationPriceInputValue : 0),
+          miscEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+            (priceCalculator.escalationPriceOptionsValue == "MISCELLANEOUS") ?
+            priceCalculator.escalationPriceInputValue : 0),
+          serviceEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+            (priceCalculator.escalationPriceOptionsValue == "SERVICE") ?
+            priceCalculator.escalationPriceInputValue : 0),
+          sparePartsNOE: 0,
+          labourNOE: 0,
+          miscNOE: 0,
+          recommendedUnit: ((priceCalculator.unit === "") || (priceCalculator.unit === null) || (priceCalculator.unit === undefined) ||
+            (priceCalculator.unit === "EMPTY")) ? "MONTH" : (typeof priceCalculator.unit === "object") ?
+            priceCalculator.unit?.value === "YEAR" ? "MONTH" : priceCalculator.unit?.value : priceCalculator.unit,
+          usageUnit: ((priceCalculator.unit === "") || (priceCalculator.unit === null) || (priceCalculator.unit === undefined) ||
+            (priceCalculator.unit === "EMPTY")) ? "YEAR" : (typeof priceCalculator.unit === "object") ? priceCalculator.unit?.value : priceCalculator.unit,
+          withBundleService: (bundleServiceNeed ? false : true),
+          portfolio: ((portfolioId === 0) || (portfolioId === null) || (portfolioId === "") ||
+            (portfolioId === undefined)) ? null : {
+            portfolioId: portfolioId
+          },
+          tenantId: loginTenantId,
+          inclusionExclusion: false,
+          partsRequired: true,
+          labourRequired: true,
+          miscRequired: true,
+          serviceRequired: false
+        }
 
-        console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
-
-        let expandAblePortfolioItems = []
-        let expendedBundleServiceItems = [];
-        if (tempBundleItemsColumnsData.status === 200) {
-          tempBundleItemsColumnsData.data.map((data, i) => {
-
-            for (let c = 0; c < data.bundleItems.length; c++) {
-              expendedBundleServiceItems.push(data.bundleItems[c]);
+        const updatePriceId = await updateItemPriceData(
+          priceCalculator.id,
+          updateItemPrice
+        );
+        if (updatePriceId.status === 200) {
+          if (((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+            ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null))) {
+          } else {
+            const rObjSJRkId = {
+              standardJobId: addPortFolioItem.templateId,
+              repairKitId: addPortFolioItem.repairOption,
+              // itemId: addPortFolioItem.id,
+              itemId: currentItemId,
+              itemPriceDataId: priceCalculator.id
             }
 
-            for (let d = 0; d < data.serviceItems.length; d++) {
-              expendedBundleServiceItems.push(data.serviceItems[d]);
+            if (((addPortFolioItem.templateId == "") ||
+              (addPortFolioItem.templateId == null)) &&
+              ((addPortFolioItem.repairOption != "") ||
+                (addPortFolioItem.repairOption != null))) {
+              const updateRkId = portfolioItemPriceRkId(rObjSJRkId);
             }
 
-            expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
-          })
-
-          setTempBundleItems(expandAblePortfolioItems);
-          setLoadingItem("22")
+            if (((addPortFolioItem.repairOption == "") ||
+              (addPortFolioItem.repairOption == null)) &&
+              ((addPortFolioItem.templateId != "") ||
+                (addPortFolioItem.templateId != null))) {
+              const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
+            }
+          }
         }
 
-      }
+        if (portfolioItems.length > 0) {
 
-      // setLoadingItem("02")
-      setTabs("6")
-      // const _tempBundleItems = [...tempBundleItems]
-      // for (let i = 0; i < _tempBundleItems.length; i++) {
-      //   if (currentItemId === _tempBundleItems[i].itemId) {
-      //     if (_tempBundleItems[i].associatedServiceOrBundle) {
-      //       for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
-      //         console.log("tempBundleService2", tempBundleService2)
-      //         for (let k = 0; k < tempBundleService2.length; k++) {
-      //           if (_tempBundleItems[i].associatedServiceOrBundle[j].itemId == tempBundleService2[k].itemId) {
-      //             tempBundleService2.splice(k, 1)//remove object if already exist
-      //             break;
-      //           }
-      //         }
-      //       }
-      //       _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService2]
-      //     } else {
-      //       _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService2] }
-      //     }
-      //   }
-      //   setTempBundleItems(_tempBundleItems)
-      //   setLoadingItem("22")
-      // }
+          const filterPortfolioItems = getFilterPortfolioItems(portfolioItems);
+          var tempBundleItemsUrl = filterPortfolioItems.map((data, i) =>
+            `itemIds=${data.itemId}`
+          ).join('&');
+          // var tempBundleItemsUrl = portfolioItems.map((data, i) =>
+          //   `itemIds=${data.itemId}`
+          // ).join('&');
+
+          if (state && state.type === "fetch") {
+            if ((portfolioId !== "" || (portfolioId !== undefined))) {
+              tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
+            }
+          }
+
+          const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+
+          console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
+
+          let expandAblePortfolioItems = []
+          let expendedBundleServiceItems = [];
+          if (tempBundleItemsColumnsData.status === 200) {
+            tempBundleItemsColumnsData.data.map((data, i) => {
+
+              for (let c = 0; c < data.bundleItems.length; c++) {
+                expendedBundleServiceItems.push(data.bundleItems[c]);
+              }
+
+              for (let d = 0; d < data.serviceItems.length; d++) {
+                expendedBundleServiceItems.push(data.serviceItems[d]);
+              }
+
+              expandAblePortfolioItems.push({ ...data.portfolioItem, associatedServiceOrBundle: expendedBundleServiceItems })
+            })
+
+            setTempBundleItems(expandAblePortfolioItems);
+            setLoadingItem("22")
+          }
+
+        }
+
+        // setLoadingItem("02")
+        setTabs("6")
+        // const _tempBundleItems = [...tempBundleItems]
+        // for (let i = 0; i < _tempBundleItems.length; i++) {
+        //   if (currentItemId === _tempBundleItems[i].itemId) {
+        //     if (_tempBundleItems[i].associatedServiceOrBundle) {
+        //       for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+        //         console.log("tempBundleService2", tempBundleService2)
+        //         for (let k = 0; k < tempBundleService2.length; k++) {
+        //           if (_tempBundleItems[i].associatedServiceOrBundle[j].itemId == tempBundleService2[k].itemId) {
+        //             tempBundleService2.splice(k, 1)//remove object if already exist
+        //             break;
+        //           }
+        //         }
+        //       }
+        //       _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService2]
+        //     } else {
+        //       _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService2] }
+        //     }
+        //   }
+        //   setTempBundleItems(_tempBundleItems)
+        //   setLoadingItem("22")
+        // }
+      }
 
     } catch (error) {
       toast("😐" + error, {
@@ -16903,557 +17445,1310 @@ export function CreatePortfolio(props) {
         setTabs("4")//navigate to component data tab
       }
 
-      let reqObj = {};
-      let currencyIs = "";
-
-      for (let i = 0; i < tempBundleItems.length; i++) {
-        if (tempBundleItems[i].itemId === currentItemId) {
-          reqObj = {
-            itemId: tempBundleItems[i].itemId,
-            standardJobId: itemPriceData.standardJobId,
-            repairKitId: itemPriceData.repairKitId,
-            itemPriceDataId: itemPriceData.itemPriceDataId
+      if (bundleServiceEditModeOn) {
+        if (viewBundleServiceItemList.length === tempBundleService3.length) {
+          var _itemArrData = [...portfolioItems];
+          for (let a = 0; a < tempBundleService3.length; a++) {
+            _itemArrData.push({ itemId: tempBundleService3[a].itemId })
           }
-          currencyIs = tempBundleItems[i].itemHeaderModel?.currency
-          break;
+          setPortfolioItems(_itemArrData);
+
+          let currencyIs = "";
+
+          for (let i = 0; i < tempBundleItems.length; i++) {
+            if (tempBundleItems[i].itemId === currentItemId) {
+              currencyIs = tempBundleItems[i].itemHeaderModel?.currency
+              break;
+            }
+          }
+
+          const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
+          setPriceCalculator({
+            ...priceCalculator,
+            calculatedPrice: resPrice.data.calculatedPrice,
+            priceMethod: ((resPrice.data.priceMethod === "") ||
+              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+            priceType: ((resPrice.data.priceType === "") ||
+              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+            priceAdditionalInput: resPrice.data.additionalPriceValue,
+            discountTypeSelect: ((resPrice.data.discountType === "") ||
+              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+            discountTypeInput: resPrice.data.discountValue,
+            year: ((resPrice.data.year === "") ||
+              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+              { label: resPrice.data.year, value: resPrice.data.year },
+
+            noOfYear: resPrice.data.noOfYear,
+            startUsage: resPrice.data.startUsage,
+            endUsage: resPrice.data.endUsage,
+            recommendedValue: resPrice.data.recommendedValue,
+            // netPrice: resPrice.data.netService,
+            netPrice: resPrice.data.calculatedPrice,
+            totalPrice: resPrice.data.totalPrice,
+            id: resPrice.data.itemPriceDataId,
+            numberOfEvents: resPrice.data.numberOfEvents,
+            portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+            flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+            escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+              label: resPrice.data.priceEscalation,
+              value: resPrice.data.priceEscalation,
+            } : ""),
+            escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+              resPrice.data.priceEscalation : ""),
+            escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+              resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                  resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                    resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+            priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+            priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              resPrice.data.sparePartsPriceBreakDownPercentage :
+              resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                resPrice.data.labourPriceBreakDownPercentage :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                  resPrice.data.miscPriceBreakDownPercentage : 0,
+
+            priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+              label: "PARTS",
+              value: "PARTS",
+            } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+              label: "LABOR",
+              value: "LABOR",
+            } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+              label: "MISCELLANEOUS",
+              value: "MISCELLANEOUS",
+            } : "",
+
+            currency: ((currencyIs != "")) ? {
+              label: currencyIs,
+              value: currencyIs
+            } : "",
+            unit: addPortFolioItem?.unit,
+            frequency: addPortFolioItem?.frequency,
+            usageType: addPortFolioItem?.usageType,
+          })
+          setPriceBreakDownFieldsValue({
+            ...priceBreakDownFieldsValue,
+            parts: resPrice.data.sparePartsNOE,
+            labor: resPrice.data.labourNOE,
+            miscellaneous: resPrice.data.miscNOE,
+            service: resPrice.data.servicePrice,
+          })
+
+          setPriceCalculator({
+            ...priceCalculator,
+
+            calculatedPrice: resPrice.data.calculatedPrice,
+            priceMethod: ((resPrice.data.priceMethod === "") ||
+              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+            priceType: ((resPrice.data.priceType === "") ||
+              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+            priceAdditionalInput: resPrice.data.additionalPriceValue,
+            discountTypeSelect: ((resPrice.data.discountType === "") ||
+              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+            discountTypeInput: resPrice.data.discountValue,
+            year: ((resPrice.data.year === "") ||
+              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+              { label: resPrice.data.year, value: resPrice.data.year },
+
+            noOfYear: resPrice.data.noOfYear,
+            startUsage: resPrice.data.startUsage,
+            endUsage: resPrice.data.endUsage,
+            recommendedValue: resPrice.data.recommendedValue,
+            // netPrice: resPrice.data.netService,
+            netPrice: resPrice.data.calculatedPrice,
+            totalPrice: resPrice.data.totalPrice,
+            id: resPrice.data.itemPriceDataId,
+            numberOfEvents: resPrice.data.numberOfEvents,
+            portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+            flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+            escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+              label: resPrice.data.priceEscalation,
+              value: resPrice.data.priceEscalation,
+            } : ""),
+            escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+              resPrice.data.priceEscalation : ""),
+            escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+              resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                  resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                    resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+            priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+            priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              resPrice.data.sparePartsPriceBreakDownPercentage :
+              resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                resPrice.data.labourPriceBreakDownPercentage :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                  resPrice.data.miscPriceBreakDownPercentage : 0,
+
+            priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+              label: "PARTS",
+              value: "PARTS",
+            } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+              label: "LABOR",
+              value: "LABOR",
+            } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+              label: "MISCELLANEOUS",
+              value: "MISCELLANEOUS",
+            } : "",
+
+            currency: ((currencyIs != "")) ? {
+              label: currencyIs,
+              value: currencyIs
+            } : "",
+            unit: addPortFolioItem?.unit,
+            frequency: addPortFolioItem?.frequency,
+            usageType: addPortFolioItem?.usageType,
+          })
+          setPriceBreakDownFieldsValue({
+            ...priceBreakDownFieldsValue,
+            parts: resPrice.data.sparePartsNOE,
+            labor: resPrice.data.labourNOE,
+            miscellaneous: resPrice.data.miscNOE,
+            service: resPrice.data.servicePrice,
+          })
+
+          setItemPriceCalculator({
+            netParts: resPrice.data.sparePartsPrice,
+            // netService: resPrice.data.netService,
+            netPrice: resPrice.data.calculatedPrice,
+            priceType: resPrice.data.priceType,
+            netPrice: resPrice.data.totalPrice,
+            netAdditionals: resPrice.data.listPrice,
+          })
+
+          setTabs("5")
+        } else {
+          // setViewBundleServiceItemList
+          let reqObj = {};
+          let currencyIs = "";
+
+          for (let i = 0; i < tempBundleItems.length; i++) {
+            if (tempBundleItems[i].itemId === currentItemId) {
+              reqObj = {
+                itemId: tempBundleItems[i].itemId,
+                standardJobId: itemPriceData.standardJobId,
+                repairKitId: itemPriceData.repairKitId,
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
+              currencyIs = tempBundleItems[i].itemHeaderModel?.currency
+              break;
+            }
+          }
+
+          // if (Object.keys(reqObj).length === 0) {
+          //   throw "Please Create an Item first, then you can add Bundle/Service";
+          // }
+
+          if (((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
+            ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null))) {
+          } else {
+            if (Object.keys(reqObj).length === 0) {
+              throw "Please Create an Item first, then you can add Bundle/Service";
+            }
+            if ((((itemPriceData.standardJobId == "") ||
+              (itemPriceData.standardJobId == null))) &&
+              ((itemPriceData.repairKitId != "") ||
+                (itemPriceData.repairKitId != null))) {
+              const updateRkId = portfolioItemPriceRkId(reqObj);
+            }
+
+            if ((((itemPriceData.repairKitId == "") ||
+              (itemPriceData.repairKitId == null))) &&
+              ((itemPriceData.standardJobId != "") ||
+                (itemPriceData.standardJobId != null))) {
+              const res2 = await portfolioItemPriceSjid(reqObj)
+            }
+          }
+
+          const res = await getItemPriceData(itemPriceData.itemPriceDataId)
+          const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
+          setPriceCalculator({
+            ...priceCalculator,
+            calculatedPrice: resPrice.data.calculatedPrice,
+            priceMethod: ((resPrice.data.priceMethod === "") ||
+              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+            priceType: ((resPrice.data.priceType === "") ||
+              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+            priceAdditionalInput: resPrice.data.additionalPriceValue,
+            discountTypeSelect: ((resPrice.data.discountType === "") ||
+              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+            discountTypeInput: resPrice.data.discountValue,
+            year: ((resPrice.data.year === "") ||
+              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+              { label: resPrice.data.year, value: resPrice.data.year },
+
+            noOfYear: resPrice.data.noOfYear,
+            startUsage: resPrice.data.startUsage,
+            endUsage: resPrice.data.endUsage,
+            recommendedValue: resPrice.data.recommendedValue,
+            // netPrice: resPrice.data.netService,
+            netPrice: resPrice.data.calculatedPrice,
+            totalPrice: resPrice.data.totalPrice,
+            id: resPrice.data.itemPriceDataId,
+            numberOfEvents: resPrice.data.numberOfEvents,
+            portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+            flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+            escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+              label: resPrice.data.priceEscalation,
+              value: resPrice.data.priceEscalation,
+            } : ""),
+            escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+              resPrice.data.priceEscalation : ""),
+            escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+              resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                  resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                    resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+            priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+            priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              resPrice.data.sparePartsPriceBreakDownPercentage :
+              resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                resPrice.data.labourPriceBreakDownPercentage :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                  resPrice.data.miscPriceBreakDownPercentage : 0,
+
+            priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+              label: "PARTS",
+              value: "PARTS",
+            } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+              label: "LABOR",
+              value: "LABOR",
+            } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+              label: "MISCELLANEOUS",
+              value: "MISCELLANEOUS",
+            } : "",
+
+            currency: ((currencyIs != "")) ? {
+              label: currencyIs,
+              value: currencyIs
+            } : "",
+            unit: addPortFolioItem?.unit,
+            frequency: addPortFolioItem?.frequency,
+            usageType: addPortFolioItem?.usageType,
+
+            // priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+            //   resPrice.data.priceMethod != "" ||
+            //   resPrice.data.priceMethod != null) ? {
+            //   label: resPrice.data.priceMethod,
+            //   value: resPrice.data.priceMethod
+            // } : "",
+            // priceType: (resPrice.data.priceType != "EMPTY" ||
+            //   resPrice.data.priceType != "" ||
+            //   resPrice.data.priceType != null) ? {
+            //   label: resPrice.data.priceType,
+            //   value: resPrice.data.priceType
+            // } : "",
+            // priceAdditionalSelect: {
+            //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+            // },
+            // priceAdditionalInput: resPrice.data.additionalPriceValue,
+            // discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+            //   resPrice.data.discountType != "" ||
+            //   resPrice.data.discountType != null) ? {
+            //   label: resPrice.data.discountType,
+            //   value: resPrice.data.discountType
+            // } : "",
+            // discountTypeInput: resPrice.data.discountValue,
+            // year: {
+            //   label: resPrice.data.year, value: resPrice.data.year
+            // },
+            // noOfYear: resPrice.data.noOfYear,
+            // startUsage: resPrice.data.startUsage,
+            // endUsage: resPrice.data.endUsage,
+            // recommendedValue: resPrice.data.recommendedValue,
+            // netPrice: resPrice.data.netService,
+            // totalPrice: resPrice.data.totalPrice,
+            // id: resPrice.data.itemPriceDataId,
+          })
+          setPriceBreakDownFieldsValue({
+            ...priceBreakDownFieldsValue,
+            parts: resPrice.data.sparePartsNOE,
+            labor: resPrice.data.labourNOE,
+            miscellaneous: resPrice.data.miscNOE,
+            service: resPrice.data.servicePrice,
+          })
+
+          var UpdatedBundleService3Data = [];
+          var _itemArrData = [...portfolioItems];
+
+          for (let a = 0; a < tempBundleService3.length; a++) {
+            _itemArrData.push({ itemId: tempBundleService3[a].itemId })
+            // var tempBundleServiceItems3 = await getItemDataById(tempBundleService3[a].itemId);
+            // if (tempBundleServiceItems3.status === 200) {
+            //   var tempBundleServiceItemsData = tempBundleServiceItems3.data;
+            //   var reqObjUpdatebundleService = {
+            //     itemId: tempBundleServiceItemsData.itemId,
+            //     itemName: tempBundleServiceItemsData.itemName,
+            //     itemHeaderModel: {
+            //       itemHeaderId: tempBundleServiceItemsData.itemHeaderModel.itemHeaderId,
+            //       itemHeaderDescription: tempBundleServiceItemsData.itemHeaderModel.itemHeaderDescription,
+            //       bundleFlag: tempBundleServiceItemsData.itemHeaderModel.bundleFlag,
+            //       withBundleService: tempBundleServiceItemsData.itemHeaderModel.withBundleService,
+            //       portfolioItemId: currentItemId,
+            //       reference: tempBundleServiceItemsData.itemHeaderModel.reference,
+            //       itemHeaderMake: tempBundleServiceItemsData.itemHeaderModel.itemHeaderMake,
+            //       itemHeaderFamily: tempBundleServiceItemsData.itemHeaderModel.itemHeaderFamily,
+            //       model: tempBundleServiceItemsData.itemHeaderModel.model,
+            //       prefix: tempBundleServiceItemsData.itemHeaderModel.prefix,
+            //       type: tempBundleServiceItemsData.itemHeaderModel.type,
+            //       additional: tempBundleServiceItemsData.itemHeaderModel.additional,
+            //       currency: tempBundleServiceItemsData.itemHeaderModel.currency,
+            //       netPrice: tempBundleServiceItemsData.itemHeaderModel.netPrice,
+            //       itemProductHierarchy: tempBundleServiceItemsData.itemHeaderModel.itemProductHierarchy,
+            //       itemHeaderGeographic: tempBundleServiceItemsData.itemHeaderModel.itemHeaderGeographic,
+            //       responseTime: tempBundleServiceItemsData.itemHeaderModel.responseTime,
+            //       usage: tempBundleServiceItemsData.itemHeaderModel.usage,
+            //       validFrom: tempBundleServiceItemsData.itemHeaderModel.validFrom,
+            //       validTo: tempBundleServiceItemsData.itemHeaderModel.validTo,
+            //       estimatedTime: tempBundleServiceItemsData.itemHeaderModel.estimatedTime,
+            //       servicePrice: tempBundleServiceItemsData.itemHeaderModel.servicePrice,
+            //       status: tempBundleServiceItemsData.itemHeaderModel.status,
+            //       itemHeaderStrategy: tempBundleServiceItemsData.itemHeaderModel.itemHeaderStrategy,
+            //       componentCode: tempBundleServiceItemsData.itemHeaderModel.componentCode,
+            //       componentDescription: tempBundleServiceItemsData.itemHeaderModel.componentDescription,
+            //       serialNumber: tempBundleServiceItemsData.itemHeaderModel.serialNumber,
+            //       variant: tempBundleServiceItemsData.itemHeaderModel.variant,
+            //       itemHeaderCustomerSegment: tempBundleServiceItemsData.itemHeaderModel.itemHeaderCustomerSegment,
+            //       jobCode: tempBundleServiceItemsData.itemHeaderModel.jobCode,
+            //       preparedBy: tempBundleServiceItemsData.itemHeaderModel.preparedBy,
+            //       approvedBy: tempBundleServiceItemsData.itemHeaderModel.approvedBy,
+            //       preparedOn: tempBundleServiceItemsData.itemHeaderModel.preparedOn,
+            //       revisedBy: tempBundleServiceItemsData.itemHeaderModel.revisedBy,
+            //       revisedOn: tempBundleServiceItemsData.itemHeaderModel.revisedOn,
+            //       salesOffice: tempBundleServiceItemsData.itemHeaderModel.salesOffice,
+            //       offerValidity: tempBundleServiceItemsData.itemHeaderModel.offerValidity,
+            //       serviceChargable: tempBundleServiceItemsData.itemHeaderModel.serviceChargable,
+            //       serviceOptional: tempBundleServiceItemsData.itemHeaderModel.serviceOptional
+            //     },
+            //     itemBodyModel: {
+            //       itemBodyId: tempBundleServiceItemsData.itemBodyModel.itemBodyId,
+            //       itemBodyDescription: tempBundleServiceItemsData.itemBodyModel.itemBodyDescription,
+            //       spareParts: tempBundleServiceItemsData.itemBodyModel.spareParts,
+            //       labours: tempBundleServiceItemsData.itemBodyModel.labours,
+            //       miscellaneous: tempBundleServiceItemsData.itemBodyModel.miscellaneous,
+            //       taskType: tempBundleServiceItemsData.itemBodyModel.taskType,
+            //       solutionCode: tempBundleServiceItemsData.itemBodyModel.solutionCode,
+            //       usageIn: tempBundleServiceItemsData.itemBodyModel.usageIn,
+            //       usage: tempBundleServiceItemsData.itemBodyModel.usage,
+            //       year: tempBundleServiceItemsData.itemBodyModel.year,
+            //       avgUsage: tempBundleServiceItemsData.itemBodyModel.avgUsage,
+            //       unit: tempBundleServiceItemsData.itemBodyModel.unit,
+            //       frequency: tempBundleServiceItemsData.itemBodyModel.frequency,
+            //       // recommendedValue: tempBundleServiceItemsData.itemBodyModel.recommendedValue,
+            //       itemPrices: tempBundleServiceItemsData.itemBodyModel.itemPrices,
+            //     }
+            //   };
+            //   updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
+            //     .then((res) => {
+            //       UpdatedBundleService3Data.push(res.data)
+            //       _itemArrData.push({ itemId: res.data.itemId })
+            //     })
+            //     .catch((err) => {
+            //       console.log("err in api call", err);
+            //     });
+            // }
+
+
+            // var reqObjUpdatebundleService = {
+            //   itemId: tempBundleService3[a].itemId,
+            //   itemName: tempBundleService3[a].itemName,
+            //   itemHeaderModel: {
+            //     itemHeaderId: tempBundleService3[a].itemHeaderModel.itemHeaderId,
+            //     itemHeaderDescription: tempBundleService3[a].itemHeaderModel.itemHeaderDescription,
+            //     bundleFlag: tempBundleService3[a].itemHeaderModel.bundleFlag,
+            //     withBundleService: tempBundleService3[a].itemHeaderModel.withBundleService,
+            //     portfolioItemId: currentItemId,
+            //     reference: tempBundleService3[a].itemHeaderModel.reference,
+            //     itemHeaderMake: tempBundleService3[a].itemHeaderModel.itemHeaderMake,
+            //     itemHeaderFamily: tempBundleService3[a].itemHeaderModel.itemHeaderFamily,
+            //     model: tempBundleService3[a].itemHeaderModel.model,
+            //     prefix: tempBundleService3[a].itemHeaderModel.prefix,
+            //     type: tempBundleService3[a].itemHeaderModel.type,
+            //     additional: tempBundleService3[a].itemHeaderModel.additional,
+            //     currency: tempBundleService3[a].itemHeaderModel.currency,
+            //     netPrice: tempBundleService3[a].itemHeaderModel.netPrice,
+            //     itemProductHierarchy: tempBundleService3[a].itemHeaderModel.itemProductHierarchy,
+            //     itemHeaderGeographic: tempBundleService3[a].itemHeaderModel.itemHeaderGeographic,
+            //     responseTime: tempBundleService3[a].itemHeaderModel.responseTime,
+            //     usage: tempBundleService3[a].itemHeaderModel.usage,
+            //     validFrom: tempBundleService3[a].itemHeaderModel.validFrom,
+            //     validTo: tempBundleService3[a].itemHeaderModel.validTo,
+            //     estimatedTime: tempBundleService3[a].itemHeaderModel.estimatedTime,
+            //     servicePrice: tempBundleService3[a].itemHeaderModel.servicePrice,
+            //     status: tempBundleService3[a].itemHeaderModel.status,
+            //     itemHeaderStrategy: tempBundleService3[a].itemHeaderModel.itemHeaderStrategy,
+            //     componentCode: tempBundleService3[a].itemHeaderModel.componentCode,
+            //     componentDescription: tempBundleService3[a].itemHeaderModel.componentDescription,
+            //     serialNumber: tempBundleService3[a].itemHeaderModel.serialNumber,
+            //     variant: tempBundleService3[a].itemHeaderModel.variant,
+            //     itemHeaderCustomerSegment: tempBundleService3[a].itemHeaderModel.itemHeaderCustomerSegment,
+            //     jobCode: tempBundleService3[a].itemHeaderModel.jobCode,
+            //     preparedBy: tempBundleService3[a].itemHeaderModel.preparedBy,
+            //     approvedBy: tempBundleService3[a].itemHeaderModel.approvedBy,
+            //     preparedOn: tempBundleService3[a].itemHeaderModel.preparedOn,
+            //     revisedBy: tempBundleService3[a].itemHeaderModel.revisedBy,
+            //     revisedOn: tempBundleService3[a].itemHeaderModel.revisedOn,
+            //     salesOffice: tempBundleService3[a].itemHeaderModel.salesOffice,
+            //     offerValidity: tempBundleService3[a].itemHeaderModel.offerValidity,
+            //     serviceChargable: tempBundleService3[a].itemHeaderModel.serviceChargable,
+            //     serviceOptional: tempBundleService3[a].itemHeaderModel.serviceOptional
+            //   },
+            //   itemBodyModel: {
+            //     itemBodyId: tempBundleService3[a].itemBodyModel.itemBodyId,
+            //     itemBodyDescription: tempBundleService3[a].itemBodyModel.itemBodyDescription,
+            //     spareParts: tempBundleService3[a].itemBodyModel.spareParts,
+            //     labours: tempBundleService3[a].itemBodyModel.labours,
+            //     miscellaneous: tempBundleService3[a].itemBodyModel.miscellaneous,
+            //     taskType: tempBundleService3[a].itemBodyModel.taskType,
+            //     solutionCode: tempBundleService3[a].itemBodyModel.solutionCode,
+            //     usageIn: tempBundleService3[a].itemBodyModel.usageIn,
+            //     usage: tempBundleService3[a].itemBodyModel.usage,
+            //     year: tempBundleService3[a].itemBodyModel.year,
+            //     avgUsage: tempBundleService3[a].itemBodyModel.avgUsage,
+            //     unit: tempBundleService3[a].itemBodyModel.unit,
+            //     frequency: tempBundleService3[a].itemBodyModel.frequency,
+            //     // recommendedValue: tempBundleService3[a].itemBodyModel.recommendedValue,
+            //     itemPrices: tempBundleService3[a].itemBodyModel.itemPrices,
+            //   }
+            // };
+
+            // updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
+            //   .then((res) => {
+            //     UpdatedBundleService3Data.push(res.data)
+            //     _itemArrData.push({ itemId: res.data.itemId })
+            //   })
+            //   .catch((err) => {
+            //     console.log("err in api call", err);
+            //   });
+          }
+
+          setPortfolioItems(_itemArrData);
+          // setTempBundleService3(UpdatedBundleService3Data);
+          // setTempBundleService2(UpdatedBundleService3Data);
+
+          let obj = {
+            portfolioId: portfolioId,
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            externalReference: generalComponentData.externalReference,
+            customerSegment: generalComponentData.customerSegment?.value,
+
+            validFrom: validityData.fromDate,
+            validTo: validityData.toDate,
+            startUsage: validityData.fromInput,
+            endUsage: validityData.toInput,
+            unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+              ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
+
+            usageCategory: categoryUsageKeyValue1.value
+              ? categoryUsageKeyValue1.value : "EMPTY",
+            strategyTask: stratgyTaskUsageKeyValue.value ?
+              stratgyTaskUsageKeyValue.value : "EMPTY",
+            taskType: stratgyTaskTypeKeyValue.value ?
+              stratgyTaskTypeKeyValue.value : "EMPTY",
+            responseTime: stratgyResponseTimeKeyValue.value ?
+              stratgyResponseTimeKeyValue.value : "EMPTY",
+            productHierarchy: stratgyHierarchyKeyValue.value ?
+              stratgyHierarchyKeyValue.value : "EMPTY",
+            geographic: stratgyGeographicKeyValue.value ?
+              stratgyGeographicKeyValue.value : "EMPTY",
+
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            offerValidity: administrative.offerValidity?.value,
+            salesOffice: administrative.salesOffice?.value,
+
+            portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+              ? portfolioPriceDataId : null,
+            // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+            optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
+            // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+            //   ? portfolioAdditionalPriceDataId : null,
+            // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+            //   ? portfolioEscalationPriceDataId : null,
+
+            supportLevel: value3.value,
+            status: value2.value,
+
+            items: _itemArrData,
+            coverages: portfolioCoverage,
+
+            // machineType: "NEW",
+            // searchTerm: "",
+            // lubricant: true,
+            // customerId: 0,
+            // customerGroup: "",
+            // availability: "AVAILABILITY_GREATER_95",
+            // type: "MACHINE",
+            // application: "HILL",
+            // contractOrSupport: "LEVEL_I",
+            // lifeStageOfMachine: "NEW_BREAKIN",
+            // numberOfEvents: 0,
+            // rating: "",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "HOURS",
+            // additionals: "",
+            // template: true,
+            // visibleInCommerce: true
+            machineType: "EMPTY",
+            searchTerm: "",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: "",
+            availability: "EMPTY",
+            type: "EMPTY",
+            application: "EMPTY",
+            contractOrSupport: "EMPTY",
+            lifeStageOfMachine: "EMPTY",
+            numberOfEvents: 0,
+            rating: "",
+            // startUsage: 0,
+            // endUsage: 0,
+            // unit: "EMPTY",
+            additionals: "",
+            template: true,
+            visibleInCommerce: true
+          }
+
+          if ((portfolioId !== "" || (portfolioId !== undefined))) {
+            const updatePortfolioRes = await updatePortfolio(
+              portfolioId,
+              obj
+            );
+            if (updatePortfolioRes.status === 200) {
+              toast(`👏 Portfolio ${generalComponentData.name} saved Successfully`, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+            } else {
+              throw `${updatePortfolioRes.status}:Something went wrong`;
+            }
+          }
+
+          // setPriceCalculator({
+          //   ...priceCalculator,
+          //   priceAdditionalSelect: {
+          //     label: res.data.additionalPriceType, value: res.data.additionalPriceType
+          //   },
+          //   year: {
+          //     label: res.data.year, value: res.data.year
+          //   },
+          //   noOfYear: res.data.noOfYear,
+          //   startUsage: res.data.startUsage,
+          //   endUsage: res.data.endUsage,
+          //   recommendedValue: res.data.recommendedValue,
+          //   netPrice: res.data.netService,
+          //   totalPrice: res.data.totalPrice,
+          //   id: res.data.itemPriceDataId,
+          // })
+
+          setPriceCalculator({
+            ...priceCalculator,
+
+            calculatedPrice: resPrice.data.calculatedPrice,
+            priceMethod: ((resPrice.data.priceMethod === "") ||
+              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+            priceType: ((resPrice.data.priceType === "") ||
+              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+            priceAdditionalInput: resPrice.data.additionalPriceValue,
+            discountTypeSelect: ((resPrice.data.discountType === "") ||
+              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+            discountTypeInput: resPrice.data.discountValue,
+            year: ((resPrice.data.year === "") ||
+              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+              { label: resPrice.data.year, value: resPrice.data.year },
+
+            noOfYear: resPrice.data.noOfYear,
+            startUsage: resPrice.data.startUsage,
+            endUsage: resPrice.data.endUsage,
+            recommendedValue: resPrice.data.recommendedValue,
+            // netPrice: resPrice.data.netService,
+            netPrice: resPrice.data.calculatedPrice,
+            totalPrice: resPrice.data.totalPrice,
+            id: resPrice.data.itemPriceDataId,
+            numberOfEvents: resPrice.data.numberOfEvents,
+            portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+            flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+            escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+              label: resPrice.data.priceEscalation,
+              value: resPrice.data.priceEscalation,
+            } : ""),
+            escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+              resPrice.data.priceEscalation : ""),
+            escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+              resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                  resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                    resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+            priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+            priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              resPrice.data.sparePartsPriceBreakDownPercentage :
+              resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                resPrice.data.labourPriceBreakDownPercentage :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                  resPrice.data.miscPriceBreakDownPercentage : 0,
+
+            priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+              label: "PARTS",
+              value: "PARTS",
+            } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+              label: "LABOR",
+              value: "LABOR",
+            } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+              label: "MISCELLANEOUS",
+              value: "MISCELLANEOUS",
+            } : "",
+
+            currency: ((currencyIs != "")) ? {
+              label: currencyIs,
+              value: currencyIs
+            } : "",
+            unit: addPortFolioItem?.unit,
+            frequency: addPortFolioItem?.frequency,
+            usageType: addPortFolioItem?.usageType,
+
+            // priceAdditionalSelect: {
+            //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+            // },
+            // year: {
+            //   label: resPrice.data.year, value: resPrice.data.year
+            // },
+            // noOfYear: resPrice.data.noOfYear,
+            // startUsage: resPrice.data.startUsage,
+            // endUsage: resPrice.data.endUsage,
+            // recommendedValue: resPrice.data.recommendedValue,
+            // netPrice: resPrice.data.netService,
+            // totalPrice: resPrice.data.totalPrice,
+            // id: resPrice.data.itemPriceDataId,
+          })
+          setPriceBreakDownFieldsValue({
+            ...priceBreakDownFieldsValue,
+            parts: resPrice.data.sparePartsNOE,
+            labor: resPrice.data.labourNOE,
+            miscellaneous: resPrice.data.miscNOE,
+            service: resPrice.data.servicePrice,
+          })
+
+          setItemPriceCalculator({
+            netParts: res.data.sparePartsPrice,
+            // netService: res.data.netService,
+            netPrice: res.data.calculatedPrice,
+            priceType: res.data.priceType,
+            netPrice: res.data.totalPrice,
+            netAdditionals: res.data.listPrice,
+          })
+          setTabs("5")
         }
-      }
-
-      // if (Object.keys(reqObj).length === 0) {
-      //   throw "Please Create an Item first, then you can add Bundle/Service";
-      // }
-
-      if (((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
-        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null))) {
       } else {
-        if (Object.keys(reqObj).length === 0) {
-          throw "Please Create an Item first, then you can add Bundle/Service";
+
+        // setViewBundleServiceItemList
+        let reqObj = {};
+        let currencyIs = "";
+
+        for (let i = 0; i < tempBundleItems.length; i++) {
+          if (tempBundleItems[i].itemId === currentItemId) {
+            reqObj = {
+              itemId: tempBundleItems[i].itemId,
+              standardJobId: itemPriceData.standardJobId,
+              repairKitId: itemPriceData.repairKitId,
+              itemPriceDataId: itemPriceData.itemPriceDataId
+            }
+            currencyIs = tempBundleItems[i].itemHeaderModel?.currency
+            break;
+          }
         }
-        if ((((itemPriceData.standardJobId == "") ||
-          (itemPriceData.standardJobId == null))) &&
-          ((itemPriceData.repairKitId != "") ||
-            (itemPriceData.repairKitId != null))) {
-          const updateRkId = portfolioItemPriceRkId(reqObj);
-        }
 
-        if ((((itemPriceData.repairKitId == "") ||
-          (itemPriceData.repairKitId == null))) &&
-          ((itemPriceData.standardJobId != "") ||
-            (itemPriceData.standardJobId != null))) {
-          const res2 = await portfolioItemPriceSjid(reqObj)
-        }
-      }
-
-      const res = await getItemPriceData(itemPriceData.itemPriceDataId)
-      const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
-      setPriceCalculator({
-        ...priceCalculator,
-        calculatedPrice: resPrice.data.calculatedPrice,
-        priceMethod: ((resPrice.data.priceMethod === "") ||
-          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
-          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
-        priceType: ((resPrice.data.priceType === "") ||
-          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
-          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
-        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
-          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
-          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
-        priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: ((resPrice.data.discountType === "") ||
-          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
-          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
-        discountTypeInput: resPrice.data.discountValue,
-        year: ((resPrice.data.year === "") ||
-          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
-          { label: resPrice.data.year, value: resPrice.data.year },
-
-        noOfYear: resPrice.data.noOfYear,
-        startUsage: resPrice.data.startUsage,
-        endUsage: resPrice.data.endUsage,
-        recommendedValue: resPrice.data.recommendedValue,
-        // netPrice: resPrice.data.netService,
-        netPrice: resPrice.data.calculatedPrice,
-        totalPrice: resPrice.data.totalPrice,
-        id: resPrice.data.itemPriceDataId,
-        numberOfEvents: resPrice.data.numberOfEvents,
-        portfolioDataId: resPrice.data.portfolio.portfolioId,
-
-        flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
-
-        escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
-          label: resPrice.data.priceEscalation,
-          value: resPrice.data.priceEscalation,
-        } : ""),
-        escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
-          resPrice.data.priceEscalation : ""),
-        escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
-          resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
-            resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
-              resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
-                resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
-
-        priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-          "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
-            resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
-        priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-          resPrice.data.sparePartsPriceBreakDownPercentage :
-          resPrice.data.labourPriceBreakDownPercentage != 0 ?
-            resPrice.data.labourPriceBreakDownPercentage :
-            resPrice.data.miscPriceBreakDownPercentage != 0 ?
-              resPrice.data.miscPriceBreakDownPercentage : 0,
-
-        priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
-          label: "PARTS",
-          value: "PARTS",
-        } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
-          label: "LABOR",
-          value: "LABOR",
-        } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
-          label: "MISCELLANEOUS",
-          value: "MISCELLANEOUS",
-        } : "",
-
-        currency: ((currencyIs != "")) ? {
-          label: currencyIs,
-          value: currencyIs
-        } : "",
-        unit: addPortFolioItem?.unit,
-        frequency: addPortFolioItem?.frequency,
-        usageType: addPortFolioItem?.usageType,
-
-        // priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
-        //   resPrice.data.priceMethod != "" ||
-        //   resPrice.data.priceMethod != null) ? {
-        //   label: resPrice.data.priceMethod,
-        //   value: resPrice.data.priceMethod
-        // } : "",
-        // priceType: (resPrice.data.priceType != "EMPTY" ||
-        //   resPrice.data.priceType != "" ||
-        //   resPrice.data.priceType != null) ? {
-        //   label: resPrice.data.priceType,
-        //   value: resPrice.data.priceType
-        // } : "",
-        // priceAdditionalSelect: {
-        //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
-        // },
-        // priceAdditionalInput: resPrice.data.additionalPriceValue,
-        // discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
-        //   resPrice.data.discountType != "" ||
-        //   resPrice.data.discountType != null) ? {
-        //   label: resPrice.data.discountType,
-        //   value: resPrice.data.discountType
-        // } : "",
-        // discountTypeInput: resPrice.data.discountValue,
-        // year: {
-        //   label: resPrice.data.year, value: resPrice.data.year
-        // },
-        // noOfYear: resPrice.data.noOfYear,
-        // startUsage: resPrice.data.startUsage,
-        // endUsage: resPrice.data.endUsage,
-        // recommendedValue: resPrice.data.recommendedValue,
-        // netPrice: resPrice.data.netService,
-        // totalPrice: resPrice.data.totalPrice,
-        // id: resPrice.data.itemPriceDataId,
-      })
-      setPriceBreakDownFieldsValue({
-        ...priceBreakDownFieldsValue,
-        parts: resPrice.data.sparePartsNOE,
-        labor: resPrice.data.labourNOE,
-        miscellaneous: resPrice.data.miscNOE,
-        service: resPrice.data.servicePrice,
-      })
-
-      var UpdatedBundleService3Data = [];
-      var _itemArrData = [...portfolioItems];
-
-      for (let a = 0; a < tempBundleService3.length; a++) {
-        _itemArrData.push({ itemId: tempBundleService3[a].itemId })
-        // var tempBundleServiceItems3 = await getItemDataById(tempBundleService3[a].itemId);
-        // if (tempBundleServiceItems3.status === 200) {
-        //   var tempBundleServiceItemsData = tempBundleServiceItems3.data;
-        //   var reqObjUpdatebundleService = {
-        //     itemId: tempBundleServiceItemsData.itemId,
-        //     itemName: tempBundleServiceItemsData.itemName,
-        //     itemHeaderModel: {
-        //       itemHeaderId: tempBundleServiceItemsData.itemHeaderModel.itemHeaderId,
-        //       itemHeaderDescription: tempBundleServiceItemsData.itemHeaderModel.itemHeaderDescription,
-        //       bundleFlag: tempBundleServiceItemsData.itemHeaderModel.bundleFlag,
-        //       withBundleService: tempBundleServiceItemsData.itemHeaderModel.withBundleService,
-        //       portfolioItemId: currentItemId,
-        //       reference: tempBundleServiceItemsData.itemHeaderModel.reference,
-        //       itemHeaderMake: tempBundleServiceItemsData.itemHeaderModel.itemHeaderMake,
-        //       itemHeaderFamily: tempBundleServiceItemsData.itemHeaderModel.itemHeaderFamily,
-        //       model: tempBundleServiceItemsData.itemHeaderModel.model,
-        //       prefix: tempBundleServiceItemsData.itemHeaderModel.prefix,
-        //       type: tempBundleServiceItemsData.itemHeaderModel.type,
-        //       additional: tempBundleServiceItemsData.itemHeaderModel.additional,
-        //       currency: tempBundleServiceItemsData.itemHeaderModel.currency,
-        //       netPrice: tempBundleServiceItemsData.itemHeaderModel.netPrice,
-        //       itemProductHierarchy: tempBundleServiceItemsData.itemHeaderModel.itemProductHierarchy,
-        //       itemHeaderGeographic: tempBundleServiceItemsData.itemHeaderModel.itemHeaderGeographic,
-        //       responseTime: tempBundleServiceItemsData.itemHeaderModel.responseTime,
-        //       usage: tempBundleServiceItemsData.itemHeaderModel.usage,
-        //       validFrom: tempBundleServiceItemsData.itemHeaderModel.validFrom,
-        //       validTo: tempBundleServiceItemsData.itemHeaderModel.validTo,
-        //       estimatedTime: tempBundleServiceItemsData.itemHeaderModel.estimatedTime,
-        //       servicePrice: tempBundleServiceItemsData.itemHeaderModel.servicePrice,
-        //       status: tempBundleServiceItemsData.itemHeaderModel.status,
-        //       itemHeaderStrategy: tempBundleServiceItemsData.itemHeaderModel.itemHeaderStrategy,
-        //       componentCode: tempBundleServiceItemsData.itemHeaderModel.componentCode,
-        //       componentDescription: tempBundleServiceItemsData.itemHeaderModel.componentDescription,
-        //       serialNumber: tempBundleServiceItemsData.itemHeaderModel.serialNumber,
-        //       variant: tempBundleServiceItemsData.itemHeaderModel.variant,
-        //       itemHeaderCustomerSegment: tempBundleServiceItemsData.itemHeaderModel.itemHeaderCustomerSegment,
-        //       jobCode: tempBundleServiceItemsData.itemHeaderModel.jobCode,
-        //       preparedBy: tempBundleServiceItemsData.itemHeaderModel.preparedBy,
-        //       approvedBy: tempBundleServiceItemsData.itemHeaderModel.approvedBy,
-        //       preparedOn: tempBundleServiceItemsData.itemHeaderModel.preparedOn,
-        //       revisedBy: tempBundleServiceItemsData.itemHeaderModel.revisedBy,
-        //       revisedOn: tempBundleServiceItemsData.itemHeaderModel.revisedOn,
-        //       salesOffice: tempBundleServiceItemsData.itemHeaderModel.salesOffice,
-        //       offerValidity: tempBundleServiceItemsData.itemHeaderModel.offerValidity,
-        //       serviceChargable: tempBundleServiceItemsData.itemHeaderModel.serviceChargable,
-        //       serviceOptional: tempBundleServiceItemsData.itemHeaderModel.serviceOptional
-        //     },
-        //     itemBodyModel: {
-        //       itemBodyId: tempBundleServiceItemsData.itemBodyModel.itemBodyId,
-        //       itemBodyDescription: tempBundleServiceItemsData.itemBodyModel.itemBodyDescription,
-        //       spareParts: tempBundleServiceItemsData.itemBodyModel.spareParts,
-        //       labours: tempBundleServiceItemsData.itemBodyModel.labours,
-        //       miscellaneous: tempBundleServiceItemsData.itemBodyModel.miscellaneous,
-        //       taskType: tempBundleServiceItemsData.itemBodyModel.taskType,
-        //       solutionCode: tempBundleServiceItemsData.itemBodyModel.solutionCode,
-        //       usageIn: tempBundleServiceItemsData.itemBodyModel.usageIn,
-        //       usage: tempBundleServiceItemsData.itemBodyModel.usage,
-        //       year: tempBundleServiceItemsData.itemBodyModel.year,
-        //       avgUsage: tempBundleServiceItemsData.itemBodyModel.avgUsage,
-        //       unit: tempBundleServiceItemsData.itemBodyModel.unit,
-        //       frequency: tempBundleServiceItemsData.itemBodyModel.frequency,
-        //       // recommendedValue: tempBundleServiceItemsData.itemBodyModel.recommendedValue,
-        //       itemPrices: tempBundleServiceItemsData.itemBodyModel.itemPrices,
-        //     }
-        //   };
-        //   updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
-        //     .then((res) => {
-        //       UpdatedBundleService3Data.push(res.data)
-        //       _itemArrData.push({ itemId: res.data.itemId })
-        //     })
-        //     .catch((err) => {
-        //       console.log("err in api call", err);
-        //     });
+        // if (Object.keys(reqObj).length === 0) {
+        //   throw "Please Create an Item first, then you can add Bundle/Service";
         // }
 
-
-        // var reqObjUpdatebundleService = {
-        //   itemId: tempBundleService3[a].itemId,
-        //   itemName: tempBundleService3[a].itemName,
-        //   itemHeaderModel: {
-        //     itemHeaderId: tempBundleService3[a].itemHeaderModel.itemHeaderId,
-        //     itemHeaderDescription: tempBundleService3[a].itemHeaderModel.itemHeaderDescription,
-        //     bundleFlag: tempBundleService3[a].itemHeaderModel.bundleFlag,
-        //     withBundleService: tempBundleService3[a].itemHeaderModel.withBundleService,
-        //     portfolioItemId: currentItemId,
-        //     reference: tempBundleService3[a].itemHeaderModel.reference,
-        //     itemHeaderMake: tempBundleService3[a].itemHeaderModel.itemHeaderMake,
-        //     itemHeaderFamily: tempBundleService3[a].itemHeaderModel.itemHeaderFamily,
-        //     model: tempBundleService3[a].itemHeaderModel.model,
-        //     prefix: tempBundleService3[a].itemHeaderModel.prefix,
-        //     type: tempBundleService3[a].itemHeaderModel.type,
-        //     additional: tempBundleService3[a].itemHeaderModel.additional,
-        //     currency: tempBundleService3[a].itemHeaderModel.currency,
-        //     netPrice: tempBundleService3[a].itemHeaderModel.netPrice,
-        //     itemProductHierarchy: tempBundleService3[a].itemHeaderModel.itemProductHierarchy,
-        //     itemHeaderGeographic: tempBundleService3[a].itemHeaderModel.itemHeaderGeographic,
-        //     responseTime: tempBundleService3[a].itemHeaderModel.responseTime,
-        //     usage: tempBundleService3[a].itemHeaderModel.usage,
-        //     validFrom: tempBundleService3[a].itemHeaderModel.validFrom,
-        //     validTo: tempBundleService3[a].itemHeaderModel.validTo,
-        //     estimatedTime: tempBundleService3[a].itemHeaderModel.estimatedTime,
-        //     servicePrice: tempBundleService3[a].itemHeaderModel.servicePrice,
-        //     status: tempBundleService3[a].itemHeaderModel.status,
-        //     itemHeaderStrategy: tempBundleService3[a].itemHeaderModel.itemHeaderStrategy,
-        //     componentCode: tempBundleService3[a].itemHeaderModel.componentCode,
-        //     componentDescription: tempBundleService3[a].itemHeaderModel.componentDescription,
-        //     serialNumber: tempBundleService3[a].itemHeaderModel.serialNumber,
-        //     variant: tempBundleService3[a].itemHeaderModel.variant,
-        //     itemHeaderCustomerSegment: tempBundleService3[a].itemHeaderModel.itemHeaderCustomerSegment,
-        //     jobCode: tempBundleService3[a].itemHeaderModel.jobCode,
-        //     preparedBy: tempBundleService3[a].itemHeaderModel.preparedBy,
-        //     approvedBy: tempBundleService3[a].itemHeaderModel.approvedBy,
-        //     preparedOn: tempBundleService3[a].itemHeaderModel.preparedOn,
-        //     revisedBy: tempBundleService3[a].itemHeaderModel.revisedBy,
-        //     revisedOn: tempBundleService3[a].itemHeaderModel.revisedOn,
-        //     salesOffice: tempBundleService3[a].itemHeaderModel.salesOffice,
-        //     offerValidity: tempBundleService3[a].itemHeaderModel.offerValidity,
-        //     serviceChargable: tempBundleService3[a].itemHeaderModel.serviceChargable,
-        //     serviceOptional: tempBundleService3[a].itemHeaderModel.serviceOptional
-        //   },
-        //   itemBodyModel: {
-        //     itemBodyId: tempBundleService3[a].itemBodyModel.itemBodyId,
-        //     itemBodyDescription: tempBundleService3[a].itemBodyModel.itemBodyDescription,
-        //     spareParts: tempBundleService3[a].itemBodyModel.spareParts,
-        //     labours: tempBundleService3[a].itemBodyModel.labours,
-        //     miscellaneous: tempBundleService3[a].itemBodyModel.miscellaneous,
-        //     taskType: tempBundleService3[a].itemBodyModel.taskType,
-        //     solutionCode: tempBundleService3[a].itemBodyModel.solutionCode,
-        //     usageIn: tempBundleService3[a].itemBodyModel.usageIn,
-        //     usage: tempBundleService3[a].itemBodyModel.usage,
-        //     year: tempBundleService3[a].itemBodyModel.year,
-        //     avgUsage: tempBundleService3[a].itemBodyModel.avgUsage,
-        //     unit: tempBundleService3[a].itemBodyModel.unit,
-        //     frequency: tempBundleService3[a].itemBodyModel.frequency,
-        //     // recommendedValue: tempBundleService3[a].itemBodyModel.recommendedValue,
-        //     itemPrices: tempBundleService3[a].itemBodyModel.itemPrices,
-        //   }
-        // };
-
-        // updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
-        //   .then((res) => {
-        //     UpdatedBundleService3Data.push(res.data)
-        //     _itemArrData.push({ itemId: res.data.itemId })
-        //   })
-        //   .catch((err) => {
-        //     console.log("err in api call", err);
-        //   });
-      }
-
-      setPortfolioItems(_itemArrData);
-      // setTempBundleService3(UpdatedBundleService3Data);
-      // setTempBundleService2(UpdatedBundleService3Data);
-
-      let obj = {
-        portfolioId: portfolioId,
-        name: generalComponentData.name,
-        description: generalComponentData.description,
-        externalReference: generalComponentData.externalReference,
-        customerSegment: generalComponentData.customerSegment?.value,
-
-        validFrom: validityData.fromDate,
-        validTo: validityData.toDate,
-        startUsage: validityData.fromInput,
-        endUsage: validityData.toInput,
-        unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
-          ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
-
-
-        usageCategory: categoryUsageKeyValue1.value
-          ? categoryUsageKeyValue1.value : "EMPTY",
-        strategyTask: stratgyTaskUsageKeyValue.value ?
-          stratgyTaskUsageKeyValue.value : "EMPTY",
-        taskType: stratgyTaskTypeKeyValue.value ?
-          stratgyTaskTypeKeyValue.value : "EMPTY",
-        responseTime: stratgyResponseTimeKeyValue.value ?
-          stratgyResponseTimeKeyValue.value : "EMPTY",
-        productHierarchy: stratgyHierarchyKeyValue.value ?
-          stratgyHierarchyKeyValue.value : "EMPTY",
-        geographic: stratgyGeographicKeyValue.value ?
-          stratgyGeographicKeyValue.value : "EMPTY",
-
-        preparedBy: administrative.preparedBy,
-        approvedBy: administrative.approvedBy,
-        preparedOn: administrative.preparedOn,
-        revisedBy: administrative.revisedBy,
-        revisedOn: administrative.revisedOn,
-        offerValidity: administrative.offerValidity?.value,
-        salesOffice: administrative.salesOffice?.value,
-
-        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
-          ? portfolioPriceDataId : null,
-        // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
-        optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
-        // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
-        //   ? portfolioAdditionalPriceDataId : null,
-        // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
-        //   ? portfolioEscalationPriceDataId : null,
-
-        supportLevel: value3.value,
-        status: value2.value,
-
-        items: _itemArrData,
-        coverages: portfolioCoverage,
-
-        // machineType: "NEW",
-        // searchTerm: "",
-        // lubricant: true,
-        // customerId: 0,
-        // customerGroup: "",
-        // availability: "AVAILABILITY_GREATER_95",
-        // type: "MACHINE",
-        // application: "HILL",
-        // contractOrSupport: "LEVEL_I",
-        // lifeStageOfMachine: "NEW_BREAKIN",
-        // numberOfEvents: 0,
-        // rating: "",
-        // startUsage: 0,
-        // endUsage: 0,
-        // unit: "HOURS",
-        // additionals: "",
-        // template: true,
-        // visibleInCommerce: true
-        machineType: "EMPTY",
-        searchTerm: "",
-        lubricant: true,
-        customerId: 0,
-        customerGroup: "",
-        availability: "EMPTY",
-        type: "EMPTY",
-        application: "EMPTY",
-        contractOrSupport: "EMPTY",
-        lifeStageOfMachine: "EMPTY",
-        numberOfEvents: 0,
-        rating: "",
-        // startUsage: 0,
-        // endUsage: 0,
-        // unit: "EMPTY",
-        additionals: "",
-        template: true,
-        visibleInCommerce: true
-      }
-
-      if ((portfolioId !== "" || (portfolioId !== undefined))) {
-        const updatePortfolioRes = await updatePortfolio(
-          portfolioId,
-          obj
-        );
-        if (updatePortfolioRes.status === 200) {
-          toast(`👏 Portfolio ${generalComponentData.name} saved Successfully`, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+        if (((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
+          ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null))) {
         } else {
-          throw `${updatePortfolioRes.status}:Something went wrong`;
+          if (Object.keys(reqObj).length === 0) {
+            throw "Please Create an Item first, then you can add Bundle/Service";
+          }
+          if ((((itemPriceData.standardJobId == "") ||
+            (itemPriceData.standardJobId == null))) &&
+            ((itemPriceData.repairKitId != "") ||
+              (itemPriceData.repairKitId != null))) {
+            const updateRkId = portfolioItemPriceRkId(reqObj);
+          }
+
+          if ((((itemPriceData.repairKitId == "") ||
+            (itemPriceData.repairKitId == null))) &&
+            ((itemPriceData.standardJobId != "") ||
+              (itemPriceData.standardJobId != null))) {
+            const res2 = await portfolioItemPriceSjid(reqObj)
+          }
         }
+
+        const res = await getItemPriceData(itemPriceData.itemPriceDataId)
+        const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
+        setPriceCalculator({
+          ...priceCalculator,
+          calculatedPrice: resPrice.data.calculatedPrice,
+          priceMethod: ((resPrice.data.priceMethod === "") ||
+            (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+            priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+          priceType: ((resPrice.data.priceType === "") ||
+            (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+            priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+          priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+            (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+            additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+          priceAdditionalInput: resPrice.data.additionalPriceValue,
+          discountTypeSelect: ((resPrice.data.discountType === "") ||
+            (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+            discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+          discountTypeInput: resPrice.data.discountValue,
+          year: ((resPrice.data.year === "") ||
+            (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+            { label: resPrice.data.year, value: resPrice.data.year },
+
+          noOfYear: resPrice.data.noOfYear,
+          startUsage: resPrice.data.startUsage,
+          endUsage: resPrice.data.endUsage,
+          recommendedValue: resPrice.data.recommendedValue,
+          // netPrice: resPrice.data.netService,
+          netPrice: resPrice.data.calculatedPrice,
+          totalPrice: resPrice.data.totalPrice,
+          id: resPrice.data.itemPriceDataId,
+          numberOfEvents: resPrice.data.numberOfEvents,
+          portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+          flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+          escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+            label: resPrice.data.priceEscalation,
+            value: resPrice.data.priceEscalation,
+          } : ""),
+          escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+            resPrice.data.priceEscalation : ""),
+          escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+            resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+              resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                  resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+          priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+          priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            resPrice.data.sparePartsPriceBreakDownPercentage :
+            resPrice.data.labourPriceBreakDownPercentage != 0 ?
+              resPrice.data.labourPriceBreakDownPercentage :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                resPrice.data.miscPriceBreakDownPercentage : 0,
+
+          priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+            label: "PARTS",
+            value: "PARTS",
+          } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+            label: "LABOR",
+            value: "LABOR",
+          } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+            label: "MISCELLANEOUS",
+            value: "MISCELLANEOUS",
+          } : "",
+
+          currency: ((currencyIs != "")) ? {
+            label: currencyIs,
+            value: currencyIs
+          } : "",
+          unit: addPortFolioItem?.unit,
+          frequency: addPortFolioItem?.frequency,
+          usageType: addPortFolioItem?.usageType,
+
+          // priceMethod: (resPrice.data.priceMethod != "EMPTY" ||
+          //   resPrice.data.priceMethod != "" ||
+          //   resPrice.data.priceMethod != null) ? {
+          //   label: resPrice.data.priceMethod,
+          //   value: resPrice.data.priceMethod
+          // } : "",
+          // priceType: (resPrice.data.priceType != "EMPTY" ||
+          //   resPrice.data.priceType != "" ||
+          //   resPrice.data.priceType != null) ? {
+          //   label: resPrice.data.priceType,
+          //   value: resPrice.data.priceType
+          // } : "",
+          // priceAdditionalSelect: {
+          //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+          // },
+          // priceAdditionalInput: resPrice.data.additionalPriceValue,
+          // discountTypeSelect: (resPrice.data.discountType != "EMPTY" ||
+          //   resPrice.data.discountType != "" ||
+          //   resPrice.data.discountType != null) ? {
+          //   label: resPrice.data.discountType,
+          //   value: resPrice.data.discountType
+          // } : "",
+          // discountTypeInput: resPrice.data.discountValue,
+          // year: {
+          //   label: resPrice.data.year, value: resPrice.data.year
+          // },
+          // noOfYear: resPrice.data.noOfYear,
+          // startUsage: resPrice.data.startUsage,
+          // endUsage: resPrice.data.endUsage,
+          // recommendedValue: resPrice.data.recommendedValue,
+          // netPrice: resPrice.data.netService,
+          // totalPrice: resPrice.data.totalPrice,
+          // id: resPrice.data.itemPriceDataId,
+        })
+        setPriceBreakDownFieldsValue({
+          ...priceBreakDownFieldsValue,
+          parts: resPrice.data.sparePartsNOE,
+          labor: resPrice.data.labourNOE,
+          miscellaneous: resPrice.data.miscNOE,
+          service: resPrice.data.servicePrice,
+        })
+
+        var UpdatedBundleService3Data = [];
+        var _itemArrData = [...portfolioItems];
+
+        for (let a = 0; a < tempBundleService3.length; a++) {
+          _itemArrData.push({ itemId: tempBundleService3[a].itemId })
+          // var tempBundleServiceItems3 = await getItemDataById(tempBundleService3[a].itemId);
+          // if (tempBundleServiceItems3.status === 200) {
+          //   var tempBundleServiceItemsData = tempBundleServiceItems3.data;
+          //   var reqObjUpdatebundleService = {
+          //     itemId: tempBundleServiceItemsData.itemId,
+          //     itemName: tempBundleServiceItemsData.itemName,
+          //     itemHeaderModel: {
+          //       itemHeaderId: tempBundleServiceItemsData.itemHeaderModel.itemHeaderId,
+          //       itemHeaderDescription: tempBundleServiceItemsData.itemHeaderModel.itemHeaderDescription,
+          //       bundleFlag: tempBundleServiceItemsData.itemHeaderModel.bundleFlag,
+          //       withBundleService: tempBundleServiceItemsData.itemHeaderModel.withBundleService,
+          //       portfolioItemId: currentItemId,
+          //       reference: tempBundleServiceItemsData.itemHeaderModel.reference,
+          //       itemHeaderMake: tempBundleServiceItemsData.itemHeaderModel.itemHeaderMake,
+          //       itemHeaderFamily: tempBundleServiceItemsData.itemHeaderModel.itemHeaderFamily,
+          //       model: tempBundleServiceItemsData.itemHeaderModel.model,
+          //       prefix: tempBundleServiceItemsData.itemHeaderModel.prefix,
+          //       type: tempBundleServiceItemsData.itemHeaderModel.type,
+          //       additional: tempBundleServiceItemsData.itemHeaderModel.additional,
+          //       currency: tempBundleServiceItemsData.itemHeaderModel.currency,
+          //       netPrice: tempBundleServiceItemsData.itemHeaderModel.netPrice,
+          //       itemProductHierarchy: tempBundleServiceItemsData.itemHeaderModel.itemProductHierarchy,
+          //       itemHeaderGeographic: tempBundleServiceItemsData.itemHeaderModel.itemHeaderGeographic,
+          //       responseTime: tempBundleServiceItemsData.itemHeaderModel.responseTime,
+          //       usage: tempBundleServiceItemsData.itemHeaderModel.usage,
+          //       validFrom: tempBundleServiceItemsData.itemHeaderModel.validFrom,
+          //       validTo: tempBundleServiceItemsData.itemHeaderModel.validTo,
+          //       estimatedTime: tempBundleServiceItemsData.itemHeaderModel.estimatedTime,
+          //       servicePrice: tempBundleServiceItemsData.itemHeaderModel.servicePrice,
+          //       status: tempBundleServiceItemsData.itemHeaderModel.status,
+          //       itemHeaderStrategy: tempBundleServiceItemsData.itemHeaderModel.itemHeaderStrategy,
+          //       componentCode: tempBundleServiceItemsData.itemHeaderModel.componentCode,
+          //       componentDescription: tempBundleServiceItemsData.itemHeaderModel.componentDescription,
+          //       serialNumber: tempBundleServiceItemsData.itemHeaderModel.serialNumber,
+          //       variant: tempBundleServiceItemsData.itemHeaderModel.variant,
+          //       itemHeaderCustomerSegment: tempBundleServiceItemsData.itemHeaderModel.itemHeaderCustomerSegment,
+          //       jobCode: tempBundleServiceItemsData.itemHeaderModel.jobCode,
+          //       preparedBy: tempBundleServiceItemsData.itemHeaderModel.preparedBy,
+          //       approvedBy: tempBundleServiceItemsData.itemHeaderModel.approvedBy,
+          //       preparedOn: tempBundleServiceItemsData.itemHeaderModel.preparedOn,
+          //       revisedBy: tempBundleServiceItemsData.itemHeaderModel.revisedBy,
+          //       revisedOn: tempBundleServiceItemsData.itemHeaderModel.revisedOn,
+          //       salesOffice: tempBundleServiceItemsData.itemHeaderModel.salesOffice,
+          //       offerValidity: tempBundleServiceItemsData.itemHeaderModel.offerValidity,
+          //       serviceChargable: tempBundleServiceItemsData.itemHeaderModel.serviceChargable,
+          //       serviceOptional: tempBundleServiceItemsData.itemHeaderModel.serviceOptional
+          //     },
+          //     itemBodyModel: {
+          //       itemBodyId: tempBundleServiceItemsData.itemBodyModel.itemBodyId,
+          //       itemBodyDescription: tempBundleServiceItemsData.itemBodyModel.itemBodyDescription,
+          //       spareParts: tempBundleServiceItemsData.itemBodyModel.spareParts,
+          //       labours: tempBundleServiceItemsData.itemBodyModel.labours,
+          //       miscellaneous: tempBundleServiceItemsData.itemBodyModel.miscellaneous,
+          //       taskType: tempBundleServiceItemsData.itemBodyModel.taskType,
+          //       solutionCode: tempBundleServiceItemsData.itemBodyModel.solutionCode,
+          //       usageIn: tempBundleServiceItemsData.itemBodyModel.usageIn,
+          //       usage: tempBundleServiceItemsData.itemBodyModel.usage,
+          //       year: tempBundleServiceItemsData.itemBodyModel.year,
+          //       avgUsage: tempBundleServiceItemsData.itemBodyModel.avgUsage,
+          //       unit: tempBundleServiceItemsData.itemBodyModel.unit,
+          //       frequency: tempBundleServiceItemsData.itemBodyModel.frequency,
+          //       // recommendedValue: tempBundleServiceItemsData.itemBodyModel.recommendedValue,
+          //       itemPrices: tempBundleServiceItemsData.itemBodyModel.itemPrices,
+          //     }
+          //   };
+          //   updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
+          //     .then((res) => {
+          //       UpdatedBundleService3Data.push(res.data)
+          //       _itemArrData.push({ itemId: res.data.itemId })
+          //     })
+          //     .catch((err) => {
+          //       console.log("err in api call", err);
+          //     });
+          // }
+
+
+          // var reqObjUpdatebundleService = {
+          //   itemId: tempBundleService3[a].itemId,
+          //   itemName: tempBundleService3[a].itemName,
+          //   itemHeaderModel: {
+          //     itemHeaderId: tempBundleService3[a].itemHeaderModel.itemHeaderId,
+          //     itemHeaderDescription: tempBundleService3[a].itemHeaderModel.itemHeaderDescription,
+          //     bundleFlag: tempBundleService3[a].itemHeaderModel.bundleFlag,
+          //     withBundleService: tempBundleService3[a].itemHeaderModel.withBundleService,
+          //     portfolioItemId: currentItemId,
+          //     reference: tempBundleService3[a].itemHeaderModel.reference,
+          //     itemHeaderMake: tempBundleService3[a].itemHeaderModel.itemHeaderMake,
+          //     itemHeaderFamily: tempBundleService3[a].itemHeaderModel.itemHeaderFamily,
+          //     model: tempBundleService3[a].itemHeaderModel.model,
+          //     prefix: tempBundleService3[a].itemHeaderModel.prefix,
+          //     type: tempBundleService3[a].itemHeaderModel.type,
+          //     additional: tempBundleService3[a].itemHeaderModel.additional,
+          //     currency: tempBundleService3[a].itemHeaderModel.currency,
+          //     netPrice: tempBundleService3[a].itemHeaderModel.netPrice,
+          //     itemProductHierarchy: tempBundleService3[a].itemHeaderModel.itemProductHierarchy,
+          //     itemHeaderGeographic: tempBundleService3[a].itemHeaderModel.itemHeaderGeographic,
+          //     responseTime: tempBundleService3[a].itemHeaderModel.responseTime,
+          //     usage: tempBundleService3[a].itemHeaderModel.usage,
+          //     validFrom: tempBundleService3[a].itemHeaderModel.validFrom,
+          //     validTo: tempBundleService3[a].itemHeaderModel.validTo,
+          //     estimatedTime: tempBundleService3[a].itemHeaderModel.estimatedTime,
+          //     servicePrice: tempBundleService3[a].itemHeaderModel.servicePrice,
+          //     status: tempBundleService3[a].itemHeaderModel.status,
+          //     itemHeaderStrategy: tempBundleService3[a].itemHeaderModel.itemHeaderStrategy,
+          //     componentCode: tempBundleService3[a].itemHeaderModel.componentCode,
+          //     componentDescription: tempBundleService3[a].itemHeaderModel.componentDescription,
+          //     serialNumber: tempBundleService3[a].itemHeaderModel.serialNumber,
+          //     variant: tempBundleService3[a].itemHeaderModel.variant,
+          //     itemHeaderCustomerSegment: tempBundleService3[a].itemHeaderModel.itemHeaderCustomerSegment,
+          //     jobCode: tempBundleService3[a].itemHeaderModel.jobCode,
+          //     preparedBy: tempBundleService3[a].itemHeaderModel.preparedBy,
+          //     approvedBy: tempBundleService3[a].itemHeaderModel.approvedBy,
+          //     preparedOn: tempBundleService3[a].itemHeaderModel.preparedOn,
+          //     revisedBy: tempBundleService3[a].itemHeaderModel.revisedBy,
+          //     revisedOn: tempBundleService3[a].itemHeaderModel.revisedOn,
+          //     salesOffice: tempBundleService3[a].itemHeaderModel.salesOffice,
+          //     offerValidity: tempBundleService3[a].itemHeaderModel.offerValidity,
+          //     serviceChargable: tempBundleService3[a].itemHeaderModel.serviceChargable,
+          //     serviceOptional: tempBundleService3[a].itemHeaderModel.serviceOptional
+          //   },
+          //   itemBodyModel: {
+          //     itemBodyId: tempBundleService3[a].itemBodyModel.itemBodyId,
+          //     itemBodyDescription: tempBundleService3[a].itemBodyModel.itemBodyDescription,
+          //     spareParts: tempBundleService3[a].itemBodyModel.spareParts,
+          //     labours: tempBundleService3[a].itemBodyModel.labours,
+          //     miscellaneous: tempBundleService3[a].itemBodyModel.miscellaneous,
+          //     taskType: tempBundleService3[a].itemBodyModel.taskType,
+          //     solutionCode: tempBundleService3[a].itemBodyModel.solutionCode,
+          //     usageIn: tempBundleService3[a].itemBodyModel.usageIn,
+          //     usage: tempBundleService3[a].itemBodyModel.usage,
+          //     year: tempBundleService3[a].itemBodyModel.year,
+          //     avgUsage: tempBundleService3[a].itemBodyModel.avgUsage,
+          //     unit: tempBundleService3[a].itemBodyModel.unit,
+          //     frequency: tempBundleService3[a].itemBodyModel.frequency,
+          //     // recommendedValue: tempBundleService3[a].itemBodyModel.recommendedValue,
+          //     itemPrices: tempBundleService3[a].itemBodyModel.itemPrices,
+          //   }
+          // };
+
+          // updateItemData(tempBundleService3[a].itemId, reqObjUpdatebundleService)
+          //   .then((res) => {
+          //     UpdatedBundleService3Data.push(res.data)
+          //     _itemArrData.push({ itemId: res.data.itemId })
+          //   })
+          //   .catch((err) => {
+          //     console.log("err in api call", err);
+          //   });
+        }
+
+        setPortfolioItems(_itemArrData);
+        // setTempBundleService3(UpdatedBundleService3Data);
+        // setTempBundleService2(UpdatedBundleService3Data);
+
+        let obj = {
+          portfolioId: portfolioId,
+          name: generalComponentData.name,
+          description: generalComponentData.description,
+          externalReference: generalComponentData.externalReference,
+          customerSegment: generalComponentData.customerSegment?.value,
+
+          validFrom: validityData.fromDate,
+          validTo: validityData.toDate,
+          startUsage: validityData.fromInput,
+          endUsage: validityData.toInput,
+          unit: ((validityData.from === "") || (validityData.from === null) || (validityData.from === undefined)) ? "EMPTY" :
+            ((typeof validityData.from === "object") ? validityData.from?.value : validityData.from),
+
+
+          usageCategory: categoryUsageKeyValue1.value
+            ? categoryUsageKeyValue1.value : "EMPTY",
+          strategyTask: stratgyTaskUsageKeyValue.value ?
+            stratgyTaskUsageKeyValue.value : "EMPTY",
+          taskType: stratgyTaskTypeKeyValue.value ?
+            stratgyTaskTypeKeyValue.value : "EMPTY",
+          responseTime: stratgyResponseTimeKeyValue.value ?
+            stratgyResponseTimeKeyValue.value : "EMPTY",
+          productHierarchy: stratgyHierarchyKeyValue.value ?
+            stratgyHierarchyKeyValue.value : "EMPTY",
+          geographic: stratgyGeographicKeyValue.value ?
+            stratgyGeographicKeyValue.value : "EMPTY",
+
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          offerValidity: administrative.offerValidity?.value,
+          salesOffice: administrative.salesOffice?.value,
+
+          portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+            ? portfolioPriceDataId : null,
+          // optionalServices: optionalServicesData.length > 0 ? optionalServicesData.toString() : "",
+          optionalServices: selectedService.length > 0 ? selectedService.map(obj => obj.itemId).join(',') : "",
+          // additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+          //   ? portfolioAdditionalPriceDataId : null,
+          // escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+          //   ? portfolioEscalationPriceDataId : null,
+
+          supportLevel: value3.value,
+          status: value2.value,
+
+          items: _itemArrData,
+          coverages: portfolioCoverage,
+
+          // machineType: "NEW",
+          // searchTerm: "",
+          // lubricant: true,
+          // customerId: 0,
+          // customerGroup: "",
+          // availability: "AVAILABILITY_GREATER_95",
+          // type: "MACHINE",
+          // application: "HILL",
+          // contractOrSupport: "LEVEL_I",
+          // lifeStageOfMachine: "NEW_BREAKIN",
+          // numberOfEvents: 0,
+          // rating: "",
+          // startUsage: 0,
+          // endUsage: 0,
+          // unit: "HOURS",
+          // additionals: "",
+          // template: true,
+          // visibleInCommerce: true
+          machineType: "EMPTY",
+          searchTerm: "",
+          lubricant: true,
+          customerId: 0,
+          customerGroup: "",
+          availability: "EMPTY",
+          type: "EMPTY",
+          application: "EMPTY",
+          contractOrSupport: "EMPTY",
+          lifeStageOfMachine: "EMPTY",
+          numberOfEvents: 0,
+          rating: "",
+          // startUsage: 0,
+          // endUsage: 0,
+          // unit: "EMPTY",
+          additionals: "",
+          template: true,
+          visibleInCommerce: true
+        }
+
+        if ((portfolioId !== "" || (portfolioId !== undefined))) {
+          const updatePortfolioRes = await updatePortfolio(
+            portfolioId,
+            obj
+          );
+          if (updatePortfolioRes.status === 200) {
+            toast(`👏 Portfolio ${generalComponentData.name} saved Successfully`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else {
+            throw `${updatePortfolioRes.status}:Something went wrong`;
+          }
+        }
+
+        // setPriceCalculator({
+        //   ...priceCalculator,
+        //   priceAdditionalSelect: {
+        //     label: res.data.additionalPriceType, value: res.data.additionalPriceType
+        //   },
+        //   year: {
+        //     label: res.data.year, value: res.data.year
+        //   },
+        //   noOfYear: res.data.noOfYear,
+        //   startUsage: res.data.startUsage,
+        //   endUsage: res.data.endUsage,
+        //   recommendedValue: res.data.recommendedValue,
+        //   netPrice: res.data.netService,
+        //   totalPrice: res.data.totalPrice,
+        //   id: res.data.itemPriceDataId,
+        // })
+
+        setPriceCalculator({
+          ...priceCalculator,
+
+          calculatedPrice: resPrice.data.calculatedPrice,
+          priceMethod: ((resPrice.data.priceMethod === "") ||
+            (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+            priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+          priceType: ((resPrice.data.priceType === "") ||
+            (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+            priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+          priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+            (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+            additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+          priceAdditionalInput: resPrice.data.additionalPriceValue,
+          discountTypeSelect: ((resPrice.data.discountType === "") ||
+            (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+            discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+          discountTypeInput: resPrice.data.discountValue,
+          year: ((resPrice.data.year === "") ||
+            (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+            { label: resPrice.data.year, value: resPrice.data.year },
+
+          noOfYear: resPrice.data.noOfYear,
+          startUsage: resPrice.data.startUsage,
+          endUsage: resPrice.data.endUsage,
+          recommendedValue: resPrice.data.recommendedValue,
+          // netPrice: resPrice.data.netService,
+          netPrice: resPrice.data.calculatedPrice,
+          totalPrice: resPrice.data.totalPrice,
+          id: resPrice.data.itemPriceDataId,
+          numberOfEvents: resPrice.data.numberOfEvents,
+          portfolioDataId: resPrice.data.portfolio.portfolioId,
+
+          flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+          escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+            label: resPrice.data.priceEscalation,
+            value: resPrice.data.priceEscalation,
+          } : ""),
+          escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+            resPrice.data.priceEscalation : ""),
+          escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+            resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+              resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                  resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+          priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+          priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            resPrice.data.sparePartsPriceBreakDownPercentage :
+            resPrice.data.labourPriceBreakDownPercentage != 0 ?
+              resPrice.data.labourPriceBreakDownPercentage :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                resPrice.data.miscPriceBreakDownPercentage : 0,
+
+          priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+            label: "PARTS",
+            value: "PARTS",
+          } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+            label: "LABOR",
+            value: "LABOR",
+          } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+            label: "MISCELLANEOUS",
+            value: "MISCELLANEOUS",
+          } : "",
+
+          currency: ((currencyIs != "")) ? {
+            label: currencyIs,
+            value: currencyIs
+          } : "",
+          unit: addPortFolioItem?.unit,
+          frequency: addPortFolioItem?.frequency,
+          usageType: addPortFolioItem?.usageType,
+
+          // priceAdditionalSelect: {
+          //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
+          // },
+          // year: {
+          //   label: resPrice.data.year, value: resPrice.data.year
+          // },
+          // noOfYear: resPrice.data.noOfYear,
+          // startUsage: resPrice.data.startUsage,
+          // endUsage: resPrice.data.endUsage,
+          // recommendedValue: resPrice.data.recommendedValue,
+          // netPrice: resPrice.data.netService,
+          // totalPrice: resPrice.data.totalPrice,
+          // id: resPrice.data.itemPriceDataId,
+        })
+        setPriceBreakDownFieldsValue({
+          ...priceBreakDownFieldsValue,
+          parts: resPrice.data.sparePartsNOE,
+          labor: resPrice.data.labourNOE,
+          miscellaneous: resPrice.data.miscNOE,
+          service: resPrice.data.servicePrice,
+        })
+
+        setItemPriceCalculator({
+          netParts: res.data.sparePartsPrice,
+          // netService: res.data.netService,
+          netPrice: res.data.calculatedPrice,
+          priceType: res.data.priceType,
+          netPrice: res.data.totalPrice,
+          netAdditionals: res.data.listPrice,
+        })
+        setTabs("5")
       }
-
-      // setPriceCalculator({
-      //   ...priceCalculator,
-      //   priceAdditionalSelect: {
-      //     label: res.data.additionalPriceType, value: res.data.additionalPriceType
-      //   },
-      //   year: {
-      //     label: res.data.year, value: res.data.year
-      //   },
-      //   noOfYear: res.data.noOfYear,
-      //   startUsage: res.data.startUsage,
-      //   endUsage: res.data.endUsage,
-      //   recommendedValue: res.data.recommendedValue,
-      //   netPrice: res.data.netService,
-      //   totalPrice: res.data.totalPrice,
-      //   id: res.data.itemPriceDataId,
-      // })
-
-      setPriceCalculator({
-        ...priceCalculator,
-
-        calculatedPrice: resPrice.data.calculatedPrice,
-        priceMethod: ((resPrice.data.priceMethod === "") ||
-          (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
-          priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
-        priceType: ((resPrice.data.priceType === "") ||
-          (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
-          priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
-        priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
-          (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
-          additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
-        priceAdditionalInput: resPrice.data.additionalPriceValue,
-        discountTypeSelect: ((resPrice.data.discountType === "") ||
-          (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
-          discountTypeOptions.find(o => o.value === resPrice.data.discountType),
-        discountTypeInput: resPrice.data.discountValue,
-        year: ((resPrice.data.year === "") ||
-          (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
-          { label: resPrice.data.year, value: resPrice.data.year },
-
-        noOfYear: resPrice.data.noOfYear,
-        startUsage: resPrice.data.startUsage,
-        endUsage: resPrice.data.endUsage,
-        recommendedValue: resPrice.data.recommendedValue,
-        // netPrice: resPrice.data.netService,
-        netPrice: resPrice.data.calculatedPrice,
-        totalPrice: resPrice.data.totalPrice,
-        id: resPrice.data.itemPriceDataId,
-        numberOfEvents: resPrice.data.numberOfEvents,
-        portfolioDataId: resPrice.data.portfolio.portfolioId,
-
-        flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
-
-        escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
-          label: resPrice.data.priceEscalation,
-          value: resPrice.data.priceEscalation,
-        } : ""),
-        escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
-          resPrice.data.priceEscalation : ""),
-        escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
-          resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
-            resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
-              resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
-                resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
-
-        priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-          "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
-            resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
-        priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-          resPrice.data.sparePartsPriceBreakDownPercentage :
-          resPrice.data.labourPriceBreakDownPercentage != 0 ?
-            resPrice.data.labourPriceBreakDownPercentage :
-            resPrice.data.miscPriceBreakDownPercentage != 0 ?
-              resPrice.data.miscPriceBreakDownPercentage : 0,
-
-        priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
-          label: "PARTS",
-          value: "PARTS",
-        } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
-          label: "LABOR",
-          value: "LABOR",
-        } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
-          label: "MISCELLANEOUS",
-          value: "MISCELLANEOUS",
-        } : "",
-
-        currency: ((currencyIs != "")) ? {
-          label: currencyIs,
-          value: currencyIs
-        } : "",
-        unit: addPortFolioItem?.unit,
-        frequency: addPortFolioItem?.frequency,
-        usageType: addPortFolioItem?.usageType,
-
-        // priceAdditionalSelect: {
-        //   label: resPrice.data.additionalPriceType, value: resPrice.data.additionalPriceType
-        // },
-        // year: {
-        //   label: resPrice.data.year, value: resPrice.data.year
-        // },
-        // noOfYear: resPrice.data.noOfYear,
-        // startUsage: resPrice.data.startUsage,
-        // endUsage: resPrice.data.endUsage,
-        // recommendedValue: resPrice.data.recommendedValue,
-        // netPrice: resPrice.data.netService,
-        // totalPrice: resPrice.data.totalPrice,
-        // id: resPrice.data.itemPriceDataId,
-      })
-      setPriceBreakDownFieldsValue({
-        ...priceBreakDownFieldsValue,
-        parts: resPrice.data.sparePartsNOE,
-        labor: resPrice.data.labourNOE,
-        miscellaneous: resPrice.data.miscNOE,
-        service: resPrice.data.servicePrice,
-      })
-
-      setItemPriceCalculator({
-        netParts: res.data.sparePartsPrice,
-        // netService: res.data.netService,
-        netPrice: res.data.calculatedPrice,
-        priceType: res.data.priceType,
-        netPrice: res.data.totalPrice,
-        netAdditionals: res.data.listPrice,
-      })
-      setTabs("5")
 
     } catch (error) {
       toast("😐" + error, {
@@ -23402,12 +24697,17 @@ export function CreatePortfolio(props) {
                     expandableRowsComponent={(row) =>
                       <ExpendTablePopup
                         bundleServiceData={row.data}
+                        compoFlag={row.data.bundleFlag}
+                        portfolioId={portfolioId}
+                        expendedRowData={row}
                         priceMethodDropdownKeyValue={priceMethodKeyValue}
                         priceTypeDropdownKeyValue={priceTypeKeyValue}
                         unitDropdownKeyValue={unitOptionKeyValue}
                         frequencyDropdownKeyValue={frequencyOptionKeyValue}
                         discountTypeDropdownKeyValue={discountTypeOptions}
                         currentItemId={currentItemId}
+                        setCheckForExpendItemStatus={setCheckForExpendItemStatus}
+                        checkForExpendItemStatus={checkForExpendItemStatus}
                       />}
                     onRowExpandToggled={handleExpandRowForPriceCalculator}
                     //onRowExpandToggled={(bool, row) => setCurrentRow(row)}
@@ -24982,7 +26282,7 @@ export function CreatePortfolio(props) {
                       <a className="btn text-white bg-primary cursor"
                         onClick={handleItemPriceCalculatorSave}
                       >
-                        Save
+                        {portfolioItemPriceEditable ? "Next" : "Save & Next"}
                       </a>
                     </div>
                   </div>
