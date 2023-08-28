@@ -1,8 +1,4 @@
 import { Modal } from "react-bootstrap";
-import DeleteIcon from "@mui/icons-material/Delete";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import { default as Select, default as SelectFilter } from "react-select";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 

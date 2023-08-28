@@ -69,7 +69,7 @@ export const selectPricingMethodList = (state) =>
 
 export const selectDropdownOption = (option) =>
   createSelector(option, (dropdownList) =>
-    dropdownList.map((task) => ({
+    dropdownList?.map((task) => ({
       label: task.value,
       value: task.key,
     }))

@@ -63,7 +63,7 @@ export const selectQuoteValidityList = (state) =>
 
 export const selectQuoteDropdownOption = (option) =>
   createSelector(option, (dropdownList) =>
-    dropdownList.map((task) => ({
+    dropdownList?.map((task) => ({
       label: task.value,
       value: task.key,
     }))

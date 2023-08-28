@@ -63,8 +63,11 @@ const RecentRepairQuote = () => {
       })
       .catch((e) => {
         // console.log(e);
-        if(e.message !== "Quote(s) is/are not found")
+        if(e.message === "Access is denied")
+          handleSnack("error", "You don't have access to this section!");
+        else if(e.message !== "Quote(s) is/are not found")
           handleSnack("error", "Error occurred while fetching repair quotes!");
+         
         setRecentQuotesLoading(false);
       });
   };

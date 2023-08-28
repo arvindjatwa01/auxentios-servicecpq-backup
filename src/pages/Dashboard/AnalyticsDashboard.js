@@ -13,7 +13,6 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Chart1, TinyAreaBasic, BubbleChart } from "../Common/index";
 
-import { getAllUsers, itemSearch } from "services";
 import {
   Autocomplete,
   Card,
@@ -194,7 +193,6 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 export const AnalyticsDashboard = () => {
-  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState("cust_seg");
   const [topQuotes, setTopQuotes] = useState("top10");
@@ -202,18 +200,7 @@ export const AnalyticsDashboard = () => {
     setTopQuotes(event.target.value);
   };
   useEffect(() => {
-    setIsLoading(true);
-    getAllUsers()
-      .then((res) => {
-        console.log("Dashboard > getAllUsers > res=", res);
-        setUsers(res);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log("axios err=", err);
-        setUsers([]);
-        setIsLoading(false);
-      });
+
 
     return () => {
       console.log("axios cleanup.");

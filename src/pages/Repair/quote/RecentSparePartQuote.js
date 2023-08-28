@@ -70,8 +70,10 @@ const RecentSparePartQuote = () => {
         setRecentQuotesLoading(false);
       })
       .catch((e) => {
-        if(e.message !== "Quote(s) is/are not found")
-          handleSnack("error", "Error occurred while fetching spare parts quotes!");
+        if(e.message === "Access is denied")
+          handleSnack("error", "You don't have access to this section!");
+        else if(e.message !== "Quote(s) is/are not found")
+          handleSnack("error", "Error occurred while fetching spare parts quotes!");        
         setRecentQuotesLoading(false);
       });
   };
