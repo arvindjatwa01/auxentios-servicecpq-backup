@@ -358,7 +358,7 @@ export function WorkListDash(props) {
                     </p>
                     <div className="">
                       <Link
-                        to="/portfolio/summary"
+                        to="/portfolio"
                         className="btn bg-primary text-white"
                       >
                         Continue <img className="ml-2" src={Buttonarrow}></img>

@@ -512,7 +512,7 @@ export function SideBarComponent(props) {
                           <span
                             className="font-size-14 font-weight-600 text-dark"
                             onClick={() =>
-                              (window.location.href = "/portfolio/summary")
+                              (window.location.href = "/portfolio")
                             }
                           >
                             Portfolio and Bundles
@@ -1090,7 +1090,7 @@ export function SideBarComponent(props) {
                 </a>
                 <ul aria-expanded="false">
                   <li>
-                    <Link to="/portfolio/summary">
+                    <Link to="/portfolio">
                       <span className="span-icon">
                         <svg
                           id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"

@@ -317,7 +317,7 @@ export function WorkList(props) {
                                             Examples of Portfolios are Premium Maintenance Plan, Value added plan etc. A service program is a marketing or product improvement program.
                                         </p>
                                         <div className=''>
-                                            <Link to="/portfolio/summary" className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></Link>
+                                            <Link to="/portfolio" className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></Link>
                                         </div>
 
                                     </div>

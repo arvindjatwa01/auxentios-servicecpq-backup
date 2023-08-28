@@ -556,7 +556,7 @@ export function HeaderComponent(props) {
                         </span>
                         <span className="ml-2">Kit</span>
                       </li>
-                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/portfolio/summary")} style={{ cursor: "pointer" }}>
+                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/portfolio")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
@@ -873,7 +873,7 @@ export function HeaderComponent(props) {
                         <div className="col-md-3 col-sm-3 mt-4">
                           <div
                             className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
-                            onClick={() => history.push("/portfolio/summary")}
+                            onClick={() => history.push("/portfolio")}
                             style={{ cursor: "pointer" }}
                           >
                             <span className="span-icon">

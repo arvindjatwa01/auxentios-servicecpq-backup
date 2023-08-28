@@ -2301,7 +2301,7 @@ export function SolutionServicePortfolio(props) {
     // Go To Solutions Function 
     const goToSolution = () => {
         var portfolioDetails = {};
-        // history.push("/portfolioBuilder/new")
+        // history.push("/portfolio/new")
 
         if (state) {
             if (state.portfolioId === undefined) {

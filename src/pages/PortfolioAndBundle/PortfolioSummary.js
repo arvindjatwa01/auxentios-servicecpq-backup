@@ -1380,7 +1380,7 @@ export const PortfolioSummary = () => {
       type: "fetch",
     };
     history.push({
-      pathname: "/portfolioBuilder/new",
+      pathname: "/portfolio/new",
       state: portfolioDetails,
     });
   }
@@ -4856,9 +4856,9 @@ export const PortfolioSummary = () => {
         portfolioId: "",
         type: "new",
       };
-      // history.push("/portfolioBuilder/new")
+      // history.push("/portfolio/new")
       history.push({
-        pathname: "/portfolioBuilder/new",
+        pathname: "/portfolio/new",
         state: portfolioDetails,
       });
     } else if (e.value === "SERVICE") {
@@ -5637,7 +5637,7 @@ export const PortfolioSummary = () => {
               onChange={handleCreateChange}
             />
             {/* <div>
-                        <Link to={{pathname: "/portfolioBuilder/new",state: { portfolioResponse}}}  onClick={handleCreatePortfolio} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                        <Link to={{pathname: "/portfolio/new",state: { portfolioResponse}}}  onClick={handleCreatePortfolio} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Portfolio<span className="ml-2"></span>
                             </Link>
                             <Link style={{ cursor: 'pointer' }} className="btn bg-primary text-white mx-2">

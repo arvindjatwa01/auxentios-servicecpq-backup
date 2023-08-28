@@ -396,7 +396,7 @@ export function SolutionSelector(props) {
             setActiveStep(2)
         } else {
             // alert("Portfolio ?")
-            history.push('/portfolioBuilder/new');
+            history.push('/portfolio/new');
         }
     }
 
