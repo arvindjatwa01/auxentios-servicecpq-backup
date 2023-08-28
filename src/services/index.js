@@ -5,7 +5,6 @@
  * I think it makes is easy to maintain when you have a long long list as your app gradually scales.
  */
 
-export { getAllUsers } from './userServices';
 export { getPortfolioSchema } from './schemaConfigServices';
 export { getGuidedSolution } from './guidedSolutionServices';
 export { getUserDetails, signup, signIn } from './userServices';

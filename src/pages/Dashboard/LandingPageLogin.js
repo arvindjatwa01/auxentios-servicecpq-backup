@@ -12,7 +12,6 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Chart1 } from '../Common/index'
-import { getAllUsers } from "services";
 
 const activityOptions = [
   'None',
@@ -31,29 +30,15 @@ const transOptions = [
 ];
 
 export const LandingPageLogin = () => {
-  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // setIsLoading(true);
-    // getAllUsers()
-    //   .then((res) => {
-    //     console.log("Dashboard > getAllUsers > res=", res);
-    //     setUsers(res);
-    //     setIsLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     console.log("axios err=", err);
-    //     setUsers([]);
-    //     setIsLoading(false);
-    //   });
-
+   
     // return () => {
     //   console.log("axios cleanup.");
     // };
   }, []);
 
-  const NoUserList = <Typography variant="body2">No users found!</Typography>;
 
   return (
     <div>

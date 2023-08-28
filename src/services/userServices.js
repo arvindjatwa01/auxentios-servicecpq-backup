@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD, USER_SERVICE_RESET_PASSWORD } from "./CONSTANTS";
+import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD, USER_SERVICE_RESET_PASSWORD, FETCH_ROLES, USER_SERVICE_ADD_USER } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -193,25 +193,58 @@ export const getUserDetails = (id) => {
   });
 };
 
-// TODO: Dummy service - delete this.
-export const getUserDetails1 = (id) => {
-  console.log("userServices > getUserDetails called...");
+/**
+ * Function to add the users.
+ */
+export const addUser = (data) => {
+  console.log("userServices > addUser called...");
   return new Promise((resolve, reject) => {
     try {
-      // do db call or API endpoint axios call here and return the promise.
-      resolve({
-        "id": "30",
-        "firstName": "Joel",
-        "lastName": "Joseph",
-        "gender": "Male",
-        "age": 33,
-        "isActiveEmployee": true,
-        "location": "London"
-      })
+      // do an SDK, DB call or API endpoint axios call here and return the promise.
+      axios
+        .post(USER_SERVICE_ADD_USER(), data, { headers: headersData })
+        .then((res) => {
+          console.log("addUser > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject(res.data)
+        })
+        .catch((err) => {
+          console.log("addUser > axios err=", err);
+          reject("Error in addUser axios!");
+        });
     } catch (error) {
-      console.error("in userServices > getUserDetails1, Err===", error);
+      console.error("in userServices > addUser, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
 };
 
+/**
+ * Function to fetch roles.
+ */
+export const fetchRoles = () => {
+  console.log("userServices > fetchRoles called...");
+  return new Promise((resolve, reject) => {
+    try {
+      // do an SDK, DB call or API endpoint axios call here and return the promise.
+      axios
+        .get(FETCH_ROLES(), { headers: headersData })
+        .then((res) => {
+          console.log("fetchRoles > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject(res.error)
+        })
+        .catch((err) => {
+          console.log("fetchRoles > axios err=", err);
+          reject("Error in fetchRoles axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > fetchRoles, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

@@ -45,7 +45,6 @@ export const GET_SEARCH_COVERAGE = SEARCH_COVERAGE + "search?search="
 export const GET_SEARCH_FAMILY_COVERAGE = SEARCH_COVERAGE
 export const GET_SEARCH_FAMILY_CUSTOM_COVERAGE = SEARCH_COVERAGE + "custom/"
 // Local endpoints. Uncomment below section to use dummy local data.
-export const GET_ALL_USERS = () => `/data/users`;
 export const GET_USER_DETAILS = (id) => `/data/user`;
 
 //Pricing URLS
@@ -73,6 +72,10 @@ export const USER_SERVICE_SIGNUP_URL = () => USER_SERVICE_URI + "signup";
 export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "root-login";
 export const USER_SERVICE_FORGOT_PASSWORD = () => USER_SERVICE_URI + "forgot-password";
 export const USER_SERVICE_RESET_PASSWORD = () => USER_SERVICE_URI + "new-password";
+export const USER_SERVICE_ADD_USER = () => USER_SERVICE_BASE_URL + "user-svc/v1/tenant-user";
+export const GET_ALL_USERS = () => USER_SERVICE_URI + "/data/users";
+
+export const FETCH_ROLES = () => USER_SERVICE_BASE_URL + "user-svc/v1/user-role";
 
 // Audit Service
 

@@ -5,7 +5,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { getAllUsers, getPortfolioCommonConfig } from "services";
+import { getPortfolioCommonConfig } from "services";
 import VisibilityTwoToneIcon from "@mui/icons-material/VisibilityTwoTone";
 
 import {
@@ -239,7 +239,6 @@ const DataGridContainer = (props) => (
 var HTMLLi = React.createElement("li", { className: "bar" }, "foo");
 
 export const ReportDashboard = () => {
-  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [tabValue, setTabValue] = useState("quote");
   const [templateExpanded, setTemplateExpanded] = useState("templateType");
@@ -291,19 +290,10 @@ export const ReportDashboard = () => {
           label: d.value,
         }));
         setCustomerSegmentOptions(options);
-      })
-      .catch((err) => {
-        alert(err);
-      });
-    getAllUsers()
-      .then((res) => {
-        console.log("Dashboard > getAllUsers > res=", res);
-        setUsers(res);
         setIsLoading(false);
       })
       .catch((err) => {
-        console.log("axios err=", err);
-        setUsers([]);
+        alert(err);
         setIsLoading(false);
       });
 
@@ -640,7 +630,7 @@ export const ReportDashboard = () => {
                     <Grid item xs={10} container>
                       <DataGridContainer>
                         <DataGrid
-                          loading={isLoading}
+                          // loading={isLoading}
                           sx={GRID_STYLE}
                           rows={data}
                           columns={reportColumns}
@@ -699,7 +689,7 @@ export const ReportDashboard = () => {
                     <Grid item xs={10}>
                       <DataGridContainer>
                         <DataGrid
-                          loading={isLoading}
+                          // loading={isLoading}
                           sx={GRID_STYLE}
                           rows={data}
                           columns={reportColumns}
@@ -757,7 +747,7 @@ export const ReportDashboard = () => {
                     <Grid item xs={10} container>
                       <DataGridContainer>
                         <DataGrid
-                          loading={isLoading}
+                          // loading={isLoading}
                           sx={GRID_STYLE}
                           rows={data}
                           columns={reportColumns}
@@ -834,7 +824,7 @@ export const ReportDashboard = () => {
                     <Grid item xs={10} container>
                       <DataGridContainer>
                         <DataGrid
-                          loading={isLoading}
+                          // loading={isLoading}
                           sx={GRID_STYLE}
                           rows={data}
                           columns={reportColumns}
@@ -959,7 +949,7 @@ export const ReportDashboard = () => {
                     <Grid item xs={10} container>
                       <DataGridContainer>
                         <DataGrid
-                          loading={isLoading}
+                          // loading={isLoading}
                           sx={GRID_STYLE}
                           rows={data}
                           columns={reportColumns}
@@ -1085,7 +1075,7 @@ export const ReportDashboard = () => {
                     <Grid item xs={10} container>
                       <DataGridContainer>
                         <DataGrid
-                          loading={isLoading}
+                          // loading={isLoading}
                           sx={GRID_STYLE}
                           rows={data}
                           columns={reportColumns}
