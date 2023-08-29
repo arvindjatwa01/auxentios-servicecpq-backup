@@ -538,7 +538,8 @@ const ExpendCustomItemTablePopup = (props) => {
 
             const priceUpdateData = {
                 // customItemPriceDataId: priceCalculator.id,
-                customItemPriceDataId: 0,
+                customItemPriceDataId: props.bundleAndServiceEditModeOn ? priceCalculator.id : 0,
+                // customItemPriceDataId: 0,
                 quantity: 1,
                 standardJobId: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
                     (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateId,
@@ -627,48 +628,72 @@ const ExpendCustomItemTablePopup = (props) => {
                 miscRequired: true
             }
 
-            // const updatePriceId = await updateCustomPriceData(
-            //     priceCalculator.id,
-            //     priceUpdateData
-            // );
-
-            console.log("====== ", rowData);
-
-            const saveNewItemPrice = await customPriceCreation(priceUpdateData)
             let itemBodyModalData = { ...rowData.customItemBodyModel };
             let itemPriceIdsData = [...itemBodyModalData["customItemPrices"]];
-            if (saveNewItemPrice.status === 200) {
-                itemPriceIdsData.push({
-                    "customItemPriceDataId": saveNewItemPrice.data.customItemPriceDataId
-                });
 
-                var reqObjSJId = {
-                    itemId: addPortFolioItem.id,
-                    standardJobId: addPortFolioItem.templateId,
-                    repairKitId: addPortFolioItem.repairOption,
-                    // itemPriceDataId: priceCalculator.id
-                    itemPriceDataId: saveNewItemPrice.data.customItemPriceDataId,
+            if (props.bundleAndServiceEditModeOn) {
+                if (rowData.customItemBodyModel?.customItemPrices.length > 0) {
+                    const updatePriceId = await updateCustomPriceData(
+                        priceCalculator.id,
+                        priceUpdateData
+                    );
+                    if (updatePriceId.status === 200) {
+                        var reqObjSJId = {
+                            itemId: addPortFolioItem.id,
+                            standardJobId: addPortFolioItem.templateId,
+                            repairKitId: addPortFolioItem.repairOption,
+                            itemPriceDataId: priceCalculator.id
+                            // itemPriceDataId: saveNewItemPrice.data.customItemPriceDataId,
+                        }
+                        if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+                            ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
+
+                            if (!addPortFolioItem.templateId && addPortFolioItem.repairOption) {
+                                const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+                            }
+
+                            if (addPortFolioItem.templateId && !addPortFolioItem.repairOption) {
+                                const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+                            }
+                        }
+                    }
                 }
-                if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
-                    ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
+            } else {
+                const saveNewItemPrice = await customPriceCreation(priceUpdateData)
 
-                    if (!addPortFolioItem.templateId && addPortFolioItem.repairOption) {
-                        const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+                if (saveNewItemPrice.status === 200) {
+                    itemPriceIdsData.push({
+                        "customItemPriceDataId": saveNewItemPrice.data.customItemPriceDataId
+                    });
+
+                    var reqObjSJId = {
+                        itemId: addPortFolioItem.id,
+                        standardJobId: addPortFolioItem.templateId,
+                        repairKitId: addPortFolioItem.repairOption,
+                        // itemPriceDataId: priceCalculator.id
+                        itemPriceDataId: saveNewItemPrice.data.customItemPriceDataId,
                     }
+                    if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+                        ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
 
-                    if (addPortFolioItem.templateId && !addPortFolioItem.repairOption) {
-                        const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+                        if (!addPortFolioItem.templateId && addPortFolioItem.repairOption) {
+                            const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+                        }
+
+                        if (addPortFolioItem.templateId && !addPortFolioItem.repairOption) {
+                            const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+                        }
+
+                        // if (((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
+                        //     (addPortFolioItem.repairOption !== "") || (addPortFolioItem.repairOption !== null)) {
+                        //     const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
+                        // }
+
+                        // if (((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)) &&
+                        //     (addPortFolioItem.templateId !== "") || (addPortFolioItem.templateId !== null)) {
+                        //     const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
+                        // }
                     }
-
-                    // if (((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-                    //     (addPortFolioItem.repairOption !== "") || (addPortFolioItem.repairOption !== null)) {
-                    //     const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
-                    // }
-
-                    // if (((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)) &&
-                    //     (addPortFolioItem.templateId !== "") || (addPortFolioItem.templateId !== null)) {
-                    //     const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
-                    // }
                 }
             }
 

@@ -781,6 +781,8 @@ export function CreateCustomPortfolio(props) {
   const [solutionItemComponentEdit, setSolutionItemComponentEdit] = useState(false);
   const [editComponentData, setEditComponentData] = useState(false);
   const [selectedSolutionItemBundleService, setSelectedSolutionItemBundleService] = useState([])
+  const [bundleAndServiceEditModeOn, setBundleAndServiceEditModeOn] = useState(false)
+  const [reviewTabItemsList, setReviewTabItemsList] = useState([]);
 
   const [showAddCustomPortfolioItemModelPopup, setShowAddCustomPortfolioItemModelPopup] = useState(false);
   const [showAddBundleServiceItemsModelPopup, setShowAddBundleServiceItemsModelPopup] = useState(false);
@@ -4404,6 +4406,7 @@ export function CreateCustomPortfolio(props) {
     setEditComponentData(false);
     setSolutionItemComponentEdit(false);
     setSelectedSolutionItemBundleService([])
+    setBundleAndServiceEditModeOn(false);
 
     setOpenSearchSolution(false);
     setCreateNewBundle(false);
@@ -4540,7 +4543,9 @@ export function CreateCustomPortfolio(props) {
 
         setTempBundleService3(row.associatedServiceOrBundle)
         setSelectedSolutionItemBundleService([...row["associatedServiceOrBundle"]])
-
+        setReviewTabItemsList([...selectedSearchMasterData])
+        setTempBundleItemCheckList([...selectedSearchMasterData])
+        setBundleAndServiceEditModeOn(true);
         setComponentData({
           ...componentData,
           componentCode: selectedItemData.customItemHeaderModel.componentCode,
@@ -10340,6 +10345,7 @@ export function CreateCustomPortfolio(props) {
       _tempBundleItemCheckList[row.customItemId] =
         !_tempBundleItemCheckList[row.customItemId];
     }
+
     setTempBundleItemCheckList(_tempBundleItemCheckList);
   };
 
@@ -10348,7 +10354,7 @@ export function CreateCustomPortfolio(props) {
     setLoadingItem(true);
     setItemModelShow(false);
     let checkListArray = [];
-    tempBundleItemCheckList.map((item, i) => {
+    tempBundleItemCheckList.length !== 0 && tempBundleItemCheckList.map((item, i) => {
       checkListArray.push({ customItemId: item.itemId });
       if (item.associatedServiceOrBundle && item.associatedServiceOrBundle.length > 0) {
         item.associatedServiceOrBundle.map((bundleService) => {
@@ -18745,7 +18751,8 @@ export function CreateCustomPortfolio(props) {
         serviceEstimateId: "",
         numberOfEvents: 0,
         frequency: ((addPortFolioItem.frequency === "") || (addPortFolioItem.frequency === null) ||
-          (addPortFolioItem.frequency === "EMPTY") || (addPortFolioItem.frequency === undefined)) ? "CYCLIC" : addPortFolioItem.frequency?.value,
+          (addPortFolioItem.frequency === "EMPTY") || (addPortFolioItem.frequency === undefined)) ? "CYCLIC" :
+          typeof addPortFolioItem.frequency === "object" ? addPortFolioItem.frequency?.value.toUpperCase() : addPortFolioItem.frequency,
         priceMethod: ((priceCalculator.priceMethod === "") || ((priceCalculator.priceMethod === null) ||
           (priceCalculator.priceMethod === "EMPTY") || (priceCalculator.priceMethod === undefined))) ? "LIST_PRICE" : priceCalculator.priceMethod?.value,
         priceType: ((priceCalculator.priceType === "") || ((priceCalculator.priceType === null) ||
@@ -26370,6 +26377,7 @@ onChange={handleAdministrativreChange}
                     expandableRowsComponent={(row, i) =>
                       <ExpendCustomItemTablePopup
                         bundleServiceData={row.data}
+                        bundleAndServiceEditModeOn={bundleAndServiceEditModeOn}
                         priceMethodDropdownKeyValue={priceMethodKeyValue}
                         priceTypeDropdownKeyValue={priceTypeKeyValue}
                         unitDropdownKeyValue={unitOptionKeyValue}
@@ -27739,8 +27747,10 @@ onChange={handleAdministrativreChange}
         <Modal.Footer>
           {tabs === "6" && (
             // <Button variant="primary" onClick={addTempItemIntobundleItem}>
-            <Button variant="primary" onClick={addTempItemsInToSearchItems}>
-              Add Selected
+            <Button variant="primary" isDisabled={tempBundleItemCheckList.length === 0} onClick={addTempItemsInToSearchItems}>
+              {bundleAndServiceEditModeOn && tempBundleItemCheckList.length === reviewTabItemsList.length ? "Close" : "Add Selected"}
+              {/* {tempBundleItemCheckList.length > reviewTabItemsList.length ? "Add Selected" : "Close"} */}
+              {/* Add Selected */}
             </Button>
           )}
         </Modal.Footer>

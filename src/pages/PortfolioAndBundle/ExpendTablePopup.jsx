@@ -682,31 +682,286 @@ const ExpendTablePopup = (props) => {
                 serviceRequired: false,
             }
 
-            const saveNewItemPrice = await createItemPriceData(priceUpdateData1)
             let itemBodyModalData = { ...rowData.itemBodyModel }
             let itemPriceIdsData = [...itemBodyModalData["itemPrices"]]
-            if (saveNewItemPrice.status === 200) {
-                itemPriceIdsData.push({
-                    "itemPriceDataId": saveNewItemPrice.data.itemPriceDataId
-                })
+            var portfolioIdsData = [...rowData["itemHeaderModel"]["portfolioItemIds"]]
 
-                let reqRkOrSjIdObj = {
-                    standardJobId: addPortFolioItem.templateId,
-                    repairKitId: addPortFolioItem.repairOption,
-                    itemId: addPortFolioItem.id,
-                    itemPriceDataId: priceCalculator.id
-                }
+            if (props.bundleServiceEditModeOn) {
+                if (rowData.itemBodyModel.itemPrices.length > 0) {
 
-                if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
-                    ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
-                    if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
-                        ((addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null))) {
-                        const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+                    const priceUpdateData = {
+                        itemPriceDataId: priceCalculator.id,
+                        quantity: 1,
+                        standardJobId: addPortFolioItem.templateId,
+                        repairKitId: addPortFolioItem.repairOption,
+                        templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+                        repairOption: "",
+                        additional: "",
+                        partListId: "",
+                        serviceEstimateId: "",
+                        numberOfEvents: 0,
+                        priceMethod: (priceCalculator.priceMethod != "EMPTY"
+                            || priceCalculator.priceMethod != "" ||
+                            priceCalculator.priceMethod != null) ?
+                            priceCalculator.priceMethod?.value : "EMPTY",
+                        priceType: (priceCalculator.priceType != "EMPTY" ||
+                            priceCalculator.priceType != "" ||
+                            priceCalculator.priceType != null) ? priceCalculator.priceType?.value : "EMPTY",
+                        listPrice: 0,
+                        priceEscalation: "",
+                        calculatedPrice: 0,
+                        flatPrice: 0,
+                        year: priceCalculator?.year?.value,
+                        noOfYear: parseInt(priceCalculator?.noOfYear),
+                        // year: addPortFolioItem?.year?.value,
+                        // noOfYear: parseInt(addPortFolioItem?.noOfYear),
+                        sparePartsPrice: 0,
+                        sparePartsPriceBreakDownPercentage: 0,
+                        servicePrice: 0,
+                        labourPrice: 0,
+                        labourPriceBreakDownPercentage: 0,
+                        miscPrice: 0,
+                        miscPriceBreakDownPercentage: 0,
+                        totalPrice: 0,
+                        netService: 0,
+                        additionalPriceType: (priceCalculator?.additionalPriceType != "EMPTY" ||
+                            priceCalculator?.additionalPriceType != "" ||
+                            priceCalculator?.additionalPriceType != null) ?
+                            priceCalculator?.additionalPriceType : "ABSOLUTE",
+                        additionalPriceValue: priceCalculator?.additionalPriceValue,
+                        discountType: (priceCalculator?.discountType != "EMPTY" ||
+                            priceCalculator?.discountType != "" ||
+                            priceCalculator?.discountType != null) ? priceCalculator?.discountType : "EMPTY",
+                        discountValue: priceCalculator?.discountValue,
+                        recommendedValue: parseInt(priceCalculator?.recommendedValue),
+                        startUsage: parseInt(priceCalculator?.startUsage),
+                        endUsage: parseInt(priceCalculator?.endUsage),
+                        sparePartsEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "PARTS") ?
+                            escalationPriceInputValue : 0),
+                        labourEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "LABOR") ?
+                            escalationPriceInputValue : 0),
+                        miscEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "MISCELLANEOUS") ?
+                            escalationPriceInputValue : 0),
+                        serviceEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "SERVICE") ?
+                            escalationPriceInputValue : 0),
+                        withBundleService: false,
+                        portfolio: (priceCalculator.portfolioDataId != 0) ? {
+                            portfolioId: priceCalculator.portfolioDataId
+                        } : {},
+                        tenantId: loginTenantId,
+                        partsRequired: true,
+                        labourRequired: true,
+                        serviceRequired: false,
+                        miscRequired: true,
+                        inclusionExclusion: false
                     }
 
-                    if (((addPortFolioItem.repairOption == "") || (addPortFolioItem.repairOption == null)) &&
-                        ((addPortFolioItem.templateId != "") || (addPortFolioItem.templateId != null))) {
-                        const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
+                    const priceUpdateData1 = {
+                        itemPriceDataId: ((priceCalculator.id === "") || (priceCalculator.id === null) ||
+                            (priceCalculator.id === undefined) || (priceCalculator.id === 0)) ? 0 : parseInt(priceCalculator.id),
+                        quantity: 1,
+                        standardJobId: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+                            (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateId,
+                        repairKitId: ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) ||
+                            (addPortFolioItem.repairOption === undefined)) ? "" : addPortFolioItem.repairOption,
+                        templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+                            (addPortFolioItem.templateId === undefined)) ? "" : (typeof addPortFolioItem.templateDescription === "object") ?
+                            addPortFolioItem.templateDescription?.value : addPortFolioItem.templateDescription,
+                        repairOption: "",
+                        additional: "",
+                        partListId: "",
+                        serviceEstimateId: "",
+                        numberOfEvents: (priceCalculator.priceType?.value === "FIXED") ? priceCalculator.numberOfEvents : 0,
+                        frequency: ((addPortFolioItem?.frequency === "") || (addPortFolioItem?.frequency === null) ||
+                            (addPortFolioItem?.frequency === undefined) || (addPortFolioItem?.frequency === "EMPTY")) ? "CYCLIC" :
+                            (typeof addPortFolioItem?.frequency === "object") ? addPortFolioItem?.frequency?.value : addPortFolioItem?.frequency,
+                        priceMethod: ((priceCalculator.priceMethod === "EMPTY") || (priceCalculator.priceMethod === "") ||
+                            (priceCalculator.priceMethod === null)) ? "LIST_PRICE" : priceCalculator.priceMethod?.value,
+                        priceType: ((priceCalculator.priceType === "EMPTY") || (priceCalculator.priceType === "") ||
+                            (priceCalculator.priceType === null)) ? "EVENT_BASED" : priceCalculator.priceType?.value,
+                        listPrice: 0,
+                        calculatedPrice: 0,
+                        flatPrice: ((priceCalculator.flatPrice === "") || (priceCalculator.flatPrice === null) || (priceCalculator.flatPrice === undefined) ||
+                            (priceCalculator.flatPrice === 0)) ? 0 : parseInt(priceCalculator.flatPrice),
+                        year: priceCalculator.year?.value,
+                        noOfYear: parseInt(priceCalculator.noOfYear),
+                        sparePartsPrice: 0,
+                        priceEscalation: "",
+                        // priceEscalation: ((priceCalculator.escalationPriceOptionsValue === "") || (priceCalculator.escalationPriceOptionsValue === null) ||
+                        //     (priceCalculator.escalationPriceOptionsValue === undefined)) ? "" : priceCalculator.escalationPriceOptionsValue,
+                        sparePartsPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+                            (priceCalculator.priceBreakDownOptionsKeyValue == "PARTS") ?
+                            priceCalculator.priceBreakDownInputValue : 0),
+                        servicePrice: 0,
+                        labourPrice: 0,
+                        labourPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+                            (priceCalculator.priceBreakDownOptionsKeyValue == "LABOR") ?
+                            priceCalculator.priceBreakDownInputValue : 0),
+                        miscPrice: 0,
+                        miscPriceBreakDownPercentage: ((priceCalculator.priceBreakDownOptionsKeyValue != "") &&
+                            (priceCalculator.priceBreakDownOptionsKeyValue == "MISCELLANEOUS") ?
+                            priceCalculator.priceBreakDownInputValue : 0),
+                        totalPrice: 0,
+                        netService: 0,
+                        additionalPriceType: ((priceCalculator?.priceAdditionalSelect === "EMPTY") ||
+                            (priceCalculator?.priceAdditionalSelect === "") ||
+                            (priceCalculator?.priceAdditionalSelect === null)) ? "ABSOLUTE" : priceCalculator?.priceAdditionalSelect?.value,
+                        additionalPriceValue: priceCalculator?.priceAdditionalInput,
+                        discountType: ((priceCalculator?.discountTypeSelect === "EMPTY") ||
+                            (priceCalculator?.discountTypeSelect === "") ||
+                            (priceCalculator?.discountTypeSelect === null)) ? "PORTFOLIO_DISCOUNT" : priceCalculator?.discountTypeSelect?.value,
+                        discountValue: priceCalculator?.discountTypeInput,
+                        recommendedValue: parseInt(priceCalculator?.recommendedValue),
+                        startUsage: parseInt(priceCalculator.startUsage),
+                        endUsage: parseInt(priceCalculator.endUsage),
+
+                        sparePartsEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "PARTS") ?
+                            escalationPriceInputValue : 0),
+                        labourEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "LABOR") ?
+                            escalationPriceInputValue : 0),
+                        miscEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "MISCELLANEOUS") ?
+                            escalationPriceInputValue : 0),
+                        serviceEscalation: ((escalationPriceOptionsValue != "") &&
+                            (escalationPriceOptionsValue == "SERVICE") ?
+                            escalationPriceInputValue : 0),
+                        // sparePartsEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+                        //     (priceCalculator.escalationPriceOptionsValue == "PARTS") ?
+                        //     priceCalculator.escalationPriceInputValue : 0),
+
+                        // labourEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+                        //     (priceCalculator.escalationPriceOptionsValue == "LABOR") ?
+                        //     priceCalculator.escalationPriceInputValue : 0),
+
+                        // miscEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+                        //     (priceCalculator.escalationPriceOptionsValue == "MISCELLANEOUS") ?
+                        //     priceCalculator.escalationPriceInputValue : 0),
+
+                        // serviceEscalation: ((priceCalculator.escalationPriceOptionsValue != "") &&
+                        //     (priceCalculator.escalationPriceOptionsValue == "SERVICE") ?
+                        //     priceCalculator.escalationPriceInputValue : 0),
+
+                        sparePartsNOE: 0,
+                        labourNOE: 0,
+                        miscNOE: 0,
+                        recommendedUnit: ((addPortFolioItem.unit === "") || (addPortFolioItem.unit === null) || (addPortFolioItem.unit === undefined) ||
+                            (addPortFolioItem.unit === "EMPTY")) ? "MONTH" : (typeof addPortFolioItem.unit === "object") ?
+                            addPortFolioItem.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem.unit?.value : addPortFolioItem.unit,
+                        usageUnit: ((addPortFolioItem.unit === "") || (addPortFolioItem.unit === null) || (addPortFolioItem.unit === undefined) ||
+                            (addPortFolioItem.unit === "EMPTY")) ? "YEAR" : (typeof addPortFolioItem.unit === "object") ? addPortFolioItem.unit?.value : addPortFolioItem.unit,
+                        withBundleService: false,
+                        portfolio: ((priceCalculator.portfolioDataId == null) || (priceCalculator.portfolioDataId == 0) ||
+                            (priceCalculator.portfolioDataId == undefined) || (priceCalculator.portfolioDataId == "")) ? null : {
+                            portfolioId: priceCalculator.portfolioDataId
+                        },
+                        tenantId: loginTenantId,
+                        inclusionExclusion: true,
+                        partsRequired: true,
+                        labourRequired: true,
+                        miscRequired: true,
+                        serviceRequired: false,
+
+                        // sparePartsEscalation: ((escalationPriceOptionsValue != "") &&
+                        //     (escalationPriceOptionsValue == "PARTS") ?
+                        //     escalationPriceInputValue : 0),
+                        // labourEscalation: ((escalationPriceOptionsValue != "") &&
+                        //     (escalationPriceOptionsValue == "LABOR") ?
+                        //     escalationPriceInputValue : 0),
+                        // miscEscalation: ((escalationPriceOptionsValue != "") &&
+                        //     (escalationPriceOptionsValue == "MISCELLANEOUS") ?
+                        //     escalationPriceInputValue : 0),
+                        // serviceEscalation: ((escalationPriceOptionsValue != "") &&
+                        //     (escalationPriceOptionsValue == "SERVICE") ?
+                        //     escalationPriceInputValue : 0),
+                    }
+
+                    const updatePriceId = await updateItemPriceData(
+                        priceCalculator.id,
+                        priceUpdateData1
+                    );
+
+                    if (updatePriceId.status === 200) {
+
+                        // let reqRkOrSjIdObj = {
+                        //     standardJobId: addPortFolioItem.templateId,
+                        //     repairKitId: addPortFolioItem.repairOption,
+                        //     itemId: addPortFolioItem.id,
+                        //     itemPriceDataId: priceCalculator.id
+                        // }
+
+                        // if ((addPortFolioItem.templateId == "") ||
+                        //     (addPortFolioItem.templateId == null) ||
+                        //     addPortFolioItem.repairOption != "") {
+                        //     const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+
+                        // }
+
+                        let reqRkOrSjIdObj = {
+                            standardJobId: addPortFolioItem.templateId,
+                            repairKitId: addPortFolioItem.repairOption,
+                            itemId: addPortFolioItem.id,
+                            itemPriceDataId: priceCalculator.id
+                        }
+
+                        if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+                            ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
+
+                            if (!addPortFolioItem.templateId && addPortFolioItem.repairOption) {
+                                const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+                            }
+                            if (addPortFolioItem.templateId && !addPortFolioItem.repairOption) {
+                                const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
+                            }
+                            // if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
+                            //     ((addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null))) {
+                            //     const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+                            // }
+
+                            // if (((addPortFolioItem.repairOption == "") || (addPortFolioItem.repairOption == null)) &&
+                            //     ((addPortFolioItem.templateId != "") || (addPortFolioItem.templateId != null))) {
+                            //     const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
+                            // }
+                        }
+                    }
+
+                }
+            } else {
+                const saveNewItemPrice = await createItemPriceData(priceUpdateData1)
+                if (saveNewItemPrice.status === 200) {
+                    itemPriceIdsData.push({
+                        "itemPriceDataId": saveNewItemPrice.data.itemPriceDataId
+                    })
+
+                    let reqRkOrSjIdObj = {
+                        standardJobId: addPortFolioItem.templateId,
+                        repairKitId: addPortFolioItem.repairOption,
+                        itemId: addPortFolioItem.id,
+                        itemPriceDataId: priceCalculator.id
+                    }
+
+                    if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+                        ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
+                        // if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
+                        //     ((addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null))) {
+                        //     const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+                        // }
+
+                        // if (((addPortFolioItem.repairOption == "") || (addPortFolioItem.repairOption == null)) &&
+                        //     ((addPortFolioItem.templateId != "") || (addPortFolioItem.templateId != null))) {
+                        //     const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
+                        // }
+                        if (!addPortFolioItem.templateId && addPortFolioItem.repairOption) {
+                            const updateRkId = portfolioItemPriceRkId(reqRkOrSjIdObj)
+                        }
+                        if (addPortFolioItem.templateId && !addPortFolioItem.repairOption) {
+                            const updateSjId = portfolioItemPriceSjid(reqRkOrSjIdObj)
+                        }
                     }
                 }
             }
@@ -950,7 +1205,7 @@ const ExpendTablePopup = (props) => {
 
             // }
 
-            var portfolioIdsData = [...rowData["itemHeaderModel"]["portfolioItemIds"]]
+
             if (!portfolioIdsData.includes(props.currentItemId)) {
                 if (props.currentItemId !== undefined) {
                     portfolioIdsData.push(props.currentItemId)
