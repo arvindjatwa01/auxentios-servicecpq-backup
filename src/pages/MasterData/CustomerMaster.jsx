@@ -7,13 +7,16 @@ import Pagination from "@mui/material/Pagination";
 import { Stack } from "@mui/material";
 import $ from "jquery";
 
-const consumableSearchOptions = [
-  { value: "A", label: "Consumable Number" },
+const customerSearchOptions = [
+  { value: "A", label: "Customer Number" },
   { value: "B", label: "Description" },
-  { value: "C", label: "Supplier" },
+  { value: "C", label: "Email" },
+  { value: "D", label: "Type" },
+  { value: "E", label: "Group" },
+  { value: "F", label: "Segment" },
 ];
 
-const ConsumableMaster = () => {
+const CustomerMaster = () => {
   const removeSearchCritria = () => {
     setSearchSelector([]);
   };
@@ -53,36 +56,61 @@ const ConsumableMaster = () => {
       selectedKeyValue: "",
     },
   ]);
-  const [consumablepagination, setConsumablepagination] = React.useState(1);
-  const consumablePaginationChange = (event, value) => {
-    setConsumablepagination(value);
+  const [customerpagination, setCustomerpagination] = React.useState(1);
+  const customerPaginationChange = (event, value) => {
+    setCustomerpagination(value);
   };
   const searchList = [
-    { A: "110346", B: "Materials Procesivos", C: "MC", D: "Stockable" },
-    { A: "111141", B: "Miscelanos", C: "EX", D: "Stockable" },
-    { A: "101093", B: "Trapo Industrial", C: "AA", D: "Non Stockable" },
     {
-      A: "110528",
-      B: "Set of mirrors for retro view mirrors",
-      C: "OL",
-      D: "Stockable",
+      A: "110346",
+      B: "Gloria Mining Services S.A.C.",
+      C: "Large Enterprise",
+      D: "Retail",
     },
-    { A: "111141", B: "Absorbent Cloth", C: "PK", D: "Stockable" },
-    { A: "110549", B: "Miscelanos", C: "LN", D: "Stockable" },
     {
-      A: "110528",
-      B: "Set of mirrors for retro view mirrors",
-      C: "EX",
-      D: "Stockable",
+      A: "1022061",
+      B: "Investments John Mic Sac",
+      C: "Medium Entrprise",
+      D: "Corporate",
+    },
+    {
+      A: "1011453",
+      B: "Provincial Municipality of Chanchamayo",
+      C: "Small Retail",
+      D: "Energy",
+    },
+    {
+      A: "1006646",
+      B: "Satipo Provincial Municipality",
+      C: "Medium Entrprise",
+      D: "A Class",
+    },
+    {
+      A: "1018516",
+      B: "2050 Vargaya Sucari Froilan",
+      C: "Large Enterprise",
+      D: "Corporate",
+    },
+    {
+      A: "1048850",
+      B: "Civil Engineers and Generating Contractors",
+      C: "Small Retail",
+      D: "C Class",
+    },
+    {
+      A: "1012124",
+      B: "Vias Engineering and Constructions S.R.L Saw",
+      C: "Revenue > $ 1 Mil",
+      D: "Energy",
     },
   ];
 
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div className="container-fluid">
-        <h5 className="font-weight-600 mb-0">Consumable Master</h5>
+        <h5 className="font-weight-600 mb-0">Customer Master</h5>
         <p className="mb-1 mt-4 font-size-12">
-          Select the search criteria for consumable
+          Select the search criteria for customer
         </p>
         <div className="w-100 equipment-select br-bl pb-3">
           <div className="d-flex align-items-center w-100 border-radius-10">
@@ -108,7 +136,7 @@ const ConsumableMaster = () => {
                       )}
                       <div>
                         <Select
-                          options={consumableSearchOptions}
+                          options={customerSearchOptions}
                           placeholder="Search By"
                           // isOptionDisabled={(option) => checkForDisabled(option)}
                         />
@@ -118,7 +146,7 @@ const ConsumableMaster = () => {
                         <input
                           className="custom-input-sleact"
                           type="text"
-                          placeholder="Search Consumable"
+                          placeholder="Search Customer"
                           autoComplete="off"
                         />
                         {
@@ -249,56 +277,58 @@ const ConsumableMaster = () => {
             <div className="">
               <div className="bg-white p-3 border-radius-10 ">
                 <div className="d-flex align-items-center justify-content-between equipment-pagination">
-                  <h5 className="font-weight-600 mb-0">Trapo Industrial</h5>
+                  <h5 className="font-weight-600 mb-0">
+                    Provincial Municipality of Chanchamayo
+                  </h5>
                   <Stack spacing={2}>
                     <Pagination
                       boundaryCount={0}
                       siblingCount={0}
                       shape="rounded"
-                      hidePrevButton={consumablepagination === 1 && true}
-                      hideNextButton={consumablepagination === 2 && true}
+                      hidePrevButton={customerpagination === 1 && true}
+                      hideNextButton={customerpagination === 2 && true}
                       count={2}
-                      page={consumablepagination}
-                      onChange={consumablePaginationChange}
+                      page={customerpagination}
+                      onChange={customerPaginationChange}
                     />
                   </Stack>
                 </div>
                 <div className="d-block mt-3">
-                  <h6 className="text-primary font-weight-600">101093</h6>
+                  <h6 className="text-primary font-weight-600">1011453</h6>
                   <p className="text-light-60 font-size-12 mb-0">
-                    Non Stockable
+                    Small Retail - Energy
                   </p>
                 </div>
               </div>
 
-              {consumablepagination === 1 && (
+              {customerpagination === 1 && (
                 <>
                   <div className="bg-white p-3 border-radius-10 overflow-hidden">
                     <div className="row align-items-end">
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                            Consumable Number
+                            Customer ID
                           </p>
                           <p className="text-primary font-size-12 mt-1 font-weight-500">
-                            101093
+                            1011453
                           </p>
                         </div>
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                            Description
+                            Customer Name
                           </p>
                           <p className="text-primary font-size-12 mt-1 font-weight-500">
-                            TRAPO INDUSTRIAL
+                            PROVINCIAL MUNICIPALITY OF CHANCHAMAYO
                           </p>
                         </div>
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                            Stock/Non Stock
+                            Customer Type
                           </p>
                           <p className="text-primary font-size-12 mt-1 font-weight-500">
                             Non Stockable
@@ -308,38 +338,58 @@ const ConsumableMaster = () => {
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                            Unit Of Measure
+                            Customer Address
                           </p>
                           <p className="text-primary font-size-12 mt-1 font-weight-500">
-                            CM
+                            83 Princeton Court, Cupertino, CA 95014
                           </p>
                         </div>
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                            Supplier
+                            District
                           </p>
                           <p className="text-primary font-size-12 mt-1 font-weight-500">
-                            AA
+                            Autown
                           </p>
                         </div>
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Availability
+                          Region/State
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          Yes
+                          Millworth
                         </p>
                       </div>
                       <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
                         <div className="d-block">
                           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                            Total Available
+                            Country
                           </p>
                           <p className="text-primary font-size-12 mt-1 font-weight-500">
-                            10
+                            US
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                        <div className="d-block">
+                          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                            Website
+                          </p>
+                          <p className="text-primary font-size-12 mt-1 font-weight-500">
+                            multiplx@optonline.net
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-lg-4 col-md-4 col-sm-6 col-12 mt-4">
+                        <div className="d-block">
+                          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                            Email
+                          </p>
+                          <p className="text-primary font-size-12 mt-1 font-weight-500">
+                            multiplx@optonline.net
                           </p>
                         </div>
                       </div>
@@ -350,57 +400,41 @@ const ConsumableMaster = () => {
                     <div className="row">
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Material Group
+                          Contact
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          AA: 0S1619
+                          Carl Mayer
                         </p>
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Material Number
+                          Payer Type
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          AA: 0S1619
+                          Self
                         </p>
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Stock Quantity
+                          Payer Name
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          10
+                          PROVINCIAL MUNICIPALITY OF CHANCHAMAYO
                         </p>
                       </div>
                       <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
                         <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Supplier
+                          Insurance
                         </p>
                         <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          AA
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Average Price
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          $ 4589.63
-                        </p>
-                      </div>
-                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
-                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
-                          Average Cost
-                        </p>
-                        <p className="text-primary font-size-12 mt-1 font-weight-500">
-                          $ 4058.96
+                          AIG
                         </p>
                       </div>
                     </div>
                   </div>
                 </>
               )}
-              {consumablepagination === 2 && <></>}
+              {customerpagination === 2 && <></>}
             </div>
           </div>
         </div>
@@ -409,4 +443,4 @@ const ConsumableMaster = () => {
   );
 };
 
-export default ConsumableMaster;
+export default CustomerMaster;

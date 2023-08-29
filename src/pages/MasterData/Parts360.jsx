@@ -856,7 +856,10 @@ const Parts360 = () => {
                 <ul>
                   {searchList.map((Data, i) => (
                     <li className={`${i === 0 ? "active" : ""}`}>
-                      <div className="row align-items-center">
+                      <div className="row position-relative">
+                        <div className="global-serach-arrow">
+                          <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
+                        </div>
                         <div className="col-lg-3 col-md-3 col-sm-3 col-3">
                           <img
                             src="../assets/images/spare-parts-sm.png"
@@ -864,27 +867,22 @@ const Parts360 = () => {
                             className=" img-fluid"
                           />
                         </div>
-                        <div className="col-lg-4 col-md-4 col-4">
+                        <div className="col-lg-5 col-md-5 col-5">
                           <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
                             {Data.A}
                           </h6>
-                          <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          <p className="font-size-12 text-light-60 font-weight-500 m-0">
                             {Data.B}
                           </p>
                         </div>
-                        <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <div className="d-block pr-1">
-                              <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                                {Data.C}
-                              </h6>
-                              <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                                {Data.D}
-                              </p>
-                            </div>
-                            <div>
-                              <ArrowForwardIosIcon className="text-primary font-size-20" />
-                            </div>
+                        <div className="col-lg-4 col-md-4 col-sm-4 col-4">
+                          <div className="d-block pr-3">
+                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                              {Data.C}
+                            </h6>
+                            <p className="font-size-12 text-light-60 font-weight-500 m-0">
+                              {Data.D}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -903,6 +901,9 @@ const Parts360 = () => {
                     <Pagination
                       boundaryCount={0}
                       siblingCount={0}
+                      shape="rounded"
+                      hidePrevButton={equipmentmasterpagination === 1 && true}
+                      hideNextButton={equipmentmasterpagination === 4 && true}
                       count={4}
                       page={equipmentmasterpagination}
                       onChange={equipmentPaginationChange}

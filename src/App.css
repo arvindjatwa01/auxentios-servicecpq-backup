@@ -4135,12 +4135,12 @@ input[type="checkbox"]:checked:after {
 .equipment-master-ul ul li.active{
   background: #ffffff;
 }
-.equipment-pagination .css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root.Mui-disabled {
+/* .equipment-pagination .css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root.Mui-disabled {
   opacity: 0;
 }
 .equipment-pagination .css-yuzg60-MuiButtonBase-root-MuiPaginationItem-root{
   border-radius: 0;
-}
+} */
 .equipment-master-chart .equipment-card {
   border-radius: 4px;
   box-shadow: none;
@@ -4301,6 +4301,15 @@ input::-ms-clear {
 .equipment-switch .MuiSwitch-track{
   background: transparent !important;
   border: 1px solid #872ff7 !important;
+}
+.global-serach-arrow{
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 8px;
+  top: 0;
+  bottom: 0;
 }
 
 .modal-header-border {
