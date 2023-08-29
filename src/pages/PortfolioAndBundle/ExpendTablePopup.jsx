@@ -51,6 +51,9 @@ const ExpendTablePopup = (props) => {
         itemBodyModel: {},
         itemHeaderModel: {}
     });
+
+    const [expendBundleServiceEdit, setExpendBundleServiceEdit] = useState(true)
+
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
     const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
     const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
@@ -149,10 +152,10 @@ const ExpendTablePopup = (props) => {
     });
 
     const frequencyOptions = [
-        { label: "Cyclic", value: "Cyclic" },
-        { label: "once", value: "once" },
-        { label: "alternate", value: "alternate" },
-        { label: "Custom", value: "Custom" },
+        { label: "Cyclic", value: "CYCLIC" },
+        { label: "once", value: "ONCE" },
+        { label: "alternate", value: "ALTERNATE" },
+        { label: "Custom", value: "CUSTOM" },
     ];
 
     const [additionalPriceHeadTypeKeyValue, setAdditionalPriceHeadTypeKeyValue] = useState([
@@ -1033,7 +1036,7 @@ const ExpendTablePopup = (props) => {
                     draggable: true,
                     progress: undefined,
                 });
-            }else {
+            } else {
                 throw res?.data?.message
             }
         } catch (error) {
@@ -1113,7 +1116,6 @@ const ExpendTablePopup = (props) => {
         $(`.scrollbar-model`).css("display", "none");
     }
 
-
     const handleSearchRelatedKitListClick = (e, currentItem) => {
 
         console.log("currentItem : ", currentItem);
@@ -1148,13 +1150,175 @@ const ExpendTablePopup = (props) => {
 
     return (
         <>
-            <div className="bg-white p-2">
+            <div className="ligt-greey-bg p-3 my-3">
                 <div>
+                    <span className="mr-3 cursor" onClick={() => setExpendBundleServiceEdit(false)}>
+                        <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                        <span className="ml-2">Edit</span>
+                    </span>
                     {/* <span className="mr-3">
+                        <SellOutlinedIcon className=" font-size-16" />
+                        <span className="ml-2">Related repair option</span>
+                    </span>
+                    <span className="mr-3">
+                        <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                        <span className="ml-2">Related Standard Job</span>
+                    </span>
+                    <span className="mr-3">
+                        <AccessAlarmOutlinedIcon className=" font-size-16" />
+                        <span className="ml-2">Related Kit</span>
+                    </span> */}
+                </div>
+            </div>
+            {expendBundleServiceEdit ?
+                <>
+                    <div className="bg-white"><div /></div>
+                    <div className="row mt-3 input-fields">
+                        <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                                <p className="text-light-dark font-size-12 font-weight-500 mb-2"> NAME</p>
+                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                    {((addPortFolioItem.name === "") || (addPortFolioItem.name == undefined) ||
+                                        (addPortFolioItem.name == null) || (addPortFolioItem.name == "string") || (addPortFolioItem.name == 0))
+                                        ? "NA" : addPortFolioItem.name}
+                                </h6>
+                            </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                                <p className="text-light-dark font-size-12 font-weight-500 mb-2"> DESCRIPTION</p>
+                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                    {((addPortFolioItem.description === "") || (addPortFolioItem.description == undefined) ||
+                                        (addPortFolioItem.description == null) || (addPortFolioItem.description == "string") || (addPortFolioItem.description == 0))
+                                        ? "NA" : addPortFolioItem.description}
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='border border-radius-10 mt-3 py-2 px-3'>
+                        <div className='row input-fields'>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE METHOD</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.priceMethod === "") || (priceCalculator.priceMethod == undefined) ||
+                                            (priceCalculator.priceMethod == null) || (priceCalculator.priceMethod == "string") || (priceCalculator.priceMethod == 0))
+                                            ? "NA" : typeof priceCalculator.priceMethod === "object" ? priceCalculator.priceMethod?.label : priceCalculator.priceMethod}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> PRICE TYPE</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.priceType === "") || (priceCalculator.priceType == undefined) ||
+                                            (priceCalculator.priceType == null) || (priceCalculator.priceType == "string") || (priceCalculator.priceType == 0))
+                                            ? "NA" : typeof priceCalculator.priceType === "object" ? priceCalculator.priceType?.label : priceCalculator.priceType}
+                                    </h6>
+                                </div>
+                            </div>
+
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> START USAGE</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.startUsage === "") || (priceCalculator.startUsage == undefined) ||
+                                            (priceCalculator.startUsage == null) || (priceCalculator.startUsage == "string") || (priceCalculator.startUsage == 0))
+                                            ? "NA" : priceCalculator.startUsage}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> END USAGE</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.endUsage === "") || (priceCalculator.endUsage == undefined) ||
+                                            (priceCalculator.endUsage == null) || (priceCalculator.endUsage == "string") || (priceCalculator.endUsage == 0))
+                                            ? "NA" : priceCalculator.endUsage}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> FREQUENCY</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((addPortFolioItem.frequency === "") || (addPortFolioItem.frequency == undefined) ||
+                                            (addPortFolioItem.frequency == null) || (addPortFolioItem.frequency == "string") || (addPortFolioItem.frequency == 0))
+                                            ? "NA" : typeof addPortFolioItem.frequency === "object" ? addPortFolioItem.frequency?.label : addPortFolioItem.frequency}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> UNIT</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((addPortFolioItem.unit === "") || (addPortFolioItem.unit == undefined) ||
+                                            (addPortFolioItem.unit == null) || (addPortFolioItem.unit == "string") || (addPortFolioItem.unit == 0))
+                                            ? "NA" : typeof addPortFolioItem.unit === "object" ? addPortFolioItem.unit?.label : addPortFolioItem.unit}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> RECOMMENDED VALUE</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.recommendedValue === "") || (priceCalculator.recommendedValue == undefined) ||
+                                            (priceCalculator.recommendedValue == null) || (priceCalculator.recommendedValue == "string") || (priceCalculator.recommendedValue == 0))
+                                            ? "NA" : priceCalculator.recommendedValue}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">  NO. OF EVENTS</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.numberOfEvents === "") || (priceCalculator.numberOfEvents == undefined) ||
+                                            (priceCalculator.numberOfEvents == null) || (priceCalculator.numberOfEvents == "string") || (priceCalculator.numberOfEvents == 0))
+                                            ? "NA" : priceCalculator.numberOfEvents}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2"> CALCULATED PRICE</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.calculatedPrice === "") || (priceCalculator.calculatedPrice == undefined) ||
+                                            (priceCalculator.calculatedPrice == null) || (priceCalculator.calculatedPrice == "string") || (priceCalculator.calculatedPrice == 0))
+                                            ? "NA" : priceCalculator.priceType?.value !== "USAGE_BASED" ? "NA" : priceCalculator.calculatedPrice}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">  BASE PRICE</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.totalPrice === "") || (priceCalculator.totalPrice == undefined) ||
+                                            (priceCalculator.totalPrice == null) || (priceCalculator.totalPrice == "string") || (priceCalculator.totalPrice == 0))
+                                            ? "NA" : priceCalculator.totalPrice}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <p className="text-light-dark font-size-12 font-weight-500 mb-2">  COST PER HOUR</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {((priceCalculator.calculatedPrice === "") || (priceCalculator.calculatedPrice == undefined) ||
+                                            (priceCalculator.calculatedPrice == null) || (priceCalculator.calculatedPrice == "string") || (priceCalculator.calculatedPrice == 0))
+                                            ? "NA" : priceCalculator.priceType?.value !== "USAGE_BASED" ? "NA" : priceCalculator.calculatedPrice}
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </> :
+                <>
+                    <div className="bg-white">
+                        <div>
+                            {/* <span className="mr-3">
           <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
           <span className="ml-2 font-size-14">Edit</span>
         </span> */}
-                    {/* <span className="mr-3">
+                            {/* <span className="mr-3">
                         <FormatListBulletedOutlinedIcon className=" font-size-16" />
                         <span className="ml-2 font-size-14">Related Standard Job</span>
                     </span>
@@ -1163,8 +1327,8 @@ const ExpendTablePopup = (props) => {
                         <span className="ml-2 font-size-14">Related Kit</span>
                     </span> */}
 
-                    {/* No need otf tabs implement in June 2023 */}
-                    {/* <TabContext value={tabs}>
+                            {/* No need otf tabs implement in June 2023 */}
+                            {/* <TabContext value={tabs}>
                         <Box
                             sx={{
                                 borderBottom: 1,
@@ -1359,10 +1523,10 @@ const ExpendTablePopup = (props) => {
                             comment end
                         </TabPanel>
                     </TabContext> */}
-                </div>
-            </div>
-            <div className="row mt-3 input-fields">
-                {/* <div className="col-md-6 col-sm-6">
+                        </div>
+                    </div>
+                    <div className="row mt-3 input-fields">
+                        {/* <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                         <label
                             className="text-light-dark font-size-12 font-weight-500"
@@ -1379,122 +1543,122 @@ const ExpendTablePopup = (props) => {
                         />
                     </div>
                 </div> */}
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            NAME
-                        </label>
-                        <input
-                            className="form-control border-radius-10 text-primary"
-                            type="text"
-                            // defaultValue={data.itemName}
-                            value={addPortFolioItem.name}
-                            placeholder="Service/Bundle ID"
-                            disabled
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                        <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                        >
-                            DESCRIPTION
-                        </label>
-                        <input
-                            className="form-control border-radius-10 text-primary"
-                            type="text"
-                            placeholder="Description"
-                            name="description"
-                            id="description"
-                            defaultValue={addPortFolioItem.description}
-                            value={addPortFolioItem.description}
-                            // onChange={handleExpandePriceChange}
-                            onChange={(e) => setAddPortFolioItem({
-                                ...addPortFolioItem,
-                                description: e.target.value,
-                            })}
-                            autoComplete="off"
-                        />
-                        <div className="css-w8dmq8">*Mandatory</div>
-                    </div>
-                </div>
-            </div>
-            <div className='border border-radius-10 mt-3 py-2 px-3'>
-                <div className='row input-fields'>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                            >
-                                PRICE METHOD
-                            </label>
-                            <Select
-                                options={priceMethodKeyValue}
-                                className="text-primary"
-                                id="priceMethod"
-                                value={priceCalculator.priceMethod}
-                                onChange={(e) =>
-                                    setPriceCalculator({
-                                        ...priceCalculator,
-                                        priceMethod: e,
-                                    })}
-                            // value={expandedPriceCalculator.priceMethod}
-                            // name="priceMethod"
-                            // // onChange={handlePriceMethodSelect}
-                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
-                            />
-                            <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                            >
-                                PRICE TYPE
-                            </label>
-                            <Select
-                                options={props.priceTypeDropdownKeyValue}
-                                className="text-primary"
-                                id="priceType"
-                                value={priceCalculator.priceType}
-                                onChange={(e) =>
-                                    setPriceCalculator({
-                                        ...priceCalculator,
-                                        priceType: e,
-                                    })}
-                            />
-                            <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                            >
-                                START USAGE
-                            </label>
-                            <div className=" d-flex form-control-date border left-select-div" style={{ borderRadius: "5px" }}>
-
+                        <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                                <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                >
+                                    NAME
+                                </label>
                                 <input
-                                    className="form-control border-none text-primary"
-                                    type="number"
-                                    id="startUsage"
-                                    value={priceCalculator.startUsage}
-                                    onChange={(e) =>
-                                        setPriceCalculator({
-                                            ...priceCalculator,
-                                            startUsage: e.target.value,
-                                        })}
-                                // value={expandedPriceCalculator.startUsage}
-                                // onChange={handleExpandePriceChange}
+                                    className="form-control border-radius-10 text-primary"
+                                    type="text"
+                                    // defaultValue={data.itemName}
+                                    value={addPortFolioItem.name}
+                                    placeholder="Service/Bundle ID"
+                                    disabled
                                 />
-                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
-                                {/* <Select
+                                <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                                <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                >
+                                    DESCRIPTION
+                                </label>
+                                <input
+                                    className="form-control border-radius-10 text-primary"
+                                    type="text"
+                                    placeholder="Description"
+                                    name="description"
+                                    id="description"
+                                    defaultValue={addPortFolioItem.description}
+                                    value={addPortFolioItem.description}
+                                    // onChange={handleExpandePriceChange}
+                                    onChange={(e) => setAddPortFolioItem({
+                                        ...addPortFolioItem,
+                                        description: e.target.value,
+                                    })}
+                                    autoComplete="off"
+                                />
+                                <div className="css-w8dmq8">*Mandatory</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='border border-radius-10 mt-3 py-2 px-3'>
+                        <div className='row input-fields'>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-12 font-weight-500"
+                                    >
+                                        PRICE METHOD
+                                    </label>
+                                    <Select
+                                        options={priceMethodKeyValue}
+                                        className="text-primary"
+                                        id="priceMethod"
+                                        value={priceCalculator.priceMethod}
+                                        onChange={(e) =>
+                                            setPriceCalculator({
+                                                ...priceCalculator,
+                                                priceMethod: e,
+                                            })}
+                                    // value={expandedPriceCalculator.priceMethod}
+                                    // name="priceMethod"
+                                    // // onChange={handlePriceMethodSelect}
+                                    // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
+                                    />
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-12 font-weight-500"
+                                    >
+                                        PRICE TYPE
+                                    </label>
+                                    <Select
+                                        options={props.priceTypeDropdownKeyValue}
+                                        className="text-primary"
+                                        id="priceType"
+                                        value={priceCalculator.priceType}
+                                        onChange={(e) =>
+                                            setPriceCalculator({
+                                                ...priceCalculator,
+                                                priceType: e,
+                                            })}
+                                    />
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-12 font-weight-500"
+                                    >
+                                        START USAGE
+                                    </label>
+                                    <div className=" d-flex form-control-date border left-select-div" style={{ borderRadius: "5px" }}>
+
+                                        <input
+                                            className="form-control border-none text-primary"
+                                            type="number"
+                                            id="startUsage"
+                                            value={priceCalculator.startUsage}
+                                            onChange={(e) =>
+                                                setPriceCalculator({
+                                                    ...priceCalculator,
+                                                    startUsage: e.target.value,
+                                                })}
+                                        // value={expandedPriceCalculator.startUsage}
+                                        // onChange={handleExpandePriceChange}
+                                        />
+                                        <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                        {/* <Select
                                     isClearable={true}
                                     id=""
                                     options={optionsusage}
@@ -1504,63 +1668,63 @@ const ExpendTablePopup = (props) => {
                                 // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
                                 /> */}
 
+                                    </div>
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                </div>
                             </div>
-                            <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                            >
-                                END USAGE
-                            </label>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-12 font-weight-500"
+                                    >
+                                        END USAGE
+                                    </label>
 
-                            <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                            >
-                                <input
-                                    className="border-none form-control border-radius-10 text-primary"
-                                    type="text"
-                                    id="endUsage"
-                                    value={priceCalculator.endUsage}
-                                    onChange={(e) =>
-                                        setPriceCalculator({
-                                            ...priceCalculator,
-                                            endUsage: e.target.value,
-                                        })}
-                                // value={expandedPriceCalculator.endUsage}
-                                // onChange={handleExpandePriceChange}
-                                />
+                                    <div
+                                        className=" d-flex form-control-date"
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <input
+                                            className="border-none form-control border-radius-10 text-primary"
+                                            type="text"
+                                            id="endUsage"
+                                            value={priceCalculator.endUsage}
+                                            onChange={(e) =>
+                                                setPriceCalculator({
+                                                    ...priceCalculator,
+                                                    endUsage: e.target.value,
+                                                })}
+                                        // value={expandedPriceCalculator.endUsage}
+                                        // onChange={handleExpandePriceChange}
+                                        />
 
-                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                        <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                                    </div>
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                </div>
                             </div>
-                            <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                    </div>
 
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                            >
-                                FREQUENCY
-                            </label>
-                            <Select
-                                // options={frequencyOptions}
-                                options={frequencyOptionKeyValue}
-                                placeholder="Select....."
-                                className="text-primary"
-                                onChange={(e) =>
-                                    setAddPortFolioItem({
-                                        ...addPortFolioItem,
-                                        frequency: e,
-                                    })
-                                }
-                                value={addPortFolioItem.frequency}
-                            />
-                            {/* <input
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-12 font-weight-500"
+                                    >
+                                        FREQUENCY
+                                    </label>
+                                    <Select
+                                        // options={frequencyOptions}
+                                        options={frequencyOptionKeyValue}
+                                        placeholder="Select....."
+                                        className="text-primary"
+                                        onChange={(e) =>
+                                            setAddPortFolioItem({
+                                                ...addPortFolioItem,
+                                                frequency: e,
+                                            })
+                                        }
+                                        value={addPortFolioItem.frequency}
+                                    />
+                                    {/* <input
                             className="form-control border-radius-10 text-primary"
                             type="text"
                             id="frequency"
@@ -1572,181 +1736,181 @@ const ExpendTablePopup = (props) => {
                             })}
                             autoComplete="off"
                         /> */}
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                            >
-                                UNIT
-                            </label>
-                            <Select
-                                // options={[
-                                //     { value: "per Hr", label: "per Hr" },
-                                //     { value: "per Km", label: "per Km" },
-                                //     { value: "per Miles", label: "per Miles" },
-                                //     { value: "per year", label: "per year" },
-                                //     { value: "per month", label: "per month" },
-                                //     { value: "per day", label: "per day" },
-                                //     { value: "per quarter", label: "per quarter" },
-                                // ]}
-                                options={unitOptionKeyValue}
-                                placeholder="Select..."
-                                className="text-primary"
-                                onChange={(e) =>
-                                    setAddPortFolioItem({ ...addPortFolioItem, unit: e })
-                                }
-                                value={addPortFolioItem.unit}
-                            />
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                            >
-                                RECOMMENDED VALUE
-                            </label>
-                            <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                            >
-                                <input
-                                    type="number"
-                                    className="form-control border-none border-radius-10 text-primary"
-                                    id="recommendedValue"
-                                    // defaultValue={priceCalculator.recommendedValue}
-                                    value={priceCalculator.recommendedValue}
-                                    onChange={(e) =>
-                                        setPriceCalculator({
-                                            ...priceCalculator,
-                                            recommendedValue: e.target.value,
-                                        })}
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-14 font-weight-500"
+                                        for="exampleInputEmail1"
+                                    >
+                                        UNIT
+                                    </label>
+                                    <Select
+                                        // options={[
+                                        //     { value: "per Hr", label: "per Hr" },
+                                        //     { value: "per Km", label: "per Km" },
+                                        //     { value: "per Miles", label: "per Miles" },
+                                        //     { value: "per year", label: "per year" },
+                                        //     { value: "per month", label: "per month" },
+                                        //     { value: "per day", label: "per day" },
+                                        //     { value: "per quarter", label: "per quarter" },
+                                        // ]}
+                                        options={unitOptionKeyValue}
+                                        placeholder="Select..."
+                                        className="text-primary"
+                                        onChange={(e) =>
+                                            setAddPortFolioItem({ ...addPortFolioItem, unit: e })
+                                        }
+                                        value={addPortFolioItem.unit}
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-14 font-weight-500"
+                                        for="exampleInputEmail1"
+                                    >
+                                        RECOMMENDED VALUE
+                                    </label>
+                                    <div
+                                        className=" d-flex form-control-date"
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <input
+                                            type="number"
+                                            className="form-control border-none border-radius-10 text-primary"
+                                            id="recommendedValue"
+                                            // defaultValue={priceCalculator.recommendedValue}
+                                            value={priceCalculator.recommendedValue}
+                                            onChange={(e) =>
+                                                setPriceCalculator({
+                                                    ...priceCalculator,
+                                                    recommendedValue: e.target.value,
+                                                })}
+                                            // onChange={handleExpandePriceChange}
+                                            autoComplete="off"
+                                        />
+                                        <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit?.value === "YEAR" ? "Month" : addPortFolioItem.unit.label}</span>
+                                    </div>
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                </div>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-12 font-weight-500"
+                                    >
+                                        NO. OF EVENTS
+                                    </label>
+                                    <input
+                                        className="form-control border-radius-10 text-primary"
+                                        type="text"
+                                        // placeholder="Description"
+                                        id="numberOfEvents"
+                                        value={priceCalculator.numberOfEvents}
+                                        disabled={priceCalculator.calculatedPrice?.value === "FIXED" ? false : true}
+                                    // onChange={(e) =>
+                                    //     setPriceCalculator({
+                                    //         ...priceCalculator,
+                                    //         recommendedValue: e.target.value,
+                                    //     })}
+                                    // value={expandedPriceCalculator.numberOfEvents}
                                     // onChange={handleExpandePriceChange}
-                                    autoComplete="off"
-                                />
-                                <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit?.value === "YEAR" ? "Month" : addPortFolioItem.unit.label}</span>
+                                    />
+                                    <div className="css-w8dmq8">*Mandatory</div>
+                                </div>
                             </div>
-                            <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-12 font-weight-500"
-                            >
-                                NO. OF EVENTS
-                            </label>
-                            <input
-                                className="form-control border-radius-10 text-primary"
-                                type="text"
-                                // placeholder="Description"
-                                id="numberOfEvents"
-                                value={priceCalculator.numberOfEvents}
-                                disabled={priceCalculator.calculatedPrice?.value === "FIXED" ? false : true}
-                            // onChange={(e) =>
-                            //     setPriceCalculator({
-                            //         ...priceCalculator,
-                            //         recommendedValue: e.target.value,
-                            //     })}
-                            // value={expandedPriceCalculator.numberOfEvents}
-                            // onChange={handleExpandePriceChange}
-                            />
-                            <div className="css-w8dmq8">*Mandatory</div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                            >
-                                CALCULATED PRICE
-                            </label>
-                            <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                            >
-                                <input
-                                    type="text"
-                                    className="form-control border-radius-10 text-primary"
-                                    id="calculatedPrice"
-                                    placeholder="0"
-                                    disabled
-                                    value={((priceCalculator.calculatedPrice?.value !== "USAGE_BASED")) ? priceCalculator.calculatedPrice : null}
-                                // value={expandedPriceCalculator.calculatedPrice}
-                                // onChange={handleExpandePriceChange}
-                                />
-                                {/* <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span> */}
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-14 font-weight-500"
+                                        for="exampleInputEmail1"
+                                    >
+                                        CALCULATED PRICE
+                                    </label>
+                                    <div
+                                        className=" d-flex form-control-date"
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <input
+                                            type="text"
+                                            className="form-control border-radius-10 text-primary"
+                                            id="calculatedPrice"
+                                            placeholder="0"
+                                            disabled
+                                            value={((priceCalculator.calculatedPrice?.value !== "USAGE_BASED")) ? priceCalculator.calculatedPrice : null}
+                                        // value={expandedPriceCalculator.calculatedPrice}
+                                        // onChange={handleExpandePriceChange}
+                                        />
+                                        {/* <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span> */}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                            >
-                                BASE PRICE
-                            </label>
-                            <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                            >
-                                <input
-                                    type="number"
-                                    className="form-control border-none border-radius-10 text-primary"
-                                    id="totalPrice"
-                                    // defaultValue={priceCalculator.recommendedValue}
-                                    value={priceCalculator.totalPrice}
-                                    onChange={(e) =>
-                                        setPriceCalculator({
-                                            ...priceCalculator,
-                                            totalPrice: e.target.value,
-                                        })}
-                                    // onChange={handleExpandePriceChange}
-                                    autoComplete="off"
-                                    disabled={true}
-                                />
-                                {/* <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span> */}
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-14 font-weight-500"
+                                        for="exampleInputEmail1"
+                                    >
+                                        BASE PRICE
+                                    </label>
+                                    <div
+                                        className=" d-flex form-control-date"
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <input
+                                            type="number"
+                                            className="form-control border-none border-radius-10 text-primary"
+                                            id="totalPrice"
+                                            // defaultValue={priceCalculator.recommendedValue}
+                                            value={priceCalculator.totalPrice}
+                                            onChange={(e) =>
+                                                setPriceCalculator({
+                                                    ...priceCalculator,
+                                                    totalPrice: e.target.value,
+                                                })}
+                                            // onChange={handleExpandePriceChange}
+                                            autoComplete="off"
+                                            disabled={true}
+                                        />
+                                        {/* <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span> */}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                            <label
-                                className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
-                            >
-                                COST PER HOUR
-                            </label>
-                            <div
-                                className=" d-flex form-control-date"
-                                style={{ overflow: "hidden" }}
-                            >
-                                <input
-                                    type="number"
-                                    className="form-control border-none border-radius-10 text-primary"
-                                    id="calculatedPrice"
-                                    // defaultValue={priceCalculator.recommendedValue}
-                                    value={((priceCalculator.calculatedPrice?.value !== "USAGE_BASED")) ? null : priceCalculator.calculatedPrice}
-                                    onChange={(e) =>
-                                        setPriceCalculator({
-                                            ...priceCalculator,
-                                            calculatedPrice: e.target.value,
-                                        })}
-                                    // onChange={handleExpandePriceChange}
-                                    autoComplete="off"
-                                    disabled={true}
-                                />
-                                {/* <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span> */}
+                            <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                    <label
+                                        className="text-light-dark font-size-14 font-weight-500"
+                                        for="exampleInputEmail1"
+                                    >
+                                        COST PER HOUR
+                                    </label>
+                                    <div
+                                        className=" d-flex form-control-date"
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <input
+                                            type="number"
+                                            className="form-control border-none border-radius-10 text-primary"
+                                            id="calculatedPrice"
+                                            // defaultValue={priceCalculator.recommendedValue}
+                                            value={((priceCalculator.calculatedPrice?.value !== "USAGE_BASED")) ? null : priceCalculator.calculatedPrice}
+                                            onChange={(e) =>
+                                                setPriceCalculator({
+                                                    ...priceCalculator,
+                                                    calculatedPrice: e.target.value,
+                                                })}
+                                            // onChange={handleExpandePriceChange}
+                                            autoComplete="off"
+                                            disabled={true}
+                                        />
+                                        {/* <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span> */}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    {/* <div className="col-md-6 col-sm-6">
+                            {/* <div className="col-md-6 col-sm-6">
                         <div className="form-group date-box">
                             <label
                                 className="text-light-dark font-size-12 font-weight-500"
@@ -1890,8 +2054,8 @@ const ExpendTablePopup = (props) => {
                             </div>
                         </div>
                     </div>*/}
-                </div>
-                {/* <div className="col-md-6 col-sm-6">
+                        </div>
+                        {/* <div className="col-md-6 col-sm-6">
                     <div className="form-group date-box">
                         <label
                             className="text-light-dark font-size-12 font-weight-500"
@@ -1921,7 +2085,7 @@ const ExpendTablePopup = (props) => {
                     
                 </div> */}
 
-                {/* <p className="font-size-14 text-black font-weight-500 my-3">USAGE</p>
+                        {/* <p className="font-size-14 text-black font-weight-500 my-3">USAGE</p>
                 <div className='row input-fields'>
                     <div className="col-md-6 col-sm-6">
                         <div className="form-group">
@@ -2086,10 +2250,11 @@ const ExpendTablePopup = (props) => {
                         </div>
                     </div>
                 </div> */}
-            </div>
-            <div className="text-right my-3">
-                <button type="button" className="btn btn-primary" onClick={(e) => handleExpandedPriceSave(e, expendedBundleServiceData)}>Save</button>
-            </div>
+                    </div>
+                    <div className="text-right my-3">
+                        <button type="button" className="btn btn-primary" onClick={(e) => handleExpandedPriceSave(e, expendedBundleServiceData)}>Save</button>
+                    </div>
+                </>}
             <div className='p-3 d-flex align-items-center justify-content-between table-header-div'>
                 <div className=''></div>
                 <div className='text-white'>Item Name</div>
