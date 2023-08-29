@@ -17693,6 +17693,7 @@ export function CreateCustomPortfolio(props) {
             className="form-control border-radius-10"
             id="calculatedPrice"
             placeholder="$100"
+            disbaled
           // value={expandedPriceCalculator.calculatedPrice}
           // onChange={handleExpandePriceChange}
           />
@@ -19922,6 +19923,12 @@ export function CreateCustomPortfolio(props) {
     }
   }
 
+  const goRecentSolutions = () => {
+     history.push({
+      pathname: "/solutionBuilder/analytics",
+    });
+  }
+
 
   return (
     <PortfolioContext.Provider
@@ -20080,10 +20087,10 @@ export function CreateCustomPortfolio(props) {
             </div>
           </div>
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0">
-              <div className="" style={{ display: "contents" }}>
+            <h5 className="d-flex justify-content-between align-items-center mb-0">
+              <div className="d-flex align-items-center" style={{ display: "contents" }}>
                 <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                  {portfolioId ? "Portfolio Details" : "Header"}
+                  {portfolioId ? "Solution Details" : "Header"}
                 </span>
                 <a className="btn-sm cursor" style={{ cursor: "pointer" }}>
                   <i className="fa fa-pencil" aria-hidden="true" onClick={makeHeaderEditable}></i>
@@ -20095,6 +20102,7 @@ export function CreateCustomPortfolio(props) {
                   <img style={{ width: "14px" }} src={folderaddIcon}></img>
                 </a>
               </div>
+              <button onClick={goRecentSolutions} className="btn bg-primary text-white cursor">Back</button>
               {/* <div className="input-group icons border-radius-10 border">
                                 <div className="input-group-prepend">
                                     <span
@@ -21282,6 +21290,7 @@ export function CreateCustomPortfolio(props) {
                                 id="exampleInputEmail1"
                                 placeholder="Auto generated"
                                 value={priceCalculatedPrice}
+                                disabled
                               />
                             </div>
                           </div>
@@ -23714,6 +23723,7 @@ onChange={handleAdministrativreChange}
                         })
                       }
                       placeholder="$100"
+                      disabled
                     />
                   </div>
                 </div>
@@ -26455,7 +26465,7 @@ onChange={handleAdministrativreChange}
                       </div>
                     </div>
                   </div>
-                  <hr />
+                  {/* <hr />
                   <div className="row mt-2 input-fields">
                     <div className="col-md-6 col-sm-6 input-fields">
                       <div className="form-group">
@@ -26552,6 +26562,7 @@ onChange={handleAdministrativreChange}
                           name="calculatedPrice"
                           onChange={handleComponentChange}
                           placeholder="$100"
+                          disabled
                         />
                       </div>
                     </div>
@@ -26604,7 +26615,7 @@ onChange={handleAdministrativreChange}
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="row mt-5" style={{ justifyContent: "right" }}>
                     <button
                       type="button"

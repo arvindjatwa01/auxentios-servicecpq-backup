@@ -3917,6 +3917,7 @@ export function CustomizedPortfolio(props) {
                         className="form-control border-radius-10"
                         id="calculatedPrice"
                         placeholder="$100"
+                        disabled
                     // value={expandedPriceCalculator.calculatedPrice}
                     // onChange={handleExpandePriceChange}
                     />
@@ -5268,6 +5269,7 @@ export function CustomizedPortfolio(props) {
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
                                                     placeholder="$100"
+                                                    disabled
                                                 />
                                             </div>
                                         </div>
@@ -6593,6 +6595,7 @@ export function CustomizedPortfolio(props) {
                                                     name="calculatedPrice"
                                                     onChange={handleComponentChange}
                                                     placeholder="$100"
+                                                    disabled
                                                 />
                                             </div>
                                         </div>
