@@ -120,7 +120,7 @@ const SparepartQuoteItemModal = (props) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header>
+      <Modal.Header className="modal-header-border">
         <Modal.Title>{props.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="p-0 bg-white">

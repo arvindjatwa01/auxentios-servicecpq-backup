@@ -517,7 +517,7 @@ const  RepairQuoteConfiguration=()=>{
     <Modal show={open} onHide={handleClose} size="md"
   aria-labelledby="contained-modal-title-vcenter"
   centered>
-        <Modal.Header closeButton>
+        <Modal.Header className="modal-header-border">
           <Modal.Title>Import Files</Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-0">

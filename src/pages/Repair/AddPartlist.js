@@ -847,7 +847,7 @@ const history=useHistory()
           <Modal show={open3} onHide={() => setOpen3(false)} size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered>
-            <Modal.Header>
+            <Modal.Header className="modal-header-border">
               <Modal.Title>Import Files</Modal.Title>
             </Modal.Header>
             <Modal.Body className="p-0">

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import type { SignUpPayload } from "../../features/auth/signUpSlice";
 import { signUpActions } from "../../features/auth/signUpSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Validator from "../../utils/validator";
@@ -20,7 +19,7 @@ export const SignUp = (props) => {
 
 
   const handleSignUp = () => {
-    let dict: SignUpPayload = {
+    let dict = {
       firstName: signUpInputData.firstName,
       lastName: signUpInputData.lastName,
       email: signUpInputData.workEmail,

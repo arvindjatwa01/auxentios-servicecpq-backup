@@ -942,7 +942,7 @@ export function Configuration() {
             <Modal show={open} onHide={handleClose} size="xl"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
-                <Modal.Header closeButton>
+                <Modal.Header className="modal-header-border">
                     <Modal.Title>Solution Selector</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="p-0 bg-white">
