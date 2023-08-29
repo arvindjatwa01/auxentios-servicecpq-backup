@@ -24713,6 +24713,8 @@ export function CreatePortfolio(props) {
                         compoFlag={row.data.bundleFlag}
                         portfolioId={portfolioId}
                         expendedRowData={row}
+                        bundleServiceEditModeOn={bundleServiceEditModeOn}
+                        viewBundleServiceItemList={viewBundleServiceItemList}
                         priceMethodDropdownKeyValue={priceMethodKeyValue}
                         priceTypeDropdownKeyValue={priceTypeKeyValue}
                         unitDropdownKeyValue={unitOptionKeyValue}
@@ -26345,7 +26347,8 @@ export function CreatePortfolio(props) {
         <Modal.Footer>
           {tabs === "6" && (
             <Button variant="primary" onClick={addTempItemIntobundleItem}>
-              Add Selected
+              {bundleServiceEditModeOn ? (Object.keys(tempBundleItemCheckList).length > 0 && tempBundleItemCheckList.selectedId !== currentItemId) ? "Add Selected" : "Close" : "Add Selected"}
+              {/* Add Selected */}
             </Button>
           )}
         </Modal.Footer>
