@@ -4525,6 +4525,10 @@ export function CreatePortfolio(props) {
   }
   console.log("object");
   const handleItemEditSave = async (addPortFolioItem, editAbleItemPriceData, compoFlagData, EditableOrNot) => {
+    // console.log("addPortFolioItem ========== ", addPortFolioItem);
+    // console.log("editAbleItemPriceData ========== ", editAbleItemPriceData);
+    // console.log("compoFlagData ========== ", compoFlagData);
+    // console.log("compoFlagData ========== ", compoFlagData);
 
     try {
       if (compoFlagData == "BUNDLE_ITEM" || compoFlagData == "SERVICE") {
@@ -5057,122 +5061,126 @@ export function CreatePortfolio(props) {
               serviceRequired: false
             }
 
-            const updatePriceId = await updateItemPriceData(
-              editAbleItemPriceData.itemPriceDataId,
-              priceUpdateData
-            );
+            if (((editAbleItemPriceData?.itemPriceDataId === "") || (editAbleItemPriceData?.itemPriceDataId === null) ||
+              (editAbleItemPriceData?.itemPriceDataId === undefined) ||
+              (editAbleItemPriceData?.itemPriceDataId === 0))) { } else {
+              const updatePriceId = await updateItemPriceData(
+                editAbleItemPriceData.itemPriceDataId,
+                priceUpdateData
+              );
 
-            if (((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-              ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null))) {
-            } else {
-              const rObjSJRkId = {
-                standardJobId: addPortFolioItem.templateId,
-                repairKitId: addPortFolioItem.repairOption,
-                itemId: addPortFolioItem.id,
-                itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+              if (((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+                ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined))) {
+              } else {
+                const rObjSJRkId = {
+                  standardJobId: addPortFolioItem.templateId,
+                  repairKitId: addPortFolioItem.repairOption,
+                  itemId: addPortFolioItem.id,
+                  itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+                }
+
+                if (((addPortFolioItem.templateId == "") ||
+                  (addPortFolioItem.templateId == null)) &&
+                  ((addPortFolioItem.repairOption != "") ||
+                    (addPortFolioItem.repairOption != null))) {
+                  const updateRkId = portfolioItemPriceRkId(rObjSJRkId);
+                }
+
+                if (((addPortFolioItem.repairOption == "") ||
+                  (addPortFolioItem.repairOption == null)) &&
+                  ((addPortFolioItem.templateId != "") ||
+                    (addPortFolioItem.templateId != null))) {
+                  const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
+                }
               }
 
-              if (((addPortFolioItem.templateId == "") ||
-                (addPortFolioItem.templateId == null)) &&
-                ((addPortFolioItem.repairOption != "") ||
-                  (addPortFolioItem.repairOption != null))) {
-                const updateRkId = portfolioItemPriceRkId(rObjSJRkId);
-              }
 
-              if (((addPortFolioItem.repairOption == "") ||
-                (addPortFolioItem.repairOption == null)) &&
-                ((addPortFolioItem.templateId != "") ||
-                  (addPortFolioItem.templateId != null))) {
-                const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
-              }
+              setItemPriceData(updatePriceId.data);
+
+              setPriceCalculator({
+                ...priceCalculator,
+                calculatedPrice: updatePriceId.data.calculatedPrice,
+                priceMethod: ((updatePriceId.data.priceMethod === "") ||
+                  (updatePriceId.data.priceMethod === null) || (updatePriceId.data.priceMethod === "EMPTY")) ? "" :
+                  priceMethodKeyValue.find(o => o.value === updatePriceId.data.priceMethod),
+                priceType: ((updatePriceId.data.priceType === "") ||
+                  (updatePriceId.data.priceType === null) || (updatePriceId.data.priceType === "EMPTY")) ? "" :
+                  priceTypeKeyValue.find(o => o.value === updatePriceId.data.priceType),
+                priceAdditionalSelect: ((updatePriceId.data.additionalPriceType === "") ||
+                  (updatePriceId.data.additionalPriceType === null) || (updatePriceId.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+                  additionalPriceHeadTypeKeyValue.find(o => o.value === updatePriceId.data.additionalPriceType),
+                priceAdditionalInput: updatePriceId.data.additionalPriceValue,
+                discountTypeSelect: ((updatePriceId.data.discountType === "") ||
+                  (updatePriceId.data.discountType === null) || (updatePriceId.data.discountType === "EMPTY")) ? "" :
+                  discountTypeOptions.find(o => o.value === updatePriceId.data.discountType),
+                discountTypeInput: updatePriceId.data.discountValue,
+                year: ((updatePriceId.data.year === "") ||
+                  (updatePriceId.data.year === null) || (updatePriceId.data.year === "EMPTY")) ? "" :
+                  { label: updatePriceId.data.year, value: updatePriceId.data.year },
+
+                noOfYear: updatePriceId.data.noOfYear,
+                startUsage: updatePriceId.data.startUsage,
+                endUsage: updatePriceId.data.endUsage,
+                recommendedValue: updatePriceId.data.recommendedValue,
+                // netPrice: updatePriceId.data.netService,
+                netPrice: updatePriceId.data.calculatedPrice,
+                totalPrice: updatePriceId.data.totalPrice,
+                id: updatePriceId.data.itemPriceDataId,
+                numberOfEvents: updatePriceId.data.numberOfEvents,
+                portfolioDataId: updatePriceId.data.portfolio.portfolioId,
+
+                flatPrice: updatePriceId.data.flatPrice ? parseInt(updatePriceId.data.flatPrice) : 0,
+
+                escalationPriceOptionsValue1: (updatePriceId.data.priceEscalation != "" ? {
+                  label: updatePriceId.data.priceEscalation,
+                  value: updatePriceId.data.priceEscalation,
+                } : ""),
+                escalationPriceOptionsValue: (updatePriceId.data.priceEscalation != "" ?
+                  updatePriceId.data.priceEscalation : ""),
+                escalationPriceInputValue: (updatePriceId.data.priceEscalation == "" ? "" :
+                  updatePriceId.data.priceEscalation === "PARTS" ? updatePriceId.data.sparePartsEscalation :
+                    updatePriceId.data.priceEscalation === "LABOR" ? updatePriceId.data.labourEscalation :
+                      updatePriceId.data.priceEscalation === "MISCELLANEOUS" ? updatePriceId.data.miscEscalation :
+                        updatePriceId.data.priceEscalation === "SERVICE" ? updatePriceId.data.serviceEscalation : ""),
+
+                priceBreakDownOptionsKeyValue: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ?
+                  "PARTS" : updatePriceId.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                    updatePriceId.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+                priceBreakDownInputValue: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ?
+                  updatePriceId.data.sparePartsPriceBreakDownPercentage :
+                  updatePriceId.data.labourPriceBreakDownPercentage != 0 ?
+                    updatePriceId.data.labourPriceBreakDownPercentage :
+                    updatePriceId.data.miscPriceBreakDownPercentage != 0 ?
+                      updatePriceId.data.miscPriceBreakDownPercentage : 0,
+
+                priceBreakDownOptionsKeyValue1: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ? {
+                  label: "PARTS",
+                  value: "PARTS",
+                } : updatePriceId.data.labourPriceBreakDownPercentage != 0 ? {
+                  label: "LABOR",
+                  value: "LABOR",
+                } : updatePriceId.data.miscPriceBreakDownPercentage != 0 ? {
+                  label: "MISCELLANEOUS",
+                  value: "MISCELLANEOUS",
+                } : "",
+
+                currency: ((passItemEditRowData?.itemHeaderModel?.currency != "")) ? {
+                  label: passItemEditRowData?.itemHeaderModel?.currency,
+                  value: passItemEditRowData?.itemHeaderModel?.currency
+                } : "",
+                unit: addPortFolioItem?.unit,
+                frequency: addPortFolioItem?.frequency,
+                usageType: addPortFolioItem?.usageType,
+              })
+              setPriceBreakDownFieldsValue({
+                ...priceBreakDownFieldsValue,
+                parts: updatePriceId.data.sparePartsNOE,
+                labor: updatePriceId.data.labourNOE,
+                miscellaneous: updatePriceId.data.miscNOE,
+                service: updatePriceId.data.servicePrice,
+              })
+
             }
-
-
-            setItemPriceData(updatePriceId.data);
-
-            setPriceCalculator({
-              ...priceCalculator,
-              calculatedPrice: updatePriceId.data.calculatedPrice,
-              priceMethod: ((updatePriceId.data.priceMethod === "") ||
-                (updatePriceId.data.priceMethod === null) || (updatePriceId.data.priceMethod === "EMPTY")) ? "" :
-                priceMethodKeyValue.find(o => o.value === updatePriceId.data.priceMethod),
-              priceType: ((updatePriceId.data.priceType === "") ||
-                (updatePriceId.data.priceType === null) || (updatePriceId.data.priceType === "EMPTY")) ? "" :
-                priceTypeKeyValue.find(o => o.value === updatePriceId.data.priceType),
-              priceAdditionalSelect: ((updatePriceId.data.additionalPriceType === "") ||
-                (updatePriceId.data.additionalPriceType === null) || (updatePriceId.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
-                additionalPriceHeadTypeKeyValue.find(o => o.value === updatePriceId.data.additionalPriceType),
-              priceAdditionalInput: updatePriceId.data.additionalPriceValue,
-              discountTypeSelect: ((updatePriceId.data.discountType === "") ||
-                (updatePriceId.data.discountType === null) || (updatePriceId.data.discountType === "EMPTY")) ? "" :
-                discountTypeOptions.find(o => o.value === updatePriceId.data.discountType),
-              discountTypeInput: updatePriceId.data.discountValue,
-              year: ((updatePriceId.data.year === "") ||
-                (updatePriceId.data.year === null) || (updatePriceId.data.year === "EMPTY")) ? "" :
-                { label: updatePriceId.data.year, value: updatePriceId.data.year },
-
-              noOfYear: updatePriceId.data.noOfYear,
-              startUsage: updatePriceId.data.startUsage,
-              endUsage: updatePriceId.data.endUsage,
-              recommendedValue: updatePriceId.data.recommendedValue,
-              // netPrice: updatePriceId.data.netService,
-              netPrice: updatePriceId.data.calculatedPrice,
-              totalPrice: updatePriceId.data.totalPrice,
-              id: updatePriceId.data.itemPriceDataId,
-              numberOfEvents: updatePriceId.data.numberOfEvents,
-              portfolioDataId: updatePriceId.data.portfolio.portfolioId,
-
-              flatPrice: updatePriceId.data.flatPrice ? parseInt(updatePriceId.data.flatPrice) : 0,
-
-              escalationPriceOptionsValue1: (updatePriceId.data.priceEscalation != "" ? {
-                label: updatePriceId.data.priceEscalation,
-                value: updatePriceId.data.priceEscalation,
-              } : ""),
-              escalationPriceOptionsValue: (updatePriceId.data.priceEscalation != "" ?
-                updatePriceId.data.priceEscalation : ""),
-              escalationPriceInputValue: (updatePriceId.data.priceEscalation == "" ? "" :
-                updatePriceId.data.priceEscalation === "PARTS" ? updatePriceId.data.sparePartsEscalation :
-                  updatePriceId.data.priceEscalation === "LABOR" ? updatePriceId.data.labourEscalation :
-                    updatePriceId.data.priceEscalation === "MISCELLANEOUS" ? updatePriceId.data.miscEscalation :
-                      updatePriceId.data.priceEscalation === "SERVICE" ? updatePriceId.data.serviceEscalation : ""),
-
-              priceBreakDownOptionsKeyValue: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ?
-                "PARTS" : updatePriceId.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
-                  updatePriceId.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
-              priceBreakDownInputValue: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ?
-                updatePriceId.data.sparePartsPriceBreakDownPercentage :
-                updatePriceId.data.labourPriceBreakDownPercentage != 0 ?
-                  updatePriceId.data.labourPriceBreakDownPercentage :
-                  updatePriceId.data.miscPriceBreakDownPercentage != 0 ?
-                    updatePriceId.data.miscPriceBreakDownPercentage : 0,
-
-              priceBreakDownOptionsKeyValue1: updatePriceId.data.sparePartsPriceBreakDownPercentage != 0 ? {
-                label: "PARTS",
-                value: "PARTS",
-              } : updatePriceId.data.labourPriceBreakDownPercentage != 0 ? {
-                label: "LABOR",
-                value: "LABOR",
-              } : updatePriceId.data.miscPriceBreakDownPercentage != 0 ? {
-                label: "MISCELLANEOUS",
-                value: "MISCELLANEOUS",
-              } : "",
-
-              currency: ((passItemEditRowData?.itemHeaderModel?.currency != "")) ? {
-                label: passItemEditRowData?.itemHeaderModel?.currency,
-                value: passItemEditRowData?.itemHeaderModel?.currency
-              } : "",
-              unit: addPortFolioItem?.unit,
-              frequency: addPortFolioItem?.frequency,
-              usageType: addPortFolioItem?.usageType,
-            })
-            setPriceBreakDownFieldsValue({
-              ...priceBreakDownFieldsValue,
-              parts: updatePriceId.data.sparePartsNOE,
-              labor: updatePriceId.data.labourNOE,
-              miscellaneous: updatePriceId.data.miscNOE,
-              service: updatePriceId.data.servicePrice,
-            })
-
           }
 
           setAddportFolioItem(addPortFolioItem)
@@ -17462,182 +17470,187 @@ export function CreatePortfolio(props) {
             }
           }
 
-          const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
-          setPriceCalculator({
-            ...priceCalculator,
-            calculatedPrice: resPrice.data.calculatedPrice,
-            priceMethod: ((resPrice.data.priceMethod === "") ||
-              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
-              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
-            priceType: ((resPrice.data.priceType === "") ||
-              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
-              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
-            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
-              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
-              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
-            priceAdditionalInput: resPrice.data.additionalPriceValue,
-            discountTypeSelect: ((resPrice.data.discountType === "") ||
-              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
-              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
-            discountTypeInput: resPrice.data.discountValue,
-            year: ((resPrice.data.year === "") ||
-              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
-              { label: resPrice.data.year, value: resPrice.data.year },
+          if ((itemPriceData.itemPriceDataId === null) || (itemPriceData.itemPriceDataId === undefined) ||
+            (itemPriceData.itemPriceDataId === 0) || (itemPriceData.itemPriceDataId === "")) {
+          } else {
+            const resPrice = await getItemPriceData(itemPriceData.itemPriceDataId)
+            setPriceCalculator({
+              ...priceCalculator,
+              calculatedPrice: resPrice.data.calculatedPrice,
+              priceMethod: ((resPrice.data.priceMethod === "") ||
+                (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+                priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+              priceType: ((resPrice.data.priceType === "") ||
+                (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+                priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+              priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+                (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+                additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+              priceAdditionalInput: resPrice.data.additionalPriceValue,
+              discountTypeSelect: ((resPrice.data.discountType === "") ||
+                (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+                discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+              discountTypeInput: resPrice.data.discountValue,
+              year: ((resPrice.data.year === "") ||
+                (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+                { label: resPrice.data.year, value: resPrice.data.year },
 
-            noOfYear: resPrice.data.noOfYear,
-            startUsage: resPrice.data.startUsage,
-            endUsage: resPrice.data.endUsage,
-            recommendedValue: resPrice.data.recommendedValue,
-            // netPrice: resPrice.data.netService,
-            netPrice: resPrice.data.calculatedPrice,
-            totalPrice: resPrice.data.totalPrice,
-            id: resPrice.data.itemPriceDataId,
-            numberOfEvents: resPrice.data.numberOfEvents,
-            portfolioDataId: resPrice.data.portfolio.portfolioId,
+              noOfYear: resPrice.data.noOfYear,
+              startUsage: resPrice.data.startUsage,
+              endUsage: resPrice.data.endUsage,
+              recommendedValue: resPrice.data.recommendedValue,
+              // netPrice: resPrice.data.netService,
+              netPrice: resPrice.data.calculatedPrice,
+              totalPrice: resPrice.data.totalPrice,
+              id: resPrice.data.itemPriceDataId,
+              numberOfEvents: resPrice.data.numberOfEvents,
+              portfolioDataId: resPrice.data.portfolio.portfolioId,
 
-            flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+              flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
 
-            escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
-              label: resPrice.data.priceEscalation,
-              value: resPrice.data.priceEscalation,
-            } : ""),
-            escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
-              resPrice.data.priceEscalation : ""),
-            escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
-              resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
-                resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
-                  resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
-                    resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+              escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+                label: resPrice.data.priceEscalation,
+                value: resPrice.data.priceEscalation,
+              } : ""),
+              escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+                resPrice.data.priceEscalation : ""),
+              escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+                resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                  resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                    resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                      resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
 
-            priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-              "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
-                resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
-            priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-              resPrice.data.sparePartsPriceBreakDownPercentage :
-              resPrice.data.labourPriceBreakDownPercentage != 0 ?
-                resPrice.data.labourPriceBreakDownPercentage :
-                resPrice.data.miscPriceBreakDownPercentage != 0 ?
-                  resPrice.data.miscPriceBreakDownPercentage : 0,
+              priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+                "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                  resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+              priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+                resPrice.data.sparePartsPriceBreakDownPercentage :
+                resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                  resPrice.data.labourPriceBreakDownPercentage :
+                  resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                    resPrice.data.miscPriceBreakDownPercentage : 0,
 
-            priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
-              label: "PARTS",
-              value: "PARTS",
-            } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
-              label: "LABOR",
-              value: "LABOR",
-            } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
-              label: "MISCELLANEOUS",
-              value: "MISCELLANEOUS",
-            } : "",
+              priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+                label: "PARTS",
+                value: "PARTS",
+              } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+                label: "LABOR",
+                value: "LABOR",
+              } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+                label: "MISCELLANEOUS",
+                value: "MISCELLANEOUS",
+              } : "",
 
-            currency: ((currencyIs != "")) ? {
-              label: currencyIs,
-              value: currencyIs
-            } : "",
-            unit: addPortFolioItem?.unit,
-            frequency: addPortFolioItem?.frequency,
-            usageType: addPortFolioItem?.usageType,
-          })
-          setPriceBreakDownFieldsValue({
-            ...priceBreakDownFieldsValue,
-            parts: resPrice.data.sparePartsNOE,
-            labor: resPrice.data.labourNOE,
-            miscellaneous: resPrice.data.miscNOE,
-            service: resPrice.data.servicePrice,
-          })
+              currency: ((currencyIs != "")) ? {
+                label: currencyIs,
+                value: currencyIs
+              } : "",
+              unit: addPortFolioItem?.unit,
+              frequency: addPortFolioItem?.frequency,
+              usageType: addPortFolioItem?.usageType,
+            })
+            setPriceBreakDownFieldsValue({
+              ...priceBreakDownFieldsValue,
+              parts: resPrice.data.sparePartsNOE,
+              labor: resPrice.data.labourNOE,
+              miscellaneous: resPrice.data.miscNOE,
+              service: resPrice.data.servicePrice,
+            })
 
-          setPriceCalculator({
-            ...priceCalculator,
+            setPriceCalculator({
+              ...priceCalculator,
 
-            calculatedPrice: resPrice.data.calculatedPrice,
-            priceMethod: ((resPrice.data.priceMethod === "") ||
-              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
-              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
-            priceType: ((resPrice.data.priceType === "") ||
-              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
-              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
-            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
-              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
-              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
-            priceAdditionalInput: resPrice.data.additionalPriceValue,
-            discountTypeSelect: ((resPrice.data.discountType === "") ||
-              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
-              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
-            discountTypeInput: resPrice.data.discountValue,
-            year: ((resPrice.data.year === "") ||
-              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
-              { label: resPrice.data.year, value: resPrice.data.year },
+              calculatedPrice: resPrice.data.calculatedPrice,
+              priceMethod: ((resPrice.data.priceMethod === "") ||
+                (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+                priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+              priceType: ((resPrice.data.priceType === "") ||
+                (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+                priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+              priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+                (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+                additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+              priceAdditionalInput: resPrice.data.additionalPriceValue,
+              discountTypeSelect: ((resPrice.data.discountType === "") ||
+                (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+                discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+              discountTypeInput: resPrice.data.discountValue,
+              year: ((resPrice.data.year === "") ||
+                (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+                { label: resPrice.data.year, value: resPrice.data.year },
 
-            noOfYear: resPrice.data.noOfYear,
-            startUsage: resPrice.data.startUsage,
-            endUsage: resPrice.data.endUsage,
-            recommendedValue: resPrice.data.recommendedValue,
-            // netPrice: resPrice.data.netService,
-            netPrice: resPrice.data.calculatedPrice,
-            totalPrice: resPrice.data.totalPrice,
-            id: resPrice.data.itemPriceDataId,
-            numberOfEvents: resPrice.data.numberOfEvents,
-            portfolioDataId: resPrice.data.portfolio.portfolioId,
+              noOfYear: resPrice.data.noOfYear,
+              startUsage: resPrice.data.startUsage,
+              endUsage: resPrice.data.endUsage,
+              recommendedValue: resPrice.data.recommendedValue,
+              // netPrice: resPrice.data.netService,
+              netPrice: resPrice.data.calculatedPrice,
+              totalPrice: resPrice.data.totalPrice,
+              id: resPrice.data.itemPriceDataId,
+              numberOfEvents: resPrice.data.numberOfEvents,
+              portfolioDataId: resPrice.data.portfolio.portfolioId,
 
-            flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+              flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
 
-            escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
-              label: resPrice.data.priceEscalation,
-              value: resPrice.data.priceEscalation,
-            } : ""),
-            escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
-              resPrice.data.priceEscalation : ""),
-            escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
-              resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
-                resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
-                  resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
-                    resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+              escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+                label: resPrice.data.priceEscalation,
+                value: resPrice.data.priceEscalation,
+              } : ""),
+              escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+                resPrice.data.priceEscalation : ""),
+              escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+                resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                  resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                    resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                      resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
 
-            priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-              "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
-                resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
-            priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
-              resPrice.data.sparePartsPriceBreakDownPercentage :
-              resPrice.data.labourPriceBreakDownPercentage != 0 ?
-                resPrice.data.labourPriceBreakDownPercentage :
-                resPrice.data.miscPriceBreakDownPercentage != 0 ?
-                  resPrice.data.miscPriceBreakDownPercentage : 0,
+              priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+                "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                  resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+              priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+                resPrice.data.sparePartsPriceBreakDownPercentage :
+                resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                  resPrice.data.labourPriceBreakDownPercentage :
+                  resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                    resPrice.data.miscPriceBreakDownPercentage : 0,
 
-            priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
-              label: "PARTS",
-              value: "PARTS",
-            } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
-              label: "LABOR",
-              value: "LABOR",
-            } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
-              label: "MISCELLANEOUS",
-              value: "MISCELLANEOUS",
-            } : "",
+              priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+                label: "PARTS",
+                value: "PARTS",
+              } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+                label: "LABOR",
+                value: "LABOR",
+              } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+                label: "MISCELLANEOUS",
+                value: "MISCELLANEOUS",
+              } : "",
 
-            currency: ((currencyIs != "")) ? {
-              label: currencyIs,
-              value: currencyIs
-            } : "",
-            unit: addPortFolioItem?.unit,
-            frequency: addPortFolioItem?.frequency,
-            usageType: addPortFolioItem?.usageType,
-          })
-          setPriceBreakDownFieldsValue({
-            ...priceBreakDownFieldsValue,
-            parts: resPrice.data.sparePartsNOE,
-            labor: resPrice.data.labourNOE,
-            miscellaneous: resPrice.data.miscNOE,
-            service: resPrice.data.servicePrice,
-          })
+              currency: ((currencyIs != "")) ? {
+                label: currencyIs,
+                value: currencyIs
+              } : "",
+              unit: addPortFolioItem?.unit,
+              frequency: addPortFolioItem?.frequency,
+              usageType: addPortFolioItem?.usageType,
+            })
+            setPriceBreakDownFieldsValue({
+              ...priceBreakDownFieldsValue,
+              parts: resPrice.data.sparePartsNOE,
+              labor: resPrice.data.labourNOE,
+              miscellaneous: resPrice.data.miscNOE,
+              service: resPrice.data.servicePrice,
+            })
 
-          setItemPriceCalculator({
-            netParts: resPrice.data.sparePartsPrice,
-            // netService: resPrice.data.netService,
-            netPrice: resPrice.data.calculatedPrice,
-            priceType: resPrice.data.priceType,
-            netPrice: resPrice.data.totalPrice,
-            netAdditionals: resPrice.data.listPrice,
-          })
+            setItemPriceCalculator({
+              netParts: resPrice.data.sparePartsPrice,
+              // netService: resPrice.data.netService,
+              netPrice: resPrice.data.calculatedPrice,
+              priceType: resPrice.data.priceType,
+              netPrice: resPrice.data.totalPrice,
+              netAdditionals: resPrice.data.listPrice,
+            })
+          }
+
 
           setTabs("5")
         } else {
