@@ -1204,7 +1204,7 @@ const handleChangedrop2 = (event) => {
       <Modal show={show} onHide={()=>handleClose1()} size="lg"
   aria-labelledby="contained-modal-title-vcenter"
   centered>
-        <Modal.Header closeButton>
+        <Modal.Header className="modal-header-border">
           <Modal.Title className="font-size-14">1000-Engine|23-Replace Engine|Replace Engine</Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-0 bg-white">

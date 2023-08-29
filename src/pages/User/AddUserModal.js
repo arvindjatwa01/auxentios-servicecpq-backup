@@ -28,8 +28,8 @@ const AddUserModal = (props) => {
             aria-labelledby="contained-modal-title-vcenter"
             centered
         >
-            <Modal.Header closeButton>
-                <Modal.Title>Add User</Modal.Title>
+            <Modal.Header className="modal-header-border">
+                <Modal.Title >Add User</Modal.Title>
             </Modal.Header>
             <Modal.Body className="px-3 bg-white">
                 <div>

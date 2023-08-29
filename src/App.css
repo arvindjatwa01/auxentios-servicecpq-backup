@@ -842,19 +842,19 @@ nav.main-menu li.hover>a span {
   font-size: 14px;
   text-decoration: none;
   -webkit-transform: translateZ(0) scale(1, 1);
-  -webkit-transition: all .1s linear;
-  transition: all .1s linear;
+  /* -webkit-transition: all .1s linear;
+  transition: all .1s linear; */
 
 }
 
 .main-menu>ul>li>a.active {
   color: #872ff7;
-  background-color: #f3eafe;
+  background-color: #872ff715;
 }
 
 .main-menu>ul>li>ul>li>a.active {
   color: #872ff7;
-  background-color: #E7D5FD;
+  background-color: #872ff730;
 }
 
 .main-menu li>a.active svg {
@@ -925,14 +925,14 @@ nav li {
 .main-menu>ul>li:hover>a,
 nav.main-menu>ul>li.active>a {
   color: #872ff7;
-  background-color: #f3eafe;
+  background-color: #872ff715;
   margin: 4px 0;
 }
 
 .main-menu>ul>li>ul>li:hover>a,
 nav.main-menu>ul>li>ul>li.active>a {
   color: #872ff7;
-  background-color: #E7D5FD;
+  background-color: #872ff730;
   margin: 4px 0;
 }
 
@@ -979,7 +979,7 @@ nav.main-menu>ul>li>ul>li.active>a {
 }
 
 .main-menu:hover li ul li ul li ul li a.active {
-  background-color: #f3eafe;
+  background-color: #872ff715;
   color: #872ff7;
 }
 
@@ -4301,4 +4301,8 @@ input::-ms-clear {
 .equipment-switch .MuiSwitch-track{
   background: transparent !important;
   border: 1px solid #872ff7 !important;
+}
+
+.modal-header-border {
+  border-bottom: 1px solid #00000030 !important;
 }

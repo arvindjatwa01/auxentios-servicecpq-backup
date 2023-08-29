@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import auxentionlogo from "../../assets/icons/png/auxentionlogo.png";
 import logoIcon from '../../assets/icons/svg/Logo.svg';
 // import LoginImage from '../assets/images/1.jpg';
 import newLogoIcon from '../../assets/icons/svg/NewLogoIcon.svg';
@@ -10,7 +9,6 @@ import erroricon from "../../assets/icons/png/error.png";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import { signUpActions } from "../../features/auth/signUpSlice";
-import type { SignUpPayload, EmailVerifyPayLoad } from "../../features/auth/signUpSlice";
 import { ToastMessageHandler } from "../../components/Common/ToastMessageHandler";
 import { authActions } from "../../features/auth/authSlice";
 import { history } from "../../utils";
@@ -127,7 +125,7 @@ export const Startup = () => {
 
         // console.log("result.isLoggedIn in useEffect", result.isLoggedIn)
         // const uuid = result.isLoggedIn
-        let dictObject: EmailVerifyPayLoad = {
+        let dictObject = {
             uuid: uuid,
             newPassword: "1234"
         }
