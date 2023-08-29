@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD, USER_SERVICE_RESET_PASSWORD, FETCH_ROLES, USER_SERVICE_ADD_USER } from "./CONSTANTS";
+import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD, USER_SERVICE_RESET_PASSWORD, FETCH_ROLES, USER_SERVICE_ADD_USER, SEARCH_USERS } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -188,6 +188,28 @@ export const getUserDetails = (id) => {
         });
     } catch (error) {
       console.error("in userServices > getUserDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const searchUsers = (query) => {
+  console.log("userServices > searchUser called...");
+  return new Promise((resolve, reject) => {
+    try {
+      // do an SDK, DB call or API endpoint axios call here and return the promise.
+      axios
+        .get(SEARCH_USERS(query), { headers: headersData })
+        .then((res) => {
+          console.log("searchUser > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("searchUser > axios err=", err);
+          reject("Error in searchUser axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > searchUser, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

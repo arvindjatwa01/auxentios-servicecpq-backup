@@ -32,7 +32,7 @@ const AddExtWorkItemModal = (props) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton>
+      <Modal.Header className="modal-header-border">
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="p-0 bg-white">

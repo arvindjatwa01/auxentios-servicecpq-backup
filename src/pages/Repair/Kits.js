@@ -3122,7 +3122,7 @@ function Kits(props) {
           aria-labelledby="contained-modal-title-vcenter"
           centered
         >
-          <Modal.Header>
+          <Modal.Header className="modal-header-border">
             <Modal.Title>Search Results</Modal.Title>
           </Modal.Header>
           <Modal.Body className="p-0 bg-white">

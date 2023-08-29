@@ -34,7 +34,23 @@ import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import AddUserModal from "./AddUserModal";
-import { addUser, fetchRoles } from "services/userServices";
+import { addUser, fetchRoles, getAllUsers, searchUsers } from "services/userServices";
+import { DataGrid } from "@mui/x-data-grid";
+import { GRID_STYLE } from "pages/Repair/CONSTANTS";
+
+const DataGridContainer = (props) =>
+(<Box
+    margin={"auto"}
+    sx={{
+        backgroundColor: "#ffffff",
+        height: 400,
+        borderRadius: 5,
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+    }}
+>{props.children}</Box>)
+
 export function Account(props) {
     const [value, setValue] = React.useState('1');
     const [activeStep, setActiveStep] = useState(0)
@@ -52,7 +68,7 @@ export function Account(props) {
 
     ];
     const [open, setOpen] = React.useState(false);
-    const newUser={
+    const newUser = {
         firstName: "", lastName: "", password: "", role: "", emailId: ""
     }
     const [subscriberData, setSubscriberData] = useState(newUser);
@@ -83,6 +99,13 @@ export function Account(props) {
         setValue(newValue);
     };
 
+    const usersColumn = [
+        { field: "firstName", headerName: "First Name", flex: 1, minWidth: 100 },
+        { field: "lastName", headerName: "Last Name", flex: 1, minWidth: 100 },
+        { field: "emailId", headerName: "Email Id", flex: 1, minWidth: 100 },
+        { field: "roles", headerName: "Role", flex: 1, minWidth: 100 },
+    ]
+
     const handleStep = (step) => {
         setActiveStep(step);
     };
@@ -92,6 +115,9 @@ export function Account(props) {
     const handleRequestActivation = (e) => {
         props.parentCallback()
     }
+    const [pageSize, setPageSize] = useState(5);
+    const [userData, setUserData] = useState([]);
+    const [totalUsers, setTotalUsers] = useState(0);
     const fetchUserRoles = async () => {
         await fetchRoles().then(fetchedRoles => {
             fetchedRoles?.map(indRole => { indRole.value = indRole.roleId; indRole.label = indRole.roleName; });
@@ -100,8 +126,23 @@ export function Account(props) {
             console.log(e);
         })
     }
+    const fetchUsers = async () => {
+        await getAllUsers()
+        .then(res => {
+            setUserData(res);
+            setTotalUsers(res.length);
+        }).catch(e => console.log(e))
+    }
+
+    const searchUserList = async (value) => {
+        await searchUsers(`firstName~${value} OR lastName~${value} OR email~${value}`)
+            .then(res => {
+                setUserData(res);
+            }).catch(e => console.log(e))
+    }
     useEffect(() => {
         fetchUserRoles();
+        fetchUsers();
     }, [])
 
     const addNewUser = async () => {
@@ -125,11 +166,10 @@ export function Account(props) {
 
 
     return (
-        <>
-            {/* <CommanComponents /> */}
-            <div class="container mt-4 p-t-200">
-                <div className="row">
-                    {/* <div className="col-md-12 col-sm-12 mx-auto">
+        <div className="content-body" style={{ minHeight: "884px" }}>
+        <div class="container-fluid mt-3">
+                {/*<div className="row">
+                     <div className="col-md-12 col-sm-12 mx-auto">
                         <Box sx={{ width: '100%' }}>
                             <Stepper activeStep={activeStep} alternativeLabel>
                                 {steps.map((label, index) => (
@@ -139,11 +179,8 @@ export function Account(props) {
                                 ))}
                             </Stepper>
                         </Box>
-                    </div> */}
-                </div>
-                <Stack sx={{ width: '100%' }} spacing={2}>
-                    <Alert className="alert-messges" onClose={() => { }}>This is a success alert — check it out!</Alert>
-                </Stack>
+                    </div> 
+                </div>*/}
                 <h4 className="mt-5">Account</h4>
                 <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
                     <TabContext value={value}>
@@ -172,7 +209,7 @@ export function Account(props) {
                                             <li><a href="#users-v" data-toggle="tab">Users</a></li>
                                             <li><a href="#supportplans-v" data-toggle="tab">Support Plans</a></li>
                                             <li><a href="#cloudregions-v" data-toggle="tab">Cloud Regions</a></li>
-                                            <li><a href="#subscriptions-v" data-toggle="tab">Subscriptions</a></li>
+                                            {/* <li><a href="#subscriptions-v" data-toggle="tab">Subscriptions</a></li> */}
                                             <li><a href="#orders-v" data-toggle="tab">Orders</a></li>
                                             <li><a href="#requests-v" data-toggle="tab">Requests</a></li>
                                             <li><a href="#bills-v" data-toggle="tab">Bills</a></li>
@@ -193,19 +230,19 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">ACCOUNT ID</label>
-                                                                    <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Auto generated" />
+                                                                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Auto generated" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">ACCOUNT NAME</label>
-                                                                    <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Business Name" />
+                                                                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Business Name" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">ALIAS</label>
-                                                                    <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Alias" />
+                                                                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Alias" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-4 col-sm-4">
@@ -307,43 +344,43 @@ export function Account(props) {
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">Full name</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">ADDRESS</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">CITY</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">STATE</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">COUNTRY</label>
-                                                                        <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">PHONE NUMBER (PRIMARY)</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">PHONE NUMBER (SECONDARY)</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
 
@@ -362,7 +399,7 @@ export function Account(props) {
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">WEBSITE URL</label>
-                                                                        <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -442,31 +479,31 @@ export function Account(props) {
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">BILLING CONTACT</label>
-                                                                        <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">OPERATIONS CONTACT</label>
-                                                                        <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">SECURITY CONTACT</label>
-                                                                        <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">CONTACT EMAIL</label>
-                                                                        <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">CONTACT NUMBER</label>
-                                                                        <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -514,26 +551,43 @@ export function Account(props) {
                                                     </div>
                                                 </div>
                                                 <div class="tab-pane" id="users-v">
-                                                    <div className="card  mt-3 px-3 py-1">
-                                                            <div className="row justify-content-end">
-                                                                <a href={undefined} className="text-violet font-size-16 cursor" onClick={() => setOpenAddUser(true)}> + Invite New Members</a>
-                                                            </div>
-                                                        </div>
                                                     <div className="card mt-1 px-3 py-1">
                                                         <div>
-                                                            <h5 className="d-flex align-items-center mb-0 ">
-                                                                <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Active Users & Subscriptions</span></div>
-                                                                <div className="hr"></div>
+                                                            <h5 className="row align-items-center mb-0 ">
+                                                                <div className="col-md-6" ><span className="mr-3" style={{ whiteSpace: 'pre' }}>Active Users & Subscriptions</span></div>
+                                                                <div className="col-md-6 d-flex justify-content-end">
+                                                            <a href={undefined} className="text-violet font-size-16 cursor" onClick={() => setOpenAddUser(true)}> + Invite New Members</a>
+                                                        </div>
                                                             </h5>
-                                                            <div className="p-2 text-black font-size-14 mt-3 border-radius-10" style={{backgroundColor: '#872ff950'}}>23 users have subscribed to the plan</div>
+                                                            <div className="p-2 text-black font-size-14 mt-3 border-radius-10" style={{ backgroundColor: '#872ff950' }}>{totalUsers} users have subscribed to the plan</div>
                                                             <div>
-                                                                <div class="input-group icons border-radius-10 border overflow-hidden mt-3">
+                                                                <div class="input-group icons border-radius-10 border overflow-hidden my-3">
                                                                     <div class="input-group-prepend">
                                                                         <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
                                                                             <img src={searchIcon} /></span>
                                                                     </div>
-                                                                    <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
+                                                                    <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" onChange={(e) => searchUserList(e.target.value)} />
                                                                 </div>
+                                                            </div>
+                                                            <div>
+                                                                <DataGridContainer>
+                                                                    <DataGrid
+                                                                        // loading={isLoading}
+                                                                        getRowId={row => row.userId}
+                                                                        sx={GRID_STYLE}
+                                                                        rows={userData}
+                                                                        columns={usersColumn}
+                                                                        //   columnVisibilityModel={columnVisibilityModel}
+                                                                        //   onColumnVisibilityModelChange={(newModel) =>
+                                                                        //     setColumnVisibilityModel(newModel)
+                                                                        //   }
+                                                                        pageSize={pageSize}
+                                                                        onPageSizeChange={(newPageSize) =>
+                                                                            setPageSize(newPageSize)
+                                                                        }
+                                                                        rowsPerPageOptions={[5, 10, 20, 50]}
+                                                                    />
+                                                                </DataGridContainer>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -704,9 +758,9 @@ export function Account(props) {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="tab-pane" id="subscriptions-v">
+                                                {/* <div class="tab-pane" id="subscriptions-v">
                                                     Subscription Tab.
-                                                </div>
+                                                </div> */}
                                                 <div class="tab-pane" id="orders-v">
                                                     <div className="card mt-3 p-3">
                                                         <h5 className="d-flex align-items-center mb-0 ">
@@ -873,25 +927,25 @@ export function Account(props) {
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">SUPPORT PLAN</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Momentum" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Momentum" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">START DATE</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="10.01.2022" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10.01.2022" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">CONTRACT END DATE</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="10.01.2023" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10.01.2023" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">STATUS</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Active" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Active" />
                                                                     </div>
                                                                 </div>
 
@@ -982,7 +1036,7 @@ export function Account(props) {
                                                             <div className="col-md-12 col-sm-12">
                                                                 <div className="form-group ">
                                                                     <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">DESCRIPTION(Short description)</label>
-                                                                    <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-12 col-sm-12">
@@ -1000,19 +1054,19 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">USER NAME</label>
-                                                                    <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Defaulted by system" />
+                                                                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Defaulted by system" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">EMAIL (if not same in profile)</label>
-                                                                    <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CONTACT (if not same in profile)</label>
-                                                                    <input type="email" class="form-control"  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                    <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-12 col-sm-12">
@@ -1056,25 +1110,25 @@ export function Account(props) {
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">PRICE PLAN</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Momentum" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Momentum" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">NUMBER OF USER</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="10.01.2022" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10.01.2022" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="30" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="30" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE AMOUNT</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="$3000" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="$3000" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-12 col-sm-12">
@@ -1118,25 +1172,25 @@ export function Account(props) {
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">PRICE PLAN</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Auto Generated" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Auto Generated" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">NUMBER OF USER</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE AMOUNT</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-12 col-sm-12">
@@ -1160,13 +1214,13 @@ export function Account(props) {
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE NUMBER</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-4 col-sm-4">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE / MONTH</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="January" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="January" />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1196,19 +1250,19 @@ export function Account(props) {
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="10.01.2022" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10.01.2022" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">INVOICE AMOUNT</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="$4000" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="$4000" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-2 col-sm-2">
                                                                     <div className="form-group ">
                                                                         <label class="font-size-14 " for="exampleInputEmail1">STATUS</label>
-                                                                        <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Paid" />
+                                                                        <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Paid" />
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-md-12 col-sm-12">
@@ -1433,7 +1487,7 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="font-size-14 " for="exampleInputEmail1">RELATED ERP ORGANISATION</label>
-                                                                    <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Long Isiand" />
+                                                                    <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Long Isiand" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1441,7 +1495,7 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="font-size-14 " for="exampleInputEmail1">SALES ORGANISATION </label>
-                                                                    <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="USA" />
+                                                                    <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="USA" />
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-4 col-sm-4">
@@ -1458,7 +1512,7 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="font-size-14 " for="exampleInputEmail1">RELATED ERP ORGANISATION</label>
-                                                                    <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Long Isiand" />
+                                                                    <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Long Isiand" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1477,7 +1531,7 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="font-size-14 " for="exampleInputEmail1">DISPLAYED BUISSNESS NAME</label>
-                                                                    <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Long Isiand" />
+                                                                    <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Long Isiand" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1496,7 +1550,7 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="font-size-14 " for="exampleInputEmail1">DISPLAYED ADDRESS</label>
-                                                                    <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Long Isiand" />
+                                                                    <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Long Isiand" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1504,7 +1558,7 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="font-size-14 " for="exampleInputEmail1">DISPLAYED BUISSNESS NAME</label>
-                                                                    <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Long Isiand" />
+                                                                    <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Long Isiand" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1512,7 +1566,7 @@ export function Account(props) {
                                                             <div className="col-md-4 col-sm-4">
                                                                 <div className="form-group ">
                                                                     <label class="font-size-14 " for="exampleInputEmail1">DISPLAYED ADDRESS</label>
-                                                                    <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="Long Isiand" />
+                                                                    <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Long Isiand" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1925,19 +1979,19 @@ export function Account(props) {
                                                     <div className="col-md-4 mt-3">
                                                         <div className="form-group ">
                                                             <label class="font-size-14 " for="exampleInputEmail1">DEFAULT MARGIN PARTS</label>
-                                                            <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="10%" />
+                                                            <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10%" />
                                                         </div>
                                                         <div className="form-group ">
                                                             <label class="font-size-14 " for="exampleInputEmail1">DEFAULT MARGIN LABOR</label>
-                                                            <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="20%" />
+                                                            <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="20%" />
                                                         </div>
                                                         <div className="form-group ">
                                                             <label class="font-size-14 " for="exampleInputEmail1">DEFAULT MARGIN MISC.</label>
-                                                            <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="10%" />
+                                                            <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10%" />
                                                         </div>
                                                         <div className="form-group ">
                                                             <label class="font-size-14 " for="exampleInputEmail1">IF % ON TOTAL MISC.(DEFAULT) </label>
-                                                            <input type="email" class="form-control "  aria-describedby="emailHelp" placeholder="15%" />
+                                                            <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="15%" />
                                                         </div>
                                                     </div>
 
@@ -3332,7 +3386,7 @@ export function Account(props) {
                 <Modal show={open} onHide={handleClose} size="xl"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered>
-                    <Modal.Header closeButton>
+                    <Modal.Header className="modal-header-border">
                         <Modal.Title>Solution Selector</Modal.Title>
                     </Modal.Header>
                     <Modal.Body className="p-0 bg-white">
@@ -3584,6 +3638,6 @@ export function Account(props) {
                     </Modal.Body>
                 </Modal>
             </div>
-        </>
+            </div>
     )
 }

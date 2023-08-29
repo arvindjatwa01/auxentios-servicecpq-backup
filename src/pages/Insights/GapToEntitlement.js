@@ -60,17 +60,23 @@ export default function GapToEntitlement(props) {
     { field: "planned_usage", headerName: "Planned Usage", width: 130 },
     { field: "warranty", headerName: "Warranty", width: 130 },
     { field: "contract", headerName: "Contract", width: 130 },
-    { field: "pm1", headerName: "250 hr PM1", width: 130 },
-    { field: "pm1_parts", headerName: "250 hr PM1 Kits", width: 130 },
-    { field: "pm2", headerName: "500 hr PM2", width: 130 },
-    { field: "pm2_parts", headerName: "500 hr PM2 Kits", width: 130 },
-    { field: "pm3", headerName: "1000 hr PM3", width: 130 },
-    { field: "pm4", headerName: "2000 hr PM4", width: 130 },
-    { field: "services", headerName: "General Services", width: 130 },
-    { field: "assessments", headerName: "Technical Assessments", width: 130 },
+    { field: "pm1", headerName: "250 hr PM1", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm1_parts", headerName: "250 hr PM1 Kits", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm2", headerName: "500 hr PM2", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm2_parts", headerName: "500 hr PM2 Kits", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm3", headerName: "1000 hr PM3", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm4", headerName: "2000 hr PM4", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "services", headerName: "General Services", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "assessments", headerName: "Technical Assessments", width: 130, renderCell: (params) => formatDisplay(params) },
   ];
 
-
+  function formatDisplay(params) {
+    let bgColor = params.value === 1 ? "#6FD4FF" : (params.value > 0.5 ? '#6C70FE' : "#D06FFF");
+    return (
+      <span style={{ fontSize: 12, backgroundColor: bgColor, padding: 5, borderRadius: 5 }}>
+        {parseFloat(params.value).toFixed(2)}
+      </span>)
+  }
   const [pageSize, setPageSize] = useState(5);
 
   return (
