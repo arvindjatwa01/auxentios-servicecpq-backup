@@ -2033,8 +2033,8 @@ const AddPortfolioItem = (props) => {
           itemId: addPortFolioItem?.id,
           itemPriceDataId: itemPriceDataId
         }
-        if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null)) &&
-          ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null)))) {
+        if (!(((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) || (addPortFolioItem.templateId === undefined)) &&
+          ((addPortFolioItem.repairOption === "") || (addPortFolioItem.repairOption === null) || (addPortFolioItem.repairOption === undefined)))) {
 
           if (((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null)) &&
             ((addPortFolioItem.repairOption != "") || (addPortFolioItem.repairOption != null))) {
@@ -2063,6 +2063,8 @@ const AddPortfolioItem = (props) => {
           throw "Please Create Portfolio First, then you can Add Item";
         }
       }
+
+      console.log("---------- ", addPortFolioItem);
 
       if ((addPortFolioItem.startUsage == "") ||
         (addPortFolioItem.startUsage == undefined)) {
@@ -2213,6 +2215,7 @@ const AddPortfolioItem = (props) => {
             numberOfEvents: itemPriceData.data.numberOfEvents,
             itemPriceId: itemPriceData.data.itemPriceDataId,
           })
+          setEditAbleItemPrice(itemPriceData.data)
           updatePriceSjRkIdData(itemPriceData.data.itemPriceDataId)
         }
       } else {
@@ -2223,6 +2226,7 @@ const AddPortfolioItem = (props) => {
             numberOfEvents: itemPriceData.data.numberOfEvents,
             itemPriceId: itemPriceData.data.itemPriceDataId,
           })
+          setEditAbleItemPrice(itemPriceData.data)
           updatePriceSjRkIdData(itemPriceData.data.itemPriceDataId)
         }
       }
@@ -2639,7 +2643,7 @@ const AddPortfolioItem = (props) => {
             onClick={handleAddPortfolioSave}
           >
             {props.compoFlag === "itemEdit"
-              ? "Save Changes"
+              ? "Save & Next"
               : "Save & Continue"}
           </Link>
         </div>
@@ -4421,7 +4425,7 @@ const AddPortfolioItem = (props) => {
                 onClick={handleAddPortfolioSave}
               >
                 {editable ? "Next" : props.compoFlag === "itemEdit"
-                  ? "Save Changes"
+                  ? "Save & Next"
                   : "Save & Continue"}
                 {/* {props.bundleOrServiceEditOrNot ? "Next" :
                       props.compoFlag === "itemEdit"

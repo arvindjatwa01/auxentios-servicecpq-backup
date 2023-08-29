@@ -10596,6 +10596,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                             name="calculatedPrice"
                                                             onChange={handleComponentChange}
                                                             placeholder="$100"
+                                                            disabled
                                                         />
                                                     </div>
                                                 </div>
