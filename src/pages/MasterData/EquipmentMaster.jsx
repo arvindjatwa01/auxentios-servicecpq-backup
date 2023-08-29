@@ -146,14 +146,48 @@ const EquipmentMaster = () => {
     },
   ];
   const searchList = [
-    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
-    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
-    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
-    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
-    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
-    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
-    { A: "ZCT01096", B: "CHAIN EXCAVATOR - 336D2 L", C: "336D2 L", D: "CATERPILLAR" },
-    
+    {
+      A: "ZCT01096",
+      B: "CHAIN EXCAVATOR - 336D2 L",
+      C: "336D2 L",
+      D: "CATERPILLAR",
+    },
+    {
+      A: "ZCT01096",
+      B: "CHAIN EXCAVATOR - 336D2 L",
+      C: "336D2 L",
+      D: "CATERPILLAR",
+    },
+    {
+      A: "ZCT01096",
+      B: "CHAIN EXCAVATOR - 336D2 L",
+      C: "336D2 L",
+      D: "CATERPILLAR",
+    },
+    {
+      A: "ZCT01096",
+      B: "CHAIN EXCAVATOR - 336D2 L",
+      C: "336D2 L",
+      D: "CATERPILLAR",
+    },
+    {
+      A: "ZCT01096",
+      B: "CHAIN EXCAVATOR - 336D2 L",
+      C: "336D2 L",
+      D: "CATERPILLAR",
+    },
+    {
+      A: "ZCT01096",
+      B: "CHAIN EXCAVATOR - 336D2 L",
+      C: "336D2 L",
+      D: "CATERPILLAR",
+    },
+    {
+      A: "ZCT01096",
+      B: "CHAIN EXCAVATOR - 336D2 L",
+      C: "336D2 L",
+      D: "CATERPILLAR",
+    },
   ];
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -900,35 +934,33 @@ const EquipmentMaster = () => {
                 <ul>
                   {searchList.map((Data, i) => (
                     <li className={`${i === 0 ? "active" : ""}`}>
-                      <div className="row align-items-center">
+                      <div className="row position-relative">
+                        <div className="global-serach-arrow">
+                          <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
+                        </div>
                         <div className="col-lg-3 col-md-3 col-sm-3 col-3">
                           <img
-                            src="../assets/images/jcb-equipment.png"
+                            src="../assets/images/spare-parts-sm.png"
                             alt="jcb"
                             className=" img-fluid"
                           />
                         </div>
-                        <div className="col-lg-4 col-md-4 col-4">
+                        <div className="col-lg-5 col-md-5 col-5">
                           <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
                             {Data.A}
                           </h6>
-                          <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
+                          <p className="font-size-12 text-light-60 font-weight-500 m-0">
                             {Data.B}
                           </p>
                         </div>
-                        <div className="col-lg-5 col-md-5 col-sm-5 col-5">
-                          <div className="d-flex align-items-center justify-content-between">
-                            <div className="d-block pr-1">
-                              <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
-                                {Data.C}
-                              </h6>
-                              <p className="font-size-12 text-light-60 font-weight-500 m-0 text-truncate">
-                                {Data.D}
-                              </p>
-                            </div>
-                            <div>
-                              <ArrowForwardIosIcon className="text-primary font-size-20" />
-                            </div>
+                        <div className="col-lg-4 col-md-4 col-sm-4 col-4">
+                          <div className="d-block pr-3">
+                            <h6 className="font-size-12 font-weight-500 text-primary m-0 text-truncate">
+                              {Data.C}
+                            </h6>
+                            <p className="font-size-12 text-light-60 font-weight-500 m-0">
+                              {Data.D}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -943,12 +975,15 @@ const EquipmentMaster = () => {
               <div className="bg-white p-3 border-radius-10 ">
                 <div className="d-flex align-items-center justify-content-between equipment-pagination">
                   <h5 className="font-weight-600 mb-0">
-                    CHAIN EXCAVATOR - 336D2 L
+                    CHAIN EXCAVATOR - 336D2 L 
                   </h5>
                   <Stack spacing={2}>
                     <Pagination
                       boundaryCount={0}
                       siblingCount={0}
+                      shape="rounded"
+                      hidePrevButton={equipmentmasterpagination === 1 && true}
+                      hideNextButton={equipmentmasterpagination === 6 && true}
                       count={6}
                       page={equipmentmasterpagination}
                       onChange={equipmentPaginationChange}
@@ -1024,7 +1059,14 @@ const EquipmentMaster = () => {
                       </div>
                     </div>
                   </div>
-                  <Grid item md={12} xs={12} container className="mt-3" sx={{width: '100%'}}>
+                  <Grid
+                    item
+                    md={12}
+                    xs={12}
+                    container
+                    className="mt-3"
+                    sx={{ width: "100%" }}
+                  >
                     <div
                       className="card equipment-card"
                       // sx={{ width: "97%", borderRadius: 4, mx: 2, my: 1 }}
