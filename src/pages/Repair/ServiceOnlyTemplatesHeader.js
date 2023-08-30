@@ -404,7 +404,7 @@ function ServiceOnlyTemplates(props) {
   const handleCoverageModelSearch = async (searchfieldName, searchText) => {
     let searchQueryCoverage = "";
     setSearchCoverageModelResults([]);
-    coverageRowData.model = searchText;
+    coverageRowData.coverageModel = searchText;
     searchQueryCoverage = searchText ? "model~" + searchText : "";
 
     // console.log("search query", searchQueryMachine);
@@ -436,16 +436,16 @@ function ServiceOnlyTemplates(props) {
     }
   };
 
-  const [querySearchSelector, setQuerySearchSelector] = useState([
-    {
-      id: 0,
-      selectFamily: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    },
-  ]);
+  // const [querySearchSelector, setQuerySearchSelector] = useState([
+  //   {
+  //     id: 0,
+  //     selectFamily: "",
+  //     selectOperator: "",
+  //     inputSearch: "",
+  //     selectOptions: [],
+  //     selectedOption: "",
+  //   },
+  // ]);
   const [selectedCoverageData, setSelectedCoverageData] = useState([]);
 
   // Select model from the search result
@@ -453,7 +453,7 @@ function ServiceOnlyTemplates(props) {
     if (type === "model") {
       setCoverageRowData({
         ...coverageRowData,
-        model: currentItem.model,
+        coverageModel: currentItem.model,
       });
       setSearchCoverageModelResults([]);
     }

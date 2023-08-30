@@ -2,24 +2,27 @@ import { Modal } from "react-bootstrap";
 import { default as Select, default as SelectFilter } from "react-select";
 
 const AddUserModal = (props) => {
+    let fontColor = "#872ff7 !important"
     const customStyle = {
         control: (styles, { isDisabled }) => {
             return {
                 ...styles,
                 borderRadius: 10,
-                fontSize: 12,
+                fontSize: 14,
+                color: fontColor
             };
         },
         singleValue: (styles, { isDisabled }) => {
             return {
                 ...styles,
                 borderRadius: 10,
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: 500,
+                color: fontColor
             };
         },
     };
-    console.log(props.roles)
+    // console.log(props.subscriberData)
     return (
         <Modal
             show={props.openAddUser}
@@ -29,12 +32,12 @@ const AddUserModal = (props) => {
             centered
         >
             <Modal.Header className="modal-header-border">
-                <Modal.Title >Add User</Modal.Title>
+                <Modal.Title >{props.title}</Modal.Title>
             </Modal.Header>
             <Modal.Body className="px-3 bg-white">
                 <div>
                     <div className="p-3">
-                        <div className="row mt-4">
+                        <div className="row input-fields mt-4">
                             <div className="col-md-6 col-sm-6">
                                 <div class="form-group w-100">
                                     <label className="text-light-dark font-size-14 font-weight-500">
@@ -67,23 +70,23 @@ const AddUserModal = (props) => {
                             <div className="col-md-6 col-sm-6">
                                 <div class="form-group w-100">
                                     <label className="text-light-dark font-size-14 font-weight-500">
-                                        EMAIL 
+                                        EMAIL
                                     </label>
                                     <input
                                         type="email"
                                         onChange={(e) =>
                                             props.setSubscriberData({
                                                 ...props.subscriberData,
-                                                emailId: e.target.value,
+                                                email: e.target.value,
                                             })
                                         }
-                                        value={props.subscriberData.emailId}
+                                        value={props.subscriberData.email}
                                         className="form-control border-radius-10 text-primary font-size-14"
                                     />
-                                <div className="css-w8dmq8">*Mandatory</div>
+                                    <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
                             </div>
-                            <div className="col-md-6 col-sm-6">
+                            {props.title === "Add User" && <div className="col-md-6 col-sm-6">
                                 <div class="form-group w-100">
                                     <label className="text-light-dark font-size-14 font-weight-500">
                                         PASSWORD
@@ -99,8 +102,9 @@ const AddUserModal = (props) => {
                                         value={props.subscriberData.password}
                                         className="form-control border-radius-10 text-primary font-size-12"
                                     />
+                                    <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
-                            </div>
+                            </div>}
                             <div className="col-md-6 col-sm-6">
                                 <div class="form-group w-100">
                                     <label className="text-light-dark font-size-14 font-weight-500">
@@ -110,12 +114,12 @@ const AddUserModal = (props) => {
                                         onChange={(e) =>
                                             props.setSubscriberData({
                                                 ...props.subscriberData,
-                                                role: e,
+                                                roles: e,
                                             })
                                         }
                                         styles={customStyle}
-                                        // getOptionLabel={(option) => `${option.label}`}
-                                        value={props.subscriberData.role}
+                                        getOptionLabel={(option) => `${option.label}`}
+                                        value={props.subscriberData.roles}
                                         options={props.roles}
                                     />
                                     <div className="css-w8dmq8">*Mandatory</div>
@@ -134,18 +138,18 @@ const AddUserModal = (props) => {
                         <button
                             type="button"
                             className="btn text-white bg-primary"
-                            onClick={props.addUser}
+                            onClick={props.title === "Add User" ? props.addUser : props.updateUser}
                             disabled={
                                 !(
-                                    props.subscriberData.emailId &&
-                                    props.subscriberData.password &&
-                                    props.subscriberData.role &&
+                                    props.subscriberData.email &&
+                                    (props.title === "Add User" ? props.subscriberData.password : true) &&
+                                    props.subscriberData.roles &&
                                     props.subscriberData.firstName &&
                                     props.subscriberData.lastName
                                 )
                             }
                         >
-                            Add User
+                            {props.title}
                         </button>
                     </div>
                 </div>

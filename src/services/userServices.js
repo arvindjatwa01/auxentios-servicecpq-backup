@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD, USER_SERVICE_RESET_PASSWORD, FETCH_ROLES, USER_SERVICE_ADD_USER, SEARCH_USERS } from "./CONSTANTS";
+import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL, USER_SERVICE_FORGOT_PASSWORD, USER_SERVICE_RESET_PASSWORD, FETCH_ROLES, USER_SERVICE_ADD_USER, SEARCH_USERS, REMOVE_USER } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -188,6 +188,56 @@ export const getUserDetails = (id) => {
         });
     } catch (error) {
       console.error("in userServices > getUserDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+// To update tenant user details
+export const updateUserDetails = (id, data) => {
+  console.log("userServices > updateUserDetails called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(GET_USER_DETAILS(id), data, { headers: headersData })
+        .then((res) => {
+          console.log("updateUserDetails > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject("Error in updateUserDetails axios!");
+        })
+        .catch((err) => {
+          console.log("updateUserDetails > axios err=", err);
+          reject("Error in updateUserDetails axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > updateUserDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+// Remove User
+export const removeUser = (id) => {
+  console.log("userServices > removeUser called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(REMOVE_USER(id), { headers: headersData })
+        .then((res) => {
+          console.log("removeUser > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject(res.data);
+        })
+        .catch((err) => {
+          console.log("removeUser > axios err=", err);
+          reject("Error in removeUser axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > removeUser, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

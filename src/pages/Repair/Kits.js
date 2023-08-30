@@ -435,7 +435,7 @@ function Kits(props) {
   const handleCoverageModelSearch = async (searchfieldName, searchText) => {
     let searchQueryCoverage = "";
     setSearchCoverageModelResults([]);
-    coverageRowData.model = searchText;
+    coverageRowData.coverageModel = searchText;
     searchQueryCoverage = searchText ? "model~" + searchText : "";
 
     // console.log("search query", searchQueryMachine);
@@ -494,7 +494,7 @@ function Kits(props) {
     if (type === "model") {
       setCoverageRowData({
         ...coverageRowData,
-        model: currentItem.model,
+        coverageModel: currentItem.model,
       });
       setSearchCoverageModelResults([]);
     }

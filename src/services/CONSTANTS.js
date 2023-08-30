@@ -44,8 +44,7 @@ const DATA_SERVICE_URI = DATA_SERVICE_BASE_URL + "data-svc/api/v1/";
 export const GET_SEARCH_COVERAGE = SEARCH_COVERAGE + "search?search="
 export const GET_SEARCH_FAMILY_COVERAGE = SEARCH_COVERAGE
 export const GET_SEARCH_FAMILY_CUSTOM_COVERAGE = SEARCH_COVERAGE + "custom/"
-// Local endpoints. Uncomment below section to use dummy local data.
-export const GET_USER_DETAILS = (id) => `/data/user`;
+
 
 //Pricing URLS
 export const PRICING_COMMON_CONFIG = PRICING_URI + "common-config/";
@@ -74,6 +73,9 @@ export const USER_SERVICE_FORGOT_PASSWORD = () => USER_SERVICE_URI + "forgot-pas
 export const USER_SERVICE_RESET_PASSWORD = () => USER_SERVICE_URI + "new-password";
 export const USER_SERVICE_ADD_USER = () => USER_SERVICE_BASE_URL + "user-svc/v1/tenant-user";
 export const GET_ALL_USERS = () => USER_SERVICE_BASE_URL + "user-svc/v1/tenant-user/user-list";
+export const GET_USER_DETAILS = (id) => USER_SERVICE_BASE_URL + `user-svc/v1/tenant-user/${id}`;
+export const REMOVE_USER = (id) => USER_SERVICE_BASE_URL + `user-svc/v1/tenant-user/${id}`;
+
 export const SEARCH_USERS = (query) => USER_SERVICE_BASE_URL + "user-svc/v1/tenant-user/search?search="+query;
 
 export const FETCH_ROLES = () => USER_SERVICE_BASE_URL + "user-svc/v1/user-role";

@@ -56,16 +56,16 @@ function EditToolbar(props) {
 
   return (
     <GridToolbarContainer className="row">
-      <div className="col-md-6 col-lg-8 font-weight-500">
+      <div className="col-md-6 col-lg-8 font-weight-500 py-2">
         PRICE / ESTIMATE SUMMARY
       </div>
       <div
         className="row col-md-6 col-lg-4"
         style={{ justifyContent: "right" }}
       >
-        <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+        {/* <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
           Add Price Summary
-        </Button>
+        </Button> */}
       </div>
     </GridToolbarContainer>
   );

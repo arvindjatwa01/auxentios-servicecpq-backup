@@ -55,7 +55,7 @@ const AddConsumableItemModal = (props) => {
   </div> */}
         <div>
           <div className="p-3">
-            <div className="row mt-4">
+            <div className="row input-fields mt-4">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-12 font-weight-500">

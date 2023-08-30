@@ -5,7 +5,7 @@ export const RenderConfirmDialog = (props) => {
 
     return (
       <Dialog
-        maxWidth="xs"
+        maxWidth="sm"
         // TransitionProps={{ onEntered: handleEntered }}
         open={props.confimationOpen}
       >

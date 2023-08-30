@@ -1,31 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from 'react-bootstrap';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
+import {Box, Tab, Radio, RadioGroup, Tooltip, Checkbox, FormGroup, FormControlLabel, FormControl, TextareaAutosize} from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
-import Button from '@mui/material/Button';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Select from 'react-select';
 import TabPanel from '@mui/lab/TabPanel';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
 import smalldeleteicon from '../../assets/icons/png/small-delete.png'
-import { CommanComponents } from "../../components/index"
-import searchIcon from '../../assets/icons/svg/search.svg'
-import { Register, Configuration } from "./index";
-import { RequestActivation, AccountActivated } from "../Profile/index"
-import Checkbox from '@mui/material/Checkbox';
-import FormGroup from '@mui/material/FormGroup';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
@@ -34,50 +19,19 @@ import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import AddUserModal from "./AddUserModal";
-import { addUser, fetchRoles, getAllUsers, searchUsers } from "services/userServices";
-import { DataGrid } from "@mui/x-data-grid";
+import { addUser, fetchRoles, getAllUsers, removeUser, searchUsers } from "services/userServices";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
-
-const DataGridContainer = (props) =>
-(<Box
-    margin={"auto"}
-    sx={{
-        backgroundColor: "#ffffff",
-        height: 400,
-        borderRadius: 5,
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-    }}
->{props.children}</Box>)
+import { Users } from "./Users";
 
 export function Account(props) {
     const [value, setValue] = React.useState('1');
     const [activeStep, setActiveStep] = useState(0)
     const [dValue, setDValue] = useState(null)
-    const [roles, setRoles] = useState([]);
-    const [openAddUser, setOpenAddUser] = useState(false);
-    const steps = [
-        'Register',
-        'Setup Account',
-        'Request Activation',
-        'Account Activated',
-        'Configuration',
-        'Load Data',
-        'Start Using',
-
-    ];
     const [open, setOpen] = React.useState(false);
-    const newUser = {
-        firstName: "", lastName: "", password: "", role: "", emailId: ""
-    }
-    const [subscriberData, setSubscriberData] = useState(newUser);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-    const handleAddUserClose = () => {
-        setOpenAddUser(false);
-        setSubscriberData(newUser);
-    }
+
 
     const options = [
         { value: 'chocolate', label: 'Construction-Heavy' },
@@ -99,12 +53,6 @@ export function Account(props) {
         setValue(newValue);
     };
 
-    const usersColumn = [
-        { field: "firstName", headerName: "First Name", flex: 1, minWidth: 100 },
-        { field: "lastName", headerName: "Last Name", flex: 1, minWidth: 100 },
-        { field: "emailId", headerName: "Email Id", flex: 1, minWidth: 100 },
-        { field: "roles", headerName: "Role", flex: 1, minWidth: 100 },
-    ]
 
     const handleStep = (step) => {
         setActiveStep(step);
@@ -115,55 +63,7 @@ export function Account(props) {
     const handleRequestActivation = (e) => {
         props.parentCallback()
     }
-    const [pageSize, setPageSize] = useState(5);
-    const [userData, setUserData] = useState([]);
-    const [totalUsers, setTotalUsers] = useState(0);
-    const fetchUserRoles = async () => {
-        await fetchRoles().then(fetchedRoles => {
-            fetchedRoles?.map(indRole => { indRole.value = indRole.roleId; indRole.label = indRole.roleName; });
-            setRoles(fetchedRoles);
-        }).catch(e => {
-            console.log(e);
-        })
-    }
-    const fetchUsers = async () => {
-        await getAllUsers()
-        .then(res => {
-            setUserData(res);
-            setTotalUsers(res.length);
-        }).catch(e => console.log(e))
-    }
-
-    const searchUserList = async (value) => {
-        await searchUsers(`firstName~${value} OR lastName~${value} OR email~${value}`)
-            .then(res => {
-                setUserData(res);
-            }).catch(e => console.log(e))
-    }
-    useEffect(() => {
-        fetchUserRoles();
-        fetchUsers();
-    }, [])
-
-    const addNewUser = async () => {
-        console.log(subscriberData);
-        let data = {
-            firstName: subscriberData.firstName,
-            lastName: subscriberData.lastName,
-            // roleName: subscriberData.role?.roleName,
-            roleName: "PRODUCT_EXPERT",
-            email: subscriberData.emailId,
-            password: subscriberData.password,
-            isApproved: true,
-            type: "TENANT_BUSINESS_USER"
-        }
-        await addUser(data).then(res => {
-            if (res) {
-                alert("Added business user successfully")
-            }
-        }).catch(e => console.log(e))
-    }
-
+    
 
     return (
         <div className="content-body" style={{ minHeight: "884px" }}>
@@ -551,46 +451,7 @@ export function Account(props) {
                                                     </div>
                                                 </div>
                                                 <div class="tab-pane" id="users-v">
-                                                    <div className="card mt-1 px-3 py-1">
-                                                        <div>
-                                                            <h5 className="row align-items-center mb-0 ">
-                                                                <div className="col-md-6" ><span className="mr-3" style={{ whiteSpace: 'pre' }}>Active Users & Subscriptions</span></div>
-                                                                <div className="col-md-6 d-flex justify-content-end">
-                                                            <a href={undefined} className="text-violet font-size-16 cursor" onClick={() => setOpenAddUser(true)}> + Invite New Members</a>
-                                                        </div>
-                                                            </h5>
-                                                            <div className="p-2 text-black font-size-14 mt-3 border-radius-10" style={{ backgroundColor: '#872ff950' }}>{totalUsers} users have subscribed to the plan</div>
-                                                            <div>
-                                                                <div class="input-group icons border-radius-10 border overflow-hidden my-3">
-                                                                    <div class="input-group-prepend">
-                                                                        <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
-                                                                            <img src={searchIcon} /></span>
-                                                                    </div>
-                                                                    <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" onChange={(e) => searchUserList(e.target.value)} />
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <DataGridContainer>
-                                                                    <DataGrid
-                                                                        // loading={isLoading}
-                                                                        getRowId={row => row.userId}
-                                                                        sx={GRID_STYLE}
-                                                                        rows={userData}
-                                                                        columns={usersColumn}
-                                                                        //   columnVisibilityModel={columnVisibilityModel}
-                                                                        //   onColumnVisibilityModelChange={(newModel) =>
-                                                                        //     setColumnVisibilityModel(newModel)
-                                                                        //   }
-                                                                        pageSize={pageSize}
-                                                                        onPageSizeChange={(newPageSize) =>
-                                                                            setPageSize(newPageSize)
-                                                                        }
-                                                                        rowsPerPageOptions={[5, 10, 20, 50]}
-                                                                    />
-                                                                </DataGridContainer>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                   <Users />
                                                 </div>
                                                 <div class="tab-pane" id="supportplans-v">
                                                     <div className="card mt-3 p-3">
@@ -3375,14 +3236,7 @@ export function Account(props) {
 
                     </TabContext>
                 </Box>
-                <AddUserModal
-                    openAddUser={openAddUser}
-                    handleAddUserClose={handleAddUserClose}
-                    subscriberData={subscriberData}
-                    setSubscriberData={setSubscriberData}
-                    addUser={addNewUser}
-                    roles={roles}
-                />
+
                 <Modal show={open} onHide={handleClose} size="xl"
                     aria-labelledby="contained-modal-title-vcenter"
                     centered>
