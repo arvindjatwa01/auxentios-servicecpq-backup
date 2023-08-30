@@ -313,6 +313,7 @@ export function CreatePortfolio(props) {
   const [currentExpendBundleServiceRow, setCurrentExpendBundleServiceRow] = useState(null);
   const [currentExpendModelComponentRow, setCurrentExpendModelComponentRow] = useState(null);
   const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
+  const [isBundleServiceRowExpanded, setIsBundleServiceRowExpanded] = useState(false)
 
   const [itemPriceData, setItemPriceData] = useState({});
   const [bundleOrServiceItemPriceData, setBundleOrServiceItemPriceData] = useState({})
@@ -4525,14 +4526,13 @@ export function CreatePortfolio(props) {
   }
   console.log("object");
   const handleItemEditSave = async (addPortFolioItem, editAbleItemPriceData, compoFlagData, EditableOrNot) => {
-    // console.log("addPortFolioItem ========== ", addPortFolioItem);
-    // console.log("editAbleItemPriceData ========== ", editAbleItemPriceData);
-    // console.log("compoFlagData ========== ", compoFlagData);
-    // console.log("compoFlagData ========== ", compoFlagData);
+    console.log("addPortFolioItem ========== ", addPortFolioItem);
+    console.log("editAbleItemPriceData ========== ", editAbleItemPriceData);
+    console.log("compoFlagData ========== ", compoFlagData);
+    console.log("compoFlagData ========== ", compoFlagData);
 
     try {
       if (compoFlagData == "BUNDLE_ITEM" || compoFlagData == "SERVICE") {
-
         if (EditableOrNot) {
           const resPrice = await getItemPriceData(editAbleItemPriceData.itemPriceDataId)
           if (resPrice.status === 200) {
@@ -4889,7 +4889,6 @@ export function CreatePortfolio(props) {
           setBundleTabs("bundleServicePriceCalculator")
 
         }
-
       } else {
         // setEditItemShow(false); //hide screen
         if (EditableOrNot) {
@@ -5338,15 +5337,27 @@ export function CreatePortfolio(props) {
               avgUsage: passItemEditRowData?.itemBodyModel?.avgUsage,
               itemPrices: ((editAbleItemPriceData?.itemPriceDataId === "") || (editAbleItemPriceData?.itemPriceDataId === null) ||
                 (editAbleItemPriceData?.itemPriceDataId === undefined) ||
-                (editAbleItemPriceData?.itemPriceDataId === 0)) ? [] : serviceOrBundlePrefix === "BUNDLE" ? [
-                  {
-                    itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
-                  }
-                ] : serviceOrBundlePrefix === "SERVICE" ? [
-                  {
-                    itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
-                  }
-                ] : []
+                (editAbleItemPriceData?.itemPriceDataId === 0)) ? [] : [
+                {
+                  itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+                }
+              ],
+              // itemPrices: ((editAbleItemPriceData?.itemPriceDataId === "") || (editAbleItemPriceData?.itemPriceDataId === null) ||
+              //   (editAbleItemPriceData?.itemPriceDataId === undefined) ||
+              //   (editAbleItemPriceData?.itemPriceDataId === 0)) ? [] : serviceOrBundlePrefix === "BUNDLE" ? [
+              //     {
+              //       itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+              //     }
+              //   ] : serviceOrBundlePrefix === "SERVICE" ? [
+              //     {
+              //       itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+              //     }
+              //   ] :
+              //   serviceOrBundlePrefix === "PORTFOLIO" ? [
+              //     {
+              //       itemPriceDataId: editAbleItemPriceData?.itemPriceDataId
+              //     }
+              //   ] : []
             },
           }
 
@@ -5382,7 +5393,7 @@ export function CreatePortfolio(props) {
         }
 
         const _bundleItems = [...bundleItems];
-        // to check if itemEdit or bundle/service edit
+        // to check if itemEdit or bundle / service edit
         if (!(editItemShow && passItemEditRowData._bundleId)) {
           for (let i = 0; i < _bundleItems.length; i++) {
             if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
@@ -5405,27 +5416,27 @@ export function CreatePortfolio(props) {
           setBundleItems(_bundleItems);
 
         }
-        //  else {
-        //   for (let i = 0; i < _bundleItems.length; i++) {
-        //     if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
-        //       for (
-        //         let j = 0;
-        //         j < _bundleItems[i].associatedServiceOrBundle.length;
-        //         j++
-        //       ) {
-        //         if (
-        //           _bundleItems[i].associatedServiceOrBundle[j].itemId ==
-        //           passItemEditRowData._bundleId
-        //         ) {
-        //           _bundleItems[i].associatedServiceOrBundle[j] = data;
-        //           break;
-        //         }
-        //       }
-        //       break;
-        //     }
-        //   }
-        //   setBundleItems(_bundleItems);
-        // }
+        else {
+          for (let i = 0; i < _bundleItems.length; i++) {
+            if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
+              for (
+                let j = 0;
+                j < _bundleItems[i].associatedServiceOrBundle.length;
+                j++
+              ) {
+                if (
+                  _bundleItems[i].associatedServiceOrBundle[j].itemId ==
+                  passItemEditRowData._bundleId
+                ) {
+                  _bundleItems[i].associatedServiceOrBundle[j] = data;
+                  break;
+                }
+              }
+              break;
+            }
+          }
+          setBundleItems(_bundleItems);
+        }
       }
     } catch (error) {
       console.log("err in handleItemEditSave", error);
@@ -11943,6 +11954,8 @@ export function CreatePortfolio(props) {
     },
   ];
 
+  console.log("============= ", tempBundleItemCheckList);
+
   const tempBundleItemColumns = [
     {
       name: (
@@ -11963,7 +11976,8 @@ export function CreatePortfolio(props) {
               name="selectedId"
               className="cursor"
               value={row.itemId}
-              checked={tempBundleItemCheckList[row.itemId] ? true : row.itemId === currentItemId ? true : false}
+              // checked={tempBundleItemCheckList[row.itemId] ? true : row.itemId === currentItemId ? true : false}
+              checked={tempBundleItemCheckList[row.itemId]}
               onChange={(e) => handleTempbundleItemSelection(e, row.id)}
               style={{ border: "1px solid #000" }}
             />
@@ -14792,13 +14806,18 @@ export function CreatePortfolio(props) {
 
 
   const handleExpandRowForPriceCalculator = (bool, row) => {
+    console.log("row ========== ======== ---- ", row);
     console.log("expended true/false ---- ", bool);
+    setIsBundleServiceRowExpanded(bool)
     setExpandedPriceCalculator({
       ...expandedPriceCalculator,
       itemId: row.itemId,
-      description: row.itemBodyModel.itemBodyDescription,
-      recommendedValue: row.itemBodyModel.recommendedValue,
+      description: row.itemDescription,
+      recommendedValue: row.recommendedValue,
       frequency: row.itemBodyModel.frequency
+      // description: row.itemBodyModel.itemBodyDescription,
+      // recommendedValue: row.itemBodyModel.recommendedValue,
+      // frequency: row.itemBodyModel.frequency
     })
 
     setCurrentExpendBundleServiceRow(row)
@@ -17154,6 +17173,15 @@ export function CreatePortfolio(props) {
 
   const handleItemPriceCalculatorSave = async () => {
     try {
+
+      const exists = tempBundleItems.some(obj => obj.itemId === currentItemId);
+
+      if (exists) {
+        setTempBundleItemCheckList({
+          "selectedId": currentItemId,
+        });
+      }
+
       if (portfolioItemPriceEditable) {
         if (portfolioItems.length > 0) {
 
@@ -17443,8 +17471,7 @@ export function CreatePortfolio(props) {
 
     try {
 
-      if ((portfolioId == "") ||
-        (portfolioId == undefined)) {
+      if ((portfolioId == "") || (portfolioId == undefined) || (portfolioId == undefined)) {
         setItemModelShow(false)
         throw "Please Create Portfolio First, then you can Add Items";
       }
@@ -17504,7 +17531,7 @@ export function CreatePortfolio(props) {
               totalPrice: resPrice.data.totalPrice,
               id: resPrice.data.itemPriceDataId,
               numberOfEvents: resPrice.data.numberOfEvents,
-              portfolioDataId: resPrice.data.portfolio.portfolioId,
+              portfolioDataId: resPrice.data?.portfolio?.portfolioId,
 
               flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
 
@@ -17588,7 +17615,7 @@ export function CreatePortfolio(props) {
               totalPrice: resPrice.data.totalPrice,
               id: resPrice.data.itemPriceDataId,
               numberOfEvents: resPrice.data.numberOfEvents,
-              portfolioDataId: resPrice.data.portfolio.portfolioId,
+              portfolioDataId: resPrice?.data?.portfolio?.portfolioId,
 
               flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
 
@@ -17728,7 +17755,7 @@ export function CreatePortfolio(props) {
             totalPrice: resPrice.data.totalPrice,
             id: resPrice.data.itemPriceDataId,
             numberOfEvents: resPrice.data.numberOfEvents,
-            portfolioDataId: resPrice.data.portfolio.portfolioId,
+            portfolioDataId: resPrice?.data?.portfolio?.portfolioId,
 
             flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
 
@@ -24707,7 +24734,8 @@ export function CreatePortfolio(props) {
                     expandableRowExpanded={(row) => (row === currentExpendBundleServiceRow)}
                     expandOnRowClicked
                     onRowClicked={(row) => setCurrentExpendBundleServiceRow(row)}
-                    expandableRowsComponent={(row) =>
+                    expandableRowsComponent={(row) => (
+                      isBundleServiceRowExpanded &&
                       <ExpendTablePopup
                         bundleServiceData={row.data}
                         compoFlag={row.data.bundleFlag}
@@ -24723,7 +24751,14 @@ export function CreatePortfolio(props) {
                         currentItemId={currentItemId}
                         setCheckForExpendItemStatus={setCheckForExpendItemStatus}
                         checkForExpendItemStatus={checkForExpendItemStatus}
-                      />}
+                        isBundleServiceRowExpanded={isBundleServiceRowExpanded}
+                        setIsBundleServiceRowExpanded={setIsBundleServiceRowExpanded}
+                      />)}
+                    // onRowExpand={handleRowExpand}
+                    // onRowCollapse={handleRowCollapse}
+                    // expanded={expandedRows}
+                    // isRowExpandable={row => true}
+                    isRowExpanded={isBundleServiceRowExpanded}
                     onRowExpandToggled={handleExpandRowForPriceCalculator}
                     //onRowExpandToggled={(bool, row) => setCurrentRow(row)}
                     pagination
