@@ -1222,7 +1222,19 @@ export function SparePartsQuoteDetails(props) {
         // setVersionDescription("");
       });
   };
-
+  const openSource = (builder) => {
+    let builderDetails = {
+      builderId: "",
+      bId: "",
+      partListNo: "",
+      partListId: "",
+      type: "fetch",
+    };
+    history.push({
+      pathname: "/RepairPartList/PartList",
+      state: builderDetails,
+    });
+  };
   return (
     <>
       <CustomizedSnackbar
@@ -1274,7 +1286,7 @@ export function SparePartsQuoteDetails(props) {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
-              {/* <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>GO TO SOLUTION</a> */}
+              <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={openSource}>Go To Source</a>
               <a href="#" className="ml-3 font-size-14">
                 <img src={shareIcon}></img>
               </a>

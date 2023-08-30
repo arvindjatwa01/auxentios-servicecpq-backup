@@ -478,6 +478,8 @@ const RepairQuoteDetails = (props) => {
     });
   };
   const populatePricingData = (result) => {
+    let calculatedNetPrice = 0;
+    result.priceEstimates?.map(indEst => calculatedNetPrice = calculatedNetPrice + indEst.netPrice);
     setBillingDetail({
       priceDate: result.priceDate ? result.priceDate : new Date(),
       billingFrequency:
@@ -495,7 +497,7 @@ const RepairQuoteDetails = (props) => {
       currency: result.currency,
       discount: result.discount,
       margin: result.margin,
-      netPrice: result.netPrice,
+      netPrice: result.netPrice ? result.netPrice : calculatedNetPrice,
       priceEstimates: result.priceEstimates,
       paymentTerms:
         result.paymentTerms && result.paymentTerms !== "EMPTY"
@@ -1219,6 +1221,17 @@ const RepairQuoteDetails = (props) => {
       setVersionOpen(true);
     }
   };
+  const openSource = (builder) => {
+    let builderDetails = {
+      builderId: "",
+      bId: "",
+      type: "fetch",
+    };
+    history.push({
+      pathname: "/RepairWithoutSpareParts/BuilderDetails",
+      state: builderDetails,
+    });
+  };
   return (
     <>
       <CustomizedSnackbar
@@ -1270,6 +1283,7 @@ const RepairQuoteDetails = (props) => {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
+              <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={openSource}>Go to Source</a>
               <a href="#" className="ml-3 font-size-14" title="Share">
                 <img src={shareIcon}></img>
               </a>

@@ -835,7 +835,7 @@ const EquipmentMaster = () => {
                         <input
                           className="custom-input-sleact"
                           type="text"
-                          placeholder="Search Parts"
+                          placeholder="Search Equipment"
                           autoComplete="off"
                         />
                         {

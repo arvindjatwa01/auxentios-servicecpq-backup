@@ -589,7 +589,7 @@ const ServiceMaster = () => {
                               <input
                                 className="custom-input-sleact"
                                 type="text"
-                                placeholder="Search Parts"
+                                placeholder="Search Labor"
                                 autoComplete="off"
                               />
                               {

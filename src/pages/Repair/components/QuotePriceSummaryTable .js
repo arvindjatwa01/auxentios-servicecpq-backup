@@ -198,12 +198,6 @@ export default function QuotePriceSummaryTable(props) {
       },
     },
     {
-      field: "netPrice",
-      headerName: "Net $",
-      flex: 1,
-      minWidth: 80,
-    },
-    {
       field: "adjustedPrice",
       headerName: "Adjusted $",
       editable: true,
@@ -219,16 +213,24 @@ export default function QuotePriceSummaryTable(props) {
     {
       field: "percentageDiscount",
       headerName: "Header Discount (%)",
+      type: 'number',
       editable: true,
       flex: 1,
       minWidth: 120,
     },
     {
       field: "fixedDiscount",
+      type: 'number',
       headerName: "Total Discount ($)",
       editable: true,
       flex: 1,
       minWidth: 120,
+    },
+    {
+      field: "netPrice",
+      headerName: "Net $",
+      flex: 1,
+      minWidth: 80,
     },
     {
       field: "Actions",

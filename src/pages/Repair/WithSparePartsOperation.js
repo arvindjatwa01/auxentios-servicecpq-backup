@@ -764,7 +764,7 @@ function WithSparePartsOperation(props) {
                                           Total Cost
                                         </p>
                                         <h6 className=" font-size-14 font-weight-600 text-primary">
-                                          $ {partlistVersion.totalPrice}
+                                          $ {partlistVersion.totalPrice? parseFloat(partlistVersion.totalPrice).toFixed(2): 0.00}
                                         </h6>
                                       </div>
                                     </div>

@@ -101,7 +101,7 @@ const RepairQuoteItemModal = (props) => {
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
-                          componentCode: e.target.value,
+                          component: e.target.value,
                         })
                       }
                       // disabled
@@ -120,7 +120,7 @@ const RepairQuoteItemModal = (props) => {
                       onChange={(e) =>
                         props.setQuoteItem({
                           ...props.quoteItem,
-                          operation: e.target.value,
+                          jobDescription: e.target.value,
                         })
                       }
                       // disabled
