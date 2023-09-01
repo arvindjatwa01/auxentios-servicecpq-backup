@@ -1929,12 +1929,11 @@ const AddPortfolioItem = (props) => {
           recommendedUnit: addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
           usageUnit: addPortFolioItem?.unit === "" ? "" : addPortFolioItem?.unit?.value,
           withBundleService: false,
-          portfolio: ((props.portfolioDataId == "") ||
-            (props.portfolioDataId == undefined) ||
-            (props.portfolioDataId == null) ||
-            (props.portfolioDataId == 0)) ? null : {
-            portfolioId: props.portfolioDataId
-          },
+          portfolio: ((props.portfolioDataId === "") || (props.portfolioDataId === undefined) ||
+            (props.portfolioDataId === null) || (props.portfolioDataId === 0)) ? null :
+            {
+              portfolioId: props.portfolioDataId
+            },
           tenantId: loginTenantId,
           inclusionExclusion: false,
           partsRequired: true,

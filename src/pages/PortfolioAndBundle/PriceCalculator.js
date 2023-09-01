@@ -37,6 +37,7 @@ import Cookies from "js-cookie";
 
 
 const PriceCalculator = (props) => {
+  console.log("priceCalculator component Props props:- ", props);
   const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
   const [priceCurrencyKeyValue, setPriceCurrencyKeyvalue] = useState([]);
   const [priceTypeKeyValue, setPriceTypeKeyValue] = useState([]);
@@ -635,7 +636,7 @@ const PriceCalculator = (props) => {
         let priceEditorNot = (props.bundleOrServiceEditOrNot && disable) ? false : true;
         let priceDataEditableOrNot = ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
           (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) ? "noEditAble" : "editAble";
-        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, disable, priceEditorNot);
+        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, disable, priceEditorNot, props.createdBundleItems);
         // props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, disable);
         // }
       } else {
@@ -666,7 +667,7 @@ const PriceCalculator = (props) => {
         let priceEditorNot = (props.bundleOrServiceEditOrNot && disable) ? false : true;
         let priceDataEditableOrNot = ((priceCalculator?.itemPriceId === null) || (priceCalculator?.itemPriceId === "") ||
           (priceCalculator?.itemPriceId === undefined) || (priceCalculator?.itemPriceId === 0)) ? "noEditAble" : "editAble";
-        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, false, priceEditorNot);
+        props.getPriceCalculatorDataFun(priceCalculator, priceDataEditableOrNot, false, priceEditorNot, props.createdBundleItems);
         // props.getPriceCalculatorDataFun(priceCalculator, props.priceCompFlagIs, false);
 
       }

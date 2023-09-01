@@ -803,11 +803,11 @@ const AddCustomPortfolioItem = (props) => {
               throw "Please Create Solution First, then you can Add Item";
             }
             if (noNeedBundleService) {
-              props.setTabs("4");
-              props.getAddPortfolioItemDataFun(addPortFolioItem);
+              // props.setTabs("4");
+              props.getAddPortfolioItemDataFun(addPortFolioItem, "4");
             } else {
-              props.setTabs("2");
-              props.getAddPortfolioItemDataFun(addPortFolioItem);
+              // props.setTabs("2");
+              props.getAddPortfolioItemDataFun(addPortFolioItem, "2");
             }
             // props.setTabs("relatedTemplate");
           }
@@ -1154,11 +1154,11 @@ const AddCustomPortfolioItem = (props) => {
         }
 
         if (noNeedBundleService) {
-          props.setTabs("4");
-          props.getAddPortfolioItemDataFun(addPortFolioItem);
+          // props.setTabs("4");
+          props.getAddPortfolioItemDataFun(addPortFolioItem, "4");
         } else {
-          props.setTabs("2");
-          props.getAddPortfolioItemDataFun(addPortFolioItem);
+          // props.setTabs("2");
+          props.getAddPortfolioItemDataFun(addPortFolioItem, "2");
         }
 
       } else if ((props.compoFlag === "itemEdit") &&

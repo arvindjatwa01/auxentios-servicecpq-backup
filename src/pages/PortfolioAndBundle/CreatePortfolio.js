@@ -2665,6 +2665,26 @@ export function CreatePortfolio(props) {
             // setAddportFolioItem({})
             setBundleOrServiceItemPriceData({});
           } else {
+
+            let _portfolioItemIds = [];
+            let _itemPrices = [];
+            const fetchItemDetailsById = await getItemDataById(createServiceOrBundle.id);
+            if (fetchItemDetailsById.status === 200) {
+              let itemDetailsData = fetchItemDetailsById.data;
+              _portfolioItemIds.push(itemDetailsData["itemHeaderModel"]["portfolioItemIds"])
+              _itemPrices.push(itemDetailsData["itemBodyModel"]["itemPrices"])
+            }
+
+            if ((bundleOrServiceItemPriceData.itemPriceDataId === "") || (bundleOrServiceItemPriceData.itemPriceDataId === null) ||
+              (bundleOrServiceItemPriceData.itemPriceDataId === undefined) || (bundleOrServiceItemPriceData.itemPriceDataId === 0)) {
+              _itemPrices = [..._itemPrices];
+            } else {
+              _itemPrices.push({
+                itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+              });
+            }
+
+
             // previous working request obj
             // let reqObj = {
             //   itemId: 0,
@@ -2752,8 +2772,10 @@ export function CreatePortfolio(props) {
                 bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" :
                   serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
                 withBundleService: false,
-                portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
-                  (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
+                portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) || (currentItemId === 0) ||
+                  (currentItemId === "")) ? [..._portfolioItemIds] : [..._portfolioItemIds, currentItemId],
+                // portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
+                //   (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
                 reference: createServiceOrBundle.reference,
                 itemHeaderMake: createServiceOrBundle?.make,
                 itemHeaderFamily: createServiceOrBundle?.family,
@@ -2819,17 +2841,18 @@ export function CreatePortfolio(props) {
                   (bundleServiceAddPortfolioItem.usageType?.value === undefined) || (bundleServiceAddPortfolioItem.usageType?.value === "EMPTY")) ? "" : bundleServiceAddPortfolioItem.usageType?.value,
                 year: bundleServiceAddPortfolioItem.year ? (typeof bundleServiceAddPortfolioItem.year === "object" ? bundleServiceAddPortfolioItem.year?.value : bundleServiceAddPortfolioItem.year) : "",
                 avgUsage: 0,
-                itemPrices: ((bundleOrServiceItemPriceData.itemPriceDataId === "") || (bundleOrServiceItemPriceData.itemPriceDataId === null) ||
-                  (bundleOrServiceItemPriceData.itemPriceDataId === undefined) ||
-                  (bundleOrServiceItemPriceData.itemPriceDataId === 0)) ? [] : serviceOrBundlePrefix === "BUNDLE" ? [
-                    {
-                      itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
-                    }
-                  ] : serviceOrBundlePrefix === "SERVICE" ? [
-                    {
-                      itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
-                    }
-                  ] : []
+                itemPrices: [..._itemPrices],
+                // itemPrices: ((bundleOrServiceItemPriceData.itemPriceDataId === "") || (bundleOrServiceItemPriceData.itemPriceDataId === null) ||
+                //   (bundleOrServiceItemPriceData.itemPriceDataId === undefined) ||
+                //   (bundleOrServiceItemPriceData.itemPriceDataId === 0)) ? [] : serviceOrBundlePrefix === "BUNDLE" ? [
+                //   {
+                //     itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+                //   }
+                //   ] : serviceOrBundlePrefix === "SERVICE" ? [
+                //     {
+                //       itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+                //     }
+                //   ] : []
               },
             }
 
@@ -3015,6 +3038,25 @@ export function CreatePortfolio(props) {
           // }
 
           // current working request obj
+
+          let _portfolioItemIds = [];
+          let _itemPrices = [];
+          const fetchItemDetailsById = await getItemDataById(createServiceOrBundle.id);
+          if (fetchItemDetailsById.status === 200) {
+            let itemDetailsData = fetchItemDetailsById.data;
+            _portfolioItemIds.push(itemDetailsData["itemHeaderModel"]["portfolioItemIds"])
+            _itemPrices.push(itemDetailsData["itemBodyModel"]["itemPrices"])
+          }
+
+          if ((bundleOrServiceItemPriceData.itemPriceDataId === "") || (bundleOrServiceItemPriceData.itemPriceDataId === null) ||
+            (bundleOrServiceItemPriceData.itemPriceDataId === undefined) || (bundleOrServiceItemPriceData.itemPriceDataId === 0)) {
+            _itemPrices = [..._itemPrices];
+          } else {
+            _itemPrices.push({
+              itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+            });
+          }
+
           let reqObj = {
             itemId: ((createServiceOrBundle.id === 0) || (createServiceOrBundle.id === null) ||
               (createServiceOrBundle.id === undefined) || createServiceOrBundle.id === "") ? 0 : createServiceOrBundle.id,
@@ -3025,8 +3067,10 @@ export function CreatePortfolio(props) {
               bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" :
                 serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
               withBundleService: false,
-              portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
-                (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
+              portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) || (currentItemId === 0) ||
+                (currentItemId === "")) ? [..._portfolioItemIds] : [..._portfolioItemIds, currentItemId],
+              // portfolioItemIds: ((currentItemId === null) || (currentItemId === undefined) ||
+              //   (currentItemId === 0) || (currentItemId === "")) ? [...createServiceOrBundle["prePortfolioIds"]] : [...createServiceOrBundle["prePortfolioIds"], currentItemId],
               reference: createServiceOrBundle.reference,
               itemHeaderMake: createServiceOrBundle?.make,
               itemHeaderFamily: createServiceOrBundle?.family,
@@ -3092,19 +3136,21 @@ export function CreatePortfolio(props) {
                 (bundleServiceAddPortfolioItem.usageType?.value === undefined) || (bundleServiceAddPortfolioItem.usageType?.value === "EMPTY")) ? "" : bundleServiceAddPortfolioItem.usageType?.value,
               year: bundleServiceAddPortfolioItem.year ? (typeof bundleServiceAddPortfolioItem.year === "object" ? bundleServiceAddPortfolioItem.year?.value : bundleServiceAddPortfolioItem.year) : "",
               avgUsage: 0,
-              itemPrices: ((bundleOrServiceItemPriceData.itemPriceDataId === "") || (bundleOrServiceItemPriceData.itemPriceDataId === null) ||
-                (bundleOrServiceItemPriceData.itemPriceDataId === undefined) ||
-                (bundleOrServiceItemPriceData.itemPriceDataId === 0)) ? [] : serviceOrBundlePrefix === "BUNDLE" ? [
-                  {
-                    itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
-                  }
-                ] : serviceOrBundlePrefix === "SERVICE" ? [
-                  {
-                    itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
-                  }
-                ] : []
+              itemPrices: [..._itemPrices],
+              // itemPrices: ((bundleOrServiceItemPriceData.itemPriceDataId === "") || (bundleOrServiceItemPriceData.itemPriceDataId === null) ||
+              //   (bundleOrServiceItemPriceData.itemPriceDataId === undefined) ||
+              //   (bundleOrServiceItemPriceData.itemPriceDataId === 0)) ? [] : serviceOrBundlePrefix === "BUNDLE" ? [
+              //     {
+              //       itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+              //     }
+              //   ] : serviceOrBundlePrefix === "SERVICE" ? [
+              //     {
+              //       itemPriceDataId: bundleOrServiceItemPriceData.itemPriceDataId
+              //     }
+              //   ] : []
             },
           }
+
           const res = await updateItemData(createServiceOrBundle.id, reqObj);
           if (res.status === 200) {
             toast("😎" + `${serviceOrBundlePrefix === "SERVICE" ? "Service" : "Bundle"} ${createServiceOrBundle.name} updated successfully`, {
@@ -4359,6 +4405,15 @@ export function CreatePortfolio(props) {
     // }
 
     // Current Todo Working
+    let _itemPrices = [];
+    if (serviceOrBundlePrefix === "BUNDLE") {
+      if ((itemPriceData?.itemPriceDataId === null || itemPriceData?.itemPriceDataId === undefined ||
+        itemPriceData?.itemPriceDataId === 0 || itemPriceData?.itemPriceDataId === "")) {
+        _itemPrices.push({
+          itemPriceDataId: itemPriceData.itemPriceDataId
+        })
+      }
+    }
 
     let reqObj = {
       itemId: 0,
@@ -4369,7 +4424,7 @@ export function CreatePortfolio(props) {
         bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
         withBundleService: false,
         // portfolioItemId: currentItemId != null ? currentItemId : 0,
-        portfolioItemIds: currentItemId != null ? [currentItemId] : [],
+        portfolioItemIds: (currentItemId === 0 || currentItemId === null || currentItemId === "" || currentItemId === undefined) ? [] : [currentItemId],
         reference: createServiceOrBundle.reference,
         itemHeaderMake: createServiceOrBundle.make,
         itemHeaderFamily: createServiceOrBundle.family,
@@ -4417,13 +4472,14 @@ export function CreatePortfolio(props) {
         usage: data.usageType ? data.usageType?.value : "",
         year: data?.year ? (typeof data?.year === "object" ? data?.year?.value : data?.year) : "",
         avgUsage: 0,
-        itemPrices: serviceOrBundlePrefix === "BUNDLE" &&
-          (itemPriceData?.itemPriceDataId != null ||
-            itemPriceData?.itemPriceDataId != undefined) ? [
-          {
-            itemPriceDataId: itemPriceData.itemPriceDataId
-          }
-        ] : [],
+        itemPrices: _itemPrices,
+        // itemPrices: serviceOrBundlePrefix === "BUNDLE" &&
+        //   (itemPriceData?.itemPriceDataId != null ||
+        //     itemPriceData?.itemPriceDataId != undefined) ? [
+        //   {
+        //     itemPriceDataId: itemPriceData.itemPriceDataId
+        //   }
+        // ] : [],
       },
     }
 
@@ -4526,10 +4582,10 @@ export function CreatePortfolio(props) {
   }
   console.log("object");
   const handleItemEditSave = async (addPortFolioItem, editAbleItemPriceData, compoFlagData, EditableOrNot) => {
-    console.log("addPortFolioItem ========== ", addPortFolioItem);
-    console.log("editAbleItemPriceData ========== ", editAbleItemPriceData);
-    console.log("compoFlagData ========== ", compoFlagData);
-    console.log("compoFlagData ========== ", compoFlagData);
+    // console.log("addPortFolioItem ========== ", addPortFolioItem);
+    // console.log("editAbleItemPriceData ========== ", editAbleItemPriceData);
+    // console.log("compoFlagData ========== ", compoFlagData);
+    // console.log("compoFlagData ========== ", compoFlagData);
 
     try {
       if (compoFlagData == "BUNDLE_ITEM" || compoFlagData == "SERVICE") {
@@ -4733,6 +4789,14 @@ export function CreatePortfolio(props) {
             setBundleOrServiceItemPriceData(resPrice.data)
           }
 
+          // let _portfolioItemIds = [];
+          // const fetchItemDetailsById = await getItemDataById(createServiceOrBundle.id);
+          // if (fetchItemDetailsById.status === 200) {
+          //   let itemDetailsData = fetchItemDetailsById.data;
+          //   _portfolioItemIds.push(itemDetailsData["itemHeaderModel"]["portfolioItemIds"])
+          // }
+
+
           // let reqObj = {
           //   itemId: parseInt(addPortFolioItem.id),
           //   itemName: addPortFolioItem.name,
@@ -4806,6 +4870,7 @@ export function CreatePortfolio(props) {
           //     ],
           //   },
           // }
+
           let reqObj = {
             itemId: ((addPortFolioItem.id === 0) || (addPortFolioItem.id === null) ||
               (addPortFolioItem.id === undefined) || addPortFolioItem.id === "") ? 0 : parseInt(addPortFolioItem.id),
@@ -4816,6 +4881,7 @@ export function CreatePortfolio(props) {
               bundleFlag: compoFlagData,
               withBundleService: passItemEditRowData?.itemHeaderModel?.withBundleService,
               portfolioItemId: bundleServicePortfolioItemId,
+              // portfolioItemId: bundleServicePortfolioItemId,
               reference: createServiceOrBundle?.reference ? createServiceOrBundle?.reference : "",
               itemHeaderMake: createServiceOrBundle?.make ? createServiceOrBundle?.make : "",
               itemHeaderFamily: createServiceOrBundle?.family ? createServiceOrBundle?.family : "",
@@ -13163,6 +13229,13 @@ export function CreatePortfolio(props) {
                 setBundleTabs("bundleServicePriceCalculator")
               } else {
 
+                // let _portfolioItemIds = [];
+                // const fetchItemDetailsById = await getItemDataById(createServiceOrBundle.id);
+                // if (fetchItemDetailsById.status === 200) {
+                //   let itemDetailsData = fetchItemDetailsById.data;
+                //   _portfolioItemIds.push(itemDetailsData["itemHeaderModel"]["portfolioItemIds"])
+                // }
+
                 // Previous working request obj
                 // let reqObj = {
                 //   itemId: parseInt(createServiceOrBundle.id),
@@ -13241,7 +13314,8 @@ export function CreatePortfolio(props) {
                     itemHeaderDescription: createServiceOrBundle.description,
                     bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : serviceOrBundlePrefix === "BUNDLE_ITEM" ? "BUNDLE_ITEM" : "PORTFOLIO",
                     withBundleService: passItemEditRowData?.itemHeaderModel?.withBundleService,
-                    portfolioItemIds: passItemEditRowData?.itemHeaderModel?.portfolioItemIds,
+                    // portfolioItemIds: passItemEditRowData?.itemHeaderModel?.portfolioItemIds,
+                    portfolioItemIds: [...passItemEditRowData["itemHeaderModel"]["portfolioItemIds"], currentItemId],
                     reference: createServiceOrBundle?.reference,
                     itemHeaderMake: createServiceOrBundle?.make,
                     itemHeaderFamily: createServiceOrBundle?.family,
@@ -13342,6 +13416,12 @@ export function CreatePortfolio(props) {
           }
         } else {
 
+          // let _portfolioItemIds = [];
+          // const fetchItemDetailsById = await getItemDataById(createServiceOrBundle.id);
+          // if (fetchItemDetailsById.status === 200) {
+          //   let itemDetailsData = fetchItemDetailsById.data;
+          //   _portfolioItemIds.push(itemDetailsData["itemHeaderModel"]["portfolioItemIds"])
+          // }
           // Old Working Todo
 
           // let reqObj = {
@@ -13423,7 +13503,7 @@ export function CreatePortfolio(props) {
               itemHeaderDescription: createServiceOrBundle.description,
               bundleFlag: "SERVICE",
               withBundleService: false,
-              portfolioItemIds: currentItemId != null ? [currentItemId] : [],
+              portfolioItemIds: (currentItemId === null || currentItemId === "" || currentItemId === undefined || currentItemId === 0) ? [] : [currentItemId],
               reference: createServiceOrBundle.reference,
               itemHeaderMake: createServiceOrBundle.make,
               itemHeaderFamily: createServiceOrBundle.family,
@@ -14209,7 +14289,7 @@ export function CreatePortfolio(props) {
     }
   };
 
-  const getPriceCalculatorDataFun = async (data, editAbleOrNot, isDisable, updateOrNot) => {
+  const getPriceCalculatorDataFun = async (data, editAbleOrNot, isDisable, updateOrNot, bundleServiceData) => {
     console.log("data ========= ", data);
     console.log("editAbleOrNot ========== ", editAbleOrNot);
     console.log("isDisable ========== ", isDisable);
@@ -14420,7 +14500,36 @@ export function CreatePortfolio(props) {
                 );
                 if (updatePriceId.status === 200) {
                   setBundleOrServiceItemPriceData(updatePriceId.data);
-                  setBundleTabs("bundleServiceAdministrative")
+
+                  if (((bundleServiceAddPortfolioItem.templateId === "") || (bundleServiceAddPortfolioItem.templateId === null)) &&
+                    ((bundleServiceAddPortfolioItem.repairOption === "") || (bundleServiceAddPortfolioItem.repairOption === null))) {
+                  } else {
+                    const rObjSJRkId = {
+                      standardJobId: bundleServiceAddPortfolioItem.templateId,
+                      repairKitId: bundleServiceAddPortfolioItem.repairOption,
+                      itemId: bundleServiceData.itemId,
+                      itemPriceDataId: data.id,
+                    }
+
+
+                    if (((bundleServiceAddPortfolioItem.templateId == "") ||
+                      (bundleServiceAddPortfolioItem.templateId == null)) &&
+                      ((bundleServiceAddPortfolioItem.repairOption != "") ||
+                        (bundleServiceAddPortfolioItem.repairOption != null))) {
+                      const updateRkId = portfolioItemPriceRkId(rObjSJRkId);
+                    }
+
+                    if (((bundleServiceAddPortfolioItem.repairOption == "") ||
+                      (bundleServiceAddPortfolioItem.repairOption == null)) &&
+                      ((bundleServiceAddPortfolioItem.templateId != "") ||
+                        (bundleServiceAddPortfolioItem.templateId != null))) {
+                      const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
+                    }
+                  }
+
+                  if (props.createdBundleItems)
+
+                    setBundleTabs("bundleServiceAdministrative")
                 } else {
                   throw "Somthing went wrong"
                 }
@@ -14429,6 +14538,31 @@ export function CreatePortfolio(props) {
                 // setItemPriceData(itemPriceData.data);
                 if (itemPriceData.status === 200) {
                   setBundleOrServiceItemPriceData(itemPriceData.data)
+
+                  if (((bundleServiceAddPortfolioItem.templateId === "") || (bundleServiceAddPortfolioItem.templateId === null)) &&
+                    ((bundleServiceAddPortfolioItem.repairOption === "") || (bundleServiceAddPortfolioItem.repairOption === null))) {
+                  } else {
+                    const rObjSJRkId = {
+                      standardJobId: bundleServiceAddPortfolioItem.templateId,
+                      repairKitId: bundleServiceAddPortfolioItem.repairOption,
+                      itemId: bundleServiceData.itemId,
+                      itemPriceDataId: itemPriceData.data.itemPriceDataId,
+                    }
+
+                    if (((bundleServiceAddPortfolioItem.templateId == "") ||
+                      (bundleServiceAddPortfolioItem.templateId == null)) &&
+                      ((bundleServiceAddPortfolioItem.repairOption != "") ||
+                        (bundleServiceAddPortfolioItem.repairOption != null))) {
+                      const updateRkId = portfolioItemPriceRkId(rObjSJRkId);
+                    }
+
+                    if (((bundleServiceAddPortfolioItem.repairOption == "") ||
+                      (bundleServiceAddPortfolioItem.repairOption == null)) &&
+                      ((bundleServiceAddPortfolioItem.templateId != "") ||
+                        (bundleServiceAddPortfolioItem.templateId != null))) {
+                      const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
+                    }
+                  }
                   setBundleTabs("bundleServiceAdministrative")
                 } else {
                   throw "Somthing went wrong"
@@ -14616,6 +14750,32 @@ export function CreatePortfolio(props) {
               if (itemPriceData.status === 200) {
                 // setItemPriceData(itemPriceData.data);
                 setBundleOrServiceItemPriceData(itemPriceData.data);
+
+                if (((bundleServiceAddPortfolioItem.templateId === "") || (bundleServiceAddPortfolioItem.templateId === null)) &&
+                  ((bundleServiceAddPortfolioItem.repairOption === "") || (bundleServiceAddPortfolioItem.repairOption === null))) {
+                } else {
+                  const rObjSJRkId = {
+                    standardJobId: bundleServiceAddPortfolioItem.templateId,
+                    repairKitId: bundleServiceAddPortfolioItem.repairOption,
+                    itemId: bundleServiceData.itemId,
+                    itemPriceDataId: itemPriceData.data.itemPriceDataId,
+                  }
+
+
+                  if (((bundleServiceAddPortfolioItem.templateId == "") ||
+                    (bundleServiceAddPortfolioItem.templateId == null)) &&
+                    ((bundleServiceAddPortfolioItem.repairOption != "") ||
+                      (bundleServiceAddPortfolioItem.repairOption != null))) {
+                    const updateRkId = portfolioItemPriceRkId(rObjSJRkId);
+                  }
+
+                  if (((bundleServiceAddPortfolioItem.repairOption == "") ||
+                    (bundleServiceAddPortfolioItem.repairOption == null)) &&
+                    ((bundleServiceAddPortfolioItem.templateId != "") ||
+                      (bundleServiceAddPortfolioItem.templateId != null))) {
+                    const updateSjId = portfolioItemPriceSjid(rObjSJRkId);
+                  }
+                }
                 setBundleTabs("bundleServiceAdministrative")
               } else {
                 throw "Somthing went wrong"
@@ -14753,34 +14913,34 @@ export function CreatePortfolio(props) {
 
             if (updatePriceId.status === 200) {
               setBundleOrServiceItemPriceData(updatePriceId.data);
+              if (((bundleServiceAddPortfolioItem.templateId === "") || (bundleServiceAddPortfolioItem.templateId === null)) &&
+                ((bundleServiceAddPortfolioItem.repairOption === "") || (bundleServiceAddPortfolioItem.repairOption === null))) {
+              } else {
+                const rObj = {
+                  standardJobId: bundleServiceAddPortfolioItem.templateId,
+                  repairKitId: bundleServiceAddPortfolioItem.repairOption,
+                  itemId: createdServiceData.itemId,
+                  itemPriceDataId: data.id
+                }
+                if (((bundleServiceAddPortfolioItem.templateId == "") ||
+                  (bundleServiceAddPortfolioItem.templateId == null)) &&
+                  (bundleServiceAddPortfolioItem.repairOption != "") ||
+                  (bundleServiceAddPortfolioItem.repairOption != null)) {
+                  const updateRkId = portfolioItemPriceRkId(rObj);
+                }
+
+                if (((bundleServiceAddPortfolioItem.repairOption == "") ||
+                  (bundleServiceAddPortfolioItem.repairOption == null)) &&
+                  ((bundleServiceAddPortfolioItem.templateId != "") ||
+                    (bundleServiceAddPortfolioItem.templateId != ""))) {
+                  const updateSjId = portfolioItemPriceSjid(rObj);
+                }
+              }
               setBundleTabs("bundleServiceAdministrative")
             } else {
               throw "Somthing went wrong"
             }
             console.log("createServiceOrBundle ", createServiceOrBundle);
-            if (((bundleServiceAddPortfolioItem.templateId === "") || (bundleServiceAddPortfolioItem.templateId === null)) &&
-              ((bundleServiceAddPortfolioItem.repairOption === "") || (bundleServiceAddPortfolioItem.repairOption === null))) {
-            } else {
-              const rObj = {
-                standardJobId: bundleServiceAddPortfolioItem.templateId,
-                repairKitId: bundleServiceAddPortfolioItem.repairOption,
-                itemId: createdServiceData.itemId,
-                itemPriceDataId: data.id
-              }
-              if (((bundleServiceAddPortfolioItem.templateId == "") ||
-                (bundleServiceAddPortfolioItem.templateId == null)) &&
-                (bundleServiceAddPortfolioItem.repairOption != "") ||
-                (bundleServiceAddPortfolioItem.repairOption != null)) {
-                const updateRkId = portfolioItemPriceRkId(rObj);
-              }
-
-              if (((bundleServiceAddPortfolioItem.repairOption == "") ||
-                (bundleServiceAddPortfolioItem.repairOption == null)) &&
-                ((bundleServiceAddPortfolioItem.templateId != "") ||
-                  (bundleServiceAddPortfolioItem.templateId != ""))) {
-                const updateSjId = portfolioItemPriceSjid(rObj);
-              }
-            }
 
           }
         } else {
