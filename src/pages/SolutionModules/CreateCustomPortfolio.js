@@ -2263,12 +2263,10 @@ export function CreateCustomPortfolio(props) {
     }
   }
 
-  const handleCustomPortfolioItemSaveAndContinue = async (itemData, itemPriceData) => {
+  const handleCustomPortfolioItemSaveAndContinue = async (itemData, itemPriceData, tabsData) => {
     try {
 
-      if ((portfolioId == "") ||
-        (portfolioId == undefined) ||
-        (portfolioId == null)) {
+      if ((portfolioId == "") || (portfolioId == undefined) || (portfolioId == null)) {
         throw "Please Create Solution First, then you can Add Item";
       }
 
@@ -2351,7 +2349,7 @@ export function CreateCustomPortfolio(props) {
           itemHeaderDescription: itemData.description,
           bundleFlag: "PORTFOLIO",
           withBundleService: !bundleServiceNeed,
-          portfolioItemId: 0,
+          portfolioItemId: [],
           reference: "",
           itemHeaderMake: itemData?.make,
           itemHeaderFamily: itemData?.family,
@@ -2500,7 +2498,7 @@ export function CreateCustomPortfolio(props) {
       var _itemArrData = [...selectedSolutionCustomItems];
       _itemArrData.push({ customItemId: itemRes.data.customItemId })
       setSelectedSolutionCustomItems(_itemArrData);
-
+      setTabs(tabsData);
       if (_itemArrData.length > 0) {
         var tempBundleItemsUrl = _itemArrData.map((data, i) =>
           `itemIds=${data.customItemId}`
@@ -10048,8 +10046,9 @@ export function CreateCustomPortfolio(props) {
       let myNewArray = [];
       for (let i = 0; i < selectedSearchRowsData.length; i++) {
         if ("portfolioId" in selectedSearchRowsData[i]) {
-          var dataIs = `portfolio_id=${selectedSearchRowsData[i].portfolioId}&custom_portfolio_id=${portfolioId != null ? portfolioId : 0}`;
-          copyMaterToCustomPortfolio(dataIs)
+          // var rUrl = `portfolio_id=${selectedSearchRowsData[i].portfolioId}&custom_portfolio_id=${portfolioId != null ? portfolioId : 0}`;
+          var rUrl = "portfolio_id=" + selectedSearchRowsData[i].portfolioId + "&custom_portfolio_id=" + portfolioId;
+          copyMaterToCustomPortfolio(rUrl)
             .then((res) => {
               var myArr = [];
               var _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
@@ -15936,7 +15935,7 @@ export function CreateCustomPortfolio(props) {
     setEditItemShow(true);
   };
 
-  const getAddPortfolioItemDataFun = async (data) => {
+  const getAddPortfolioItemDataFun = async (data, tabsData) => {
     try {
       console.log("dataaaaa23324442", data)
       setAddportFolioItem(data);
@@ -16056,10 +16055,8 @@ export function CreateCustomPortfolio(props) {
           (data?.unit === undefined) || (data?.unit === "EMPTY")) ? "MONTH" : data?.unit?.value === "YEAR" ? "MONTH" : data?.unit?.value,
         usageUnit: ((data?.unit === "") || (data?.unit === null) ||
           (data?.unit === undefined) || (data?.unit === "EMPTY")) ? "YEAR" : data?.unit?.value,
-        customPortfolio: ((portfolioId === 0) || (portfolioId === null) ||
-          (portfolioId === undefined) || (portfolioId === "")) ? null : {
-          portfolioId: portfolioId
-        },
+        customPortfolio: ((portfolioId === 0) || (portfolioId === null) || (portfolioId === undefined) ||
+          (portfolioId === "")) ? null : { portfolioId: portfolioId },
         tenantId: loginTenantId,
         partsRequired: true,
         labourRequired: true,
@@ -16078,7 +16075,7 @@ export function CreateCustomPortfolio(props) {
         setItemPriceData(itemPriceDataRes.data)
         // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
         // handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
-        handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
         setTempBundleService1([]);
         setTempBundleService2([]);
         setTempBundleService3([]);
@@ -16096,7 +16093,7 @@ export function CreateCustomPortfolio(props) {
         setItemPriceData(itemPriceDataRes.data)
         // handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
         // handlePortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
-        handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data)
+        handleCustomPortfolioItemSaveAndContinue(data, itemPriceDataRes.data, tabsData)
         setTempBundleService1([]);
         setTempBundleService2([]);
         setTempBundleService3([]);
@@ -17155,7 +17152,7 @@ export function CreateCustomPortfolio(props) {
                 data={data.associatedServiceOrBundle}
                 customStyles={customStyles}
                 expandableRows
-                selectableRows
+                // selectableRows
                 expandableRowExpanded={(row) => (row === expendedSubComponent)}
                 expandOnRowClicked
                 onRowClicked={(row) => setExpendedSubComponent(row)}
@@ -17256,9 +17253,9 @@ export function CreateCustomPortfolio(props) {
 
           <li className="border-bottom p-3">
             <div className="d-flex align-items-center">
-              <div class="checkbox mr-3">
+              {/* <div class="checkbox mr-3">
                 <input type="checkbox" value=""></input>
-              </div>
+              </div> */}
               <p className="mb-0 font-size-14">
                 {data?.componentCode ? data?.componentCode == "" ? "N/A" : data?.componentCode : "N/A"}
                 {/* {data.itemHeaderModel == undefined ?
@@ -19201,6 +19198,10 @@ export function CreateCustomPortfolio(props) {
 
   const showSearchPortfolioData = async () => {
     try {
+
+      if (portfolioId === 0 || portfolioId === null || portfolioId === undefined || portfolioId === "") {
+        throw "Create Solution First then You can Search Porfolio/Solution.";
+      }
 
       if (selectedItemType == "" ||
         querySearchSelector[0]?.selectFamily?.value == "" ||
