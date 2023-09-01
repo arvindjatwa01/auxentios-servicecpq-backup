@@ -64,6 +64,9 @@ import { fetchSegments } from "services/repairBuilderServices";
 import UpdateCoverageModal from "./components/UpdateCoverageModal";
 import PriceMethodTable from "./components/PriceMethodTable";
 import PriceSummaryTable from "./components/PriceSummaryTable";
+import { createSJQuote } from "services/repairQuoteServices";
+import QuoteModal from "./components/QuoteModal";
+import { REPAIR_QUOTE_DETAILS } from "navigation/CONSTANTS";
 
 function ServiceOnlyTemplates(props) {
   const history = useHistory();
@@ -79,6 +82,7 @@ function ServiceOnlyTemplates(props) {
   const [value, setValue] = React.useState("estimation");
   const [templateDBId, setTemplateDBId] = useState("");
   const [version, setVersion] = useState({ value: "Gold", label: "Gold" });
+  const [openQuotePopup, setOpenQuotePopup] = useState(false);
 
   const [selTemplateStatus, setSelTemplateStatus] = useState({
     value: "DRAFT",
@@ -88,7 +92,8 @@ function ServiceOnlyTemplates(props) {
   const [noOptionsModelCoverage, setNoOptionsModelCoverage] = useState(false);
   const [headerLoading, setHeaderLoading] = useState(false);
   const [templateId, setTemplateId] = useState("");
-
+  const [quoteDescription, setQuoteDescription] = useState("");
+  const [quoteReference, setQuoteReference] = useState("");
   const handleVersionTemplate = async (e) => {
     await updateTemplateVersion(templateDBId, e.value)
       .then((result) => {
@@ -227,6 +232,25 @@ function ServiceOnlyTemplates(props) {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
+  const handleCreateQuote = async () => {
+    await createSJQuote(templateDBId, quoteDescription, quoteReference).then(createdQuote => {
+      handleSnack('success',"Quote has been created successfully!");
+      let quoteDetails = {
+        quoteId: "",
+        // templateDBId: "",
+        type: "fetch",
+      };
+      quoteDetails.quoteId = createdQuote.quoteId;
+      // templateDetails.templateDBId = createdQuote.id;
+      history.push({
+        pathname: REPAIR_QUOTE_DETAILS,
+        state: quoteDetails,
+      });
+    }).catch(e => {
+      handleSnack("error", "Error occurred while creating quote");
+    })
+    setOpenQuotePopup(false);
+  };
 
   const customStyles = {
     rows: {
@@ -916,6 +940,15 @@ function ServiceOnlyTemplates(props) {
         severity={severity}
         message={snackMessage}
       />
+      <QuoteModal
+        setOpenQuotePopup={setOpenQuotePopup}
+        openQuotePopup={openQuotePopup}
+        setQuoteDescription={setQuoteDescription}
+        quoteDescription={quoteDescription}
+        quoteReference={quoteReference}
+        setQuoteReference={setQuoteReference}
+        handleCreateQuote={handleCreateQuote}
+      />
       {/* <CommanComponents/> */}
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div class="container-fluid ">
@@ -1014,9 +1047,8 @@ function ServiceOnlyTemplates(props) {
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
                     <MenuItem
-                      data-toggle="modal"
-                      data-target="#quotecreat"
-                      sx={{ marginInline: 2 }}
+                      onClick={() => setOpenQuotePopup(true)}
+                      className="custommenu ml-2 mr-4"
                     >
                       Quote
                     </MenuItem>

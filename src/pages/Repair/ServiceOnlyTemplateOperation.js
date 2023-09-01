@@ -406,7 +406,7 @@ function ServiceOnlyTemplateOperation(props) {
                   <EditIcon
                     onClick={() =>
                       ["DRAFT", "REVISED"].indexOf(
-                        activeElement?.builderStatus
+                        activeElement?.templateStatus
                       ) > -1
                         ? makeHeaderEditable()
                         : handleSnack(
@@ -446,7 +446,7 @@ function ServiceOnlyTemplateOperation(props) {
                 <KeyboardArrowRightIcon />
               </button>
               {showAddNewButton &&
-                ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
+                ["DRAFT", "REVISED"].indexOf(activeElement?.templateStatus) >
                   -1 && (
                   <button
                     className="btn-no-border ml-2"
@@ -702,9 +702,9 @@ function ServiceOnlyTemplateOperation(props) {
                                         <p className="mr-2 font-size-14 font-weight-500 mr-2">
                                           Total Parts
                                       </p>
-                                        <h6 className=" font-size-14 font-weight-600 text-primary">
+                                        <p className=" font-size-14 font-weight-600 text-primary">
                                         {partlistVersion.totalParts}
-                                      </h6>
+                                      </p>
                                     </div>
                                   </div>
                                   <div className="col-5">
@@ -712,20 +712,20 @@ function ServiceOnlyTemplateOperation(props) {
                                         <p class="mr-2 font-size-14 font-weight-500 mr-2">
                                           Total Cost
                                       </p>
-                                        <h6 className=" font-size-14 font-weight-600 text-primary">
-                                        $ {partlistVersion.totalPrice}
-                                      </h6>
+                                        <p className=" font-size-14 font-weight-600 text-primary">
+                                        $ {partlistVersion.totalPrice? parseFloat(partlistVersion.totalPrice).toFixed(2): 0.00}
+                                      </p>
                                     </div>
                                   </div>
                                     </div><div className="row mb-4">
                                   <div className="col-4">
                                     <div class="d-flex">
-                                        <p className="mr-2 font-size-14 font-weight-500 mr-2">
+                                        <p className="mr-2 font-size-14 font-weight-500">
                                           New
                                       </p>
-                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                        <p className="font-size-14 font-weight-600 text-primary align-items-center">
                                         {partlistVersion.totalNewParts}
-                                      </h6>
+                                      </p>
                                     </div>
                                   </div>
                                     <div className="col-4">
@@ -733,11 +733,11 @@ function ServiceOnlyTemplateOperation(props) {
                                         <p className="mr-2 font-size-14 font-weight-500 mr-2">
                                           Refurbished
                                       </p>
-                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                        <p className="font-size-14 font-weight-600 text-primary">
                                           {
                                             partlistVersion.totalRefurbishedParts
                                           }
-                                      </h6>
+                                      </p>
                                     </div>
                                   </div>
                                     <div className="col-4">
@@ -745,9 +745,9 @@ function ServiceOnlyTemplateOperation(props) {
                                         <p className="mr-2 font-size-14 font-weight-500 mr-2">
                                           Reman
                                       </p>
-                                        <h6 className="font-size-14 font-weight-600 text-primary">
+                                        <p className="font-size-14 font-weight-600 text-primary">
                                         {partlistVersion.totalRemanParts}
-                                      </h6>
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
@@ -822,9 +822,9 @@ function ServiceOnlyTemplateOperation(props) {
                                 <p className="mr-2 font-size-14 font-weight-500 mr-2">
                                   Estimated Hours
                                 </p>
-                                <h6 className=" font-size-14 font-weight-600 text-primary">
+                                <p className=" font-size-14 font-weight-600 text-primary">
                                   {operationData.serviceEstimation.totalParts}
-                                </h6>
+                                </p>
                               </div>
                             </div>
                             <div className="col-6">
@@ -832,9 +832,9 @@ function ServiceOnlyTemplateOperation(props) {
                                 <p class="mr-2 font-size-14 font-weight-500 mr-2">
                                   Total Cost
                                 </p>
-                                <h6 className=" font-size-14 font-weight-600 text-primary">
+                                <p className=" font-size-14 font-weight-600 text-primary">
                                   $ {operationData.serviceEstimation.netPrice}
-                                </h6>
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -844,10 +844,10 @@ function ServiceOnlyTemplateOperation(props) {
                                 <p className="mr-2 font-size-14 font-weight-500 mr-2">
                                   Labor
                                 </p>
-                                <h6 className="font-size-14 font-weight-600 text-primary">
+                                <p className="font-size-14 font-weight-600 text-primary">
                                   ${" "}
                                   {operationData.serviceEstimation.labourPrice}
-                                </h6>
+                                </p>
                               </div>
                             </div>
                             <div className="col-4">
@@ -855,13 +855,13 @@ function ServiceOnlyTemplateOperation(props) {
                                 <p className="mr-2 font-size-14 font-weight-500 mr-2">
                                   Consumables
                                 </p>
-                                <h6 className="font-size-14 font-weight-600 text-primary">
+                                <p className="font-size-14 font-weight-600 text-primary">
                                   ${" "}
                                   {
                                     operationData.serviceEstimation
                                       .consumablePrice
                                   }
-                                </h6>
+                                </p>
                               </div>
                             </div>
                             <div className="col-4">
@@ -869,13 +869,13 @@ function ServiceOnlyTemplateOperation(props) {
                                 <p className="mr-2 font-size-14 font-weight-500 mr-2">
                                   Misc
                                 </p>
-                                <h6 className="font-size-14 font-weight-600 text-primary ">
+                                <p className="font-size-14 font-weight-600 text-primary ">
                                   ${" "}
                                   {
                                     operationData.serviceEstimation
                                       .extraMiscellaneous
                                   }
-                                </h6>
+                                </p>
                               </div>
                             </div>
                           </div>

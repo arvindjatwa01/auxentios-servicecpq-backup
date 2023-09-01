@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { ADD_PL_QUOTE_ITEM, ADD_REPAIR_QUOTE_ITEM, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_REPAIR_QUOTE, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_PL_QUOTE_ITEM, UPDATE_QUOTE_PAYER, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
+import { ADD_PL_QUOTE_ITEM, ADD_REPAIR_QUOTE_ITEM, CREATE_PART_QUOTE_FROM_KIT, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_REPAIR_QUOTE, CREATE_REPAIR_QUOTE_FROM_SJ, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_PL_QUOTE_ITEM, UPDATE_QUOTE_PAYER, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -580,6 +580,53 @@ export const createSparePartQuote = (builderId, quoteDescription, quoteReference
         });
     } catch (error) {
       console.error("in RepairQuote > createSparePartQuote, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Create Quote from KIT
+export const createKITQuote = (kitId, quoteDescription, quoteReference) => {
+  console.log("RepairQuote > createKITQuote called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_PART_QUOTE_FROM_KIT(kitId, quoteDescription, quoteReference), config)
+        .then((res) => {
+          console.log("createKITQuote  > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while creating kit quotes");
+        })
+        .catch((err) => {
+          console.log("createKITQuote > axios err=", err);
+          reject("Error in createKITQuote axios!");
+        });
+    } catch (error) {
+      console.error("in RepairQuote > createKITQuote, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Create Quote from SJ
+export const createSJQuote = (standardJobId, quoteDescription, quoteReference) => {
+  console.log("RepairQuote > createKITQuote called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CREATE_REPAIR_QUOTE_FROM_SJ(standardJobId, quoteDescription, quoteReference), config)
+        .then((res) => {
+          console.log("createSJQuote  > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject("Error occurred while creating standa job quotes");
+        })
+        .catch((err) => {
+          console.log("createSJQuote > axios err=", err);
+          reject("Error in createSJQuote axios!");
+        });
+    } catch (error) {
+      console.error("in RepairQuote > createSJQuote, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import GapToEntitlement from "./GapToEntitlement";
+import SparepartSegment from "./SparepartSegment";
 
 export default function Insights(props) {
   const [insightType, setInsightType] = useState("propensity");
@@ -41,7 +42,7 @@ export default function Insights(props) {
                   <MenuItem value={"propensity"}>Propensity To Buy</MenuItem>
                   <MenuItem value={"entitlement"}>Gap To Entitlement</MenuItem>
                   <MenuItem value={"spare-parts-segment"}>
-                    Spare Parts Segment
+                    Parts Segmentation
                   </MenuItem>
                   <MenuItem value={"job-recommendation"}>
                     Job Hour Recommendation
@@ -56,6 +57,8 @@ export default function Insights(props) {
         </Grid>
         {insightType === 'propensity' && <Propensity />}
         {insightType === 'entitlement' && <GapToEntitlement />}
+        {insightType === 'spare-parts-segment' && <SparepartSegment />}
+
       </div>
     </div>
   );

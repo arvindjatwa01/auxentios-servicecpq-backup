@@ -1230,6 +1230,10 @@ export function SparePartsQuoteDetails(props) {
       partListId: "",
       type: "fetch",
     };
+    // builderDetails.builderId = selectedBuilder.builderId;
+    // builderDetails.bId = selectedBuilder.id;
+    // builderDetails.partListId = selectedBuilder.estimationNumber;
+    // builderDetails.versionNumber = selectedBuilder.versionNumber;
     history.push({
       pathname: "/RepairPartList/PartList",
       state: builderDetails,
