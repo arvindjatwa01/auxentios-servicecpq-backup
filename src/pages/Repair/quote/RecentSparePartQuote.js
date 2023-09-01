@@ -70,10 +70,10 @@ const RecentSparePartQuote = () => {
         setRecentQuotesLoading(false);
       })
       .catch((e) => {
-        if(e.message === "Access is denied")
+        if (e.message === "Access is denied")
           handleSnack("error", "You don't have access to this section!");
-        else if(e.message !== "Quote(s) is/are not found")
-          handleSnack("error", "Error occurred while fetching spare parts quotes!");        
+        else if (e.message !== "Quote(s) is/are not found")
+          handleSnack("error", "Error occurred while fetching spare parts quotes!");
         setRecentQuotesLoading(false);
       });
   };
@@ -115,91 +115,88 @@ const RecentSparePartQuote = () => {
             </div>
           </div>
           <div className="card p-4 mt-5">
-            <div className="mt-5">
-              {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
-              <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">
-                  RECENT SPARE PART QUOTE
-                </h6>
-                <div className="row">
-                  {recentQuotesLoading ? (
-                    <LoadingProgress />
-                  ) : recentQuotes.length > 0 ? (
-                    recentQuotes.map((indQuote) => (
-                      <div className="col-md-4">
-                        <div className="recent-items mt-3">
-                          <div className="d-flex justify-content-between align-items-center ">
-                            <p className="mb-0 overflow-hidden white-space">
-                              <FontAwesomeIcon
-                                className=" font-size-14"
-                                icon={faFileAlt}
+            <div className="recent-div p-3">
+              <h6 className="font-weight-600 text-grey mb-0">
+                RECENT SPARE PART QUOTE
+              </h6>
+              <div className="row">
+                {recentQuotesLoading ? (
+                  <LoadingProgress />
+                ) : recentQuotes.length > 0 ? (
+                  recentQuotes.map((indQuote) => (
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space">
+                            <FontAwesomeIcon
+                              className=" font-size-14"
+                              icon={faFileAlt}
+                            />
+                            <span className="font-weight-500 ml-2">
+                              {indQuote.quoteName}
+                            </span>
+                            <span
+                              className="ml-2"
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 800,
+                              }}
+                            >
+                              {indQuote.version ? parseFloat(indQuote.version.substring(8)).toFixed(1) : ""}
+                            </span>
+                          </p>
+                          <div className="d-flex align-items-center">
+                            <a
+                              href={undefined}
+                              className="btn-sm"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <i
+                                className="fa fa-pencil"
+                                aria-hidden="true"
+                                onClick={() => makeQuoteEditable(indQuote)}
+                              ></i>
+                            </a>
+                            <a href="#" className="ml-3 font-size-14">
+                              <FontAwesomeIcon icon={faShareAlt} />
+                            </a>
+                            <a href="#" className="ml-3 font-size-14">
+                              <FontAwesomeIcon icon={faFolderPlus} />
+                            </a>
+                            <a href="#" className="ml-3 font-size-14">
+                              <FontAwesomeIcon icon={faUpload} />
+                            </a>
+                            <a href="#" className="ml-2 p-0 more-icon-div">
+                              <MuiMenuComponent
+                                className=" p-0 font-size-14"
+                                options={activityOptions}
                               />
-                              <span className="font-weight-500 ml-2">
-                                {indQuote.quoteName}
-                              </span>
-                              <span
-                                className="ml-2"
-                                style={{
-                                  fontSize: 9,
-                                  fontWeight: 800,
-                                }}
-                              >
-                                {indQuote.version ? parseFloat(indQuote.version.substring(8)).toFixed(1) : ""}
-                              </span>
-                            </p>
-                            <div className="d-flex align-items-center">
-                              <a
-                                href={undefined}
-                                className="btn-sm"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <i
-                                  className="fa fa-pencil"
-                                  aria-hidden="true"
-                                  onClick={() => makeQuoteEditable(indQuote)}
-                                ></i>
-                              </a>
-                              <a href="#" className="ml-3 font-size-14">
-                                <FontAwesomeIcon icon={faShareAlt} />
-                              </a>
-                              <a href="#" className="ml-3 font-size-14">
-                                <FontAwesomeIcon icon={faFolderPlus} />
-                              </a>
-                              <a href="#" className="ml-3 font-size-14">
-                                <FontAwesomeIcon icon={faUpload} />
-                              </a>
-                              <a href="#" className="ml-2 p-0 more-icon-div">
-                                <MuiMenuComponent
-                                  className=" p-0 font-size-14"
-                                  options={activityOptions}
-                                />
-                              </a>
-                            </div>
+                            </a>
                           </div>
                         </div>
-                        <div className="d-flex justify-content-between align-items-center mt-2">
-                          <p className="font-size-12 mb-0">
-                          <Moment format="HH:MM a">
-                              {indQuote.updatedAt}
-                            </Moment>
-                            ,{" "}
-                            <Moment format="DD MMM YY">
-                              {indQuote.updatedAt}
-                            </Moment>
-                          </p>
-                          <p className="font-size-12 mb-0">Spare Part Quote</p>
-                        </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="ml-3 mt-4">
-                      <Typography>No Quotes Found</Typography>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">
+                          <Moment format="HH:MM a">
+                            {indQuote.updatedAt}
+                          </Moment>
+                          ,{" "}
+                          <Moment format="DD MMM YY">
+                            {indQuote.updatedAt}
+                          </Moment>
+                        </p>
+                        <p className="font-size-12 mb-0">Spare Part Quote</p>
+                      </div>
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="ml-3 mt-4">
+                    <Typography>No Quotes Found</Typography>
+                  </div>
+                )}
               </div>
             </div>
-          </div>          
+          </div>
         </div>
         {modalComponent}
       </div>

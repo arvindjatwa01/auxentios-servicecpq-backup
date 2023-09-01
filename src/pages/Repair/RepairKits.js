@@ -160,8 +160,8 @@ export const RepairKits = () => {
         res.map(kit => {
           let family = [], model = [];
           kit.coverages.map(coverage => {          
-          family.push(coverage.family);
-          model.push(coverage.model);          
+          family.push(coverage.coverageFamily);
+          model.push(coverage.coverageModel);          
         });
         // return {...kit, family : family, model: model};
         kit.family = family;

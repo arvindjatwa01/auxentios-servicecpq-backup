@@ -805,6 +805,7 @@ nav.main-menu li.hover>a span {
 
 .main-menu>ul>li>ul>li a {
   padding-left: 11px;
+  margin: 4px 0
 }
 
 .main-menu ul li.active a {
@@ -922,11 +923,16 @@ nav li {
   padding: 0;
 }
 
+.main-menu>ul>li, .main-menu>ul>li:active {
+  padding: 2px 0
+}
+
+
 .main-menu>ul>li:hover>a,
 nav.main-menu>ul>li.active>a {
   color: #872ff7;
   background-color: #872ff715;
-  margin: 4px 0;
+  /* margin: 4px 0; */
 }
 
 .main-menu>ul>li>ul>li:hover>a,

@@ -269,6 +269,8 @@ export const CREATE_REPAIR_QUOTE = (builderId, description, reference) => QUOTE_
 export const CREATE_SPARE_PART_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const CREATE_PART_QUOTE_FROM_KIT =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-kit-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const CREATE_REPAIR_QUOTE_FROM_SJ =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-sj-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const UPLOAD_ITEMS_TO_REP_QUOTE = () => QUOTE_REST_SERVICE + `/repair-buider/item/upload`;
+export const UPLOAD_ITEMS_TO_PARTS_QUOTE = () => QUOTE_REST_SERVICE + `/part-list/item/upload`;
 
 export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
 export const FETCH_REPAIR_QUOTE_VERSIONS = (quoteName) => QUOTE_REST_SERVICE + `/versions?quote_name=${quoteName}`;
