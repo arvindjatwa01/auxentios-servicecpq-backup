@@ -282,7 +282,7 @@ export default function SparepartSegment(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    Low
+                    High
                   </Grid>
                   <Grid
                     item
@@ -300,7 +300,7 @@ export default function SparepartSegment(props) {
                     direction="row"
                     justifyContent={"center"}
                   >
-                    High
+                    Low
                   </Grid>
                 </Grid>
                 <Divider sx={{ marginBlock: 3 }} />

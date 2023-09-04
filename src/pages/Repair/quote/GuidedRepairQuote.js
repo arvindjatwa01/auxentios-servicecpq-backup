@@ -42,7 +42,7 @@ import { templateSearch } from "services/templateService";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Tooltip, Typography } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
+import { REPAIR_QUOTE_DETAILS, STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import SearchComponentTemplate from "../components/SearchComponentTemplate";
 import QuoteRepairConfiguration from "./QuoteRepairConfiguration";
 import QuoteWithEvaluation from "./QuoteWithEvaluation";

@@ -45,7 +45,6 @@ export const SPARE_PARTS_QUOTE_REVIEWED ="/SparePartsQuoteReviewed";
 export const QUOTE_SPARE_PARTS_REVIEWED ="/quote/spare-part-reviewed";
 export const QUOTE_REPAIR_CREATE ="/repair-quote/create";
 export const TERMS_CONDITIONS ="/TermsConditions";
-export const REPAIR_QUOTE_CONFIGURATION ="/RepairQuoteConfiguration";
 export const SOLUTION_QUOTE ="/SolutionQuote";
 export const SOLUTION_QUOTE_SEARCH ="/SolutionQuoteSearch";
 export const SOLUTION_QUOTE_CONFIG ="/SolutionQuoteConfiguration";
