@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET } from "./CONSTANTS";
+import { FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -112,7 +112,7 @@ export const getPartsSegmentDetails = (cluster) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(FETCH_PROPENSITY_TO_BUY_DET(cluster), config)
+        .get(FETCH_PARTS_SEGMENT_DETAILS(cluster), config)
         .then((res) => {
           console.log("getPartsSegmentDetails > axios res=", res);
           if (res.status === 200) resolve(res.data);

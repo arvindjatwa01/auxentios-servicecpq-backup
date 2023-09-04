@@ -4,49 +4,49 @@ import Typography from "@mui/material/Typography";
 
 import StopIcon from "@mui/icons-material/Square";
 import { Box, Card, Divider, Grid } from "@mui/material";
-import { getPropensityDetails, getPropensityToBuy } from "services/dashboardServices";
+import { getPartsSegmentDetails,  getPartsSegment } from "services/dashboardServices";
 import LoadingProgress from "../Repair/components/Loader";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
 
-const propensityValues = [
-  { propensity_level: "low", transaction_level: "low", value: "10%" },
-  { propensity_level: "low", transaction_level: "high", value: "12%" },
-  { propensity_level: "low", transaction_level: "medium", value: "15%" },
-  { propensity_level: "medium", transaction_level: "low", value: "2%" },
-  { propensity_level: "medium", transaction_level: "medium", value: "23%" },
-  { propensity_level: "medium", transaction_level: "high", value: "18%" },
-  { propensity_level: "high", transaction_level: "low", value: "2%" },
-  { propensity_level: "high", transaction_level: "medium", value: "21%" },
-  { propensity_level: "high", transaction_level: "high", value: "39%" },
+const partsSegmentValues = [
+  { cluster: "A_High",  parts_percentage: "10" },
+  { cluster: "A_Medium", parts_percentage: "12" },
+  { cluster: "A_Low",  parts_percentage: "15" },
+  { cluster: "B_High",  parts_percentage: "2" },
+  { cluster: "B_Medium",  parts_percentage: "23" },
+  { cluster: "B_Low",  parts_percentage: "18" },
+  { cluster: "C_High",  parts_percentage: "2" },
+  { cluster: "C_Medium",  parts_percentage: "21" },
+  { cluster: "C_Low",  parts_percentage: "39" },
 ];
 
-const propensityMatrix = [
-  ["low", "low", "#ff6493"],
-  ["medium", "low", "#00b8b0"],
-  ["high", "low", "#00b8b0"],
-  ["low", "medium", "#ff6493"],
-  ["medium", "medium", "#872ff7"],
-  ["high", "medium", "#00b8b0"],
-  ["low", "high", "#872ff7"],
-  ["medium", "high", "#872ff7"],
-  ["high", "high", "#00b8b0"],
+const partsSegmentMatrix = [
+  ["A_High", "#ff6493"],
+  ["A_Medium", "#00b8b0"],
+  ["A_Low", "#00b8b0"],
+  ["B_High", "#ff6493"],
+  ["B_Medium", "#872ff7"],
+  ["B_Low", "#00b8b0"],
+  ["C_High", "#872ff7"],
+  ["C_Medium", "#872ff7"],
+  ["C_Low",  "#00b8b0"],
 ];
 
 export default function SparepartSegment(props) {
-  const [propensityData, setPropensityData] = useState([]);
+  const [partsSegmentData, setPartsSegmentData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
     const [isLoadingTable, setIsLoadingTable] = useState(false);
   useEffect(() => {
     setIsLoading(true);
-    getPropensityToBuy()
+    getPartsSegment()
       .then((res) => {
-        setPropensityData(res);
+        setPartsSegmentData(res);
         setIsLoading(false);
       })
       .catch((err) => {
         console.log("axios err=", err);
-        setPropensityData([]);
+        setPartsSegmentData([]);
         setIsLoading(false);
       });
 
@@ -54,59 +54,33 @@ export default function SparepartSegment(props) {
       console.log("axios cleanup.");
     };
   }, []);
-  const [showCustomerDetail, setShowCustomerDetail] = useState(false);
-  const [propensityDetails, setPropensityDetails] = useState([]);
-  const [selPropensityLevel, setSelPropensityLevel] = useState("");
-  const [selTransactionLevel, setSelTransactionLevel] = useState("");
+  const [showSegmentDetails, setShowSegmentDetails] = useState(false);
+  const [partsSegmentDetails, setPartsSegmentDetails] = useState([]);
+  const [selectedCluster, setSelectedCluster] = useState("");
 
-  const handleClickPropensity = (propensityLevel, transactionLevel) => {
+  const handleClickPartsSegment = (cluster) => {
     setIsLoadingTable(true);
-    setPropensityDetails([]);
-    setSelPropensityLevel(propensityLevel);
-    setSelTransactionLevel(transactionLevel);
-    getPropensityDetails(propensityLevel, transactionLevel).then((res) => {
-        setPropensityDetails(res);
+    setPartsSegmentDetails([]);
+    setSelectedCluster(cluster);
+    getPartsSegmentDetails(cluster).then((res) => {
+        setPartsSegmentDetails(res);
         setIsLoadingTable(false);
       })
       .catch((err) => {
         console.log("axios err=", err);
-        setPropensityDetails([]);
+        setPartsSegmentDetails([]);
         setIsLoadingTable(false);
       });
-    setShowCustomerDetail(true);
+    setShowSegmentDetails(true);
   };
   const customerDetailColumns = [
-    { field: "customer_id", headerName: "Customer ID", width: 100 },
-    { field: "customer_name", headerName: "Customer Name", width: 130 },
-    { field: "customer_group", headerName: "Customer Group", width: 130 },
-    { field: "customer_segment", headerName: "Customer Segment", width: 130 },
-    { field: "customer_level", headerName: "Customer Level", width: 130 },
-    { field: "last_purchase", headerName: "Last Purchase Date", width: 130 },
-    { field: "recency", headerName: "Recency", width: 100 },
-    { field: "frequency", headerName: "Frequency", width: 100 },
-    { field: "transaction_value", headerName: "Transaction Value", width: 100 },
-    { field: "transaction_level", headerName: "Transaction Level", width: 100 },
-    { field: "min_discount", headerName: "Min Discount", width: 100 },
-    { field: "max_discount", headerName: "Max Discount", width: 100 },
-    { field: "avg_discount", headerName: "Avg Discount", width: 100 },
-    { field: "equipment_no", headerName: "Equipment #", width: 130 },
-    { field: "description", headerName: "Description", width: 130 },
-    { field: "maker", headerName: "Maker", width: 130 },
-    { field: "maker_serial_num", headerName: "Maker Serial#", width: 130 },
-    { field: "model_prefix", headerName: "Model Prefix", width: 130 },
-    { field: "model", headerName: "Model", width: 130 },
-    { field: "brand", headerName: "Brand", width: 130 },
-    { field: "product_segment", headerName: "Product Segment", width: 130 },
-    {
-      field: "warranty_availability",
-      headerName: "Warranty Availability",
-      width: 130,
-    },
-    { field: "planned_usage", headerName: "Planned Usage", width: 130 },
-    { field: "warranty", headerName: "Warranty", width: 130 },
-    { field: "contract", headerName: "Contract", width: 130 },
-    { field: "propensity_score", headerName: "Propensity Score", width: 130 },
-    { field: "propensity_level", headerName: "Propensity Level", width: 130 },
+    { field: "part_number", headerName: "Part #", flex: 1, minWidth: 200 },
+    { field: "part_class", headerName: "Part Class", flex: 1 },
+    { field: "part_description", headerName: "Part Description", flex:1 },
+    { field: "cost_price", headerName: "Cost Price", flex:1 },
+    { field: "quantity", headerName: "Quantity", flex:1 },
+    { field: "total_transaction", headerName: "Total Transaction", flex:1 },
+    // { field: "cluster", headerName: "Cluster", width: 100 }    
   ];
 
   const [pageSize, setPageSize] = useState(5);
@@ -123,27 +97,25 @@ export default function SparepartSegment(props) {
             marginBlock: 3,
             padding: 2,
           }}
-        >{showCustomerDetail ? (isLoading ? <LoadingProgress /> : (
+        >{showSegmentDetails ? (isLoading ? <LoadingProgress /> : (
             <Card sx={{width: "100%",
             marginInline: "auto", paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4}}>
               <Typography sx={{ fontSize: 16, fontWeight: 600, marginBlock: 2 }}>
-                Propensity to Buy Details
+                Parts Segmentation Details
               </Typography>
               <div style={{ display: "flex", marginBlock: 4 }}>
                 <Typography sx={{ fontSize: 14, marginRight: 2 }}>
                   {" "}
-                  <strong>Propensity Level : </strong> {selPropensityLevel}
+                  <strong>Cluster : </strong> {selectedCluster}
                 </Typography>
-                <Typography sx={{ fontSize: 14 }}>
-                  <strong>Transaction Level : </strong> {selTransactionLevel}
-                </Typography>
+                
               </div>
               <Box sx={{ height: 500 }}>
               <DataGrid
                 loading={isLoadingTable}
-                getRowId={(row) => row.customer_id}
+                getRowId={(row) => row.part_number}
                 sx={GRID_STYLE}
-                rows={propensityDetails}
+                rows={partsSegmentDetails}
                 columns={customerDetailColumns}
                 pageSize={pageSize}
                 onPageSizeChange={(newPageSize)=> setPageSize(newPageSize)}
@@ -156,7 +128,7 @@ export default function SparepartSegment(props) {
               >
                 <button
                   class="btn bg-primary text-white"
-                  onClick={() => setShowCustomerDetail(false)}
+                  onClick={() => setShowSegmentDetails(false)}
                 >
                   Back
                 </button>
@@ -209,7 +181,7 @@ export default function SparepartSegment(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    Low
+                    A
                   </Grid>
                   <Grid
                     item
@@ -219,7 +191,7 @@ export default function SparepartSegment(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    Medium
+                    B
                   </Grid>
                   <Grid
                     item
@@ -229,13 +201,13 @@ export default function SparepartSegment(props) {
                     justifyContent="center"
                     alignItems="center"
                   >
-                    High
+                    C
                   </Grid>
                 </Grid>
               </Grid>
               <Grid item xs={6}>
                 <Grid container>
-                  {propensityMatrix.map((indArray) => (
+                  {partsSegmentMatrix.map((indArray) => (
                     <Grid item xs={4}>
                       <Card
                         variant="outlined"
@@ -244,12 +216,12 @@ export default function SparepartSegment(props) {
                           paddingBlock: 4,
                           marginBlock: 1,
                           borderRadius: 2,
-                          backgroundColor: indArray[2],
+                          backgroundColor: indArray[1],
                           width: "90%",
                           marginInline: "auto",
                         }}
                         onClick={() =>
-                          handleClickPropensity(indArray[0], indArray[1])
+                          handleClickPartsSegment(indArray[0], indArray[1])
                         }
                         style={{ cursor: "pointer" }}
                       >
@@ -262,11 +234,10 @@ export default function SparepartSegment(props) {
                           style={{ fontSize: 18, fontWeight: "600" }}
                         >
                           {
-                            propensityData.filter(
+                            partsSegmentValues.filter(
                               (object) =>
-                                object.propensity_level === indArray[0] &&
-                                object.transaction_level === indArray[1]
-                            )[0]?.percentage_value
+                                object.cluster === indArray[0] 
+                            )[0]?.parts_percentage
                           }{" "}
                           %
                         </Typography>
