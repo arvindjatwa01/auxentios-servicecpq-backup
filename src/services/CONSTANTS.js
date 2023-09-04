@@ -329,6 +329,8 @@ export const QUOTE_COMMON_CONFIG_URL = QUOTE_COMMON_REST_SERVICE + "/common-conf
 export const FETCH_PROPENSITY_TO_BUY = "https://do7wm3sbgg.execute-api.us-east-2.amazonaws.com/propensity-to-buy";
 export const FETCH_PROPENSITY_TO_BUY_DET = (propensityLevel, transLevel) => `https://vlup8cemj1.execute-api.us-east-2.amazonaws.com/propensity_table?propensity_level=${propensityLevel}&transaction_level=${transLevel}`;
 export const FETCH_GAP_TO_ENTITLEMENT = `https://yr2btg0lie.execute-api.us-east-2.amazonaws.com/gap-to-entitlement`;
+export const FETCH_PARTS_SEGMENT_DETAILS = (cluster) => `https://eoa6truj1j.execute-api.us-east-2.amazonaws.com/parts_segmentation?cluster=${cluster}`;
+export const FETCH_PARTS_SEGMENT = () => `/parts_segmentation`;
 
 // Master Equipment 
 export const validate_Coverage_Get_Url =  DATA_SERVICE_URI + "equipment/validate-coverage" 

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { FETCH_GAP_TO_ENTITLEMENT, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET } from "./CONSTANTS";
+import { FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -83,3 +83,48 @@ export const getGapToEntitlement = () => {
       }
     });
   };
+
+  //Fetch parts segments
+export const getPartsSegment = () => {
+  console.log("Dashboard Service > partsSegment called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_PARTS_SEGMENT, config)
+        .then((res) => {
+          console.log("getPropensityToBuy > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getPropensityToBuy > axios err=", err);
+          reject("Error in getPropensityToBuy axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getPropensityToBuy, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getPartsSegmentDetails = (cluster) => {
+  console.log("Dashboard Service > getPartsSegmentDetails called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_PROPENSITY_TO_BUY_DET(cluster), config)
+        .then((res) => {
+          console.log("getPartsSegmentDetails > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getPartsSegmentDetails > axios err=", err);
+          reject("Error in getPartsSegmentDetails axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getPartsSegmentDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
