@@ -45,7 +45,7 @@ const customStyles = {
 };
 
 const PortfolioItemTabsModal = (props) => {
-    const { show, hideModal } = props;
+    const { show, hideModal, componentDataTabShow } = props;
     const [activeTab, setActiveTab] = useState(1);
     const [bundleServiceNeed, setBundleServiceNeed] = useState(true);
 
@@ -174,7 +174,7 @@ const PortfolioItemTabsModal = (props) => {
                             >
                                 <Tab label="Portfolio Item" value={1} />
                                 <Tab label="Service/Bundle" value={2} disabled={!bundleServiceNeed} />
-                                <Tab label="Component Data" value={3} />
+                                {componentDataTabShow && <Tab label="Component Data" value={3} />}
                                 <Tab label="Price Calculator" value={4} />
                                 <Tab label="Review" value={5} />
                             </TabList>

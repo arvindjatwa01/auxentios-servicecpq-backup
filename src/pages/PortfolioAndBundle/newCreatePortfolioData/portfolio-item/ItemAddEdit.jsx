@@ -8,7 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Select from "react-select";
 import { FormControlLabel, FormGroup, Switch, } from "@mui/material";
 import { Link } from "react-router-dom";
-import { isEmptyData, isEmptySelectData } from "../utilities/textUtilities";
+import { errorToastMessage, isEmptyData, isEmptySelectData } from "../utilities/textUtilities";
 import $ from "jquery";
 import { useAppSelector } from "../../../../app/hooks";
 
@@ -129,8 +129,10 @@ const ItemAddEdit = (props) => {
         quantity: 1,
         numberOfEvents: "",
         standardJobId: "",
+        standardJobIdSearch: false,
         templateDescription: "",
         repairKitId: "",
+        repairKitIdSearch: false,
         kitDescription: "",
         repairOption: "",
         headerdescription: "",
@@ -208,7 +210,7 @@ const ItemAddEdit = (props) => {
 
     // template Id(StandardJobId) search
     const handleSearchStandardJobId = async (e) => {
-        setItemRequestObj((prev) => ({ ...prev, standardJobId: e.target.value }))
+        setItemRequestObj((prev) => ({ ...prev, standardJobId: e.target.value, standardJobIdSearch: true, }))
         setStandardJobIdDetails({ templateDBId: "", templateType: "", templateId: "", })
         if (e.target.value.length === 0) {
             setSearchedStandardJobIdList([])
@@ -228,7 +230,8 @@ const ItemAddEdit = (props) => {
             templateType: currentItem.templateType,
             templateId: currentItem.templateId,
         });
-        setItemRequestObj((prev) => ({ ...prev, standardJobId: currentItem.standardJobId, templateDescription: currentItem.description }))
+        setItemRequestObj((prev) => ({ ...prev, standardJobId: currentItem.standardJobId, templateDescription: currentItem.description, standardJobIdSearch: false }))
+        setSearchedStandardJobIdList([]);
     }
 
     // go to template Screen
@@ -264,7 +267,7 @@ const ItemAddEdit = (props) => {
 
     // Related kit Id(RepairKitId) search
     const handleSearchRepairKitId = async (e) => {
-        setItemRequestObj((prev) => ({ ...prev, repairKitId: e.target.value }))
+        setItemRequestObj((prev) => ({ ...prev, repairKitId: e.target.value, repairKitIdSearch: true, }))
         if (e.target.value.length === 0) {
             setSearchedRepairKitIdList([])
         } else {
@@ -278,7 +281,7 @@ const ItemAddEdit = (props) => {
 
     // handle Select Repair Kit Id
     const handleSelectRepairKitId = (currentItem) => {
-        setItemRequestObj((prev) => ({ ...prev, repairKitId: currentItem.kitId, kitDescription: currentItem.description }))
+        setItemRequestObj((prev) => ({ ...prev, repairKitId: currentItem.kitId, kitDescription: currentItem.description, repairKitIdSearch: false, }))
     }
 
     // handle Item Edit flag
@@ -306,6 +309,65 @@ const ItemAddEdit = (props) => {
             partListId: "",
             type: "fetch",
         };
+    }
+
+    const checkInputValidation = () => {
+        if (itemActiveTab === "itemSummary") {
+            if (isPortfolioItem && isEmptyData(itemRequestObj.name)) {
+                errorToastMessage("Name is a required field, you can’t leave it blank")
+                return false;
+            } else if (isPortfolioItem && isEmptyData(itemRequestObj.description)) {
+                errorToastMessage("Description is a required field, you can’t leave it blank")
+                return false;
+            } else if (isEmptyData(itemRequestObj.usageIn)) {
+                errorToastMessage("Usage In is a required field, you can’t leave it blank")
+                return false;
+            } else if (isEmptyData(itemRequestObj.taskType)) {
+                errorToastMessage("Task Type is a required field, you can’t leave it blank")
+                return false;
+            } else if (isEmptyData(itemRequestObj.startUsage)) {
+                errorToastMessage("Start Usage is a required field, you can’t leave it blank")
+                return false;
+            } else if (parseInt(itemRequestObj.startUsage) < 0) {
+                errorToastMessage("Start Usage must not be negative")
+                return false;
+            } else if (isEmptyData(itemRequestObj.endUsage)) {
+                errorToastMessage("End Usage is a required field, you can’t leave it blank")
+                return false;
+            } else if (parseInt(itemRequestObj.endUsage) < 0) {
+                errorToastMessage("End Usage must not be negative")
+                return false;
+            } else if (parseInt(itemRequestObj.startUsage) > parseInt(itemRequestObj.endUsage)) {
+                errorToastMessage("Start Usage must not be greater to End Usage")
+                return false;
+            } else if (isEmptyData(itemRequestObj.unit)) {
+                errorToastMessage("Unit is a required field, you can’t leave it blank")
+                return false;
+            } else if (isEmptyData(itemRequestObj.recommendedValue)) {
+                errorToastMessage("Recommended Value is a required field, you can’t leave it blank")
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
+    const handleAddUpdateItem = async () => {
+        if (!editItemData) {
+            if (!editItemData && !checkInputValidation()) {
+                return;
+            }
+            if (itemActiveTab === "itemSummary") {
+                setItemActiveTab("relatedTemplate")
+            } else if (itemActiveTab === "relatedTemplate") {
+                if (isEmptyData(itemRequestObj.standardJobId)) {
+                    
+                    setItemActiveTab("relatedKit")
+                }
+            } else if (itemActiveTab === "relatedKit") {
+
+            }
+        }
     }
 
     return (
@@ -457,13 +519,15 @@ const ItemAddEdit = (props) => {
                     </> : <>
                         <div className="row mt-4 input-fields">
                             <div className="col-md-6 col-sm-6">
-                                <div className="form-group w-100">
-                                    <label className="text-light-dark font-size-12 font-weight-500">NAME</label>
-                                    <input type="text" className="form-control border-radius-10" placeholder="Required*" name="name"
-                                        value={itemRequestObj.name} onChange={handleInputTextChange}
-                                    />
-                                    <div className="css-w8dmq8">*Mandatory</div>
-                                </div>
+                                {isPortfolioItem &&
+                                    <div className="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500">NAME</label>
+                                        <input type="text" className="form-control border-radius-10" placeholder="Required*" name="name"
+                                            value={itemRequestObj.name} onChange={handleInputTextChange}
+                                        />
+                                        <div className="css-w8dmq8">*Mandatory</div>
+                                    </div>
+                                }
                             </div>
                             <div className="col-md-6 col-sm-6">
                                 <div className="form-group w-100">
@@ -757,7 +821,7 @@ const ItemAddEdit = (props) => {
                                         <ul className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
                                             id="style" style={{ display: "block" }}
                                         >
-                                            {itemRequestObj.standardJobId.length !== 0 && searchedStandardJobIdList.length === 0 ?
+                                            {itemRequestObj.standardJobId.length !== 0 && itemRequestObj.standardJobIdSearch && searchedStandardJobIdList.length === 0 ?
                                                 <li className="list-group-item">No Record Found</li>
                                                 :
                                                 searchedStandardJobIdList.map((currentItem, i) => (
@@ -917,7 +981,7 @@ const ItemAddEdit = (props) => {
                                         <ul className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
                                             id="style" style={{ display: "block" }}
                                         >
-                                            {itemRequestObj.repairKitId.length !== 0 && searchedRepairKitIdList.length === 0 ?
+                                            {itemRequestObj.repairKitId.length !== 0 && itemRequestObj.repairKitIdSearch && searchedRepairKitIdList.length === 0 ?
                                                 <li className="list-group-item">No Record Found</li> :
                                                 searchedRepairKitIdList.map((currentItem, i) => (
                                                     <li className="list-group-item" key={i}
@@ -1039,9 +1103,7 @@ const ItemAddEdit = (props) => {
                 </TabPanel>
             </TabContext>
             <div className="pull-right mt-3">
-                <Link className="btn cursor bg-primary text-white border mr-4"
-                // onClick={handleSummaryAndTemplateTabs}
-                >
+                <Link className="btn cursor bg-primary text-white border mr-4" onClick={handleAddUpdateItem}>
                     {editItemData ? "Next" : "Save & Next"}
                 </Link>
             </div>

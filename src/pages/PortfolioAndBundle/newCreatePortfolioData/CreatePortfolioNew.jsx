@@ -22,7 +22,7 @@ import $ from "jquery";
 import Select from 'react-select';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from "@date-io/date-fns";
-import { getPortfolioCommonConfig, getSolutionPriceCommonConfig, getValidityKeyValue } from '../../..//services/index';
+import { createCoverage, createPortfolio, getPortfolioCommonConfig, getSolutionPriceCommonConfig, getValidityKeyValue, portfolioPriceAgreementCreation, portfolioPriceCreation, updatePortfolio, updatePortfolioPrice } from '../../..//services/index';
 import { FONT_STYLE_SELECT } from "../../Repair/CONSTANTS";
 
 import { isEmptyData, isEmptySelectData } from './utilities/textUtilities';
@@ -83,7 +83,6 @@ export const CreatePortfolio = () => {
     const productHierarchyKeyValuePair = useAppSelector(selectStrategyTaskOption(selectProductList));
     const geographicKeyValuePair = useAppSelector(selectStrategyTaskOption(selectGeographicalList));
 
-
     // Price tab Key-Value -pair list
     const [priceListKeyValuePair, setPriceListKeyValuePair] = useState([])
     const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([])
@@ -94,24 +93,22 @@ export const CreatePortfolio = () => {
     ]);
     const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState([])
 
-
     const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
     const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({ value: "STANDARD", label: "Standard (Bronze)" })
-
     const [portfolioStatusKeyValuePair, setPortfolioStatusKeyValuePair] = useState([]);
     const [portfolioStatus, setPortfolioStatus] = useState({ value: "DRAFT", label: "Draft", })
     const [isActivePortfolio, setIsActivePortfolio] = useState(false);
 
-    const [portfolioId, setPortfolioId] = useState(null);
+    const [portfolioRecordId, setPortfolioRecordId] = useState(0);
     const [portfolioHeaderActiveTab, setPortfolioHeaderActiveTab] = useState("general");
     const [portfolioTabsEditView, setPortfolioTabsEditView] = useState({
         generalTabEdit: false,
         validityTabEdit: false,
         strategyTabEdit: false,
-        administrativeTabEdit: false,
         priceTabEdit: false,
         priceAgreementTabEdit: false,
         coverageTabEdit: false,
+        administrativeTabEdit: false,
     });
 
     const [isPriceAgreementDisable, setIsPriceAgreementDisable] = useState(false);
@@ -149,6 +146,7 @@ export const CreatePortfolio = () => {
     })
 
     const [priceTabData, setPriceTabData] = useState({
+        portfolioPriceId: 0,
         priceList: "",
         priceMethod: "",
         priceDate: new Date(),
@@ -164,6 +162,7 @@ export const CreatePortfolio = () => {
     })
 
     const [priceAgreementTableRow, setPriceAgreementTableRow] = useState([])
+    const [priceAgreementIds, setPriceAgreementIds] = useState([])
 
     const [searchCoverageData, setSearchCoverageData] = useState([])
     const [checkedCoverageData, setCheckedCoverageData] = useState([])
@@ -389,7 +388,7 @@ export const CreatePortfolio = () => {
 
             if (keyName === "strategyTask") {
                 _strategyTabData.taskType = "";
-                dispatch(taskActions.updateList(e.value))
+                dispatch(taskActions.updateTask(e.value))
             }
             setStrategyTabData(_strategyTabData)
         } catch (error) {
@@ -557,7 +556,7 @@ export const CreatePortfolio = () => {
     const viewGeneralTabData = () => {
         return (
             <>
-                {!portfolioTabsEditView.generalViewOnly ?
+                {!portfolioTabsEditView.generalTabEdit ?
                     <>
                         <div className="row mt-4 input-fields">
                             <div className="col-md-6 col-sm-6">
@@ -583,7 +582,7 @@ export const CreatePortfolio = () => {
                                     <input type="text" name="name" className="form-control text-primary border-radius-10" placeholder="Name"
                                         value={generalTabData.name}
                                         onChange={handleGeneralTabTextChange}
-                                        disabled={portfolioId === null ? false : true}
+                                        disabled={portfolioRecordId === 0 ? false : true}
                                     />
                                     <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
@@ -652,48 +651,41 @@ export const CreatePortfolio = () => {
                         <div className="row mt-4">
                             <div className="col-md-4 col-sm-3">
                                 <div className="form-group">
-                                    <p className="font-size-12 font-weight-500 mb-2">
-                                        PORTFOLIO NAME
-                                    </p>
+                                    <p className="font-size-12 font-weight-500 mb-2">SELECT TYPE</p>
                                     <h6 className="font-weight-500 text-primary font-size-17">
-                                        {generalTabData.name == "" || generalTabData.name == null ? "NA" : generalTabData.name}
+                                        {isEmptySelectData(generalTabData.headerType?.value) ? "NA" : generalTabData.headerType?.value}
                                     </h6>
                                 </div>
                             </div>
                             <div className="col-md-4 col-sm-3">
                                 <div className="form-group">
-                                    <p className="font-size-12 font-weight-500 mb-2">
-                                        PORTFOLIO DESCRIPTION
-                                    </p>
-                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {generalTabData.description == "" || generalTabData.description == null ? "NA" : generalTabData.description}
+                                    <p className="font-size-12 font-weight-500 mb-2">PORTFOLIO NAME</p>
+                                    <h6 className="font-weight-500 text-primary font-size-17">
+                                        {isEmptyData(generalTabData.name) ? "NA" : generalTabData.name}
                                     </h6>
                                 </div>
                             </div>
                             <div className="col-md-4 col-sm-3">
                                 <div className="form-group">
-                                    <p className="font-size-12 font-weight-500 mb-2">
-                                        REFERENCE
-                                    </p>
+                                    <p className="font-size-12 font-weight-500 mb-2">PORTFOLIO DESCRIPTION</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {generalTabData.externalReference == "" ||
-                                            generalTabData.externalReference == null ||
-                                            generalTabData.externalReference == "string"
-                                            ? "NA" : generalTabData.externalReference}
+                                        {isEmptyData(generalTabData.description) ? "NA" : generalTabData.description}
                                     </h6>
                                 </div>
                             </div>
                             <div className="col-md-4 col-sm-3">
                                 <div className="form-group">
-                                    <p className="font-size-12 font-weight-500 mb-2">
-                                        CUSTOMER SEGMENT
-                                    </p>
+                                    <p className="font-size-12 font-weight-500 mb-2"> REFERENCE</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {generalTabData?.customerSegment == "" ||
-                                            generalTabData?.customerSegment == null ||
-                                            generalTabData?.customerSegment == undefined ||
-                                            generalTabData?.customerSegment?.label == "string"
-                                            ? "NA" : generalTabData?.customerSegment?.label}
+                                        {isEmptyData(generalTabData.externalReference) ? "NA" : generalTabData.externalReference}
+                                    </h6>
+                                </div>
+                            </div>
+                            <div className="col-md-4 col-sm-3">
+                                <div className="form-group">
+                                    <p className="font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
+                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                        {isEmptySelectData(generalTabData.customerSegment?.value) ? "NA" : generalTabData.customerSegment?.label}
                                     </h6>
                                 </div>
                             </div>
@@ -1635,9 +1627,326 @@ export const CreatePortfolio = () => {
         )
     }
 
-    // handle next Click for Portfolio Create/Update
-    const handleNextClick = () => {
+    // Capitalize First Latter
+    const capitalizeFirstLetter = (inputString) => {
+        return inputString.charAt(0).toUpperCase() + inputString.slice(1).toLowerCase();
+    }
 
+    // Error Toast Message
+    const errorToastMessage = (message) => (
+        toast("😐" + message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        })
+    )
+
+    // Toast Success Message
+    const successToastMessage = (message) => (
+        toast("👏" + message, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        })
+    )
+
+    // check General tab Input Validation
+    const checkInputValidation = (activeTab) => {
+        if (activeTab == "general" && !portfolioTabsEditView.generalViewOnly) {
+            if (isEmptyData(generalTabData.headerType?.value)) {
+                errorToastMessage("Select Type is a required field, you can’t leave it blank");
+                return false;
+            } else if (isEmptyData(generalTabData.name)) {
+                errorToastMessage(generalTabData.headerType?.value + " Name is a required field, you can’t leave it blank")
+                return false;
+            } else if (isEmptyData(generalTabData.externalReference)) {
+                errorToastMessage("Reference is a required field, you can’t leave it blank")
+                return false;
+            }
+            return true;
+        } else {
+            if (isEmptyData(portfolioRecordId)) {
+                errorToastMessage("Please create " + generalTabData.headerType?.value + " First");
+                return false;
+            } else {
+                if (activeTab == "strategy" && !portfolioTabsEditView.strategyTabEdit) {
+                    if (isEmptyData(strategyTabData.categoryUsage?.value)) {
+                        errorToastMessage("Category usage is a required field, you can’t leave it blank");
+                        return false;
+                    } else if (isEmptyData(strategyTabData.strategyTask?.value)) {
+                        errorToastMessage("Strategy Task is a required field, you can’t leave it blank")
+                        return false;
+                    }
+                    return true;
+                } else if (activeTab === "price" && !portfolioTabsEditView.priceTabEdit) {
+                    if (isEmptyData(priceTabData.priceMethod?.value)) {
+                        errorToastMessage("Price method is a required field, you can’t leave it blank");
+                        return false;
+                    }
+                    return true;
+                } else if (activeTab === "administrative" && !portfolioTabsEditView.administrativeTabEdit) {
+                    if (isEmptyData(administrativeTabData.preparedBy)) {
+                        errorToastMessage("Prepared By is a required field, you can’t leave it blank");
+                        return false;
+                    } else if (isEmptySelectData(administrativeTabData.salesOffice?.value)) {
+                        errorToastMessage("Sales Office/Branch is a required field, you can’t leave it blank");
+                        return false;
+                    } else if (isEmptySelectData(administrativeTabData.offerValidity?.value)) {
+                        errorToastMessage("Offer validity is a required field, you can’t leave it blank");
+                        return false;
+                    }
+                    return true;
+                }
+                return true;
+            }
+            return true;
+        }
+    }
+
+    // Create/Update portfolio Price
+    const portfolioPriceCreateUpdate = async () => {
+        let priceReqObj = {
+            priceMethod: priceTabData.priceMethod?.value || "LIST_PRICE",
+            priceType: priceTabData.priceType?.value || "EVENT_BASSD",
+            priceList: priceTabData.priceList?.value || "COUNTRY",
+            priceDate: priceTabData.priceDate,
+            currency: "INR",
+            validFrom: validityTabData.validFrom,
+            validTo: validityTabData.validTo,
+            calculatedPriceRule: "",
+            userId: ""
+        }
+
+        if (isEmptyData(priceTabData.portfolioPriceId)) {
+            const portfolioPriceCreate = await portfolioPriceCreation(priceReqObj);
+            if (portfolioPriceCreate.status === 200) {
+                setPriceTabData({
+                    ...priceTabData,
+                    portfolioPriceId: portfolioPriceCreate.data.portfolioPriceId,
+                    netPrice: portfolioPriceCreate.data.totalPrice,
+                    calculatedPrice: portfolioPriceCreate.data.calculatedPrice,
+                })
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            const portfolioPriceUpdate = await updatePortfolioPrice(priceReqObj, priceTabData.portfolioPriceId)
+            if (portfolioPriceUpdate.status === 200) {
+                setPriceTabData({
+                    ...priceTabData,
+                    netPrice: portfolioPriceUpdate.data.totalPrice,
+                    calculatedPrice: portfolioPriceUpdate.data.calculatedPrice,
+                });
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    // Create/Update Price Agreement
+    const portfolioPriceAgreementCreateUpdate = async () => {
+        const _priceAgreementIds = [...priceAgreementIds];
+        if (priceAgreementTableRow.length !== 0) {
+            for (let i = 0; i < priceAgreementTableRow.length; i++) {
+                var reqObj = {
+                    itemType: isEmptyData(priceAgreementTableRow[i].itemType) ? "EMPTY" : priceAgreementTableRow[i].itemType,
+                    itemNumber: priceAgreementTableRow[i].itemNumber,
+                    specialPrice: parseFloat(priceAgreementTableRow[i].specialPrice),
+                    discount: parseFloat(priceAgreementTableRow[i].discount),
+                    absoluteDiscount: parseFloat(priceAgreementTableRow[i].absoluteDiscount)
+                }
+                const priceAgreementCreate = await portfolioPriceAgreementCreation(reqObj)
+                if (priceAgreementCreate.status === 200) {
+                    _priceAgreementIds.push({ priceAgreementId: priceAgreementCreate.data.priceAgreementId })
+                }
+            }
+        }
+        setPriceAgreementIds(_priceAgreementIds);
+    }
+
+    // Create coverage 
+    const createPortfolioCoverage = async () => {
+        try {
+            let _portfolioCoverageIds = [...portfolioCoverageIds]
+            for (let i = 0; i < selectedCoverageData.length; i++) {
+                if (selectedCoverageData[i].model === "" || selectedCoverageData[i].family === "") {
+                    throw "Family or Model values are missing";
+                }
+                let reqObj = {
+                    coverageId: 0,
+                    serviceId: 0,
+                    modelNo: selectedCoverageData[i].model,
+                    serialNumber: selectedCoverageData[i].includedSerialNoModalData[0].serialNumber?.value || "",
+                    startSerialNumber: "",
+                    endSerialNumber: "",
+                    serialNumberPrefix: selectedCoverageData[i].prefix,
+                    family: selectedCoverageData[i].family,
+                    make: selectedCoverageData[i].make,
+                    fleet: "",
+                    fleetSize: "SMALL",
+                    location: "",
+                    startDate: "",
+                    endDate: "",
+                    actions: "",
+                    createdAt: "",
+                };
+
+                const coverageCreate = await createCoverage(reqObj);
+                _portfolioCoverageIds.push({ coverageId: coverageCreate.coverageId });
+            }
+            setPortfolioCoverageIds(_portfolioCoverageIds);
+        } catch (error) {
+            errorToastMessage(error);
+            return;
+        }
+    }
+
+    // handle next Click for Portfolio Create/Update
+    const handleNextClick = async (e) => {
+        try {
+            let { id } = e.target;
+            // strategyTabData
+            let requestObj = {
+                portfolioId: portfolioRecordId,
+                headerType: generalTabData.headerType?.value || "",
+                name: generalTabData.name,
+                description: generalTabData.description,
+                externalReference: generalTabData.externalReference,
+                customerSegment: generalTabData.customerSegment?.value || "",
+
+                validFrom: validityTabData.validFrom,
+                validTo: validityTabData.validTo,
+                startUsage: validityTabData.fromInput,
+                endUsage: validityTabData.toInput,
+                unit: validityTabData.from?.value || "EMPTY",
+
+                usageCategory: strategyTabData.categoryUsage?.value || "EMPTY",
+                strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
+                taskType: strategyTabData.taskType?.value || "EMPTY",
+                // optionalServices: [],
+                optionalServices: "",
+                responseTime: strategyTabData.responseTime?.value || "EMPTY",
+                productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
+                geographic: strategyTabData.geographic?.value || "EMPTY",
+
+                portfolioPrice: isEmptyData(priceTabData.portfolioPriceId) ? null : {
+                    portfolioPriceId: priceTabData.portfolioPriceId,
+                },
+
+                preparedBy: administrativeTabData.preparedBy,
+                approvedBy: administrativeTabData.approvedBy,
+                preparedOn: administrativeTabData.preparedOn,
+                revisedBy: administrativeTabData.revisedBy,
+                revisedOn: administrativeTabData.revisedOn,
+                salesOffice: administrativeTabData.salesOffice?.value || "",
+                offerValidity: administrativeTabData.preparedBy?.value || "",
+
+                items: [],
+                coverages: portfolioCoverageIds,
+
+                status: portfolioStatus?.value,
+                supportLevel: portfolioSupportLevel?.value,
+
+                machineType: "EMPTY",
+                searchTerm: "",
+                lubricant: true,
+                customerId: 0,
+                customerGroup: "",
+                availability: "EMPTY",
+                type: "EMPTY",
+                application: "EMPTY",
+                contractOrSupport: "EMPTY",
+                lifeStageOfMachine: "EMPTY",
+                numberOfEvents: 0,
+                rating: "",
+                additionals: "",
+                template: true,
+                visibleInCommerce: true
+
+            }
+            if (!checkInputValidation(id)) {
+                return;
+            }
+            if (id == "general") {
+                if (isEmptyData(portfolioRecordId)) {
+                    const portfolioCreate = await createPortfolio(requestObj);
+                    if (portfolioCreate.status === 200) {
+                        successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + " " + generalTabData.name + " Created successfully")
+                        setPortfolioRecordId(portfolioCreate.data.portfolioId);
+                        setPortfolioHeaderActiveTab("validity")
+                        setPortfolioTabsEditView(prev => ({ ...prev, generalTabEdit: true, }))
+                    }
+                } else {
+                    const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
+                    if (portfolioUpdate.status === 200) {
+                        successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                        setPortfolioHeaderActiveTab("validity")
+                        setPortfolioTabsEditView(prev => ({ ...prev, generalTabEdit: true, }))
+                    }
+                }
+            } else if (id == "validity") {
+                const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
+                if (portfolioUpdate.status === 200) {
+                    successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                }
+                setPortfolioHeaderActiveTab("strategy")
+                setPortfolioTabsEditView(prev => ({
+                    ...prev,
+                    validityTabEdit: true,
+                }))
+            } else if (id == "strategy") {
+                const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
+                if (portfolioUpdate.status === 200) {
+                    successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                    setPortfolioHeaderActiveTab(isPriceAgreementDisable ? "priceAgreement" : "price")
+                    setPortfolioTabsEditView(prev => ({ ...prev, strategyTabEdit: true, }))
+                }
+            } else if (id == "price") {
+                if (portfolioPriceCreateUpdate()) {
+                    const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
+                    if (portfolioUpdate.status === 200) {
+                        successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                        setPortfolioHeaderActiveTab("coverage")
+                        setPortfolioTabsEditView(prev => ({ ...prev, priceTabEdit: true, }))
+                    }
+                }
+            } else if (id == "priceAgreement") {
+                portfolioPriceAgreementCreateUpdate();
+                setPortfolioHeaderActiveTab("coverage")
+                setPortfolioTabsEditView(prev => ({ ...prev, priceAgreementTabEdit: true, }))
+            } else if (id == "coverage") {
+                createPortfolioCoverage();
+                setPortfolioHeaderActiveTab("administrative")
+                setPortfolioTabsEditView(prev => ({ ...prev, coverageTabEdit: true, }))
+            } else if (id == "administrative") {
+                const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
+                if (portfolioUpdate.status === 200) {
+                    successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                    setPortfolioTabsEditView(prev => ({ ...prev, administrativeTabEdit: true, }))
+                }
+            }
+        } catch (error) {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
     }
 
     return (
@@ -1657,7 +1966,7 @@ export const CreatePortfolio = () => {
                         <h5 className="d-flex justify-content-between align-items-center mb-0">
                             <div className="d-flex align-items-center">
                                 <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                                    {portfolioId ? "Portfolio Details" : "New Portfolio*"}
+                                    {portfolioRecordId !== 0 ? "Portfolio Details" : "New Portfolio*"}
                                 </span>
                                 <a className="btn-sm cursor">
                                     <i className="fa fa-pencil" aria-hidden="true" onClick={handlePortfolioHeaderTabDataViews} />
@@ -1690,7 +1999,9 @@ export const CreatePortfolio = () => {
                             </TabContext>
                         </Box>
                     </div>
-                    <PortfolioItemsList />
+                    <PortfolioItemsList
+                        componentDataTabShow={strategyTabData.categoryUsage?.value === "REPAIR_OR_REPLACE" ? true : false}
+                    />
                 </div>
             </div>
             <ToastContainer />

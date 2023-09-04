@@ -61,6 +61,7 @@ import { useHistory } from "react-router-dom";
 
 const AddCustomPortfolioItem = (props) => {
 
+  console.log("AddCustomPortfolioItem Props ", props);
   const history = useHistory();
   var CookiesSetData = Cookies.get("loginTenantDtl");
   var getCookiesJsonData;
@@ -525,9 +526,12 @@ const AddCustomPortfolioItem = (props) => {
       id: props.passItemEditRowData.customItemId,
       name: props.passItemEditRowData.itemName,
       description: itemBodyDescription,
-      usageIn: { label: usageIn, value: usageIn },
-      usageType: { label: usage, value: usage },
-      taskType: { label: taskType[0], value: taskType[0] },
+      usageIn: (usageIn === "" || usageIn === "EMPTY" || usageIn === null || usageIn === undefined) ? "" :
+        { label: usageIn, value: usageIn },
+      usageType: (usage === "" || usage === "EMPTY" || usage === null || usage === undefined) ? "" :
+        { label: usage, value: usage },
+      taskType: (taskType[0] === "" || taskType[0] === "EMPTY" || taskType[0] === null || taskType[0] === undefined) ? "" :
+        { label: taskType[0], value: taskType[0] },
       // frequency: { label: frequency, value: frequency },
       // unit: { label: unit, value: unit },
       unit: ((res.data?.usageUnit === "") || (res.data?.usageUnit === null) || (res.data?.usageUnit === "EMPTY")) ? "" :
@@ -538,12 +542,15 @@ const AddCustomPortfolioItem = (props) => {
       quantity: res.data.quantity,
       numberOfEvents: res.data.numberOfEvents,
       strategyTask: { label: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy, value: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy },
-      templateId: (res.data.standardJobId == "" || res.data.standardJobId == "string") ? "" : res.data.standardJobId,
-      templateDescription: {
-        label: res.data.templateDescription,
-        value: res.data.templateDescription,
-      },
-      repairOption: (res.data.repairKitId == "" || res.data.repairKitId == "string") ? "" : res.data.repairKitId,
+      templateId: (res.data.standardJobId === "" || res.data.standardJobId === "string" || res.data.standardJobId === null ||
+        res.data.standardJobId === undefined) ? "" : res.data.standardJobId,
+      templateDescription: (res.data.templateDescription === "" || res.data.templateDescription === "string" || res.data.templateDescription === null) ? "" :
+        {
+          label: res.data.templateDescription,
+          value: res.data.templateDescription,
+        },
+      repairOption: (res.data.repairKitId === "" || res.data.repairKitId === "string" || res.data.repairKitId === null ||
+        res.data.repairKitId === undefined) ? "" : res.data.repairKitId,
       kitDescription: (res.data.repairKitId == "" || res.data.repairKitId == "string") ? "" : {
         label: "rty",
         value: "rty",
@@ -788,8 +795,7 @@ const AddCustomPortfolioItem = (props) => {
 
       if (tabs == "relatedTemplate") {
 
-        if ((addPortFolioItem.templateId == "") ||
-          (addPortFolioItem.templateId == undefined)) {
+        if ((addPortFolioItem.templateId == "") || (addPortFolioItem.templateId == null) || (addPortFolioItem.templateId == undefined)) {
           setTabs("relatedKit");
           // setTabs((prev) => `${parseInt(prev) + 1}`);
         }
@@ -2491,7 +2497,7 @@ const AddCustomPortfolioItem = (props) => {
                 label="Related Kit"
                 value="relatedKit"
                 // disabled={addPortFolioItem.templateId != "" && editable != true} />
-                disabled={addPortFolioItem.templateId != ""} />
+                disabled={addPortFolioItem.templateId != "" || addPortFolioItem.templateId != ""} />
             </TabList>
           </Box>
           <TabPanel value="itemSummary">

@@ -184,7 +184,8 @@ import {
   getItemDataById,
   getCustomServiceItemsList,
   linkCustomItemToPortfolio,
-  getPortfolioAndSolutionCommonConfig
+  getPortfolioAndSolutionCommonConfig,
+  getCustomItemPriceData
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -2057,8 +2058,8 @@ export function CreateCustomPortfolio(props) {
         throw "Something went wrong/Item not created"
       }
 
-      if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
-        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
+      if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null) || (itemPriceData.standardJobId === undefined)) &&
+        ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null) || (itemPriceData.repairKitId === undefined)))) {
         let reqObjSJId = {
           itemId: itemRes.data.customItemId,
           standardJobId: itemPriceData.standardJobId,
@@ -2066,17 +2067,13 @@ export function CreateCustomPortfolio(props) {
           itemPriceDataId: itemPriceData.customItemPriceDataId
         }
 
-        if (((itemPriceData.standardJobId == "") ||
-          (itemPriceData.standardJobId == null)) &&
-          ((itemPriceData.repairKitId != "") ||
-            (itemPriceData.repairKitId != null))) {
+        if (((itemPriceData.standardJobId == "") || (itemPriceData.standardJobId == null)) &&
+          ((itemPriceData.repairKitId != "") || (itemPriceData.repairKitId != null))) {
           const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
         }
 
-        if (((itemPriceData.repairKitId == "") ||
-          (itemPriceData.repairKitId == null)) &&
-          ((itemPriceData.standardJobId != "") ||
-            (itemPriceData.standardJobId != null))) {
+        if (((itemPriceData.repairKitId == "") || (itemPriceData.repairKitId == null)) &&
+          ((itemPriceData.standardJobId != "") || (itemPriceData.standardJobId != null))) {
           const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
         }
       }
@@ -2420,8 +2417,8 @@ export function CreateCustomPortfolio(props) {
 
       if (itemRes.status === 200) {
 
-        if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null)) &&
-          ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null)))) {
+        if (!(((itemPriceData.standardJobId === "") || (itemPriceData.standardJobId === null) || (itemPriceData.standardJobId === undefined)) &&
+          ((itemPriceData.repairKitId === "") || (itemPriceData.repairKitId === null) || (itemPriceData.repairKitId === undefined)))) {
           let reqObjSJId = {
             itemId: itemRes.data.customItemId,
             standardJobId: itemPriceData.standardJobId,
@@ -2429,17 +2426,13 @@ export function CreateCustomPortfolio(props) {
             itemPriceDataId: itemPriceData.customItemPriceDataId
           }
 
-          if (((itemPriceData.standardJobId == "") ||
-            (itemPriceData.standardJobId == null)) &&
-            ((itemPriceData.repairKitId != "") ||
-              (itemPriceData.repairKitId != null))) {
+          if (((itemPriceData.standardJobId == "") || (itemPriceData.standardJobId == null)) &&
+            ((itemPriceData.repairKitId != "") || (itemPriceData.repairKitId != null))) {
             const price_RkIdUpdate = await customPortfolioItemPriceRkId(reqObjSJId)
           }
 
-          if (((itemPriceData.repairKitId == "") ||
-            (itemPriceData.repairKitId == null)) &&
-            ((itemPriceData.standardJobId != "") ||
-              (itemPriceData.standardJobId != ""))) {
+          if (((itemPriceData.repairKitId == "") || (itemPriceData.repairKitId == null)) &&
+            ((itemPriceData.standardJobId != "") || (itemPriceData.standardJobId != ""))) {
             const price_SjIdUpdate = await customPortfolioItemPriceSJID(reqObjSJId)
           }
         }
@@ -3176,10 +3169,8 @@ export function CreateCustomPortfolio(props) {
           ((res.data.customItemBodyModel.repairKitId === "") || (res.data.customItemBodyModel.repairKitId === null) || (res.data.customItemBodyModel.repairKitId === undefined)))) {
 
           // Update ItemPrice RkId
-          if (((res.data.customItemBodyModel.standardJobId === "" == "") ||
-            (res.data.customItemBodyModel.standardJobId === "" == null)) &&
-            ((res.data.customItemBodyModel.repairKitId != "") ||
-              (res.data.customItemBodyModel.repairKitId != null))) {
+          if (((res.data.customItemBodyModel.standardJobId === "" == "") || (res.data.customItemBodyModel.standardJobId === "" == null)) &&
+            ((res.data.customItemBodyModel.repairKitId != "") || (res.data.customItemBodyModel.repairKitId != null))) {
             itemPriceRes = await customPortfolioItemPriceRkId({
               standardJobId: res.data.customItemBodyModel.standardJobId,
               repairKitId: res.data.customItemBodyModel.repairKitId,
@@ -3507,6 +3498,28 @@ export function CreateCustomPortfolio(props) {
       );
     }
 
+    // get CustomItem details 
+    let _customItemPrices = [];
+    const customItemDetails = getCustomItemDataById(addPortFolioItem.id);
+    if (customItemDetails.status === 200) {
+      let selectBundleServiceData = customItemDetails.data;
+      let selectBundleServiceHeaderData = selectBundleServiceData["customItemHeaderModel"];
+      let selectBundleServiceBodyData = selectBundleServiceData["customItemBodyModel"];
+      _customItemPrices.push([...selectBundleServiceBodyData["customItemPrices"]])
+    }
+
+    if ((editAbleItemPriceData?.customItemPriceDataId === "" || editAbleItemPriceData?.customItemPriceDataId === null ||
+      editAbleItemPriceData?.customItemPriceDataId === 0 || editAbleItemPriceData?.customItemPriceDataId === undefined)) {
+      _customItemPrices = [..._customItemPrices];
+    } else {
+      const exists = _customItemPrices.some(obj => obj.customItemPriceDataId === itemPriceData.customItemPriceDataId);
+      if (!exists) {
+        _customItemPrices.push({
+          customItemPriceDataId: itemPriceData.customItemPriceDataId
+        });
+      }
+    }
+
     let reqObj = {
       customItemId: parseInt(addPortFolioItem.id),
       itemName: addPortFolioItem.name,
@@ -3564,11 +3577,12 @@ export function CreateCustomPortfolio(props) {
         unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
         frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
         recommendedValue: parseInt(addPortFolioItem.recommendedValue),
-        customItemPrices: editAbleItemPriceData?.customItemPriceDataId != "" ? [
-          {
-            customItemPriceDataId: itemPriceData.customItemPriceDataId
-          }
-        ] : [],
+        customItemPrices: _customItemPrices,
+        // customItemPrices: editAbleItemPriceData?.customItemPriceDataId != "" ? [
+        //   {
+        //     customItemPriceDataId: itemPriceData.customItemPriceDataId
+        //   }
+        // ] : [],
       },
     };
 
@@ -3845,6 +3859,28 @@ export function CreateCustomPortfolio(props) {
 
           }
 
+          // get CustomItem details 
+          let _customItemPrices = [];
+          const customItemDetails = getCustomItemDataById(addPortFolioItem.id);
+          if (customItemDetails.status === 200) {
+            let selectBundleServiceData = customItemDetails.data;
+            let selectBundleServiceHeaderData = selectBundleServiceData["customItemHeaderModel"];
+            let selectBundleServiceBodyData = selectBundleServiceData["customItemBodyModel"];
+            _customItemPrices.push([...selectBundleServiceBodyData["customItemPrices"]])
+          }
+
+          if ((editAbleItemPriceData.customItemPriceDataId === "" || editAbleItemPriceData.customItemPriceDataId === null ||
+            editAbleItemPriceData.customItemPriceDataId === 0 || editAbleItemPriceData.customItemPriceDataId === undefined)) {
+            _customItemPrices = [..._customItemPrices];
+          } else {
+            const exists = _customItemPrices.some(obj => obj.customItemPriceDataId === editAbleItemPriceData.customItemPriceDataId);
+            if (!exists) {
+              _customItemPrices.push({
+                customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
+              });
+            }
+          }
+
           let reqObj = {
             customItemId: parseInt(addPortFolioItem.id),
             itemName: addPortFolioItem.name,
@@ -3904,12 +3940,13 @@ export function CreateCustomPortfolio(props) {
               avgUsage: 0,
               unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
               frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
-              customItemPrices: (editAbleItemPriceData?.customItemPriceDataId == "" ||
-                editAbleItemPriceData.customItemPriceDataId == undefined) ? [] : [
-                {
-                  customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
-                }
-              ]
+              customItemPrices: _customItemPrices,
+              // customItemPrices: (editAbleItemPriceData?.customItemPriceDataId == "" ||
+              //   editAbleItemPriceData.customItemPriceDataId == undefined) ? [] : [
+              //   {
+              //     customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
+              //   }
+              // ]
             }
           }
 
@@ -4100,6 +4137,28 @@ export function CreateCustomPortfolio(props) {
 
           }
 
+          // get CustomItem details 
+          let _customItemPrices = [];
+          const customItemDetails = getCustomItemDataById(addPortFolioItem.id);
+          if (customItemDetails.status === 200) {
+            let selectBundleServiceData = customItemDetails.data;
+            let selectBundleServiceHeaderData = selectBundleServiceData["customItemHeaderModel"];
+            let selectBundleServiceBodyData = selectBundleServiceData["customItemBodyModel"];
+            _customItemPrices.push([...selectBundleServiceBodyData["customItemPrices"]])
+          }
+
+          if ((editAbleItemPriceData.customItemPriceDataId === "" || editAbleItemPriceData.customItemPriceDataId === null ||
+            editAbleItemPriceData.customItemPriceDataId === 0 || editAbleItemPriceData.customItemPriceDataId === undefined)) {
+            _customItemPrices = [..._customItemPrices];
+          } else {
+            const exists = _customItemPrices.some(obj => obj.customItemPriceDataId === editAbleItemPriceData.customItemPriceDataId);
+            if (!exists) {
+              _customItemPrices.push({
+                customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
+              });
+            }
+          }
+
           let reqObj = {
             customItemId: parseInt(addPortFolioItem.id),
             itemName: addPortFolioItem.name,
@@ -4162,12 +4221,13 @@ export function CreateCustomPortfolio(props) {
               avgUsage: passItemEditRowData?.customItemBodyModel?.avgUsage,
               unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
               frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
-              customItemPrices: (editAbleItemPriceData?.customItemPriceDataId == "" ||
-                editAbleItemPriceData.customItemPriceDataId == undefined) ? [] : [
-                {
-                  customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
-                }
-              ]
+              customItemPrices: _customItemPrices,
+              // customItemPrices: (editAbleItemPriceData?.customItemPriceDataId == "" ||
+              //   editAbleItemPriceData.customItemPriceDataId == undefined) ? [] : [
+              //   {
+              //     customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
+              //   }
+              // ],
             }
           }
 
@@ -11137,25 +11197,20 @@ export function CreateCustomPortfolio(props) {
                 }
 
                 // Update ItemPrice RkId
-                if (((standardJobIdIs == "") ||
-                  (standardJobIdIs == null)) &&
-                  ((repairKitIdIs != "") ||
-                    (repairKitIdIs != null))) {
+                if (((standardJobIdIs == "") || (standardJobIdIs == null)) &&
+                  ((repairKitIdIs != "") || (repairKitIdIs != null))) {
                   const updateRkIdPrice = await customPortfolioItemPriceRkId(updatePriceForCreatedItem)
                 }
 
                 // Update Item Price SjId
-                if (((repairKitIdIs == "") ||
-                  (repairKitIdIs == null)) &&
-                  ((standardJobIdIs != "") ||
-                    (standardJobIdIs != null))) {
+                if (((repairKitIdIs == "") || (repairKitIdIs == null)) &&
+                  ((standardJobIdIs != "") || (standardJobIdIs != null))) {
                   const updateSjIdPrice = await customPortfolioItemPriceSJID(updatePriceForCreatedItem)
                 }
               }
             }
           }
           setSelectedSolutionCustomItems(_selectedSolutionCustomItems)
-
         }
       }
       let _tempBundleItems = [...tempBundleItems];
@@ -11604,25 +11659,21 @@ export function CreateCustomPortfolio(props) {
           createItemsArr.push(customItemIds)
           _selectedSolutionCustomItemsArray.push({ customItemId: itemRes.data.customItemId })
           if (customPriceIdIs != 0) {
-            if (!(((standardJobIdIs === "") || (standardJobIdIs === null)) &&
-              ((repairKitIdIs === "") || (repairKitIdIs === null)))) {
+            if (!(((standardJobIdIs === "") || (standardJobIdIs === null) || (standardJobIdIs === undefined)) &&
+              ((repairKitIdIs === "") || (repairKitIdIs === null) || (repairKitIdIs === undefined)))) {
               var newreqObj = {
                 itemId: itemRes.data.customItemId,
                 standardJobId: standardJobIdIs,
                 repairKitId: repairKitIdIs,
                 itemPriceDataId: customPriceIdIs
               }
-              if (((standardJobIdIs == "") ||
-                (standardJobIdIs == null)) &&
-                ((repairKitIdIs != "") ||
-                  (repairKitIdIs != null))) {
+              if (((standardJobIdIs == "") || (standardJobIdIs == null)) &&
+                ((repairKitIdIs != "") || (repairKitIdIs != null))) {
                 const price_RkIdUpdate = await customPortfolioItemPriceRkId(newreqObj)
               }
 
-              if (((repairKitIdIs == "") ||
-                (repairKitIdIs == null)) &&
-                ((standardJobIdIs != "") ||
-                  (standardJobIdIs != null))) {
+              if (((repairKitIdIs == "") || (repairKitIdIs == null)) &&
+                ((standardJobIdIs != "") || (standardJobIdIs != null))) {
                 const price_SjIdUpdate = await customPortfolioItemPriceSJID(newreqObj)
               }
             }
@@ -14027,21 +14078,21 @@ export function CreateCustomPortfolio(props) {
       minWidth: "150px",
       maxWidth: "150px",
     },
-    {
-      name: (
-        <>
-          <div>Strategy</div>
-        </>
-      ),
-      // selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
-      // wrap: true,
-      // sortable: true,
-      // format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
-      selector: (row) => row?.itemHeaderStrategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row?.itemHeaderStrategy,
-    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Strategy</div>
+    //     </>
+    //   ),
+    //   // selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+    //   // wrap: true,
+    //   // sortable: true,
+    //   // format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
+    //   selector: (row) => row?.itemHeaderStrategy,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row?.itemHeaderStrategy,
+    // },
     {
       name: (
         <>
@@ -15599,6 +15650,28 @@ export function CreateCustomPortfolio(props) {
         //     unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
         //     itemPrices: serviceOrBundlePrefix === "BUNDLE" ?
         //       bundleServiceItemPriceData : [],
+        //   }
+        // }
+
+        // get CustomItem details 
+        let _customItemPrices = [];
+        // const customItemDetails = getCustomItemDataById(createServiceOrBundle.id);
+        // if (customItemDetails.status === 200) {
+        //   let selectBundleServiceData = customItemDetails.data;
+        //   let selectBundleServiceHeaderData = selectBundleServiceData["customItemHeaderModel"];
+        //   let selectBundleServiceBodyData = selectBundleServiceData["customItemBodyModel"];
+        //   _customItemPrices.push([...selectBundleServiceBodyData["customItemPrices"]])
+        // }
+
+        // if ((editAbleItemPriceData.customItemPriceDataId === "" || editAbleItemPriceData.customItemPriceDataId === null ||
+        //   editAbleItemPriceData.customItemPriceDataId === 0 || editAbleItemPriceData.customItemPriceDataId === undefined)) {
+        //   _customItemPrices = [..._customItemPrices];
+        // } else {
+        //   const exists = _customItemPrices.some(obj => obj.customItemPriceDataId === editAbleItemPriceData.customItemPriceDataId);
+        //   if (!exists) {
+        //     _customItemPrices.push({
+        //       customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId
+        //     });
         //   }
         // }
 
@@ -17202,9 +17275,9 @@ export function CreateCustomPortfolio(props) {
         <ul className="mb-0 component-li">
           <li className="border-bottom p-3">
             <div className="d-flex align-items-center">
-              <div class="checkbox mr-3">
+              {/* <div class="checkbox mr-3">
                 <input type="checkbox" value=""></input>
-              </div>
+              </div> */}
               <p className="mb-0 font-size-14">
                 {(data?.componentCode === "") || ((data?.componentCode === null) || (data?.componentCode === undefined)) ? "N/A" : data?.componentCode}
               </p>
@@ -18082,17 +18155,113 @@ export function CreateCustomPortfolio(props) {
 
   const handleComponentTabDataSave = async () => {
     try {
-      if ((portfolioId === undefined) || (portfolioId == null) || (portfolioId === "") || (portfolioId === 0)) {
-        throw "Please Create Solution First";
-      }
 
-      if ((currentItemId === null) || (currentItemId === "") || ((currentItemId === undefined) || (currentItemId == 0))) {
-        throw "Please Create Item First!";
-      }
 
       if (editComponentData) {
+        if ((itemPriceData.customItemPriceDataId === null) || (itemPriceData.customItemPriceDataId === undefined) ||
+          (itemPriceData.customItemPriceDataId === 0) || (itemPriceData.customItemPriceDataId === "")) {
+        } else {
+          let currencyIs = "";
+
+          for (let i = 0; i < tempBundleItems.length; i++) {
+            if (tempBundleItems[i].customItemId === currentItemId) {
+              currencyIs = tempBundleItems[i].customItemHeaderModel?.currency
+              break;
+            }
+          }
+          const resPrice = await getCustomItemPriceData(itemPriceData.customItemPriceDataId);
+          setPriceCalculator({
+            ...priceCalculator,
+            calculatedPrice: resPrice.data.calculatedPrice,
+            priceMethod: ((resPrice.data.priceMethod === "") ||
+              (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+              priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+            priceType: ((resPrice.data.priceType === "") ||
+              (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+              priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+            priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+              (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+              additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+            priceAdditionalInput: resPrice.data.additionalPriceValue,
+            discountTypeSelect: ((resPrice.data.discountType === "") ||
+              (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+              discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+            discountTypeInput: resPrice.data.discountValue,
+            year: ((resPrice.data.year === "") ||
+              (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+              { label: resPrice.data.year, value: resPrice.data.year },
+
+            noOfYear: resPrice.data.noOfYear,
+            startUsage: resPrice.data.startUsage,
+            endUsage: resPrice.data.endUsage,
+            recommendedValue: resPrice.data.recommendedValue,
+            // netPrice: resPrice.data.netService,
+            netPrice: resPrice.data.calculatedPrice,
+            totalPrice: resPrice.data.totalPrice,
+            id: resPrice.data.customItemPriceDataId,
+            numberOfEvents: resPrice.data.numberOfEvents,
+            portfolioDataId: resPrice.data?.customPortfolio?.portfolioId,
+
+            flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+            escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+              label: resPrice.data.priceEscalation,
+              value: resPrice.data.priceEscalation,
+            } : ""),
+            escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+              resPrice.data.priceEscalation : ""),
+            escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+              resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+                resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                  resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                    resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+            priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+            priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+              resPrice.data.sparePartsPriceBreakDownPercentage :
+              resPrice.data.labourPriceBreakDownPercentage != 0 ?
+                resPrice.data.labourPriceBreakDownPercentage :
+                resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                  resPrice.data.miscPriceBreakDownPercentage : 0,
+
+            priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+              label: "PARTS",
+              value: "PARTS",
+            } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+              label: "LABOR",
+              value: "LABOR",
+            } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+              label: "MISCELLANEOUS",
+              value: "MISCELLANEOUS",
+            } : "",
+
+            currency: ((currencyIs != "")) ? {
+              label: currencyIs,
+              value: currencyIs
+            } : "",
+            unit: addPortFolioItem?.unit,
+            frequency: addPortFolioItem?.frequency,
+            usageType: addPortFolioItem?.usageType,
+          })
+          setPriceBreakDownFieldsValue({
+            ...priceBreakDownFieldsValue,
+            parts: resPrice.data.sparePartsNOE,
+            labor: resPrice.data.labourNOE,
+            miscellaneous: resPrice.data.miscNOE,
+            service: resPrice.data.servicePrice,
+          })
+        }
         setTabs("5")
       } else {
+        if ((portfolioId === undefined) || (portfolioId == null) || (portfolioId === "") || (portfolioId === 0)) {
+          throw "Please Create Solution First";
+        }
+
+        if ((currentItemId === null) || (currentItemId === "") || ((currentItemId === undefined) || (currentItemId == 0))) {
+          throw "Please Create Item First!";
+        }
         let reqObj = {}
         let itemReqObj = {};
 
@@ -18649,160 +18818,7 @@ export function CreateCustomPortfolio(props) {
   const handleItemPriceCalculatorSave = async () => {
     try {
       console.log("priceCalculator ========= ", priceCalculator);
-      if ((priceCalculator.id === 0) || (priceCalculator.id === null) || (priceCalculator.id === undefined) || (priceCalculator.id === "")) {
-        throw `Please Create Item first`;
-      }
 
-      if (!bundleServiceNeed) {
-        if ((priceCalculator.startUsage == "") ||
-          (priceCalculator.startUsage == undefined)) {
-          throw "Start Usage is a required field, you can’t leave it blank";
-        }
-
-        if ((priceCalculator.endUsage == "") ||
-          (priceCalculator.endUsage == undefined)) {
-          throw "End Usage is a required field, you can’t leave it blank";
-        }
-
-        if (parseInt(priceCalculator.startUsage) > parseInt(priceCalculator.endUsage)) {
-          throw "start Usage must not be greater to End Usage.";
-        }
-
-        if ((priceCalculator.unit == "") ||
-          (priceCalculator.unit == undefined)) {
-          throw "Unit is a required field, you can’t leave it blank";
-        }
-
-        if ((priceCalculator.recommendedValue == "") ||
-          (priceCalculator.recommendedValue == undefined)) {
-          throw "Recommended Value is a required field, you can’t leave it blank";
-        }
-      }
-
-      // Previous item price update reqest obj  
-      // const updateItemPrice = {
-      //   customItemPriceDataId: priceCalculator.id,
-      //   quantity: 0,
-      //   standardJobId: addPortFolioItem.templateId,
-      //   repairKitId: addPortFolioItem.repairOption,
-      //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
-      //   repairOption: "",
-      //   additional: "",
-      //   partListId: "",
-      //   serviceEstimateId: "",
-      //   numberOfEvents: 0,
-      //   priceMethod: priceCalculator.priceMethod?.value,
-      //   priceType: priceCalculator.priceType?.value,
-      //   listPrice: 0,
-      //   priceEscalation: "",
-      //   calculatedPrice: 0,
-      //   flatPrice: 0,
-      //   year: priceCalculator?.year?.value,
-      //   noOfYear: priceCalculator?.noOfYear,
-      //   sparePartsPrice: 0,
-      //   sparePartsPriceBreakDownPercentage: 0,
-      //   servicePrice: 0,
-      //   labourPrice: 0,
-      //   labourPriceBreakDownPercentage: 0,
-      //   miscPrice: 0,
-      //   miscPriceBreakDownPercentage: 0,
-      //   totalPrice: 0,
-      //   netService: 0,
-      //   additionalPriceType: priceCalculator?.priceAdditionalSelect?.value,
-      //   additionalPriceValue: priceCalculator?.priceAdditionalInput,
-      //   discountType: priceCalculator?.discountTypeSelect?.value,
-      //   discountValue: priceCalculator?.discountTypeInput,
-      //   recommendedValue: priceCalculator?.recommendedValue,
-      //   startUsage: priceCalculator?.startUsage,
-      //   endUsage: priceCalculator?.endUsage,
-      //   sparePartsEscalation: 0,
-      //   labourEscalation: 0,
-      //   miscEscalation: 0,
-      //   serviceEscalation: 0,
-      //   withBundleService: true,
-      //   customPortfolio: ((portfolioId == 0) ||
-      //     (portfolioId == null) ||
-      //     (portfolioId == undefined) ||
-      //     (portfolioId == "")) ? null : {
-      //     portfolioId: portfolioId
-      //   },
-      //   tenantId: loginTenantId,
-      //   partsRequired: true,
-      //   labourRequired: true,
-      //   serviceRequired: true,
-      //   miscRequired: true,
-      //   inclusionExclusion: true
-      // }
-
-      // current item price update request obj
-      let updateItemPrice = {
-        customItemPriceDataId: priceCalculator.id,
-        quantity: 1,
-        standardJobId: addPortFolioItem.templateId,
-        repairKitId: addPortFolioItem.repairOption,
-        templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
-          (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateDescription?.value,
-        repairOption: "",
-        additional: "",
-        partListId: "",
-        serviceEstimateId: "",
-        numberOfEvents: 0,
-        frequency: ((addPortFolioItem.frequency === "") || (addPortFolioItem.frequency === null) ||
-          (addPortFolioItem.frequency === "EMPTY") || (addPortFolioItem.frequency === undefined)) ? "CYCLIC" :
-          typeof addPortFolioItem.frequency === "object" ? addPortFolioItem.frequency?.value.toUpperCase() : addPortFolioItem.frequency,
-        priceMethod: ((priceCalculator.priceMethod === "") || ((priceCalculator.priceMethod === null) ||
-          (priceCalculator.priceMethod === "EMPTY") || (priceCalculator.priceMethod === undefined))) ? "LIST_PRICE" : priceCalculator.priceMethod?.value,
-        priceType: ((priceCalculator.priceType === "") || ((priceCalculator.priceType === null) ||
-          (priceCalculator.priceType === "EMPTY") || (priceCalculator.priceType === undefined))) ? "EVENT_BASED" : priceCalculator.priceType?.value,
-        listPrice: 0,
-        priceEscalation: "",
-        calculatedPrice: 0,
-        flatPrice: ((priceCalculator.flatPrice === "") || (priceCalculator.flatPrice === null) ||
-          (priceCalculator.flatPrice === undefined)) ? 0 : priceCalculator.flatPrice,
-        year: priceCalculator?.year?.value,
-        noOfYear: parseInt(priceCalculator?.noOfYear),
-        sparePartsPrice: 0,
-        sparePartsPriceBreakDownPercentage: 0,
-        servicePrice: 0,
-        labourPrice: 0,
-        labourPriceBreakDownPercentage: 0,
-        miscPrice: 0,
-        miscPriceBreakDownPercentage: 0,
-        totalPrice: 0,
-        netService: 0,
-        additionalPriceType: ((priceCalculator?.priceAdditionalSelect === null) || (priceCalculator?.priceAdditionalSelect === "") ||
-          (priceCalculator?.priceAdditionalSelect === undefined) || (priceCalculator?.priceAdditionalSelect === "EMPTY")) ? "ABSOLUTE" : priceCalculator?.priceAdditionalSelect?.value,
-        additionalPriceValue: priceCalculator?.priceAdditionalInput,
-        discountType: ((priceCalculator?.discountTypeSelect === "") || (priceCalculator?.discountTypeSelect === null) ||
-          (priceCalculator?.discountTypeSelect === undefined) || (priceCalculator?.discountTypeSelect === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : priceCalculator?.discountTypeSelect?.value,
-        discountValue: priceCalculator?.discountTypeInput,
-        recommendedValue: parseInt(priceCalculator?.recommendedValue),
-        startUsage: parseInt(priceCalculator?.startUsage),
-        endUsage: parseInt(priceCalculator?.endUsage),
-        sparePartsEscalation: 0,
-        labourEscalation: 0,
-        miscEscalation: 0,
-        serviceEscalation: 0,
-        withBundleService: true,
-        sparePartsNOE: 0,
-        labourNOE: 0,
-        miscNOE: 0,
-        recommendedUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
-          (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "MONTH" :
-          addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
-        usageUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
-          (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "YEAR" : addPortFolioItem?.unit?.value,
-        customPortfolio: ((portfolioId == "") || (portfolioId == undefined) ||
-          (portfolioId == null) || (portfolioId == 0)) ? null : {
-          portfolioId: portfolioId
-        },
-        tenantId: loginTenantId,
-        partsRequired: true,
-        labourRequired: true,
-        serviceRequired: false,
-        miscRequired: true,
-        inclusionExclusion: false
-      }
       if (portfolioItemPriceEditable) {
         if (selectedSolutionCustomItems.length > 0) {
           var tempBundleItemsUrl = selectedSolutionCustomItems.map((data, i) =>
@@ -18837,6 +18853,161 @@ export function CreateCustomPortfolio(props) {
         const _tempBundleItems = [...tempBundleItems]
         setTabs("6")
       } else {
+        if ((priceCalculator.id === 0) || (priceCalculator.id === null) || (priceCalculator.id === undefined) || (priceCalculator.id === "")) {
+          throw `Please Create Item first`;
+        }
+
+        if (!bundleServiceNeed) {
+          if ((priceCalculator.startUsage == "") ||
+            (priceCalculator.startUsage == undefined)) {
+            throw "Start Usage is a required field, you can’t leave it blank";
+          }
+
+          if ((priceCalculator.endUsage == "") ||
+            (priceCalculator.endUsage == undefined)) {
+            throw "End Usage is a required field, you can’t leave it blank";
+          }
+
+          if (parseInt(priceCalculator.startUsage) > parseInt(priceCalculator.endUsage)) {
+            throw "start Usage must not be greater to End Usage.";
+          }
+
+          if ((priceCalculator.unit == "") ||
+            (priceCalculator.unit == undefined)) {
+            throw "Unit is a required field, you can’t leave it blank";
+          }
+
+          if ((priceCalculator.recommendedValue == "") ||
+            (priceCalculator.recommendedValue == undefined)) {
+            throw "Recommended Value is a required field, you can’t leave it blank";
+          }
+        }
+
+        // Previous item price update reqest obj  
+        // const updateItemPrice = {
+        //   customItemPriceDataId: priceCalculator.id,
+        //   quantity: 0,
+        //   standardJobId: addPortFolioItem.templateId,
+        //   repairKitId: addPortFolioItem.repairOption,
+        //   templateDescription: addPortFolioItem.templateId != "" ? addPortFolioItem.templateDescription?.value : "",
+        //   repairOption: "",
+        //   additional: "",
+        //   partListId: "",
+        //   serviceEstimateId: "",
+        //   numberOfEvents: 0,
+        //   priceMethod: priceCalculator.priceMethod?.value,
+        //   priceType: priceCalculator.priceType?.value,
+        //   listPrice: 0,
+        //   priceEscalation: "",
+        //   calculatedPrice: 0,
+        //   flatPrice: 0,
+        //   year: priceCalculator?.year?.value,
+        //   noOfYear: priceCalculator?.noOfYear,
+        //   sparePartsPrice: 0,
+        //   sparePartsPriceBreakDownPercentage: 0,
+        //   servicePrice: 0,
+        //   labourPrice: 0,
+        //   labourPriceBreakDownPercentage: 0,
+        //   miscPrice: 0,
+        //   miscPriceBreakDownPercentage: 0,
+        //   totalPrice: 0,
+        //   netService: 0,
+        //   additionalPriceType: priceCalculator?.priceAdditionalSelect?.value,
+        //   additionalPriceValue: priceCalculator?.priceAdditionalInput,
+        //   discountType: priceCalculator?.discountTypeSelect?.value,
+        //   discountValue: priceCalculator?.discountTypeInput,
+        //   recommendedValue: priceCalculator?.recommendedValue,
+        //   startUsage: priceCalculator?.startUsage,
+        //   endUsage: priceCalculator?.endUsage,
+        //   sparePartsEscalation: 0,
+        //   labourEscalation: 0,
+        //   miscEscalation: 0,
+        //   serviceEscalation: 0,
+        //   withBundleService: true,
+        //   customPortfolio: ((portfolioId == 0) ||
+        //     (portfolioId == null) ||
+        //     (portfolioId == undefined) ||
+        //     (portfolioId == "")) ? null : {
+        //     portfolioId: portfolioId
+        //   },
+        //   tenantId: loginTenantId,
+        //   partsRequired: true,
+        //   labourRequired: true,
+        //   serviceRequired: true,
+        //   miscRequired: true,
+        //   inclusionExclusion: true
+        // }
+
+        // current item price update request obj
+        let updateItemPrice = {
+          customItemPriceDataId: priceCalculator.id,
+          quantity: 1,
+          standardJobId: addPortFolioItem.templateId,
+          repairKitId: addPortFolioItem.repairOption,
+          templateDescription: ((addPortFolioItem.templateId === "") || (addPortFolioItem.templateId === null) ||
+            (addPortFolioItem.templateId === undefined)) ? "" : addPortFolioItem.templateDescription?.value,
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          frequency: ((addPortFolioItem.frequency === "") || (addPortFolioItem.frequency === null) ||
+            (addPortFolioItem.frequency === "EMPTY") || (addPortFolioItem.frequency === undefined)) ? "CYCLIC" :
+            typeof addPortFolioItem.frequency === "object" ? addPortFolioItem.frequency?.value.toUpperCase() : addPortFolioItem.frequency,
+          priceMethod: ((priceCalculator.priceMethod === "") || ((priceCalculator.priceMethod === null) ||
+            (priceCalculator.priceMethod === "EMPTY") || (priceCalculator.priceMethod === undefined))) ? "LIST_PRICE" : priceCalculator.priceMethod?.value,
+          priceType: ((priceCalculator.priceType === "") || ((priceCalculator.priceType === null) ||
+            (priceCalculator.priceType === "EMPTY") || (priceCalculator.priceType === undefined))) ? "EVENT_BASED" : priceCalculator.priceType?.value,
+          listPrice: 0,
+          priceEscalation: "",
+          calculatedPrice: 0,
+          flatPrice: ((priceCalculator.flatPrice === "") || (priceCalculator.flatPrice === null) ||
+            (priceCalculator.flatPrice === undefined)) ? 0 : priceCalculator.flatPrice,
+          year: priceCalculator?.year?.value,
+          noOfYear: parseInt(priceCalculator?.noOfYear),
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0,
+          netService: 0,
+          additionalPriceType: ((priceCalculator?.priceAdditionalSelect === null) || (priceCalculator?.priceAdditionalSelect === "") ||
+            (priceCalculator?.priceAdditionalSelect === undefined) || (priceCalculator?.priceAdditionalSelect === "EMPTY")) ? "ABSOLUTE" : priceCalculator?.priceAdditionalSelect?.value,
+          additionalPriceValue: priceCalculator?.priceAdditionalInput,
+          discountType: ((priceCalculator?.discountTypeSelect === "") || (priceCalculator?.discountTypeSelect === null) ||
+            (priceCalculator?.discountTypeSelect === undefined) || (priceCalculator?.discountTypeSelect === "EMPTY")) ? "PORTFOLIO_DISCOUNT" : priceCalculator?.discountTypeSelect?.value,
+          discountValue: priceCalculator?.discountTypeInput,
+          recommendedValue: parseInt(priceCalculator?.recommendedValue),
+          startUsage: parseInt(priceCalculator?.startUsage),
+          endUsage: parseInt(priceCalculator?.endUsage),
+          sparePartsEscalation: 0,
+          labourEscalation: 0,
+          miscEscalation: 0,
+          serviceEscalation: 0,
+          withBundleService: true,
+          sparePartsNOE: 0,
+          labourNOE: 0,
+          miscNOE: 0,
+          recommendedUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+            (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "MONTH" :
+            addPortFolioItem?.unit?.value === "YEAR" ? "MONTH" : addPortFolioItem?.unit?.value,
+          usageUnit: ((addPortFolioItem?.unit === "") || (addPortFolioItem?.unit === null) ||
+            (addPortFolioItem?.unit === "EMPTY") || (addPortFolioItem?.unit === undefined)) ? "YEAR" : addPortFolioItem?.unit?.value,
+          customPortfolio: ((portfolioId == "") || (portfolioId == undefined) ||
+            (portfolioId == null) || (portfolioId == 0)) ? null : {
+            portfolioId: portfolioId
+          },
+          tenantId: loginTenantId,
+          partsRequired: true,
+          labourRequired: true,
+          serviceRequired: false,
+          miscRequired: true,
+          inclusionExclusion: false
+        }
+
         const updatePriceId = await updateCustomPriceData(
           priceCalculator.id,
           updateItemPrice
@@ -19120,8 +19291,7 @@ export function CreateCustomPortfolio(props) {
       var _selectedSolutionCustomItems = [...selectedSolutionCustomItems];
       let _currentExpendableItemRow = { ...currentExpendableItemRow }
 
-
-
+      console.log("itemPriceData ========= ", itemPriceData);
       // if (_selectedSolutionCustomItems.length > 0) {
       //   var tempBundleItemsUrl = _selectedSolutionCustomItems.map((data, i) =>
       //     `itemIds=${data.customItemId}`
@@ -19164,9 +19334,111 @@ export function CreateCustomPortfolio(props) {
 
       // }
 
+      console.log("selectedSolutionCustomItems ======== ", selectedSolutionCustomItems);
       setItemListShowLoading(false);
       setShowAddBundleServiceItemsModelPopup(false)
+    } else {
+      if ((itemPriceData.customItemPriceDataId === null) || (itemPriceData.customItemPriceDataId === undefined) ||
+        (itemPriceData.customItemPriceDataId === 0) || (itemPriceData.customItemPriceDataId === "")) {
+      } else {
+
+
+        let currencyIs = "";
+
+        for (let i = 0; i < tempBundleItems.length; i++) {
+          if (tempBundleItems[i].customItemId === currentItemId) {
+            currencyIs = tempBundleItems[i].customItemHeaderModel?.currency
+            break;
+          }
+        }
+        const resPrice = await getCustomItemPriceData(itemPriceData.customItemPriceDataId);
+        setPriceCalculator({
+          ...priceCalculator,
+          calculatedPrice: resPrice.data.calculatedPrice,
+          priceMethod: ((resPrice.data.priceMethod === "") ||
+            (resPrice.data.priceMethod === null) || (resPrice.data.priceMethod === "EMPTY")) ? "" :
+            priceMethodKeyValue.find(o => o.value === resPrice.data.priceMethod),
+          priceType: ((resPrice.data.priceType === "") ||
+            (resPrice.data.priceType === null) || (resPrice.data.priceType === "EMPTY")) ? "" :
+            priceTypeKeyValue.find(o => o.value === resPrice.data.priceType),
+          priceAdditionalSelect: ((resPrice.data.additionalPriceType === "") ||
+            (resPrice.data.additionalPriceType === null) || (resPrice.data.additionalPriceType === "EMPTY")) ? { label: "Surcharge $", value: "ABSOLUTE" } :
+            additionalPriceHeadTypeKeyValue.find(o => o.value === resPrice.data.additionalPriceType),
+          priceAdditionalInput: resPrice.data.additionalPriceValue,
+          discountTypeSelect: ((resPrice.data.discountType === "") ||
+            (resPrice.data.discountType === null) || (resPrice.data.discountType === "EMPTY")) ? "" :
+            discountTypeOptions.find(o => o.value === resPrice.data.discountType),
+          discountTypeInput: resPrice.data.discountValue,
+          year: ((resPrice.data.year === "") ||
+            (resPrice.data.year === null) || (resPrice.data.year === "EMPTY")) ? "" :
+            { label: resPrice.data.year, value: resPrice.data.year },
+
+          noOfYear: resPrice.data.noOfYear,
+          startUsage: resPrice.data.startUsage,
+          endUsage: resPrice.data.endUsage,
+          recommendedValue: resPrice.data.recommendedValue,
+          // netPrice: resPrice.data.netService,
+          netPrice: resPrice.data.calculatedPrice,
+          totalPrice: resPrice.data.totalPrice,
+          id: resPrice.data.customItemPriceDataId,
+          numberOfEvents: resPrice.data.numberOfEvents,
+          portfolioDataId: resPrice.data?.customPortfolio?.portfolioId,
+
+          flatPrice: resPrice.data.flatPrice ? parseInt(resPrice.data.flatPrice) : 0,
+
+          escalationPriceOptionsValue1: (resPrice.data.priceEscalation != "" ? {
+            label: resPrice.data.priceEscalation,
+            value: resPrice.data.priceEscalation,
+          } : ""),
+          escalationPriceOptionsValue: (resPrice.data.priceEscalation != "" ?
+            resPrice.data.priceEscalation : ""),
+          escalationPriceInputValue: (resPrice.data.priceEscalation == "" ? "" :
+            resPrice.data.priceEscalation === "PARTS" ? resPrice.data.sparePartsEscalation :
+              resPrice.data.priceEscalation === "LABOR" ? resPrice.data.labourEscalation :
+                resPrice.data.priceEscalation === "MISCELLANEOUS" ? resPrice.data.miscEscalation :
+                  resPrice.data.priceEscalation === "SERVICE" ? resPrice.data.serviceEscalation : ""),
+
+          priceBreakDownOptionsKeyValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            "PARTS" : resPrice.data.labourPriceBreakDownPercentage != 0 ? "LABOR" :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ? "MISCELLANEOUS" : "",
+          priceBreakDownInputValue: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ?
+            resPrice.data.sparePartsPriceBreakDownPercentage :
+            resPrice.data.labourPriceBreakDownPercentage != 0 ?
+              resPrice.data.labourPriceBreakDownPercentage :
+              resPrice.data.miscPriceBreakDownPercentage != 0 ?
+                resPrice.data.miscPriceBreakDownPercentage : 0,
+
+          priceBreakDownOptionsKeyValue1: resPrice.data.sparePartsPriceBreakDownPercentage != 0 ? {
+            label: "PARTS",
+            value: "PARTS",
+          } : resPrice.data.labourPriceBreakDownPercentage != 0 ? {
+            label: "LABOR",
+            value: "LABOR",
+          } : resPrice.data.miscPriceBreakDownPercentage != 0 ? {
+            label: "MISCELLANEOUS",
+            value: "MISCELLANEOUS",
+          } : "",
+
+          currency: ((currencyIs != "")) ? {
+            label: currencyIs,
+            value: currencyIs
+          } : "",
+          unit: addPortFolioItem?.unit,
+          frequency: addPortFolioItem?.frequency,
+          usageType: addPortFolioItem?.usageType,
+        })
+        setPriceBreakDownFieldsValue({
+          ...priceBreakDownFieldsValue,
+          parts: resPrice.data.sparePartsNOE,
+          labor: resPrice.data.labourNOE,
+          miscellaneous: resPrice.data.miscNOE,
+          service: resPrice.data.servicePrice,
+        })
+
+
+      }
     }
+    console.log("itemPriceData ========= ", itemPriceData);
     setTabs("4")
   }
 

@@ -184,7 +184,7 @@ const coverageColumns = [
         ),
     },
 ];
-const PortfolioItemsList = () => {
+const PortfolioItemsList = ({ componentDataTabShow }) => {
 
     const [showDragAndDropModal, setShowDragAndDropModal] = useState(false)
     const [uploadFileImage, setUploadFileImage] = useState("general");
@@ -371,12 +371,11 @@ const PortfolioItemsList = () => {
             </div>
             {dragAndDropFileModal()}
             {viewCoverageModal()}
-            {showAddItemModal &&
-                <PortfolioItemTabsModal
-                    show={showAddItemModal}
-                    hideModal={() => setShowAddItemModal(false)}
-                />}
-
+            {showAddItemModal && <PortfolioItemTabsModal
+                show={showAddItemModal}
+                hideModal={() => setShowAddItemModal(false)}
+                componentDataTabShow={componentDataTabShow}
+            />}
         </>
     )
 }
