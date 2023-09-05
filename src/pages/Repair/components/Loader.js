@@ -5,7 +5,7 @@ const LoadingProgress = () => {
     <Loader
       type="spinner-default"
       bgColor={"#872ff7"}
-      title={"spinner-default"}
+      title={"Loading"}
       color={"#FFFFFF"}
       size={35}
     />

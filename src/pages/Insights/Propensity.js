@@ -36,7 +36,7 @@ const propensityMatrix = [
 export default function Propensity(props) {
   const [propensityData, setPropensityData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingTable, setIsLoadingTable] = useState(false);
+  const [isLoadingTable, setIsLoadingTable] = useState(false);
   useEffect(() => {
     setIsLoading(true);
     getPropensityToBuy()
@@ -65,9 +65,9 @@ export default function Propensity(props) {
     setSelPropensityLevel(propensityLevel);
     setSelTransactionLevel(transactionLevel);
     getPropensityDetails(propensityLevel, transactionLevel).then((res) => {
-        setPropensityDetails(res);
-        setIsLoadingTable(false);
-      })
+      setPropensityDetails(res);
+      setIsLoadingTable(false);
+    })
       .catch((err) => {
         console.log("axios err=", err);
         setPropensityDetails([]);
@@ -110,248 +110,246 @@ export default function Propensity(props) {
   ];
 
   const [pageSize, setPageSize] = useState(5);
-  return isLoading ? (
-    <LoadingProgress />
-  ) : (
+  return (
     <div>
-      {/* <h5 className="">Propensity to buy</h5> */}
-      
-        <Grid
-          container
-          sx={{
-            width: "100%",
-            backgroundColor: "#f3eafe",
-            borderRadius: 5,
-            marginBlock: 3,
-            padding: 2,
-          }}
-        >{showCustomerDetail ? (
-            <Card sx={{width: "100%",
-            marginInline: "auto", paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4}}>
-              <Typography sx={{ fontSize: 16, fontWeight: 600, marginBlock: 2 }}>
-                Propensity to Buy Details
-              </Typography>
-              <div style={{ display: "flex", marginBlock: 4 }}>
-                <Typography sx={{ fontSize: 14, marginRight: 2 }}>
-                  {" "}
-                  <strong>Propensity Level : </strong> {selPropensityLevel}
-                </Typography>
-                <Typography sx={{ fontSize: 14 }}>
-                  <strong>Transaction Level : </strong> {selTransactionLevel}
-                </Typography>
-              </div>
-              <Box sx={{ height: 500 }}>
-              <DataGrid
-                loading={isLoadingTable}
-                getRowId={(row) => row.customer_id}
-                sx={GRID_STYLE}
-                rows={propensityDetails}
-                columns={customerDetailColumns}
-                pageSize={pageSize}
-                onPageSizeChange={(newPageSize)=> setPageSize(newPageSize)}
-                rowsPerPageOptions={[5, 10, 20, 50]}
-                // autoHeight
-              /></Box>
-              <div
-                className="row"
-                style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
-              >
-                <button
-                  class="btn bg-primary text-white"
-                  onClick={() => setShowCustomerDetail(false)}
-                >
-                  Back
-                </button>
-              </div>
-            </Card>
-          ) : (
-          <Card
-            className="mr-2"
-            sx={{
-              borderRadius: 4,
-              height: 500,
-              width: "100%",
-              marginInline: "auto",
-            }}
-            variant="outlined"
+      <Grid
+        container
+        sx={{
+          width: "100%",
+          backgroundColor: "#f3eafe",
+          borderRadius: 5,
+          marginBlock: 3,
+          padding: 2,
+        }}
+      >{showCustomerDetail ? (
+        <Card sx={{
+          width: "100%",
+          marginInline: "auto", paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4
+        }}>
+          <Typography sx={{ fontSize: 16, fontWeight: 600, marginBlock: 2 }}>
+            Propensity to Buy Details
+          </Typography>
+          <div style={{ display: "flex", marginBlock: 4 }}>
+            <Typography sx={{ fontSize: 14, marginRight: 2 }}>
+              {" "}
+              <strong>Propensity Level : </strong> {selPropensityLevel}
+            </Typography>
+            <Typography sx={{ fontSize: 14 }}>
+              <strong>Transaction Level : </strong> {selTransactionLevel}
+            </Typography>
+          </div>
+          <Box sx={{ height: 500 }}>
+            <DataGrid
+              loading={isLoadingTable}
+              getRowId={(row) => row.customer_id}
+              sx={GRID_STYLE}
+              rows={propensityDetails}
+              columns={customerDetailColumns}
+              pageSize={pageSize}
+              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+              rowsPerPageOptions={[5, 10, 20, 50]}
+            // autoHeight
+            /></Box>
+          <div
+            className="row"
+            style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
           >
-            <Grid container sx={{ marginBlock: 5, marginInline: 5 }}>
-              <Grid item container xs={3}>
+            <button
+              class="btn bg-primary text-white"
+              onClick={() => setShowCustomerDetail(false)}
+            >
+              Back
+            </button>
+          </div>
+        </Card>
+      ) : (
+        <Card
+          className="mr-2"
+          sx={{
+            borderRadius: 4,
+            height: 500,
+            width: "100%",
+            marginInline: "auto",
+          }}
+          variant="outlined"
+        >{isLoading ? <LoadingProgress /> :
+          <Grid container sx={{ marginBlock: 5, marginInline: 5 }}>
+            <Grid item container xs={3}>
+              <Grid
+                item
+                container
+                xs={6}
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+              >
+                $ Value of Transaction
+              </Grid>
+              <Grid
+                item
+                container
+                xs={1}
+                direction="row"
+                justifyContent={"end"}
+              >
+                <Divider orientation="vertical" flexItem />
+              </Grid>
+              <Grid
+                item
+                container
+                xs={5}
+                direction="row"
+                justifyContent={"end"}
+              >
                 <Grid
                   item
                   container
-                  xs={6}
+                  xs={12}
                   direction="row"
                   justifyContent="center"
                   alignItems="center"
                 >
-                  $ Value of Transaction
+                  Low
                 </Grid>
                 <Grid
                   item
                   container
-                  xs={1}
+                  xs={12}
                   direction="row"
-                  justifyContent={"end"}
+                  justifyContent="center"
+                  alignItems="center"
                 >
-                  <Divider orientation="vertical" flexItem />
+                  Medium
                 </Grid>
                 <Grid
                   item
                   container
-                  xs={5}
+                  xs={12}
                   direction="row"
-                  justifyContent={"end"}
+                  justifyContent="center"
+                  alignItems="center"
                 >
-                  <Grid
-                    item
-                    container
-                    xs={12}
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    Low
-                  </Grid>
-                  <Grid
-                    item
-                    container
-                    xs={12}
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    Medium
-                  </Grid>
-                  <Grid
-                    item
-                    container
-                    xs={12}
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    High
-                  </Grid>
+                  High
                 </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Grid container>
-                  {propensityMatrix.map((indArray) => (
-                    <Grid item xs={4}>
-                      <Card
-                        variant="outlined"
-                        sx={{
-                          paddingInline: "auto",
-                          paddingBlock: 4,
-                          marginBlock: 1,
-                          borderRadius: 2,
-                          backgroundColor: indArray[2],
-                          width: "90%",
-                          marginInline: "auto",
-                        }}
-                        onClick={() =>
-                          handleClickPropensity(indArray[0], indArray[1])
-                        }
-                        style={{ cursor: "pointer" }}
-                      >
-                        {/* <div
+            </Grid>
+            <Grid item xs={6}>
+              <Grid container>
+                {propensityMatrix.map((indArray) => (
+                  <Grid item xs={4}>
+                    <Card
+                      variant="outlined"
+                      sx={{
+                        paddingInline: "auto",
+                        paddingBlock: 4,
+                        marginBlock: 1,
+                        borderRadius: 2,
+                        backgroundColor: indArray[2],
+                        width: "90%",
+                        marginInline: "auto",
+                      }}
+                      onClick={() =>
+                        handleClickPropensity(indArray[0], indArray[1])
+                      }
+                      style={{ cursor: "pointer" }}
+                    >
+                      {/* <div
                         style={{ fontSize: 12, color: "gray", marginBlock: 10 }}
                       >
                       </div> */}
-                        <Typography
-                          textAlign="center"
-                          style={{ fontSize: 18, fontWeight: "600" }}
-                        >
-                          {
-                            propensityData.filter(
-                              (object) =>
-                                object.propensity_level === indArray[0] &&
-                                object.transaction_level === indArray[1]
-                            )[0]?.percentage_value
-                          }{" "}
-                          %
-                        </Typography>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
+                      <Typography
+                        textAlign="center"
+                        style={{ fontSize: 18, fontWeight: "600" }}
+                      >
+                        {
+                          propensityData.filter(
+                            (object) =>
+                              object.propensity_level === indArray[0] &&
+                              object.transaction_level === indArray[1]
+                          )[0]?.percentage_value
+                        }{" "}
+                        %
+                      </Typography>
+                    </Card>
+                  </Grid>
+                ))}
               </Grid>
-              <Grid item container xs={2}>
-                <Grid item xs={12} display="flex">
-                  <StopIcon sx={{ color: "#00b8b0", marginInline: 1 }} />
-                  <Typography variant="body2">
-                    <strong>Focus Sales Efforts</strong>: On the fence of
-                    buying, but win rates and values are higher
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} display="flex">
-                  <StopIcon sx={{ color: "#872ff7", marginInline: 1 }} />
-                  <Typography variant="body2">
-                    <strong>Avoid Overinvesting Effort</strong>: Propensity to
-                    buy is already high or value is low
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} display="flex">
-                  <StopIcon sx={{ color: "#ff6493", marginInline: 1 }} />
-                  <Typography variant="body2">
-                    <strong>Invest only minimum Effort</strong>: Win rate,
-                    propensity-to-buy and value are all lower
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}></Grid>
-                <Grid item xs={12}></Grid>
-                <Grid item xs={12}></Grid>
-              </Grid>
-              <Grid item xs={3}></Grid>
-              <Grid item xs={6}>
-                <Grid container>
-                  <Grid
-                    item
-                    container
-                    xs={4}
-                    direction="row"
-                    justifyContent={"center"}
-                  >
-                    Low
-                  </Grid>
-                  <Grid
-                    item
-                    container
-                    xs={4}
-                    direction="row"
-                    justifyContent={"center"}
-                  >
-                    Medium
-                  </Grid>
-                  <Grid
-                    item
-                    container
-                    xs={4}
-                    direction="row"
-                    justifyContent={"center"}
-                  >
-                    High
-                  </Grid>
-                </Grid>
-                <Divider sx={{ marginBlock: 3 }} />
-                <Grid container>
-                  <Grid
-                    item
-                    container
-                    xs={12}
-                    direction="row"
-                    justifyContent={"center"}
-                  >
-                    Propensity-to-buy score
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item xs={3}></Grid>
             </Grid>
-          </Card>)}
-          {/* </div> */}
-        </Grid>
+            <Grid item container xs={2}>
+              <Grid item xs={12} display="flex">
+                <StopIcon sx={{ color: "#00b8b0", marginInline: 1 }} />
+                <Typography variant="body2">
+                  <strong>Focus Sales Efforts</strong>: On the fence of
+                  buying, but win rates and values are higher
+                </Typography>
+              </Grid>
+              <Grid item xs={12} display="flex">
+                <StopIcon sx={{ color: "#872ff7", marginInline: 1 }} />
+                <Typography variant="body2">
+                  <strong>Avoid Overinvesting Effort</strong>: Propensity to
+                  buy is already high or value is low
+                </Typography>
+              </Grid>
+              <Grid item xs={12} display="flex">
+                <StopIcon sx={{ color: "#ff6493", marginInline: 1 }} />
+                <Typography variant="body2">
+                  <strong>Invest only minimum Effort</strong>: Win rate,
+                  propensity-to-buy and value are all lower
+                </Typography>
+              </Grid>
+              <Grid item xs={12}></Grid>
+              <Grid item xs={12}></Grid>
+              <Grid item xs={12}></Grid>
+            </Grid>
+            <Grid item xs={3}></Grid>
+            <Grid item xs={6}>
+              <Grid container>
+                <Grid
+                  item
+                  container
+                  xs={4}
+                  direction="row"
+                  justifyContent={"center"}
+                >
+                  Low
+                </Grid>
+                <Grid
+                  item
+                  container
+                  xs={4}
+                  direction="row"
+                  justifyContent={"center"}
+                >
+                  Medium
+                </Grid>
+                <Grid
+                  item
+                  container
+                  xs={4}
+                  direction="row"
+                  justifyContent={"center"}
+                >
+                  High
+                </Grid>
+              </Grid>
+              <Divider sx={{ marginBlock: 3 }} />
+              <Grid container>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  direction="row"
+                  justifyContent={"center"}
+                >
+                  Propensity-to-buy score
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={3}></Grid>
+          </Grid>}
+        </Card>)}
+        {/* </div> */}
+      </Grid>
     </div>
   );
 }
