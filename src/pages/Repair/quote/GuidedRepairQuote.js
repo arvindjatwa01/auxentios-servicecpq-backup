@@ -1,4 +1,3 @@
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -14,7 +13,6 @@ import Stepper from "@mui/material/Stepper";
 import Tab from "@mui/material/Tab";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { FileUploader } from "react-drag-drop-files";
 import penIcon from "../../../assets/images/pen.png";
 import {
   Header,
@@ -44,10 +42,12 @@ import { templateSearch } from "services/templateService";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { Tooltip, Typography } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
+import { REPAIR_QUOTE_DETAILS, STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import SearchComponentTemplate from "../components/SearchComponentTemplate";
 import QuoteRepairConfiguration from "./QuoteRepairConfiguration";
 import QuoteWithEvaluation from "./QuoteWithEvaluation";
+import { uploadItemsToRepairQuote } from "services/repairQuoteServices";
+import { UploadQuoteItems } from "./UploadQuoteItems";
 
 export const GuidedRepairQuote = (props) => {
   const [guidedSolutions, setGuidedSolutions] = useState([]);
@@ -1275,6 +1275,31 @@ export const GuidedRepairQuote = (props) => {
       });
   }, []);
 
+  const [file, setFile] = useState(null);
+
+  const handleReadFile = (file) => {
+    // e.preventDefault();
+    if (file) {
+      setFile(file);
+    }
+  };
+//Uplaod spare parts through excel sheet
+  const handleUploadFile = async () => {
+    // console.log("Upload");
+    const form = new FormData();
+    form.append("file", file);
+    await uploadItemsToRepairQuote(form)
+      .then((result) => {
+        handleSnack(
+          "success",
+          `Quote has been created successfully with the items`
+        );
+      })
+      .catch((err) => {
+        handleSnack("error", `Failed to upload the items!`);
+      });
+  };
+
   return (
     <>
       <CustomizedSnackbar
@@ -1526,49 +1551,7 @@ export const GuidedRepairQuote = (props) => {
                 </div>
               </TabPanel>
               <TabPanel className="p-0" value="import">
-                <div className="card  mt-3 p-3">
-                  <h5 className="d-flex align-items-center mb-0">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                        Import From Excel
-                      </span>
-                      <a href="#" className="btn-sm">
-                        <i className="fa fa-bookmark-o" aria-hidden="true"></i>
-                      </a>{" "}
-                      <a href="#" className="btn-sm">
-                        <i className="fa fa-folder-o" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                    <div className="hr"></div>
-                  </h5>
-                  {/* <p className="mt-4 ">
-                    Amet minim mollit non deserunt ullamco est aliqua dolor do
-                    amet sint,Amet minim mollit non deserunt ullamco est aliqua
-                    dolor do amet sint
-                  </p> */}
-                  <div className="p-3">
-                    <div className="add-new-recod">
-                      <div>
-                        <FontAwesomeIcon
-                          className="cloudupload"
-                          icon={faCloudUploadAlt}
-                        />
-                        <h6 className="font-weight-500 mt-3">
-                          Drag and drop files to upload <br /> or
-                        </h6>
-                        <FileUploader
-                          handleChange={handleChange}
-                          name="file"
-                          types={fileTypes}
-                        />
-                        <p className="mt-3">
-                          Single upload file should not be more than <br />{" "}
-                          10MB. Only the .xls, .xlsx file types are allowed
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <UploadQuoteItems handleUploadFile={handleUploadFile} handleReadFile={handleReadFile} />
               </TabPanel>
             </TabContext>
           </Box>

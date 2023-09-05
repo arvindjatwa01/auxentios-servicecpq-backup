@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { ADD_PL_QUOTE_ITEM, ADD_REPAIR_QUOTE_ITEM, CREATE_PART_QUOTE_FROM_KIT, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_REPAIR_QUOTE, CREATE_REPAIR_QUOTE_FROM_SJ, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_PL_QUOTE_ITEM, UPDATE_QUOTE_PAYER, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM } from "./CONSTANTS";
+import { ADD_PL_QUOTE_ITEM, ADD_REPAIR_QUOTE_ITEM, CREATE_PART_QUOTE_FROM_KIT, CREATE_QUOTE_PAYER, CREATE_QUOTE_VERSION, CREATE_REPAIR_QUOTE, CREATE_REPAIR_QUOTE_FROM_SJ, CREATE_SPARE_PART_QUOTE, FETCH_BILLING_FREQ, FETCH_BILLING_TYPE, FETCH_DEL_PRIORITY, FETCH_DEL_TYPE, FETCH_PAYMENT_TERMS, FETCH_QUOTE_SUMMARY, FETCH_REPAIR_QUOTE_DETAILS, FETCH_REPAIR_QUOTE_VERSIONS, RECENT_QUOTES, SEARCH_REPAIR_QUOTES, UPDATE_PL_QUOTE_ITEM, UPDATE_QUOTE_PAYER, UPDATE_REPAIR_QUOTE, UPDATE_REPAIR_QUOTE_ITEM, UPLOAD_ITEMS_TO_PARTS_QUOTE, UPLOAD_ITEMS_TO_REP_QUOTE } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -627,6 +627,62 @@ export const createSJQuote = (standardJobId, quoteDescription, quoteReference) =
         });
     } catch (error) {
       console.error("in RepairQuote > createSJQuote, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//upload repair quote items through the excel sheet
+export const uploadItemsToRepairQuote = (file) => {
+  console.log("service repairquote > upload items called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(UPLOAD_ITEMS_TO_REP_QUOTE(), file, config)
+        .then((res) => {
+          console.log("uploadItemsToRepairQuote response: ", res);
+          if (res.status === 200 || res.status === 201) {
+            resolve(res.data);
+          } else {
+            console.log("Error Status:", res.status);
+            reject("Error in uploadItemsToRepairQuote axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("uploadItemsToRepairQuote > axios err=", err);
+          reject("Error in uploadItemsToRepairQuote axios!");
+        });
+    } catch (error) {
+      console.error("uploadItemsToRepairQuote general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//upload spare parts quote items through the excel sheet
+export const uploadItemsToPartsQuote = (file) => {
+  console.log("service uploadItemsToPartsQuote called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(UPLOAD_ITEMS_TO_PARTS_QUOTE(), file, config)
+        .then((res) => {
+          console.log("uploadItemsToPartsQuote response: ", res);
+          if (res.status === 200 || res.status === 201) {
+            resolve(res.data);
+          } else {
+            console.log("Error Status:", res.status);
+            reject("Error in uploadItemsToPartsQuote axios!");
+          }
+        })
+        .catch((err) => {
+          console.log("uploadItemsToPartsQuote > axios err=", err);
+          reject("Error in uploadItemsToPartsQuote axios!");
+        });
+    } catch (error) {
+      console.error("uploadItemsToPartsQuote general exception", error);
       reject(SYSTEM_ERROR);
     }
   });

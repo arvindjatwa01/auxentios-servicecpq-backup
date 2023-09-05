@@ -86,6 +86,9 @@ import UpdateCoverageModal from "./components/UpdateCoverageModal";
 import PriceMethodTable from "./components/PriceMethodTable";
 import PriceSummaryTable from "./components/PriceSummaryTable";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import QuoteModal from "./components/QuoteModal";
+import { createKITQuote } from "services/repairQuoteServices";
+import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -257,6 +260,9 @@ function Kits(props) {
     estViewOnly: false,
     priceViewOnly: false,
   });
+  const [quoteDescription, setQuoteDescription] = useState("");
+  const [quoteReference, setQuoteReference] = useState("");
+  const [openQuotePopup, setOpenQuotePopup] = useState(false);
 
   // Retrieve price methods
   const priceMethodOptions = useAppSelector(
@@ -1318,6 +1324,25 @@ function Kits(props) {
         setUpdateCoverageModalOpen(false);
       });
   };
+  const handleCreateQuote = async () => {
+    await createKITQuote(kitDBId, quoteDescription, quoteReference).then(createdQuote => {
+      handleSnack('success',"Quote has been created successfully!");
+      let quoteDetails = {
+        quoteId: "",
+        // templateDBId: "",
+        type: "fetch",
+      };
+      quoteDetails.quoteId = createdQuote.quoteId;
+      // templateDetails.templateDBId = createdQuote.id;
+      history.push({
+        pathname: SPARE_PARTS_QUOTE_DETAILS,
+        state: quoteDetails,
+      });
+    }).catch(e => {
+      handleSnack("error", "Error occurred while creating quote");
+    })
+    setOpenQuotePopup(false);
+  };
   const [show, setShow] = React.useState(false);
   return (
     <>
@@ -1326,6 +1351,15 @@ function Kits(props) {
         open={openSnack}
         severity={severity}
         message={snackMessage}
+      />
+      <QuoteModal
+        setOpenQuotePopup={setOpenQuotePopup}
+        openQuotePopup={openQuotePopup}
+        setQuoteDescription={setQuoteDescription}
+        quoteDescription={quoteDescription}
+        quoteReference={quoteReference}
+        setQuoteReference={setQuoteReference}
+        handleCreateQuote={handleCreateQuote}
       />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
@@ -1423,7 +1457,10 @@ function Kits(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem data-toggle="modal" data-target="#quotecreat">
+                    <MenuItem
+                      onClick={() => setOpenQuotePopup(true)}
+                      className="custommenu ml-2 mr-4"
+                    >
                       Quote
                     </MenuItem>
                   </Menu>

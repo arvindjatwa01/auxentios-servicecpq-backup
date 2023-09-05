@@ -33,6 +33,8 @@ import LoadingProgress from "../components/Loader";
 import SearchComponent from "../components/SearchComponent";
 import { GRID_STYLE, KIT_SEARCH_Q_OPTIONS } from "../CONSTANTS";
 import { repairActions } from "../dropdowns/repairSlice";
+import { uploadItemsToPartsQuote } from "services/repairQuoteServices";
+import { UploadQuoteItems } from "./UploadQuoteItems";
 
 const SparePartQuoteConfiguration = () => {
   const [value, setValue] = React.useState("partlist");
@@ -114,7 +116,7 @@ const SparePartQuoteConfiguration = () => {
           let family = [],
             model = [];
           kit.coverages.map((coverage) => {
-            family.push(coverage.coversageFamily);
+            family.push(coverage.coverageFamily);
             model.push(coverage.coverageModel);
           });
           // return {...kit, family : family, model: model};
@@ -257,6 +259,31 @@ const SparePartQuoteConfiguration = () => {
       selectedOption: "",
     },
   ]);
+
+  const [file, setFile] = useState(null);
+
+  const handleReadFile = (file) => {
+    // e.preventDefault();
+    if (file) {
+      setFile(file);
+    }
+  };
+  //Uplaod spare parts through excel sheet
+  const handleUploadFile = async () => {
+    // console.log("Upload");
+    const form = new FormData();
+    form.append("file", file);
+    await uploadItemsToPartsQuote(form)
+      .then((result) => {
+        handleSnack(
+          "success",
+          `Quote has been created successfully with the items`
+        );
+      })
+      .catch((err) => {
+        handleSnack("error", `Failed to upload the items!`);
+      });
+  };
 
   return (
     <>
@@ -441,30 +468,7 @@ const SparePartQuoteConfiguration = () => {
                   </div>
                 </TabPanel>
                 <TabPanel value="import">
-                  <div className="add-new-recod">
-                    <div>
-                      <FontAwesomeIcon
-                        className="cloudupload"
-                        icon={faCloudUploadAlt}
-                      />
-                      <h6 className="font-weight-500 mt-3">
-                        Drag and drop files to upload <br /> or
-                      </h6>
-                      {/* <a href="/QuoteSolutionBuilder" className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a> */}
-                      <FileUploader
-                        // handleChange={handleReadFile}
-                        name="file"
-                        types={fileTypes}
-                        onClick={(event) => {
-                          event.currentTarget.value = null;
-                        }}
-                      />
-                      <p className="mt-3">
-                        Single upload file should not be more than <br />
-                        10MB. Only the .xls, .xlsx file types are allowed
-                      </p>
-                    </div>
-                  </div>
+                  <UploadQuoteItems handleUploadFile={handleUploadFile} handleReadFile={handleReadFile} file={file}/>
                 </TabPanel>
               </TabContext>
             </Box>
