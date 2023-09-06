@@ -1956,10 +1956,10 @@ export function SolutionServicePortfolio(props) {
                     <div>Model</div>
                 </>
             ),
-            selector: (row) => row?.model,
+            selector: (row) => row?.modelNo,
             wrap: true,
             sortable: true,
-            format: (row) => row?.model,
+            format: (row) => row?.modelNO,
         },
         {
             name: (
@@ -1967,10 +1967,10 @@ export function SolutionServicePortfolio(props) {
                     <div>Serial No.</div>
                 </>
             ),
-            selector: (row) => row?.serialNumber,
+            selector: (row) => row?.serialNumberPrefix,
             wrap: true,
             sortable: true,
-            format: (row) => row?.serialNumber,
+            format: (row) => row?.serialNumberPrefix,
         },
         {
             name: (
