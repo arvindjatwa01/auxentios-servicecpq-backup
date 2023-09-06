@@ -74,6 +74,9 @@ import { useDispatch } from "react-redux";
 import ModalCreateVersion from "pages/Repair/components/ModalCreateVersion";
 import { createQuoteVersion } from "services/repairQuoteServices";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import QuotePriceSummaryTable from "pages/Repair/components/QuotePriceSummaryTable ";
+import SolutionQuotePriceEstimate from "./SolutionQuotePriceEstimate";
+import SolutionQuotePayerGridTable from "./SolutionQuotePayerGridTable";
 const customStyles = {
     rows: {
         style: {
@@ -215,6 +218,18 @@ export function SolutionServicePortfolio(props) {
         netPayAble: "",
         leadTime: "",
         serviceRecipentAddress: customerData.customerAddress,
+    });
+
+    const [billingDetail, setBillingDetail] = useState({
+        priceDate: new Date(),
+        paymentTerms: "",
+        currency: "",
+        billingType: "",
+        billingFrequency: "",
+        netPrice: "",
+        margin: "",
+        discount: "",
+        priceEstimates: [],
     });
 
     const shippingLeadCountUnit = [
@@ -382,7 +397,6 @@ export function SolutionServicePortfolio(props) {
             });
     }
 
-    console.log("state ================ state ", state);
     // Handle Save & Next Click
     const handleNextClick = async (e) => {
         try {
@@ -521,7 +535,8 @@ export function SolutionServicePortfolio(props) {
                         rbQuoteItems: [],
                         plQuoteItems: [],
                         payers: payerListArray,
-                        priceEstimates: [],
+                        // priceEstimates: [],
+                        priceEstimates: billingDetail.priceEstimates,
                         sbPriceEstimates: [],
                         otherItemPrice: 0
                     }
@@ -830,7 +845,8 @@ export function SolutionServicePortfolio(props) {
                     rbQuoteItems: [],
                     plQuoteItems: [],
                     payers: payerListArray,
-                    priceEstimates: [],
+                    // priceEstimates: [],
+                    priceEstimates: billingDetail.priceEstimates,
                     sbPriceEstimates: [],
                     otherItemPrice: 0
                 }
@@ -989,7 +1005,8 @@ export function SolutionServicePortfolio(props) {
                     rbQuoteItems: [],
                     plQuoteItems: [],
                     payers: payerListArray,
-                    priceEstimates: [],
+                    // priceEstimates: [],
+                    priceEstimates: billingDetail.priceEstimates,
                     sbPriceEstimates: [],
                     otherItemPrice: 0
                 }
@@ -1148,7 +1165,8 @@ export function SolutionServicePortfolio(props) {
                     rbQuoteItems: [],
                     plQuoteItems: [],
                     payers: payerListArray,
-                    priceEstimates: [],
+                    // priceEstimates: [],
+                    priceEstimates: billingDetail.priceEstimates,
                     sbPriceEstimates: [],
                     otherItemPrice: 0
                 }
@@ -1260,7 +1278,8 @@ export function SolutionServicePortfolio(props) {
                     rbQuoteItems: [],
                     plQuoteItems: [],
                     payers: payerListArray,
-                    priceEstimates: [],
+                    // priceEstimates: [],
+                    priceEstimates: billingDetail.priceEstimates,
                     sbPriceEstimates: [],
                     otherItemPrice: 0
                 }
@@ -1276,6 +1295,8 @@ export function SolutionServicePortfolio(props) {
                         draggable: true,
                         progress: undefined,
                     });
+                    fetchPriceEstimateDetails(solutionRes.data);
+                    // setBillingDetail
                     setValue("shipping_billing");
                     setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
                 }
@@ -1379,7 +1400,8 @@ export function SolutionServicePortfolio(props) {
                     rbQuoteItems: [],
                     plQuoteItems: [],
                     payers: payerListArray,
-                    priceEstimates: [],
+                    // priceEstimates: [],
+                    priceEstimates: billingDetail.priceEstimates,
                     sbPriceEstimates: [],
                     otherItemPrice: 0
                 }
@@ -1427,12 +1449,13 @@ export function SolutionServicePortfolio(props) {
         { label: "Tax", value: "TAX" },
     ]
 
-    const [addPayerData, setAddPayerData] = useState([{
-        id: 1,
-        payerName: customerData.customerName,
-        billingSplit: 100,
-        price: "",
-    }])
+    const [addPayerData, setAddPayerData] = useState([])
+    // const [addPayerData, setAddPayerData] = useState([{
+    //     id: 1,
+    //     payerName: customerData.customerName,
+    //     billingSplit: 100,
+    //     price: "",
+    // }])
 
     const addPayerColumns = [
         {
@@ -1582,6 +1605,20 @@ export function SolutionServicePortfolio(props) {
         }
     ])
 
+    const [priceEstimateSummary, setPriceEstimateSummary] = useState({
+        sbPriceEstimateId: 1,
+        priceBreakup: 1,
+        priceSummaryType: "",
+        percentageDiscount: 0,
+        fixedDiscount: 0,
+        price: 0,
+        netPrice: 0,
+        otherItems: null,
+        tenantId: 74
+    });
+
+    const priceEstimateSummaryColumns = []
+
     const priceSummaryColumns = [
         {
             name: (
@@ -1611,6 +1648,7 @@ export function SolutionServicePortfolio(props) {
             format: (row, i) => {
                 return (
                     <Select
+                        value={row.priceSummaryType}
                         // defaultValue={selectedOption}
                         onChange={(e) => handlePriceSummaryRowData(e, i, true)}
                         options={summeryTypeOptions}
@@ -1624,7 +1662,7 @@ export function SolutionServicePortfolio(props) {
         {
             name: (
                 <>
-                    <div>Estimated $</div>
+                    <div>Adjusted $</div>
                 </>
             ),
             selector: (row) => row.estimated,
@@ -1684,6 +1722,9 @@ export function SolutionServicePortfolio(props) {
             wrap: true,
             sortable: true,
             format: (row) => row?.actions,
+            cell: (row) => (
+                <button onClick={() => handleEditClick(row)}>Edit</button>
+            ),
         },
     ]
 
@@ -2091,6 +2132,50 @@ export function SolutionServicePortfolio(props) {
     }
 
 
+    // price Estimate Details 
+    const fetchPriceEstimateDetails = (result) => {
+        let _priceEstimate = [];
+        const getPriceBreakUpValues = (value) => {
+            switch (value) {
+                case "TOTAL_SOLUTION_PRICE":
+                    return "A"
+                    break;
+                case "TOTAL_ADDITIONAL_PRICE":
+                    return "B"
+                    break;
+                case "FLAT_RATE":
+                    return "C"
+                    break;
+                case "ENVIRONMENTAL":
+                    return "D"
+                    break;
+                case "TAX":
+                    return "E"
+                    break;
+            }
+        }
+        for (let i = 0; i < result.sbPriceEstimates.length; i++) {
+            if (result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_PARTS" &&
+                result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_SERVICE" &&
+                result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_MISC" &&
+                result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_LABOR"
+            ) {
+                _priceEstimate.push({ ...result.sbPriceEstimates[i], priceBreakup: getPriceBreakUpValues(result.sbPriceEstimates[i]["priceSummaryType"]) });
+            }
+        }
+
+        setBillingDetail({ ...billingDetail, priceEstimates: _priceEstimate, })
+    }
+
+    // payer Details fetch
+    const fetchPayerDetails = (result) => {
+        let _payerDetails = [];
+        for (let i = 0; i < result.payers.length; i++) {
+            _payerDetails.push(result.payers[i])
+        }
+        // setAddPayerData
+    }
+
     const fetchAllDetails = async (quoteIdIs) => {
         console.log("quoteIdIs --- ", quoteIdIs)
         if (quoteIdIs) {
@@ -2139,12 +2224,12 @@ export function SolutionServicePortfolio(props) {
                     contactPhone: result.contactPhone
                 });
                 customerAddressAre = resultData[0].contactAddress;
-                setAddPayerData([{
-                    id: 1,
-                    payerName: resultData[0].fullName,
-                    billingSplit: 100,
-                    price: "",
-                }]);
+                // setAddPayerData([{
+                //     id: 1,
+                //     payerName: resultData[0].fullName,
+                //     billingSplit: 100,
+                //     price: "",
+                // }]);
             })
             .catch((e) => {
                 handleSnack(
@@ -2195,10 +2280,68 @@ export function SolutionServicePortfolio(props) {
             // salesOffice: result.,
         });
 
+        let solutionPriceEstimate = [];
+        let _priceEstimate = [];
+        for (let i = 0; i < result.sbPriceEstimates.length; i++) {
+            if (result.sbPriceEstimates[i].priceSummaryType === "TOTAL_SOLUTION_PRICE") {
+                let _priceSummeryType = summeryTypeOptions.find(obj => obj.value === "TOTAL_SOLUTION_PRICE")
+                // _priceEstimate.push(result.sbPriceEstimates[i])
+                solutionPriceEstimate.push({
+                    ...result.sbPriceEstimates[i],
+                    priceBreakup: 1,
+                    estimated: result.sbPriceEstimates[i]["price"],
+                    discount: result.sbPriceEstimates[i]["percentageDiscount"],
+                    priceSummaryType: _priceSummeryType || "",
+                })
+            }
+        }
+
+        const getPriceBreakUpValues = (value) => {
+            switch (value) {
+                case "TOTAL_SOLUTION_PRICE":
+                    return "A"
+                    break;
+                case "TOTAL_ADDITIONAL_PRICE":
+                    return "B"
+                    break;
+                case "FLAT_RATE":
+                    return "C"
+                    break;
+                case "ENVIRONMENTAL":
+                    return "D"
+                    break;
+                case "TAX":
+                    return "E"
+                    break;
+            }
+        }
+
+        for (let i = 0; i < result.sbPriceEstimates.length; i++) {
+            if (result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_PARTS" &&
+                result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_SERVICE" &&
+                result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_MISC" &&
+                result.sbPriceEstimates[i].priceSummaryType !== "ESTIMATED_LABOR"
+            ) {
+                // _priceEstimate.push({ ...result.sbPriceEstimates[i], priceBreakup: ((i) + 9).toString(36).toUpperCase() });
+                _priceEstimate.push({ ...result.sbPriceEstimates[i], priceBreakup: getPriceBreakUpValues(result.sbPriceEstimates[i]["priceSummaryType"]) });
+            }
+        }
+
+        fetchPriceEstimateDetails(result);
+
+        // setBillingDetail({
+        //     ...billingDetail,
+        //     priceEstimates: _priceEstimate,
+        // })
+        setPriceSummaryData(solutionPriceEstimate)
+        console.log("====== solutionPriceEstimate ", solutionPriceEstimate);
+
+
         setQuoteVersionIs(result.version)
 
         // General Details Tab Data 
         let paymentTermsObj = paymentTermsOptions.find(obj => obj.value === result.paymentTerms)
+
         setShippingBillingDetails({
             deliveryType: ((result.deliveryType === "") || (result.deliveryType === null) ||
                 (result.deliveryType === undefined) || (result.deliveryType === "EMPTY")) ? "" : {
@@ -2224,7 +2367,6 @@ export function SolutionServicePortfolio(props) {
                 (result.serviceRecipentAddress === undefined)) ? customerAddressAre : result.serviceRecipentAddress,
         });
 
-        // Price as Billing Tab Data
         setQuoteBillingData({
             paymentTerms: ((result.paymentTerms === "") || (result.paymentTerms === null) ||
                 (result.paymentTerms === undefined) || (result.paymentTerms === "EMPTY")) ? "" : {
@@ -2278,7 +2420,19 @@ export function SolutionServicePortfolio(props) {
             }
         }
         setSubQuotesIds(subQuotesData)
-        setQuoteItemsMaster(result.sbQuoteItems);
+        let _sbQuoteItems = [];
+        for (let i = 0; i < result.sbQuoteItems.length; i++) {
+            if (result.sbQuoteItems[i].coverages.length === 0) {
+                _sbQuoteItems.push(result.sbQuoteItems[i])
+            } else {
+                for (let j = 0; j < result.sbQuoteItems[i].coverages.length; j++) {
+                    _sbQuoteItems.push({ ...result.sbQuoteItems[i], ...result.sbQuoteItems[i].coverages[j] })
+                }
+            }
+        }
+        console.log("_sbQuoteItems ", _sbQuoteItems);
+        // setQuoteItemsMaster(result.sbQuoteItems);
+        setQuoteItemsMaster(_sbQuoteItems);
         setSubQuoteItems(result.sbQuoteItems)
 
         const addPayerTableData = [];
@@ -2293,7 +2447,8 @@ export function SolutionServicePortfolio(props) {
                 })
                 addPayerSaveData.push({ "payerId": result.payers[i].payerId })
             }
-            setAddPayerData(addPayerTableData)
+            setAddPayerData(result.payers)
+            // setAddPayerData(addPayerTableData)
             setPayerListArray(addPayerSaveData)
         }
     }
@@ -2537,12 +2692,12 @@ export function SolutionServicePortfolio(props) {
         filterQuoteItems.map((data, i) => {
             const exist = quoteItemsMaster.some(item => item.sbQuoteId === data.sbQuoteId)
             if (!exist) {
-                cloneArr.push(data)
+                //         cloneArr.push(data)
                 subQuotesData.push({ "sbQuoteId": data.sbQuoteId })
             }
         })
         setSubQuotesIds(subQuotesData)
-        setQuoteItemsMaster([...quoteItemsMaster, ...cloneArr])
+        setQuoteItemsMaster([...quoteItemsMaster, ...filterQuoteItems])
         setSearchQuoteItems([])
         setFilterQuoteItems([])
 
@@ -2689,7 +2844,18 @@ export function SolutionServicePortfolio(props) {
 
             searchSolutionQuotes(searchStr).then((res) => {
                 if (res.status === 200) {
-                    setSearchQuoteItems(res.data)
+                    let _sbQuoteItems = [];
+                    for (let i = 0; i < res.data.length; i++) {
+                        if (res.data[i].coverages.length === 0) {
+                            _sbQuoteItems.push(res.data[i])
+                        } else {
+                            for (let j = 0; j < res.data[i].coverages.length; j++) {
+                                _sbQuoteItems.push({ ...res.data[i], ...res.data[i].coverages[j] })
+                            }
+                        }
+                    }
+                    // setSearchQuoteItems(res.data)
+                    setSearchQuoteItems(_sbQuoteItems)
                 } else {
                     toast("😐" + res.data.message, {
                         position: "top-right",
@@ -2821,6 +2987,20 @@ export function SolutionServicePortfolio(props) {
                     handleSnack("error", "Error occurred while creating builder version");
                 // setVersionDescription("");
             });
+    };
+
+    const [editRowId, setEditRowId] = useState(null);
+
+    const handleEditClick = (row) => {
+        setEditRowId(row.priceBreakup);
+    };
+
+    const handleSaveClick = (editedRow) => {
+        const updatedData = priceSummaryData.map((row) =>
+            row.priceBreakup === editedRow.priceBreakup ? editedRow : row
+        );
+        setPriceSummaryData(updatedData);
+        setEditRowId(null);
     };
 
     return (
@@ -4161,7 +4341,8 @@ export function SolutionServicePortfolio(props) {
                                                                     quoteBillingData.paymentTerms == null ||
                                                                     quoteBillingData.paymentTerms == undefined ||
                                                                     quoteBillingData.paymentTerms == "string" ?
-                                                                    "NA" : quoteBillingData.paymentTerms}
+                                                                    "NA" : typeof quoteBillingData.paymentTerms === "object" ?
+                                                                        quoteBillingData.paymentTerms?.value : quoteBillingData.paymentTerms}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -4173,7 +4354,7 @@ export function SolutionServicePortfolio(props) {
                                                                     quoteBillingData.currency == null ||
                                                                     quoteBillingData.currency == undefined ||
                                                                     quoteBillingData.currency == "string" ?
-                                                                    "NA" : quoteBillingData.currency}
+                                                                    "NA" : typeof quoteBillingData.currency === "object" ? quoteBillingData.currency?.value : quoteBillingData.currency}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -4209,7 +4390,7 @@ export function SolutionServicePortfolio(props) {
                                                                     quoteBillingData.billingFrequency == null ||
                                                                     quoteBillingData.billingFrequency == undefined ||
                                                                     quoteBillingData.billingFrequency == "string" ?
-                                                                    "NA" : quoteBillingData.billingFrequency}
+                                                                    "NA" : typeof quoteBillingData.billingFrequency === "object" ? quoteBillingData.billingFrequency?.value : quoteBillingData.billingFrequency}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -4250,46 +4431,59 @@ export function SolutionServicePortfolio(props) {
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <hr />
+                                                {/* <a onClick={addNewPayer} className="btn bg-primary text-white"><AddIcon className="mr-2" />ADD PAYER</a> */}
+                                                <div className="mt-3">
+                                                    <SolutionQuotePayerGridTable
+                                                        handleSnack={handleSnack}
+                                                        dataRows={addPayerData}
+                                                        quoteId={quoteIdIs}
+                                                    />
+                                                    {/* <DataTable
+                                                        className=""
+                                                        title=""
+                                                        columns={addPayerColumns}
+                                                        data={addPayerData}
+                                                        // columns={masterColumns2}
+                                                        // data={rows2}
+                                                        customStyles={customStyles}
+                                                        pagination
+                                                    // onRowClicked={(e) => handleRowClick(e)}
+                                                    // selectableRows
+                                                    /> */}
+                                                </div>
+                                                <div className="mt-3 d-flex align-items-center justify-content-between">
+                                                    <h6 className="mb-0 font-size-16 font-weight-600">PRICE/ESTIMATE SUMMARY</h6>
+                                                    {/* <div className="d-flex align-items-center">
+                                                        <a href="#" className="text-primary mr-3"><ModeEditOutlineOutlinedIcon /></a>
+                                                        <a href="#" className="text-primary mr-3"><ShareOutlinedIcon /></a>
+                                                        <a onClick={addNewPriceSummaryData} className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Price Summary Type</a>
+                                                    </div> */}
+                                                </div>
+                                                <div className="my-3">
+                                                    <SolutionQuotePriceEstimate
+                                                        rows={billingDetail.priceEstimates}
+                                                        setRows={(rows) =>
+                                                            setBillingDetail({
+                                                                ...billingDetail,
+                                                                priceEstimates: rows,
+                                                            })
+                                                        } />
+                                                    {/* <DataTable
+                                                        className=""
+                                                        title=""
+                                                        columns={priceSummaryColumns}
+                                                        data={priceSummaryData}
+                                                        // columns={masterColumns3}
+                                                        // data={rows3}
+                                                        customStyles={customStyles}
+                                                        pagination
+                                                    // onRowClicked={(e) => handleRowClick(e)}
+                                                    // selectableRows
+                                                    /> */}
+                                                </div>
                                             </>}
 
-                                        <hr />
-                                        <a onClick={addNewPayer} className="btn bg-primary text-white"><AddIcon className="mr-2" />ADD PAYER</a>
-                                        <div className="mt-3">
-                                            <DataTable
-                                                className=""
-                                                title=""
-                                                columns={addPayerColumns}
-                                                data={addPayerData}
-                                                // columns={masterColumns2}
-                                                // data={rows2}
-                                                customStyles={customStyles}
-                                                pagination
-                                                // onRowClicked={(e) => handleRowClick(e)}
-                                                selectableRows
-                                            />
-                                        </div>
-                                        <div className="mt-3 d-flex align-items-center justify-content-between">
-                                            <h6 className="mb-0 font-size-16 font-weight-600">PRICE/ESTIMATE SUMMARY</h6>
-                                            <div className="d-flex align-items-center">
-                                                <a href="#" className="text-primary mr-3"><ModeEditOutlineOutlinedIcon /></a>
-                                                <a href="#" className="text-primary mr-3"><ShareOutlinedIcon /></a>
-                                                <a onClick={addNewPriceSummaryData} className="btn bg-primary text-white"><AddIcon className="mr-2" />Add Price Summary Type</a>
-                                            </div>
-                                        </div>
-                                        <div className="mt-3">
-                                            <DataTable
-                                                className=""
-                                                title=""
-                                                columns={priceSummaryColumns}
-                                                data={priceSummaryData}
-                                                // columns={masterColumns3}
-                                                // data={rows3}
-                                                customStyles={customStyles}
-                                                pagination
-                                                // onRowClicked={(e) => handleRowClick(e)}
-                                                selectableRows
-                                            />
-                                        </div>
 
                                         {/* OTHER MISC ITEMS $ Comment  */}
                                         {/*                                         
@@ -4912,7 +5106,7 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </div>
                             </>}
-
+                            {console.log("quoteItemsMaster ----------- ", quoteItemsMaster)}
                             {
                                 quoteItemsMaster.length > 0 &&
                                 <>
