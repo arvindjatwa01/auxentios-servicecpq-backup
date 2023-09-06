@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, useLocation, Link } from 'react-router-dom';
 
 import folderAddIcon from "../../..//assets/icons/svg/folder-add.svg";
 import editIcon from "../../../assets/icons/svg/edit.svg";
@@ -44,7 +44,6 @@ import PortfolioCoverageSearch from './PortfolioCoverageSearch';
 import CoveragePaginationTable from './coverage/CoveragePaginationTable';
 import PortfolioItemsList from './portfolio-item/PortfolioItemsList';
 
-
 const portfolioHeaderType = [
     { label: "PORTFOLIO", value: "PORTFOLIO", },
     { label: "PROGRAM", value: "PROGRAM", },
@@ -74,6 +73,9 @@ const salesOfficeKeyValuePair = [
 export const CreatePortfolio = () => {
 
     const history = useHistory();
+    const location = useLocation();
+
+    console.log("history ", location);
 
     const dispatch = useDispatch();
     const categoryUsageKeyValuePair = useAppSelector(selectStrategyTaskOption(selectCategoryList));
@@ -187,6 +189,10 @@ export const CreatePortfolio = () => {
 
     useEffect(() => {
         getInitialData()
+    }, []);
+
+    useEffect(() => {
+    //    if()
     }, []);
 
     useEffect(() => {

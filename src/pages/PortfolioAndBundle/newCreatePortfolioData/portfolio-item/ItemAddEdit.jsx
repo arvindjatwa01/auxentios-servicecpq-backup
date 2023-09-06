@@ -92,8 +92,19 @@ const usageTypeKeyValuePair = [
 
 
 const ItemAddEdit = (props) => {
-    const { itemType, isEditable, isPortfolioItem, bundleServiceNeed, handleBundleServiceNeed,
-        frequencyKeyValuePairs, unitKeyValuePairs } = props;
+    const { itemType,
+        isEditable,
+        isPortfolioItem,
+        bundleServiceNeed,
+        handleBundleServiceNeed,
+        frequencyKeyValuePairs,
+        unitKeyValuePairs,
+        componentDataTabShow,
+        handleGetPortfolioItemsData,
+        // itemHeaderModelObj,
+        // itemBodyModelObj,
+        // itemRequestObj
+     } = props;
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -111,6 +122,8 @@ const ItemAddEdit = (props) => {
     const [editItemData, setEditItemData] = useState(isEditable ? true : false)
 
     // const [itemRequestObj, setItemRequestObj] = useState({ ...defaultReqObj })
+    const [itemPriceDataId, setItemPriceDataId] = useState(0)
+
     const [itemRequestObj, setItemRequestObj] = useState({
         id: 0,
         name: "",
@@ -361,11 +374,12 @@ const ItemAddEdit = (props) => {
                 setItemActiveTab("relatedTemplate")
             } else if (itemActiveTab === "relatedTemplate") {
                 if (isEmptyData(itemRequestObj.standardJobId)) {
-                    
                     setItemActiveTab("relatedKit")
+                } else {
+                    handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem)
                 }
             } else if (itemActiveTab === "relatedKit") {
-
+                handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem)
             }
         }
     }
