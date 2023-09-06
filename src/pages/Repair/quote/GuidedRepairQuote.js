@@ -1289,11 +1289,22 @@ export const GuidedRepairQuote = (props) => {
     const form = new FormData();
     form.append("file", file);
     await uploadItemsToRepairQuote(form)
-      .then((result) => {
+      .then((createdQuote) => {
         handleSnack(
           "success",
           `Quote has been created successfully with the items`
         );
+        let quoteDetails = {
+          quoteId: "",
+          // templateDBId: "",
+          type: "fetch",
+        };
+        quoteDetails.quoteId = createdQuote.quoteId;
+        // templateDetails.templateDBId = createdQuote.id;
+        history.push({
+          pathname: REPAIR_QUOTE_DETAILS,
+          state: quoteDetails,
+        });
       })
       .catch((err) => {
         handleSnack("error", `Failed to upload the items!`);
@@ -1551,7 +1562,7 @@ export const GuidedRepairQuote = (props) => {
                 </div>
               </TabPanel>
               <TabPanel className="p-0" value="import">
-                <UploadQuoteItems handleUploadFile={handleUploadFile} handleReadFile={handleReadFile} />
+                <UploadQuoteItems handleUploadFile={handleUploadFile} handleReadFile={handleReadFile} file={file}/>
               </TabPanel>
             </TabContext>
           </Box>

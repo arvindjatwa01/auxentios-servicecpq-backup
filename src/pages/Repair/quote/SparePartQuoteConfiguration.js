@@ -274,11 +274,22 @@ const SparePartQuoteConfiguration = () => {
     const form = new FormData();
     form.append("file", file);
     await uploadItemsToPartsQuote(form)
-      .then((result) => {
+      .then((createdQuote) => {
         handleSnack(
           "success",
           `Quote has been created successfully with the items`
         );
+        let quoteDetails = {
+          quoteId: "",
+          // templateDBId: "",
+          type: "fetch",
+        };
+        quoteDetails.quoteId = createdQuote.quoteId;
+        // templateDetails.templateDBId = createdQuote.id;
+        history.push({
+          pathname: SPARE_PARTS_QUOTE_DETAILS,
+          state: quoteDetails,
+        });
       })
       .catch((err) => {
         handleSnack("error", `Failed to upload the items!`);
