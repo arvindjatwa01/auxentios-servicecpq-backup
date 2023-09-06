@@ -57,6 +57,7 @@ import {
   addPartToPartList,
   createKIT,
   createPartlistBuilderVersion,
+  fetchBuilderDetails,
   fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
   fetchPartsFromPartlist,
@@ -353,10 +354,38 @@ function PartList(props) {
       setBId(state.bId);
       // setPartListNo(state.partListNo);
       setPartListId(state.partListId);
-      fetchAllDetails(state.builderId, state.versionNumber);
+      if(state.versionNumber)
+        fetchAllDetails(state.builderId, state.versionNumber);
+      else
+        fetchAllDetailsWithDBId(state.bId);
     }
   }, []);
 
+  const fetchAllDetailsWithDBId = (id) => {
+    var versionHistoryData = {
+      builderId: "",
+      exitingType: "repair",
+      editable: false,
+    };
+    localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
+    console.log(id);
+    if (id) {
+      setHeaderLoading(true);
+      fetchBuilderDetails(id)
+        .then((result) => {
+          populateHeader(result);
+          setHeaderLoading(false);
+          fetchPartlist(result.id);
+        })
+        .catch((err) => {
+          setHeaderLoading(false);
+          handleSnack(
+            "error",
+            "Error occurred while fetching the version details"
+          );
+        });
+    }
+  };
   const fetchAllDetails = (builderId, versionNumber) => {
     var versionHistoryData = {
       builderId: "",

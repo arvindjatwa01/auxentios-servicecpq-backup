@@ -4,7 +4,6 @@ import {
   Card,
   FormControl,
   Grid,
-  InputLabel,
   MenuItem,
   Select,
   Typography,
@@ -21,32 +20,31 @@ export default function Insights(props) {
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div class="container-fluid mt-3">
-        <Grid container>
-          <Grid item container md={4} xs={12}>
+        <Grid container columnSpacing={1}>
+          <Grid item container md={4} xs={12} >
             <Card
               sx={{ padding: 2, marginBlock: 2, display: "flex", width: "100%" }}
             >
               <Grid container>
                 <Grid item xs={3}>
-                  <Typography variant="h6" sx={{ mr: 20 }}>
+                  <Typography fontSize={18} fontWeight='500'>
                     Insight
                   </Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  <FormControl sx={{ m: 1, minWidth: 300, ml: 10 }} size="small">
+                  <FormControl sx={{ m: 1, minWidth: 270, ml: 5 }} size="small">
                     {/* <InputLabel id="demo-select-small-label">Insights</InputLabel> */}
                     <Select
-                      labelId="demo-select-small-label"
-                      id="demo-select-small"
                       value={insightType}
                       // label="Insights"
                       onChange={handleChange}
-                      sx={{ minWidth: 300, paddingLeft: 2 }}
+                      sx={{ minWidth: 300, paddingLeft: 2, fontSize: 14 }}
+
                     >
                       <MenuItem value={"propensity"}>Propensity To Buy</MenuItem>
                       <MenuItem value={"entitlement"}>Gap To Entitlement</MenuItem>
                       <MenuItem value={"spare-parts-segment"}>
-                        Parts Segmentation
+                        Product Segment
                       </MenuItem>
                       <MenuItem value={"job-recommendation"}>
                         Job Hour Recommendation
@@ -58,6 +56,13 @@ export default function Insights(props) {
                   </FormControl>
                 </Grid>
               </Grid>
+            </Card>
+          </Grid>
+          <Grid item container md={8} xs={12}>
+            <Card
+              sx={{ padding: 2, marginBlock: 2, display: "flex", width: "100%" }}
+            >
+
             </Card>
           </Grid>
         </Grid>

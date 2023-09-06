@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import Typography from "@mui/material/Typography";
-
 import { Box, Card, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
@@ -12,7 +10,21 @@ import {
 export default function GapToEntitlement(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [entitlementData, setEntitlementData] = useState([]);
-
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    customer_name: false,
+    last_purchase: false,
+    recency: false,
+    frequency: false,
+    transaction_value: false,
+    min_discount: false,
+    max_discount: false,
+    avg_discount: false,
+    product_segment: false,
+    warranty_availability: false,
+    planned_usage: false,
+    warranty: false,
+    contract: false,
+  })
   useEffect(() => {
     setIsLoading(true);
     getGapToEntitlement()
@@ -46,6 +58,14 @@ export default function GapToEntitlement(props) {
     { field: "avg_discount", headerName: "Avg Discount", width: 100 },
     { field: "equipment_num", headerName: "Equipment #", width: 130 },
     { field: "description", headerName: "Description", width: 130 },
+    { field: "pm1", headerName: "250 hr PM1", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm1_parts", headerName: "250 hr PM1 Kits", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm2", headerName: "500 hr PM2", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm2_parts", headerName: "500 hr PM2 Kits", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm3", headerName: "1000 hr PM3", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "pm4", headerName: "2000 hr PM4", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "services", headerName: "General Services", width: 130, renderCell: (params) => formatDisplay(params) },
+    { field: "assessments", headerName: "Technical Assessments", width: 130, renderCell: (params) => formatDisplay(params) },
     { field: "maker", headerName: "Maker", width: 130 },
     { field: "maker_serial_num", headerName: "Maker Serial#", width: 130 },
     { field: "model_prefix", headerName: "Model Prefix", width: 130 },
@@ -60,14 +80,6 @@ export default function GapToEntitlement(props) {
     { field: "planned_usage", headerName: "Planned Usage", width: 130 },
     { field: "warranty", headerName: "Warranty", width: 130 },
     { field: "contract", headerName: "Contract", width: 130 },
-    { field: "pm1", headerName: "250 hr PM1", width: 130, renderCell: (params) => formatDisplay(params) },
-    { field: "pm1_parts", headerName: "250 hr PM1 Kits", width: 130, renderCell: (params) => formatDisplay(params) },
-    { field: "pm2", headerName: "500 hr PM2", width: 130, renderCell: (params) => formatDisplay(params) },
-    { field: "pm2_parts", headerName: "500 hr PM2 Kits", width: 130, renderCell: (params) => formatDisplay(params) },
-    { field: "pm3", headerName: "1000 hr PM3", width: 130, renderCell: (params) => formatDisplay(params) },
-    { field: "pm4", headerName: "2000 hr PM4", width: 130, renderCell: (params) => formatDisplay(params) },
-    { field: "services", headerName: "General Services", width: 130, renderCell: (params) => formatDisplay(params) },
-    { field: "assessments", headerName: "Technical Assessments", width: 130, renderCell: (params) => formatDisplay(params) },
   ];
 
   function formatDisplay(params) {
@@ -77,7 +89,7 @@ export default function GapToEntitlement(props) {
         {parseFloat(params.value).toFixed(2)}
       </span>)
   }
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   return (
     <div>
@@ -111,9 +123,13 @@ export default function GapToEntitlement(props) {
               getRowId={(row) => row.customer_id}
               rows={entitlementData}
               columns={customerDetailColumns}
+              columnVisibilityModel={columnVisibilityModel}
+              onColumnVisibilityModelChange={(newModel) =>
+                setColumnVisibilityModel(newModel)
+              }
               pageSize={pageSize}
               onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-              rowsPerPageOptions={[5, 10, 20, 50]}
+              rowsPerPageOptions={[10, 20, 50]}
             />
           </Box>
         </Card>

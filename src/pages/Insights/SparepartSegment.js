@@ -152,7 +152,26 @@ export default function SparepartSegment(props) {
                             <Grid
                                 item
                                 container
-                                xs={12}
+                                xs={6}
+                                direction="row"
+                                justifyContent="center"
+                                alignItems="center"
+                            >
+                                $ Value and Buying Frequency (Revenue)
+                            </Grid>
+                            <Grid
+                                item
+                                container
+                                xs={1}
+                                direction="row"
+                                justifyContent={"end"}
+                            >
+                                <Divider orientation="vertical" flexItem />
+                            </Grid>
+                            <Grid
+                                item
+                                container
+                                xs={5}
                                 direction="row"
                                 justifyContent={"end"}
                             >
@@ -164,7 +183,7 @@ export default function SparepartSegment(props) {
                                     justifyContent="center"
                                     alignItems="center"
                                 >
-                                    A
+                                    High
                                 </Grid>
                                 <Grid
                                     item
@@ -174,7 +193,7 @@ export default function SparepartSegment(props) {
                                     justifyContent="center"
                                     alignItems="center"
                                 >
-                                    B
+                                    Medium
                                 </Grid>
                                 <Grid
                                     item
@@ -184,7 +203,7 @@ export default function SparepartSegment(props) {
                                     justifyContent="center"
                                     alignItems="center"
                                 >
-                                    C
+                                    Low
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -216,9 +235,8 @@ export default function SparepartSegment(props) {
                                                     partsSegmentData.filter(
                                                         (object) =>
                                                             object.cluster === indArray[0]
-                                                    )[0]?.parts_percentage
-                                                }{" "}
-                                                %
+                                                    )[0]?.parts_count
+                                                }
                                             </Typography>
                                         </Card>
                                     </Grid>
@@ -226,27 +244,27 @@ export default function SparepartSegment(props) {
                             </Grid>
                         </Grid>
                         <Grid item container xs={4} paddingRight={10}>
-                            <Grid item xs={12} display="flex" sx={{ marginBlock: 1, paddingBlock: 4 }}>
+                            {/* <Grid item xs={12} display="flex" sx={{ marginBlock: 1, paddingBlock: 4 }}>
                                 <StopIcon sx={{ color: "#872ff7", marginInline: 1 }} />
                                 <Typography variant="body2">
-                                    <strong>A</strong>: Max 20% of parts generate min 70% of total revenue
+                                    Max 20% of parts generate min 70% of total revenue
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12} display="flex" sx={{ paddingBlock: 4 }}>
+                            <Grid item xs={12} display="flex" sx={{ marginBlock: 1, paddingBlock: 4 }}>
                                 <StopIcon sx={{ color: "#6FD4FF", marginInline: 1 }} />
                                 <Typography variant="body2">
-                                    <strong>B</strong>: Max 30% of parts generate max 20% of total revenue
+                                    Max 30% of parts generate max 20% of total revenue
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12} display="flex" sx={{ paddingBlock: 4 }}>
+                            <Grid item xs={12} display="flex" sx={{ marginBlock: 1, paddingBlock: 4 }}>
                                 <StopIcon sx={{ color: "#ff6493", marginInline: 1 }} />
                                 <Typography variant="body2">
-                                    <strong>C</strong>: Min 50% of parts generate max 10% of total revenue
+                                    Min 50% of parts generate max 10% of total revenue
                                 </Typography>
                             </Grid>
                             <Grid item xs={12}></Grid>
                             <Grid item xs={12}></Grid>
-                            <Grid item xs={12}></Grid>
+                            <Grid item xs={12}></Grid> */}
                         </Grid>
                         <Grid item xs={2}></Grid>
                         <Grid item xs={6}>
@@ -288,14 +306,13 @@ export default function SparepartSegment(props) {
                                     direction="row"
                                     justifyContent={"center"}
                                 >
-                                    Frequency
+                                    $ Value
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={3}></Grid>
                     </Grid>}
                 </Card>)}
-                {/* </div> */}
             </Grid>
         </div>
     );
