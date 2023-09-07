@@ -8,7 +8,6 @@ export const isEmptyData = (str) => {
 }
 
 export const isEmptySelectData = (str) => {
-    console.log("str ======= ", str);
     if (str === "" || str === null || str === undefined || str === 0 || str === "string" || str === "EMPTY") {
         return true;
     }
