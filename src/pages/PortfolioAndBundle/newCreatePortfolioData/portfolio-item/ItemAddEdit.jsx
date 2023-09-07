@@ -104,7 +104,7 @@ const ItemAddEdit = (props) => {
         // itemHeaderModelObj,
         // itemBodyModelObj,
         // itemRequestObj
-     } = props;
+    } = props;
     const dispatch = useDispatch();
     const history = useHistory();
 
@@ -532,8 +532,8 @@ const ItemAddEdit = (props) => {
                         </div>
                     </> : <>
                         <div className="row mt-4 input-fields">
-                            <div className="col-md-6 col-sm-6">
-                                {isPortfolioItem &&
+                            {isPortfolioItem &&
+                                <div className="col-md-6 col-sm-6">
                                     <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500">NAME</label>
                                         <input type="text" className="form-control border-radius-10" placeholder="Required*" name="name"
@@ -541,8 +541,8 @@ const ItemAddEdit = (props) => {
                                         />
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
-                                }
-                            </div>
+                                </div>
+                            }
                             <div className="col-md-6 col-sm-6">
                                 <div className="form-group w-100">
                                     <label className="text-light-dark font-size-12 font-weight-500"> DESCRIPTION</label>
