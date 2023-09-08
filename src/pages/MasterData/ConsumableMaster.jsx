@@ -400,7 +400,63 @@ const ConsumableMaster = () => {
                   </div>
                 </>
               )}
-              {consumablepagination === 2 && <></>}
+              {consumablepagination === 2 && (
+                <>
+                  <h5 className="font-weight-500 mt-4">Price</h5>
+                  <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
+                    <div className="row">
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          List Price
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          $ 956.32
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Cost Price
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          $ 865.45
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Supplier contracted price
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          $ 923.55
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Start date
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          04/05/2023
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          End Date
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          31/12/2023
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Effective Date
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          05/05/2023
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
