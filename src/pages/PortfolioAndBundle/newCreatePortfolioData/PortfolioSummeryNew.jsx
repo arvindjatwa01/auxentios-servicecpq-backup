@@ -13,7 +13,7 @@ import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
-import { getPortfolioCommonConfig, getSearchCoverageForFamily, getSearchForRecentPortfolio, getServiceBundleItemPrices, getTypeKeyValue, itemSearchDropdown, portfolioSearchDropdownList, portfolioSearchTableDataList, recentItemsList } from "../../../services/index";
+import { getPortfolioCommonConfig, getSearchCoverageForFamily, getSearchForRecentPortfolio, getServiceBundleItemPrices, getSolutionPriceCommonConfig, getTypeKeyValue, itemSearchDropdown, portfolioSearchDropdownList, portfolioSearchTableDataList, recentItemsList } from "../../../services/index";
 import { getFormattedDateTime } from './utilities/dateUtilities';
 import { errorToastMessage, isEmptyData } from './utilities/textUtilities';
 import DataTable from 'react-data-table-component';
@@ -103,6 +103,8 @@ export const PortfolioSummary = () => {
 
     const [customerSegmentKeyValuePair, setCustomerSegmentKeyValuePair] = useState([])
     const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] = useState([])
+    const [itemVersionKeyValuePairs, setItemVersionKeyValuePairs] = useState([])
+    const [itemStatusKeyValuePairs, setItemStatusKeyValuePairs] = useState([])
 
     const [showBundleServiceModel, setShowBundleServiceModel] = useState(false);
     const [itemFlag, setItemFlag] = useState("")
@@ -160,6 +162,32 @@ export const PortfolioSummary = () => {
             .catch((error) => {
                 return;
             })
+
+        // get item version key value Pair
+        getSolutionPriceCommonConfig("support-level")
+            .then((res) => {
+                const options = []
+                res.map((d) => {
+                    if (d.key !== "EMPTY") { options.push({ value: d.key, label: d.value, }) }
+                });
+                setItemVersionKeyValuePairs(options);
+            })
+            .catch((err) => {
+                return;
+            });
+
+        // get item status key value Pair
+        getSolutionPriceCommonConfig("status")
+            .then((res) => {
+                const options = []
+                res.map((d) => {
+                    if (d.key !== "EMPTY") { options.push({ value: d.key, label: d.value, }) }
+                });
+                setItemStatusKeyValuePairs(options);
+            })
+            .catch((err) => {
+                return;
+            });
     }, [])
 
     const handleCreateTypeChange = (e) => {
@@ -842,6 +870,8 @@ export const PortfolioSummary = () => {
                     itemFlag={itemFlag}
                     customerSegmentKeyValuePair={customerSegmentKeyValuePair}
                     machineComponentKeyValuePair={machineComponentKeyValuePair}
+                    itemVersionKeyValuePairs={itemVersionKeyValuePairs}
+                    itemStatusKeyValuePairs={itemStatusKeyValuePairs}
                 />
             }
         </>
