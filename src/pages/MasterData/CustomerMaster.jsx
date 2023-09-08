@@ -434,7 +434,108 @@ const CustomerMaster = () => {
                   </div>
                 </>
               )}
-              {customerpagination === 2 && <></>}
+              {customerpagination === 2 && (
+                <>
+                  <h5 className="font-weight-500 mt-4">Customer Details</h5>
+                  <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
+                    <div className="row">
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Segment
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Mining
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Group
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Medium Enterprise
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Type
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Commercial
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Class
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          A Class
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Since
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          2012
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Status
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Active
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <h5 className="font-weight-500 mt-4">ERP Details</h5>
+                  <div className="bg-white p-3 border-radius-10 mt-3 mb-5">
+                    <div className="row">
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Code
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          CU1011453
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Group
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Medium Enterprise
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Industry
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          PROVINCIAL MUNICIPALITY OF CHANCHAMAYO
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Rating
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          3.4
+                        </p>
+                      </div>
+                      <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+                        <p className="text-light-60 font-size-12 m-0 font-weight-500">
+                          Customer Type
+                        </p>
+                        <p className="text-primary font-size-12 mt-1 font-weight-500">
+                          Commercial
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
