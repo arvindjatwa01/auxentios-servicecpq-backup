@@ -4,6 +4,9 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import Select from 'react-select';
+
+import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import $ from "jquery";
 
 import shareIcon from "../../../assets/icons/svg/share.svg";
@@ -19,10 +22,40 @@ import { isEmptyData, isEmptySelectData } from './utilities/textUtilities';
 import { getSearchQueryCoverage } from 'services';
 import ItemAddEdit from './portfolio-item/ItemAddEdit';
 import ItemPriceCalculator from './portfolio-item/ItemPriceCalculator';
+import { convertTimestampToFormateDate } from './utilities/dateUtilities';
+import { FONT_STYLE_SELECT } from 'pages/Repair/CONSTANTS';
 
-const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyValuePair, machineComponentKeyValuePair }) => {
+const offerValidityKeyValuePairs = [
+    { value: "15", label: "15 days" },
+    { value: "30", label: "1 month" },
+    { value: "45", label: "45 days" },
+    { value: "60", label: "2 months" },
+];
+
+const salesOfficeKeyValuePairs = [
+    { value: "Location1", label: "Location1" },
+    { value: "Location2", label: "Location2" },
+    { value: "Location3", label: "Location3" },
+    { value: "Location4", label: "Location4" },
+];
+
+const serviceTypeKeyValuePairs = [
+    { value: "free", label: "Free" },
+    { value: "chargeable", label: "Chargeable" },
+];
+
+const activityOptions = ["None", "Atria", "Callisto"];
+
+const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyValuePair, machineComponentKeyValuePair, itemVersionKeyValuePairs, itemStatusKeyValuePairs }) => {
     const [activeTab, setActiveTab] = useState("bundleServiceHeader")
-    const [itemEditable, setItemEditable] = useState(false);
+    const [itemActive, setItemActive] = useState(false)
+
+    const [bundleServiceEdit, setBundleServiceEdit] = useState({
+        bundleServiceHeader: false,
+        bundleServiceItems: false,
+        bundleServicePrice: false,
+        bundleServiceAdministrative: false,
+    })
 
     const [bundleServiceObj, setBundleServiceObj] = useState({
         itemId: 0,
@@ -43,30 +76,23 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
         frequency: "",
         currency: "",
         machineComponent: "",
+        serviceChargable: { value: "chargeable", label: "Chargeable" },
+        supportLevel: { value: "STANDARD", label: "Standard (Bronze)" },
+        status: "",
     })
+
+    const [administrative, setAdministrative] = useState({
+        preparedBy: "",
+        approvedBy: "",
+        preparedOn: new Date(),
+        revisedBy: "",
+        revisedOn: new Date(),
+        salesOffice: "",
+        offerValidity: "",
+    });
 
     const [modelSearchList, setModelSearchList] = useState([])
     const [prefixKeyValuePair, setPrefixKeyValuePair] = useState([])
-
-    const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
-        id: "",
-        name: "",
-        description: "",
-        bundleFlag: "",
-        reference: "",
-        customerSegment: "",
-        make: "",
-        model: "",
-        family: "",
-        prefix: "",
-        machine: "",
-        additional: "",
-        estimatedTime: "",
-        unit: "",
-        usageType: "",
-        frequency: "",
-        currency: "",
-    });
 
     // search model
     const handleModelSearch = (e) => {
@@ -86,6 +112,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
             });
     }
 
+    // Select Search Model from list
     const handleSelectModel = (currentItem) => {
         setBundleServiceObj(pre => ({
             ...pre,
@@ -97,6 +124,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
         $(`.scrollbar-model`).css("display", "none");
     }
 
+    // input fields text change
     const handleTextChange = (e) => {
         const { name, type, value } = e.target;
         if (type === "number") {
@@ -106,8 +134,37 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
         }
     }
 
+    // administrative tab text change
+    const handleAdministrativeTextChange = (e, type, keyName) => {
+        if (type === "text") {
+            setAdministrative(pre => ({ ...pre, [e.target.name]: e.target.value }))
+        } else if (type === "date") {
+            setAdministrative(pre => ({ ...pre, [keyName]: e }))
+        } else if (type === "select") {
+            setAdministrative(pre => ({ ...pre, [keyName]: e }))
+        }
+    }
+
+    // Select text change
     const handleSelectChange = (e, keyName) => {
         setBundleServiceObj(pre => ({ ...pre, [keyName]: e }))
+    }
+
+    // make item status options disable 
+    const handleStatusOptionsDisable = (optionData) => {
+        if ((optionData.value === "DRAFT" && bundleServiceObj.status.value == "ACTIVE")) {
+            setItemActive(false)
+            return true;
+        }
+
+        if (((optionData.value === "DRAFT" || optionData.value === "ACTIVE") && (bundleServiceObj.status.value == "REVISED"))) {
+            return true;
+        }
+
+        if (((optionData.value === "DRAFT" || optionData.value === "ACTIVE" || optionData.value === "REVISED") &&
+            (bundleServiceObj.status.value == "ARCHIVED"))) {
+            return true;
+        }
     }
 
     return (
@@ -124,7 +181,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                 <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
                                 {itemFlag === "BUNDLE" && <Tab label={`${itemFlag} ITEMS`} value="bundleServiceItems" />}
                                 {itemFlag === "BUNDLE" && <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>}
-                                <Tab label="PRICE CALCULATOR" value="bundleServicePriceCalculator" />
+                                <Tab label="PRICE CALCULATOR" value="bundleServicePrice" />
                                 <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
                                 <Tab label="ADMINISTRATIVE" value="bundleServiceAdministrative" />
                             </TabList>
@@ -135,59 +192,37 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                     <div className="ml-3 green-custom-btn ">
                                         {itemFlag === "SERVICE" &&
                                             <Select
-                                                // className={`customselectbtn1 p-2 border-radius-10 ${value4.value == "chargeable" ? "bg-gray-light" : "bg-green-light"}`}
-                                                // onChange={(e) => handleOption4(e)}
-                                                options={[
-                                                    { value: "free", label: "Free" },
-                                                    { value: "chargeable", label: "Chargeable" },
-                                                ]}
-                                            // value={value4}
+                                                className={`customselectbtn1 p-2 border-radius-10 ${bundleServiceObj.serviceChargable?.value == "chargeable" ? "bg-gray-light" : "bg-green-light"}`}
+                                                onChange={(e) => handleSelectChange(e, "serviceChargable")}
+                                                options={serviceTypeKeyValuePairs}
+                                                value={bundleServiceObj.serviceChargable}
                                             />
                                         }
                                     </div>
                                     <div className="d-flex justify-content-center align-items-center">
                                         <div className="ml-3">
-                                            <Select
-                                                className="customselectbtn1"
-                                            // onChange={(e) => handleOption3(e)}
-                                            // options={versionOption}
-                                            // value={value3}
+                                            <Select className="customselectbtn1"
+                                                onChange={(e) => handleSelectChange(e, "supportLevel")}
+                                                options={itemVersionKeyValuePairs}
+                                                value={bundleServiceObj.supportLevel}
                                             />
                                         </div>
 
                                         <div className="ml-3">
-                                            <Select
-                                                className="customselectbtn"
-                                            // onChange={(e) => handleOption2(e)}
-                                            // options={statusOption}
-                                            // value={value2}
-                                            // isOptionDisabled={(option) => makeStatusValueDisabled(option)}
+                                            <Select className="customselectbtn"
+                                                onChange={(e) => handleSelectChange(e, "status")}
+                                                options={itemStatusKeyValuePairs}
+                                                value={bundleServiceObj.status}
+                                                isOptionDisabled={(option) => handleStatusOptionsDisable(option)}
                                             />
                                         </div>
-                                        <a className="ml-3 font-size-14 cursor">
-                                            <img src={shareIcon} />
-                                        </a>
-                                        <a className="ml-3 font-size-14 cursor">
-                                            <img src={folderaddIcon} />
-                                        </a>
-                                        <a className="ml-3 font-size-14 cursor">
-                                            <img src={uploadIcon} />
-                                        </a>
-                                        <a className="ml-3 font-size-14 cursor">
-                                            <img src={cpqIcon} />
-                                        </a>
-                                        <a className="ml-3 font-size-14 cursor">
-                                            <img src={deleteIcon} />
-                                        </a>
-                                        <a className="ml-3 font-size-14 cursor">
-                                            <img src={copyIcon} />
-                                        </a>
-                                        <a className="ml-2 cursor">
-                                            {/* <MuiMenuComponent
-                                                // onClick={() => alert()}
-                                                // options={activityOptions}
-                                            /> */}
-                                        </a>
+                                        <a className="ml-3 font-size-14 cursor"><img src={shareIcon} /></a>
+                                        <a className="ml-3 font-size-14 cursor"><img src={folderaddIcon} /></a>
+                                        <a className="ml-3 font-size-14 cursor"><img src={uploadIcon} /></a>
+                                        <a className="ml-3 font-size-14 cursor"> <img src={cpqIcon} /></a>
+                                        <a className="ml-3 font-size-14 cursor"><img src={deleteIcon} /></a>
+                                        <a className="ml-3 font-size-14 cursor"><img src={copyIcon} /></a>
+                                        <a className="ml-2 cursor"><MuiMenuComponent options={activityOptions} /></a>
                                     </div>
                                 </div>
                                 <div className="card p-4 mt-5">
@@ -215,7 +250,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                             <input type="search" className="form-control search-form-control" aria-label="Search Dashboard" />
                                         </div>
                                     </h5>
-                                    {itemEditable ?
+                                    {bundleServiceEdit.bundleServiceHeader ?
                                         <div className="row mt-4 ">
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
@@ -408,7 +443,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                         <button type="button" className="btn text-white bg-primary"
                                         // onClick={handleAddNewServiceOrBundle}
                                         >
-                                            {itemEditable ? "Next" : "Save & Next"}
+                                            {bundleServiceEdit.bundleServiceHeader ? "Next" : "Save & Next"}
                                         </button>
                                     </div>
                                 </div>
@@ -425,11 +460,162 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                 unitKeyValuePairs={[]}
                             />
                         </TabPanel>
-                        <TabPanel value="bundleServicePriceCalculator">
+                        <TabPanel value="bundleServicePrice">
                             <ItemPriceCalculator />
                         </TabPanel>
                         <TabPanel value="bundleServiceAdministrative">
-                            <h3>Administrative details</h3>
+                            <div>
+                                <div className="ligt-greey-bg p-3">
+                                    <div><span className="mr-3 cursor">
+                                        <i className="fa fa-pencil font-size-12" aria-hidden="true" />
+                                        <span className="ml-2">Edit</span>
+                                    </span></div>
+                                </div>
+                                {bundleServiceEdit.bundleServiceAdministrative ?
+                                    <div className="row mt-4">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.preparedBy) ? "NA" : administrative.preparedBy}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.approvedBy) ? "NA" : administrative.preparedBy}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.preparedOn) ? "NA" : convertTimestampToFormateDate(administrative.preparedOn)}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.revisedBy) ? "NA" : administrative.revisedBy}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.revisedOn) ? "NA" : convertTimestampToFormateDate(administrative.revisedOn)}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.salesOffice?.value) ? "NA" : administrative.salesOffice?.label}</h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.offerValidity?.value) ? "NA" : administrative.offerValidity?.label}</h6>
+                                            </div>
+                                        </div>
+                                    </div> :
+                                    <div className="row mt-4  input-fields">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">PREPARED BY</label>
+                                                <input type="text" className="form-control text-primary border-radius-10" name="preparedBy"
+                                                    placeholder="Required (ex-abc@gmail.com)" value={administrative.preparedBy}
+                                                    onChange={(e) => handleAdministrativeTextChange(e, "text")}
+                                                />
+                                                <div className="css-w8dmq8">*Mandatory</div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">APPROVED BY</label>
+                                                <input type="text" className="form-control text-primary border-radius-10" name="approvedBy"
+                                                    placeholder="Optional  (ex-abc@gmail.com)" value={administrative.approvedBy}
+                                                    onChange={(e) => handleAdministrativeTextChange(e, "text")}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-14 font-weight-500">PREPARED ON</label>
+                                            <div className="d-flex align-items-center date-box w-100">
+                                                <div className="form-group w-100">
+                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                        <DatePicker
+                                                            variant="inline"
+                                                            format="dd/MM/yyyy"
+                                                            className="form-controldate border-radius-10"
+                                                            label=""
+                                                            name="preparedOn"
+                                                            value={administrative.preparedOn}
+                                                            onChange={(e) => handleAdministrativeTextChange(e, "date", "preparedOn")}
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                    <div className="css-w8dmq8">*Mandatory</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">REVISED BY</label>
+                                                <input type="text" className="form-control border-radius-10 text-primary" name="revisedBy"
+                                                    placeholder="Optional  (ex-abc@gmail.com)" value={administrative.revisedBy}
+                                                    onChange={(e) => handleAdministrativeTextChange(e, "text")}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">REVISED ON</label>
+                                                <div className="d-flex align-items-center date-box w-100">
+                                                    <div className="form-group w-100 m-0">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="revisedOn"
+                                                                value={administrative.revisedOn}
+                                                                onChange={(e) => handleAdministrativeTextChange(e, "date", "revisedOn")}
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500"> SALES OFFICE / BRANCH</label>
+                                                <Select className="text-primary"
+                                                    options={salesOfficeKeyValuePairs}
+                                                    onChange={(e) => handleAdministrativeTextChange(e, "select", "salesOffice")}
+                                                    value={administrative.salesOffice}
+                                                    styles={FONT_STYLE_SELECT}
+                                                />
+                                                <div className="css-w8dmq8">*Mandatory</div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">OFFER VALIDITY</label>
+                                                <Select className="text-primary"
+                                                    options={offerValidityKeyValuePairs}
+                                                    onChange={(e) => handleAdministrativeTextChange(e, "select", "offerValidity")}
+                                                    value={administrative.offerValidity}
+                                                    styles={FONT_STYLE_SELECT}
+                                                />
+                                                <div className="css-w8dmq8">*Mandatory</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div className="row" style={{ justifyContent: "right" }}>
+                                    <button type="button" className="btn text-white bg-primary"
+                                    // onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
+                                    > {bundleServiceEdit.bundleServiceAdministrative ? "Close" : "Save & CLose"}</button>
+                                </div>
+                            </div>
                         </TabPanel>
                     </TabContext>
                 </Box>
