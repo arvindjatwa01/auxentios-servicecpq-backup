@@ -70,14 +70,17 @@ const salesOfficeKeyValuePair = [
     { value: "Location4", label: "Location4" },
 ];
 
+const additionalPriceKeyValuePair = [
+    { label: "Surcharge %", value: "PERCENTAGE" },
+    { label: "Surcharge $", value: "ABSOLUTE", },
+];
+
 export const CreatePortfolio = () => {
 
     const history = useHistory();
     const location = useLocation();
-
-    console.log("history ", location);
-
     const dispatch = useDispatch();
+
     const categoryUsageKeyValuePair = useAppSelector(selectStrategyTaskOption(selectCategoryList));
     const strategyTaskKeyValuePair = useAppSelector(selectStrategyTaskOption(selectUpdateList));
     const taskTypeKeyValuePair = useAppSelector(selectStrategyTaskOption(selectUpdateTaskList));
@@ -89,10 +92,6 @@ export const CreatePortfolio = () => {
     const [priceListKeyValuePair, setPriceListKeyValuePair] = useState([])
     const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([])
     const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([])
-    const [additionalPriceKeyValuePair, setAdditionalPriceHeadTypeKeyValue] = useState([
-        { label: "Surcharge %", value: "PERCENTAGE" },
-        { label: "Surcharge $", value: "ABSOLUTE", },
-    ]);
     const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState([])
 
     const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
@@ -192,7 +191,7 @@ export const CreatePortfolio = () => {
     }, []);
 
     useEffect(() => {
-    //    if()
+        //    if()
     }, []);
 
     useEffect(() => {

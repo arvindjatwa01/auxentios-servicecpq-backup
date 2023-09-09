@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import Select from 'react-select';
 import { Modal } from 'react-bootstrap'
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import Select from 'react-select';
 
+import $ from "jquery";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import $ from "jquery";
 
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import shareIcon from "../../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../../assets/icons/svg/upload.svg";
@@ -18,12 +18,19 @@ import copyIcon from "../../../assets/icons/svg/Copy.svg";
 import shearchIcon from "../../../assets/icons/svg/search.svg";
 
 import { MuiMenuComponent } from "../../Operational/index";
-import { isEmptyData, isEmptySelectData } from './utilities/textUtilities';
-import { getSearchQueryCoverage } from 'services';
+import { errorToastMessage, isEmptyData, isEmptySelectData, successToastMessage } from './utilities/textUtilities';
 import ItemAddEdit from './portfolio-item/ItemAddEdit';
 import ItemPriceCalculator from './portfolio-item/ItemPriceCalculator';
 import { convertTimestampToFormateDate } from './utilities/dateUtilities';
 import { FONT_STYLE_SELECT } from 'pages/Repair/CONSTANTS';
+import {
+    getItemDataById,
+    getSearchQueryCoverage,
+    itemCreation,
+    updateItemData
+} from '../../../services/index';
+
+import { updateItemPriceSjRkId } from './portfolio-item/SJRKIdUpdate';
 
 const offerValidityKeyValuePairs = [
     { value: "15", label: "15 days" },
@@ -44,11 +51,93 @@ const serviceTypeKeyValuePairs = [
     { value: "chargeable", label: "Chargeable" },
 ];
 
+const additionalPriceKeyValuePair = [
+    { label: "Surcharge %", value: "PERCENTAGE" },
+    { label: "Surcharge $", value: "ABSOLUTE", },
+];
+
+const discountTypeKeyValuePair = [
+    { value: "PROGRAM_DISCOUNT", label: "Program" },
+    { value: "CUSTOMER_DISCOUNT", label: "Customer" },
+    { value: "PORTFOLIO_DISCOUNT", label: "Portfolio" },
+];
+
+const usageTypeKeyValuePair = [
+    { value: "Planned Usage", label: "Planned Usage" },
+    { value: "Recommended usage", label: "Recommended usage" },
+];
+
+const defaultItemHeaderObj = {
+    itemHeaderId: 0,
+    itemHeaderDescription: "",
+    bundleFlag: "SERVICE",
+    withBundleService: false,
+    portfolioItemIds: [],
+    reference: "",
+    itemHeaderMake: "",
+    itemHeaderFamily: "",
+    model: "",
+    prefix: "",
+    type: "",
+    additional: "",
+    currency: "",
+    netPrice: 0,
+    itemProductHierarchy: "EMPTY",
+    itemHeaderGeographic: "EMPTY",
+    responseTime: "EMPTY",
+    usage: "",
+    validFrom: "",
+    validTo: "",
+    estimatedTime: "",
+    servicePrice: 0,
+    status: "DRAFT",
+    componentCode: "",
+    componentDescription: "",
+    serialNumber: "",
+    itemHeaderStrategy: "EMPTY",
+    variant: "",
+    itemHeaderCustomerSegment: "",
+    jobCode: "",
+    preparedBy: "",
+    approvedBy: "",
+    preparedOn: "",
+    revisedBy: "",
+    revisedOn: "",
+    salesOffice: "",
+    offerValidity: "",
+    serviceChargable: true,
+    serviceOptional: false,
+}
+
+const defaultItemBodyObj = {
+    itemBodyId: 0,
+    itemBodyDescription: "",
+    spareParts: ["EMPTY"],
+    labours: ["EMPTY"],
+    miscellaneous: ["EMPTY"],
+    taskType: ["EMPTY"],
+    solutionCode: "",
+    usageIn: "",
+    usage: "",
+    year: "",
+    avgUsage: 0,
+    itemPrices: [],
+}
+
 const activityOptions = ["None", "Atria", "Callisto"];
 
-const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyValuePair, machineComponentKeyValuePair, itemVersionKeyValuePairs, itemStatusKeyValuePairs }) => {
+const BundleServiceAddUpdate = (props) => {
+    const { show, hideModel, itemFlag, customerSegmentKeyValuePair,
+        machineComponentKeyValuePair, itemVersionKeyValuePairs,
+        itemStatusKeyValuePairs, itemId, frequencyKeyValuePairs,
+        unitKeyValuePairs, priceHeadTypeKeyValuePair, priceTypeKeyValuePair,
+        priceMethodKeyValuePair, currencyKeyValuePair } = props;
+
     const [activeTab, setActiveTab] = useState("bundleServiceHeader")
     const [itemActive, setItemActive] = useState(false)
+
+    const [bundleServiceItemHeader, setBundleServiceItemHeader] = useState({ ...defaultItemHeaderObj })
+    const [bundleServiceItemBody, setBundleServiceItemBody] = useState({ ...defaultItemBodyObj })
 
     const [bundleServiceEdit, setBundleServiceEdit] = useState({
         bundleServiceHeader: false,
@@ -61,6 +150,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
         itemId: 0,
         name: "",
         description: "",
+        itemBodyDescription: "",
         bundleFlag: "",
         reference: "",
         customerSegment: "",
@@ -68,7 +158,6 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
         model: "",
         family: "",
         prefix: "",
-        machine: "",
         additional: "",
         estimatedTime: "",
         unit: "",
@@ -78,7 +167,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
         machineComponent: "",
         serviceChargable: { value: "chargeable", label: "Chargeable" },
         supportLevel: { value: "STANDARD", label: "Standard (Bronze)" },
-        status: "",
+        status: { value: "DRAFT", label: "Draft" },
     })
 
     const [administrative, setAdministrative] = useState({
@@ -92,10 +181,78 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
     });
 
     const [modelSearchList, setModelSearchList] = useState([])
+    const [modelSelect, setModelSelect] = useState(false)
     const [prefixKeyValuePair, setPrefixKeyValuePair] = useState([])
+
+    useEffect(() => {
+        if (itemId) {
+            handleGetItemDetails(itemId)
+            setBundleServiceEdit({
+                bundleServiceHeader: true,
+                bundleServiceItems: true,
+                bundleServicePrice: true,
+                bundleServiceAdministrative: true,
+            })
+        }
+    }, [itemId])
+
+    // get Select Bundle/Service Item Details
+    const handleGetItemDetails = async (itemId) => {
+        const itemDetails = await getItemDataById(itemId);
+        if (itemDetails.status === 200) {
+            const { itemId, itemName, itemHeaderModel, itemBodyModel } = itemDetails.data;
+
+            // set customer Segment
+            const _customerSegment = customerSegmentKeyValuePair.find(obj => obj.value === itemHeaderModel.itemHeaderCustomerSegment);
+
+            // Set machine-component Type
+            const _machineType = machineComponentKeyValuePair.find(obj => obj.value === itemHeaderModel.type);
+
+            // set Item Status
+            const _status = itemStatusKeyValuePairs.find(obj => obj.value === itemHeaderModel.status)
+
+            setBundleServiceObj({
+                ...bundleServiceObj,
+                itemId: itemId,
+                name: itemName,
+                description: itemHeaderModel.itemHeaderDescription,
+                bundleFlag: itemHeaderModel.bundleFlag,
+                reference: itemHeaderModel.reference,
+                customerSegment: _customerSegment || "",
+                make: itemHeaderModel.itemHeaderMake,
+                model: itemHeaderModel.model,
+                family: itemHeaderModel.itemHeaderFamily,
+                prefix: itemHeaderModel.prefix,
+                additional: "",
+                estimatedTime: itemHeaderModel.estimatedTime,
+                unit: "",
+                usageType: "",
+                frequency: "",
+                currency: itemHeaderModel.currency,
+                machineComponent: _machineType || "",
+                serviceChargable: itemHeaderModel.serviceChargable ? { value: "chargeable", label: "Chargeable" } : { value: "free", label: "Free" },
+                supportLevel: { value: "STANDARD", label: "Standard (Bronze)" },
+                status: _status,
+            })
+
+            setModelSelect(!isEmptyData(itemHeaderModel.model))
+            setBundleServiceItemHeader({ ...itemHeaderModel })
+            setBundleServiceItemBody({ ...itemBodyModel })
+
+        }
+    }
+
+    // handle Bundle/Service Edit falg
+    const handleBundleServiceEditFlag = () => {
+        setBundleServiceEdit({
+            ...bundleServiceEdit,
+            bundleServiceHeader: itemId ? !bundleServiceEdit.bundleServiceHeader : false,
+        })
+    }
 
     // search model
     const handleModelSearch = (e) => {
+        setModelSelect(false);
         var searchStr = "model~" + e.target.value;
         getSearchQueryCoverage(searchStr)
             .then((res) => {
@@ -120,7 +277,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
             make: currentItem.make,
             family: currentItem.family
         }))
-        // setModelResultSelected(true);
+        setModelSelect(true);
         $(`.scrollbar-model`).css("display", "none");
     }
 
@@ -167,6 +324,113 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
         }
     }
 
+    // check bundle Header input validation
+    const checkHeaderValidation = () => {
+        try {
+            if (isEmptyData(bundleServiceObj.name)) {
+                errorToastMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Name is a required field, you can’t leave it blank");
+                return false;
+            } else if (isEmptyData(bundleServiceObj.description)) {
+                errorToastMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Description is a required field, you can’t leave it blank");
+                return false;
+            } else if (isEmptyData(bundleServiceObj.model)) {
+                errorToastMessage("Model is a required field, you can’t leave it blank");
+                return false;
+            } else if (!modelSelect) {
+                errorToastMessage("Please Enter valid Model .");
+                return false;
+            }
+            return true;
+        } catch (error) {
+            return
+        }
+    }
+
+    // Bundle/Service Header Tab Button Action
+    const handleBundleServiceHeader = async () => {
+        try {
+            if (!bundleServiceEdit.bundleServiceHeader && !checkHeaderValidation()) {
+                return;
+            }
+            if (itemFlag === "SERVICE") {
+                if (bundleServiceEdit.bundleServiceHeader) {
+                    setActiveTab("bundleServicePrice")
+                }
+                if (!bundleServiceEdit.bundleServiceHeader && bundleServiceObj.status?.value === "ACTIVE") {
+                    errorToastMessage("Service Status is Active, change Status for change item details.");
+                    return;
+                }
+                let serviceReqObj = {
+                    itemId: bundleServiceObj.itemId,
+                    itemName: bundleServiceObj.name,
+                    itemHeaderModel: {
+                        ...bundleServiceItemHeader,
+                        itemHeaderDescription: bundleServiceObj.description,
+                        bundleFlag: "SERVICE",
+                        reference: bundleServiceObj.reference,
+                        itemHeaderMake: bundleServiceObj.make,
+                        itemHeaderFamily: bundleServiceObj.family,
+                        model: bundleServiceObj.model,
+                        prefix: bundleServiceObj.prefix?.value || "",
+                        type: bundleServiceObj.machineComponent?.value || "EMPTY",
+                        estimatedTime: bundleServiceObj.estimatedTime,
+                        status: "DRAFT",
+                        itemHeaderCustomerSegment: bundleServiceObj.customerSegment?.value || "",
+                        preparedBy: administrative.preparedBy,
+                        approvedBy: administrative.approvedBy,
+                        preparedOn: administrative.preparedOn,
+                        revisedBy: administrative.revisedBy,
+                        revisedOn: administrative.revisedOn,
+                        salesOffice: administrative.salesOffice?.value || "",
+                        offerValidity: administrative.offerValidity?.value || "",
+                        serviceChargable: (bundleServiceObj.serviceChargable?.value === "chargeable"),
+                        serviceOptional: (!(bundleServiceObj.serviceChargable?.value === "chargeable"))
+                    },
+                    itemBodyModel: { ...bundleServiceItemBody },
+                }
+                if (itemId) {
+                    const updateService = await updateItemData(itemId, serviceReqObj)
+                    if (updateService.status === 200) {
+                        successToastMessage(bundleServiceObj.name + " Update Successfully.")
+                        setActiveTab("bundleServicePrice")
+                    }
+                } else {
+                    const createService = await itemCreation(serviceReqObj);
+                    if (createService.status === 200) {
+                        successToastMessage(bundleServiceObj.name + " Create Successfully.")
+                        setActiveTab("bundleServicePrice")
+                    }
+                }
+            } else {
+                setActiveTab("bundleServiceItems")
+            }
+        } catch (error) {
+            return;
+        }
+    }
+
+    const handleBundleServiceItems = async (editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem) => {
+        setBundleServiceItemHeader({
+            ...bundleServiceItemHeader,
+            usage: itemRequestObj.usageType?.value || "",
+        });
+        setBundleServiceItemBody({
+            ...bundleServiceItemBody,
+            itemBodyDescription: "",
+            taskType: itemRequestObj.taskType,
+            usageIn: itemRequestObj.usageIn,
+            usage: itemRequestObj.usageType,
+            year: itemRequestObj.year,
+            itemPrices: [...bundleServiceItemBody, { itemPriceDataId: itemPriceDataId }],
+        });
+        // updateItemPriceSjRkId({
+        //     standardJobId: itemRequestObj.standardJobId,
+        //     repairKitId: itemRequestObj.repairKitId,
+        //     itemId: 0,
+        //     itemPriceDataId: 0
+        // })
+    }
+
     return (
         <Modal size="xl" show={show} onHide={hideModel}>
             <Modal.Body>
@@ -192,10 +456,11 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                     <div className="ml-3 green-custom-btn ">
                                         {itemFlag === "SERVICE" &&
                                             <Select
-                                                className={`customselectbtn1 p-2 border-radius-10 ${bundleServiceObj.serviceChargable?.value == "chargeable" ? "bg-gray-light" : "bg-green-light"}`}
+                                                className={`customselectbtn1 p-${bundleServiceEdit.bundleServiceHeader ? 0 : 2} border-radius-10 ${bundleServiceObj.serviceChargable?.value == "chargeable" ? "bg-gray-light" : "bg-green-light"}`}
                                                 onChange={(e) => handleSelectChange(e, "serviceChargable")}
                                                 options={serviceTypeKeyValuePairs}
                                                 value={bundleServiceObj.serviceChargable}
+                                                isDisabled={bundleServiceEdit.bundleServiceHeader}
                                             />
                                         }
                                     </div>
@@ -205,6 +470,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                                 onChange={(e) => handleSelectChange(e, "supportLevel")}
                                                 options={itemVersionKeyValuePairs}
                                                 value={bundleServiceObj.supportLevel}
+                                                isDisabled={bundleServiceEdit.bundleServiceHeader}
                                             />
                                         </div>
 
@@ -214,6 +480,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                                 options={itemStatusKeyValuePairs}
                                                 value={bundleServiceObj.status}
                                                 isOptionDisabled={(option) => handleStatusOptionsDisable(option)}
+                                                isDisabled={bundleServiceEdit.bundleServiceHeader}
                                             />
                                         </div>
                                         <a className="ml-3 font-size-14 cursor"><img src={shareIcon} /></a>
@@ -229,7 +496,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                     <h5 className="d-flex align-items-center mb-0">
                                         <div className="" style={{ display: "contents" }}>
                                             <span className="mr-3">Header</span>
-                                            <a className="btn-sm cursor"
+                                            <a className="btn-sm cursor" onClick={handleBundleServiceEditFlag}
                                             // onClick={makeBundleServiceHeaderEditable}
                                             >
                                                 <i className="fa fa-pencil" aria-hidden="true" />
@@ -440,9 +707,7 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                                     }
 
                                     <div className="row" style={{ justifyContent: "right" }}>
-                                        <button type="button" className="btn text-white bg-primary"
-                                        // onClick={handleAddNewServiceOrBundle}
-                                        >
+                                        <button type="button" className="btn text-white bg-primary" onClick={handleBundleServiceHeader}>
                                             {bundleServiceEdit.bundleServiceHeader ? "Next" : "Save & Next"}
                                         </button>
                                     </div>
@@ -452,16 +717,27 @@ const BundleServiceAddUpdate = ({ show, hideModel, itemFlag, customerSegmentKeyV
                         <TabPanel value="bundleServiceItems">
                             <ItemAddEdit
                                 itemType="bundleItem"
-                                isEditable={false}
+                                isEditable={bundleServiceEdit.bundleServiceItems}
                                 isPortfolioItem={false}
                                 // bundleServiceNeed={bundleServiceNeed}
                                 // handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
-                                frequencyKeyValuePairs={[]}
-                                unitKeyValuePairs={[]}
+                                frequencyKeyValuePairs={frequencyKeyValuePairs}
+                                unitKeyValuePairs={unitKeyValuePairs}
+                                handleGetPortfolioItemsData={handleBundleServiceItems}
                             />
                         </TabPanel>
                         <TabPanel value="bundleServicePrice">
-                            <ItemPriceCalculator />
+                            <ItemPriceCalculator
+                                priceMethodKeyValuePair={priceMethodKeyValuePair}
+                                priceTypeKeyValuePair={priceTypeKeyValuePair}
+                                priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+                                unitKeyValuePairs={unitKeyValuePairs}
+                                frequencyKeyValuePairs={frequencyKeyValuePairs}
+                                currencyKeyValuePair={currencyKeyValuePair}
+                                additionalPriceKeyValuePair={additionalPriceKeyValuePair}
+                                discountTypeKeyValuePair={discountTypeKeyValuePair}
+                                usageTypeKeyValuePair={usageTypeKeyValuePair}
+                            />
                         </TabPanel>
                         <TabPanel value="bundleServiceAdministrative">
                             <div>
