@@ -1210,7 +1210,7 @@ export function SubHeaderComponent(props) {
                           Insights{" "}
                         </a>
                       </li> */}
-                      <li className="cursor">
+                      {/* <li className="cursor">
                         <a
                           href="#"
                           data-original-title=""
@@ -1246,7 +1246,7 @@ export function SubHeaderComponent(props) {
                           </span>
                           Notes{" "}
                         </a>
-                      </li>
+                      </li> */}
                       {/* <li className="cursor"><a href="#" data-toggle="modal" data-target="#myModal2"><WarningAmberIcon className="mr-2" style={{ fontSize: '21px', color: '#000' }} />Errors</a></li> */}
                     </ul>
                   </div>
@@ -1628,7 +1628,6 @@ export function SubHeaderComponent(props) {
                           }
                         />
                       </MuiPickersUtilsProvider>
-                      {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
                     </div>
                   </div>
                 </div>

@@ -15,8 +15,66 @@ const customerSearchOptions = [
   { value: "E", label: "Group" },
   { value: "F", label: "Segment" },
 ];
-
+const dummySearchList = [
+  {
+    id: 1,
+    A: "110346",
+    B: "Gloria Mining Services S.A.C.",
+    C: "Large Enterprise",
+    D: "Retail",
+    active: true,
+  },
+  {
+    id: 2,
+    A: "1022061",
+    B: "Investments John Mic Sac",
+    C: "Medium Entrprise",
+    D: "Corporate",
+    active: false,
+  },
+  {
+    id: 3,
+    A: "1011453",
+    B: "Provincial Municipality of Chanchamayo",
+    C: "Small Retail",
+    D: "Energy",
+    active: false,
+  },
+  {
+    id: 4,
+    A: "1006646",
+    B: "Satipo Provincial Municipality",
+    C: "Medium Entrprise",
+    D: "A Class",
+    active: false,
+  },
+  {
+    id: 5,
+    A: "1018516",
+    B: "2050 Vargaya Sucari Froilan",
+    C: "Large Enterprise",
+    D: "Corporate",
+    active: false,
+  },
+  {
+    id: 6,
+    A: "1048850",
+    B: "Civil Engineers and Generating Contractors",
+    C: "Small Retail",
+    D: "C Class",
+    active: false,
+  },
+  {
+    id: 7,
+    A: "1012124",
+    B: "Vias Engineering and Constructions S.R.L Saw",
+    C: "Revenue > $ 1 Mil",
+    D: "Energy",
+    active: false,
+  },
+];
 const CustomerMaster = () => {
+  const [searchList, setSearchList] = useState([...dummySearchList]);
   const removeSearchCritria = () => {
     setSearchSelector([]);
   };
@@ -60,51 +118,16 @@ const CustomerMaster = () => {
   const customerPaginationChange = (event, value) => {
     setCustomerpagination(value);
   };
-  const searchList = [
-    {
-      A: "110346",
-      B: "Gloria Mining Services S.A.C.",
-      C: "Large Enterprise",
-      D: "Retail",
-    },
-    {
-      A: "1022061",
-      B: "Investments John Mic Sac",
-      C: "Medium Entrprise",
-      D: "Corporate",
-    },
-    {
-      A: "1011453",
-      B: "Provincial Municipality of Chanchamayo",
-      C: "Small Retail",
-      D: "Energy",
-    },
-    {
-      A: "1006646",
-      B: "Satipo Provincial Municipality",
-      C: "Medium Entrprise",
-      D: "A Class",
-    },
-    {
-      A: "1018516",
-      B: "2050 Vargaya Sucari Froilan",
-      C: "Large Enterprise",
-      D: "Corporate",
-    },
-    {
-      A: "1048850",
-      B: "Civil Engineers and Generating Contractors",
-      C: "Small Retail",
-      D: "C Class",
-    },
-    {
-      A: "1012124",
-      B: "Vias Engineering and Constructions S.R.L Saw",
-      C: "Revenue > $ 1 Mil",
-      D: "Energy",
-    },
-  ];
 
+  // view search list details
+  const viewEquipmentDetails = (id) => {
+    const _searchList = [...searchList];
+    const updatedSearchList = _searchList.map((data) => ({
+      ...data,
+      active: data.id === id ? true : false,
+    }));
+    setSearchList(updatedSearchList);
+  };
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div className="container-fluid">
@@ -236,7 +259,11 @@ const CustomerMaster = () => {
               <div className="equipment-master-ul">
                 <ul>
                   {searchList.map((Data, i) => (
-                    <li className={`${i === 0 ? "active" : ""}`}>
+                    <li
+                      key={`customer-master-${i}`}
+                      className={`${Data.active ? "active" : ""}`}
+                      onClick={() => viewEquipmentDetails(Data.id)}
+                    >
                       <div className="row position-relative">
                         <div className="global-serach-arrow">
                           <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
