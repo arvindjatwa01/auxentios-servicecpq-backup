@@ -12,8 +12,37 @@ const consumableSearchOptions = [
   { value: "B", label: "Description" },
   { value: "C", label: "Supplier" },
 ];
-
+const dummySearchList = [
+  { id: 1, 
+    A: "110346", 
+    B: "Materials Procesivos", 
+    C: "MC", 
+    D: "Stockable",
+    active: true,
+   },
+  { id: 2, A: "111141", B: "Miscelanos", C: "EX", D: "Stockable", active: false, },
+  { id: 3, A: "101093", B: "Trapo Industrial", C: "AA", D: "Non Stockable", active: false, },
+  {
+    id: 4,
+    A: "110528",
+    B: "Set of mirrors for retro view mirrors",
+    C: "OL",
+    D: "Stockable",
+    active: false,
+  },
+  { id: 5, A: "111141", B: "Absorbent Cloth", C: "PK", D: "Stockable", active: false, },
+  { id: 6, A: "110549", B: "Miscelanos", C: "LN", D: "Stockable", active: false, },
+  {
+    id: 7,
+    A: "110528",
+    B: "Set of mirrors for retro view mirrors",
+    C: "EX",
+    D: "Stockable",
+    active: false,
+  },
+];
 const ConsumableMaster = () => {
+  const [searchList, setSearchList] = useState([...dummySearchList]);
   const removeSearchCritria = () => {
     setSearchSelector([]);
   };
@@ -57,25 +86,16 @@ const ConsumableMaster = () => {
   const consumablePaginationChange = (event, value) => {
     setConsumablepagination(value);
   };
-  const searchList = [
-    { A: "110346", B: "Materials Procesivos", C: "MC", D: "Stockable" },
-    { A: "111141", B: "Miscelanos", C: "EX", D: "Stockable" },
-    { A: "101093", B: "Trapo Industrial", C: "AA", D: "Non Stockable" },
-    {
-      A: "110528",
-      B: "Set of mirrors for retro view mirrors",
-      C: "OL",
-      D: "Stockable",
-    },
-    { A: "111141", B: "Absorbent Cloth", C: "PK", D: "Stockable" },
-    { A: "110549", B: "Miscelanos", C: "LN", D: "Stockable" },
-    {
-      A: "110528",
-      B: "Set of mirrors for retro view mirrors",
-      C: "EX",
-      D: "Stockable",
-    },
-  ];
+
+  // view search list details
+  const viewEquipmentDetails = (id) => {
+    const _searchList = [...searchList];
+    const updatedSearchList = _searchList.map((data) => ({
+      ...data,
+      active: data.id === id ? true : false,
+    }));
+    setSearchList(updatedSearchList);
+  };
 
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
@@ -208,7 +228,11 @@ const ConsumableMaster = () => {
               <div className="equipment-master-ul">
                 <ul>
                   {searchList.map((Data, i) => (
-                    <li className={`${i === 0 ? "active" : ""}`}>
+                    <li
+                      key={`customer-master-${i}`}
+                      className={`${Data.active ? "active" : ""}`}
+                      onClick={() => viewEquipmentDetails(Data.id)}
+                    >
                       <div className="row position-relative">
                         <div className="global-serach-arrow">
                           <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />

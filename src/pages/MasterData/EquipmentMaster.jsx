@@ -105,12 +105,70 @@ const warrentydata = [
     servicePrice: "5879.24",
   },
 ];
-
+const dummySearchList = [
+  {
+    id: 1,
+    A: "ZCT01096",
+    B: "CHAIN EXCAVATOR - 336D2 L",
+    C: "336D2 L",
+    D: "CATERPILLAR",
+    active: true,
+  },
+  {
+    id: 2,
+    A: "ZCT01096",
+    B: "CHAIN EXCAVATOR - 336D2 L",
+    C: "336D2 L",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 3,
+    A: "ZCT01096",
+    B: "CHAIN EXCAVATOR - 336D2 L",
+    C: "336D2 L",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 4,
+    A: "ZCT01096",
+    B: "CHAIN EXCAVATOR - 336D2 L",
+    C: "336D2 L",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 5,
+    A: "ZCT01096",
+    B: "CHAIN EXCAVATOR - 336D2 L",
+    C: "336D2 L",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 6,
+    A: "ZCT01096",
+    B: "CHAIN EXCAVATOR - 336D2 L",
+    C: "336D2 L",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 7,
+    A: "ZCT01096",
+    B: "CHAIN EXCAVATOR - 336D2 L",
+    C: "336D2 L",
+    D: "CATERPILLAR",
+    active: false,
+  },
+];
 const EquipmentMaster = () => {
   const [showModal, setShowModal] = useState(false);
   const [isFailureReport, setIsFailureReport] = useState(false);
   const [bundleItems, setBundleItems] = useState([...tempdata]);
   const [warrentyItems, setWarrentyItems] = useState([...warrentydata]);
+  const [searchList, setSearchList] = useState([...dummySearchList]);
   const lifeCycleStatusData = [
     {
       month: "Jan",
@@ -149,50 +207,7 @@ const EquipmentMaster = () => {
       maintenance: 239,
     },
   ];
-  const searchList = [
-    {
-      A: "ZCT01096",
-      B: "CHAIN EXCAVATOR - 336D2 L",
-      C: "336D2 L",
-      D: "CATERPILLAR",
-    },
-    {
-      A: "ZCT01096",
-      B: "CHAIN EXCAVATOR - 336D2 L",
-      C: "336D2 L",
-      D: "CATERPILLAR",
-    },
-    {
-      A: "ZCT01096",
-      B: "CHAIN EXCAVATOR - 336D2 L",
-      C: "336D2 L",
-      D: "CATERPILLAR",
-    },
-    {
-      A: "ZCT01096",
-      B: "CHAIN EXCAVATOR - 336D2 L",
-      C: "336D2 L",
-      D: "CATERPILLAR",
-    },
-    {
-      A: "ZCT01096",
-      B: "CHAIN EXCAVATOR - 336D2 L",
-      C: "336D2 L",
-      D: "CATERPILLAR",
-    },
-    {
-      A: "ZCT01096",
-      B: "CHAIN EXCAVATOR - 336D2 L",
-      C: "336D2 L",
-      D: "CATERPILLAR",
-    },
-    {
-      A: "ZCT01096",
-      B: "CHAIN EXCAVATOR - 336D2 L",
-      C: "336D2 L",
-      D: "CATERPILLAR",
-    },
-  ];
+
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
   const [searchSelector, setSearchSelector] = useState([
@@ -1052,6 +1067,16 @@ const EquipmentMaster = () => {
     setShowModal(true);
   };
 
+  // view search list details
+  const viewEquipmentDetails = (id) => {
+    const _searchList = [...searchList];
+    const updatedSearchList = _searchList.map((data) => ({
+      ...data,
+      active: data.id === id ? true : false,
+    }));
+    setSearchList(updatedSearchList);
+  };
+
   return (
     <>
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -1192,7 +1217,11 @@ const EquipmentMaster = () => {
                 <div className="equipment-master-ul">
                   <ul>
                     {searchList.map((Data, i) => (
-                      <li className={`${i === 0 ? "active" : ""}`}>
+                      <li
+                        key={`equipment-master-${i}`}
+                        className={`${Data.active ? "active" : ""}`}
+                        onClick={() => viewEquipmentDetails(Data.id)}
+                      >
                         <div className="row position-relative">
                           <div className="global-serach-arrow">
                             <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />

@@ -4324,3 +4324,20 @@ input::-ms-clear {
 .failure-modal .modal-content {
   background: #F8F8F8 !important;
 }
+.font-size-28{
+  font-size: 28px !important;
+}
+.font-size-10{
+  font-size: 10px !important;
+}
+.notes-circle{
+  width: 35px;
+  height: 35px;
+  border: 1px solid #872FF7;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  color: #872FF7;
+}
