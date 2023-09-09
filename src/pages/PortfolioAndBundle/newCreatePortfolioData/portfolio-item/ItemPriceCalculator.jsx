@@ -8,9 +8,13 @@ import FormGroup from "@mui/material/FormGroup";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { isEmptyData } from '../utilities/textUtilities';
 
+const ItemPriceCalculator = (props) => {
+    const { priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, unitKeyValuePairs,
+        frequencyKeyValuePairs, currencyKeyValuePair, additionalPriceKeyValuePair, discountTypeKeyValuePair,
+        usageTypeKeyValuePair } = props;
 
-const ItemPriceCalculator = () => {
     const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
         itemPriceDataId: 0,
         priceMethod: "",
@@ -46,6 +50,13 @@ const ItemPriceCalculator = () => {
         calculatedPrice: 0,
     });
 
+    const [priceEscalationValues, setPriceEscalationValues] = useState({
+        sparePartsEscalation: 0,
+        labourEscalation: 0,
+        miscEscalation: 0,
+        serviceEscalation: 0,
+    })
+
     const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([{ value: 1, label: 1 }])
 
     useEffect(() => {
@@ -76,6 +87,33 @@ const ItemPriceCalculator = () => {
         }
     }
 
+    const priceEscalationPriceInput = (e) => {
+        if (itemPriceRecordObj.priceEscalation?.value === "PARTS") {
+            setPriceEscalationValues({
+                ...priceEscalationValues,
+                sparePartsEscalation: parseFloat(e.target.value),
+            })
+        } else if (itemPriceRecordObj.priceEscalation?.value === "LABOR") {
+            setPriceEscalationValues({
+                ...priceEscalationValues,
+                labourEscalation: parseFloat(e.target.value),
+            })
+
+        } else if (itemPriceRecordObj.priceEscalation?.value === "MISCELLANEOUS") {
+            setPriceEscalationValues({
+                ...priceEscalationValues,
+                miscEscalation: parseFloat(e.target.value),
+                serviceEscalation: 0,
+            })
+
+        } else if (itemPriceRecordObj.priceEscalation?.value === "SERVICE") {
+            setPriceEscalationValues({
+                ...priceEscalationValues,
+                serviceEscalation: parseFloat(e.target.value),
+            })
+        }
+    }
+
     return (
         <>
             <div className="ligt-greey-bg p-3">
@@ -102,8 +140,7 @@ const ItemPriceCalculator = () => {
                         <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">PRICE METHOD</label>
                             <Select className="text-primary" placeholder="placeholder (Optional)"
-                                // options={priceMethodKeyValue}
-                                value={itemPriceRecordObj.priceMethod}
+                                options={priceMethodKeyValuePair} value={itemPriceRecordObj.priceMethod}
                                 onChange={(e) => handlePriceTextChange(e, "priceMethod", "select")}
                             />
                         </div>
@@ -112,14 +149,8 @@ const ItemPriceCalculator = () => {
                         <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">CURRENCY </label>
                             <Select className="text-primary" placeholder="placeholder (Optional)"
-                                // options={priceCurrencyKeyValue}
-                                value={itemPriceRecordObj.currency}
+                                options={currencyKeyValuePair} value={itemPriceRecordObj.currency}
                                 onChange={(e) => handlePriceTextChange(e, "currency", "select")}
-                            // onChange={(e) => {
-                            //     setPriceCalculator({ ...priceCalculator, currency: e })
-                            //     setAddportFolioItem({ ...addPortFolioItem, currency: e })
-                            // }
-                            // }
                             />
                         </div>
                     </div>
@@ -147,8 +178,7 @@ const ItemPriceCalculator = () => {
                         <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">PRICE TYPE</label>
                             <Select className="text-primary" placeholder="placeholder (Optional)"
-                                // options={priceTypeKeyValue}
-                                value={itemPriceRecordObj.priceType}
+                                options={priceTypeKeyValuePair} value={itemPriceRecordObj.priceType}
                                 onChange={(e) => handlePriceTextChange(e, "priceType", "select")}
                             />
                         </div>
@@ -161,7 +191,7 @@ const ItemPriceCalculator = () => {
                                     <Select className="text-primary" placeholder="Select"
                                         value={itemPriceRecordObj.additionalPriceType}
                                         onChange={(e) => handlePriceTextChange(e, "additionalPriceType", "select")}
-                                    // options={additionalPriceHeadTypeKeyValue}
+                                        options={additionalPriceKeyValuePair}
                                     />
                                 </div>
                                 <input type="number" className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
@@ -177,19 +207,17 @@ const ItemPriceCalculator = () => {
                             <label className="text-light-dark font-size-12 font-weight-500">PRICE ESCALATION</label>
                             <div className=" d-flex align-items-center form-control-date">
                                 <Select className="select-input text-primary"
-                                    // options={priceHeadTypeKeyValue}
+                                    options={priceHeadTypeKeyValuePair}
                                     value={itemPriceRecordObj.priceEscalation}
-                                // onChange={(e) => handleEscalationPriceValue(e)}
+                                    onChange={(e) => handlePriceTextChange(e, "priceEscalation", "select")}
                                 />
                                 <input className="form-control rounded-top-left-0 rounded-bottom-left-0" type="text" placeholder="20%"
-                                    id="priceEscalationInput"
-                                // value={priceCalculator.escalationPriceInputValue}
-                                // onChange={(e) =>
-                                //     setPriceCalculator({
-                                //         ...priceCalculator,
-                                //         escalationPriceInputValue: e.target.value,
-                                //     })
-                                // }
+                                    id="priceEscalationInput" disabled={isEmptyData(itemPriceRecordObj.priceEscalation?.value)}
+                                    value={itemPriceRecordObj.priceEscalation?.value === "PARTS" ? priceEscalationValues.sparePartsEscalation :
+                                        itemPriceRecordObj.priceEscalation?.value === "LABOR" ? priceEscalationValues.labourEscalation :
+                                            itemPriceRecordObj.priceEscalation?.value === "MISCELLANEOUS" ? priceEscalationValues.miscEscalation :
+                                                itemPriceRecordObj.priceEscalation?.value === "SERVICE" ? priceEscalationValues.serviceEscalation : 0}
+                                    onChange={priceEscalationPriceInput}
                                 />
                             </div>
                         </div>
@@ -229,9 +257,8 @@ const ItemPriceCalculator = () => {
                             <div className=" d-flex form-control-date">
                                 <div className="">
                                     <Select className="text-primary" placeholder="Select"
-                                        value={itemPriceRecordObj.discountType}
+                                        value={itemPriceRecordObj.discountType} options={discountTypeKeyValuePair}
                                         onChange={(e) => handlePriceTextChange(e, "discountType", "select")}
-                                    // options={discountTypeOptions}
                                     />
                                 </div>
                                 <input type="text" className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
@@ -247,12 +274,11 @@ const ItemPriceCalculator = () => {
                             <label className="text-light-dark font-size-12 font-weight-500"> PRICE BREAK DOWN</label>
                             <div className=" d-flex form-control-date">
                                 <Select className="select-input text-primary"
-                                // value={priceCalculator.priceBreakDownOptionsKeyValue1}
-                                // onChange={(e) =>
-                                //     handlePriceBreakDownValue(e)
-                                // }
-                                // options={priceHeadTypeKeyValue}
-                                // placeholder="Select "
+                                    // value={priceCalculator.priceBreakDownOptionsKeyValue1}
+                                    // onChange={(e) =>
+                                    //     handlePriceBreakDownValue(e)
+                                    // }
+                                    options={priceHeadTypeKeyValuePair}
                                 />
                                 <input type="text" className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                     placeholder="optional"
@@ -328,8 +354,7 @@ const ItemPriceCalculator = () => {
                             <div className="form-group">
                                 <label className="text-light-dark font-size-14 font-weight-500"> USAGE TYPE</label>
                                 <Select className="text-primary"
-                                    // options={usageTypeKeyValuePair}
-                                    value={itemPriceRecordObj.usageType}
+                                    options={usageTypeKeyValuePair} value={itemPriceRecordObj.usageType}
                                     onChange={(e) => handlePriceTextChange(e, "usageType", "select")}
                                 />
                             </div>
@@ -338,7 +363,7 @@ const ItemPriceCalculator = () => {
                             <div className="form-group">
                                 <label className="text-light-dark font-size-14 font-weight-500"> FREQUENCY</label>
                                 <Select placeholder="Select..." className="text-primary"
-                                    // options={frequencyKeyValuePairs}
+                                    options={frequencyKeyValuePairs}
                                     value={itemPriceRecordObj.frequency}
                                     onChange={(e) => handlePriceTextChange(e, "frequency", "select")}
                                 />
@@ -348,7 +373,7 @@ const ItemPriceCalculator = () => {
                             <div className="form-group">
                                 <label className="text-light-dark font-size-14 font-weight-500">UNIT</label>
                                 <Select placeholder="Select..." className="text-primary"
-                                    // options={unitKeyValuePairs}
+                                    options={unitKeyValuePairs}
                                     value={itemPriceRecordObj.usageUnit}
                                     onChange={(e) => handlePriceTextChange(e, "usageUnit", "select")}
                                 />

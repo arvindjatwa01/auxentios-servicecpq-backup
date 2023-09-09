@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom';
 import $ from "jquery";
 import Select from 'react-select'
+import Loader from "react-js-loader";
 import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
@@ -13,11 +14,23 @@ import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
-import { getPortfolioCommonConfig, getSearchCoverageForFamily, getSearchForRecentPortfolio, getServiceBundleItemPrices, getSolutionPriceCommonConfig, getTypeKeyValue, itemSearchDropdown, portfolioSearchDropdownList, portfolioSearchTableDataList, recentItemsList } from "../../../services/index";
 import { getFormattedDateTime } from './utilities/dateUtilities';
 import { errorToastMessage, isEmptyData } from './utilities/textUtilities';
 import DataTable from 'react-data-table-component';
 import BundleServiceAddUpdate from './BundleServiceAddUpdate';
+import {
+    getPortfolioAndSolutionCommonConfig,
+    getPortfolioCommonConfig,
+    getSearchCoverageForFamily,
+    getSearchForRecentPortfolio,
+    getServiceBundleItemPrices,
+    getSolutionPriceCommonConfig,
+    getTypeKeyValue,
+    itemSearchDropdown,
+    portfolioSearchDropdownList,
+    portfolioSearchTableDataList,
+    recentItemsList
+} from "../../../services/index";
 
 const customStyles = {
     option: (provided, state) => ({
@@ -105,11 +118,20 @@ export const PortfolioSummary = () => {
     const [machineComponentKeyValuePair, setMachineComponentKeyValuePair] = useState([])
     const [itemVersionKeyValuePairs, setItemVersionKeyValuePairs] = useState([])
     const [itemStatusKeyValuePairs, setItemStatusKeyValuePairs] = useState([])
+    const [frequencyKeyValuePairs, setFrequencyKeyValuePairs] = useState([])
+    const [unitKeyValuePairs, setUnitKeyValuePairs] = useState([])
+    const [priceMethodKeyValuePair, setPriceMethodKeyValuePair] = useState([])
+    const [priceTypeKeyValuePair, setPriceTypeKeyValuePair] = useState([])
+    const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState([])
+    const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([])
 
     const [showBundleServiceModel, setShowBundleServiceModel] = useState(false);
     const [itemFlag, setItemFlag] = useState("")
+    const [itemId, setItemId] = useState(null)
+    const [showLoader, setShowLoader] = useState(false)
 
     useEffect(() => {
+        setShowLoader(true);
         // get Recent Portfolio List
         getSearchForRecentPortfolio()
             .then((res) => {
@@ -188,11 +210,113 @@ export const PortfolioSummary = () => {
             .catch((err) => {
                 return;
             });
+
+        // get frequency key-value pair
+        getPortfolioAndSolutionCommonConfig("frequency")
+            .then((res) => {
+                if (res.status === 200) {
+                    const options = []
+                    res.data.map((d) => {
+                        if (d.key !== "EMPTY") { options.push({ value: d.key, label: d.value, }) }
+                    });
+                    setFrequencyKeyValuePairs(options);
+                }
+            })
+            .catch((err) => {
+                return;
+            });
+
+        // get unit key-value pairs
+        getPortfolioAndSolutionCommonConfig("unit")
+            .then((res) => {
+                if (res.status === 200) {
+                    const options = []
+                    res.data.map((d) => {
+                        if ((d.key !== "EMPTY") && (d.key !== "MONTH")) { options.push({ value: d.key, label: d.value, }) }
+                    });
+                    setUnitKeyValuePairs(options);
+                }
+            })
+            .catch((err) => {
+                return;
+            });
+
+        // get Price-method key-value Pair
+        getSolutionPriceCommonConfig("price-method")
+            .then((res) => {
+                const priceMethodOptions = []
+                res.map((d) => {
+                    if (d.key != "EMPTY") { priceMethodOptions.push({ value: d.key, label: d.value, }) }
+                });
+                setPriceMethodKeyValuePair(priceMethodOptions);
+            })
+            .catch((err) => {
+                return;
+            });
+
+        // get Price-Type key-value Pair
+        getSolutionPriceCommonConfig("price-type")
+            .then((res) => {
+                const priceTypeOptions = []
+                res.map((d) => {
+                    if (d.key != "EMPTY") { priceTypeOptions.push({ value: d.key, label: d.value, }) }
+                });
+                setPriceTypeKeyValuePair(priceTypeOptions);
+            })
+            .catch((err) => {
+                return;
+            });
+
+        //get price-head-type key-value pair
+        getSolutionPriceCommonConfig("price-head-type")
+            .then((res) => {
+                const priceHeadTypeOptions = []
+                res.map((d) => {
+                    if (d.key != "EMPTY") { priceHeadTypeOptions.push({ value: d.key, label: d.value, }) }
+                });
+                setPriceHeadTypeKeyValuePair(priceHeadTypeOptions);
+            })
+            .catch((err) => {
+                return;
+            });
+
+        //  get currency  key-value pair
+        getSolutionPriceCommonConfig("currency")
+            .then((res) => {
+                const currencyOptions = []
+                res.map((d) => {
+                    if (d.key != "EMPTY") { currencyOptions.push({ value: d, label: d, }) }
+                });
+                setCurrencyKeyValuePair(currencyOptions);
+            })
+            .catch((err) => {
+                return;
+            })
+        setShowLoader(false);
     }, [])
 
-    const handleCreateTypeChange = (e) => {
-        setItemFlag(e.value)
+    // view Bundle/Service Details
+    const viewBundleServiceDetails = (row) => {
+        setItemId(row.itemId);
+        setItemFlag(row.bundleFlag)
         setShowBundleServiceModel(true)
+    }
+
+    // change Create type Portfolio/Bundle/Service
+    const handleCreateTypeChange = (e) => {
+        if (e.value === "PORTFOLIO") {
+            history.push({
+                pathname: "/portfolio/new",
+                state: {
+                    portfolioId: 0,
+                    type: "new",
+                },
+            });
+        } else {
+            setItemFlag(e.value)
+            setShowBundleServiceModel(true)
+            setItemId(null);
+        }
     }
 
     // Select Search Itm Type Portfolio/Bundle/Service
@@ -574,9 +698,7 @@ export const PortfolioSummary = () => {
             sortable: false,
             format: (row) => row.action,
             cell: (row, i) => (<div>
-                <a className='cursor'> <EditOutlinedIcon />
-                    {/* <img className="mr-2" src={EditOutlinedIcon} /> */}
-                </a>
+                <a className='cursor' key={`action-${i}`} onClick={() => viewBundleServiceDetails(row)}><EditOutlinedIcon /></a>
             </div>),
         },
     ]
@@ -644,11 +766,7 @@ export const PortfolioSummary = () => {
                                     </p>
                                     <div className="d-flex align-items-center">
                                         <a className="btn-sm cursor">
-                                            <i className="fa fa-pencil" aria-hidden="true"
-                                            // onClick={() =>
-                                            //     makePortfolioEditableEditable(data)
-                                            // }
-                                            />
+                                            <i className="fa fa-pencil" aria-hidden="true" onClick={() => viewBundleServiceDetails(service)} />
                                         </a>
                                         <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faShareAlt} /></a>
                                         <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faFolderPlus} /></a>
@@ -684,11 +802,7 @@ export const PortfolioSummary = () => {
                                     </p>
                                     <div className="d-flex align-items-center">
                                         <a className="btn-sm cursor">
-                                            <i className="fa fa-pencil" aria-hidden="true"
-                                            // onClick={() =>
-                                            //     makePortfolioEditableEditable(data)
-                                            // }
-                                            />
+                                            <i className="fa fa-pencil" aria-hidden="true" onClick={() => viewBundleServiceDetails(bundle)} />
                                         </a>
                                         <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faShareAlt} /></a>
                                         <a className="ml-3 font-size-14 cursor"><FontAwesomeIcon icon={faFolderPlus} /></a>
@@ -708,6 +822,21 @@ export const PortfolioSummary = () => {
         </div>
     )
 
+    // show Loader
+    const showLoadingProgress = () => {
+        return (
+            <div className="d-flex align-items-center justify-content-center">
+                <Loader
+                    type="spinner-default"
+                    bgColor={"#872ff7"}
+                    title={"spinner-default"}
+                    color={"#FFFFFF"}
+                    size={35}
+                />
+            </div>
+        )
+    }
+
     return (
         <>
             <div className="content-body" style={{ minHeight: "884px" }}>
@@ -725,142 +854,145 @@ export const PortfolioSummary = () => {
                             onChange={handleCreateTypeChange}
                         />
                     </div>
-                    <div className="card p-4 mt-5">
-                        <TabContext value={recentTabIs}>
-                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                <TabList className="custom-tabs-div" aria-label="lab API tabs example" onChange={(e, tabValue) => setRecentTabIs(tabValue)}>
-                                    <Tab label="Portfolio" value={"portfolio"} />
-                                    <Tab label="Service " value={"service"} />
-                                    <Tab label="Bundle" value={"bundle"} />
-                                </TabList>
-                            </Box>
-                            <TabPanel value={"portfolio"}>{viewRecentPortfolio()}</TabPanel>
-                            <TabPanel value={"service"}>{viewRecentServices()}</TabPanel>
-                            <TabPanel value={"bundle"}>{viewRecentBundles()}</TabPanel>
-                        </TabContext>
-                    </div>
-                    <div className="bg-primary px-3 mb-3 border-radius-10 ">
-                        <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
-                            <div className="mx-2">
-                                <div className="d-flex align-items-center bg-primary w-100">
-                                    <div className="d-flex mr-2" style={{ whiteSpace: "pre" }}>
-                                        <h5 className="mr-2 mb-0 text-white">
-                                            <span>Search</span>
-                                        </h5>
-                                        <p className="ml-4 mb-0">
-                                            <a className="ml-3 cursor text-white cursor"><EditOutlinedIcon /></a>
-                                            <a href={undefined} className="ml-3 cursor text-white"><ShareOutlinedIcon /></a>
-                                        </p>
-                                    </div>
-                                    <div className="d-flex justify-content-between align-items-center w-100 mr-4">
-                                        <div className="row align-items-center m-0">
-                                            {searchParameter.map((obj, i) =>
-                                                <div className={`customselect ${i < ((searchParameter.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-10`}>
-                                                    {i === 0 &&
-                                                        <Select
-                                                            placeholder="Select Type."
-                                                            options={([
-                                                                { label: "Portfolio", value: "PORTFOLIO" },
-                                                                { label: "Bundle", value: "BUNDLE_ITEM" },
-                                                                { label: "Service", value: "SERVICE" },
-
-                                                            ])}
-                                                            value={obj.itemType}
-                                                            onChange={handleSelectSearchType}
-                                                        />
-                                                    }
-                                                    {i > 0 &&
-                                                        <Select
-                                                            isClearable={true}
-                                                            defaultValue={{ label: "AND", value: "AND" }}
-                                                            options={[
-                                                                { label: "AND", value: "AND", id: i },
-                                                                { label: "OR", value: "OR", id: i },
-                                                            ]}
-                                                            placeholder="AND/OR"
-                                                            onChange={(e) => handleSelectOperator(e, i)}
-                                                            value={obj.selectOperator}
-                                                        />
-                                                    }
-                                                    <div>
-                                                        <Select
-                                                            options={isEmptyData(searchParameter[0].itemType?.value) ? [] : searchParameter[0].itemType?.value === "PORTFOLIO" ? portfolioSearchOptions : bundleServiceSearchOptions}
-                                                            onChange={(e) => handleSelectFamily(e, i)}
-                                                            value={obj.selectFamily}
-                                                            isOptionDisabled={(option) => handleCheckDisableOptions(option)}
-                                                        />
-                                                    </div>
-                                                    <div className="customselectsearch">
-                                                        <input className="custom-input-sleact pr-1" type="text" placeholder="Search string"
-                                                            id={"inputSearch-" + i} value={obj.inputSearch} autoComplete="off" onChange={(e) => handleSearchDropdownData(e, i)}
-                                                        />
-                                                        {
-                                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`} id="style">
-                                                                {obj.inputSearch.length !== 0 && obj.selectOptions.length === 0 && <li className="list-group-item">No Result found</li>}
-                                                                {obj.selectOptions.map((currentItem, j) => (
-                                                                    <li className="list-group-item" key={j} onClick={() => handleSelectDropdownItem(currentItem, i)}>
-                                                                        {searchParameter[0].itemType?.value === "PORTFOLIO" && obj.selectFamily.value !== "name" &&
-                                                                            obj.selectFamily.value !== "description" ? currentItem : currentItem.split("#")[1]
-                                                                        }
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        }
-                                                    </div>
-                                                    {(searchParameter.length - 1) === i &&
-                                                        <a className="btn bg-primary text-white border-radius-10 cursor" onClick={handleSearchData}>
-                                                            <SearchIcon /><span className="ml-1">Search</span>
-                                                        </a>
-                                                    }
-                                                </div>
-                                            )}
-                                            <div onClick={(e) => addMoreSearchParameters(e)}>
-                                                <a className="btn-sm text-white border mr-2 cursor" style={{ border: "1px solid #872FF7" }}>+</a>
+                    {showLoader ? showLoadingProgress() :
+                        <>
+                            <div className="card p-4 mt-5">
+                                <TabContext value={recentTabIs}>
+                                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                        <TabList className="custom-tabs-div" aria-label="lab API tabs example" onChange={(e, tabValue) => setRecentTabIs(tabValue)}>
+                                            <Tab label="Portfolio" value={"portfolio"} />
+                                            <Tab label="Service " value={"service"} />
+                                            <Tab label="Bundle" value={"bundle"} />
+                                        </TabList>
+                                    </Box>
+                                    <TabPanel value={"portfolio"}>{viewRecentPortfolio()}</TabPanel>
+                                    <TabPanel value={"service"}>{viewRecentServices()}</TabPanel>
+                                    <TabPanel value={"bundle"}>{viewRecentBundles()}</TabPanel>
+                                </TabContext>
+                            </div>
+                            <div className="bg-primary px-3 mb-3 border-radius-10 ">
+                                <div className="d-block height-66 d-md-flex justify-content-between align-items-center">
+                                    <div className="mx-2">
+                                        <div className="d-flex align-items-center bg-primary w-100">
+                                            <div className="d-flex mr-2" style={{ whiteSpace: "pre" }}>
+                                                <h5 className="mr-2 mb-0 text-white">
+                                                    <span>Search</span>
+                                                </h5>
+                                                <p className="ml-4 mb-0">
+                                                    <a className="ml-3 cursor text-white cursor"><EditOutlinedIcon /></a>
+                                                    <a href={undefined} className="ml-3 cursor text-white"><ShareOutlinedIcon /></a>
+                                                </p>
                                             </div>
-                                            <div onClick={handleDeleteSearchParameters}>
-                                                <a className="btn-sm border cursor">
-                                                    <svg
-                                                        data-name="Layer 41"
-                                                        id="Layer_41"
-                                                        fill="white"
-                                                        viewBox="0 0 50 50"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                    >
-                                                        <title />
-                                                        <path
-                                                            className="cls-1"
-                                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                                        />
-                                                        <path
-                                                            className="cls-1"
-                                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                                        />
-                                                        <path
-                                                            className="cls-1"
-                                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                                        />
-                                                    </svg>
-                                                </a>
+                                            <div className="d-flex justify-content-between align-items-center w-100 mr-4">
+                                                <div className="row align-items-center m-0">
+                                                    {searchParameter.map((obj, i) =>
+                                                        <div className={`customselect ${i < ((searchParameter.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-10`}>
+                                                            {i === 0 &&
+                                                                <Select
+                                                                    placeholder="Select Type."
+                                                                    options={([
+                                                                        { label: "Portfolio", value: "PORTFOLIO" },
+                                                                        { label: "Bundle", value: "BUNDLE_ITEM" },
+                                                                        { label: "Service", value: "SERVICE" },
+
+                                                                    ])}
+                                                                    value={obj.itemType}
+                                                                    onChange={handleSelectSearchType}
+                                                                />
+                                                            }
+                                                            {i > 0 &&
+                                                                <Select
+                                                                    isClearable={true}
+                                                                    defaultValue={{ label: "AND", value: "AND" }}
+                                                                    options={[
+                                                                        { label: "AND", value: "AND", id: i },
+                                                                        { label: "OR", value: "OR", id: i },
+                                                                    ]}
+                                                                    placeholder="AND/OR"
+                                                                    onChange={(e) => handleSelectOperator(e, i)}
+                                                                    value={obj.selectOperator}
+                                                                />
+                                                            }
+                                                            <div>
+                                                                <Select
+                                                                    options={isEmptyData(searchParameter[0].itemType?.value) ? [] : searchParameter[0].itemType?.value === "PORTFOLIO" ? portfolioSearchOptions : bundleServiceSearchOptions}
+                                                                    onChange={(e) => handleSelectFamily(e, i)}
+                                                                    value={obj.selectFamily}
+                                                                    isOptionDisabled={(option) => handleCheckDisableOptions(option)}
+                                                                />
+                                                            </div>
+                                                            <div className="customselectsearch">
+                                                                <input className="custom-input-sleact pr-1" type="text" placeholder="Search string"
+                                                                    id={"inputSearch-" + i} value={obj.inputSearch} autoComplete="off" onChange={(e) => handleSearchDropdownData(e, i)}
+                                                                />
+                                                                {
+                                                                    <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`} id="style">
+                                                                        {obj.inputSearch.length !== 0 && obj.selectOptions.length === 0 && <li className="list-group-item">No Result found</li>}
+                                                                        {obj.selectOptions.map((currentItem, j) => (
+                                                                            <li className="list-group-item" key={j} onClick={() => handleSelectDropdownItem(currentItem, i)}>
+                                                                                {searchParameter[0].itemType?.value === "PORTFOLIO" && obj.selectFamily.value !== "name" &&
+                                                                                    obj.selectFamily.value !== "description" ? currentItem : currentItem.split("#")[1]
+                                                                                }
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                }
+                                                            </div>
+                                                            {(searchParameter.length - 1) === i &&
+                                                                <a className="btn bg-primary text-white border-radius-10 cursor" onClick={handleSearchData}>
+                                                                    <SearchIcon /><span className="ml-1">Search</span>
+                                                                </a>
+                                                            }
+                                                        </div>
+                                                    )}
+                                                    <div onClick={(e) => addMoreSearchParameters(e)}>
+                                                        <a className="btn-sm text-white border mr-2 cursor" style={{ border: "1px solid #872FF7" }}>+</a>
+                                                    </div>
+                                                    <div onClick={handleDeleteSearchParameters}>
+                                                        <a className="btn-sm border cursor">
+                                                            <svg
+                                                                data-name="Layer 41"
+                                                                id="Layer_41"
+                                                                fill="white"
+                                                                viewBox="0 0 50 50"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                            >
+                                                                <title />
+                                                                <path
+                                                                    className="cls-1"
+                                                                    d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                                                />
+                                                                <path
+                                                                    className="cls-1"
+                                                                    d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                                                />
+                                                                <path
+                                                                    className="cls-1"
+                                                                    d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                                                />
+                                                            </svg>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div><div className="text-center pl-3 py-3" /></div>
                                 </div>
                             </div>
-                            <div><div className="text-center pl-3 py-3" /></div>
-                        </div>
-                    </div>
-                    <div className="card">
-                        <div style={{ minHeight: 200, height: "auto", width: "100%", backgroundColor: "#fff" }}>
-                            {searchResultData.length !== 0 &&
-                                <DataTable
-                                    columns={searchParameter[0]?.itemType?.value === "PORTFOLIO" ? portfolioColumns : bundleServiceColumns}
-                                    data={searchResultData}
-                                    customStyles={dataTableCustomStyle}
-                                    pagination
-                                />
-                            }
-                        </div>
-                    </div>
+                            <div className="card">
+                                <div style={{ minHeight: 200, height: "auto", width: "100%", backgroundColor: "#fff" }}>
+                                    {searchResultData.length !== 0 &&
+                                        <DataTable
+                                            columns={searchParameter[0]?.itemType?.value === "PORTFOLIO" ? portfolioColumns : bundleServiceColumns}
+                                            data={searchResultData}
+                                            customStyles={dataTableCustomStyle}
+                                            pagination
+                                        />
+                                    }
+                                </div>
+                            </div>
+                        </>}
                 </div>
             </div>
             {showBundleServiceModel &&
@@ -872,6 +1004,13 @@ export const PortfolioSummary = () => {
                     machineComponentKeyValuePair={machineComponentKeyValuePair}
                     itemVersionKeyValuePairs={itemVersionKeyValuePairs}
                     itemStatusKeyValuePairs={itemStatusKeyValuePairs}
+                    itemId={itemId}
+                    frequencyKeyValuePairs={frequencyKeyValuePairs}
+                    unitKeyValuePairs={unitKeyValuePairs}
+                    priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+                    priceTypeKeyValuePair={priceTypeKeyValuePair}
+                    priceMethodKeyValuePair={priceMethodKeyValuePair}
+                    currencyKeyValuePair={currencyKeyValuePair}
                 />
             }
         </>
