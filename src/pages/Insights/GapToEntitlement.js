@@ -2,16 +2,32 @@ import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { Box, Card, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar, GridToolbarColumnsButton, GridToolbarContainer } from "@mui/x-data-grid";
 import {
   getGapToEntitlement,
 } from "services/dashboardServices";
 
+const CustomToolbar = ({ setColumnButtonEl }) => {
+  return (
+    <GridToolbarContainer sx={{ justifyContent: 'end' }}>
+      <GridToolbarColumnsButton ref={setColumnButtonEl} />
+    </GridToolbarContainer>
+  );
+}
+
 export default function GapToEntitlement(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [entitlementData, setEntitlementData] = useState([]);
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
+  const [columnButtonEl, setColumnButtonEl] = useState(null);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
     customer_name: false,
+    customer_group: false,
+    customer_segment: false,
+    customer_level: false,
+    equipment_num: false,
+    description: false,
     last_purchase: false,
     recency: false,
     frequency: false,
@@ -33,7 +49,7 @@ export default function GapToEntitlement(props) {
         setIsLoading(false);
       })
       .catch((err) => {
-        console.log("axios err=", err);
+        // console.log("axios err=", err);
         setEntitlementData([]);
         setIsLoading(false);
       });
@@ -42,6 +58,7 @@ export default function GapToEntitlement(props) {
       console.log("axios cleanup.");
     };
   }, []);
+
 
   const customerDetailColumns = [
     { field: "customer_id", headerName: "Customer ID", width: 100 },
@@ -89,7 +106,6 @@ export default function GapToEntitlement(props) {
         {parseFloat(params.value).toFixed(2)}
       </span>)
   }
-  const [pageSize, setPageSize] = useState(10);
 
   return (
     <div>
@@ -121,6 +137,7 @@ export default function GapToEntitlement(props) {
               loading={isLoading}
               sx={GRID_STYLE}
               getRowId={(row) => row.customer_id}
+
               rows={entitlementData}
               columns={customerDetailColumns}
               columnVisibilityModel={columnVisibilityModel}
@@ -130,6 +147,25 @@ export default function GapToEntitlement(props) {
               pageSize={pageSize}
               onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
               rowsPerPageOptions={[10, 20, 50]}
+              components={{
+                Toolbar: CustomToolbar,
+              }}
+              componentsProps={{
+                panel: {
+                  anchorEl: columnButtonEl,
+                  placement: "bottom-end"
+                },
+                toolbar: {
+                  setColumnButtonEl
+                }
+              }}
+              localeText={{ toolbarColumns: "Select Columns" }}
+              checkboxSelection={true}
+              keepNonExistentRowsSelected
+              onSelectionModelChange={(newRowSelectionModel) => {
+                setRowSelectionModel(newRowSelectionModel);
+              }}
+              selectionModel={rowSelectionModel}
             />
           </Box>
         </Card>
