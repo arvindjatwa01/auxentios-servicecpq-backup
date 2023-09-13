@@ -52,10 +52,12 @@ import {
 import {
     getPortfolioAndSolutionCommonConfig
 } from "../../../../services/index"
-import { isEmptyData } from '../utilities/textUtilities';
+import { isEmpty } from '../utilities/textUtilities';
 import ItemPriceCalculator from './ItemPriceCalculator';
 import { useDispatch } from 'react-redux';
 import ExpendBundleServiceItem from './ExpendBundleServiceItem';
+
+import { dataTableCustomStyle } from "../itemConstant"
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 
@@ -100,39 +102,9 @@ const coverageRowData = [
     },
 ];
 
-const customStyles = {
-    rows: {
-        style: {
-            minHeight: "72px", // override the row height
-        },
-    },
-    headCells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for head cells
-            paddingRight: "8px",
-            backgroundColor: "#872ff7",
-            color: "#fff",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-    cells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for data cells
-            paddingRight: "8px",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-};
-
 const coverageColumns = [
     {
-        name: (
-            <>
-                <div>
-                    <Checkbox className="text-white" {...label} />
-                </div>
-            </>
-        ),
+        name: <div> <Checkbox className="text-white" {...label} /></div>,
         selector: (row) => row.standardJobId,
         wrap: true,
         sortable: true,
@@ -140,90 +112,56 @@ const coverageColumns = [
         cell: (row) => <Checkbox className="text-black" />,
     },
     {
-        name: (
-            <>
-                <div>Make</div>
-            </>
-        ),
+        name: <div>Make</div>,
         selector: (row) => row.make,
         wrap: true,
         sortable: true,
         format: (row) => row.make,
     },
     {
-        name: (
-            <>
-                <div>Family</div>
-            </>
-        ),
+        name: <div>Family</div>,
         selector: (row) => row.family,
         wrap: true,
         sortable: true,
         format: (row) => row.family,
     },
     {
-        name: (
-            <>
-                <div>Model</div>
-            </>
-        ),
+        name: <div>Model</div>,
         selector: (row) => row.modelDescription,
         wrap: true,
         sortable: true,
         format: (row) => row.modelDescription,
     },
     {
-        name: (
-            <>
-                <div>Prefix</div>
-            </>
-        ),
+        name: <div>Prefix</div>,
         selector: (row) => row.prefix,
         wrap: true,
         sortable: true,
         format: (row) => row.prefix,
     },
     {
-        name: (
-            <>
-                <div>Serial No</div>
-            </>
-        ),
+        name: <div>Serial No</div>,
         selector: (row) => row.bundleId,
         sortable: true,
         maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
         format: (row) => row.bundleId,
     },
     {
-        name: (
-            <>
-                <div>
-                    <img className="mr-2" src={boxicon}></img>Start Serial No
-                </div>
-            </>
-        ),
+        name: <div><img className="mr-2" src={boxicon} />Start Serial No</div>,
         selector: (row) => row.bundleDescription,
         wrap: true,
         sortable: true,
         format: (row) => row.bundleDescription,
     },
     {
-        name: (
-            <>
-                <div>End Serial No</div>
-            </>
-        ),
+        name: <div>End Serial No</div>,
         selector: (row) => row.strategy,
         wrap: true,
         sortable: true,
         format: (row) => row.strategy,
     },
     {
-        name: (
-            <>
-                <div>Action</div>
-            </>
-        ),
+        name: <div>Action</div>,
         selector: (row) => row.action,
         wrap: true,
         sortable: true,
@@ -270,7 +208,7 @@ const bundleServiceItemsColumns = [
     {
         id: "quantity",
         name: "Quantity",
-        selector: (row) => isEmptyData(row.quantity) ? 1 : row.quantity,
+        selector: (row) => isEmpty(row.quantity) ? 1 : row.quantity,
         sortable: false,
         wrap: true,
     },
@@ -284,7 +222,7 @@ const bundleServiceItemsColumns = [
     {
         id: "templateKitId",
         name: "Template/Kit ID",
-        selector: (row) => !isEmptyData(row?.standardJobId) ? row?.standardJobId : !isEmptyData(row?.repairKitId) ? row?.repairKitId : "NA",
+        selector: (row) => !isEmpty(row?.standardJobId) ? row?.standardJobId : !isEmpty(row?.repairKitId) ? row?.repairKitId : "NA",
         sortable: false,
         wrap: true,
     },
@@ -633,7 +571,7 @@ const PortfolioItemsList = ({ componentDataTabShow }) => {
                                     <DataTable
                                         columns={bundleServiceItemsColumns}
                                         data={searchBundleServiceItem}
-                                        customStyles={customStyles}
+                                        customStyles={dataTableCustomStyle}
                                         selectableRows
                                         selectableRowsHighlight
                                         onSelectedRowsChange={(rows) => setSelectedSearchedItems(rows.selectedRows)}
@@ -655,7 +593,7 @@ const PortfolioItemsList = ({ componentDataTabShow }) => {
                                     <DataTable
                                         columns={bundleServiceItemsColumns}
                                         data={bundleServiceItemsList}
-                                        customStyles={customStyles}
+                                        customStyles={dataTableCustomStyle}
                                         pagination
                                         expandableRows
                                         expandableRowsComponent={(row) => (
@@ -929,7 +867,7 @@ const PortfolioItemsList = ({ componentDataTabShow }) => {
                                     // expandOnRowClicked
                                     // onRowClicked={(row) => setCurrentExpendModelComponentRow(row)}
                                     // data={tempBundleItems}
-                                    // customStyles={customStyles}
+                                    // customStyles={dataTableCustomStyle}
                                     // expandableRows
                                     // expandableRowsComponent={ReviewModalTabExpendableBundleServiceItems}
                                     // onRowExpandToggled={(bool, row) => setCurrentExpendModelComponentRow(row)}

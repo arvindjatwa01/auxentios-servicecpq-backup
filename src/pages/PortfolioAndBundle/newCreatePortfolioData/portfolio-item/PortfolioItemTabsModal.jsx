@@ -18,31 +18,8 @@ import {
 import Select from 'react-select';
 import ItemPriceCalculator from './ItemPriceCalculator';
 import DataTable from 'react-data-table-component';
-import { isEmptyData } from '../utilities/textUtilities';
-
-const customStyles = {
-    rows: {
-        style: {
-            minHeight: "72px", // override the row height
-        },
-    },
-    headCells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for head cells
-            paddingRight: "8px",
-            backgroundColor: "#872ff7",
-            color: "#fff",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-    cells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for data cells
-            paddingRight: "8px",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-};
+import { isEmpty } from '../utilities/textUtilities';
+import { dataTableCustomStyle } from "../itemConstant"
 
 const PortfolioItemTabsModal = (props) => {
     const { show, hideModal, componentDataTabShow } = props;
@@ -141,7 +118,7 @@ const PortfolioItemTabsModal = (props) => {
         {
             id: "quantity",
             name: "Quantity",
-            selector: (row) => isEmptyData(row.quantity) ? 1 : row.quantity,
+            selector: (row) => isEmpty(row.quantity) ? 1 : row.quantity,
             sortable: false,
             wrap: true,
         },
@@ -155,7 +132,7 @@ const PortfolioItemTabsModal = (props) => {
         {
             id: "templateKitId",
             name: "Template/Kit ID",
-            selector: (row) => !isEmptyData(row?.standardJobId) ? row?.standardJobId : !isEmptyData(row?.repairKitId) ? row?.repairKitId : "NA",
+            selector: (row) => !isEmpty(row?.standardJobId) ? row?.standardJobId : !isEmpty(row?.repairKitId) ? row?.repairKitId : "NA",
             sortable: false,
             wrap: true,
         },
@@ -199,7 +176,7 @@ const PortfolioItemTabsModal = (props) => {
                                 <DataTable
                                     columns={bundleServiceItemsColumns}
                                     data={searchBundleServiceItem}
-                                    customStyles={customStyles}
+                                    customStyles={dataTableCustomStyle}
                                     selectableRows
                                     selectableRowsHighlight
                                     onSelectedRowsChange={(rows) => setSelectedSearchedItems(rows.selectedRows)}
@@ -221,7 +198,7 @@ const PortfolioItemTabsModal = (props) => {
                                 <DataTable
                                     columns={bundleServiceItemsColumns}
                                     data={bundleServiceItemsList}
-                                    customStyles={customStyles}
+                                    customStyles={dataTableCustomStyle}
                                     pagination
                                     expandableRows
                                     expandOnRowClicked
@@ -488,7 +465,7 @@ const PortfolioItemTabsModal = (props) => {
                                 // expandOnRowClicked
                                 // onRowClicked={(row) => setCurrentExpendModelComponentRow(row)}
                                 // data={tempBundleItems}
-                                // customStyles={customStyles}
+                                // customStyles={dataTableCustomStyle}
                                 // expandableRows
                                 // expandableRowsComponent={ReviewModalTabExpendableBundleServiceItems}
                                 // onRowExpandToggled={(bool, row) => setCurrentExpendModelComponentRow(row)}

@@ -5,8 +5,8 @@ import Select from 'react-select';
 import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
 import { getSearchCoverageForFamily, getSearchQueryCoverage, getServiceBundleItemPrices, itemSearchDropdown } from '../../../services/index';
-import { isEmptyData, isEmptySelectData } from './utilities/textUtilities';
-import { toast } from 'react-toastify';
+import { isEmpty, isEmptySelect } from './utilities/textUtilities';
+import { errorMessage } from './utilities/toastMessage';
 
 const operatorOptions = [
     { label: "And", value: "AND" },
@@ -159,10 +159,10 @@ const PortfolioCoverageSearch = (props) => {
                     coverageInputSearch(_searchSelector, value, i, obj);
                 }
                 if (searchFlag === "bundleSearch") {
-                    if (isEmptySelectData(searchSelector[0]?.itemType?.value)) {
+                    if (isEmptySelect(searchSelector[0]?.itemType?.value)) {
                         throw "Select Item Type first."
                     }
-                    if (isEmptySelectData(obj?.selectFamily?.value)) {
+                    if (isEmptySelect(obj?.selectFamily?.value)) {
                         throw "Select family first."
                     }
                     bundleServiceInputSearch(_searchSelector, value, i, obj)
@@ -174,15 +174,7 @@ const PortfolioCoverageSearch = (props) => {
                 setSearchSelector([..._searchSelector]);
             }
         } catch (error) {
-            toast("😐" + error, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            errorMessage(error)
             return;
         }
     }
@@ -201,23 +193,23 @@ const PortfolioCoverageSearch = (props) => {
     const handleSearchItems = async () => {
         try {
             var searchStr = "";
-            if (isEmptySelectData(searchSelector[0].itemType?.value)) {
+            if (isEmptySelect(searchSelector[0].itemType?.value)) {
                 throw "Please fill data properly";
             }
             if (searchFlag !== "coverage") {
-                if (isEmptySelectData(searchSelector[0].itemType?.value)) {
+                if (isEmptySelect(searchSelector[0].itemType?.value)) {
                     throw "Please fill data properly";
                 }
             }
-            if (isEmptyData(searchSelector[0]?.inputSearch)) {
+            if (isEmpty(searchSelector[0]?.inputSearch)) {
                 throw "Please fill data properly";
             }
 
             if (searchFlag === "bundleSearch") {
-                if (isEmptySelectData(searchSelector[0]?.itemTypeOperator?.value)) {
+                if (isEmptySelect(searchSelector[0]?.itemTypeOperator?.value)) {
                     throw "Please fill data properly";
                 }
-                if (isEmptySelectData(searchSelector[0]?.selectFamily?.value)) {
+                if (isEmptySelect(searchSelector[0]?.selectFamily?.value)) {
                     throw "Please fill data properly";
                 }
                 searchStr = `itemIds=${(searchSelector[0]?.inputSearch.split("#")[0])}`;
@@ -229,11 +221,11 @@ const PortfolioCoverageSearch = (props) => {
             }
 
             for (let i = 1; i < searchSelector.length; i++) {
-                if (isEmptySelectData(searchSelector[i].selectOperator?.value)) {
+                if (isEmptySelect(searchSelector[i].selectOperator?.value)) {
                     throw "Please fill data properly";
-                } else if (isEmptySelectData(searchSelector[i].selectFamily?.value)) {
+                } else if (isEmptySelect(searchSelector[i].selectFamily?.value)) {
                     throw "Please fill data properly";
-                } else if (isEmptyData(searchSelector[0]?.inputSearch)) {
+                } else if (isEmpty(searchSelector[0]?.inputSearch)) {
                     throw "Please fill data properly";
                 }
                 if (searchFlag == "coverage") {
@@ -267,15 +259,7 @@ const PortfolioCoverageSearch = (props) => {
             }
 
         } catch (error) {
-            toast("😐" + error, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            errorMessage(error)
             return;
         }
     }

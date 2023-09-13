@@ -8,7 +8,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import Select from "react-select";
 import { FormControlLabel, FormGroup, Switch, } from "@mui/material";
 import { Link } from "react-router-dom";
-import { errorToastMessage, isEmptyData, isEmptySelectData } from "../utilities/textUtilities";
+import { errorMessage } from "../utilities/toastMessage";
+import { isEmpty, isEmptySelect } from "../utilities/textUtilities";
 import $ from "jquery";
 import { useAppSelector } from "../../../../app/hooks";
 
@@ -20,76 +21,43 @@ import {
     selectUpdateList,
     taskActions,
 } from "../../customerSegment/strategySlice"
-import { getSearchKitId, getSearchStandardJobId } from "../../../../services/index";
+import { createItemPriceData, getSearchKitId, getSearchStandardJobId, updateItemPriceData } from "../../../../services/index";
 import { toast } from "react-toastify";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import { useHistory } from "react-router-dom";
+import { defaultItemObj, usageTypeKeyValuePair, itemPriceDefaultObj } from "../itemConstant"
 
-const defaultReqObj = {
+const itemRequestDefaultObj = {
     itemId: 0,
-    itemName: "",
-    itemHeaderModel: {
-        itemHeaderId: 0,
-        itemHeaderDescription: "",
-        bundleFlag: "",
-        withBundleService: true,
-        portfolioItemIds: [],
-        reference: "",
-        itemHeaderMake: "",
-        itemHeaderFamily: "",
-        model: "",
-        prefix: "",
-        type: "",
-        additional: "",
-        currency: "",
-        netPrice: 0,
-        itemProductHierarchy: "",
-        itemHeaderGeographic: "",
-        responseTime: "",
-        usage: "",
-        validFrom: "",
-        validTo: "",
-        estimatedTime: "",
-        servicePrice: 0,
-        status: "",
-        componentCode: "",
-        componentDescription: "",
-        serialNumber: "",
-        itemHeaderStrategy: "",
-        variant: "",
-        itemHeaderCustomerSegment: "",
-        jobCode: "",
-        preparedBy: "",
-        approvedBy: "",
-        preparedOn: "",
-        revisedBy: "",
-        revisedOn: "",
-        salesOffice: "",
-        offerValidity: "",
-        serviceChargable: true,
-        serviceOptional: true
-    },
-    itemBodyModel: {
-        itemBodyId: 0,
-        itemBodyDescription: "",
-        spareParts: "",
-        labours: "",
-        miscellaneous: "",
-        taskType: "",
-        solutionCode: "",
-        usageIn: "",
-        usage: "",
-        year: "",
-        avgUsage: 0,
-        itemPrices: []
-    },
+    name: "",
+    description: "",
+    usageIn: "",
+    strategyTask: "",
+    taskType: "",
+    year: { label: 1, value: 1 },
+    noOfYear: 1,
+    startUsage: "",
+    endUsage: "",
+    usageType: "",
+    frequency: "",
+    unit: "",
+    recommendedValue: "",
+    quantity: 1,
+    numberOfEvents: "",
+    standardJobId: "",
+    standardJobIdSearch: false,
+    templateDescription: "",
+    repairKitId: "",
+    repairKitIdSearch: false,
+    repairOption: "",
+    repairOption: "",
+    headerdescription: "",
+    branch: "",
+    offerValidity: "",
+    withBundleService: true,
+    itemPriceId: null,
+    bundleServiceNeed: true,
 }
-
-const usageTypeKeyValuePair = [
-    { value: "Planned Usage", label: "Planned Usage" },
-    { value: "Recommended usage", label: "Recommended usage" },
-];
-
 
 const ItemAddEdit = (props) => {
     const { itemType,
@@ -124,42 +92,8 @@ const ItemAddEdit = (props) => {
     // const [itemRequestObj, setItemRequestObj] = useState({ ...defaultReqObj })
     const [itemPriceDataId, setItemPriceDataId] = useState(0)
 
-    const [itemRequestObj, setItemRequestObj] = useState({
-        id: 0,
-        name: "",
-        description: "",
-        usageIn: "",
-        strategyTask: "",
-        taskType: "",
-        year: { label: 1, value: 1 },
-        noOfYear: 1,
-        startUsage: "",
-        endUsage: "",
-        usageType: "",
-        frequency: "",
-        unit: "",
-        recommendedValue: "",
-        quantity: 1,
-        numberOfEvents: "",
-        standardJobId: "",
-        standardJobIdSearch: false,
-        templateDescription: "",
-        repairKitId: "",
-        repairKitIdSearch: false,
-        kitDescription: "",
-        repairOption: "",
-        headerdescription: "",
-        preparedBy: "",
-        approvedBy: "",
-        preparedOn: new Date(),
-        revisedBy: "",
-        revisedOn: new Date(),
-        branch: "",
-        offerValidity: "",
-        withBundleService: true,
-        itemPriceId: null,
-        bundleServiceNeed: true,
-    })
+    const [itemRequestObj, setItemRequestObj] = useState({ ...itemRequestDefaultObj })
+    const [itemPriceRequestObj, setItemPriceRequestObj] = useState({ ...itemPriceDefaultObj });
 
     const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([{ value: 1, label: 1 }])
     const [searchedStandardJobIdList, setSearchedStandardJobIdList] = useState([])
@@ -168,21 +102,6 @@ const ItemAddEdit = (props) => {
         templateDBId: "",
         templateType: "",
         templateId: "",
-    })
-
-    const [itemPriceRequestObj, setItemPriceRequestObj] = useState({
-        year: { label: 1, value: 1 },
-        noOfYear: 1,
-        startUsage: "",
-        endUsage: "",
-        frequency: "",
-        unit: "",
-        recommendedValue: "",
-        numberOfEvents: "",
-        standardJobId: "",
-        templateDescription: "",
-        repairKitId: "",
-        kitDescription: "",
     })
 
     useEffect(() => {
@@ -210,6 +129,18 @@ const ItemAddEdit = (props) => {
         }
     }
 
+    // price related input text change
+    const handlePriceInputChange = (e) => {
+        const { id, type, name, value, checked } = e.target;
+        if (type === "number") {
+            setItemPriceRequestObj((prev) => ({ ...prev, [name]: parseInt(value) }))
+        } else if (type === "checkbox") {
+            setItemPriceRequestObj((prev) => ({ ...prev, [name]: checked }))
+        } else {
+            setItemPriceRequestObj((prev) => ({ ...prev, [name]: value }))
+        }
+    }
+
     // handle Select change
     const handleSelectChange = (e, keyName) => {
         setItemRequestObj((prev) => ({ ...prev, [keyName]: e }))
@@ -219,6 +150,11 @@ const ItemAddEdit = (props) => {
         if (keyName === "strategyTask") {
             dispatch(taskActions.updateTask(e.value));
         }
+    }
+
+    // handle Price related Select change
+    const handlePriceSelectChange = (e, keyName) => {
+        setItemPriceRequestObj((prev) => ({ ...prev, [keyName]: e }))
     }
 
     // template Id(StandardJobId) search
@@ -250,7 +186,7 @@ const ItemAddEdit = (props) => {
     // go to template Screen
     const goToTemplateScreen = () => {
         try {
-            if (isEmptyData(standardJobIdDetails.templateDBId)) {
+            if (isEmpty(standardJobIdDetails.templateDBId)) {
                 throw "Search and Select any one Template Id"
             }
             let templateDetails = {
@@ -294,7 +230,7 @@ const ItemAddEdit = (props) => {
 
     // handle Select Repair Kit Id
     const handleSelectRepairKitId = (currentItem) => {
-        setItemRequestObj((prev) => ({ ...prev, repairKitId: currentItem.kitId, kitDescription: currentItem.description, repairKitIdSearch: false, }))
+        setItemRequestObj((prev) => ({ ...prev, repairKitId: currentItem.kitId, repairOption: currentItem.description, repairKitIdSearch: false, }))
     }
 
     // handle Item Edit flag
@@ -324,40 +260,41 @@ const ItemAddEdit = (props) => {
         };
     }
 
-    const checkInputValidation = () => {
+    // Validation check for each required field
+    const checkInputValidation = (isItem) => {
         if (itemActiveTab === "itemSummary") {
-            if (isPortfolioItem && isEmptyData(itemRequestObj.name)) {
-                errorToastMessage("Name is a required field, you can’t leave it blank")
+            if (isItem && isPortfolioItem && isEmpty(itemRequestObj.name)) {
+                errorMessage("Name is a required field, you can’t leave it blank")
                 return false;
-            } else if (isPortfolioItem && isEmptyData(itemRequestObj.description)) {
-                errorToastMessage("Description is a required field, you can’t leave it blank")
+            } else if (isItem && isPortfolioItem && isEmpty(itemRequestObj.description)) {
+                errorMessage("Description is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmptyData(itemRequestObj.usageIn)) {
-                errorToastMessage("Usage In is a required field, you can’t leave it blank")
+            } else if (isEmpty(isItem && itemRequestObj.usageIn)) {
+                errorMessage("Usage In is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmptyData(itemRequestObj.taskType)) {
-                errorToastMessage("Task Type is a required field, you can’t leave it blank")
+            } else if (isEmpty(isItem && itemRequestObj.taskType)) {
+                errorMessage("Task Type is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmptyData(itemRequestObj.startUsage)) {
-                errorToastMessage("Start Usage is a required field, you can’t leave it blank")
+            } else if (isEmpty(itemRequestObj.startUsage)) {
+                errorMessage("Start Usage is a required field, you can’t leave it blank")
                 return false;
             } else if (parseInt(itemRequestObj.startUsage) < 0) {
-                errorToastMessage("Start Usage must not be negative")
+                errorMessage("Start Usage must not be negative")
                 return false;
-            } else if (isEmptyData(itemRequestObj.endUsage)) {
-                errorToastMessage("End Usage is a required field, you can’t leave it blank")
+            } else if (isEmpty(itemRequestObj.endUsage)) {
+                errorMessage("End Usage is a required field, you can’t leave it blank")
                 return false;
             } else if (parseInt(itemRequestObj.endUsage) < 0) {
-                errorToastMessage("End Usage must not be negative")
+                errorMessage("End Usage must not be negative")
                 return false;
             } else if (parseInt(itemRequestObj.startUsage) > parseInt(itemRequestObj.endUsage)) {
-                errorToastMessage("Start Usage must not be greater to End Usage")
+                errorMessage("Start Usage must not be greater to End Usage")
                 return false;
-            } else if (isEmptyData(itemRequestObj.unit)) {
-                errorToastMessage("Unit is a required field, you can’t leave it blank")
+            } else if (isEmpty(itemRequestObj.unit)) {
+                errorMessage("Unit is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmptyData(itemRequestObj.recommendedValue)) {
-                errorToastMessage("Recommended Value is a required field, you can’t leave it blank")
+            } else if (isEmpty(itemRequestObj.recommendedValue)) {
+                errorMessage("Recommended Value is a required field, you can’t leave it blank")
                 return false;
             }
             return true;
@@ -366,21 +303,66 @@ const ItemAddEdit = (props) => {
     }
 
     const handleAddUpdateItem = async () => {
-        if (!editItemData) {
-            if (!editItemData && !checkInputValidation()) {
-                return;
-            }
-            if (itemActiveTab === "itemSummary") {
-                setItemActiveTab("relatedTemplate")
-            } else if (itemActiveTab === "relatedTemplate") {
-                if (isEmptyData(itemRequestObj.standardJobId)) {
-                    setItemActiveTab("relatedKit")
-                } else {
+        try {
+            if (!editItemData) {
+                if (!editItemData && !checkInputValidation(true)) {
+                    return;
+                }
+                if (itemActiveTab === "itemSummary") {
+                    setItemActiveTab("relatedTemplate")
+                } else if (itemActiveTab === "relatedTemplate") {
+                    if (isEmpty(itemRequestObj.standardJobId)) {
+                        setItemActiveTab("relatedKit")
+                    } else {
+                        handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem)
+                    }
+                } else if (itemActiveTab === "relatedKit") {
                     handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem)
                 }
-            } else if (itemActiveTab === "relatedKit") {
-                handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem)
             }
+        } catch (error) {
+            return;
+        }
+
+    }
+
+    // calculate Item Price
+    const handleCalculateItemPrice = async () => {
+        try {
+            if (!checkInputValidation(false)) {
+                return;
+            }
+            let priceReqObj = {
+                ...itemPriceRequestObj,
+                recommendedUnit: itemRequestObj.unit?.value === "YEAR" ? "MONTH" : itemRequestObj.unit?.value,
+                usageUnit: itemRequestObj.unit?.value || "",
+                startUsage: itemRequestObj.startUsage,
+                endUsage: itemRequestObj.endUsage
+            }
+            if (!itemPriceDataId || itemPriceDataId === "") {
+                const updateItemPrice = await createItemPriceData(priceReqObj);
+                if (updateItemPrice.status === 200) {
+                    setItemPriceRequestObj({ ...updateItemPrice.data });
+                    setItemRequestObj({
+                        ...itemRequestObj,
+                        numberOfEvents: updateItemPrice.data.numberOfEvents,
+                        itemPriceId: updateItemPrice.data.itemPriceDataId,
+                    });
+                }
+            } else {
+                const createItemPrice = await updateItemPriceData(itemPriceDataId, priceReqObj);
+                if (createItemPrice.status === 200) {
+                    setItemPriceDataId(createItemPrice.data.itemPriceDataId)
+                    setItemPriceRequestObj({ ...createItemPrice.data });
+                    setItemRequestObj({
+                        ...itemRequestObj,
+                        numberOfEvents: createItemPrice.data.numberOfEvents,
+                        itemPriceId: createItemPrice.data.itemPriceDataId,
+                    });
+                }
+            }
+        } catch (error) {
+            return;
         }
     }
 
@@ -397,9 +379,9 @@ const ItemAddEdit = (props) => {
                     <TabList className="custom-tabs-div" onChange={(e, activeItemTab) => setItemActiveTab(activeItemTab)}>
                         <Tab label="Item Summary(s)" value="itemSummary" />
                         <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
-                        <Tab label="Related template(s)" value="relatedTemplate" disabled={!isEmptyData(itemRequestObj.repairKitId)} />
+                        <Tab label="Related template(s)" value="relatedTemplate" disabled={!isEmpty(itemRequestObj.repairKitId)} />
                         <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
-                        <Tab label="Related Kit" value="relatedKit" disabled={!isEmptyData(itemRequestObj.standardJobId)} />
+                        <Tab label="Related Kit" value="relatedKit" disabled={!isEmpty(itemRequestObj.standardJobId)} />
                     </TabList>
                 </Box>
                 <TabPanel value="itemSummary">
@@ -409,7 +391,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">NAME</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(itemRequestObj.name) ? "NA" : itemRequestObj.name}
+                                        {isEmpty(itemRequestObj.name) ? "NA" : itemRequestObj.name}
                                     </h6>
                                 </div>
                             </div>}
@@ -417,7 +399,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(itemRequestObj.description) ? "NA" : itemRequestObj.description}
+                                        {isEmpty(itemRequestObj.description) ? "NA" : itemRequestObj.description}
                                     </h6>
                                 </div>
                             </div>
@@ -429,7 +411,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE IN</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelectData(itemRequestObj.usageIn?.value) ? "NA" : itemRequestObj.usageIn?.label}
+                                            {isEmptySelect(itemRequestObj.usageIn?.value) ? "NA" : itemRequestObj.usageIn?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -437,7 +419,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">STRATEGY TASK</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelectData(itemRequestObj.strategyTask?.value) ? "NA" : itemRequestObj.strategyTask?.label}
+                                            {isEmptySelect(itemRequestObj.strategyTask?.value) ? "NA" : itemRequestObj.strategyTask?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -445,7 +427,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">TASK TYPE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelectData(itemRequestObj.taskType?.value) ? "NA" : itemRequestObj.taskType?.label}
+                                            {isEmptySelect(itemRequestObj.taskType?.value) ? "NA" : itemRequestObj.taskType?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -457,7 +439,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">YEAR</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelectData(itemRequestObj.year?.value) ? "NA" : itemRequestObj.year?.label}
+                                            {isEmptySelect(itemRequestObj.year?.value) ? "NA" : itemRequestObj.year?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -465,7 +447,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF YEARS</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptyData(itemRequestObj.noOfYear) ? "NA" : itemRequestObj.noOfYear}
+                                            {isEmpty(itemRequestObj.noOfYear) ? "NA" : itemRequestObj.noOfYear}
                                         </h6>
                                     </div>
                                 </div>
@@ -476,7 +458,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">START USAGE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptyData(itemRequestObj.startUsage) ? "NA" : itemRequestObj.startUsage}
+                                            {isEmpty(itemRequestObj.startUsage) ? "NA" : itemRequestObj.startUsage}
                                         </h6>
                                     </div>
                                 </div>
@@ -484,7 +466,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">END USAGE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptyData(itemRequestObj.endUsage) ? "NA" : itemRequestObj.endUsage}
+                                            {isEmpty(itemRequestObj.endUsage) ? "NA" : itemRequestObj.endUsage}
                                         </h6>
                                     </div>
                                 </div>
@@ -492,7 +474,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE TYPE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelectData(itemRequestObj.usageType?.value) ? "NA" : itemRequestObj.usageType?.label}
+                                            {isEmptySelect(itemRequestObj.usageType?.value) ? "NA" : itemRequestObj.usageType?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -500,7 +482,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelectData(itemRequestObj.frequency?.value) ? "NA" : itemRequestObj.frequency?.label}
+                                            {isEmptySelect(itemRequestObj.frequency?.value) ? "NA" : itemRequestObj.frequency?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -508,7 +490,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelectData(itemRequestObj.unit?.value) ? "NA" : itemRequestObj.unit?.label}
+                                            {isEmptySelect(itemRequestObj.unit?.value) ? "NA" : itemRequestObj.unit?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -516,7 +498,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">RECOMMENDED VALUE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptyData(itemRequestObj.recommendedValue) ? "NA" : itemRequestObj.recommendedValue}
+                                            {isEmpty(itemRequestObj.recommendedValue) ? "NA" : itemRequestObj.recommendedValue}
                                         </h6>
                                     </div>
                                 </div>
@@ -524,7 +506,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">No. OF EVENTS</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptyData(itemRequestObj.numberOfEvents) ? "NA" : itemRequestObj.numberOfEvents}
+                                            {isEmpty(itemRequestObj.numberOfEvents) ? "NA" : itemRequestObj.numberOfEvents}
                                         </h6>
                                     </div>
                                 </div>
@@ -627,9 +609,9 @@ const ItemAddEdit = (props) => {
                                         <div className=" d-flex form-control-date" style={{ overflow: "hidden" }}>
                                             <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                 placeholder="Required*" name="startUsage"
-                                                value={itemRequestObj.startUsage} onChange={handleInputTextChange}
+                                                value={itemPriceRequestObj.startUsage} onChange={handlePriceInputChange}
                                             />
-                                            <span className="hours-div text-primary">{itemRequestObj.unit === "" ? "Select unit" : itemRequestObj.unit?.label}</span>
+                                            <span className="hours-div text-primary">{itemPriceRequestObj.usageUnit === "" ? "Select unit" : itemPriceRequestObj.usageUnit?.label}</span>
                                         </div>
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
@@ -640,9 +622,9 @@ const ItemAddEdit = (props) => {
                                         <div className=" d-flex form-control-date" style={{ overflow: "hidden" }}>
                                             <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                 placeholder="Required*" name="endUsage"
-                                                value={itemRequestObj.endUsage} onChange={handleInputTextChange}
+                                                value={itemPriceRequestObj.endUsage} onChange={handlePriceInputChange}
                                             />
-                                            <span className="hours-div text-primary">{itemRequestObj.unit === "" ? "Select unit" : itemRequestObj.unit?.label}</span>
+                                            <span className="hours-div text-primary">{itemPriceRequestObj.usageUnit === "" ? "Select unit" : itemPriceRequestObj.usageUnit?.label}</span>
                                         </div>
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
@@ -672,8 +654,8 @@ const ItemAddEdit = (props) => {
                                         <label className="text-light-dark font-size-14 font-weight-500">UNIT</label>
                                         <Select placeholder="Select..." className="text-primary"
                                             options={unitKeyValuePairs}
-                                            value={itemRequestObj.unit}
-                                            onChange={(e) => handleSelectChange(e, "unit")}
+                                            value={itemPriceRequestObj.usageUnit}
+                                            onChange={(e) => handleSelectChange(e, "usageUnit")}
                                         />
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
@@ -684,9 +666,9 @@ const ItemAddEdit = (props) => {
                                         <div className="d-flex form-control-date" style={{ overflow: "hidden" }}>
                                             <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                 placeholder="Recommended Value" name="recommendedValue"
-                                                value={itemRequestObj.recommendedValue} onChange={handleInputTextChange}
+                                                value={itemPriceRequestObj.recommendedValue} onChange={handlePriceInputChange}
                                             />
-                                            <span className="hours-div text-primary">{itemRequestObj.unit === "" ? "Select unit" : itemRequestObj.unit?.value.toLowerCase() === "year" ? "Month" : itemRequestObj.unit?.label}</span>
+                                            <span className="hours-div text-primary">{itemRequestObj.usageUnit === "" ? "Select unit" : itemRequestObj.unit?.value.toLowerCase() === "year" ? "Month" : itemRequestObj.usageUnit?.label}</span>
                                         </div>
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
@@ -695,7 +677,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500">NO. OF EVENTS</label>
                                         <input type="number" className="form-control border-radius-10 text-primary" placeholder="NO. OF EVENTS"
-                                            value={itemRequestObj.numberOfEvents} onChange={handleInputTextChange} disabled readOnly />
+                                            value={itemPriceRequestObj.numberOfEvents} onChange={handlePriceInputChange} disabled readOnly />
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
                                 </div>
@@ -726,8 +708,7 @@ const ItemAddEdit = (props) => {
                             </div>
                             <div className="my-1 d-flex align-items-center justify-content-end">
                                 <a className="btn border mr-4 cursor">Cancel</a>
-                                {/* <a className="btn d-flex align-items-center border bg-primary text-white" onClick={calculateItemPrice}> */}
-                                <a className="btn d-flex align-items-center border bg-primary text-white cursor">
+                                <a className="btn d-flex align-items-center border bg-primary text-white" onClick={handleCalculateItemPrice}>
                                     <span className="mr-2 funds">
                                         <svg style={{ width: "13px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
                                             <g>
@@ -788,7 +769,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE ID</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(itemRequestObj.standardJobId) ? "NA" : itemRequestObj.standardJobId}
+                                        {isEmpty(itemRequestObj.standardJobId) ? "NA" : itemRequestObj.standardJobId}
                                     </h6>
                                 </div>
                             </div>
@@ -796,7 +777,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE DESCRIPTION</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(itemRequestObj.templateDescription) ? "NA" : itemRequestObj.templateDescription}
+                                        {isEmpty(itemRequestObj.templateDescription) ? "NA" : itemRequestObj.templateDescription}
                                     </h6>
                                 </div>
                             </div>
@@ -949,7 +930,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">RELATED KIT</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(itemRequestObj.repairKitId) ? "NA" : itemRequestObj.repairKitId}
+                                        {isEmpty(itemRequestObj.repairKitId) ? "NA" : itemRequestObj.repairKitId}
                                     </h6>
                                 </div>
                             </div>
@@ -957,7 +938,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">KIT DESCRIPTION</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(itemRequestObj.kitDescription) ? "NA" : itemRequestObj.kitDescription}
+                                        {isEmpty(itemRequestObj.repairOption) ? "NA" : itemRequestObj.repairOption}
                                     </h6>
                                 </div>
                             </div>
@@ -1012,8 +993,8 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <label className="text-light-dark font-size-14 font-weight-500"> KIT DESCRIPTION</label>
                                     <input type="text" className="form-control text-primary border-radius-10"
-                                        name="kitDescription" placeholder="KIT DESCRIPTION"
-                                        value={itemRequestObj.kitDescription}
+                                        name="repairOption" placeholder="KIT DESCRIPTION"
+                                        value={itemRequestObj.repairOption}
                                         onChange={handleInputTextChange}
                                         disabled
                                     />

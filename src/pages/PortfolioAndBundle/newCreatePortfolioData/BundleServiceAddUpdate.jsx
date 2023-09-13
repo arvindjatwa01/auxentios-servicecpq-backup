@@ -18,10 +18,11 @@ import copyIcon from "../../../assets/icons/svg/Copy.svg";
 import shearchIcon from "../../../assets/icons/svg/search.svg";
 
 import { MuiMenuComponent } from "../../Operational/index";
-import { errorToastMessage, isEmptyData, isEmptySelectData, successToastMessage } from './utilities/textUtilities';
+import { errorMessage, successMessage } from './utilities/toastMessage';
+import { isEmpty, isEmptySelect } from './utilities/textUtilities';
 import ItemAddEdit from './portfolio-item/ItemAddEdit';
 import ItemPriceCalculator from './portfolio-item/ItemPriceCalculator';
-import { convertTimestampToFormateDate } from './utilities/dateUtilities';
+import { getFormatDateTime } from './utilities/dateUtilities';
 import { FONT_STYLE_SELECT } from 'pages/Repair/CONSTANTS';
 import {
     getItemDataById,
@@ -31,98 +32,16 @@ import {
 } from '../../../services/index';
 
 import { updateItemPriceSjRkId } from './portfolio-item/SJRKIdUpdate';
-
-const offerValidityKeyValuePairs = [
-    { value: "15", label: "15 days" },
-    { value: "30", label: "1 month" },
-    { value: "45", label: "45 days" },
-    { value: "60", label: "2 months" },
-];
-
-const salesOfficeKeyValuePairs = [
-    { value: "Location1", label: "Location1" },
-    { value: "Location2", label: "Location2" },
-    { value: "Location3", label: "Location3" },
-    { value: "Location4", label: "Location4" },
-];
-
-const serviceTypeKeyValuePairs = [
-    { value: "free", label: "Free" },
-    { value: "chargeable", label: "Chargeable" },
-];
-
-const additionalPriceKeyValuePair = [
-    { label: "Surcharge %", value: "PERCENTAGE" },
-    { label: "Surcharge $", value: "ABSOLUTE", },
-];
-
-const discountTypeKeyValuePair = [
-    { value: "PROGRAM_DISCOUNT", label: "Program" },
-    { value: "CUSTOMER_DISCOUNT", label: "Customer" },
-    { value: "PORTFOLIO_DISCOUNT", label: "Portfolio" },
-];
-
-const usageTypeKeyValuePair = [
-    { value: "Planned Usage", label: "Planned Usage" },
-    { value: "Recommended usage", label: "Recommended usage" },
-];
-
-const defaultItemHeaderObj = {
-    itemHeaderId: 0,
-    itemHeaderDescription: "",
-    bundleFlag: "SERVICE",
-    withBundleService: false,
-    portfolioItemIds: [],
-    reference: "",
-    itemHeaderMake: "",
-    itemHeaderFamily: "",
-    model: "",
-    prefix: "",
-    type: "",
-    additional: "",
-    currency: "",
-    netPrice: 0,
-    itemProductHierarchy: "EMPTY",
-    itemHeaderGeographic: "EMPTY",
-    responseTime: "EMPTY",
-    usage: "",
-    validFrom: "",
-    validTo: "",
-    estimatedTime: "",
-    servicePrice: 0,
-    status: "DRAFT",
-    componentCode: "",
-    componentDescription: "",
-    serialNumber: "",
-    itemHeaderStrategy: "EMPTY",
-    variant: "",
-    itemHeaderCustomerSegment: "",
-    jobCode: "",
-    preparedBy: "",
-    approvedBy: "",
-    preparedOn: "",
-    revisedBy: "",
-    revisedOn: "",
-    salesOffice: "",
-    offerValidity: "",
-    serviceChargable: true,
-    serviceOptional: false,
-}
-
-const defaultItemBodyObj = {
-    itemBodyId: 0,
-    itemBodyDescription: "",
-    spareParts: ["EMPTY"],
-    labours: ["EMPTY"],
-    miscellaneous: ["EMPTY"],
-    taskType: ["EMPTY"],
-    solutionCode: "",
-    usageIn: "",
-    usage: "",
-    year: "",
-    avgUsage: 0,
-    itemPrices: [],
-}
+import {
+    offerValidityKeyValuePairs,
+    salesOfficeKeyValuePairs,
+    serviceTypeKeyValuePairs,
+    additionalPriceKeyValuePair,
+    discountTypeKeyValuePair,
+    usageTypeKeyValuePair,
+    defaultItemHeaderObj,
+    defaultItemBodyObj,
+} from "./itemConstant"
 
 const activityOptions = ["None", "Atria", "Callisto"];
 
@@ -235,7 +154,7 @@ const BundleServiceAddUpdate = (props) => {
                 status: _status,
             })
 
-            setModelSelect(!isEmptyData(itemHeaderModel.model))
+            setModelSelect(!isEmpty(itemHeaderModel.model))
             setBundleServiceItemHeader({ ...itemHeaderModel })
             setBundleServiceItemBody({ ...itemBodyModel })
 
@@ -327,17 +246,17 @@ const BundleServiceAddUpdate = (props) => {
     // check bundle Header input validation
     const checkHeaderValidation = () => {
         try {
-            if (isEmptyData(bundleServiceObj.name)) {
-                errorToastMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Name is a required field, you can’t leave it blank");
+            if (isEmpty(bundleServiceObj.name)) {
+                errorMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Name is a required field, you can’t leave it blank");
                 return false;
-            } else if (isEmptyData(bundleServiceObj.description)) {
-                errorToastMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Description is a required field, you can’t leave it blank");
+            } else if (isEmpty(bundleServiceObj.description)) {
+                errorMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Description is a required field, you can’t leave it blank");
                 return false;
-            } else if (isEmptyData(bundleServiceObj.model)) {
-                errorToastMessage("Model is a required field, you can’t leave it blank");
+            } else if (isEmpty(bundleServiceObj.model)) {
+                errorMessage("Model is a required field, you can’t leave it blank");
                 return false;
             } else if (!modelSelect) {
-                errorToastMessage("Please Enter valid Model .");
+                errorMessage("Please Enter valid Model .");
                 return false;
             }
             return true;
@@ -356,8 +275,8 @@ const BundleServiceAddUpdate = (props) => {
                 if (bundleServiceEdit.bundleServiceHeader) {
                     setActiveTab("bundleServicePrice")
                 }
-                if (!bundleServiceEdit.bundleServiceHeader && bundleServiceObj.status?.value === "ACTIVE") {
-                    errorToastMessage("Service Status is Active, change Status for change item details.");
+                if (itemId && !bundleServiceEdit.bundleServiceHeader && bundleServiceObj.status?.value === "ACTIVE") {
+                    errorMessage("Service Status is Active, change Status for change item details.");
                     return;
                 }
                 let serviceReqObj = {
@@ -391,13 +310,13 @@ const BundleServiceAddUpdate = (props) => {
                 if (itemId) {
                     const updateService = await updateItemData(itemId, serviceReqObj)
                     if (updateService.status === 200) {
-                        successToastMessage(bundleServiceObj.name + " Update Successfully.")
+                        successMessage(bundleServiceObj.name + " Update Successfully.")
                         setActiveTab("bundleServicePrice")
                     }
                 } else {
                     const createService = await itemCreation(serviceReqObj);
                     if (createService.status === 200) {
-                        successToastMessage(bundleServiceObj.name + " Create Successfully.")
+                        successMessage(bundleServiceObj.name + " Create Successfully.")
                         setActiveTab("bundleServicePrice")
                     }
                 }
@@ -416,7 +335,7 @@ const BundleServiceAddUpdate = (props) => {
         });
         setBundleServiceItemBody({
             ...bundleServiceItemBody,
-            itemBodyDescription: "",
+            itemBodyDescription: itemRequestObj.description,
             taskType: itemRequestObj.taskType,
             usageIn: itemRequestObj.usageIn,
             usage: itemRequestObj.usageType,
@@ -522,13 +441,13 @@ const BundleServiceAddUpdate = (props) => {
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">{itemFlag} NAME</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(bundleServiceObj.name) ? "NA" : bundleServiceObj.name}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(bundleServiceObj.name) ? "NA" : bundleServiceObj.name}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">{itemFlag} DESCRIPTION</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(bundleServiceObj.description) ? "NA" : bundleServiceObj.description}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(bundleServiceObj.description) ? "NA" : bundleServiceObj.description}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
@@ -540,49 +459,49 @@ const BundleServiceAddUpdate = (props) => {
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(bundleServiceObj.reference) ? "NA" : bundleServiceObj.reference}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(bundleServiceObj.reference) ? "NA" : bundleServiceObj.reference}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptySelectData(bundleServiceObj.customerSegment?.value) ? "NA" : bundleServiceObj.customerSegment?.label}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptySelect(bundleServiceObj.customerSegment?.value) ? "NA" : bundleServiceObj.customerSegment?.label}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">MACHINE/COMPONENT</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptySelectData(bundleServiceObj.machineComponent?.value) ? "NA" : bundleServiceObj.machineComponent?.label}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptySelect(bundleServiceObj.machineComponent?.value) ? "NA" : bundleServiceObj.machineComponent?.label}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group customselectmodelSerch">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">MODEL(S)</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(bundleServiceObj.model) ? "NA" : bundleServiceObj.model}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(bundleServiceObj.model) ? "NA" : bundleServiceObj.model}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">FAMILY</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(bundleServiceObj.family) ? "NA" : bundleServiceObj.family}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(bundleServiceObj.family) ? "NA" : bundleServiceObj.family}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">MAKE</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(bundleServiceObj.make) ? "NA" : bundleServiceObj.make}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(bundleServiceObj.make) ? "NA" : bundleServiceObj.make}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREFIX(S)</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptySelectData(bundleServiceObj.prefix?.value) ? "NA" : bundleServiceObj.prefix?.label}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptySelect(bundleServiceObj.prefix?.value) ? "NA" : bundleServiceObj.prefix?.label}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">ESTIMATED HOURS</p>
-                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(bundleServiceObj.estimatedTime) ? "NA" : bundleServiceObj.estimatedTime}</h6>
+                                                    <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(bundleServiceObj.estimatedTime) ? "NA" : bundleServiceObj.estimatedTime}</h6>
                                                 </div>
                                             </div>
                                         </div> :
@@ -752,43 +671,43 @@ const BundleServiceAddUpdate = (props) => {
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
-                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.preparedBy) ? "NA" : administrative.preparedBy}</h6>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(administrative.preparedBy) ? "NA" : administrative.preparedBy}</h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
-                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.approvedBy) ? "NA" : administrative.preparedBy}</h6>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(administrative.approvedBy) ? "NA" : administrative.preparedBy}</h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
-                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.preparedOn) ? "NA" : convertTimestampToFormateDate(administrative.preparedOn)}</h6>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(administrative.preparedOn) ? "NA" : getFormatDateTime(administrative.preparedOn, false)}</h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
-                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.revisedBy) ? "NA" : administrative.revisedBy}</h6>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(administrative.revisedBy) ? "NA" : administrative.revisedBy}</h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
-                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.revisedOn) ? "NA" : convertTimestampToFormateDate(administrative.revisedOn)}</h6>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(administrative.revisedOn) ? "NA" : getFormatDateTime(administrative.revisedOn, false)}</h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
-                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.salesOffice?.value) ? "NA" : administrative.salesOffice?.label}</h6>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(administrative.salesOffice?.value) ? "NA" : administrative.salesOffice?.label}</h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
-                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmptyData(administrative.offerValidity?.value) ? "NA" : administrative.offerValidity?.label}</h6>
+                                                <h6 className="font-weight-500 text-uppercase text-primary font-size-17">{isEmpty(administrative.offerValidity?.value) ? "NA" : administrative.offerValidity?.label}</h6>
                                             </div>
                                         </div>
                                     </div> :

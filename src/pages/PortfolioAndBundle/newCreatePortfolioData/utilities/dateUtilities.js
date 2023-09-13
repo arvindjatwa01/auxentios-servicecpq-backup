@@ -1,58 +1,33 @@
-export const convertTimestampToFormateDate = (timeStamp) => {
+import { isEmpty } from "./textUtilities";
+
+// convert time into format time according to readable
+export const getFormatDateTime = (timeStamp, withTime) => {
+  if (isEmpty(timeStamp)) {
+    return "";
+  }
   var date = new Date(timeStamp);
-  var year = date.getFullYear();
-  // var m = date.getMonth() + 1;
-  var m = date.getMonth();
-  // var month = m < 10 ? '0' + m : m;
+  var year = date.getFullYear(); // get year 
+  var m = date.getMonth(); // get Month [0-11]// [Jan-Dec]
   var month = m;
-  var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-  var format = "AM";
-  var hour = date.getHours();
-  var minutes = date.getMinutes();
-  var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  if (hour > 11) {
-    format = "PM";
-  }
-  if (hour > 12) {
-    hour = hour - 12;
-  } else if (hour === 0) {
-    hour = 12;
-  }
+  var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate(); // current day
+  var format = "AM"; // time format AM/PM
+  var hour = date.getHours(); // get hours
+  var minutes = date.getMinutes(); // get minutes
+  var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"]; // Month Name
 
-  if (hour < 10) {
-    hour = "0" + hour;
-  }
-
-  if (minutes < 10) {
-    minutes = "0" + minutes;
-  }
-
-  var finalDateString = year + "-" + month + "-" + day;
-  return finalDateString;
-}
-
-// times- in-human readable with date-time
-export const getFormattedDateTime = (timeStamp) => {
-  var date = new Date(timeStamp);
-  var year = date.getFullYear();
-  var m = date.getMonth();
-  var month = m;
-  var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-  var format = "AM";
-  var hour = date.getHours();
-  var minutes = date.getMinutes();
-  var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  if (hour > 11) { format = "PM"; }
+  if (hour > 11) { format = "PM"; } // hours is greater to 11 then PM else AM
 
   if (hour > 12) {
-    hour = hour - 12;
+    hour = hour - 12; // if hour is greater to 12 then return hour in readable formate
   } else if (hour === 0) { hour = 12; }
 
-  if (hour < 10) { hour = "0" + hour; }
+  if (hour < 10) { hour = "0" + hour; } // hour is lesser to 10 then concat with 0
 
-  if (minutes < 10) { minutes = "0" + minutes; }
-
-  var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
+  if (minutes < 10) { minutes = "0" + minutes; } // minutes is lesser to 10 then concat with 0
+  if (withTime) {
+    var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
+  } else {
+    var finalDateString = year + "-" + month + "-" + day;
+  }
   return finalDateString;
 }
