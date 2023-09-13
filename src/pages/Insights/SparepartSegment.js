@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 
 import StopIcon from "@mui/icons-material/Square";
-import { Box, Card, Divider, Grid } from "@mui/material";
+import { Box, Card, Divider, Grid, Slider } from "@mui/material";
 import { getPartsSegmentDetails, getPartsSegment } from "services/dashboardServices";
 import LoadingProgress from "../Repair/components/Loader";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
+import FilterOptions from "./SliderCompnent";
 
 const partsSegmentValues = [
     { "cluster": "C_Low", "parts_count": 71575, "parts_percentage": 86.0, "revenue_percentage": 0.3 },
@@ -20,17 +21,16 @@ const partsSegmentValues = [
     { "cluster": "A_Mid", "parts_count": 213, "parts_percentage": 0.26, "revenue_percentage": 15.11 },
     { "cluster": "A_High", "parts_count": 45, "parts_percentage": 0.05, "revenue_percentage": 34.86 }
 ]
-
 const partsSegmentMatrix = [
-    ["A_High", "#872ff7"],
-    ["A_Mid", "#872ff780"],
     ["A_Low", "#872ff760"],
-    ["B_High", "#6FD4FF"],
-    ["B_Mid", "#6FD4FF80"],
+    ["A_Mid", "#872ff780"],
+    ["A_High", "#872ff7"],
     ["B_Low", "#6FD4FF60"],
-    ["C_High", "#ff6493"],
-    ["C_Mid", "#ff649380"],
+    ["B_Mid", "#6FD4FF80"],
+    ["B_High", "#6FD4FF"],
     ["C_Low", "#ff649360"],
+    ["C_Mid", "#ff649380"],
+    ["C_High", "#ff6493"],
 ];
 
 export default function SparepartSegment(props) {
@@ -81,12 +81,13 @@ export default function SparepartSegment(props) {
         { field: "quantity", headerName: "Quantity", flex: 1 },
         { field: "total_transaction", headerName: "Total Transaction", flex: 1 },
     ];
+    const [transValueRange, setTransValueRange] = useState([1000, 10000]);
+    const [precentProduct, setPercentProduct] = useState([0, 100]);
+    const [buyingFrequency, setBuyingFrequency] = useState([0, 10000]);
 
     const [pageSize, setPageSize] = useState(5);
     return (
         <div>
-            {/* <h5 className="">Propensity to buy</h5> */}
-
             <Grid
                 container
                 sx={{
@@ -96,59 +97,18 @@ export default function SparepartSegment(props) {
                     marginBlock: 3,
                     padding: 2,
                 }}
-                justifyContent={'center'}
-            >{showSegmentDetails ? (
-                <Card sx={{
-                    width: "100%",
-                    marginInline: "auto", paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4
-                }}>
-                    <Typography sx={{ fontSize: 16, fontWeight: 600, marginBlock: 2 }}>
-                        Parts Segmentation Details
-                    </Typography>
-                    <div style={{ display: "flex", marginBlock: 4 }}>
-                        <Typography sx={{ fontSize: 14, marginRight: 2 }}>
-                            {" "}
-                            <strong>Cluster : </strong> {selectedCluster}
-                        </Typography>
-
-                    </div>
-                    <Box sx={{ height: 500 }}>
-                        <DataGrid
-                            loading={isLoadingTable}
-                            getRowId={(row) => row.part_number}
-                            sx={GRID_STYLE}
-                            rows={partsSegmentDetails}
-                            columns={customerDetailColumns}
-                            pageSize={pageSize}
-                            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                            rowsPerPageOptions={[5, 10, 20, 50]}
-                        // autoHeight
-                        /></Box>
-                    <div
-                        className="row"
-                        style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
-                    >
-                        <button
-                            class="btn bg-primary text-white"
-                            onClick={() => setShowSegmentDetails(false)}
-                        >
-                            Back
-                        </button>
-                    </div>
-                </Card>
-            ) :
-                (<Card
-                    className="mr-2"
+            >
+                <Card
                     sx={{
                         borderRadius: 4,
-                        height: 500,
+                        height: 700,
                         width: "100%",
-                        marginInline: "auto",
+                        margin: 2,
                     }}
                     variant="outlined"
                 > {isLoading ? <LoadingProgress /> :
                     <Grid container sx={{ marginBlock: 5, marginInline: 5 }}>
-                        <Grid item container xs={2}>
+                        <Grid item container xs={4}>
                             <Grid
                                 item
                                 container
@@ -157,7 +117,7 @@ export default function SparepartSegment(props) {
                                 justifyContent="center"
                                 alignItems="center"
                             >
-                                $ Value and Buying Frequency (Revenue)
+                                Historical $ transaction value / % of total products
                             </Grid>
                             <Grid
                                 item
@@ -207,20 +167,22 @@ export default function SparepartSegment(props) {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                            <Grid container>
+                        <Grid item xs={6} lg={4}>
+                            <Grid container columnSpacing={2} rowSpacing={2}>
                                 {partsSegmentMatrix.map((indArray) => (
-                                    <Grid item xs={4}>
+                                    <Grid item container xs={4} justifyContent={'center'} alignItems={'center'}>
                                         <Card
                                             variant="outlined"
                                             sx={{
-                                                paddingInline: "auto",
-                                                paddingBlock: 4,
-                                                marginBlock: 1,
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
                                                 borderRadius: 2,
                                                 backgroundColor: indArray[1],
-                                                width: "90%",
-                                                marginInline: "auto",
+                                                height: 150,
+                                                width: 150,
+                                                transition: "transform 0.15s ease-in-out",
+                                                ':hover': { transform: "scale3d(1.05, 1.05, 1)" },
                                             }}
                                             onClick={() =>
                                                 handleClickPartsSegment(indArray[0], indArray[1])
@@ -243,31 +205,11 @@ export default function SparepartSegment(props) {
                                 ))}
                             </Grid>
                         </Grid>
-                        <Grid item container xs={4} paddingRight={10}>
-                            {/* <Grid item xs={12} display="flex" sx={{ marginBlock: 1, paddingBlock: 4 }}>
-                                <StopIcon sx={{ color: "#872ff7", marginInline: 1 }} />
-                                <Typography variant="body2">
-                                    Max 20% of parts generate min 70% of total revenue
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12} display="flex" sx={{ marginBlock: 1, paddingBlock: 4 }}>
-                                <StopIcon sx={{ color: "#6FD4FF", marginInline: 1 }} />
-                                <Typography variant="body2">
-                                    Max 30% of parts generate max 20% of total revenue
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12} display="flex" sx={{ marginBlock: 1, paddingBlock: 4 }}>
-                                <StopIcon sx={{ color: "#ff6493", marginInline: 1 }} />
-                                <Typography variant="body2">
-                                    Min 50% of parts generate max 10% of total revenue
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12}></Grid>
-                            <Grid item xs={12}></Grid>
-                            <Grid item xs={12}></Grid> */}
+                        <Grid item container xs={4}>
+
                         </Grid>
-                        <Grid item xs={2}></Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={3}></Grid>
+                        <Grid item xs={6} lg={4} sx={{ marginTop: 5 }}>
                             <Grid container>
                                 <Grid
                                     item
@@ -276,7 +218,7 @@ export default function SparepartSegment(props) {
                                     direction="row"
                                     justifyContent={"center"}
                                 >
-                                    High
+                                    Low
                                 </Grid>
                                 <Grid
                                     item
@@ -294,7 +236,7 @@ export default function SparepartSegment(props) {
                                     direction="row"
                                     justifyContent={"center"}
                                 >
-                                    Low
+                                    High
                                 </Grid>
                             </Grid>
                             <Divider sx={{ marginBlock: 3 }} />
@@ -306,13 +248,68 @@ export default function SparepartSegment(props) {
                                     direction="row"
                                     justifyContent={"center"}
                                 >
-                                    $ Value
+                                    Buying Frequency
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={3}></Grid>
                     </Grid>}
-                </Card>)}
+                </Card>
+                {showSegmentDetails && (
+                    <Card sx={{
+                        width: "100%",
+                        paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4, margin: 2
+                    }}>
+                        <Grid container marginY={3}>
+                            <Grid item xs={9} container direction={'row'} alignItems={'center'}>
+                                <Typography sx={{ fontSize: 16, fontWeight: 600, marginBlock: 2, mr: 1 }}>
+                                    Parts Segmentation Details
+                                </Typography>
+                                (<Typography sx={{ fontSize: 12, marginRight: 2 }}>
+                                    <strong>Cluster : </strong> {selectedCluster}
+                                </Typography>)
+                            </Grid>
+                        </Grid>
+                        <Grid Container>
+                        <Grid item container xs={12} columnSpacing={1}>
+
+                            <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                                <FilterOptions name="Transaction $" sliderRange={transValueRange} setSliderRange={setTransValueRange} />
+                            </Grid>
+                            <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                                <FilterOptions name='% of Parts' sliderRange={precentProduct} setSliderRange={setPercentProduct} />
+                            </Grid>
+                            <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                                <FilterOptions name='Buying Frequency' sliderRange={buyingFrequency} setSliderRange={setBuyingFrequency} />
+                            </Grid>
+                            </Grid>
+                        </Grid>
+                        <Box sx={{ height: 500 }}>
+                            <DataGrid
+                                loading={isLoadingTable}
+                                getRowId={(row) => row.part_number}
+                                sx={GRID_STYLE}
+                                rows={partsSegmentDetails}
+                                columns={customerDetailColumns}
+                                pageSize={pageSize}
+                                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                                rowsPerPageOptions={[5, 10, 20, 50]}
+                            // autoHeight
+                            /></Box>
+                        <div
+                            className="row"
+                            style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
+                        >
+                            <button
+                                class="btn bg-primary text-white"
+                                onClick={() => setShowSegmentDetails(false)}
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </Card>
+                )
+                }
             </Grid>
         </div>
     );

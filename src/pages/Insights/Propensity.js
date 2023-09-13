@@ -3,11 +3,26 @@ import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 
 import StopIcon from "@mui/icons-material/Square";
-import { Box, Card, Divider, Grid } from "@mui/material";
+import { Box, Card, Divider, Grid, Tooltip } from "@mui/material";
 import { getPropensityDetails, getPropensityToBuy } from "services/dashboardServices";
 import LoadingProgress from "../Repair/components/Loader";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarColumnsButton, GridToolbarContainer } from "@mui/x-data-grid";
+import styled from "@emotion/styled";
+import FilterOptions from "./SliderCompnent";
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  transition: "transform 0.15s ease-in-out",
+  "&:hover": { transform: "scale3d(1.02, 1.02, 1)" },
+}))
+
+const CustomToolbar = ({ setColumnButtonEl }) => {
+  return (
+    <GridToolbarContainer sx={{ justifyContent: 'end' }}>
+      <GridToolbarColumnsButton ref={setColumnButtonEl} />
+    </GridToolbarContainer>
+  );
+}
 
 const propensityValues = [
   { propensity_level: "low", transaction_level: "low", value: "10%" },
@@ -36,7 +51,20 @@ const propensityMatrix = [
 export default function Propensity(props) {
   const [propensityData, setPropensityData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [pageSize, setPageSize] = useState(10);
+  const [columnButtonEl, setColumnButtonEl] = useState(null);
   const [isLoadingTable, setIsLoadingTable] = useState(false);
+  const [showCustomerDetail, setShowCustomerDetail] = useState(false);
+  const [propensityDetails, setPropensityDetails] = useState([]);
+  const [selPropensityLevel, setSelPropensityLevel] = useState("");
+  const [selTransactionLevel, setSelTransactionLevel] = useState("");
+  const [transValueRange, setTransValueRange] = useState([1000, 10000]);
+  const [minTransValue, setMinTransValue] = useState(1000);
+  const [maxTransValue, setMaxTransValue] = useState(10000)
+  const [propensityScoreRange, setPropensityScoreRange] = useState([0, 100]);
+  const [minPropScore, setMinPropScore] = useState(0);
+  const [maxPropScore, setMaxPropScore] = useState(100)
   useEffect(() => {
     setIsLoading(true);
     getPropensityToBuy()
@@ -54,11 +82,27 @@ export default function Propensity(props) {
       console.log("axios cleanup.");
     };
   }, []);
-  const [showCustomerDetail, setShowCustomerDetail] = useState(false);
-  const [propensityDetails, setPropensityDetails] = useState([]);
-  const [selPropensityLevel, setSelPropensityLevel] = useState("");
-  const [selTransactionLevel, setSelTransactionLevel] = useState("");
 
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    last_purchase: false,
+    recency: false,
+    frequency: false,
+    min_discount: false,
+    max_discount: false,
+    avg_discount: false,
+    equipment_no: false,
+    description: false,
+    maker: false,
+    maker_serial_num: false,
+    model_prefix: false,
+    model: false,
+    brand: false,
+    product_segment: false,
+    warranty_availability: false,
+    planned_usage: false,
+    warranty: false,
+    contract: false,
+  })
   const handleClickPropensity = (propensityLevel, transactionLevel) => {
     setIsLoadingTable(true);
     setPropensityDetails([]);
@@ -76,16 +120,16 @@ export default function Propensity(props) {
     setShowCustomerDetail(true);
   };
   const customerDetailColumns = [
-    { field: "customer_id", headerName: "Customer ID", width: 100 },
-    { field: "customer_name", headerName: "Customer Name", width: 130 },
-    { field: "customer_group", headerName: "Customer Group", width: 130 },
-    { field: "customer_segment", headerName: "Customer Segment", width: 130 },
-    { field: "customer_level", headerName: "Customer Level", width: 130 },
-    { field: "last_purchase", headerName: "Last Purchase Date", width: 130 },
+    { field: "customer_id", headerName: "Customer ID", minWidth: 80, flex: 1 },
+    { field: "customer_name", headerName: "Customer Name", minWidth: 130, flex: 1 },
+    { field: "customer_group", headerName: "Customer Group", minWidth: 130, flex: 1 },
+    { field: "customer_segment", headerName: "Customer Segment", minWidth: 130, flex: 1 },
+    { field: "customer_level", headerName: "Customer Level", minWidth: 100, flex: 1 },
+    { field: "last_purchase", headerName: "Last Purchase Date", minWidth: 130, flex: 1 },
     { field: "recency", headerName: "Recency", width: 100 },
     { field: "frequency", headerName: "Frequency", width: 100 },
-    { field: "transaction_value", headerName: "Transaction Value", width: 100 },
-    { field: "transaction_level", headerName: "Transaction Level", width: 100 },
+    { field: "transaction_value", headerName: "Transaction Value", minWidth: 130, flex: 1 },
+    { field: "transaction_level", headerName: "Transaction Level", minWidth: 130, flex: 1 },
     { field: "min_discount", headerName: "Min Discount", width: 100 },
     { field: "max_discount", headerName: "Max Discount", width: 100 },
     { field: "avg_discount", headerName: "Avg Discount", width: 100 },
@@ -109,7 +153,6 @@ export default function Propensity(props) {
     { field: "propensity_level", headerName: "Propensity Level", width: 130 },
   ];
 
-  const [pageSize, setPageSize] = useState(5);
   return (
     <div>
       <Grid
@@ -121,55 +164,13 @@ export default function Propensity(props) {
           marginBlock: 3,
           padding: 2,
         }}
-      >{showCustomerDetail ? (
-        <Card sx={{
-          width: "100%",
-          marginInline: "auto", paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4
-        }}>
-          <Typography sx={{ fontSize: 16, fontWeight: 600, marginBlock: 2 }}>
-            Propensity to Buy Details
-          </Typography>
-          <div style={{ display: "flex", marginBlock: 4 }}>
-            <Typography sx={{ fontSize: 14, marginRight: 2 }}>
-              {" "}
-              <strong>Propensity Level : </strong> {selPropensityLevel}
-            </Typography>
-            <Typography sx={{ fontSize: 14 }}>
-              <strong>Transaction Level : </strong> {selTransactionLevel}
-            </Typography>
-          </div>
-          <Box sx={{ height: 500 }}>
-            <DataGrid
-              loading={isLoadingTable}
-              getRowId={(row) => row.customer_id}
-              sx={GRID_STYLE}
-              rows={propensityDetails}
-              columns={customerDetailColumns}
-              pageSize={pageSize}
-              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-              rowsPerPageOptions={[5, 10, 20, 50]}
-            // autoHeight
-            /></Box>
-          <div
-            className="row"
-            style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
-          >
-            <button
-              class="btn bg-primary text-white"
-              onClick={() => setShowCustomerDetail(false)}
-            >
-              Back
-            </button>
-          </div>
-        </Card>
-      ) : (
+      >
         <Card
-          className="mr-2"
           sx={{
             borderRadius: 4,
-            height: 500,
+            height: 700,
             width: "100%",
-            marginInline: "auto",
+            margin: 2,
           }}
           variant="outlined"
         >{isLoading ? <LoadingProgress /> :
@@ -233,49 +234,49 @@ export default function Propensity(props) {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Grid container>
+            <Grid item xs={6} lg={4}>
+              <Grid container columnSpacing={2} rowSpacing={2}>
                 {propensityMatrix.map((indArray) => (
-                  <Grid item xs={4}>
-                    <Card
-                      variant="outlined"
-                      sx={{
-                        paddingInline: "auto",
-                        paddingBlock: 4,
-                        marginBlock: 1,
-                        borderRadius: 2,
-                        backgroundColor: indArray[2],
-                        width: "90%",
-                        marginInline: "auto",
-                      }}
-                      onClick={() =>
-                        handleClickPropensity(indArray[0], indArray[1])
-                      }
-                      style={{ cursor: "pointer" }}
-                    >
-                      {/* <div
-                        style={{ fontSize: 12, color: "gray", marginBlock: 10 }}
+                  <Grid item container xs={4} justifyContent={'center'} alignItems={'center'}>
+                    <Tooltip title="Click here to know the details" >
+                      <Card
+                        variant="outlined"
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderRadius: 2,
+                          backgroundColor: indArray[2],
+                          height: 150,
+                          width: 150,
+                          transition: "transform 0.15s ease-in-out",
+                          ':hover': { transform: "scale3d(1.05, 1.05, 1)" },
+                        }}
+                        onClick={() =>
+                          handleClickPropensity(indArray[0], indArray[1])
+                        }
+                        style={{ cursor: "pointer" }}
                       >
-                      </div> */}
-                      <Typography
-                        textAlign="center"
-                        style={{ fontSize: 18, fontWeight: "600" }}
-                      >
-                        {
-                          propensityData.filter(
-                            (object) =>
-                              object.propensity_level === indArray[0] &&
-                              object.transaction_level === indArray[1]
-                          )[0]?.percentage_value
-                        }{" "}
-                        %
-                      </Typography>
-                    </Card>
+                        <Typography
+                          textAlign="center"
+                          style={{ fontSize: 18, fontWeight: "600" }}
+                        >
+                          {
+                            propensityData.filter(
+                              (object) =>
+                                object.propensity_level === indArray[0] &&
+                                object.transaction_level === indArray[1]
+                            )[0]?.percentage_value
+                          }{" "}
+                          %
+                        </Typography>
+                      </Card>
+                    </Tooltip>
                   </Grid>
                 ))}
               </Grid>
             </Grid>
-            <Grid item container xs={2}>
+            <Grid item container xs={3} md={4} sx={{ marginTop: 8, marginInline: 5 }}>
               <Grid item xs={12} display="flex">
                 <StopIcon sx={{ color: "#00b8b0", marginInline: 1 }} />
                 <Typography variant="body2">
@@ -302,7 +303,7 @@ export default function Propensity(props) {
               <Grid item xs={12}></Grid>
             </Grid>
             <Grid item xs={3}></Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} lg={4} sx={{ marginTop: 5 }}>
               <Grid container>
                 <Grid
                   item
@@ -347,8 +348,95 @@ export default function Propensity(props) {
             </Grid>
             <Grid item xs={3}></Grid>
           </Grid>}
-        </Card>)}
+        </Card>
         {/* </div> */}
+        {showCustomerDetail && (
+          <Card sx={{
+            width: "100%",
+            paddingInline: 3, backgroundColor: '#ffffff', borderRadius: 4, margin: 2
+          }}>
+            <Grid container marginY={3}>
+              <Grid item xs={9} container direction={'row'} alignItems={'center'}>
+                <Typography sx={{ fontSize: 16, fontWeight: 600, mr: 1 }}>
+                  Propensity to Buy Details
+                </Typography>
+                (
+                <Typography sx={{ fontSize: 12, marginRight: 2 }}>
+                  <strong>Propensity Level : </strong> {selPropensityLevel}
+                </Typography>
+                <Typography sx={{ fontSize: 12 }}>
+                  <strong>Transaction Level : </strong> {selTransactionLevel}
+                </Typography>)
+
+              </Grid>
+              <Grid item container xs={3} justifyContent={'end'}>
+                <button
+                  class="btn bg-primary text-white"
+                  onClick={() => console.log(rowSelectionModel)}
+                >
+                  Create CRM Leads
+                </button>
+              </Grid>
+            </Grid>
+            <Grid Container >
+              <Grid item container xs={12} columnSpacing={1}>
+                <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                  <FilterOptions name={'Transaction $'} sliderRange={transValueRange} setSliderRange={setTransValueRange} min={minTransValue} max={maxTransValue} />
+                </Grid>
+                <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                  <FilterOptions name='Propensity' sliderRange={propensityScoreRange} setSliderRange={setPropensityScoreRange} min={minPropScore} max={maxPropScore} />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Box sx={{ height: 500 }}>
+              <DataGrid
+                loading={isLoadingTable}
+                getRowId={(row) => row.customer_id + row.equipment_no}
+                sx={GRID_STYLE}
+                rows={propensityDetails}
+                columns={customerDetailColumns}
+                columnVisibilityModel={columnVisibilityModel}
+                onColumnVisibilityModelChange={(newModel) =>
+                  setColumnVisibilityModel(newModel)
+                }
+                pageSize={pageSize}
+                onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+                rowsPerPageOptions={[10, 20, 50]}
+                checkboxSelection
+                // keepNonExistentRowsSelected
+                onSelectionModelChange={(newRowSelectionModel) => {
+                  console.log(newRowSelectionModel)
+                  setRowSelectionModel(newRowSelectionModel);
+                }}
+                selectionModel={rowSelectionModel}
+                components={{
+                  Toolbar: CustomToolbar,
+                }}
+                componentsProps={{
+                  panel: {
+                    anchorEl: columnButtonEl,
+                    placement: "bottom-end"
+                  },
+                  toolbar: {
+                    setColumnButtonEl
+                  }
+                }}
+                localeText={{ toolbarColumns: "Select Columns" }}
+              // autoHeight
+              /></Box>
+            <div
+              className="row"
+              style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
+            >
+              <button
+                class="btn bg-primary text-white"
+                onClick={() => setShowCustomerDetail(false)}
+              >
+                Back
+              </button>
+            </div>
+          </Card>
+        )}
       </Grid>
     </div>
   );
