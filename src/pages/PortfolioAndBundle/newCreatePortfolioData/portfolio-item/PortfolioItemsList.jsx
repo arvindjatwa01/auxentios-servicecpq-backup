@@ -63,6 +63,7 @@ const fileTypes = ["JPG", "PNG", "GIF"];
 
 const menuComponentOptions = ["Create Versions", "Show Errors", "Review"];
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
 const coverageRowData = [
     {
         id: 1,
@@ -226,7 +227,8 @@ const bundleServiceItemsColumns = [
         sortable: false,
         wrap: true,
     },
-]
+];
+
 const PortfolioItemsList = ({ componentDataTabShow }) => {
     const dispatch = useDispatch();
     const [showDragAndDropModal, setShowDragAndDropModal] = useState(false)
