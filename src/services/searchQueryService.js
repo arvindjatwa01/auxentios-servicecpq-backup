@@ -132,7 +132,8 @@ export const getSearchForRecentPortfolio = () => {
         .get(RECENT_PORTFOLIO_URL + "/recent", { headers: headersData })
         .then((res) => {
           console.log("getSearchForRecentPortfolio > axios res=", res);
-          resolve(res.data);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("getSearchForRecentPortfolio > axios err=", err);

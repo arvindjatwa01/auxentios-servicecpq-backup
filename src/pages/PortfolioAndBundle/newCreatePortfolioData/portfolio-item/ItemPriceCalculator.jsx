@@ -8,7 +8,7 @@ import FormGroup from "@mui/material/FormGroup";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { isEmptyData } from '../utilities/textUtilities';
+import { isEmpty } from '../utilities/textUtilities';
 
 const ItemPriceCalculator = (props) => {
     const { priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, unitKeyValuePairs,
@@ -212,7 +212,7 @@ const ItemPriceCalculator = (props) => {
                                     onChange={(e) => handlePriceTextChange(e, "priceEscalation", "select")}
                                 />
                                 <input className="form-control rounded-top-left-0 rounded-bottom-left-0" type="text" placeholder="20%"
-                                    id="priceEscalationInput" disabled={isEmptyData(itemPriceRecordObj.priceEscalation?.value)}
+                                    id="priceEscalationInput" disabled={isEmpty(itemPriceRecordObj.priceEscalation?.value)}
                                     value={itemPriceRecordObj.priceEscalation?.value === "PARTS" ? priceEscalationValues.sparePartsEscalation :
                                         itemPriceRecordObj.priceEscalation?.value === "LABOR" ? priceEscalationValues.labourEscalation :
                                             itemPriceRecordObj.priceEscalation?.value === "MISCELLANEOUS" ? priceEscalationValues.miscEscalation :

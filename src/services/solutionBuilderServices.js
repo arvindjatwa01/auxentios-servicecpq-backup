@@ -108,26 +108,3 @@ export const getUserDetails = (id) => {
     }
   });
 };
-
-// TODO: Dummy service - delete this.
-export const getUserDetails1 = (id) => {
-  console.log("userServices > getUserDetails called...");
-  return new Promise((resolve, reject) => {
-    try {
-      // do db call or API endpoint axios call here and return the promise.
-      resolve({
-        "id": "30",
-        "firstName": "Joel",
-        "lastName": "Joseph",
-        "gender": "Male",
-        "age": 33,
-        "isActiveEmployee": true,
-        "location": "London"
-      })
-    } catch (error) {
-      console.error("in userServices > getUserDetails1, Err===", error);
-      reject(SYSTEM_ERROR);
-    }
-  });
-};
-

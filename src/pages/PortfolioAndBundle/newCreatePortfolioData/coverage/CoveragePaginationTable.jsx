@@ -5,42 +5,20 @@ import DataTable from 'react-data-table-component'
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 
-import { isEmptyData, isEmptySelectData } from '../utilities/textUtilities';
-import { toast } from 'react-toastify';
-
 
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from "@date-io/date-fns";
 
+import { isEmpty, isEmptySelect } from '../utilities/textUtilities';
 import { getValidateCoverage, machineSearch } from 'services/searchServices';
+
 import {
     createCoverage,
     getSearchQueryCoverage, updateCoverage
 } from "../../../../services/index";
 
-const customStyles = {
-    rows: {
-        style: {
-            minHeight: "72px", // override the row height
-        },
-    },
-    headCells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for head cells
-            paddingRight: "8px",
-            backgroundColor: "#872ff7",
-            color: "#fff",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-    cells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for data cells
-            paddingRight: "8px",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-};
+import { dataTableCustomStyle } from "../itemConstant"
+import { successMessage } from '../utilities/toastMessage';
 
 const CoveragePaginationTable = (props) => {
     const { tableData, isSelectAble, setCheckedCoverageData, className, handleUpdateCoverageData, handlePortfolioCoverageIds } = props;
@@ -125,7 +103,7 @@ const CoveragePaginationTable = (props) => {
             make: row.make,
             family: row.family,
             modelNo: row.model,
-            serialNoPrefix: isEmptyData(row.prefix) ? "" : { label: row.prefix, value: row.prefix },
+            serialNoPrefix: isEmpty(row.prefix) ? "" : { label: row.prefix, value: row.prefix },
             startSerialNo: row.startSerialNo,
             endSerialNo: row.endSerialNo,
             fleet: row.fleet,
@@ -133,7 +111,7 @@ const CoveragePaginationTable = (props) => {
             serialNo: editSerialNo,
         };
 
-        let prefixKeyValuePair = isEmptyData(row.prefix) ? [] : [{ label: row.prefix, value: row.prefix }]
+        let prefixKeyValuePair = isEmpty(row.prefix) ? [] : [{ label: row.prefix, value: row.prefix }]
         setModalPrefixKeyValuePair([...prefixKeyValuePair])
         setEditCoverageData(obj);
         setSelectedCoverageIndex(i)
@@ -195,7 +173,7 @@ const CoveragePaginationTable = (props) => {
                     serialNumber: editCoverageData?.serialNo,
                     startSerialNumber: editCoverageData?.startSerialNo,
                     endSerialNumber: editCoverageData?.endSerialNo,
-                    serialNumberPrefix: isEmptySelectData(editCoverageData?.serialNoPrefix?.value) ? "" : editCoverageData?.serialNoPrefix?.value,
+                    serialNumberPrefix: isEmptySelect(editCoverageData?.serialNoPrefix?.value) ? "" : editCoverageData?.serialNoPrefix?.value,
                     family: editCoverageData?.family,
                     make: editCoverageData?.make,
                     fleet: editCoverageData?.fleet,
@@ -208,16 +186,7 @@ const CoveragePaginationTable = (props) => {
 
                 const coverageRes = await updateCoverage(editCoverageData.coverageId, coverageReqObj);
                 if (coverageRes.status === 200) {
-                    toast("😎 Coverage data updated successfully", {
-                        position: "top-right",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                    });
-
+                    successMessage("Coverage data updated successfully");
                     const tempObj = {
                         ...selectedCoverage,
                         make: coverageRes.data.make,
@@ -451,7 +420,7 @@ const CoveragePaginationTable = (props) => {
                         title=""
                         columns={includedSerialNoColumns}
                         data={tableData[selectedCoverageIndex]?.includedSerialNoModalData}
-                        customStyles={customStyles}
+                        customStyles={dataTableCustomStyle}
                     // pagination
                     />
                 </Modal.Body>
@@ -631,7 +600,7 @@ const CoveragePaginationTable = (props) => {
             selector: (row) => row.location,
             wrap: true,
             sortable: true,
-            format: (row) => isEmptyData(row.location) ? "NA" : row.location,
+            format: (row) => isEmpty(row.location) ? "NA" : row.location,
         },
         {
             name: <div>Start Date</div>,
@@ -686,7 +655,7 @@ const CoveragePaginationTable = (props) => {
                 title=""
                 columns={columns}
                 data={tableData}
-                customStyles={customStyles}
+                customStyles={dataTableCustomStyle}
                 selectableRows={isSelectAble}
                 onSelectedRowsChange={(state) => setCheckedCoverageData(state.selectedRows)}
                 pagination
