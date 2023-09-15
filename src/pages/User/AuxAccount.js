@@ -3,19 +3,23 @@ import { Modal } from 'react-bootstrap';
 import { Box, Radio, RadioGroup, FormControlLabel, FormControl, TextareaAutosize, Card, FormGroup, Checkbox } from '@mui/material';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
+import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Select from 'react-select';
 import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
 import smalldeleteicon from '../../assets/icons/png/small-delete.png'
-import { Users } from "./Users";
-import styled from "@emotion/styled";
 import { FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
+import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
+import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import { FileUploader } from "react-drag-drop-files";
+import { Users } from "./Users";
 
 export function AuxAdmin(props) {
     const [value, setValue] = React.useState('1');
-    const [activeStep, setActiveStep] = useState(0)
-    const [dValue, setDValue] = useState(null)
     const [open, setOpen] = React.useState(false);
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -35,23 +39,7 @@ export function AuxAdmin(props) {
         { value: 'systemDefect', label: 'System defect' },
         { value: 'productSupport', label: 'Product support' },
     ];
-    const regions = [
-        { label: "US East", value: 'US East' },
-        { label: "US West", value: 'US West' },
-        { label: "Canada", value: 'Canada' },
-        { label: "Mexico", value: 'Mexico' },
-        { label: "South America", value: 'South America' },
-        { label: "Asia", value: 'Asia' },
-        { label: "Australia", value: 'Australia' },
-        { label: "Africa", value: 'Africa' },
-        { label: "Western Europe", value: 'Western Europe' },
-        { label: "Eastern Europe", value: 'Eastern Europe' },
-    ]
-    const entityTypeOptions = [
-        { value: "sole_proprietorship", label: "Sole Proprietorship" },
-        { value: "LLC", label: "Limited Liability Company (LLC)" },
-        { value: "corporation", label: "Corporation" },
-    ]
+
     const [businessInfo, setBusinessInfo] = useState({
         legalName: "",
         webSite: "",
@@ -70,606 +58,121 @@ export function AuxAdmin(props) {
     };
 
 
-    const handleStep = (step) => {
-        setActiveStep(step);
-    };
-    const handleChangeSelect = (e) => {
-        setDValue(e)
-    }
-    const handleRequestActivation = (e) => {
-        props.parentCallback()
-    }
-    const [addons, setAddons] = useState({
+    const [addonSelected, seAddonSelected] = useState({
         commerce: false,
         ai: false,
         collaboration: false,
-      });
-    
-      const handleAddons = (event) => {
-        setAddons({
-          ...addons,
-          [event.target.name]: event.target.checked,
-        });
-      };
-      const {commerce, ai, collaboration} = addons;
+    });
 
+    const handleAddons = (event) => {
+        seAddonSelected({
+            ...addonSelected,
+            [event.target.name]: event.target.checked,
+        });
+    };
+    const [file, setFile] = useState(null);
+    const handleReadFile = (file) => {
+        // e.preventDefault();
+        if (file) {
+            setFile(file);
+        }
+    };
     return (
         <div className="content-body" style={{ minHeight: "884px" }}>
             <div class="container-fluid mt-3">
-                <h4>Account</h4>
+                <h4>Account and Settings</h4>
                 <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
                     <div className="Account-custom-tabs">
                         <div class="row mt-5">
                             <div class="col-2 text-center">
                                 <ul class="nav nav-tabs tabs-left sideways">
-                                    <li class=""><a className="active" href="#packages-v" data-toggle="tab">Packages</a></li>
-                                    <li><a href="#businessInfo-v" data-toggle="tab">Business Information</a></li>
-                                    <li><a href="#businessloc-v" data-toggle="tab">Business Location</a></li>
-                                    <li><a href="#cloudregions-v" data-toggle="tab">Cloud Regions</a></li>
-                                    <li><a href="#supportplans-v" data-toggle="tab">Support Plans</a></li>
-                                    <li><a href="#addons-v" data-toggle="tab">Add Ons</a></li>
-                                    <li><a href="#requests-v" data-toggle="tab">Requests</a></li>
-                                    <li><a href="#bills-v" data-toggle="tab">Bills</a></li>
-                                    <li><a href="#invoices-v" data-toggle="tab">Invoices</a></li>
+                                    <li class=""><a className="active" href="#tenants-v" data-toggle="tab">Tenant and Reports</a></li>
+                                    <li><a href="#invoices-v" data-toggle="tab">Tenant Invoices</a></li>
+                                    <li><a href="#requests-v" data-toggle="tab">Tenant Requests</a></li>
                                 </ul>
                             </div>
                             <div class="col-10">
                                 <div className="card p-3">
                                     <div class="tab-content">
-                                        <div class="tab-pane active" id="packages-v">
+                                        <div class="tab-pane active" id="tenants-v">
                                             <div className="card mt-3 p-3">
                                                 <h5 className="d-flex align-items-center mb-0">
-                                                    <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Package Selection</span></div>
+                                                    <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Tenant and Reports</span></div>
                                                     <div className="hr"></div>
                                                 </h5>
-                                                <div className="row mt-3">
-                                                    <div className="col-md-3 col-sm-3">
-                                                        <Card variant={'outlined'} sx={{ py: 5, borderRadius: 4, display: 'flex', justifyContent: 'center' }}>
-                                                            STARTER
-                                                        </Card>
-                                                    </div>
-                                                    <div className="col-md-3 col-sm-3">
-                                                        <Card variant={'outlined'} sx={{ py: 5, borderRadius: 4, display: 'flex', justifyContent: 'center' }}>
-                                                            GROWTH
-                                                        </Card>
-                                                    </div>
-                                                    <div className="col-md-3 col-sm-3">
-                                                        <Card variant={'outlined'} sx={{ py: 5, borderRadius: 4, display: 'flex', justifyContent: 'center' }}>
-                                                            MOMENTUM
-                                                        </Card>
-                                                    </div>
-                                                    <div className="col-md-3 col-sm-3">
-                                                        <Card variant={'outlined'} sx={{ py: 5, borderRadius: 4, display: 'flex', justifyContent: 'center' }}>
-                                                            ENTERPRISE
-                                                        </Card>
-                                                    </div>
-                                                </div>
+                                                <Users />
                                             </div>
                                         </div>
-                                        <div class="tab-pane" id="businessInfo-v">
-                                            <div className="card mt-3 p-3">
-                                                <h5 className="d-flex align-items-center mb-0">
-                                                    <div className="" style={{ display: 'contents' }}>
-                                                        <span className="mr-3" style={{ whiteSpace: 'pre' }}>Business Information</span>
-                                                    </div>
-                                                    <div className="hr"></div>
-                                                </h5>
-                                                <div className="row input-fields">
-                                                    <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group">
-                                                            <label className="text-light-dark font-size-12 font-weight-500">
-                                                                BUSINESS LEGAL NAME
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                onChange={(e) => setBusinessInfo({ ...businessInfo, legalName: e.target.value })}
-                                                                className="form-control border-radius-10 text-primary"
-                                                                value={businessInfo.legalName}
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group ">
-                                                            <label className="text-light-dark font-size-12 font-weight-500">
-                                                                WEBSITE
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                onChange={(e) => setBusinessInfo({ ...businessInfo, webSite: e.target.value })}
-                                                                className="form-control border-radius-10 text-primary"
-                                                                value={businessInfo.webSite}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group ">
-                                                            <label className="text-light-dark font-size-12 font-weight-500">
-                                                                ENTITY TYPE
-                                                            </label>
-                                                            <Select
-                                                                // defaultValue={selectedOption}
-                                                                onChange={(e) =>
-                                                                    setBusinessInfo({
-                                                                        ...businessInfo,
-                                                                        entityType: e,
-                                                                    })
-                                                                }
-                                                                options={entityTypeOptions}
-                                                                value={businessInfo.entityType}
-                                                                styles={FONT_STYLE_SELECT}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group ">
-                                                            <label className="text-light-dark font-size-12 font-weight-500">
-                                                                TAX TYPE
-                                                            </label>
-                                                            <Select
-                                                                onChange={(e) =>
-                                                                    setBusinessInfo({
-                                                                        ...businessInfo,
-                                                                        taxDocType: e,
-                                                                    })
-                                                                }
-                                                                options={entityTypeOptions}
-                                                                value={businessInfo.taxDocType}
-                                                                styles={FONT_STYLE_SELECT}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group ">
-                                                            <label className="text-light-dark font-size-12 font-weight-500">
-                                                                TAX NUMBER
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                onChange={(e) => setBusinessInfo({ ...businessInfo, taxNo: e.target.value })}
-                                                                className="form-control border-radius-10 text-primary"
-                                                                value={businessInfo.taxNo}
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            <div className="card mt-3 p-3">
-                                                <div>
-                                                    <div className="d-flex mt-3">
-                                                        <div className="mr-3"><a href="#" className="bg-primary text-white btn font-size-12">Request for Extension</a></div>
-                                                        <p>You will receive an email to confirm your decision. This will not end your subscription or payments and you will continue to be charged. You can cancel your subscription, or switch payment methods to keep the the subscription active.
-                                                            This can't be reversed. All the data and transactions you've created will be permanently erased.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="card mt-3 p-3">
-                                                <div>
-                                                    <div className="d-flex mt-3">
-                                                        <div className="mr-3"><a href="#" className="bg-red text-white btn font-size-12"><img className="mr-2" src={smalldeleteicon}></img>Request for Deactivation</a></div>
-                                                        <p>You will receive an email to confirm your decision. This will not end your subscription or payments and you will continue to be charged. You can cancel your subscription, or switch payment methods to keep the the subscription active.
-                                                            This can't be reversed. All the data and transactions you've created will be permanently erased.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane" id="businessloc-v">
-
+                                        <div class="tab-pane" id="invoices-v">
                                             <div className="card  mt-3 p-3">
                                                 <div>
-                                                    <h5 className="d-flex align-items-center mb-0">
-                                                        <div className="" style={{ display: 'contents' }}>
-                                                            <span className="mr-3" style={{ whiteSpace: 'pre' }}>Business Location</span></div>
+                                                    <h5 className="d-flex align-items-center mb-0 mt-4">
+                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Past Invoices</span></div>
                                                         <div className="hr"></div>
                                                     </h5>
-                                                    <div className="row input-fields mt-3">
+                                                    <div className="row mt-4">
                                                         <div className="col-md-4 col-sm-4">
+                                                            <div className="form-group ">
+                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE NUMBER</label>
+                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4 col-sm-4">
+                                                            <div className="form-group ">
+                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE / MONTH</label>
+                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="January" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-2">
+                                                        <div className="col-md-2 col-sm-2">
                                                             <div className="form-group">
-                                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                                    ADDRESS
-                                                                </label>
-                                                                <input
-                                                                    type="text"
-                                                                    onChange={(e) => setBusinessLoc({ ...businessLoc, address: e.target.value })}
-                                                                    className="form-control border-radius-10 text-primary"
-                                                                    value={businessLoc.address}
+                                                                <label className="font-size-14 " for="exampleInputEmail1">ACCOUNT NO.</label>
+                                                                <Select
+                                                                    defaultValue={selectedOption}
+                                                                    onChange={setSelectedOption}
+                                                                    options={options}
+                                                                    placeholder="1234567"
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="col-md-4 col-sm-4">
+                                                        <div className="col-md-2 col-sm-2">
                                                             <div className="form-group">
-                                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                                    CONTACT
-                                                                </label>
-                                                                <input
-                                                                    type="text"
-                                                                    onChange={(e) => setBusinessLoc({ ...businessLoc, contact: e.target.value })}
-                                                                    className="form-control border-radius-10 text-primary"
-                                                                    value={businessLoc.contact}
+                                                                <label className="font-size-14 " for="exampleInputEmail1">INVOICE NUMBER</label>
+                                                                <Select
+                                                                    defaultValue={selectedOption}
+                                                                    onChange={setSelectedOption}
+                                                                    options={options}
+                                                                    placeholder="USD"
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group">
-                                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                                    PHONE NUMBER
-                                                                </label>
-                                                                <input
-                                                                    type="text"
-                                                                    onChange={(e) => setBusinessLoc({ ...businessLoc, phoneNo: e.target.value })}
-                                                                    className="form-control border-radius-10 text-primary"
-                                                                    value={businessLoc.phoneNo}
-                                                                />
+                                                        <div className="col-md-2 col-sm-2">
+                                                            <div className="form-group ">
+                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE</label>
+                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10.01.2022" />
                                                             </div>
                                                         </div>
-
-
-
+                                                        <div className="col-md-2 col-sm-2">
+                                                            <div className="form-group ">
+                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE AMOUNT</label>
+                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="$4000" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-2 col-sm-2">
+                                                            <div className="form-group ">
+                                                                <label class="font-size-14 " for="exampleInputEmail1">STATUS</label>
+                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Paid" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-12 col-sm-12">
+                                                            <div className="Add-new-segment-div p-3 border-radius-10 bg-light-blue">
+                                                                <a href="#" className="btn bg-primary text-white">Generate pdf</a>
+                                                            </div>
+                                                        </div>
 
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Contact Information</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                            <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
-                                                            <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <div className="row">
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">Full name</p>
-                                                                <h6 class="font-weight-600">Jane</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">ADDRESS</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">CITY</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">STATE</p>
-                                                                <h6 class="font-weight-600">Jane</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">COUNTRY</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">PHONE NUMBER (PRIMARY)</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">PHONE NUMBER (SECONDARY)</p>
-                                                                <h6 class="font-weight-600">Jane</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">COMMUNICATION PREFERENCE</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">WEBSITE URL</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="card  overflow-hidden mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Alternate contact</span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <div className="row mt-3">
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">BILLING CONTACT</label>
-                                                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">OPERATIONS CONTACT</label>
-                                                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">SECURITY CONTACT</label>
-                                                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">CONTACT EMAIL</label>
-                                                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">CONTACT NUMBER</label>
-                                                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Alternate contact</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                                            <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
-                                                            <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <div className="row mt-3">
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">BILLING CONTACT</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">OPERATIONS CONTACT</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">SECURITY CONTACT</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">CONTACT EMAIL</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div class="form-group">
-                                                                <p class="font-size-14 mb-2">CONTACT NUMBER</p>
-                                                                <h6 class="font-weight-600">Doe</h6>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="tab-pane" id="supportplans-v">
-                                            <div className="card mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0 ">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Active Plan
-                                                        </span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <RadioGroup className='my-3'
-                                                        row
-                                                        aria-labelledby="demo-form-control-label-placement"
-                                                        name="position"
-                                                        defaultValue="top"
-                                                    >
-                                                        <div className="col-md-4">
-
-                                                            <div className="w-100 m-0 mb-3 p-2 d-flex custom-radio py-4 align-itemsstart border">
-                                                                <FormControlLabel className="m-0" value="end" control={<Radio />} label="" />
-                                                                <div className="ml-2">
-                                                                    <span>Momentum </span><br /><span>$100</span><br /><span>user / month</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                    </RadioGroup>
-                                                </div>
-                                            </div>
-                                            <div className="card mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0 ">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Support</span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <p className="mt-3">View or Update <a href="#" className="text-violet" onClick={() => setOpen(true)}>support plans</a></p>
-                                                </div>
-                                            </div>
-                                            <div className="card mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0 ">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Deactivation</span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <div className="d-flex mt-3">
-                                                        <div className="mr-3"><a href="#" className="bg-red text-white btn font-size-12"><img className="mr-2" src={smalldeleteicon}></img>Request for Deactivation</a></div>
-                                                        <p>You will receive an email to confirm your decision. This will not end your subscription or payments and you will continue to be charged. You can cancel your subscription, or switch payment methods to keep the the subscription active.
-                                                            This can't be reversed. All the data and transactions you've created will be permanently erased.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane" id="cloudregions-v">
-                                            <div className="card mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0 ">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Account regions</span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-
-                                                    <FormControl>
-                                                        <RadioGroup className='my-3'
-                                                            row
-                                                            aria-labelledby="demo-form-control-label-placement"
-                                                            name="position"
-                                                            defaultValue="top"
-                                                        >
-                                                            {regions.map(region =>
-                                                                <div className="col-md-3">
-
-                                                                    <Card variant={'outlined'} sx={{ borderRadius: 2, p: 3, py: 4, my: 1 }}>
-                                                                        <FormControlLabel
-                                                                            value={region.value}
-                                                                            control={<Radio />}
-                                                                            label={region.label}
-                                                                        />
-                                                                    </Card>
-                                                                </div>)}
-                                                        </RadioGroup>
-                                                    </FormControl>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane" id="addons-v">
-                                            <div className="card mt-3 p-3">
-                                                <h5 className="d-flex align-items-center mb-0 ">
-                                                    <div className="" style={{ display: 'contents' }}>
-                                                        <span className="mr-3" style={{ whiteSpace: 'pre' }}>Add-Ons</span></div>
-                                                    <div className="hr"></div>
-                                                </h5>
-                                                <FormGroup >
-
-                                                    <div className="col-md-3">
-                                                        <Card variant={'outined'} sx={{py:4, px: 2}}>
-                                                            <FormControlLabel
-                                                                control={<Checkbox checked={commerce} onChange={handleAddons} name="commerce" />}
-                                                                label="Commerce"
-                                                            />
-                                                        </Card>
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                    <Card variant={'outined'} sx={{py:4, px: 2}}>
-
-                                                        <FormControlLabel
-                                                            
-                                                            control={<Checkbox checked={ai} onChange={handleAddons} name="ai" />}
-                                                            label="AI"
-                                                        />
-                                                        </Card>
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                        <FormControlLabel
-                                                            className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart border"
-                                                            control={<Checkbox checked={collaboration} onChange={handleAddons} name="collaboration" />}
-                                                            label="Collaboration"
-                                                        />
-                                                    </div>
-                                                </FormGroup>
-                                            </div>
-                                            <div className="card mt-3 p-3">
-                                                <h5 className="d-flex align-items-center mb-0 ">
-                                                    <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Order Status</span></div>
-                                                    <div className="hr"></div>
-                                                </h5>
-                                                <RadioGroup className='my-3'
-                                                    row
-                                                    aria-labelledby="demo-form-control-label-placement"
-                                                    name="position"
-                                                    defaultValue="top"
-                                                >
-
-                                                    <div className="col-md-3">
-                                                        <div className="w-100  mb-3 text-left p-2 card py-4  border">
-                                                            <FormControlLabel
-                                                                className="align-itemsstart m-0"
-                                                                value="Account Active"
-                                                                control={<Radio />}
-                                                                label=""
-                                                                labelPlacement="bottom"
-                                                            />
-                                                            <p> Account Active</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                        <div className="w-100 mb-3 text-left p-2 card py-4 border">
-                                                            <FormControlLabel
-                                                                className="m-0 align-itemsstart"
-                                                                value="Do it with us"
-                                                                control={<Radio />}
-                                                                label=""
-                                                                labelPlacement="bottom"
-                                                            />
-                                                            <p>Momentum Price Plan<br />
-                                                                $100<br />
-                                                                User / month</p>
-                                                        </div>
-                                                    </div>
-
-                                                </RadioGroup>
-                                            </div>
-                                            <div className="card mt-3 p-3">
-                                                <h5 className="d-flex align-items-center mb-0 ">
-                                                    <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Delivery request</span></div>
-                                                    <div className="hr"></div>
-                                                </h5>
-                                                <RadioGroup className='my-3'
-                                                    row
-                                                    aria-labelledby="demo-form-control-label-placement"
-                                                    name="position"
-                                                    defaultValue="top"
-                                                >
-
-                                                    <div className="col-md-3">
-                                                        <div className="w-100  mb-3 text-left p-2 card py-4  border">
-                                                            <FormControlLabel
-                                                                className="align-itemsstart m-0"
-                                                                value="Asia"
-                                                                control={<Radio />}
-                                                                label="Do it ourselves"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                            <p> We help with provision and support, all other activities are carried out by your team</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                        <div className="w-100 mb-3 text-left p-2 card py-4 border">
-                                                            <FormControlLabel
-                                                                className="m-0 align-itemsstart"
-                                                                value="Do it with us"
-                                                                control={<Radio />}
-                                                                label="Do it with us"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                            <p>Our experts assist you with requirement mapping, consulting, data loading, test scripts and training</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                        <div className="w-100 mb-3 text-left p-2 card py-4 border">
-                                                            <FormControlLabel
-                                                                className="m-0 align-itemsstart"
-                                                                value="Do it for us"
-                                                                control={<Radio />}
-                                                                label="Do it for us"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                            <p> We own the solution delivery with support from your team</p>
-                                                        </div>
-                                                    </div>
-
-                                                </RadioGroup>
-                                            </div>
-                                            <div className="Add-new-segment-div p-3 border-radius-10">
-                                                <a href="#" className="btn bg-primary text-white">Request activation</a>
-                                            </div>
-                                            <div className="Add-new-segment-div p-3 border-radius-10 mt-3">
-                                                <a href="#" className="btn bg-primary text-white">Configure System</a>
                                             </div>
                                         </div>
                                         <div class="tab-pane" id="requests-v">
@@ -851,204 +354,6 @@ export function AuxAdmin(props) {
                                                         <div className="Add-new-segment-div p-3 border-radius-10 bg-light-blue">
                                                             <a href="#" className="btn bg-primary text-white"><span className="mr-2">+</span>Add Attachments</a>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane" id="bills-v">
-                                            <div className="card  mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0 mt-4">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Billing Plan</span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <div className="row mt-4">
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group">
-                                                                <label className="font-size-14 " for="exampleInputEmail1">ACCOUNT NO.</label>
-                                                                <Select
-                                                                    defaultValue={selectedOption}
-                                                                    onChange={setSelectedOption}
-                                                                    options={options}
-                                                                    placeholder="1234567"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group">
-                                                                <label className="font-size-14 " for="exampleInputEmail1">CURRENCY</label>
-                                                                <Select
-                                                                    defaultValue={selectedOption}
-                                                                    onChange={setSelectedOption}
-                                                                    options={options}
-                                                                    placeholder="USD"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">PRICE PLAN</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Momentum" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">NUMBER OF USER</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10.01.2022" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="30" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE AMOUNT</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="$3000" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12 col-sm-12">
-                                                            <div className="Add-new-segment-div p-3 border-radius-10 bg-light-blue">
-                                                                <a href="#" className="btn bg-primary text-white">Generate pdf</a>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="card  mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0 mt-4">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Adhoc Plan</span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <div className="row mt-4">
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group">
-                                                                <label className="font-size-14 " for="exampleInputEmail1">ACCOUNT NO.</label>
-                                                                <Select
-                                                                    defaultValue={selectedOption}
-                                                                    onChange={setSelectedOption}
-                                                                    options={options}
-                                                                    placeholder="Choose"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group">
-                                                                <label className="font-size-14 " for="exampleInputEmail1">CURRENCY</label>
-                                                                <Select
-                                                                    defaultValue={selectedOption}
-                                                                    onChange={setSelectedOption}
-                                                                    options={options}
-                                                                    placeholder="Choose"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">PRICE PLAN</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Auto Generated" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">NUMBER OF USER</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE AMOUNT</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12 col-sm-12">
-                                                            <div className="Add-new-segment-div p-3 border-radius-10 bg-light-blue">
-                                                                <a href="#" className="btn bg-primary text-white">Manual Invoice</a>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane" id="invoices-v">
-                                            <div className="card  mt-3 p-3">
-                                                <div>
-                                                    <h5 className="d-flex align-items-center mb-0 mt-4">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Past Invoices</span></div>
-                                                        <div className="hr"></div>
-                                                    </h5>
-                                                    <div className="row mt-4">
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE NUMBER</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE / MONTH</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="January" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="row mt-2">
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group">
-                                                                <label className="font-size-14 " for="exampleInputEmail1">ACCOUNT NO.</label>
-                                                                <Select
-                                                                    defaultValue={selectedOption}
-                                                                    onChange={setSelectedOption}
-                                                                    options={options}
-                                                                    placeholder="1234567"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group">
-                                                                <label className="font-size-14 " for="exampleInputEmail1">INVOICE NUMBER</label>
-                                                                <Select
-                                                                    defaultValue={selectedOption}
-                                                                    onChange={setSelectedOption}
-                                                                    options={options}
-                                                                    placeholder="USD"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE DATE</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="10.01.2022" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">INVOICE AMOUNT</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="$4000" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-2 col-sm-2">
-                                                            <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">STATUS</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Paid" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12 col-sm-12">
-                                                            <div className="Add-new-segment-div p-3 border-radius-10 bg-light-blue">
-                                                                <a href="#" className="btn bg-primary text-white">Generate pdf</a>
-                                                            </div>
-                                                        </div>
-
                                                     </div>
                                                 </div>
                                             </div>

@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 
 import Typography from "@mui/material/Typography";
 
-import StopIcon from "@mui/icons-material/Square";
-import { Box, Card, Divider, Grid, Slider } from "@mui/material";
+import { Box, Card, Divider, Grid } from "@mui/material";
 import { getPartsSegmentDetails, getPartsSegment } from "services/dashboardServices";
 import LoadingProgress from "../Repair/components/Loader";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
@@ -37,6 +36,13 @@ export default function SparepartSegment(props) {
     const [partsSegmentData, setPartsSegmentData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingTable, setIsLoadingTable] = useState(false);
+    const [transValueRange, setTransValueRange] = useState([1000, 10000]);
+    const [precentProduct, setPercentProduct] = useState([0, 100]);
+    const [buyingFrequency, setBuyingFrequency] = useState([0, 10000]);
+    const [pageSize, setPageSize] = useState(10);
+    const [showSegmentDetails, setShowSegmentDetails] = useState(false);
+    const [partsSegmentDetails, setPartsSegmentDetails] = useState([]);
+    const [selectedCluster, setSelectedCluster] = useState("");
     useEffect(() => {
         setIsLoading(true);
         getPartsSegment()
@@ -54,9 +60,7 @@ export default function SparepartSegment(props) {
             console.log("axios cleanup.");
         };
     }, []);
-    const [showSegmentDetails, setShowSegmentDetails] = useState(false);
-    const [partsSegmentDetails, setPartsSegmentDetails] = useState([]);
-    const [selectedCluster, setSelectedCluster] = useState("");
+
 
     const handleClickPartsSegment = (cluster) => {
         setIsLoadingTable(true);
@@ -81,11 +85,7 @@ export default function SparepartSegment(props) {
         { field: "quantity", headerName: "Quantity", flex: 1 },
         { field: "total_transaction", headerName: "Total Transaction", flex: 1 },
     ];
-    const [transValueRange, setTransValueRange] = useState([1000, 10000]);
-    const [precentProduct, setPercentProduct] = useState([0, 100]);
-    const [buyingFrequency, setBuyingFrequency] = useState([0, 10000]);
 
-    const [pageSize, setPageSize] = useState(5);
     return (
         <div>
             <Grid
@@ -208,7 +208,7 @@ export default function SparepartSegment(props) {
                         <Grid item container xs={4}>
 
                         </Grid>
-                        <Grid item xs={3}></Grid>
+                        <Grid item xs={4}></Grid>
                         <Grid item xs={6} lg={4} sx={{ marginTop: 5 }}>
                             <Grid container>
                                 <Grid
@@ -271,17 +271,17 @@ export default function SparepartSegment(props) {
                             </Grid>
                         </Grid>
                         <Grid Container>
-                        <Grid item container xs={12} columnSpacing={1}>
+                            <Grid item container xs={12} columnSpacing={1}>
 
-                            <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
-                                <FilterOptions name="Transaction $" sliderRange={transValueRange} setSliderRange={setTransValueRange} />
-                            </Grid>
-                            <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
-                                <FilterOptions name='% of Parts' sliderRange={precentProduct} setSliderRange={setPercentProduct} />
-                            </Grid>
-                            <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
-                                <FilterOptions name='Buying Frequency' sliderRange={buyingFrequency} setSliderRange={setBuyingFrequency} />
-                            </Grid>
+                                <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                                    <FilterOptions name="Transaction $" sliderRange={transValueRange} setSliderRange={setTransValueRange} />
+                                </Grid>
+                                <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                                    <FilterOptions name='% of Parts' sliderRange={precentProduct} setSliderRange={setPercentProduct} />
+                                </Grid>
+                                <Grid item xs={4} container justifyContent={'start'} alignItems={'center'}>
+                                    <FilterOptions name='Buying Frequency' sliderRange={buyingFrequency} setSliderRange={setBuyingFrequency} />
+                                </Grid>
                             </Grid>
                         </Grid>
                         <Box sx={{ height: 500 }}>
@@ -293,10 +293,10 @@ export default function SparepartSegment(props) {
                                 columns={customerDetailColumns}
                                 pageSize={pageSize}
                                 onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-                                rowsPerPageOptions={[5, 10, 20, 50]}
+                                rowsPerPageOptions={[10, 20, 50]}
                             // autoHeight
                             /></Box>
-                        <div
+                        {/* <div
                             className="row"
                             style={{ justifyContent: "right", marginInline: 9, marginBlock: 7 }}
                         >
@@ -306,7 +306,7 @@ export default function SparepartSegment(props) {
                             >
                                 Back
                             </button>
-                        </div>
+                        </div> */}
                     </Card>
                 )
                 }

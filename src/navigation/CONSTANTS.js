@@ -16,7 +16,7 @@ export const DASHBOARD = "/dashboard";
 export const PAGE1 = "/page1";
 export const AUTH_PAGE1 = "/authorized1";
 export const PROFILE = "/profile";
-export const ACCOUNT = "/account";
+// export const ACCOUNT = "/account";
 export const LANDING_PAGE_LOGIN = "/LandingPageLogin";
 export const RIPAIR_SERVICE_ESTIMATE = "/RepairServiceEstimate";
 // export const WITHOUTSPARE_REPAIR_OPTION = "/WithoutSpareParts";
@@ -98,4 +98,10 @@ export const CONSUMABLE_MASTER = "/consumable-master";
 export const CUSTOMER_MASTER = "/customer-master";
 
 //Aux Admin
-export const AUX_ADMIN_PROVISION = "/aux-admin/provision"
+export const AUX_ADMIN_PROVISION = "/aux-admin/provision";
+export const AUX_ADMIN_ACCOUNT = "/aux-admin/account";
+export const ACCOUNT_RENEWAL_BILLING = "/account-billing";
+export const ACCOUNT_CONFIGURATION = "/account-config";
+export const ACCOUNT_SETTINGs = "/account-settings";
+export const ACCOUNT_SUPPORT = "/account-support"
+export const ACCOUNT_PACKAGES = "/packages"

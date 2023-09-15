@@ -26,6 +26,11 @@ import {
   SOLUTION_BUILDER_ANALYTICS,
   SOLUTION_QUOTE,
   REPAIR_SERVICE_PARTS_TEMPLATE,
+  ACCOUNT_PACKAGES,
+  ACCOUNT_SETTINGs,
+  ACCOUNT_RENEWAL_BILLING,
+  ACCOUNT_CONFIGURATION,
+  ACCOUNT_SUPPORT,
 } from "../navigation/CONSTANTS";
 import Cookies from "js-cookie";
 import { Divider } from "@mui/material";
@@ -1397,22 +1402,35 @@ export function HeaderComponent(props) {
                       </li>
                       <Divider />
                       <li>
-                        <Link to="/account">
-                          <span>Account</span>
+                        <span style={{fontSize: 18}}>Account</span>
+                      </li>
+                      <li>
+                        <Link to={ACCOUNT_PACKAGES}>
+                          <span>My Packages </span>
                         </Link>
                       </li>
                       <li>
-                        <Link to="/account?tab=packages">
-                          <span>My Packages</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to="/account?tab=settings">
+                        <Link to={ACCOUNT_SETTINGs}>
                           <span>Account Settings</span>
                         </Link>
                       </li>
-                      <Divider />
                       <li>
+                        <Link to={ACCOUNT_RENEWAL_BILLING}>
+                          <span>Renewal & Billing</span>
+                        </Link>
+                      </li>
+                      <Divider sx={{my: 1}}/>
+                      <li>
+                        <Link to={ACCOUNT_CONFIGURATION}>
+                          <span>Configuration</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to={ACCOUNT_SUPPORT}>
+                          <span>Help & Support</span>
+                        </Link>
+                      </li>
+                       <li>
                         <a className="cursor" onClick={handleLogout}>
                           
                           <span>{loginStatus ? "Logout" : "Login"}</span>
