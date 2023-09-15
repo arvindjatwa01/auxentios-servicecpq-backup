@@ -6,7 +6,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Tab from "@mui/material/Tab";
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Select from "react-select";
 // import { MuiMenuComponent } from "./components/MuiMenuRepair";
 import {
@@ -114,6 +114,8 @@ import { createSparePartQuote } from "services/repairQuoteServices";
 import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import PriceMethodTable from "./components/PriceMethodTable";
 import PriceSummaryTable from "./components/PriceSummaryTable";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import NotesAddEdit from "../SolutionModules/NotesAddEdit";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -198,6 +200,7 @@ function PartList(props) {
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = useState("customer");
+  const [showNotes, setShowNotes] = useState(false);
   const [open, setOpen] = useState(false);
   const [addPartOpen, setAddPartOpen] = useState(false);
   const [searchResultOpen, setSearchResultOpen] = useState(false);
@@ -354,10 +357,9 @@ function PartList(props) {
       setBId(state.bId);
       // setPartListNo(state.partListNo);
       setPartListId(state.partListId);
-      if(state.versionNumber)
+      if (state.versionNumber)
         fetchAllDetails(state.builderId, state.versionNumber);
-      else
-        fetchAllDetailsWithDBId(state.bId);
+      else fetchAllDetailsWithDBId(state.bId);
     }
   }, []);
 
@@ -784,7 +786,7 @@ function PartList(props) {
     };
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      handleSnack("error","Please enter the email address in correct format");
+      handleSnack("error", "Please enter the email address in correct format");
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
@@ -1331,7 +1333,7 @@ function PartList(props) {
     history.push({
       pathname: "/RepairPartList",
     });
-  }
+  };
 
   const handleResetData = (action) => {
     if (action === "RESET") {
@@ -1497,25 +1499,21 @@ function PartList(props) {
 
   const refreshData = (builderId, version) => {
     setHeaderLoading(true);
-      fetchBuilderVersionDet(builderId, version)
-        .then((result) => {
-          populateHeader(result);
-          setHeaderLoading(false);
-          // fetchPartlist(result.id);
-          fetchPartsOfPartlist(
-            partListNo,
-            page,
-            pageSize
-          );
-        })
-        .catch((err) => {
-          setHeaderLoading(false);
-          handleSnack(
-            "error",
-            "Error occurred while fetching the version details"
-          );
-        });
-  }
+    fetchBuilderVersionDet(builderId, version)
+      .then((result) => {
+        populateHeader(result);
+        setHeaderLoading(false);
+        // fetchPartlist(result.id);
+        fetchPartsOfPartlist(partListNo, page, pageSize);
+      })
+      .catch((err) => {
+        setHeaderLoading(false);
+        handleSnack(
+          "error",
+          "Error occurred while fetching the version details"
+        );
+      });
+  };
   // Updates the bulk edits
   const bulkUpdateParts = async () => {
     setConfirmationOpen(false);
@@ -1701,6 +1699,9 @@ function PartList(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
+                <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
+                  <DescriptionOutlinedIcon className="text-grey font-size-28" />
+                </a>
                 <button
                   className="ml-3 btn-no-border font-size-14"
                   title="Share"
@@ -3475,6 +3476,9 @@ function PartList(props) {
           </div>
         </div> */}
       </div>
+      {showNotes && (
+        <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
+      )}
     </>
   );
 }

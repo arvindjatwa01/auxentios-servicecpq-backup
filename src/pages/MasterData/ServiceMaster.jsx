@@ -87,8 +87,82 @@ const erpservicedata = [
     quantity: "5879.24",
   },
 ];
+const dummySearchLaborList = [
+  {
+    id: 1,
+    A: "S012",
+    B: "Internal",
+    C: "Inspection",
+    D: "Field Service",
+    active: true,
+  },
+  {
+    id: 2,
+    A: "S006",
+    B: "Internal",
+    C: "Analysis",
+    D: "Field Service",
+    active: false,
+  },
+  {
+    id: 3,
+    A: "S014",
+    B: "External",
+    C: "Inspection",
+    D: "Special Service",
+    active: false,
+  },
+  {
+    id: 4,
+    A: "3J0634",
+    B: "3620656",
+    C: "SEAL",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 5,
+    A: "F198300020130",
+    B: "3620656",
+    C: "PRESSURE WASHER",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 6,
+    A: "2A4429",
+    B: "3620656",
+    C: "LOCK",
+    D: "CATERPILLAR",
+    active: false,
+  },
+  {
+    id: 7,
+    A: "3681P053",
+    B: "3620656",
+    C: "MANIFOLD COVER GASKET",
+    D: "CATERPILLAR",
+    active: false,
+  },
+];
+const dummySearchServiceList = [
+  { id: 1, A: "AC01", B: "Chroming", C: "Description 1", D: "Test Agency 1", active: true, },
+  { id: 2, A: "AC02", B: "Electrical Work", C: "Description 2", D: "Test Agency 2", active: false, },
+  { id: 3, A: "AC03", B: "Machining", C: "Description 3", D: "Test Agency 3", active: false, },
+  { id: 4, A: "AC04", B: "Tooling", C: "Description 4", D: "Test Agency 4", active: false, },
+  { id: 5, A: "AC05", B: "Crane Service", C: "Description 5", D: "Test Agency 5", active: false, },
+  { id: 6, A: "AC06", B: "Welding", C: "Description 6", D: "Test Agency 6", active: false, },
+  { id: 7, A: "AC07", B: "Drlling", C: "Description 7", D: "Test Agency 7", active: false, },
+];
+
 const ServiceMaster = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
+  const [globalLaborList, setGlobalLaborList] = useState([
+    ...dummySearchLaborList,
+  ]);
+  const [globalServiceList, setGlobalServiceList] = useState([
+    ...dummySearchServiceList,
+  ]);
   const [erpItemsService, setErpItemsService] = useState([...erpservicedata]);
   const [value, setValue] = React.useState("1");
   const searchOptions = [
@@ -148,34 +222,7 @@ const ServiceMaster = () => {
   const laborPaginationChange = (event, value) => {
     setLabormasterpagination(value);
   };
-  const globalsearchList = [
-    { A: "S012", B: "Internal", C: "Inspection", D: "Field Service" },
-    { A: "S006", B: "Internal", C: "Analysis", D: "Field Service" },
-    { A: "S014", B: "External", C: "Inspection", D: "Special Service" },
-    { A: "3J0634", B: "3620656", C: "SEAL", D: "CATERPILLAR" },
-    {
-      A: "F198300020130",
-      B: "3620656",
-      C: "PRESSURE WASHER",
-      D: "CATERPILLAR",
-    },
-    { A: "2A4429", B: "3620656", C: "LOCK", D: "CATERPILLAR" },
-    {
-      A: "3681P053",
-      B: "3620656",
-      C: "MANIFOLD COVER GASKET",
-      D: "CATERPILLAR",
-    },
-  ];
-  const globalservicesearchList = [
-    { A: "AC01", B: "Chroming", C: "Description 1", D: "Test Agency 1" },
-    { A: "AC02", B: "Electrical Work", C: "Description 2", D: "Test Agency 2" },
-    { A: "AC03", B: "Machining", C: "Description 3", D: "Test Agency 3" },
-    { A: "AC04", B: "Tooling", C: "Description 4", D: "Test Agency 4" },
-    { A: "AC05", B: "Crane Service", C: "Description 5", D: "Test Agency 5" },
-    { A: "AC06", B: "Welding", C: "Description 6", D: "Test Agency 6" },
-    { A: "AC07", B: "Drlling", C: "Description 7", D: "Test Agency 7" },
-  ];
+ 
   const priceLaborColumns = [
     {
       name: (
@@ -536,6 +583,24 @@ const ServiceMaster = () => {
       },
     },
   };
+
+  const viewLaborDetails = (id) => {
+    const _globalLaborList = [...globalLaborList];
+    const updatedGlobalLaborList = _globalLaborList.map((data) => ({
+      ...data,
+      active: data.id === id ? true : false,
+    }));
+    setGlobalLaborList(updatedGlobalLaborList);
+  };
+  const viewServiceDetails = (id) => {
+    const _globalServiceList = [...globalServiceList];
+    const updatedGlobalServiceList = _globalServiceList.map((data) => ({
+      ...data,
+      active: data.id === id ? true : false,
+    }));
+    setGlobalServiceList(updatedGlobalServiceList);
+  };
+
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
       <div className="container-fluid">
@@ -683,8 +748,12 @@ const ServiceMaster = () => {
                   <div className="bg-grey border-radius-10 p-3">
                     <div className="equipment-master-ul">
                       <ul>
-                        {globalsearchList.map((Data, i) => (
-                          <li className={`${i === 0 ? "active" : ""}`}>
+                        {globalLaborList.map((Data, i) => (
+                          <li
+                            key={`labor-master-${i}`}
+                            className={`${Data.active ? "active" : ""}`}
+                            onClick={() => viewLaborDetails(Data.id)}
+                          >
                             <div className="row position-relative">
                               <div className="global-serach-arrow">
                                 <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
@@ -1074,8 +1143,12 @@ const ServiceMaster = () => {
                   <div className="bg-grey border-radius-10 p-3">
                     <div className="equipment-master-ul">
                       <ul>
-                        {globalservicesearchList.map((Data, i) => (
-                          <li className={`${i === 0 ? "active" : ""}`}>
+                        {globalServiceList.map((Data, i) => (
+                          <li
+                            key={`service-master-${i}`}
+                            className={`${Data.active ? "active" : ""}`}
+                            onClick={() => viewServiceDetails(Data.id)}
+                          >
                             <div className="row position-relative">
                               <div className="global-serach-arrow">
                                 <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />

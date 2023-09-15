@@ -107,24 +107,54 @@ const warrentydata = [
     servicePrice: "5879.24",
   },
 ];
+const dummySearchList = [
+  {
+    id: 1,
+    A: "5365377",
+    B: "HOSE AS.",
+    C: "3620656",
+    D: "CATERPILLAR",
+    active: true,
+  },
+  {
+    id: 2,
+    A: "1L1118",
+    B: "FITTING",
+    C: "3620656",
+    D: "Description",
+    active: false,
+  },
+  {
+    id: 3,
+    A: "0R6158",
+    B: "Full Core Deposit",
+    C: "992K",
+    D: "Description",
+    active: false,
+  },
+  {
+    id: 4,
+    A: "3J0634",
+    B: "SEAL",
+    C: "3620656",
+    D: "Description",
+    active: false,
+  },
+  {
+    id: 5,
+    A: "F198300020130",
+    B: "PRESSURE WASHER",
+    C: "3620656",
+    D: "Description",
+    active: false,
+  },
+];
 
 const Parts360 = () => {
   const [bundleItems, setBundleItems] = useState([...tempdata]);
   const [warrentyItems, setWarrentyItems] = useState([...warrentydata]);
-
+  const [searchList, setSearchList] = useState([...dummySearchList]);
   const [value, setValue] = React.useState("1");
-  const searchList = [
-    { A: "5365377", B: "HOSE AS.", C: "3620656", D: "CATERPILLAR" },
-    { A: "1L1118", B: "FITTING", C: "3620656", D: "Description" },
-    { A: "0R6158", B: "Full Core Deposit", C: "992K", D: "Description" },
-    { A: "3J0634", B: "SEAL", C: "3620656", D: "Description" },
-    {
-      A: "F198300020130",
-      B: "PRESSURE WASHER",
-      C: "3620656",
-      D: "Description",
-    },
-  ];
 
   const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -723,6 +753,14 @@ const Parts360 = () => {
       },
     },
   };
+  const viewEquipmentDetails = (id) => {
+    const _searchList = [...searchList];
+    const updatedSearchList = _searchList.map((data) => ({
+      ...data,
+      active: data.id === id ? true : false,
+    }));
+    setSearchList(updatedSearchList);
+  };
 
   return (
     <div className="content-body" style={{ minHeight: "884px" }}>
@@ -855,7 +893,11 @@ const Parts360 = () => {
               <div className="equipment-master-ul">
                 <ul>
                   {searchList.map((Data, i) => (
-                    <li className={`${i === 0 ? "active" : ""}`}>
+                    <li
+                      key={`parts-master-${i}`}
+                      className={`${Data.active ? "active" : ""}`}
+                      onClick={() => viewEquipmentDetails(Data.id)}
+                    >
                       <div className="row position-relative">
                         <div className="global-serach-arrow">
                           <ArrowForwardIosIcon className="text-primary font-size-20 mb-0 pb-0" />
