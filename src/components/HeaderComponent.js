@@ -28,6 +28,7 @@ import {
   REPAIR_SERVICE_PARTS_TEMPLATE,
 } from "../navigation/CONSTANTS";
 import Cookies from "js-cookie";
+import { Divider } from "@mui/material";
 
 export function HeaderComponent(props) {
   let history = useHistory();
@@ -1387,25 +1388,33 @@ export function HeaderComponent(props) {
                     <ul>
                       <li>
                         <Link to="/profile">
-                          <i className="icon-user"></i> <span>Profile</span>
+                          <span>Profile View</span>
                         </Link>
                       </li>
-                      <li>
-                        <Link to="#">
-                          <i className="icon-user"></i> <span>Help</span>
-                        </Link>
+                      
+                      <li>                        
+                        <span >Tenant ID #: {localStorage.getItem("user_tenantId")}</span>
                       </li>
+                      <Divider />
                       <li>
                         <Link to="/account">
-                          <i className="icon-user"></i> <span>Account</span>
+                          <span>Account</span>
                         </Link>
                       </li>
-                      {/* <li>
-                        <a href="page-lock.html"><i className="icon-lock"></i> <span>Lock Screen</span></a>
-                      </li> */}
+                      <li>
+                        <Link to="/account?tab=packages">
+                          <span>My Packages</span>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/account?tab=settings">
+                          <span>Account Settings</span>
+                        </Link>
+                      </li>
+                      <Divider />
                       <li>
                         <a className="cursor" onClick={handleLogout}>
-                          <i className="icon-key"></i>{" "}
+                          
                           <span>{loginStatus ? "Logout" : "Login"}</span>
                         </a>
                       </li>

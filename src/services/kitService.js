@@ -3,27 +3,11 @@ import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
 import { FETCH_KIT, KIT_MULTI_PARTS_TO_PARTLIST, KIT_PART_OF_PARTLIST, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_PRICE, UPDATE_KIT_RATING, UPDATE_KIT_STATUS, UPDATE_KIT_VERSION } from "./CONSTANTS";
 
-const accessToken = localStorage.getItem("access_token");
-
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
   getCookiesJsonData = JSON.parse(CookiesSetData);
 }
-//  else {
-//   getCookiesJsonData = {
-//     access_token: "Bearer null",
-//   }
-// }
-// var getCookiesJsonData = JSON.parse(CookiesSetData);
-
-// const headersData = {
-//   'content-type': 'application/json',
-//   'Accept': 'application/json',
-//   // 'Authorization': accessToken != undefined ? accessToken : ''
-//   'Authorization': CookiesSetData != undefined ? getCookiesJsonData.access_token : ''
-//   // 'Authorization': url.Auth_Token
-// }
 
 const config = {
   headers: {
@@ -195,7 +179,7 @@ export const kitSearch = (searchStr) => {
   });
 };
 
-//Search Kits
+//Fetch Kit with Id
 export const fetchKITDetails = (kitId) => {
   console.log("kitService > fetchKITDetails called...");
   return new Promise((resolve, reject) => {

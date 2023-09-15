@@ -13,12 +13,12 @@
  * Toggle this basePath variable between "actual-domain.com/" or "/data/".
  */
 
-const PRICING_BASE_URL = "http://35.200.157.237/";
-const SOLUTION_BASE_URL = "http://35.200.157.237/";
-const USER_SERVICE_BASE_URL = "http://35.200.157.237/";
-const DATA_SERVICE_BASE_URL = "http://35.200.157.237/";
-const QUOTE_SERVICE_BASE_URL = "http://35.200.157.237/";
-const REPAIR_BUILDER_URI = "http://35.200.157.237/repair-builder-svc/v1/";
+const PRICING_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
+const SOLUTION_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
+const USER_SERVICE_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
+const DATA_SERVICE_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
+const QUOTE_SERVICE_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
+const REPAIR_BUILDER_URI = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/repair-builder-svc/v1/";
 
 
 // const PRICING_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
