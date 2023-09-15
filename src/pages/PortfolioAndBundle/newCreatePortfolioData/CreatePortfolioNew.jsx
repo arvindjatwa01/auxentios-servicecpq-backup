@@ -24,8 +24,8 @@ import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from "@date-io/date-fns";
 import { createCoverage, createPortfolio, getPortfolioCommonConfig, getSolutionPriceCommonConfig, getValidityKeyValue, portfolioPriceAgreementCreation, portfolioPriceCreation, updatePortfolio, updatePortfolioPrice } from '../../..//services/index';
 import { FONT_STYLE_SELECT } from "../../Repair/CONSTANTS";
-
-import { isEmptyData, isEmptySelectData } from './utilities/textUtilities';
+import { isEmpty, isEmptySelect } from './utilities/textUtilities';
+import { errorMessage, successMessage } from './utilities/toastMessage';
 import { useAppSelector } from '../../..//app/hooks';
 import {
     selectCategoryList,
@@ -38,41 +38,28 @@ import {
     taskActions
 } from '../customerSegment/strategySlice';
 import { useDispatch } from 'react-redux';
-import { convertTimestampToFormateDate } from './utilities/dateUtilities';
+import { getFormatDateTime } from './utilities/dateUtilities';
 import { sparePartSearch } from 'services/searchServices';
 import PortfolioCoverageSearch from './PortfolioCoverageSearch';
 import CoveragePaginationTable from './coverage/CoveragePaginationTable';
 import PortfolioItemsList from './portfolio-item/PortfolioItemsList';
 
+import {
+    offerValidityKeyValuePairs,
+    salesOfficeKeyValuePairs,
+    additionalPriceKeyValuePair
+} from "./itemConstant"
+
 const portfolioHeaderType = [
     { label: "PORTFOLIO", value: "PORTFOLIO", },
     { label: "PROGRAM", value: "PROGRAM", },
-]
+];
 
 const priceAgreementItemsKeyValuePair = [
     { value: "PARTS", label: "Spare Parts" },
     { value: "LABOUR", label: "Labor" },
     { value: "SERVICE", label: "Service" },
     { value: "MISC", label: "Miscellaneous" },
-]
-
-const validityKeyValuePair = [
-    { value: "15", label: "15 days" },
-    { value: "30", label: "1 month" },
-    { value: "45", label: "45 days" },
-    { value: "60", label: "2 months" },
-];
-
-const salesOfficeKeyValuePair = [
-    { value: "Location1", label: "Location1" },
-    { value: "Location2", label: "Location2" },
-    { value: "Location3", label: "Location3" },
-    { value: "Location4", label: "Location4" },
-];
-
-const additionalPriceKeyValuePair = [
-    { label: "Surcharge %", value: "PERCENTAGE" },
-    { label: "Surcharge $", value: "ABSOLUTE", },
 ];
 
 export const CreatePortfolio = () => {
@@ -511,6 +498,7 @@ export const CreatePortfolio = () => {
         setSearchCoverageData(data)
     }
 
+    // handle Search Coverage Data-table checkbox 
     const handleCheckedCoverageData = () => {
         let selectedCoverageDataClone = []
         checkedCoverageData.map((data, i) => {
@@ -524,6 +512,7 @@ export const CreatePortfolio = () => {
         setCheckedCoverageData([]);
     }
 
+    // ****TODO
     const handleUpdateCoverageData = (updatedData, isFiltered = false) => {
         setSelectedCoverageData(updatedData)
         if (isFiltered) {
@@ -531,6 +520,7 @@ export const CreatePortfolio = () => {
         }
     }
 
+    // ****TODO
     const handlePortfolioCoverageIds = (idsData) => {
         setPortfolioCoverageIds(idsData);
     }
@@ -658,7 +648,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">SELECT TYPE</p>
                                     <h6 className="font-weight-500 text-primary font-size-17">
-                                        {isEmptySelectData(generalTabData.headerType?.value) ? "NA" : generalTabData.headerType?.value}
+                                        {isEmptySelect(generalTabData.headerType?.value) ? "NA" : generalTabData.headerType?.value}
                                     </h6>
                                 </div>
                             </div>
@@ -666,7 +656,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">PORTFOLIO NAME</p>
                                     <h6 className="font-weight-500 text-primary font-size-17">
-                                        {isEmptyData(generalTabData.name) ? "NA" : generalTabData.name}
+                                        {isEmpty(generalTabData.name) ? "NA" : generalTabData.name}
                                     </h6>
                                 </div>
                             </div>
@@ -674,7 +664,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">PORTFOLIO DESCRIPTION</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(generalTabData.description) ? "NA" : generalTabData.description}
+                                        {isEmpty(generalTabData.description) ? "NA" : generalTabData.description}
                                     </h6>
                                 </div>
                             </div>
@@ -682,7 +672,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2"> REFERENCE</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(generalTabData.externalReference) ? "NA" : generalTabData.externalReference}
+                                        {isEmpty(generalTabData.externalReference) ? "NA" : generalTabData.externalReference}
                                     </h6>
                                 </div>
                             </div>
@@ -690,7 +680,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(generalTabData.customerSegment?.value) ? "NA" : generalTabData.customerSegment?.label}
+                                        {isEmptySelect(generalTabData.customerSegment?.value) ? "NA" : generalTabData.customerSegment?.label}
                                     </h6>
                                 </div>
                             </div>
@@ -954,7 +944,7 @@ export const CreatePortfolio = () => {
                                     CATEGORY USAGE
                                 </p>
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {isEmptySelectData(strategyTabData.categoryUsage?.value) ? "NA" : strategyTabData?.categoryUsage?.label}
+                                    {isEmptySelect(strategyTabData.categoryUsage?.value) ? "NA" : strategyTabData?.categoryUsage?.label}
                                 </h6>
                             </div>
                         </div>
@@ -964,7 +954,7 @@ export const CreatePortfolio = () => {
                                     STRATEGY TASK
                                 </p>
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {isEmptySelectData(strategyTabData.strategyTask?.value) ? "NA" : strategyTabData?.strategyTask?.label}
+                                    {isEmptySelect(strategyTabData.strategyTask?.value) ? "NA" : strategyTabData?.strategyTask?.label}
                                 </h6>
                             </div>
                         </div>
@@ -972,7 +962,7 @@ export const CreatePortfolio = () => {
                             <div className="form-group">
                                 <p className="font-size-12 font-weight-500 mb-2">TASK TYPE</p>
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {isEmptySelectData(strategyTabData.taskType?.value) ? "NA" : strategyTabData?.taskType?.label}
+                                    {isEmptySelect(strategyTabData.taskType?.value) ? "NA" : strategyTabData?.taskType?.label}
                                 </h6>
                             </div>
                         </div>
@@ -984,7 +974,7 @@ export const CreatePortfolio = () => {
                             <div className="form-group">
                                 <p className="font-size-12 font-weight-500 mb-2">RESPONSE TIME</p>
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {isEmptySelectData(strategyTabData.responseTime?.value) ? "NA" : strategyTabData?.responseTime?.label}
+                                    {isEmptySelect(strategyTabData.responseTime?.value) ? "NA" : strategyTabData?.responseTime?.label}
                                 </h6>
                             </div>
                         </div>
@@ -992,7 +982,7 @@ export const CreatePortfolio = () => {
                             <div className="form-group">
                                 <p className="font-size-12 font-weight-500 mb-2">PRODUCT HIERARCHY</p>
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {isEmptySelectData(strategyTabData.productHierarchy?.value) ? "NA" : strategyTabData?.productHierarchy?.label}
+                                    {isEmptySelect(strategyTabData.productHierarchy?.value) ? "NA" : strategyTabData?.productHierarchy?.label}
                                 </h6>
                             </div>
                         </div>
@@ -1000,7 +990,7 @@ export const CreatePortfolio = () => {
                             <div className="form-group">
                                 <p className="font-size-12 font-weight-500 mb-2">GEOGRAPHIC</p>
                                 <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                    {isEmptySelectData(strategyTabData.geographic?.value) ? "NA" : strategyTabData?.geographic?.label}
+                                    {isEmptySelect(strategyTabData.geographic?.value) ? "NA" : strategyTabData?.geographic?.label}
                                 </h6>
                             </div>
                         </div>
@@ -1182,7 +1172,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">PRICE LIST</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(priceTabData.priceList?.value) ? "NA" : priceTabData?.priceList?.label}
+                                        {isEmptySelect(priceTabData.priceList?.value) ? "NA" : priceTabData?.priceList?.label}
                                     </h6>
                                 </div>
                             </div>
@@ -1190,7 +1180,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">PRICE METHOD</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(priceTabData.priceMethod?.value) ? "NA" : priceTabData?.priceMethod?.label}
+                                        {isEmptySelect(priceTabData.priceMethod?.value) ? "NA" : priceTabData?.priceMethod?.label}
                                     </h6>
                                 </div>
                             </div>
@@ -1198,7 +1188,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(priceTabData.priceDate) ? "NA" : convertTimestampToFormateDate(priceTabData.priceDate)}
+                                        {isEmpty(priceTabData.priceDate) ? "NA" : getFormatDateTime(priceTabData.priceDate, false)}
                                     </h6>
                                 </div>
                             </div>
@@ -1209,7 +1199,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">PRICE TYPE</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(priceTabData.priceType?.value) ? "NA" : priceTabData?.priceType?.label}
+                                        {isEmptySelect(priceTabData.priceType?.value) ? "NA" : priceTabData?.priceType?.label}
                                     </h6>
                                 </div>
                             </div>
@@ -1217,7 +1207,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2"> NET PRICE{" "}</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(priceTabData.netPrice) ? "NA" : parseInt(priceTabData.netPrice)}
+                                        {isEmpty(priceTabData.netPrice) ? "NA" : parseInt(priceTabData.netPrice)}
                                     </h6>
                                 </div>
                             </div>
@@ -1225,8 +1215,8 @@ export const CreatePortfolio = () => {
                                 <div className="form-group date-box">
                                     <p className="font-size-12 font-weight-500 mb-2">ADDITIONAL</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(priceTabData.additionalPriceType?.value) ? "NA" : priceTabData?.additionalPriceType?.label}
-                                        {isEmptyData(priceTabData.additionalPriceValue) ? "NA" : parseInt(priceTabData.additionalPriceValue)}
+                                        {isEmptySelect(priceTabData.additionalPriceType?.value) ? "NA" : priceTabData?.additionalPriceType?.label}
+                                        {isEmpty(priceTabData.additionalPriceValue) ? "NA" : parseInt(priceTabData.additionalPriceValue)}
                                     </h6>
                                 </div>
                             </div>
@@ -1234,8 +1224,8 @@ export const CreatePortfolio = () => {
                                 <div className="form-group date-box">
                                     <p className="font-size-12 font-weight-500 mb-2">PRICE ESCALATON</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(priceTabData.priceEscalatonType?.value) ? "NA" : priceTabData?.priceEscalatonType?.label}
-                                        {isEmptyData(priceTabData.priceEscaltonValue) ? "NA" : parseInt(priceTabData.priceEscaltonValue)}
+                                        {isEmptySelect(priceTabData.priceEscalatonType?.value) ? "NA" : priceTabData?.priceEscalatonType?.label}
+                                        {isEmpty(priceTabData.priceEscaltonValue) ? "NA" : parseInt(priceTabData.priceEscaltonValue)}
                                     </h6>
                                 </div>
                             </div>
@@ -1246,7 +1236,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">CALCULATED PRICE</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(priceTabData.calculatedPrice) ? "NA" : parseInt(priceTabData.calculatedPrice)}
+                                        {isEmpty(priceTabData.calculatedPrice) ? "NA" : parseInt(priceTabData.calculatedPrice)}
                                     </h6>
                                 </div>
                             </div>
@@ -1254,8 +1244,8 @@ export const CreatePortfolio = () => {
                                 <div className="form-group date-box">
                                     <p className="font-size-12 font-weight-500 mb-2">PRICE BREAK DOWN</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(priceTabData.priceBreakDownType?.value) ? "NA" : priceTabData?.priceBreakDownType?.label}
-                                        {isEmptyData(priceTabData.priceBreakDownValue) ? "NA" : parseInt(priceTabData.priceBreakDownValue)}
+                                        {isEmptySelect(priceTabData.priceBreakDownType?.value) ? "NA" : priceTabData?.priceBreakDownType?.label}
+                                        {isEmpty(priceTabData.priceBreakDownValue) ? "NA" : parseInt(priceTabData.priceBreakDownValue)}
                                     </h6>
                                 </div>
                             </div>
@@ -1433,7 +1423,8 @@ export const CreatePortfolio = () => {
                                 isSelectAble={false}
                                 tableData={selectedCoverageData}
                                 handleUpdateCoverageData={handleUpdateCoverageData}
-                                handlePortfolioCoverageIds={handlePortfolioCoverageIds}
+                                // handlePortfolioCoverageIds={handlePortfolioCoverageIds}
+                                handlePortfolioCoverageIds={(idsData) => setPortfolioCoverageIds(idsData)}
                             />
                         </>
                     )}
@@ -1536,7 +1527,7 @@ export const CreatePortfolio = () => {
                                     <label className="text-light-dark font-size-14 font-weight-500"> SALES OFFICE / BRANCH</label>
                                     <Select
                                         className="text-primary"
-                                        options={salesOfficeKeyValuePair}
+                                        options={salesOfficeKeyValuePairs}
                                         placeholder="Required"
                                         value={administrativeTabData.salesOffice}
                                         onChange={(e) => handleAdministrativeTabTextChange(e, "salesOffice", "select")}
@@ -1552,7 +1543,7 @@ export const CreatePortfolio = () => {
                                     <label className="text-light-dark font-size-14 font-weight-500">OFFER VALIDITY</label>
                                     <Select
                                         className="text-primary"
-                                        options={validityKeyValuePair}
+                                        options={offerValidityKeyValuePairs}
                                         placeholder="Required"
                                         value={administrativeTabData.offerValidity}
                                         onChange={(e) => handleAdministrativeTabTextChange(e, "offerValidity", "select")}
@@ -1574,7 +1565,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2"> PREPARED BY</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(administrativeTabData.preparedBy) ? "NA" : administrativeTabData.preparedBy}
+                                        {isEmpty(administrativeTabData.preparedBy) ? "NA" : administrativeTabData.preparedBy}
                                     </h6>
                                 </div>
                             </div>
@@ -1582,7 +1573,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2"> APPROVED BY</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(administrativeTabData.preparedBy) ? "NA" : administrativeTabData.preparedBy}
+                                        {isEmpty(administrativeTabData.preparedBy) ? "NA" : administrativeTabData.preparedBy}
                                     </h6>
                                 </div>
                             </div>
@@ -1590,7 +1581,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(administrativeTabData.preparedOn) ? "NA" : convertTimestampToFormateDate(administrativeTabData.preparedBy)}
+                                        {isEmpty(administrativeTabData.preparedOn) ? "NA" : getFormatDateTime(administrativeTabData.preparedBy, false)}
                                     </h6>
                                 </div>
                             </div>
@@ -1598,7 +1589,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">REVISED BY</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(administrativeTabData.revisedBy) ? "NA" : administrativeTabData.revisedBy}
+                                        {isEmpty(administrativeTabData.revisedBy) ? "NA" : administrativeTabData.revisedBy}
                                     </h6>
                                 </div>
                             </div>
@@ -1606,7 +1597,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">REVISED  ON</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptyData(administrativeTabData.revisedOn) ? "NA" : convertTimestampToFormateDate(administrativeTabData.revisedOn)}
+                                        {isEmpty(administrativeTabData.revisedOn) ? "NA" : getFormatDateTime(administrativeTabData.revisedOn, false)}
                                     </h6>
                                 </div>
                             </div>
@@ -1614,7 +1605,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(administrativeTabData.salesOffice?.value) ? "NA" : administrativeTabData.salesOffice?.label}
+                                        {isEmptySelect(administrativeTabData.salesOffice?.value) ? "NA" : administrativeTabData.salesOffice?.label}
                                     </h6>
                                 </div>
                             </div>
@@ -1622,7 +1613,7 @@ export const CreatePortfolio = () => {
                                 <div className="form-group">
                                     <p className="font-size-12 font-weight-500 mb-2"> OFFER VALIDITY</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmptySelectData(administrativeTabData.offerValidity?.value) ? "NA" : administrativeTabData.offerValidity?.label}
+                                        {isEmptySelect(administrativeTabData.offerValidity?.value) ? "NA" : administrativeTabData.offerValidity?.label}
                                     </h6>
                                 </div>
                             </div>
@@ -1637,75 +1628,49 @@ export const CreatePortfolio = () => {
         return inputString.charAt(0).toUpperCase() + inputString.slice(1).toLowerCase();
     }
 
-    // Error Toast Message
-    const errorToastMessage = (message) => (
-        toast("😐" + message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        })
-    )
-
-    // Toast Success Message
-    const successToastMessage = (message) => (
-        toast("👏" + message, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        })
-    )
-
     // check General tab Input Validation
     const checkInputValidation = (activeTab) => {
         if (activeTab == "general" && !portfolioTabsEditView.generalViewOnly) {
-            if (isEmptyData(generalTabData.headerType?.value)) {
-                errorToastMessage("Select Type is a required field, you can’t leave it blank");
+            if (isEmpty(generalTabData.headerType?.value)) {
+                errorMessage("Select Type is a required field, you can’t leave it blank");
                 return false;
-            } else if (isEmptyData(generalTabData.name)) {
-                errorToastMessage(generalTabData.headerType?.value + " Name is a required field, you can’t leave it blank")
+            } else if (isEmpty(generalTabData.name)) {
+                errorMessage(generalTabData.headerType?.value + " Name is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmptyData(generalTabData.externalReference)) {
-                errorToastMessage("Reference is a required field, you can’t leave it blank")
+            } else if (isEmpty(generalTabData.externalReference)) {
+                errorMessage("Reference is a required field, you can’t leave it blank")
                 return false;
             }
             return true;
         } else {
-            if (isEmptyData(portfolioRecordId)) {
-                errorToastMessage("Please create " + generalTabData.headerType?.value + " First");
+            if (isEmpty(portfolioRecordId)) {
+                errorMessage("Please create " + generalTabData.headerType?.value + " First");
                 return false;
             } else {
                 if (activeTab == "strategy" && !portfolioTabsEditView.strategyTabEdit) {
-                    if (isEmptyData(strategyTabData.categoryUsage?.value)) {
-                        errorToastMessage("Category usage is a required field, you can’t leave it blank");
+                    if (isEmpty(strategyTabData.categoryUsage?.value)) {
+                        errorMessage("Category usage is a required field, you can’t leave it blank");
                         return false;
-                    } else if (isEmptyData(strategyTabData.strategyTask?.value)) {
-                        errorToastMessage("Strategy Task is a required field, you can’t leave it blank")
+                    } else if (isEmpty(strategyTabData.strategyTask?.value)) {
+                        errorMessage("Strategy Task is a required field, you can’t leave it blank")
                         return false;
                     }
                     return true;
                 } else if (activeTab === "price" && !portfolioTabsEditView.priceTabEdit) {
-                    if (isEmptyData(priceTabData.priceMethod?.value)) {
-                        errorToastMessage("Price method is a required field, you can’t leave it blank");
+                    if (isEmpty(priceTabData.priceMethod?.value)) {
+                        errorMessage("Price method is a required field, you can’t leave it blank");
                         return false;
                     }
                     return true;
                 } else if (activeTab === "administrative" && !portfolioTabsEditView.administrativeTabEdit) {
-                    if (isEmptyData(administrativeTabData.preparedBy)) {
-                        errorToastMessage("Prepared By is a required field, you can’t leave it blank");
+                    if (isEmpty(administrativeTabData.preparedBy)) {
+                        errorMessage("Prepared By is a required field, you can’t leave it blank");
                         return false;
-                    } else if (isEmptySelectData(administrativeTabData.salesOffice?.value)) {
-                        errorToastMessage("Sales Office/Branch is a required field, you can’t leave it blank");
+                    } else if (isEmptySelect(administrativeTabData.salesOffice?.value)) {
+                        errorMessage("Sales Office/Branch is a required field, you can’t leave it blank");
                         return false;
-                    } else if (isEmptySelectData(administrativeTabData.offerValidity?.value)) {
-                        errorToastMessage("Offer validity is a required field, you can’t leave it blank");
+                    } else if (isEmptySelect(administrativeTabData.offerValidity?.value)) {
+                        errorMessage("Offer validity is a required field, you can’t leave it blank");
                         return false;
                     }
                     return true;
@@ -1730,7 +1695,7 @@ export const CreatePortfolio = () => {
             userId: ""
         }
 
-        if (isEmptyData(priceTabData.portfolioPriceId)) {
+        if (isEmpty(priceTabData.portfolioPriceId)) {
             const portfolioPriceCreate = await portfolioPriceCreation(priceReqObj);
             if (portfolioPriceCreate.status === 200) {
                 setPriceTabData({
@@ -1764,7 +1729,7 @@ export const CreatePortfolio = () => {
         if (priceAgreementTableRow.length !== 0) {
             for (let i = 0; i < priceAgreementTableRow.length; i++) {
                 var reqObj = {
-                    itemType: isEmptyData(priceAgreementTableRow[i].itemType) ? "EMPTY" : priceAgreementTableRow[i].itemType,
+                    itemType: isEmpty(priceAgreementTableRow[i].itemType) ? "EMPTY" : priceAgreementTableRow[i].itemType,
                     itemNumber: priceAgreementTableRow[i].itemNumber,
                     specialPrice: parseFloat(priceAgreementTableRow[i].specialPrice),
                     discount: parseFloat(priceAgreementTableRow[i].discount),
@@ -1811,7 +1776,7 @@ export const CreatePortfolio = () => {
             }
             setPortfolioCoverageIds(_portfolioCoverageIds);
         } catch (error) {
-            errorToastMessage(error);
+            errorMessage(error);
             return;
         }
     }
@@ -1844,7 +1809,7 @@ export const CreatePortfolio = () => {
                 productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
                 geographic: strategyTabData.geographic?.value || "EMPTY",
 
-                portfolioPrice: isEmptyData(priceTabData.portfolioPriceId) ? null : {
+                portfolioPrice: isEmpty(priceTabData.portfolioPriceId) ? null : {
                     portfolioPriceId: priceTabData.portfolioPriceId,
                 },
 
@@ -1883,10 +1848,10 @@ export const CreatePortfolio = () => {
                 return;
             }
             if (id == "general") {
-                if (isEmptyData(portfolioRecordId)) {
+                if (isEmpty(portfolioRecordId)) {
                     const portfolioCreate = await createPortfolio(requestObj);
                     if (portfolioCreate.status === 200) {
-                        successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + " " + generalTabData.name + " Created successfully")
+                        successMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + " " + generalTabData.name + " Created successfully")
                         setPortfolioRecordId(portfolioCreate.data.portfolioId);
                         setPortfolioHeaderActiveTab("validity")
                         setPortfolioTabsEditView(prev => ({ ...prev, generalTabEdit: true, }))
@@ -1894,7 +1859,7 @@ export const CreatePortfolio = () => {
                 } else {
                     const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
                     if (portfolioUpdate.status === 200) {
-                        successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                        successMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
                         setPortfolioHeaderActiveTab("validity")
                         setPortfolioTabsEditView(prev => ({ ...prev, generalTabEdit: true, }))
                     }
@@ -1902,7 +1867,7 @@ export const CreatePortfolio = () => {
             } else if (id == "validity") {
                 const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
                 if (portfolioUpdate.status === 200) {
-                    successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                    successMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
                 }
                 setPortfolioHeaderActiveTab("strategy")
                 setPortfolioTabsEditView(prev => ({
@@ -1912,7 +1877,7 @@ export const CreatePortfolio = () => {
             } else if (id == "strategy") {
                 const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
                 if (portfolioUpdate.status === 200) {
-                    successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                    successMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
                     setPortfolioHeaderActiveTab(isPriceAgreementDisable ? "priceAgreement" : "price")
                     setPortfolioTabsEditView(prev => ({ ...prev, strategyTabEdit: true, }))
                 }
@@ -1920,7 +1885,7 @@ export const CreatePortfolio = () => {
                 if (portfolioPriceCreateUpdate()) {
                     const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
                     if (portfolioUpdate.status === 200) {
-                        successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                        successMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
                         setPortfolioHeaderActiveTab("coverage")
                         setPortfolioTabsEditView(prev => ({ ...prev, priceTabEdit: true, }))
                     }
@@ -1936,7 +1901,7 @@ export const CreatePortfolio = () => {
             } else if (id == "administrative") {
                 const portfolioUpdate = await updatePortfolio(portfolioRecordId, requestObj);
                 if (portfolioUpdate.status === 200) {
-                    successToastMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
+                    successMessage(capitalizeFirstLetter(generalTabData.headerType?.value) + generalTabData.name + " Updated successfully")
                     setPortfolioTabsEditView(prev => ({ ...prev, administrativeTabEdit: true, }))
                 }
             }

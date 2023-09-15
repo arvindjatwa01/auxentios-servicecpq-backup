@@ -14,8 +14,9 @@ import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
-import { getFormattedDateTime } from './utilities/dateUtilities';
-import { errorToastMessage, isEmptyData } from './utilities/textUtilities';
+import { getFormatDateTime } from './utilities/dateUtilities';
+import { errorMessage } from './utilities/toastMessage';
+import { isEmpty } from './utilities/textUtilities';
 import DataTable from 'react-data-table-component';
 import BundleServiceAddUpdate from './BundleServiceAddUpdate';
 import {
@@ -32,49 +33,7 @@ import {
     recentItemsList
 } from "../../../services/index";
 
-const customStyles = {
-    option: (provided, state) => ({
-        ...provided,
-        color: "#000",
-    }),
-    control: (provided, state) => ({
-        ...provided,
-        backgroundColor: "#872ff7",
-        width: "140px",
-        display: "flex",
-        justifyContent: "center",
-        fontSize: "14px",
-        padding: "5px 10px",
-        color: "#fff !important",
-        fontSize: "14px",
-        fontWeight: "500",
-        cursor: "pointer"
-    }),
-}
-
-const dataTableCustomStyle = {
-    rows: {
-        style: {
-            minHeight: "72px", // override the row height
-        },
-    },
-    headCells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for head cells
-            paddingRight: "8px",
-            backgroundColor: "#872ff7",
-            color: "#fff",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-    cells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for data cells
-            paddingRight: "8px",
-            borderRight: "1px solid rgba(0,0,0,.12)",
-        },
-    },
-};
+import { selectCustomStyle, dataTableCustomStyle } from "./itemConstant"
 
 const portfolioSearchOptions = [
     { label: "Make", value: "make" },
@@ -470,9 +429,9 @@ export const PortfolioSummary = () => {
     // search Portfolio and Bundle/Service Items
     const handleSearchData = async () => {
         try {
-            if (isEmptyData(searchParameter[0].itemType?.value) || isEmptyData(searchParameter[0]?.selectFamily?.value) ||
-                isEmptyData(searchParameter[0].inputSearch)) {
-                errorToastMessage("Please fill data properly")
+            if (isEmpty(searchParameter[0].itemType?.value) || isEmpty(searchParameter[0]?.selectFamily?.value) ||
+                isEmpty(searchParameter[0].inputSearch)) {
+                errorMessage("Please fill data properly")
                 return;
             }
             let searchUrl = "";
@@ -484,8 +443,8 @@ export const PortfolioSummary = () => {
             }
 
             for (let i = 1; i < searchParameter.length; i++) {
-                if (isEmptyData(searchParameter[i].selectFamily?.value) || isEmptyData(searchParameter[i].inputSearch)) {
-                    errorToastMessage("Please fill data properly");
+                if (isEmpty(searchParameter[i].selectFamily?.value) || isEmpty(searchParameter[i].inputSearch)) {
+                    errorMessage("Please fill data properly");
                     return;
                 }
 
@@ -503,7 +462,7 @@ export const PortfolioSummary = () => {
                 if (portfolioSearch.status === 200) {
                     setSearchResultData(portfolioSearch.data);
                 } else {
-                    errorToastMessage("No information is found for your search, change the search criteria");
+                    errorMessage("No information is found for your search, change the search criteria");
                     return;
                 }
             } else {
@@ -515,7 +474,7 @@ export const PortfolioSummary = () => {
                     for (let i = 0; i < bundleServiceData.length; i++) {
                         if (searchParameter[0].itemType?.value === "BUNDLE_ITEM") {
                             if (bundleServiceData[i].bundleItems.length === 0) {
-                                errorToastMessage("No information is found for your search, change the search criteria");
+                                errorMessage("No information is found for your search, change the search criteria");
                                 return;
                             }
                             for (let j = 0; j < bundleServiceData[i].bundleItems.length; j++) {
@@ -523,7 +482,7 @@ export const PortfolioSummary = () => {
                             }
                         } else if (searchParameter[0].itemType?.value === "SERVICE") {
                             if (bundleServiceData[i].serviceItems.length === 0) {
-                                errorToastMessage("No information is found for your search, change the search criteria");
+                                errorMessage("No information is found for your search, change the search criteria");
                                 return;
                             }
                             for (let j = 0; j < bundleServiceData[i].serviceItems.length; j++) {
@@ -533,7 +492,7 @@ export const PortfolioSummary = () => {
                     }
                     setSearchResultData(_bundleServiceItems)
                 } else {
-                    errorToastMessage("No information is found for your search, change the search criteria");
+                    errorMessage("No information is found for your search, change the search criteria");
                     return;
                 }
             }
@@ -654,7 +613,7 @@ export const PortfolioSummary = () => {
             selector: (row) => row.quantity,
             wrap: true,
             sortable: false,
-            format: (row) => isEmptyData(row.quantity) ? 1 : row.quantity,
+            format: (row) => isEmpty(row.quantity) ? 1 : row.quantity,
         },
         {
             name: (<div>Recommended Value</div>),
@@ -739,7 +698,7 @@ export const PortfolioSummary = () => {
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                                <p className="font-size-12 mb-0">{getFormattedDateTime(portfolio.updatedAt)}</p>
+                                <p className="font-size-12 mb-0">{getFormatDateTime(portfolio.updatedAt, true)}</p>
                                 <p className="font-size-12 mb-0">Portfolio</p>
                             </div>
                         </div>
@@ -775,7 +734,7 @@ export const PortfolioSummary = () => {
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                                <p className="font-size-12 mb-0">{getFormattedDateTime(service.updatedAt)}</p>
+                                <p className="font-size-12 mb-0">{getFormatDateTime(service.updatedAt, true)}</p>
                                 <p className="font-size-12 mb-0">Service</p>
                             </div>
                         </div>
@@ -811,7 +770,7 @@ export const PortfolioSummary = () => {
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                                <p className="font-size-12 mb-0">{getFormattedDateTime(bundle.updatedAt)}</p>
+                                <p className="font-size-12 mb-0">{getFormatDateTime(bundle.updatedAt, true)}</p>
                                 <p className="font-size-12 mb-0">Bundle</p>
                             </div>
                         </div>
@@ -845,7 +804,7 @@ export const PortfolioSummary = () => {
                         <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
                         <Select className="customselect1" id="custom"
                             placeholder=" + Create"
-                            styles={customStyles}
+                            styles={selectCustomStyle}
                             options={[
                                 { label: "Portfolio", value: "PORTFOLIO" },
                                 { label: "Service", value: "SERVICE" },
@@ -915,7 +874,7 @@ export const PortfolioSummary = () => {
                                                             }
                                                             <div>
                                                                 <Select
-                                                                    options={isEmptyData(searchParameter[0].itemType?.value) ? [] : searchParameter[0].itemType?.value === "PORTFOLIO" ? portfolioSearchOptions : bundleServiceSearchOptions}
+                                                                    options={isEmpty(searchParameter[0].itemType?.value) ? [] : searchParameter[0].itemType?.value === "PORTFOLIO" ? portfolioSearchOptions : bundleServiceSearchOptions}
                                                                     onChange={(e) => handleSelectFamily(e, i)}
                                                                     value={obj.selectFamily}
                                                                     isOptionDisabled={(option) => handleCheckDisableOptions(option)}

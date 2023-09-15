@@ -1,12 +1,12 @@
 import { portfolioItemPriceRkId, portfolioItemPriceSjid } from "services";
-import { isEmptyData } from "../utilities/textUtilities"
+import { isEmpty } from "../utilities/textUtilities"
 
 export const updateItemPriceSjRkId = (obj) => {
-    if (isEmptyData(obj.standardJobId) && isEmptyData(obj.repairKitId)) {
+    if (isEmpty(obj.standardJobId) && isEmpty(obj.repairKitId)) {
         return;
-    } else if (!isEmptyData(obj.standardJobId) && isEmptyData(obj.repairKitId)) {
+    } else if (!isEmpty(obj.standardJobId) && isEmpty(obj.repairKitId)) {
         portfolioItemPriceSjid(obj)
-    } else if (isEmptyData(obj.standardJobId) && !isEmptyData(obj.repairKitId)) {
+    } else if (isEmpty(obj.standardJobId) && !isEmpty(obj.repairKitId)) {
         portfolioItemPriceRkId(obj)
     }
 }

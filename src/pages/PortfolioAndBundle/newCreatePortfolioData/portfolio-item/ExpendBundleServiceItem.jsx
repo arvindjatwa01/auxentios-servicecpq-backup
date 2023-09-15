@@ -3,9 +3,16 @@ import Select from 'react-select'
 
 const ExpendBundleServiceItem = (props) => {
     const { bundleServiceRowData } = props;
+    const [isExist, setIsExist] = useState(false)
     return (
         <>
             <div className="ligt-greey-bg p-3 my-3">
+                {isExist && <div>
+                    <span className="mr-3 cursor" onClick={() => setIsExist(false)}>
+                        <i className="fa fa-pencil font-size-12" aria-hidden="true" />
+                        <span className="ml-2">Edit</span>
+                    </span>
+                </div>}
             </div>
             <div className="row mt-3 input-fields">
                 <div className="col-md-6 col-sm-6">
