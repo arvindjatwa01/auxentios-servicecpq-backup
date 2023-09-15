@@ -391,7 +391,7 @@ export const PortfolioSummary = () => {
     getSearchForRecentPortfolio()
       .then((res) => {
         console.log("getSearchForRecentPortfolio res ", res)
-        setRecentPortfolio(res);
+        setRecentPortfolio(res.data);
       })
 
     // getSearchForRecentBundleService()

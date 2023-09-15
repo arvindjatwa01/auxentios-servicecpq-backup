@@ -328,19 +328,24 @@ const BundleServiceAddUpdate = (props) => {
         }
     }
 
-    const handleBundleServiceItems = async (editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem) => {
+    const handleBundleServiceItems = async (editItemData, itemRequestObj, itemPriceData, isPortfolioItem) => {
         setBundleServiceItemHeader({
             ...bundleServiceItemHeader,
             usage: itemRequestObj.usageType?.value || "",
         });
+        const _itemPrice = [...bundleServiceItemBody.itemPrices];
+        if (!_itemPrice.some(obj => obj.itemPriceDataId === itemPriceData.itemPriceDataId)) {
+            _itemPrice.push({ itemPriceDataId: itemPriceData.itemPriceDataId });
+        }
+
         setBundleServiceItemBody({
             ...bundleServiceItemBody,
             itemBodyDescription: itemRequestObj.description,
             taskType: itemRequestObj.taskType,
             usageIn: itemRequestObj.usageIn,
             usage: itemRequestObj.usageType,
-            year: itemRequestObj.year,
-            itemPrices: [...bundleServiceItemBody, { itemPriceDataId: itemPriceDataId }],
+            year: itemPriceData.year,
+            itemPrices: _itemPrice,
         });
         // updateItemPriceSjRkId({
         //     standardJobId: itemRequestObj.standardJobId,

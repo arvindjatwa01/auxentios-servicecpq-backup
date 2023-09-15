@@ -160,6 +160,7 @@ const ItemAddEdit = (props) => {
     // template Id(StandardJobId) search
     const handleSearchStandardJobId = async (e) => {
         setItemRequestObj((prev) => ({ ...prev, standardJobId: e.target.value, standardJobIdSearch: true, }))
+        setItemPriceRequestObj((prev) => ({ ...prev, standardJobId: e.target.value, standardJobIdSearch: true, }))
         setStandardJobIdDetails({ templateDBId: "", templateType: "", templateId: "", })
         if (e.target.value.length === 0) {
             setSearchedStandardJobIdList([])
@@ -180,6 +181,7 @@ const ItemAddEdit = (props) => {
             templateId: currentItem.templateId,
         });
         setItemRequestObj((prev) => ({ ...prev, standardJobId: currentItem.standardJobId, templateDescription: currentItem.description, standardJobIdSearch: false }))
+        setItemPriceRequestObj((prev) => ({ ...prev, standardJobId: currentItem.standardJobId, templateDescription: currentItem.description, standardJobIdSearch: false }))
         setSearchedStandardJobIdList([]);
     }
 
@@ -217,6 +219,7 @@ const ItemAddEdit = (props) => {
     // Related kit Id(RepairKitId) search
     const handleSearchRepairKitId = async (e) => {
         setItemRequestObj((prev) => ({ ...prev, repairKitId: e.target.value, repairKitIdSearch: true, }))
+        setItemPriceRequestObj((prev) => ({ ...prev, repairKitId: e.target.value, repairKitIdSearch: true, }))
         if (e.target.value.length === 0) {
             setSearchedRepairKitIdList([])
         } else {
@@ -231,6 +234,7 @@ const ItemAddEdit = (props) => {
     // handle Select Repair Kit Id
     const handleSelectRepairKitId = (currentItem) => {
         setItemRequestObj((prev) => ({ ...prev, repairKitId: currentItem.kitId, repairOption: currentItem.description, repairKitIdSearch: false, }))
+        setItemPriceRequestObj((prev) => ({ ...prev, repairKitId: currentItem.kitId, repairOption: currentItem.description, repairKitIdSearch: false, }))
     }
 
     // handle Item Edit flag
@@ -269,31 +273,31 @@ const ItemAddEdit = (props) => {
             } else if (isItem && isPortfolioItem && isEmpty(itemRequestObj.description)) {
                 errorMessage("Description is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmpty(isItem && itemRequestObj.usageIn)) {
+            } else if (isItem && isEmpty(isItem && itemRequestObj.usageIn)) {
                 errorMessage("Usage In is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmpty(isItem && itemRequestObj.taskType)) {
+            } else if (isItem && isEmpty(isItem && itemRequestObj.taskType)) {
                 errorMessage("Task Type is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmpty(itemRequestObj.startUsage)) {
+            } else if (isEmpty(itemPriceRequestObj.startUsage)) {
                 errorMessage("Start Usage is a required field, you can’t leave it blank")
                 return false;
-            } else if (parseInt(itemRequestObj.startUsage) < 0) {
+            } else if (parseInt(itemPriceRequestObj.startUsage) < 0) {
                 errorMessage("Start Usage must not be negative")
                 return false;
-            } else if (isEmpty(itemRequestObj.endUsage)) {
+            } else if (isEmpty(itemPriceRequestObj.endUsage)) {
                 errorMessage("End Usage is a required field, you can’t leave it blank")
                 return false;
-            } else if (parseInt(itemRequestObj.endUsage) < 0) {
+            } else if (parseInt(itemPriceRequestObj.endUsage) < 0) {
                 errorMessage("End Usage must not be negative")
                 return false;
-            } else if (parseInt(itemRequestObj.startUsage) > parseInt(itemRequestObj.endUsage)) {
+            } else if (parseInt(itemPriceRequestObj.startUsage) > parseInt(itemPriceRequestObj.endUsage)) {
                 errorMessage("Start Usage must not be greater to End Usage")
                 return false;
-            } else if (isEmpty(itemRequestObj.unit)) {
+            } else if (isEmpty(itemPriceRequestObj.usageUnit)) {
                 errorMessage("Unit is a required field, you can’t leave it blank")
                 return false;
-            } else if (isEmpty(itemRequestObj.recommendedValue)) {
+            } else if (isEmpty(itemPriceRequestObj.recommendedValue)) {
                 errorMessage("Recommended Value is a required field, you can’t leave it blank")
                 return false;
             }
@@ -311,13 +315,19 @@ const ItemAddEdit = (props) => {
                 if (itemActiveTab === "itemSummary") {
                     setItemActiveTab("relatedTemplate")
                 } else if (itemActiveTab === "relatedTemplate") {
-                    if (isEmpty(itemRequestObj.standardJobId)) {
+                    if (isEmpty(itemPriceRequestObj.standardJobId)) {
                         setItemActiveTab("relatedKit")
                     } else {
-                        handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem)
+                        handleAddUpdateItemPrice(false)
+                            .then((itemPriceData) => {
+                                handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceData, isPortfolioItem)
+                            });
                     }
                 } else if (itemActiveTab === "relatedKit") {
-                    handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceDataId, isPortfolioItem)
+                    handleAddUpdateItemPrice(false)
+                        .then((itemPriceData) => {
+                            handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceData, isPortfolioItem)
+                        });
                 }
             }
         } catch (error) {
@@ -331,34 +341,108 @@ const ItemAddEdit = (props) => {
         try {
             if (!checkInputValidation(false)) {
                 return;
-            }
+            };
+            handleAddUpdateItemPrice(true);
+        } catch (error) {
+            return;
+        }
+    }
+
+    const handleAddUpdateItemPrice = async (isCalculated) => {
+        try {
             let priceReqObj = {
                 ...itemPriceRequestObj,
-                recommendedUnit: itemRequestObj.unit?.value === "YEAR" ? "MONTH" : itemRequestObj.unit?.value,
-                usageUnit: itemRequestObj.unit?.value || "",
-                startUsage: itemRequestObj.startUsage,
-                endUsage: itemRequestObj.endUsage
+                recommendedUnit: itemPriceRequestObj.usageUnit?.value === "YEAR" ? "MONTH" : itemPriceRequestObj.usageUnit?.value,
+                usageUnit: itemPriceRequestObj.usageUnit?.value || "",
+                year: itemPriceRequestObj.year?.value || "",
+                startUsage: itemPriceRequestObj.startUsage,
+                endUsage: itemPriceRequestObj.endUsage,
+                standardJobId: itemPriceRequestObj.standardJobId,
+                templateDescription: itemPriceRequestObj.templateDescription,
+                repairKitId: itemPriceRequestObj.repairKitId,
+                repairOption: itemPriceRequestObj.repairOption,
+                frequency: !isEmptySelect(itemPriceRequestObj.frequency?.value) ? itemPriceRequestObj.frequency?.value : "CYCLIC",
+                priceMethod: !isEmpty(itemPriceRequestObj.priceMethod) ? itemPriceRequestObj.priceMethod : "LIST_PRICE",
+                priceType: !isEmpty(itemPriceRequestObj.priceType) ? itemPriceRequestObj.priceType : "EVENT_BASED",
+                additionalPriceType: !isEmpty(itemPriceRequestObj.additionalPriceType) ? itemPriceRequestObj.additionalPriceType : "ABSOLUTE",
+                discountType: !isEmpty(itemPriceRequestObj.discountType) ? itemPriceRequestObj.discountType : "PORTFOLIO_DISCOUNT",
             }
             if (!itemPriceDataId || itemPriceDataId === "") {
                 const updateItemPrice = await createItemPriceData(priceReqObj);
                 if (updateItemPrice.status === 200) {
-                    setItemPriceRequestObj({ ...updateItemPrice.data });
+                    // set frequency key-value
+                    let _frequency = frequencyKeyValuePairs.find((obj) => obj.value === updateItemPrice.data.frequency)
+
+                    // set unit key value
+                    let _usageUnit = unitKeyValuePairs.find((obj) => obj.value === updateItemPrice.data.usageUnit)
+
+                    setItemPriceRequestObj({
+                        ...updateItemPrice.data,
+                        year: isEmpty(updateItemPrice.data.year) ? "" :
+                            { label: updateItemPrice.data.year, value: updateItemPrice.data.year },
+
+                        frequency: _frequency || "",
+                        usageUnit: _usageUnit || "",
+                    });
                     setItemRequestObj({
                         ...itemRequestObj,
                         numberOfEvents: updateItemPrice.data.numberOfEvents,
                         itemPriceId: updateItemPrice.data.itemPriceDataId,
+                        year: isEmpty(updateItemPrice.data.year) ? "" :
+                            { label: updateItemPrice.data.year, value: updateItemPrice.data.year },
+                        frequency: _frequency || "",
+                        usageUnit: _usageUnit || "",
                     });
+                    if (!isCalculated) {
+                        return {
+                            ...updateItemPrice.data,
+                            year: isEmpty(updateItemPrice.data.year) ? "" :
+                                { label: updateItemPrice.data.year, value: updateItemPrice.data.year },
+
+                            frequency: _frequency || "",
+                            usageUnit: _usageUnit || "",
+                        };
+                    }
                 }
             } else {
                 const createItemPrice = await updateItemPriceData(itemPriceDataId, priceReqObj);
                 if (createItemPrice.status === 200) {
+                    // set frequency key-value
+                    let _frequency = frequencyKeyValuePairs.find((obj) => obj.value === createItemPrice.data.frequency)
+
+                    // set unit key value
+                    let _usageUnit = unitKeyValuePairs.find((obj) => obj.value === createItemPrice.data.usageUnit)
+
                     setItemPriceDataId(createItemPrice.data.itemPriceDataId)
-                    setItemPriceRequestObj({ ...createItemPrice.data });
+                    setItemPriceRequestObj({
+                        ...createItemPrice.data,
+                        year: isEmpty(createItemPrice.data.year) ? "" :
+                            { label: createItemPrice.data.year, value: createItemPrice.data.year },
+
+                        frequency: _frequency || "",
+                        usageUnit: _usageUnit || "",
+                    });
                     setItemRequestObj({
                         ...itemRequestObj,
                         numberOfEvents: createItemPrice.data.numberOfEvents,
                         itemPriceId: createItemPrice.data.itemPriceDataId,
+                        year: isEmpty(createItemPrice.data.year) ? "" :
+                            { label: createItemPrice.data.year, value: createItemPrice.data.year },
+
+                        frequency: _frequency || "",
+                        usageUnit: _usageUnit || "",
                     });
+
+                    if (!isCalculated) {
+                        return {
+                            ...createItemPrice.data,
+                            year: isEmpty(createItemPrice.data.year) ? "" :
+                                { label: createItemPrice.data.year, value: createItemPrice.data.year },
+
+                            frequency: _frequency || "",
+                            usageUnit: _usageUnit || "",
+                        };
+                    }
                 }
             }
         } catch (error) {
@@ -439,7 +523,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">YEAR</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelect(itemRequestObj.year?.value) ? "NA" : itemRequestObj.year?.label}
+                                            {isEmptySelect(itemPriceRequestObj.year?.value) ? "NA" : itemPriceRequestObj.year?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -447,7 +531,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF YEARS</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmpty(itemRequestObj.noOfYear) ? "NA" : itemRequestObj.noOfYear}
+                                            {isEmpty(itemPriceRequestObj.noOfYear) ? "NA" : itemPriceRequestObj.noOfYear}
                                         </h6>
                                     </div>
                                 </div>
@@ -458,7 +542,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">START USAGE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmpty(itemRequestObj.startUsage) ? "NA" : itemRequestObj.startUsage}
+                                            {isEmpty(itemPriceRequestObj.startUsage) ? "NA" : itemPriceRequestObj.startUsage}
                                         </h6>
                                     </div>
                                 </div>
@@ -466,7 +550,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">END USAGE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmpty(itemRequestObj.endUsage) ? "NA" : itemRequestObj.endUsage}
+                                            {isEmpty(itemPriceRequestObj.endUsage) ? "NA" : itemPriceRequestObj.endUsage}
                                         </h6>
                                     </div>
                                 </div>
@@ -482,7 +566,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelect(itemRequestObj.frequency?.value) ? "NA" : itemRequestObj.frequency?.label}
+                                            {isEmptySelect(itemPriceRequestObj.frequency?.value) ? "NA" : itemPriceRequestObj.frequency?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -490,7 +574,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmptySelect(itemRequestObj.unit?.value) ? "NA" : itemRequestObj.unit?.label}
+                                            {isEmptySelect(itemPriceRequestObj.usageUnit?.value) ? "NA" : itemPriceRequestObj.usageUnit?.label}
                                         </h6>
                                     </div>
                                 </div>
@@ -498,7 +582,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">RECOMMENDED VALUE</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmpty(itemRequestObj.recommendedValue) ? "NA" : itemRequestObj.recommendedValue}
+                                            {isEmpty(itemPriceRequestObj.recommendedValue) ? "NA" : itemPriceRequestObj.recommendedValue}
                                         </h6>
                                     </div>
                                 </div>
@@ -506,7 +590,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">No. OF EVENTS</p>
                                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                            {isEmpty(itemRequestObj.numberOfEvents) ? "NA" : itemRequestObj.numberOfEvents}
+                                            {isEmpty(itemPriceRequestObj.numberOfEvents) ? "NA" : itemPriceRequestObj.numberOfEvents}
                                         </h6>
                                     </div>
                                 </div>
@@ -588,7 +672,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <label className="text-light-dark font-size-14 font-weight-500"> YEAR</label>
                                         <Select options={yearsKeyValuePairs} className="text-primary" value={itemRequestObj.year}
-                                            onChange={(e) => handleSelectChange(e, "year")}
+                                            onChange={(e) => handlePriceSelectChange(e, "year")}
                                         />
                                     </div>
                                 </div>
@@ -596,7 +680,7 @@ const ItemAddEdit = (props) => {
                                     <div className="form-group">
                                         <label className="text-light-dark font-size-14 font-weight-500"> NO. OF YEARS</label>
                                         <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                            placeholder="No. of Years" name="noOfYear" value={itemRequestObj.noOfYear} onChange={handleInputTextChange}
+                                            placeholder="No. of Years" name="noOfYear" value={itemRequestObj.noOfYear} onChange={handlePriceInputChange}
                                         />
                                     </div>
                                 </div>
@@ -645,7 +729,7 @@ const ItemAddEdit = (props) => {
                                         <Select placeholder="Select....." className="text-primary"
                                             options={frequencyKeyValuePairs}
                                             value={itemRequestObj.frequency}
-                                            onChange={(e) => handleSelectChange(e, "frequency")}
+                                            onChange={(e) => handlePriceSelectChange(e, "frequency")}
                                         />
                                     </div>
                                 </div>
@@ -655,7 +739,7 @@ const ItemAddEdit = (props) => {
                                         <Select placeholder="Select..." className="text-primary"
                                             options={unitKeyValuePairs}
                                             value={itemPriceRequestObj.usageUnit}
-                                            onChange={(e) => handleSelectChange(e, "usageUnit")}
+                                            onChange={(e) => handlePriceSelectChange(e, "usageUnit")}
                                         />
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
@@ -668,7 +752,7 @@ const ItemAddEdit = (props) => {
                                                 placeholder="Recommended Value" name="recommendedValue"
                                                 value={itemPriceRequestObj.recommendedValue} onChange={handlePriceInputChange}
                                             />
-                                            <span className="hours-div text-primary">{itemRequestObj.usageUnit === "" ? "Select unit" : itemRequestObj.unit?.value.toLowerCase() === "year" ? "Month" : itemRequestObj.usageUnit?.label}</span>
+                                            <span className="hours-div text-primary">{itemPriceRequestObj.usageUnit === "" ? "Select unit" : itemPriceRequestObj.usageUnit?.value.toLowerCase() === "year" ? "Month" : itemPriceRequestObj.usageUnit?.label}</span>
                                         </div>
                                         <div className="css-w8dmq8">*Mandatory</div>
                                     </div>
@@ -769,7 +853,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE ID</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmpty(itemRequestObj.standardJobId) ? "NA" : itemRequestObj.standardJobId}
+                                        {isEmpty(itemPriceRequestObj.standardJobId) ? "NA" : itemPriceRequestObj.standardJobId}
                                     </h6>
                                 </div>
                             </div>
@@ -777,7 +861,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE DESCRIPTION</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmpty(itemRequestObj.templateDescription) ? "NA" : itemRequestObj.templateDescription}
+                                        {isEmpty(itemPriceRequestObj.templateDescription) ? "NA" : itemPriceRequestObj.templateDescription}
                                     </h6>
                                 </div>
                             </div>
@@ -809,14 +893,14 @@ const ItemAddEdit = (props) => {
                                     }
                                     <input type="text" className="form-control text-primary border-radius-10 position-relative"
                                         name="templateId" placeholder="TEMPLATE ID"
-                                        value={itemRequestObj.standardJobId}
+                                        value={itemPriceRequestObj.standardJobId}
                                         onChange={handleSearchStandardJobId}
                                     />
                                     {
                                         <ul className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
                                             id="style" style={{ display: "block" }}
                                         >
-                                            {itemRequestObj.standardJobId.length !== 0 && itemRequestObj.standardJobIdSearch && searchedStandardJobIdList.length === 0 ?
+                                            {itemPriceRequestObj.standardJobId.length !== 0 && itemPriceRequestObj.standardJobIdSearch && searchedStandardJobIdList.length === 0 ?
                                                 <li className="list-group-item">No Record Found</li>
                                                 :
                                                 searchedStandardJobIdList.map((currentItem, i) => (
@@ -834,8 +918,8 @@ const ItemAddEdit = (props) => {
                                     <input type="text" className="form-control text-primary border-radius-10"
                                         name="templateDescription"
                                         placeholder="TEMPLATE DESCRIPTION"
-                                        value={itemRequestObj.templateDescription}
-                                        onChange={handleInputTextChange}
+                                        value={itemPriceRequestObj.templateDescription}
+                                        onChange={handlePriceInputChange}
                                         disabled
                                     />
                                 </div>
@@ -930,7 +1014,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">RELATED KIT</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmpty(itemRequestObj.repairKitId) ? "NA" : itemRequestObj.repairKitId}
+                                        {isEmpty(itemPriceRequestObj.repairKitId) ? "NA" : itemPriceRequestObj.repairKitId}
                                     </h6>
                                 </div>
                             </div>
@@ -938,7 +1022,7 @@ const ItemAddEdit = (props) => {
                                 <div className="form-group">
                                     <p className="text-light-dark font-size-12 font-weight-500 mb-2">KIT DESCRIPTION</p>
                                     <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                                        {isEmpty(itemRequestObj.repairOption) ? "NA" : itemRequestObj.repairOption}
+                                        {isEmpty(itemPriceRequestObj.repairOption) ? "NA" : itemPriceRequestObj.repairOption}
                                     </h6>
                                 </div>
                             </div>
@@ -970,13 +1054,13 @@ const ItemAddEdit = (props) => {
                                     }
                                     <input type="text" className="form-control text-primary border-radius-10"
                                         name="repairOption" placeholder="RELATED KIT"
-                                        value={itemRequestObj.repairKitId} onChange={handleSearchRepairKitId}
+                                        value={itemPriceRequestObj.repairKitId} onChange={handleSearchRepairKitId}
                                     />
                                     {
                                         <ul className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
                                             id="style" style={{ display: "block" }}
                                         >
-                                            {itemRequestObj.repairKitId.length !== 0 && itemRequestObj.repairKitIdSearch && searchedRepairKitIdList.length === 0 ?
+                                            {itemPriceRequestObj.repairKitId.length !== 0 && itemPriceRequestObj.repairKitIdSearch && searchedRepairKitIdList.length === 0 ?
                                                 <li className="list-group-item">No Record Found</li> :
                                                 searchedRepairKitIdList.map((currentItem, i) => (
                                                     <li className="list-group-item" key={i}
@@ -994,8 +1078,8 @@ const ItemAddEdit = (props) => {
                                     <label className="text-light-dark font-size-14 font-weight-500"> KIT DESCRIPTION</label>
                                     <input type="text" className="form-control text-primary border-radius-10"
                                         name="repairOption" placeholder="KIT DESCRIPTION"
-                                        value={itemRequestObj.repairOption}
-                                        onChange={handleInputTextChange}
+                                        value={itemPriceRequestObj.repairOption}
+                                        onChange={handlePriceInputChange}
                                         disabled
                                     />
                                 </div>
