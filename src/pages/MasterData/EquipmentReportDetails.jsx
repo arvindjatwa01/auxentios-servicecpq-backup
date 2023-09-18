@@ -2,9 +2,9 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
-const EquipmentReportDetails = ({ show, hideModel, isFailureReport }) => {
-  // show failures modal data
-  const viewFailureReportDetails = () => {
+const EquipmentReportDetails = ({ show, hideModel, header, reportType }) => {
+  // equipment-master-component
+  const failureReport = () => {
     return (
       <div className="row">
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -98,9 +98,71 @@ const EquipmentReportDetails = ({ show, hideModel, isFailureReport }) => {
       </div>
     );
   };
-
-  //  show service report details
-  const viewServiceReportDetails = () => {
+  const WarrantyReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">ID</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Title
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Category
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            SEAL-O-RING
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Basis
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            C9 ACERT
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">Unit</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Start Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            End Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Start Usage
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">8501</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            End Usage
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">3873</p>
+        </div>
+      </div>
+    );
+  };
+  const ServiceReport = () => {
     return (
       <div className="row">
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
@@ -204,7 +266,383 @@ const EquipmentReportDetails = ({ show, hideModel, isFailureReport }) => {
       </div>
     );
   };
-
+  const ContractReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Entitlement #
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Entitlement Title
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Category
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            SEAL-O-RING
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Basis
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            C9 ACERT
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Amount
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Currency
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Valid For
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            268 HP
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">Unit</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">PC</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Start Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            End Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Start Usage
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">8501</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            End Usage
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">3873</p>
+        </div>
+      </div>
+    );
+  };
+  const ErpWarrantyReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Component ID
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Description
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            SEAL-O-RING
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Serial Number
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Warranty
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">PC</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Warranty Code
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+      </div>
+    );
+  };
+  const UsageReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Current Usage
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Average Usage
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Last Updated Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Sensor ID
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            SMU ID
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            SMU Type
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            94886.38
+          </p>
+        </div>
+      </div>
+    );
+  };
+  const UsageSmuReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            SMU ID/Sensor ID
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            SMU Type
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Usage ID
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Reading Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">Unit</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Reading Description
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            94886.38
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Overwrite/Error
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            94886.38
+          </p>
+        </div>
+      </div>
+    );
+  };
+  // parts-360-component
+  const ReplacedByReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Replaced By
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Replaced Quantity
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Availability
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Total Available
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Sales Unit
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Price
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            94886.38
+          </p>
+        </div>
+      </div>
+    );
+  };
+  const AlternateReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Alternate Part #
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Quantity
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Availability
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Total Available
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Sales Unit
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Price
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            94886.38
+          </p>
+        </div>
+      </div>
+    );
+  };
+  const RemanRefurbReport = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Reman Part #
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Refurbished Part #
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Availability
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Total Available
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Sales Unit
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Price
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            94886.38
+          </p>
+        </div>
+      </div>
+    );
+  };
   return (
     <Modal
       className="failure-modal"
@@ -215,17 +653,27 @@ const EquipmentReportDetails = ({ show, hideModel, isFailureReport }) => {
     >
       <Modal.Header>
         <Modal.Title>
-          {isFailureReport ? "Failure" : "Service"} Report Details
-          <span>
-            <EditOutlinedIcon />
+          {header}
+          <span className="ml-2">
+            <EditOutlinedIcon className="font-size-20" />
           </span>{" "}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="bg-white p-3 border-radius-10">
-          {isFailureReport
-            ? viewFailureReportDetails()
-            : viewServiceReportDetails()}
+          {/* equipment-master-component */}
+          {reportType === "failure" && failureReport()}
+          {reportType === "warranty" && WarrantyReport()}
+          {reportType === "service" && ServiceReport()}
+          {reportType === "contract" && ContractReport()}
+          {reportType === "erpWarranty" && ErpWarrantyReport()}
+          {reportType === "usage" && UsageReport()}
+          {reportType === "usageSmu" && UsageSmuReport()}
+          {/* parts-360-component */}
+          {reportType === "replacedByDetails" && ReplacedByReport()}
+          {reportType === "alternateDetails" && AlternateReport()}
+          {reportType === "remanDetails" && RemanRefurbReport()}
+
           <div className="text-right">
             <button
               type="button"
