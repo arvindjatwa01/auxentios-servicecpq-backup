@@ -21,11 +21,11 @@ import {
     selectUpdateList,
     taskActions,
 } from "../../customerSegment/strategySlice"
-import { createItemPriceData, getSearchKitId, getSearchStandardJobId, updateItemPriceData } from "../../../../services/index";
+import { createItemPriceData, getItemDataById, getItemPriceData, getSearchKitId, getSearchStandardJobId, updateItemPriceData } from "../../../../services/index";
 import { toast } from "react-toastify";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import { useHistory } from "react-router-dom";
-import { defaultItemObj, usageTypeKeyValuePair, itemPriceDefaultObj } from "../itemConstant"
+import { defaultItemObj, usageTypeKeyValuePair, defaultItemPriceObj } from "../itemConstant"
 
 const itemRequestDefaultObj = {
     itemId: 0,
@@ -69,6 +69,7 @@ const ItemAddEdit = (props) => {
         unitKeyValuePairs,
         componentDataTabShow,
         handleGetPortfolioItemsData,
+        itemId
         // itemHeaderModelObj,
         // itemBodyModelObj,
         // itemRequestObj
@@ -93,7 +94,7 @@ const ItemAddEdit = (props) => {
     const [itemPriceDataId, setItemPriceDataId] = useState(0)
 
     const [itemRequestObj, setItemRequestObj] = useState({ ...itemRequestDefaultObj })
-    const [itemPriceRequestObj, setItemPriceRequestObj] = useState({ ...itemPriceDefaultObj });
+    const [itemPriceRequestObj, setItemPriceRequestObj] = useState({ ...defaultItemPriceObj });
 
     const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([{ value: 1, label: 1 }])
     const [searchedStandardJobIdList, setSearchedStandardJobIdList] = useState([])
@@ -103,6 +104,55 @@ const ItemAddEdit = (props) => {
         templateType: "",
         templateId: "",
     })
+
+    useEffect(() => {
+        if (itemId) {
+            handleGetItemDetails(itemId)
+        }
+    }, [itemId]);
+
+    // get Select Bundle/Service Item Details
+    const handleGetItemDetails = async (itemId) => {
+        const itemDetails = await getItemDataById(itemId);
+        if (itemDetails.status === 200) {
+            const { itemId, itemName, itemHeaderModel, itemBodyModel } = itemDetails.data;
+
+            const _usageIn = usageInKeyValuePair.find(obj => obj.value === itemBodyModel.usageIn)
+            const _strategyTask = strategyTaskKeyValuePair.find(obj => obj.value === itemHeaderModel.itemHeaderStrategy)
+            const _taskType = taskTypeKeyValuePair.find(obj => obj.value === itemBodyModel.taskType[0]);
+            const _usageType = usageTypeKeyValuePair.find(obj => obj.value === itemBodyModel.usage);
+
+            setItemRequestObj({
+                ...itemRequestObj,
+                name: itemName,
+                description: itemBodyModel.itemBodyDescription,
+                usageIn: _usageIn || "",
+                strategyTask: _strategyTask,
+                taskType: _taskType,
+                usageType: _usageType,
+            });
+
+            if (itemBodyModel.itemPrices.length !== 0) {
+                const itemPriceDetails = await getItemPriceData(itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1].itemPriceDataId)
+                if (itemPriceDetails.status === 200) {
+                    let _frequency = frequencyKeyValuePairs.find((obj) => obj.value === itemPriceDetails.data.frequency)
+
+                    // set unit key value
+                    let _usageUnit = unitKeyValuePairs.find((obj) => obj.value === itemPriceDetails.data.usageUnit)
+
+                    setItemPriceRequestObj({
+                        ...itemPriceDetails.data,
+                        numberOfEvents: itemPriceDetails.data.numberOfEvents,
+                        itemPriceId: itemPriceDetails.data.itemPriceDataId,
+                        year: isEmpty(itemPriceDetails.data.year) ? "" :
+                            { label: itemPriceDetails.data.year, value: itemPriceDetails.data.year },
+                        frequency: _frequency || "",
+                        usageUnit: _usageUnit || "",
+                    })
+                }
+            }
+        }
+    }
 
     useEffect(() => {
         var yearsOptionArr = [];
@@ -306,29 +356,38 @@ const ItemAddEdit = (props) => {
         return true;
     }
 
+    // Common function for item price add/Edit/ view
+    const handleItemAddUpdateAction = async () => {
+        try {
+            if (isEditable) { // if Editable true,then we on call get API not Put/Post are acceptable 
+                handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceRequestObj, isPortfolioItem, isEditable)
+            } else {
+                handleAddUpdateItemPrice(false)
+                    .then((itemPriceData) => {
+                        handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceData, isPortfolioItem, isEditable)
+                    });
+            }
+        } catch (error) {
+            return;
+        }
+    }
+
+    // Item Data Add/Update/View mode actions 
     const handleAddUpdateItem = async () => {
         try {
-            if (!editItemData) {
-                if (!editItemData && !checkInputValidation(true)) {
-                    return;
+            if (!editItemData && !checkInputValidation(true)) {
+                return;
+            }
+            if (itemActiveTab === "itemSummary") {
+                setItemActiveTab("relatedTemplate")
+            } else if (itemActiveTab === "relatedTemplate") {
+                if (isEmpty(itemPriceRequestObj.standardJobId)) {
+                    setItemActiveTab("relatedKit")
+                } else {
+                    handleItemAddUpdateAction();
                 }
-                if (itemActiveTab === "itemSummary") {
-                    setItemActiveTab("relatedTemplate")
-                } else if (itemActiveTab === "relatedTemplate") {
-                    if (isEmpty(itemPriceRequestObj.standardJobId)) {
-                        setItemActiveTab("relatedKit")
-                    } else {
-                        handleAddUpdateItemPrice(false)
-                            .then((itemPriceData) => {
-                                handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceData, isPortfolioItem)
-                            });
-                    }
-                } else if (itemActiveTab === "relatedKit") {
-                    handleAddUpdateItemPrice(false)
-                        .then((itemPriceData) => {
-                            handleGetPortfolioItemsData(editItemData, itemRequestObj, itemPriceData, isPortfolioItem)
-                        });
-                }
+            } else if (itemActiveTab === "relatedKit") {
+                handleItemAddUpdateAction();
             }
         } catch (error) {
             return;
@@ -348,6 +407,7 @@ const ItemAddEdit = (props) => {
         }
     }
 
+    // common function for Item Price Update/Create
     const handleAddUpdateItemPrice = async (isCalculated) => {
         try {
             let priceReqObj = {

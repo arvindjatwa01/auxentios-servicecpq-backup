@@ -41,6 +41,7 @@ import {
     usageTypeKeyValuePair,
     defaultItemHeaderObj,
     defaultItemBodyObj,
+    defaultItemPriceObj,
 } from "./itemConstant"
 
 const activityOptions = ["None", "Atria", "Callisto"];
@@ -57,6 +58,7 @@ const BundleServiceAddUpdate = (props) => {
 
     const [bundleServiceItemHeader, setBundleServiceItemHeader] = useState({ ...defaultItemHeaderObj })
     const [bundleServiceItemBody, setBundleServiceItemBody] = useState({ ...defaultItemBodyObj })
+    const [bundleServicePriceObj, setBundleServicePriceObj] = useState({ ...defaultItemPriceObj });
 
     const [bundleServiceEdit, setBundleServiceEdit] = useState({
         bundleServiceHeader: false,
@@ -101,7 +103,8 @@ const BundleServiceAddUpdate = (props) => {
 
     const [modelSearchList, setModelSearchList] = useState([])
     const [modelSelect, setModelSelect] = useState(false)
-    const [prefixKeyValuePair, setPrefixKeyValuePair] = useState([])
+    const [prefixKeyValuePair, setPrefixKeyValuePair] = useState([]);
+    const [itemPriceDataId, setItemPriceDataId] = useState(null)
 
     useEffect(() => {
         if (itemId) {
@@ -156,8 +159,11 @@ const BundleServiceAddUpdate = (props) => {
 
             setModelSelect(!isEmpty(itemHeaderModel.model))
             setBundleServiceItemHeader({ ...itemHeaderModel })
-            setBundleServiceItemBody({ ...itemBodyModel })
+            setBundleServiceItemBody({ ...itemBodyModel });
 
+            if (itemBodyModel.itemPrices.length !== 0) {
+                setItemPriceDataId(itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1].itemPriceDataId)
+            };
         }
     }
 
@@ -265,6 +271,73 @@ const BundleServiceAddUpdate = (props) => {
         }
     }
 
+    // Common Function for Item Create/Update
+    const handleCreateUpdateItem = async (itemHeaderData, itemBodyData, itemPriceObj = bundleServicePriceObj) => {
+        let itemReqObj = {
+            itemId: bundleServiceObj.itemId,
+            itemName: bundleServiceObj.name,
+            itemHeaderModel: {
+                ...bundleServiceItemHeader,
+                itemHeaderDescription: bundleServiceObj.description,
+                bundleFlag: itemFlag === "BUNDLE" ? "BUNDLE_ITEM" : "SERVICE",
+                reference: bundleServiceObj.reference,
+                itemHeaderMake: bundleServiceObj.make,
+                itemHeaderFamily: bundleServiceObj.family,
+                model: bundleServiceObj.model,
+                prefix: bundleServiceObj.prefix?.value || "",
+                type: bundleServiceObj.machineComponent?.value || "EMPTY",
+                estimatedTime: bundleServiceObj.estimatedTime,
+                status: "DRAFT",
+                itemHeaderCustomerSegment: bundleServiceObj.customerSegment?.value || "",
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice?.value || "",
+                offerValidity: administrative.offerValidity?.value || "",
+                serviceChargable: (bundleServiceObj.serviceChargable?.value === "chargeable"),
+                serviceOptional: (!(bundleServiceObj.serviceChargable?.value === "chargeable"))
+            },
+            itemBodyModel: {
+                ...bundleServiceItemBody,
+                itemBodyDescription: itemBodyData.itemBodyDescription,
+                taskType: [itemBodyData.taskType?.value || "EMPTY"],
+                usageIn: itemBodyData.usageIn?.value || "",
+                usage: itemBodyData.usage?.value || "",
+                year: itemBodyData.year?.value || "",
+                itemPrices: itemBodyData.itemPrices,
+            },
+        };
+        if (itemId) {
+            const updateItem = await updateItemData(itemId, itemReqObj)
+            if (updateItem.status === 200) {
+                successMessage(bundleServiceObj.name + " Update Successfully.")
+                updateItemPriceSjRkId({
+                    standardJobId: itemPriceObj.standardJobId,
+                    repairKitId: itemPriceObj.repairKitId,
+                    itemId: itemId,
+                    itemPriceDataId: itemBodyData.itemPrices[itemBodyData.itemPrices.length - 1].itemPriceDataId
+                })
+                setActiveTab("bundleServicePrice")
+            }
+        } else {
+            const createItem = await itemCreation(itemReqObj);
+            if (createItem.status === 200) {
+                successMessage(bundleServiceObj.name + " Create Successfully.")
+                if (itemBodyData.itemPrices.length !== 0) {
+                    updateItemPriceSjRkId({
+                        standardJobId: itemPriceObj.standardJobId,
+                        repairKitId: itemPriceObj.repairKitId,
+                        itemId: createItem.data.itemId,
+                        itemPriceDataId: itemBodyData.itemPrices[itemBodyData.itemPrices.length - 1].itemPriceDataId
+                    })
+                }
+                setActiveTab("bundleServicePrice");
+            }
+        }
+    }
+
     // Bundle/Service Header Tab Button Action
     const handleBundleServiceHeader = async () => {
         try {
@@ -328,31 +401,31 @@ const BundleServiceAddUpdate = (props) => {
         }
     }
 
-    const handleBundleServiceItems = async (editItemData, itemRequestObj, itemPriceData, isPortfolioItem) => {
-        setBundleServiceItemHeader({
-            ...bundleServiceItemHeader,
-            usage: itemRequestObj.usageType?.value || "",
-        });
+    // Bundle/Service Items Tab Button Action
+    const handleBundleServiceItems = async (editItemData, itemRequestObj, itemPriceData, isPortfolioItem, isEditable) => {
         const _itemPrice = [...bundleServiceItemBody.itemPrices];
-        if (!_itemPrice.some(obj => obj.itemPriceDataId === itemPriceData.itemPriceDataId)) {
+        if (!_itemPrice.some(obj => obj.itemPriceDataId === itemPriceData.itemPriceDataId) && !isEmpty(itemPriceData.itemPriceDataId)) {
             _itemPrice.push({ itemPriceDataId: itemPriceData.itemPriceDataId });
-        }
-
-        setBundleServiceItemBody({
-            ...bundleServiceItemBody,
-            itemBodyDescription: itemRequestObj.description,
+        };
+        const _bundleServiceItemHeader = { ...bundleServiceItemHeader, usage: itemRequestObj.usageType?.value || "", };
+        const _bundleServiceItemBody = {
+            ...bundleServiceItemBody, itemBodyDescription: itemRequestObj.description,
             taskType: itemRequestObj.taskType,
             usageIn: itemRequestObj.usageIn,
             usage: itemRequestObj.usageType,
             year: itemPriceData.year,
             itemPrices: _itemPrice,
-        });
-        // updateItemPriceSjRkId({
-        //     standardJobId: itemRequestObj.standardJobId,
-        //     repairKitId: itemRequestObj.repairKitId,
-        //     itemId: 0,
-        //     itemPriceDataId: 0
-        // })
+        };
+        const _bundleServicePriceObj = { ...itemPriceData };
+
+        setBundleServiceItemHeader({ ..._bundleServiceItemHeader });
+        setBundleServiceItemBody({ ..._bundleServiceItemBody });
+        setBundleServicePriceObj({ ..._bundleServicePriceObj });
+        if (isEditable) {
+            setActiveTab("bundleServicePrice");
+        } else {
+            handleCreateUpdateItem(_bundleServiceItemHeader, _bundleServiceItemBody, _bundleServicePriceObj)
+        }
     }
 
     return (
@@ -647,6 +720,7 @@ const BundleServiceAddUpdate = (props) => {
                                 // handleBundleServiceNeed={() => setBundleServiceNeed(!bundleServiceNeed)}
                                 frequencyKeyValuePairs={frequencyKeyValuePairs}
                                 unitKeyValuePairs={unitKeyValuePairs}
+                                itemId={itemId}
                                 handleGetPortfolioItemsData={handleBundleServiceItems}
                             />
                         </TabPanel>
@@ -661,6 +735,7 @@ const BundleServiceAddUpdate = (props) => {
                                 additionalPriceKeyValuePair={additionalPriceKeyValuePair}
                                 discountTypeKeyValuePair={discountTypeKeyValuePair}
                                 usageTypeKeyValuePair={usageTypeKeyValuePair}
+                                itemId={itemId}
                             />
                         </TabPanel>
                         <TabPanel value="bundleServiceAdministrative">

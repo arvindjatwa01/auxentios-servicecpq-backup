@@ -9,11 +9,14 @@ import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { isEmpty } from '../utilities/textUtilities';
+import { getItemDataById, getItemPriceData } from 'services';
+
+import { defaultItemPriceObj } from "../itemConstant"
 
 const ItemPriceCalculator = (props) => {
     const { priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, unitKeyValuePairs,
         frequencyKeyValuePairs, currencyKeyValuePair, additionalPriceKeyValuePair, discountTypeKeyValuePair,
-        usageTypeKeyValuePair } = props;
+        usageTypeKeyValuePair, itemId } = props;
 
     const [itemPriceRecordObj, setItemPriceRecordObj] = useState({
         itemPriceDataId: 0,
@@ -50,15 +53,111 @@ const ItemPriceCalculator = (props) => {
         calculatedPrice: 0,
     });
 
+    const [itemPriceRequestObj, setItemPriceRequestObj] = useState({ ...defaultItemPriceObj })
+
     const [priceEscalationValues, setPriceEscalationValues] = useState({
         sparePartsEscalation: 0,
         labourEscalation: 0,
         miscEscalation: 0,
         serviceEscalation: 0,
     })
-
     const [yearsKeyValuePairs, seYearsKeyValuePairs] = useState([{ value: 1, label: 1 }])
 
+    useEffect(() => {
+        if (itemId) {
+            handleGetItemDetails(itemId)
+        }
+    }, [itemId]);
+
+    // get Select Bundle/Service/Portfolio Item Details
+    const handleGetItemDetails = async (itemId) => {
+        const itemDetails = await getItemDataById(itemId);
+        if (itemDetails.status === 200) {
+            const { itemId, itemName, itemHeaderModel, itemBodyModel } = itemDetails.data;
+
+            const _currency = currencyKeyValuePair.find(obj => obj.value === itemHeaderModel.currency);
+            const _usageType = usageTypeKeyValuePair.find(obj => obj.value === itemBodyModel.usage);
+
+            // setItemRequestObj({
+            //     ...itemRequestObj,
+            //     name: itemName,
+            //     description: itemBodyModel.itemBodyDescription,
+            //     usageIn: _usageIn || "",
+            //     strategyTask: _strategyTask,
+            //     taskType: _taskType,
+            //     usageType: _usageType,
+            // });
+
+            if (itemBodyModel.itemPrices.length !== 0) {
+                const itemPriceDetails = await getItemPriceData(itemBodyModel.itemPrices[itemBodyModel.itemPrices.length - 1].itemPriceDataId)
+                if (itemPriceDetails.status === 200) {
+
+                    //             priceMethodKeyValuePair, priceTypeKeyValuePair, priceHeadTypeKeyValuePair, unitKeyValuePairs,
+                    // frequencyKeyValuePairs, currencyKeyValuePair, additionalPriceKeyValuePair, discountTypeKeyValuePair,
+                    // usageTypeKeyValuePair,
+
+                    const _priceMethod = priceMethodKeyValuePair.find((obj) => obj.value === itemPriceDetails.data.priceMethod)
+
+                    const _priceType = priceTypeKeyValuePair.find((obj) => obj.value === itemPriceDetails.data.priceType)
+
+                    const _additionalPriceType = additionalPriceKeyValuePair.find((obj) => obj.value === itemPriceDetails.data.additionalPriceType)
+
+                    const _priceEscalation = priceHeadTypeKeyValuePair.find((obj) => obj.value === itemPriceDetails.data.priceEscalation)
+
+                    const _discountType = discountTypeKeyValuePair.find((obj) => obj.value === itemPriceDetails.data.discountType)
+
+                    // set frequency key value
+                    let _frequency = frequencyKeyValuePairs.find((obj) => obj.value === itemPriceDetails.data.frequency)
+
+                    // set unit key value
+                    let _usageUnit = unitKeyValuePairs.find((obj) => obj.value === itemPriceDetails.data.usageUnit)
+
+
+                    // setPriceEscalationValues({
+                    //     sparePartsEscalation: 0,
+                    //     labourEscalation: 0,
+                    //     miscEscalation: 0,
+                    //     serviceEscalation: 0,
+                    // })
+
+                    setItemPriceRecordObj({
+                        ...itemPriceDetails.data,
+                        numberOfEvents: itemPriceDetails.data.numberOfEvents,
+                        itemPriceId: itemPriceDetails.data.itemPriceDataId,
+                        year: isEmpty(itemPriceDetails.data.year) ? "" :
+                            { label: itemPriceDetails.data.year, value: itemPriceDetails.data.year },
+                        frequency: _frequency || "",
+                        usageUnit: _usageUnit || "",
+                        priceMethod: _priceMethod,
+                        priceType: _priceType,
+                        additionalPriceType: _additionalPriceType,
+                        priceEscalation: _priceEscalation,
+                        discountType: _discountType,
+                        currency: _currency,
+                        usageType: _usageType,
+                    });
+                    setItemPriceRequestObj({
+                        ...itemPriceDetails.data,
+                        numberOfEvents: itemPriceDetails.data.numberOfEvents,
+                        itemPriceId: itemPriceDetails.data.itemPriceDataId,
+                        year: isEmpty(itemPriceDetails.data.year) ? "" :
+                            { label: itemPriceDetails.data.year, value: itemPriceDetails.data.year },
+                        frequency: _frequency || "",
+                        usageUnit: _usageUnit || "",
+                        priceMethod: _priceMethod,
+                        priceType: _priceType,
+                        additionalPriceType: _additionalPriceType,
+                        priceEscalation: _priceEscalation,
+                        discountType: _discountType,
+                        currency: _currency,
+                        usageType: _usageType,
+                    })
+                }
+            }
+        }
+    }
+
+    // Year Options change on noOfYear value Change
     useEffect(() => {
         var yearsOptionArr = [];
         for (let i = 1; i <= itemPriceRecordObj.noOfYear; i++) {
@@ -67,26 +166,28 @@ const ItemPriceCalculator = (props) => {
         seYearsKeyValuePairs(yearsOptionArr);
     }, [itemPriceRecordObj.noOfYear])
 
+    // text value change 
     const handlePriceTextChange = (e, keyName, type, isPrice = false) => {
         try {
             if (type === "text") {
-                setItemPriceRecordObj(pre => ({ ...pre, [keyName]: e.target.value }))
+                setItemPriceRequestObj(pre => ({ ...pre, [keyName]: e.target.value }))
             } else if (type === "select") {
-                setItemPriceRecordObj(pre => ({ ...pre, [keyName]: e }))
+                setItemPriceRequestObj(pre => ({ ...pre, [keyName]: e }))
             } else if (type === "number") {
                 if (isPrice) {
-                    setItemPriceRecordObj(pre => ({ ...pre, [keyName]: parseFloat(e.target.value) }))
+                    setItemPriceRequestObj(pre => ({ ...pre, [keyName]: parseFloat(e.target.value) }))
                 } else {
-                    setItemPriceRecordObj(pre => ({ ...pre, [keyName]: parseInt(e.target.value) }))
+                    setItemPriceRequestObj(pre => ({ ...pre, [keyName]: parseInt(e.target.value) }))
                 }
             } else {
-                setItemPriceRecordObj(pre => ({ ...pre, [keyName]: e.target.value }))
+                setItemPriceRequestObj(pre => ({ ...pre, [keyName]: e.target.value }))
             }
         } catch (error) {
             return;
         }
     }
 
+    // Price Escalation input value change
     const priceEscalationPriceInput = (e) => {
         if (itemPriceRecordObj.priceEscalation?.value === "PARTS") {
             setPriceEscalationValues({
@@ -140,7 +241,7 @@ const ItemPriceCalculator = (props) => {
                         <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">PRICE METHOD</label>
                             <Select className="text-primary" placeholder="placeholder (Optional)"
-                                options={priceMethodKeyValuePair} value={itemPriceRecordObj.priceMethod}
+                                options={priceMethodKeyValuePair} value={itemPriceRequestObj.priceMethod}
                                 onChange={(e) => handlePriceTextChange(e, "priceMethod", "select")}
                             />
                         </div>
@@ -166,7 +267,7 @@ const ItemPriceCalculator = (props) => {
                                             className="form-controldate border-radius-10"
                                             label=""
                                             name="preparedOn"
-                                            value={itemPriceRecordObj.priceDate}
+                                            value={itemPriceRequestObj.priceDate}
                                             onChange={(e) => handlePriceTextChange(e, "priceDate", "date")}
                                         />
                                     </MuiPickersUtilsProvider>
@@ -178,7 +279,7 @@ const ItemPriceCalculator = (props) => {
                         <div className="form-group">
                             <label className="text-light-dark font-size-14 font-weight-500">PRICE TYPE</label>
                             <Select className="text-primary" placeholder="placeholder (Optional)"
-                                options={priceTypeKeyValuePair} value={itemPriceRecordObj.priceType}
+                                options={priceTypeKeyValuePair} value={itemPriceRequestObj.priceType}
                                 onChange={(e) => handlePriceTextChange(e, "priceType", "select")}
                             />
                         </div>
@@ -189,14 +290,14 @@ const ItemPriceCalculator = (props) => {
                             <div className=" d-flex form-control-date">
                                 <div className="">
                                     <Select className="text-primary" placeholder="Select"
-                                        value={itemPriceRecordObj.additionalPriceType}
+                                        value={itemPriceRequestObj.additionalPriceType}
                                         onChange={(e) => handlePriceTextChange(e, "additionalPriceType", "select")}
                                         options={additionalPriceKeyValuePair}
                                     />
                                 </div>
                                 <input type="number" className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                     placeholder="10%" name="priceAdditionalInput"
-                                    value={itemPriceRecordObj.additionalPriceValue}
+                                    value={itemPriceRequestObj.additionalPriceValue}
                                     onChange={(e) => handlePriceTextChange(e, "additionalPriceValue", "number", true)}
                                 />
                             </div>
@@ -208,15 +309,15 @@ const ItemPriceCalculator = (props) => {
                             <div className=" d-flex align-items-center form-control-date">
                                 <Select className="select-input text-primary"
                                     options={priceHeadTypeKeyValuePair}
-                                    value={itemPriceRecordObj.priceEscalation}
+                                    value={itemPriceRequestObj.priceEscalation}
                                     onChange={(e) => handlePriceTextChange(e, "priceEscalation", "select")}
                                 />
                                 <input className="form-control rounded-top-left-0 rounded-bottom-left-0" type="text" placeholder="20%"
-                                    id="priceEscalationInput" disabled={isEmpty(itemPriceRecordObj.priceEscalation?.value)}
-                                    value={itemPriceRecordObj.priceEscalation?.value === "PARTS" ? priceEscalationValues.sparePartsEscalation :
-                                        itemPriceRecordObj.priceEscalation?.value === "LABOR" ? priceEscalationValues.labourEscalation :
-                                            itemPriceRecordObj.priceEscalation?.value === "MISCELLANEOUS" ? priceEscalationValues.miscEscalation :
-                                                itemPriceRecordObj.priceEscalation?.value === "SERVICE" ? priceEscalationValues.serviceEscalation : 0}
+                                    id="priceEscalationInput" disabled={isEmpty(itemPriceRequestObj.priceEscalation?.value)}
+                                    value={itemPriceRequestObj.priceEscalation?.value === "PARTS" ? priceEscalationValues.sparePartsEscalation :
+                                        itemPriceRequestObj.priceEscalation?.value === "LABOR" ? priceEscalationValues.labourEscalation :
+                                            itemPriceRequestObj.priceEscalation?.value === "MISCELLANEOUS" ? priceEscalationValues.miscEscalation :
+                                                itemPriceRequestObj.priceEscalation?.value === "SERVICE" ? priceEscalationValues.serviceEscalation : 0}
                                     onChange={priceEscalationPriceInput}
                                 />
                             </div>
@@ -245,7 +346,7 @@ const ItemPriceCalculator = (props) => {
                         <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500"> FLAT PRICE / ADJUSTED PRICE</label>
                             <input type="number" className="form-control border-radius-10 text-primary" name="flatPrice"
-                                value={itemPriceRecordObj.flatPrice} placeholder="0"
+                                value={itemPriceRequestObj.flatPrice} placeholder="0"
                                 onChange={(e) => handlePriceTextChange(e, "flatPrice", "number", true)}
                                 disabled={!itemPriceRecordObj.flatRateIndicator}
                             />
@@ -257,13 +358,13 @@ const ItemPriceCalculator = (props) => {
                             <div className=" d-flex form-control-date">
                                 <div className="">
                                     <Select className="text-primary" placeholder="Select"
-                                        value={itemPriceRecordObj.discountType} options={discountTypeKeyValuePair}
+                                        value={itemPriceRequestObj.discountType} options={discountTypeKeyValuePair}
                                         onChange={(e) => handlePriceTextChange(e, "discountType", "select")}
                                     />
                                 </div>
                                 <input type="text" className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                     name="discountTypeInput" placeholder="10%"
-                                    value={itemPriceRecordObj.discountValue}
+                                    value={itemPriceRequestObj.discountValue}
                                     onChange={(e) => handlePriceTextChange(e, "discountValue", "number", true)}
                                 />
                             </div>
@@ -307,7 +408,7 @@ const ItemPriceCalculator = (props) => {
                         <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                                 <label className="text-light-dark font-size-14 font-weight-500"> YEAR</label>
-                                <Select options={yearsKeyValuePairs} className="text-primary" value={itemPriceRecordObj.year}
+                                <Select options={yearsKeyValuePairs} className="text-primary" value={itemPriceRequestObj.year}
                                     onChange={(e) => handlePriceTextChange(e, "year", "select")}
                                 />
                             </div>
@@ -316,7 +417,7 @@ const ItemPriceCalculator = (props) => {
                             <div className="form-group">
                                 <label className="text-light-dark font-size-14 font-weight-500"> NO. OF YEARS</label>
                                 <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                    placeholder="No. of Years" name="noOfYear" value={itemPriceRecordObj.noOfYear}
+                                    placeholder="No. of Years" name="noOfYear" value={itemPriceRequestObj.noOfYear}
                                     onChange={(e) => handlePriceTextChange(e, "noOfYear", "number")}
                                 />
                             </div>
@@ -329,10 +430,10 @@ const ItemPriceCalculator = (props) => {
                                 <label className="text-light-dark font-size-14 font-weight-500"> START USAGE</label>
                                 <div className=" d-flex form-control-date" style={{ overflow: "hidden" }}>
                                     <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                        placeholder="Required*" name="startUsage" value={itemPriceRecordObj.startUsage}
+                                        placeholder="Required*" name="startUsage" value={itemPriceRequestObj.startUsage}
                                         onChange={(e) => handlePriceTextChange(e, "startUsage", "number")}
                                     />
-                                    <span className="hours-div text-primary">{itemPriceRecordObj.usageUnit === "" ? "Select unit" : itemPriceRecordObj.usageUnit?.label}</span>
+                                    <span className="hours-div text-primary">{itemPriceRequestObj.usageUnit === "" ? "Select unit" : itemPriceRecordObj.usageUnit?.label}</span>
                                 </div>
                                 <div className="css-w8dmq8">*Mandatory</div>
                             </div>
@@ -342,10 +443,10 @@ const ItemPriceCalculator = (props) => {
                                 <label className="text-light-dark font-size-14 font-weight-500">END USAGE</label>
                                 <div className=" d-flex form-control-date" style={{ overflow: "hidden" }}>
                                     <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
-                                        placeholder="Required*" name="endUsage" value={itemPriceRecordObj.endUsage}
+                                        placeholder="Required*" name="endUsage" value={itemPriceRequestObj.endUsage}
                                         onChange={(e) => handlePriceTextChange(e, "endUsage", "number")}
                                     />
-                                    <span className="hours-div text-primary">{itemPriceRecordObj.usageUnit === "" ? "Select unit" : itemPriceRecordObj.usageUnit?.label}</span>
+                                    <span className="hours-div text-primary">{itemPriceRequestObj.usageUnit === "" ? "Select unit" : itemPriceRequestObj.usageUnit?.label}</span>
                                 </div>
                                 <div className="css-w8dmq8">*Mandatory</div>
                             </div>
@@ -364,7 +465,7 @@ const ItemPriceCalculator = (props) => {
                                 <label className="text-light-dark font-size-14 font-weight-500"> FREQUENCY</label>
                                 <Select placeholder="Select..." className="text-primary"
                                     options={frequencyKeyValuePairs}
-                                    value={itemPriceRecordObj.frequency}
+                                    value={itemPriceRequestObj.frequency}
                                     onChange={(e) => handlePriceTextChange(e, "frequency", "select")}
                                 />
                             </div>
@@ -374,7 +475,7 @@ const ItemPriceCalculator = (props) => {
                                 <label className="text-light-dark font-size-14 font-weight-500">UNIT</label>
                                 <Select placeholder="Select..." className="text-primary"
                                     options={unitKeyValuePairs}
-                                    value={itemPriceRecordObj.usageUnit}
+                                    value={itemPriceRequestObj.usageUnit}
                                     onChange={(e) => handlePriceTextChange(e, "usageUnit", "select")}
                                 />
                                 <div className="css-w8dmq8">*Mandatory</div>
@@ -386,10 +487,10 @@ const ItemPriceCalculator = (props) => {
                                 <div className="d-flex form-control-date" style={{ overflow: "hidden" }}>
                                     <input type="number" className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                         placeholder="Recommended Value" name="recommendedValue"
-                                        value={itemPriceRecordObj.recommendedValue}
+                                        value={itemPriceRequestObj.recommendedValue}
                                         onChange={(e) => handlePriceTextChange(e, "recommendedValue", "number")}
                                     />
-                                    <span className="hours-div text-primary">{itemPriceRecordObj.usageUnit === "" ? "Select unit" : itemPriceRecordObj.usageUnit?.value.toLowerCase() === "year" ? "Month" : itemPriceRecordObj.usageUnit?.label}</span>
+                                    <span className="hours-div text-primary">{itemPriceRequestObj.usageUnit === "" ? "Select unit" : itemPriceRequestObj.usageUnit?.value.toLowerCase() === "year" ? "Month" : itemPriceRecordObj.usageUnit?.label}</span>
                                 </div>
                                 <div className="css-w8dmq8">*Mandatory</div>
                             </div>
@@ -398,7 +499,7 @@ const ItemPriceCalculator = (props) => {
                             <div className="form-group w-100">
                                 <label className="text-light-dark font-size-12 font-weight-500">NO. OF EVENTS</label>
                                 <input type="number" className="form-control border-radius-10 text-primary" placeholder="NO. OF EVENTS"
-                                    value={itemPriceRecordObj.numberOfEvents} disabled readOnly
+                                    value={itemPriceRequestObj.numberOfEvents} disabled readOnly
                                     onChange={(e) => handlePriceTextChange(e, "numberOfEvents", "number")}
                                 />
                                 <div className="css-w8dmq8">*Mandatory</div>
@@ -487,11 +588,11 @@ const ItemPriceCalculator = (props) => {
                     <div className="d-flex align-items-center">
                         <div className="d-block mr-4">
                             <p className="mb-0 font-size-14 text-grey">TOTAL BASE PRICE</p>
-                            {/* <p className="mb-0 font-size-14 text-black">${priceCalculator.totalPrice}</p> */}
+                            <p className="mb-0 font-size-14 text-black">${itemPriceRequestObj.totalPrice}</p>
                         </div>
                         <div className="d-block">
                             <p className="mb-0 font-size-14 text-grey">NET PRICE</p>
-                            {/* <p className="mb-0 font-size-14 text-black">${priceCalculator.calculatedPrice}</p> */}
+                            <p className="mb-0 font-size-14 text-black">${itemPriceRequestObj.calculatedPrice}</p>
                         </div>
                     </div>
                     <div className="d-flex align-items-center">

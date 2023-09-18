@@ -254,10 +254,17 @@ export const PortfolioSummary = () => {
         setShowLoader(false);
     }, [])
 
+    useEffect(() => {
+        if (!showBundleServiceModel) {
+            setItemId(null);
+            setItemFlag("");
+        }
+    }, [showBundleServiceModel]);
+
     // view Bundle/Service Details
     const viewBundleServiceDetails = (row) => {
         setItemId(row.itemId);
-        setItemFlag(row.bundleFlag)
+        setItemFlag(row.bundleFlag === "SERVICE" ? "SERVICE" : "BUNDLE")
         setShowBundleServiceModel(true)
     }
 
