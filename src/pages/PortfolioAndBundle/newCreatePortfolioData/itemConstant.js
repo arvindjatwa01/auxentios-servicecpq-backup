@@ -58,7 +58,7 @@ export const defaultItemBodyObj = {
 };
 
 // default data for item Price Add/Update 
-export const itemPriceDefaultObj = {
+export const defaultItemPriceObj = {
     itemPriceDataId: 0,
     quantity: 0,
     standardJobId: "",
