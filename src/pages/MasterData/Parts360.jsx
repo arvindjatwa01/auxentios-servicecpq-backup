@@ -22,6 +22,7 @@ import EquipmentReportDetails from "./EquipmentReportDetails";
 import SearchListMaster from "./SearchListMaster";
 import EquipmentSearchMaster from "./EquipmentSearchMaster";
 import { partsSearch } from "./equipmentConstant";
+import WithoutSearchDataTable from "./WithoutSearchDataTable";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -349,7 +350,9 @@ const Parts360 = () => {
         >
           <EditOutlinedIcon
             className="mr-1"
-            onClick={() => handleShowReportDetails("Alternate Parts", "alternateDetails")}
+            onClick={() =>
+              handleShowReportDetails("Alternate Parts", "alternateDetails")
+            }
           />
           <DeleteOutlineOutlinedIcon />
         </div>
@@ -555,7 +558,10 @@ const Parts360 = () => {
           className="d-flex justify-content-center align-items-center row-svg-div"
           style={{ minWidth: "180px !important" }}
         >
-          <EditOutlinedIcon className="mr-1" />
+          <EditOutlinedIcon
+            className="mr-1"
+            onClick={() => handleShowReportDetails("Price Details", "price")}
+          />
           <DeleteOutlineOutlinedIcon />
         </div>
       ),
@@ -695,7 +701,12 @@ const Parts360 = () => {
           className="d-flex justify-content-center align-items-center row-svg-div"
           style={{ minWidth: "180px !important" }}
         >
-          <EditOutlinedIcon className="mr-1" />
+          <EditOutlinedIcon
+            className="mr-1"
+            onClick={() =>
+              handleShowReportDetails("Warranty Details", "partsWarranty")
+            }
+          />
           <DeleteOutlineOutlinedIcon />
         </div>
       ),
@@ -1016,52 +1027,18 @@ const Parts360 = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white p-3 border-radius-10 mt-4 overflow-hidden">
-              <div className="d-flex align-items-center justify-content-between">
-                <h6 className="font-weight-600 mb-0 mr-3">Price Details</h6>
-                <a href="#" className="btn bg-primary text-white">
-                  Add New
-                </a>
-              </div>
-              <div className="table-responsive mt-3">
-                <div
-                  className="custom-table  table-child"
-                  style={{
-                    height: "auto",
-                    width: "100%",
-                  }}
-                >
-                  <DataTable
-                    title=""
-                    columns={priceItemColumns}
-                    data={bundleItems}
-                    customStyles={customStyles}
-                    // pagination
-                  />
-                </div>
-              </div>
-            </div>
+            <WithoutSearchDataTable
+              columns={priceItemColumns}
+              data={bundleItems}
+              title="Price Details"
+              showAddBtn={true}
+            />
             <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
-            <div className="bg-white p-3 mt-3 border-radius-10 mb-5 overflow-hidden">
-              <h6 className="font-weight-600 mb-0 mr-3">ERP Price</h6>
-              <div className="table-responsive mt-3">
-                <div
-                  className="custom-table  table-child"
-                  style={{
-                    height: "auto",
-                    width: "100%",
-                  }}
-                >
-                  <DataTable
-                    title=""
-                    columns={erpDetailsItemColumns}
-                    data={bundleItems}
-                    customStyles={customStyles}
-                    // pagination
-                  />
-                </div>
-              </div>
-            </div>
+            <WithoutSearchDataTable
+              columns={erpDetailsItemColumns}
+              data={bundleItems}
+              title="ERP Details"
+            />
           </TabPanel>
           <TabPanel value="2" className="px-0">
             <div className="bg-white p-3 border-radius-10">
@@ -1109,52 +1086,18 @@ const Parts360 = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white p-3 border-radius-10 mt-4 overflow-hidden">
-              <div className="d-flex align-items-center justify-content-between">
-                <h6 className="font-weight-600 mb-0 mr-3">Price Details</h6>
-                <a href="#" className="btn bg-primary text-white">
-                  Add New
-                </a>
-              </div>
-              <div className="table-responsive mt-3">
-                <div
-                  className="custom-table  table-child"
-                  style={{
-                    height: "auto",
-                    width: "100%",
-                  }}
-                >
-                  <DataTable
-                    title=""
-                    columns={priceItemColumns}
-                    data={bundleItems}
-                    customStyles={customStyles}
-                    // pagination
-                  />
-                </div>
-              </div>
-            </div>
+            <WithoutSearchDataTable
+              columns={priceItemColumns}
+              data={bundleItems}
+              title="Price Details"
+              showAddBtn={true}
+            />
             <h6 className="font-weight-500 pl-2 mt-5">ERP Price</h6>
-            <div className="bg-white p-3 mt-3 border-radius-10 mb-5 overflow-hidden">
-              <h6 className="font-weight-600 mb-0 mr-3">ERP Price</h6>
-              <div className="table-responsive mt-3">
-                <div
-                  className="custom-table  table-child"
-                  style={{
-                    height: "auto",
-                    width: "100%",
-                  }}
-                >
-                  <DataTable
-                    title=""
-                    columns={erpDetailsItemColumns}
-                    data={bundleItems}
-                    customStyles={customStyles}
-                    // pagination
-                  />
-                </div>
-              </div>
-            </div>
+            <WithoutSearchDataTable
+              columns={erpDetailsItemColumns}
+              data={bundleItems}
+              title="ERP Details"
+            />
           </TabPanel>
         </TabContext>
       </Box>
@@ -1166,31 +1109,12 @@ const Parts360 = () => {
     return (
       <>
         <h5 className="font-weight-500 mt-5 ">Warranty</h5>
-        <div className="bg-white p-3 border-radius-10 mt-3 mb-4">
-          <div className="d-flex align-items-center justify-content-between">
-            <h6 className="font-weight-600 mb-0 mr-3">Warranty Details</h6>
-            <a href="#" className="btn bg-primary text-white">
-              Add New
-            </a>
-          </div>
-          <div className="table-responsive mt-3">
-            <div
-              className="custom-table  table-child"
-              style={{
-                height: "auto",
-                width: "100%",
-              }}
-            >
-              <DataTable
-                title=""
-                columns={warrentyItemColumns}
-                data={warrentyItems}
-                customStyles={customStyles}
-                // pagination
-              />
-            </div>
-          </div>
-        </div>
+        <WithoutSearchDataTable
+          columns={warrentyItemColumns}
+          data={warrentyItems}
+          title="Warranty Details"
+          showAddBtn={true}
+        />
       </>
     );
   };

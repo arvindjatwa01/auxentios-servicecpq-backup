@@ -188,3 +188,150 @@ export const partsSearch = [
   { value: "E", label: "ERP Material Group" },
   { value: "F", label: "ERP Material Number" },
 ];
+
+export const laborOptions = [
+  { value: "A", label: "By internal or external" },
+  { value: "B", label: "Service code" },
+  { value: "C", label: "Description" },
+  { value: "D", label: "Labor type" },
+];
+
+export const serviceOptions = [
+  { value: "A", label: "By internal or external" },
+  { value: "B", label: "Service code" },
+  { value: "C", label: "Description" },
+  { value: "D", label: "Labor type" },
+];
+
+export const customerSearchOptions = [
+  { value: "A", label: "Customer Number" },
+  { value: "B", label: "Description" },
+  { value: "C", label: "Email" },
+  { value: "D", label: "Type" },
+  { value: "E", label: "Group" },
+  { value: "F", label: "Segment" },
+];
+
+export const consumableSearchOptions = [
+  { value: "A", label: "Consumable Number" },
+  { value: "B", label: "Description" },
+  { value: "C", label: "Supplier" },
+];
+
+export const defaultCustomerSearchList = [
+  {
+    id: 1,
+    A: "110346",
+    B: "Gloria Mining Services S.A.C.",
+    C: "Large Enterprise",
+    D: "Retail",
+    active: true,
+  },
+  {
+    id: 2,
+    A: "1022061",
+    B: "Investments John Mic Sac",
+    C: "Medium Entrprise",
+    D: "Corporate",
+    active: false,
+  },
+  {
+    id: 3,
+    A: "1011453",
+    B: "Provincial Municipality of Chanchamayo",
+    C: "Small Retail",
+    D: "Energy",
+    active: false,
+  },
+  {
+    id: 4,
+    A: "1006646",
+    B: "Satipo Provincial Municipality",
+    C: "Medium Entrprise",
+    D: "A Class",
+    active: false,
+  },
+  {
+    id: 5,
+    A: "1018516",
+    B: "2050 Vargaya Sucari Froilan",
+    C: "Large Enterprise",
+    D: "Corporate",
+    active: false,
+  },
+  {
+    id: 6,
+    A: "1048850",
+    B: "Civil Engineers and Generating Contractors",
+    C: "Small Retail",
+    D: "C Class",
+    active: false,
+  },
+  {
+    id: 7,
+    A: "1012124",
+    B: "Vias Engineering and Constructions S.R.L Saw",
+    C: "Revenue > $ 1 Mil",
+    D: "Energy",
+    active: false,
+  },
+];
+
+export const defaultConsumableSearchList = [
+  {
+    id: 1,
+    A: "110346",
+    B: "Materials Procesivos",
+    C: "MC",
+    D: "Stockable",
+    active: true,
+  },
+  {
+    id: 2,
+    A: "111141",
+    B: "Miscelanos",
+    C: "EX",
+    D: "Stockable",
+    active: false,
+  },
+  {
+    id: 3,
+    A: "101093",
+    B: "Trapo Industrial",
+    C: "AA",
+    D: "Non Stockable",
+    active: false,
+  },
+  {
+    id: 4,
+    A: "110528",
+    B: "Set of mirrors for retro view mirrors",
+    C: "OL",
+    D: "Stockable",
+    active: false,
+  },
+  {
+    id: 5,
+    A: "111141",
+    B: "Absorbent Cloth",
+    C: "PK",
+    D: "Stockable",
+    active: false,
+  },
+  {
+    id: 6,
+    A: "110549",
+    B: "Miscelanos",
+    C: "LN",
+    D: "Stockable",
+    active: false,
+  },
+  {
+    id: 7,
+    A: "110528",
+    B: "Set of mirrors for retro view mirrors",
+    C: "EX",
+    D: "Stockable",
+    active: false,
+  },
+];

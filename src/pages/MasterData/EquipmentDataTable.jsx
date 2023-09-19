@@ -6,7 +6,6 @@ import AddIcon from "@mui/icons-material/Add";
 
 const EquipmentDataTable = ({ columns, data, title }) => {
   return (
-    <>
       <div className="bg-white p-3 border-radius-10 mt-3 overflow-hidden">
         <div className="row align-items-center">
           <div className="col-lg-9 col-md-9">
@@ -41,7 +40,6 @@ const EquipmentDataTable = ({ columns, data, title }) => {
           </div>
         </div>
       </div>
-    </>
   );
 };
 

@@ -4,7 +4,7 @@ import $ from "jquery";
 import Select from "react-select";
 
 import SearchIcon from "@mui/icons-material/Search";
-import { eqipmentOptions, partsSearch } from "./equipmentConstant";
+import { consumableSearchOptions, customerSearchOptions, eqipmentOptions, laborOptions, partsSearch, serviceOptions } from "./equipmentConstant";
 
 const EquipmentSearchMaster = ({ falgType }) => {
   const [searchSelector, setSearchSelector] = useState([
@@ -80,6 +80,14 @@ const EquipmentSearchMaster = ({ falgType }) => {
                           ? partsSearch
                           : falgType === "equipment"
                           ? eqipmentOptions
+                          : falgType === "labor"
+                          ? laborOptions
+                          : falgType === "service"
+                          ? serviceOptions
+                          : falgType === "customer"
+                          ? customerSearchOptions
+                          : falgType === "consumable"
+                          ? consumableSearchOptions
                           : []
                       }
                       placeholder="Search By"
@@ -91,7 +99,7 @@ const EquipmentSearchMaster = ({ falgType }) => {
                     <input
                       className="custom-input-sleact"
                       type="text"
-                      placeholder="Search Parts"
+                      placeholder={"Search " + falgType}
                       autoComplete="off"
                     />
                     {
