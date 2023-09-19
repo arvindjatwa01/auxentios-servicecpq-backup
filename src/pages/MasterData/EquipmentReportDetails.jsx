@@ -552,7 +552,7 @@ const EquipmentReportDetails = ({ show, hideModel, header, reportType }) => {
       <div className="row">
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-          Alternate Part #
+            Alternate Part #
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500">
             2276044
@@ -560,7 +560,7 @@ const EquipmentReportDetails = ({ show, hideModel, header, reportType }) => {
         </div>
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-          Quantity
+            Quantity
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
         </div>
@@ -600,7 +600,7 @@ const EquipmentReportDetails = ({ show, hideModel, header, reportType }) => {
       <div className="row">
         <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
           <p className="text-light-60 font-size-12 m-0 font-weight-500">
-          Reman Part #
+            Reman Part #
           </p>
           <p className="text-primary font-size-12 mt-1 font-weight-500">
             2276044
@@ -643,6 +643,272 @@ const EquipmentReportDetails = ({ show, hideModel, header, reportType }) => {
       </div>
     );
   };
+  const PriceDetails = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Group#
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">Type</p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">New</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Part #
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Sales Unit
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Quantity
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Price
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            94886.38
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Valid From
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Valid To
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+      </div>
+    );
+  };
+  const PartsWarrantyDetails = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Warranty Type
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Warranty Duration
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Date Of Sale
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Date Of Installation
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+      </div>
+    );
+  };
+  // service-labor-component
+  const LaborPriceDetails = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Charge Code
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Labor Code
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Labor Type
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            1757896
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Service Type
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">1</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Unit Of Measure
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">Days</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Unit Price
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Currency
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">USD</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Start Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            End Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Effective From
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Last Updated
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+      </div>
+    );
+  };
+  const ServicePriceDetails = () => {
+    return (
+      <div className="row">
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Activity ID
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            2276044
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Activity Name
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            Chroming
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Supplying Vendor
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+          Test Agency 1
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Unit Of Measure
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">Hours</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Unit Price
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">9.92</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+          Currency
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">USD</p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Start Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            End Date
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Effective From
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+        <div className="col-lg-4 col-md-6 col-sm-6 mt-3">
+          <p className="text-light-60 font-size-12 m-0 font-weight-500">
+            Last Updated
+          </p>
+          <p className="text-primary font-size-12 mt-1 font-weight-500">
+            01/01/2023
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Modal
       className="failure-modal"
@@ -673,6 +939,11 @@ const EquipmentReportDetails = ({ show, hideModel, header, reportType }) => {
           {reportType === "replacedByDetails" && ReplacedByReport()}
           {reportType === "alternateDetails" && AlternateReport()}
           {reportType === "remanDetails" && RemanRefurbReport()}
+          {reportType === "price" && PriceDetails()}
+          {reportType === "partsWarranty" && PartsWarrantyDetails()}
+          {/* service-master-component */}
+          {reportType === "laborPrice" && LaborPriceDetails()}
+          {reportType === "srvicePrice" && ServicePriceDetails()}
 
           <div className="text-right">
             <button
