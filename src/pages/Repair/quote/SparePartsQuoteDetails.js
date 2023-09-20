@@ -77,6 +77,9 @@ import {
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import QuotePriceSummaryTable from "../components/QuotePriceSummaryTable ";
 import LoadingProgress from "../components/Loader";
+import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+
 
 const customStyles = {
   rows: {
@@ -113,6 +116,8 @@ export function SparePartsQuoteDetails(props) {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
 
   const [quoteId, setQuoteId] = useState(0);
+
+  const [showNotes, setShowNotes] = useState(false);
 
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -715,7 +720,7 @@ export function SparePartsQuoteDetails(props) {
     setShippingDetail({ ...shippingDetail, serviceRecipientAddress });
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      handleSnack("error","Please enter the email address in correct format");
+      handleSnack("error", "Please enter the email address in correct format");
     } else {
       updateQuoteHeader(quoteId, data)
         .then((result) => {
@@ -1284,7 +1289,16 @@ export function SparePartsQuoteDetails(props) {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
-              <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={openSource}>Go To Source</a>
+              <a
+                href={undefined}
+                className="cursor btn ml-3 font-size-14 bg-primary text-white"
+                onClick={openSource}
+              >
+                Go To Source
+              </a>
+              <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
+                <DescriptionOutlinedIcon className="text-grey font-size-28" />
+              </a>
               <a href="#" className="ml-3 font-size-14">
                 <img src={shareIcon}></img>
               </a>
@@ -2725,20 +2739,23 @@ export function SparePartsQuoteDetails(props) {
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
             > */}
-              <DataTable
-                className=""
-                title=""
-                columns={quoteItemsColumns}
-                data={quoteItems}
-                customStyles={customStyles}
-                pagination
-                // onRowClicked={(e) => handleRowClick(e)}
-                // selectableRows
-              />
+            <DataTable
+              className=""
+              title=""
+              columns={quoteItemsColumns}
+              data={quoteItems}
+              customStyles={customStyles}
+              pagination
+              // onRowClicked={(e) => handleRowClick(e)}
+              // selectableRows
+            />
             {/* </div> */}
           </div>
         </div>
       </div>
+      {showNotes && (
+        <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
+      )}
     </>
   );
 }
