@@ -75,7 +75,6 @@ import {
   selectQuoteValidityList,
 } from "../dropdowns/quoteRepairSlice";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import PriceSummaryTable from "../components/PriceSummaryTable";
 import QuotePriceSummaryTable from "../components/QuotePriceSummaryTable ";
 import LoadingProgress from "../components/Loader";
 import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
@@ -222,6 +221,16 @@ export function SparePartsQuoteDetails(props) {
   const validityOptions = useAppSelector(
     selectQuoteDropdownOption(selectQuoteValidityList)
   );
+
+  const addPayerDetails = (id, payerName, billingSplit) => {
+    addQuotePayer(id, { payerName, billingSplit })
+      .then((addedPayer) => {
+        setPayers([addedPayer]);
+      })
+      .catch((e) => {
+        handleSnack("warning", "please check the payer data!");
+      });
+  };
   useEffect(() => {
     console.log(state);
     if (state) {
@@ -241,30 +250,30 @@ export function SparePartsQuoteDetails(props) {
   const [payers, setPayers] = useState([]);
   const [quoteSummary, setQuoteSummary] = useState("");
 
-  async function createQuotePayer(data) {
-    await addQuotePayer(quoteId, {
-      ...data,
-      payerId: undefined,
-      isNew: undefined,
-    })
-      .then((payer) => {
-        handleSnack("success", `Payer has been added!${JSON.stringify(payer)}`);
-        return payer;
-      })
-      .catch((e) => {
-        handleSnack("error", "Payer details could not be added");
-        throw e;
-      });
-  }
-  const updateQuotePayer = async (payerQuoteId, data) => {
-    await updatePayerData(payerQuoteId, data)
-      .then((savedPayer) => {
-        handleSnack("success", "Payer has been updated!");
-      })
-      .catch((e) => {
-        handleSnack("error", "Payer details could not be updated");
-      });
-  };
+  // async function createQuotePayer(data) {
+  //   await addQuotePayer(quoteId, {
+  //     ...data,
+  //     payerId: undefined,
+  //     isNew: undefined,
+  //   })
+  //     .then((payer) => {
+  //       handleSnack("success", `Payer has been added!${JSON.stringify(payer)}`);
+  //       return payer;
+  //     })
+  //     .catch((e) => {
+  //       handleSnack("error", "Payer details could not be added");
+  //       throw e;
+  //     });
+  // }
+  // const updateQuotePayer = async (payerQuoteId, data) => {
+  //   await updatePayerData(payerQuoteId, data)
+  //     .then((savedPayer) => {
+  //       handleSnack("success", "Payer has been updated!");
+  //     })
+  //     .catch((e) => {
+  //       handleSnack("error", "Payer details could not be updated");
+  //     });
+  // };
 
   const [quoteVersionOptions, setQuoteVersionOptions] = useState([
     { label: "Version 1", value: 1 },
@@ -412,6 +421,9 @@ export function SparePartsQuoteDetails(props) {
       country: result.country ? result.country : "",
       regionOrState: result.regionOrState ? result.regionOrState : "",
     });
+    if (result.customerName && result.payers.length === 0) {
+      addPayerDetails(result.quoteId, result.customerName, 100);
+    }
     setSearchCustResults([]);
   };
   const populateMachineData = (result) => {
@@ -484,20 +496,6 @@ export function SparePartsQuoteDetails(props) {
             )
           : { label: "", value: "" },
     });
-    // setPricingData({
-    //   priceDate: result.priceDate ? result.priceDate : new Date(),
-    //   priceMethod:
-    //     result.priceMethod && result.priceMethod !== "EMPTY"
-    //       ? priceMethodOptions.find(
-    //           (element) => element.value === result.priceMethod
-    //         )
-    //       : { label: "", value: "" },
-    //   netPrice: result.netPrice ? result.netPrice : 0.0,
-    //   adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
-    //   currency: result.currency
-    //     ? currencyOptions.find((element) => element.value === result.currency)
-    //     : { label: "", value: "" },
-    // });
   };
   const populateShippingData = async (result) => {
     let serviceRecipientAddress = "";
@@ -2485,6 +2483,8 @@ export function SparePartsQuoteDetails(props) {
                       </div> */}
                         <div className="mt-3">
                           <QuotePriceSummaryTable
+                            handleSnack={handleSnack}
+                            quoteId={quoteId}
                             rows={billingDetail.priceEstimates}
                             setRows={(rows) =>
                               setBillingDetail({

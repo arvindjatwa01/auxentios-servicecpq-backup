@@ -6,7 +6,6 @@ import Checkbox from "@mui/material/Checkbox";
 import Tab from "@mui/material/Tab";
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Select from "react-select";
 // import { MuiMenuComponent } from "./components/MuiMenuRepair";
 import {
@@ -75,7 +74,6 @@ import CustomSnackbar from "../Common/CustomSnackBar";
 import AddNewSparepartModal from "./components/AddNewSparePart";
 import SearchBox from "./components/SearchBox";
 // import logoIcon from '../assets/icons/svg/menu.png'
-import { useAppSelector } from "app/hooks";
 import {
   customerSearch,
   machineSearch,
@@ -97,14 +95,9 @@ import {
   GRID_STYLE,
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
-  QUOTE_OPTIONS,
   SPAREPART_SEARCH_Q_OPTIONS,
   STATUS_OPTIONS,
 } from "./CONSTANTS";
-import {
-  selectDropdownOption,
-  selectPricingMethodList,
-} from "./dropdowns/repairSlice";
 import CreateKIT from "./components/CreateKIT";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -114,7 +107,6 @@ import { createSparePartQuote } from "services/repairQuoteServices";
 import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import PriceMethodTable from "./components/PriceMethodTable";
 import PriceSummaryTable from "./components/PriceSummaryTable";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -197,7 +189,6 @@ function PartList(props) {
   const [partListNo, setPartListNo] = useState("");
   const [partListId, setPartListId] = useState("");
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = useState("customer");
   const [open, setOpen] = useState(false);
   const [addPartOpen, setAddPartOpen] = useState(false);
@@ -224,6 +215,8 @@ function PartList(props) {
   const activityOptions = ["New Versions", "Show Errors", "Review"];
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
+  const [selectedMasterData, setSelectedMasterData] = useState([]);
+  const [masterData, setMasterData] = useState([]);
   const [kitOpen, setKitOpen] = useState(false);
   const [kitVersion, setKitVersion] = useState({
     value: "GOLD",
@@ -315,11 +308,6 @@ function PartList(props) {
     { value: 60, label: "2 months" },
   ];
 
-  // Retrieve price methods
-  const priceMethodOptions = useAppSelector(
-    selectDropdownOption(selectPricingMethodList)
-  );
-
   // TODO: Replace it with tenant details
   const salesOfficeOptions = [
     { value: "Location1", label: "Location1" },
@@ -355,9 +343,10 @@ function PartList(props) {
       setBId(state.bId);
       // setPartListNo(state.partListNo);
       setPartListId(state.partListId);
-      if (state.versionNumber)
+      if(state.versionNumber)
         fetchAllDetails(state.builderId, state.versionNumber);
-      else fetchAllDetailsWithDBId(state.bId);
+      else
+        fetchAllDetailsWithDBId(state.bId);
     }
   }, []);
 
@@ -551,12 +540,6 @@ function PartList(props) {
   const populatePricingData = (result) => {
     setPricingData({
       priceDate: result.priceDate ? result.priceDate : new Date(),
-      // priceMethod:
-      //   result.priceMethod && result.priceMethod !== "EMPTY"
-      //     ? priceMethodOptions.find(
-      //         (element) => element.value === result.priceMethod
-      //       )
-      //     : { label: "", value: "" },
       netPrice: result.netPrice ? result.netPrice : 0.0,
       adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: result.currency
@@ -784,7 +767,7 @@ function PartList(props) {
     };
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      handleSnack("error", "Please enter the email address in correct format");
+      handleSnack("error","Please enter the email address in correct format");
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
@@ -1221,9 +1204,6 @@ function PartList(props) {
       handleSnack("info", "Set active status to do “convert to”");
     else setOpen(true);
   };
-  const handleCreate = () => {
-    history.push("/quoteTemplate");
-  };
 
   const handleCreateKIT = () => {
     // if (selBuilderStatus?.value === "ACTIVE") {
@@ -1331,7 +1311,7 @@ function PartList(props) {
     history.push({
       pathname: "/RepairPartList",
     });
-  };
+  }
 
   const handleResetData = (action) => {
     if (action === "RESET") {
@@ -1366,13 +1346,6 @@ function PartList(props) {
         ...viewOnlyTab,
         priceViewOnly: false,
       });
-  };
-
-  const [selectedMasterData, setSelectedMasterData] = useState([]);
-  const [masterData, setMasterData] = useState([]);
-
-  const handleRowClick = (e) => {
-    setShow(true);
   };
 
   // Select parts to add
@@ -1497,21 +1470,25 @@ function PartList(props) {
 
   const refreshData = (builderId, version) => {
     setHeaderLoading(true);
-    fetchBuilderVersionDet(builderId, version)
-      .then((result) => {
-        populateHeader(result);
-        setHeaderLoading(false);
-        // fetchPartlist(result.id);
-        fetchPartsOfPartlist(partListNo, page, pageSize);
-      })
-      .catch((err) => {
-        setHeaderLoading(false);
-        handleSnack(
-          "error",
-          "Error occurred while fetching the version details"
-        );
-      });
-  };
+      fetchBuilderVersionDet(builderId, version)
+        .then((result) => {
+          populateHeader(result);
+          setHeaderLoading(false);
+          // fetchPartlist(result.id);
+          fetchPartsOfPartlist(
+            partListNo,
+            page,
+            pageSize
+          );
+        })
+        .catch((err) => {
+          setHeaderLoading(false);
+          handleSnack(
+            "error",
+            "Error occurred while fetching the version details"
+          );
+        });
+  }
   // Updates the bulk edits
   const bulkUpdateParts = async () => {
     setConfirmationOpen(false);
@@ -1548,7 +1525,6 @@ function PartList(props) {
     }
   }
 
-  const [show, setShow] = React.useState(false);
   return (
     <>
       <CustomSnackbar
@@ -3368,7 +3344,6 @@ function PartList(props) {
                   rowsPerPageOptions={[5]}
                   checkboxSelection
                   onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
-                  onCellClick={(e) => handleRowClick(e)}
                 />
               </div>
             </div>

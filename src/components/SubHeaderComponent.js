@@ -16,7 +16,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 // import { signUpActions } from "../../src/features/auth/authSlice";
 
 import DateFnsUtils from "@date-io/date-fns";
@@ -25,16 +25,14 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Tab from "@mui/material/Tab";
-import Clock from "react-live-clock";
 
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { getAuditRestServiceData } from "./../services/index";
-import { Tooltip } from "@mui/material";
 
 export function SubHeaderComponent(props) {
   // const dispatch = useDispatch();
-  const result = useSelector((state) => state.loginSuccess);
-  const location = useLocation();
+  // const result = useSelector((state) => state.loginSuccess);
+  // const location = useLocation();
   const notesForOptions = [
     { label: "Customer", value: "Customer" },
     { label: "Internal", value: "Internal" },

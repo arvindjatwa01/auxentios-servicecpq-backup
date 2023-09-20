@@ -15,7 +15,7 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MuiMenuComponent } from "pages/Operational";
 import React, { useEffect, useState } from "react";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Moment from "react-moment";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
@@ -78,7 +78,6 @@ import QuoteModal from "./components/QuoteModal";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import PriceSummaryTable from "./components/PriceSummaryTable";
 import PriceMethodTable from "./components/PriceMethodTable";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -120,7 +119,7 @@ function WithoutSparePartsHeader(props) {
     history.push({
       pathname: "/RepairWithoutSpareParts",
     });
-  };
+  }
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
     machineViewOnly: false,
@@ -560,7 +559,7 @@ function WithoutSparePartsHeader(props) {
     console.log(data);
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      handleSnack("error", "Please enter the email address in correct format");
+      handleSnack("error","Please enter the email address in correct format");
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
@@ -715,7 +714,7 @@ function WithoutSparePartsHeader(props) {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     if (selBuilderStatus?.value !== "ACTIVE")
-      handleSnack("info", "Set active status to do �convert to�");
+      handleSnack("info", "Set active status to do “convert to”");
     else setOpen(true);
   };
   const handleClose = () => {
@@ -1002,10 +1001,7 @@ function WithoutSparePartsHeader(props) {
           {activeElement.name === "header" && (
             <React.Fragment>
               <div className="card p-4 mt-5">
-                <div
-                  className="row px-3 pb-1"
-                  style={{ justifyContent: "right" }}
-                >
+                <div className="row px-3 pb-1" style={{ justifyContent: "right" }}>
                   <button
                     type="button"
                     className="btn btn-light bg-primary text-white"
@@ -2114,13 +2110,13 @@ function WithoutSparePartsHeader(props) {
                               </div>
                               <PriceSummaryTable
                                 rows={pricingData.priceEstimateDTO}
-                                setRows={(rows) => {
+                                setRows={(rows) =>{
                                   console.log(rows);
                                   setPricingData({
                                     ...pricingData,
                                     priceEstimateDTO: rows,
-                                  });
-                                }}
+                                  })}
+                                }
                               />
                               <div
                                 className="row my-3 mr-2"
