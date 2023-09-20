@@ -2459,6 +2459,8 @@ const RepairQuoteDetails = (props) => {
                         <div className="mt-3">
                           <QuotePriceSummaryTable
                             rows={billingDetail.priceEstimates}
+                            quoteId={quoteId}
+                            handleSnack={handleSnack}
                             setRows={(rows) =>
                               setBillingDetail({
                                 ...billingDetail,

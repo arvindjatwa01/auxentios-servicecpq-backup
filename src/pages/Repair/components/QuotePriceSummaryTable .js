@@ -17,7 +17,7 @@ import {
 } from "@mui/x-data-grid";
 import { GRID_STYLE } from "../CONSTANTS";
 import { Tooltip } from "@mui/material";
-import { addQuotePayer } from "services/repairQuoteServices";
+import { addQuotePayer, addQuotePriceSummary, updateQuotePriceSummary } from "services/repairQuoteServices";
 import { useState } from "react";
 
 function SummaryAdjustedPrice(params) {
@@ -63,9 +63,9 @@ function EditToolbar(props) {
         className="row col-md-6 col-lg-4"
         style={{ justifyContent: "right" }}
       >
-        {/* <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+        <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
           Add Price Summary
-        </Button> */}
+        </Button>
       </div>
     </GridToolbarContainer>
   );
@@ -128,30 +128,41 @@ export default function QuotePriceSummaryTable(props) {
         const updatedRow = { ...newRow, isNew: false };
         if (updatedRow.rbPriceEstimateId === "new") {
           console.log(oldRow, newRow, rows);
-          addQuotePayer(props.quoteId, {
+          addQuotePriceSummary(props.quoteId, {
             ...updatedRow,
             id: undefined,
             isNew: undefined,
           })
-            .then((savedPayer) => {
-              props.handleSnack("success", `Payer has been added!`);
+            .then((savedSummary) => {
+              props.handleSnack("success", `Quote summary has been added!`);
               setRows(
-                rows.map((row) => (row.rbPriceEstimateId === newRow.rbPriceEstimateId ? savedPayer : row))
+                rows.map((row) => (row.rbPriceEstimateId === newRow.rbPriceEstimateId ? savedSummary : row))
               );
-              resolve(savedPayer);
+              resolve(savedSummary);
             })
             .catch((e) => {
-              props.handleSnack("error", "Payer details could not be added");
+              props.handleSnack("error", "Quote price summary details could not be added");
               resolve(oldRow);
             });
         } else {
-          setRows(
-            rows.map((row) =>
-              row.rbPriceEstimateId === updatedRow.rbPriceEstimateId
-                ? { ...updatedRow, isNew: undefined }
-                : row
-            )
-          );
+          updateQuotePriceSummary(newRow.rbPriceEstimateId, updatedRow)
+            .then((savedSummary) => {
+              props.handleSnack("success", "Quote summary has been updated!");
+              setRows(
+                rows.map((row) =>
+                  row.rbPriceEstimateId === updatedRow.rbPriceEstimateId
+                    ? { ...updatedRow, isNew: undefined }
+                    : row
+                )
+              );
+              
+              resolve(savedSummary.data);
+            })
+            .catch((e) => {
+              props.handleSnack("error", "Quote summary details could not be updated");
+              resolve(oldRow);
+            });
+          
 
           resolve(updatedRow);
         }

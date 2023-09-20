@@ -12,31 +12,17 @@
  * Other way to deal with this is to name every json file as per your service endpoint and use a basepath variable.
  * Toggle this basePath variable between "actual-domain.com/" or "/data/".
  */
-
-const PRICING_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
-const SOLUTION_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
-const USER_SERVICE_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
-const DATA_SERVICE_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
-const QUOTE_SERVICE_BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
-const REPAIR_BUILDER_URI = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/repair-builder-svc/v1/";
+const BASE_URL = process.env.REACT_APP_API_BASEURL;
 
 
-// const PRICING_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
-// const SOLUTION_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
-// const USER_SERVICE_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
-// const DATA_SERVICE_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
-// const QUOTE_SERVICE_BASE_URL = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/";
-// const REPAIR_BUILDER_URI = "http://afa9bd0c4417b4fbfbe386149fb059f3-96fa7279b384f94a.elb.ap-south-1.amazonaws.com/repair-builder-svc/v1/";
-
-const PRICING_URI = PRICING_BASE_URL + "pricing-svc/v1/";
-const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
-
-const QUOTE_REST_SERVICE = SOLUTION_BASE_URL + "quote-svc/v1/quote";
-const QUOTE_COMMON_REST_SERVICE = QUOTE_SERVICE_BASE_URL + "quote-svc/v1";
-
-const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
-const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/"
-const DATA_SERVICE_URI = DATA_SERVICE_BASE_URL + "data-svc/api/v1/";
+const PRICING_URI = BASE_URL + "pricing-svc/v1/";
+const SOLUTION_BUILDER_URI = BASE_URL + "solution-builder-svc/v1/";
+const QUOTE_REST_SERVICE = BASE_URL + "quote-svc/v1/quote";
+const QUOTE_COMMON_REST_SERVICE = BASE_URL + "quote-svc/v1";
+const USER_SERVICE_URI = BASE_URL + "user-svc/v1/";
+const SEARCH_COVERAGE = BASE_URL + "data-svc/api/v1/coverage/"
+const DATA_SERVICE_URI = BASE_URL + "data-svc/api/v1/";
+const REPAIR_BUILDER_URI = BASE_URL + "repair-builder-svc/v1/";
 
 
 // search for coverage
@@ -67,18 +53,20 @@ export const GET_SEARCH_KIT_ID = REPAIR_BUILDER_URI + "kit/search?search=kitId~"
 export const GET_SEARCH_STANDARD_JOB_ID = REPAIR_BUILDER_URI + "standard-job/search?search=standardJobId~";
 
 //User Service
-export const USER_SERVICE_SIGNUP_URL = () => USER_SERVICE_URI + "signup";
-export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "root-login";
-export const USER_SERVICE_FORGOT_PASSWORD = () => USER_SERVICE_URI + "forgot-password";
-export const USER_SERVICE_RESET_PASSWORD = () => USER_SERVICE_URI + "new-password";
-export const USER_SERVICE_ADD_USER = () => USER_SERVICE_BASE_URL + "user-svc/v1/tenant-user";
-export const GET_ALL_USERS = () => USER_SERVICE_BASE_URL + "user-svc/v1/tenant-user/user-list";
-export const GET_USER_DETAILS = (id) => USER_SERVICE_BASE_URL + `user-svc/v1/tenant-user/${id}`;
-export const REMOVE_USER = (id) => USER_SERVICE_BASE_URL + `user-svc/v1/tenant-user/${id}`;
+export const USER_SERVICE_SIGNUP_URL = () => USER_SERVICE_URI + "user/signup";
+export const USER_SERVICE_VALIDATE_URL = () => USER_SERVICE_URI + "user/validate-user";
 
-export const SEARCH_USERS = (query) => USER_SERVICE_BASE_URL + "user-svc/v1/tenant-user/search?search="+query;
+export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "user/root-login";
+export const USER_SERVICE_FORGOT_PASSWORD = () => USER_SERVICE_URI + "user/forgot-password";
+export const USER_SERVICE_RESET_PASSWORD = () => USER_SERVICE_URI + "user/new-password";
+export const USER_SERVICE_ADD_USER = () => USER_SERVICE_URI + "tenant-user";
+export const GET_ALL_USERS = () => USER_SERVICE_URI + "tenant-user/user-list";
+export const GET_USER_DETAILS = (id) => USER_SERVICE_URI + `tenant-user/${id}`;
+export const REMOVE_USER = (id) => USER_SERVICE_URI + `tenant-user/${id}`;
 
-export const FETCH_ROLES = () => USER_SERVICE_BASE_URL + "user-svc/v1/user-role";
+export const SEARCH_USERS = (query) => USER_SERVICE_URI + "tenant-user/search?search="+query;
+
+export const FETCH_ROLES = () => USER_SERVICE_URI + "user-role";
 
 // Audit Service
 
@@ -283,6 +271,9 @@ export const ADD_PL_QUOTE_ITEM = (quoteId) => QUOTE_REST_SERVICE + `/part-list?q
 export const FETCH_QUOTE_SUMMARY = (quoteId) => QUOTE_REST_SERVICE + `/summary?quote_id=${quoteId}`;
 export const CREATE_QUOTE_PAYER = (quoteId) => QUOTE_REST_SERVICE + `/payer?quote_id=${quoteId}`;
 export const UPDATE_QUOTE_PAYER = (quotePayerId) => QUOTE_REST_SERVICE + `/payer/${quotePayerId}`;
+export const ADD_QUOTE_PRICE_SUMMARY = (quoteId) => QUOTE_REST_SERVICE + `/rbpe?quote_id=${quoteId}`;
+export const UPDATE_QUOTE_PRICE_SUMMARY = (priceSummaryId) => QUOTE_REST_SERVICE + `/rbpe/${priceSummaryId}`;
+
 export const FETCH_BILLING_TYPE = () => QUOTE_COMMON_REST_SERVICE + `/common-config/billing-type`;
 export const FETCH_BILLING_FREQ = () => QUOTE_COMMON_REST_SERVICE + `/common-config/billing-frequency`;
 export const FETCH_DEL_TYPE = () => QUOTE_COMMON_REST_SERVICE + `/common-config/delivery-type`;

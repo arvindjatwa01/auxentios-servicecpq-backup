@@ -27,6 +27,7 @@
     "chart.js": "^4.1.2",
     "connected-react-router": "^6.9.2",
     "date-fns": "^2.0.0-beta.5",
+    "env-cmd": "^10.1.0",
     "faker": "^5.5.3",
     "font-awesome": "^4.7.0",
     "fontsource-roboto": "^4.0.0",
@@ -62,8 +63,12 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "set PORT=3008 && react-scripts start",
-    "build": "react-scripts build",
+    "start": "set PORT=3008 && env-cmd -f .env.dev react-scripts start",
+    "start:trial": "set PORT=3008 && env-cmd -f .env.trial react-scripts start",
+    "start:demo": "set PORT=3008 && env-cmd -f .env.demo react-scripts start",
+    "build": "env-cmd -f .env.dev react-scripts build",
+    "build:trial": "env-cmd -f .env.trial react-scripts build",
+    "build:demo": "env-cmd -f .env.demo react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
