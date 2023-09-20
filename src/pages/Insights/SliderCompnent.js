@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { Slider, Stack, Typography, Card } from '@mui/material'
 
 export default function FilterOptions(props) {
     let minDistance = 10;
-    const marks = [{ label: props.min, value: props.min }, { label: props.max, value: props.max }]
+    // const marks = [{ label: props.min, value: props.min }, { label: props.max, value: props.max }]
     const handleChangeTransValue = (event, newValue, activeThumb) => {
         if (!Array.isArray(newValue)) {
             return;

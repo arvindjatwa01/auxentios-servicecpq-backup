@@ -5,18 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFileAlt,
   faFolderPlus,
-  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import Buttonarrow from "../../../assets/icons/svg/Button-arrow.svg";
 
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { quoteRecent } from "services/repairQuoteServices";
@@ -29,7 +22,6 @@ import { repairQuoteActions } from "../dropdowns/quoteRepairSlice";
 import { useDispatch } from "react-redux";
 
 const RecentRepairQuote = () => {
-  const [modalComponent, setModalComponent] = useState(null);
   const [recentQuotesLoading, setRecentQuotesLoading] = useState(false);
   const [recentQuotes, setRecentQuotes] = useState([]);
   // Snack Bar State
@@ -195,7 +187,6 @@ const RecentRepairQuote = () => {
             </div>
           </div>          
         </div>
-        {modalComponent}
       </div>
     </>
   );

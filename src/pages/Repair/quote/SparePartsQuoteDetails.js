@@ -1226,14 +1226,10 @@ export function SparePartsQuoteDetails(props) {
     let builderDetails = {
       builderId: "",
       bId: "",
-      partListNo: "",
-      partListId: "",
       type: "fetch",
     };
     builderDetails.builderId = customerData.source;
     builderDetails.bId = savedQuoteDetails.builderId;
-    // builderDetails.partListId = selectedBuilder.estimationNumber;
-    // builderDetails.versionNumber = selectedBuilder.versionNumber;
     history.push({
       pathname: "/RepairPartList/PartList",
       state: builderDetails,
@@ -1283,7 +1279,7 @@ export function SparePartsQuoteDetails(props) {
                     className="customselectbtn"
                     onChange={(e) => handleQuoteStatus(e)}
                     // isOptionDisabled={(e) => disableStatusOptions(e)}
-                    options={STATUS_OPTIONS}
+                    options={statusOptions}
                     value={selQuoteStatus}
                   />
                 </div>

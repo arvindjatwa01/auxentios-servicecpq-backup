@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { Box, Card, Grid } from "@mui/material";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
-import { DataGrid, GridToolbar, GridToolbarColumnsButton, GridToolbarContainer } from "@mui/x-data-grid";
+import { DataGrid, GridToolbarColumnsButton, GridToolbarContainer } from "@mui/x-data-grid";
 import {
   getGapToEntitlement,
 } from "services/dashboardServices";

@@ -9,17 +9,18 @@ import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
 import FilterOptions from "./SliderCompnent";
 
-const partsSegmentValues = [
-    { "cluster": "C_Low", "parts_count": 71575, "parts_percentage": 86.0, "revenue_percentage": 0.3 },
-    { "cluster": "C_Mid", "parts_count": 6017, "parts_percentage": 7.23, "revenue_percentage": 0.22 },
-    { "cluster": "C_High", "parts_count": 1585, "parts_percentage": 1.9, "revenue_percentage": 0.13 },
-    { "cluster": "B_Low", "parts_count": 1541, "parts_percentage": 1.85, "revenue_percentage": 0.47 },
-    { "cluster": "B_Mid", "parts_count": 955, "parts_percentage": 1.15, "revenue_percentage": 0.26 },
-    { "cluster": "A_Low", "parts_count": 951, "parts_percentage": 1.14, "revenue_percentage": 48.46 },
-    { "cluster": "B_High", "parts_count": 345, "parts_percentage": 0.41, "revenue_percentage": 0.2 },
-    { "cluster": "A_Mid", "parts_count": 213, "parts_percentage": 0.26, "revenue_percentage": 15.11 },
-    { "cluster": "A_High", "parts_count": 45, "parts_percentage": 0.05, "revenue_percentage": 34.86 }
-]
+//For local testing
+// const partsSegmentValues = [
+//     { "cluster": "C_Low", "parts_count": 71575, "parts_percentage": 86.0, "revenue_percentage": 0.3 },
+//     { "cluster": "C_Mid", "parts_count": 6017, "parts_percentage": 7.23, "revenue_percentage": 0.22 },
+//     { "cluster": "C_High", "parts_count": 1585, "parts_percentage": 1.9, "revenue_percentage": 0.13 },
+//     { "cluster": "B_Low", "parts_count": 1541, "parts_percentage": 1.85, "revenue_percentage": 0.47 },
+//     { "cluster": "B_Mid", "parts_count": 955, "parts_percentage": 1.15, "revenue_percentage": 0.26 },
+//     { "cluster": "A_Low", "parts_count": 951, "parts_percentage": 1.14, "revenue_percentage": 48.46 },
+//     { "cluster": "B_High", "parts_count": 345, "parts_percentage": 0.41, "revenue_percentage": 0.2 },
+//     { "cluster": "A_Mid", "parts_count": 213, "parts_percentage": 0.26, "revenue_percentage": 15.11 },
+//     { "cluster": "A_High", "parts_count": 45, "parts_percentage": 0.05, "revenue_percentage": 34.86 }
+// ]
 const partsSegmentMatrix = [
     ["A_Low", "#872ff760"],
     ["A_Mid", "#872ff780"],

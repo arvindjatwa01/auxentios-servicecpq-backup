@@ -24,6 +24,7 @@ import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
 import SearchComponent from "./components/SearchComponent";
 import { repairQuoteActions } from "./dropdowns/quoteRepairSlice";
+import { WITH_SPARE_PARTS } from "navigation/CONSTANTS";
 
 export const RepairWithSpareParts = () => {
   const [recentBuilders, setRecentBuilders] = useState([]);
@@ -191,7 +192,7 @@ export const RepairWithSpareParts = () => {
         builderDetails.bId = result.id;
 
         history.push({
-          pathname: "/RepairWithSpareParts/BuilderDetails",
+          pathname: WITH_SPARE_PARTS,
           state: builderDetails,
         });
       })
@@ -211,7 +212,7 @@ export const RepairWithSpareParts = () => {
     builderDetails.builderId = builder.builderId;
     builderDetails.bId = builder.id;
     history.push({
-      pathname: "/RepairWithSpareParts/BuilderDetails",
+      pathname: WITH_SPARE_PARTS,
       state: builderDetails,
     });
   };

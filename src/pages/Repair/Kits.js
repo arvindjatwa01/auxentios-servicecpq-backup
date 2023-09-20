@@ -85,7 +85,6 @@ import { fetchPartsFromPartlist } from "services/repairBuilderServices";
 import UpdateCoverageModal from "./components/UpdateCoverageModal";
 import PriceMethodTable from "./components/PriceMethodTable";
 import PriceSummaryTable from "./components/PriceSummaryTable";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import QuoteModal from "./components/QuoteModal";
 import { createKITQuote } from "services/repairQuoteServices";
 import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
@@ -263,11 +262,6 @@ function Kits(props) {
   const [quoteDescription, setQuoteDescription] = useState("");
   const [quoteReference, setQuoteReference] = useState("");
   const [openQuotePopup, setOpenQuotePopup] = useState(false);
-
-  // Retrieve price methods
-  const priceMethodOptions = useAppSelector(
-    selectDropdownOption(selectPricingMethodList)
-  );
 
   // TODO: Replace it with tenant details
   const salesOfficeOptions = [
@@ -1307,9 +1301,6 @@ function Kits(props) {
     history.push("/quoteTemplate");
   };
 
-  const handleRowClick = (e) => {
-    setShow(true);
-  };
   const handleUpdateCoverage = () => {
     // coverageRowData.fleetSize = undefined;
     updateKITCoverage(kitDBId, [coverageRowData])
@@ -1343,7 +1334,6 @@ function Kits(props) {
     })
     setOpenQuotePopup(false);
   };
-  const [show, setShow] = React.useState(false);
   return (
     <>
       <CustomizedSnackbar
@@ -3185,7 +3175,6 @@ function Kits(props) {
                   rowsPerPageOptions={[5]}
                   checkboxSelection
                   onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
-                  onCellClick={(e) => handleRowClick(e)}
                 />
               </div>
             </div>

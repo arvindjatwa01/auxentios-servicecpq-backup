@@ -8,13 +8,8 @@ import { getPropensityDetails, getPropensityToBuy } from "services/dashboardServ
 import LoadingProgress from "../Repair/components/Loader";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid, GridToolbarColumnsButton, GridToolbarContainer } from "@mui/x-data-grid";
-import styled from "@emotion/styled";
 import FilterOptions from "./SliderCompnent";
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  transition: "transform 0.15s ease-in-out",
-  "&:hover": { transform: "scale3d(1.02, 1.02, 1)" },
-}))
 
 const CustomToolbar = ({ setColumnButtonEl }) => {
   return (
@@ -23,18 +18,18 @@ const CustomToolbar = ({ setColumnButtonEl }) => {
     </GridToolbarContainer>
   );
 }
-
-const propensityValues = [
-  { propensity_level: "low", transaction_level: "low", value: "10%" },
-  { propensity_level: "low", transaction_level: "high", value: "12%" },
-  { propensity_level: "low", transaction_level: "medium", value: "15%" },
-  { propensity_level: "medium", transaction_level: "low", value: "2%" },
-  { propensity_level: "medium", transaction_level: "medium", value: "23%" },
-  { propensity_level: "medium", transaction_level: "high", value: "18%" },
-  { propensity_level: "high", transaction_level: "low", value: "2%" },
-  { propensity_level: "high", transaction_level: "medium", value: "21%" },
-  { propensity_level: "high", transaction_level: "high", value: "39%" },
-];
+//For local testing
+// const propensityValues = [
+//   { propensity_level: "low", transaction_level: "low", value: "10%" },
+//   { propensity_level: "low", transaction_level: "high", value: "12%" },
+//   { propensity_level: "low", transaction_level: "medium", value: "15%" },
+//   { propensity_level: "medium", transaction_level: "low", value: "2%" },
+//   { propensity_level: "medium", transaction_level: "medium", value: "23%" },
+//   { propensity_level: "medium", transaction_level: "high", value: "18%" },
+//   { propensity_level: "high", transaction_level: "low", value: "2%" },
+//   { propensity_level: "high", transaction_level: "medium", value: "21%" },
+//   { propensity_level: "high", transaction_level: "high", value: "39%" },
+// ];
 
 const propensityMatrix = [
   ["low", "low", "#ff6493"],

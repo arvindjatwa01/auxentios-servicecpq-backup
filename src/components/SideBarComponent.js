@@ -1,16 +1,5 @@
 import React, { useEffect, useState } from "react";
-import $ from "jquery";
-import logoIcon from "../assets/icons/png/logo.png";
 import { SolutionBuilderModal } from "../pages/SolutionModules/index";
-import PulseIcon from "../assets/icons/svg/Pulse.svg";
-import homesidebarIcon from "../assets/icons/svg/Homesidebar.svg";
-import VectorStrokeIcon from "../assets/icons/svg/Vector-Stroke.svg";
-import starIcon from "../assets/icons/svg/Star.svg";
-import searchIcon from "../assets/icons/svg/search.svg";
-import TemplatesIcon from "../assets/icons/svg/RepairTemplates.svg";
-import manu3lineIcon from "../assets/icons/svg/manu3line.svg";
-import Disassemble from "../assets/icons/svg/Disassemble.png";
-import collIcon from "../assets/icons/svg/coll.png";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
@@ -18,13 +7,13 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Modal } from "react-bootstrap";
 import Radio from "@material-ui/core/Radio";
-import { Link, NavLink, exact } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   QUOTE_RECENT_REPAIR,
   QUOTE_SPARE_PARTS,
-  REPAIR_SERVICE_PARTS_TEMPLATE,
 } from "navigation/CONSTANTS";
 import { Divider } from "@mui/material";
+import Cookies from "js-cookie";
 
 export function SideBarComponent(props) {
   const [solutionBuilderShow, setSolutionBuilderShow] = useState(false);
@@ -39,6 +28,19 @@ export function SideBarComponent(props) {
       setSolutionBuilderShow(true);
     }
   };
+  const [planName, setPlanName] = useState('STARTER');
+  useEffect(() => {
+    var CookiesSetData = Cookies.get("loginTenantDtl");
+
+    if (CookiesSetData !== undefined) {
+      var getCookiesJsonData = JSON.parse(CookiesSetData);
+      if (getCookiesJsonData.user_logIn_Status) {
+        setPlanName(getCookiesJsonData.user_planName);
+      }
+    }
+  }, [])
+
+  const packageValue = {STARTER: 1, GROWTH: 2, MOMENTUM: 3, ENTERPRISE: 4}
 
   const handleShow = () => {
     if (solutionBuilderShow) {
@@ -59,524 +61,11 @@ export function SideBarComponent(props) {
   };
 
   return (
-    // <div className="nk-sidebar" onMouseEnter={handleOpenSideBar} onMouseLeave={handleCloseSideBar}>
-    //      <div className="nk-sidebar">
-    //     <div className="nk-nav-scroll">
-    //         <ul className="metismenu" id="menu">
-    //             <li className="nav-label">Dashboard</li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-speedometer menu-icon"></i><span className="nav-text">Dashboard</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./index.html">Home 1</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li className="mega-menu mega-menu-sm">
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-globe-alt menu-icon"></i><span className="nav-text">Layouts</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./layout-blank.html">Blank</a></li>
-    //                     <li><a href="./layout-one-column.html">One Column</a></li>
-    //                     <li><a href="./layout-two-column.html">Two column</a></li>
-    //                     <li><a href="./layout-compact-nav.html">Compact Nav</a></li>
-    //                     <li><a href="./layout-vertical.html">Vertical</a></li>
-    //                     <li><a href="./layout-horizontal.html">Horizontal</a></li>
-    //                     <li><a href="./layout-boxed.html">Boxed</a></li>
-    //                     <li><a href="./layout-wide.html">Wide</a></li>
-
-    //                     <li><a href="./layout-fixed-header.html">Fixed Header</a></li>
-    //                     <li><a href="layout-fixed-sidebar.html">Fixed Sidebar</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li className="nav-label">Apps</li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-envelope menu-icon"></i> <span className="nav-text">Email</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./email-inbox.html">Inbox</a></li>
-    //                     <li><a href="./email-read.html">Read</a></li>
-    //                     <li><a href="./email-compose.html">Compose</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-screen-tablet menu-icon"></i><span className="nav-text">Apps</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./app-profile.html">Profile</a></li>
-    //                     <li><a href="./app-calender.html">Calender</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-graph menu-icon"></i> <span className="nav-text">Charts</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./chart-flot.html">Flot</a></li>
-    //                     <li><a href="./chart-morris.html">Morris</a></li>
-    //                     <li><a href="./chart-chartjs.html">Chartjs</a></li>
-    //                     <li><a href="./chart-chartist.html">Chartist</a></li>
-    //                     <li><a href="./chart-sparkline.html">Sparkline</a></li>
-    //                     <li><a href="./chart-peity.html">Peity</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li className="nav-label">UI Components</li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-grid menu-icon"></i><span className="nav-text">UI Components</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./ui-accordion.html">Accordion</a></li>
-    //                     <li><a href="./ui-alert.html">Alert</a></li>
-    //                     <li><a href="./ui-badge.html">Badge</a></li>
-    //                     <li><a href="./ui-button.html">Button</a></li>
-    //                     <li><a href="./ui-button-group.html">Button Group</a></li>
-    //                     <li><a href="./ui-cards.html">Cards</a></li>
-    //                     <li><a href="./ui-carousel.html">Carousel</a></li>
-    //                     <li><a href="./ui-dropdown.html">Dropdown</a></li>
-    //                     <li><a href="./ui-list-group.html">List Group</a></li>
-    //                     <li><a href="./ui-media-object.html">Media Object</a></li>
-    //                     <li><a href="./ui-modal.html">Modal</a></li>
-    //                     <li><a href="./ui-pagination.html">Pagination</a></li>
-    //                     <li><a href="./ui-popover.html">Popover</a></li>
-    //                     <li><a href="./ui-progressbar.html">Progressbar</a></li>
-    //                     <li><a href="./ui-tab.html">Tab</a></li>
-    //                     <li><a href="./ui-typography.html">Typography</a></li>
-    //                     <li><a href="./uc-nestedable.html">Nestedable</a></li>
-    //                     <li><a href="./uc-noui-slider.html">Noui Slider</a></li>
-    //                     <li><a href="./uc-sweetalert.html">Sweet Alert</a></li>
-    //                     <li><a href="./uc-toastr.html">Toastr</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li>
-    //                 <a href="widgets.html" aria-expanded="false">
-    //                     <i className="icon-badge menu-icon"></i><span className="nav-text">Widget</span>
-    //                 </a>
-    //             </li>
-    //             <li className="nav-label">Forms</li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-note menu-icon"></i><span className="nav-text">Forms</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./form-basic.html">Basic Form</a></li>
-    //                     <li><a href="./form-validation.html">Form Validation</a></li>
-    //                     <li><a href="./form-step.html">Step Form</a></li>
-    //                     <li><a href="./form-editor.html">Editor</a></li>
-    //                     <li><a href="./form-picker.html">Picker</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li className="nav-label">Table</li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-menu menu-icon"></i><span className="nav-text">Table</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./table-basic.html" aria-expanded="false">Basic Table</a></li>
-    //                     <li><a href="./table-datatable.html" aria-expanded="false">Data Table</a></li>
-    //                 </ul>
-    //             </li>
-    //             <li className="nav-label">Pages</li>
-    //             <li>
-    //                 <a className="has-arrow" href="#" aria-expanded="false">
-    //                     <i className="icon-notebook menu-icon"></i><span className="nav-text">Pages</span>
-    //                 </a>
-    //                 <ul aria-expanded="false">
-    //                     <li><a href="./page-login.html">Login</a></li>
-    //                     <li><a href="./page-register.html">Register</a></li>
-    //                     <li><a href="./page-lock.html">Lock Screen</a></li>
-    //                     <li><a className="has-arrow" href="#" aria-expanded="false">Error</a>
-    //                         <ul aria-expanded="false">
-    //                             <li><a href="./page-error-404.html">Error 404</a></li>
-    //                             <li><a href="./page-error-403.html">Error 403</a></li>
-    //                             <li><a href="./page-error-400.html">Error 400</a></li>
-    //                             <li><a href="./page-error-500.html">Error 500</a></li>
-    //                             <li><a href="./page-error-503.html">Error 503</a></li>
-    //                         </ul>
-    //                     </li>
-    //                 </ul>
-    //             </li>
-    //         </ul>
-    //     </div>
-    // </div>
     <div>
       <nav
         className="main-menu"
       // style={{backgroundColor: '	#404040'}}
       >
-        <ul style={{ display: "none" }}>
-          <li className="">
-            <Link to="/">
-              <span className="span-icon">
-                <img src={homesidebarIcon}></img>
-              </span>
-              <span className="nav-text">Dashboard</span>
-            </Link>
-          </li>
-
-          <li className="has-subnav">
-            <Link to="/workList">
-              <span className="span-icon">
-                <img src={VectorStrokeIcon}></img>
-              </span>
-              <span className="nav-text">Work List</span>
-            </Link>
-          </li>
-          <li className="has-subnav">
-            <Link to="/repairBuilder">
-              <span className="span-icon">
-                <img src={VectorStrokeIcon}></img>
-              </span>
-              <span className="nav-text">Repair Builder</span>
-            </Link>
-          </li>
-          <li className="has-subnav">
-            <Link to="/segments">
-              <span className="span-icon">
-                <img src={VectorStrokeIcon}></img>
-              </span>
-              <span className="nav-text">Segment</span>
-            </Link>
-          </li>
-          <li className="has-subnav">
-            <Link to="/Repairoption2">
-              <span className="span-icon">
-                <img src={VectorStrokeIcon}></img>
-              </span>
-              <span className="nav-text">Repair Options</span>
-            </Link>
-          </li>
-          <li className="has-subnav">
-            <Link to="/Partlistfileupload">
-              <span className="span-icon">
-                <img src={VectorStrokeIcon}></img>
-              </span>
-              <span className="nav-text">Play List</span>
-            </Link>
-          </li>
-          <li className="has-subnav">
-            <Link to="#">
-              <span className="span-icon">
-                <img src={starIcon}></img>
-              </span>
-              <span className="nav-text">Forms</span>
-            </Link>
-          </li>
-          <li className="has-subnav">
-            <Link to="#">
-              <span className="span-icon">
-                <img src={PulseIcon}></img>
-              </span>
-              <span className="nav-text">Pages</span>
-            </Link>
-          </li>
-        </ul>
-        <ul className="metismenu" id="menu1" style={{ display: "none" }}>
-          {/* <li className="has-subnav ">
-                <a href="#">
-                <span className="span-icon"><img src={collIcon}></img></span>
-                    <span className="nav-text">
-                        <b>Standard Job</b>
-                    </span>
-                </a>
-            </li>
-            <li className="has-subnav ">
-                <a href="#">
-                <span className="span-icon"><img src={searchIcon}></img></span>
-                    <span className="nav-text">
-                        Search
-                    </span>
-                </a>
-            </li>
-            
-        <li className="has-subnav sub-li">
-                <a href="#">
-                <span className="span-icon"><img src={manu3lineIcon}></img></span>
-                    <span className="nav-text">
-                        Header
-                    </span>
-                </a>
-       
-            </li> */}
-          {/* <li className="has-subnav sub-li">
-            <a className="has-arrow" href="#" aria-expanded="false">
-                <span className="span-icon"><img src={collIcon}></img></span>
-                    <span className="nav-text">
-                    <span className="font-size-16 font-weight-600">01</span>
-                    <span className="ml-2 " style={{display:'inline-grid'}}>
-                        <span className="font-size-14 font-weight-600 text-dark">Disassemble</span>
-                        <span className="d-block text-grey font-size-14">15</span>
-                    </span>
-                    </span>
-                </a>
-                  <ul aria-expanded="false">
-                     <li><a href="#">
-                     <span className="span-icon"><img src={Disassemble}></img></span>
-                    <span className="nav-text">
-                    <span className="font-size-16 font-weight-600">01</span>
-                    <span className="ml-2 " style={{display:'inline-grid'}}>
-                        <span className="font-size-14 font-weight-600 text-dark">BOMB Aceite Transmission</span>
-                        <span className="d-block text-grey font-size-14">15</span>
-                    </span>
-                    </span>
-                         </a></li>
-                         <li><a href="#">
-                     <span className="span-icon"><img src={Disassemble}></img></span>
-                    <span className="nav-text">
-                    <span className="font-size-16 font-weight-600">01</span>
-                    <span className="ml-2 " style={{display:'inline-grid'}}>
-                        <span className="font-size-14 font-weight-600 text-dark">Freno de Parqueo</span>
-                        <span className="d-block text-grey font-size-14">15</span>
-                    </span>
-                    </span>
-                         </a></li>
-                         
-                </ul>
-             </li> */}
-
-          <li className="has-subnav sub-li">
-            <a className="has-arrow" href="#" aria-expanded="false">
-              <span className="span-icon">
-                <img src={homesidebarIcon}></img>
-              </span>
-              <span className="nav-text">
-                <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-14 font-weight-600 text-dark">
-                    Dashboard
-                  </span>
-                </span>
-              </span>
-            </a>
-            <ul aria-expanded="false">
-              <li>
-                <a href="/">
-                  <span className="span-icon">
-                    <img src={Disassemble}></img>
-                  </span>
-                  <span className="nav-text">
-                    <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-14 font-weight-600 text-dark">
-                        Operational Dashboard
-                      </span>
-                    </span>
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="/analytics">
-                  <span className="span-icon">
-                    <img src={Disassemble}></img>
-                  </span>
-                  <span className="nav-text">
-                    <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-14 font-weight-600 text-dark">
-                        Analytics Dashboard
-                      </span>
-                    </span>
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="/reports">
-                  <span className="span-icon">
-                    <img src={Disassemble}></img>
-                  </span>
-                  <span className="nav-text">
-                    <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-14 font-weight-600 text-dark">
-                        Reports Dashboard
-                      </span>
-                    </span>
-                  </span>
-                </a>
-              </li>
-            </ul>
-          </li>
-
-          <li className="has-subnav sub-li">
-            <a className="has-arrow" href="#" aria-expanded="false">
-              <span className="span-icon">
-                <img src={VectorStrokeIcon}></img>
-              </span>
-              <span className="nav-text">
-                <span className="ml-2 " style={{ display: "inline-grid" }}>
-                  <span className="font-size-14 font-weight-600 text-dark">
-                    Build
-                  </span>
-                </span>
-              </span>
-            </a>
-            <ul aria-expanded="false">
-              <li>
-                <a className="has-arrow" href="#" aria-expanded="false">
-                  <span className="span-icon">
-                    <img src={collIcon}></img>
-                  </span>
-                  <span className="nav-text">
-                    <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-14 font-weight-600 text-dark">
-                        Repair
-                      </span>
-                    </span>
-                  </span>
-                </a>
-                <ul aria-expanded="false">
-                  <li>
-                    <a href="#">
-                      <span className="span-icon">
-                        <img src={Disassemble}></img>
-                      </span>
-                      <span className="nav-text">
-                        <span
-                          className="ml-2 "
-                          style={{ display: "inline-grid" }}
-                        >
-                          <span className="font-size-14 font-weight-600 text-dark">
-                            Repair Builder
-                          </span>
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <span className="span-icon">
-                        <img src={Disassemble}></img>
-                      </span>
-                      <span className="nav-text">
-                        <span
-                          className="ml-2 "
-                          style={{ display: "inline-grid" }}
-                        >
-                          <span className="font-size-14 font-weight-600 text-dark">
-                            Part Lists
-                          </span>
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <span className="span-icon">
-                        <img src={Disassemble}></img>
-                      </span>
-                      <span className="nav-text">
-                        <span
-                          className="ml-2 "
-                          style={{ display: "inline-grid" }}
-                        >
-                          <span className="font-size-14 font-weight-600 text-dark">
-                            Standard Jobs
-                          </span>
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <span className="span-icon">
-                        <img src={Disassemble}></img>
-                      </span>
-                      <span className="nav-text">
-                        <span
-                          className="ml-2 "
-                          style={{ display: "inline-grid" }}
-                        >
-                          <span className="font-size-14 font-weight-600 text-dark">
-                            Kits
-                          </span>
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <a className="has-arrow" href="#" aria-expanded="false">
-                  <span className="span-icon">
-                    <img src={collIcon}></img>
-                  </span>
-                  <span className="nav-text">
-                    <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-14 font-weight-600 text-dark">
-                        Solution
-                      </span>
-                    </span>
-                  </span>
-                </a>
-                <ul aria-expanded="false">
-                  <li>
-                    <a href="#">
-                      <span className="span-icon">
-                        <img src={Disassemble}></img>
-                      </span>
-                      <span className="nav-text">
-                        <span
-                          className="ml-2 "
-                          style={{ display: "inline-grid" }}
-                        >
-                          <span
-                            className="font-size-14 font-weight-600 text-dark"
-                            onClick={() =>
-                              (window.location.href = "/portfolio")
-                            }
-                          >
-                            Portfolio and Bundles
-                          </span>
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      style={{ cursor: "pointer" }}
-                      onClick={() =>
-                        (window.location.href = "/solutionBuilder/analytics")
-                      }
-                    >
-                      {/* <li><a style={{ cursor: 'pointer' }} onClick={handleShow}> */}
-                      <span className="span-icon">
-                        <img src={Disassemble}></img>
-                      </span>
-                      <span className="nav-text">
-                        <span
-                          className="ml-2 "
-                          style={{ display: "inline-grid" }}
-                        >
-                          <span className="font-size-14 font-weight-600 text-dark">
-                            Solution Builder
-                          </span>
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                  {/* <li><a href="#">
-                    <span className="span-icon"><img src={Disassemble}></img></span>
-                    <span className="nav-text">
-                      <span className="ml-2 " style={{ display: 'inline-grid' }}>
-                        <span className="font-size-14 font-weight-600 text-dark">Reports Dashboard</span>
-                      </span>
-                    </span>
-                  </a>
-                  </li> */}
-                </ul>
-              </li>
-            </ul>
-          </li>
-
-          {/* <li className="has-subnav sub-li">
-                <a className="has-arrow" href="#" aria-expanded="false">
-                <span className="span-icon"><img src={collIcon}></img></span>
-                    <span className="nav-text">
-                        Header
-                    </span>
-                </a>
-       
-            </li> */}
-        </ul>
         <ul className="metismenu scrollbamenu" id="menu">
           <li className="has-subnav sub-li">
             <NavLink
@@ -659,6 +148,7 @@ export function SideBarComponent(props) {
               </span>
             </NavLink>
           </li>
+          {packageValue[planName] > 3 && 
           <li className="has-subnav sub-li">
             <NavLink
               to="/insights"
@@ -703,6 +193,8 @@ export function SideBarComponent(props) {
               </span>
             </NavLink>
           </li>
+          } 
+          {packageValue[planName] > 2 &&
           <li className="has-subnav sub-li">
             <a
               className="has-arrow border-radius-50 cursor"
@@ -825,6 +317,7 @@ export function SideBarComponent(props) {
               </li>
             </ul>
           </li>
+          }
           <Divider sx={{ marginLeft: '5%', marginRight: '5%', marginBlock: 1 }} />
           <li className="has-subnav sub-li">
             <a
@@ -1006,6 +499,7 @@ export function SideBarComponent(props) {
               {/* </ul>
                   </li> */}
 
+              {packageValue[planName] > 1 && 
               <li>
                 <NavLink
                   to="/RepairPartList"
@@ -1062,6 +556,7 @@ export function SideBarComponent(props) {
                   </span>
                 </NavLink>
               </li>
+              }
               {/* <li>
                     <a
                       className="has-arrow border-radius-50"
@@ -1114,6 +609,7 @@ export function SideBarComponent(props) {
                     </a>
 
                     <ul aria-expanded="false"> */}
+              {packageValue[planName] > 1 &&
               <li>
                 <NavLink
                   to="/standard-job"
@@ -1163,94 +659,55 @@ export function SideBarComponent(props) {
                   </span>
                 </NavLink>
               </li>
-
-              <li>
-                <NavLink
-                  to="/RepairKits"
-                  activeClassName="active"
-                  className="border-radius-50"
-                >
-                  <span className="span-icon">
-                    <svg
-                      id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 108.98463 118.98497"
-                      // height={15}
-                      // width={15}
-                    >
-                      <path
-                        className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
-                        d="M95.44022,21.28183h-14.42578V12.68637C81.01443,5.69125,75.32327,.00009,68.32791,.00009h-27.67041C33.66214,.00009,27.97098,5.69125,27.97098,12.68637v8.59546H13.54422C6.0762,21.28183,.00003,27.35727,.00003,34.82626V105.44052C.00003,112.90951,6.0762,118.98495,13.54422,118.98495H95.44022c7.46826,0,13.54443-6.07544,13.54443-13.54443V34.82626c0-7.46899-6.07617-13.54443-13.54443-13.54443ZM36.30594,12.68637c0-2.39966,1.9519-4.35132,4.35156-4.35132h27.67041c2.39966,0,4.35156,1.95166,4.35156,4.35132v8.59546H36.30594V12.68637ZM100.64969,105.44052c0,2.87183-2.33691,5.20947-5.20947,5.20947H13.54422c-2.87231,0-5.20923-2.33765-5.20923-5.20947V34.82626c0-2.87183,2.33691-5.20947,5.20923-5.20947H95.44022c2.87256,0,5.20947,2.33765,5.20947,5.20947V105.44052Z"
-                      />
-                      <path
-                        className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
-                        d="M72.72098,76.62314H36.26443c-2.30176,0-4.16748,1.86572-4.16748,4.16748s1.86572,4.16748,4.16748,4.16748h36.45654c2.302,0,4.16748-1.86572,4.16748-4.16748s-1.86548-4.16748-4.16748-4.16748Z"
-                      />
-                      <path
-                        className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
-                        d="M72.72098,93.21664H36.26443c-2.30176,0-4.16748,1.86548-4.16748,4.16748,0,2.30176,1.86572,4.16748,4.16748,4.16748h36.45654c2.302,0,4.16748-1.86572,4.16748-4.16748,0-2.302-1.86548-4.16748-4.16748-4.16748Z"
-                      />
-                      <path
-                        className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
-                        d="M48.24271,67.07382l21.24536-21.24463c1.62793-1.62622,1.62793-4.26514,0-5.89307-1.62646-1.62793-4.26685-1.62793-5.89307,0l-15.35229,15.35156-6.26733-6.26758c-1.62646-1.62793-4.26709-1.62793-5.89331,0-1.62793,1.62793-1.62793,4.26514,0,5.89307l12.16064,12.16064Z"
-                      />
-                    </svg>
-                  </span>
-                  <span className="nav-text">
-                    <span
-                      className="ml-2 "
-                      style={{ display: "inline-grid" }}
-                    >
-                      <span className="font-size-13 font-weight-400 text-dark">
-                        Kits
+              }
+              {packageValue[planName] > 1 &&
+                <li>
+                  <NavLink
+                    to="/RepairKits"
+                    activeClassName="active"
+                    className="border-radius-50"
+                  >
+                    <span className="span-icon">
+                      <svg
+                        id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 108.98463 118.98497"
+                        // height={15}
+                        // width={15}
+                      >
+                        <path
+                          className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
+                          d="M95.44022,21.28183h-14.42578V12.68637C81.01443,5.69125,75.32327,.00009,68.32791,.00009h-27.67041C33.66214,.00009,27.97098,5.69125,27.97098,12.68637v8.59546H13.54422C6.0762,21.28183,.00003,27.35727,.00003,34.82626V105.44052C.00003,112.90951,6.0762,118.98495,13.54422,118.98495H95.44022c7.46826,0,13.54443-6.07544,13.54443-13.54443V34.82626c0-7.46899-6.07617-13.54443-13.54443-13.54443ZM36.30594,12.68637c0-2.39966,1.9519-4.35132,4.35156-4.35132h27.67041c2.39966,0,4.35156,1.95166,4.35156,4.35132v8.59546H36.30594V12.68637ZM100.64969,105.44052c0,2.87183-2.33691,5.20947-5.20947,5.20947H13.54422c-2.87231,0-5.20923-2.33765-5.20923-5.20947V34.82626c0-2.87183,2.33691-5.20947,5.20923-5.20947H95.44022c2.87256,0,5.20947,2.33765,5.20947,5.20947V105.44052Z"
+                        />
+                        <path
+                          className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
+                          d="M72.72098,76.62314H36.26443c-2.30176,0-4.16748,1.86572-4.16748,4.16748s1.86572,4.16748,4.16748,4.16748h36.45654c2.302,0,4.16748-1.86572,4.16748-4.16748s-1.86548-4.16748-4.16748-4.16748Z"
+                        />
+                        <path
+                          className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
+                          d="M72.72098,93.21664H36.26443c-2.30176,0-4.16748,1.86548-4.16748,4.16748,0,2.30176,1.86572,4.16748,4.16748,4.16748h36.45654c2.302,0,4.16748-1.86572,4.16748-4.16748,0-2.302-1.86548-4.16748-4.16748-4.16748Z"
+                        />
+                        <path
+                          className="uuid-c202c004-106f-49a6-aa14-c5d8120b224f"
+                          d="M48.24271,67.07382l21.24536-21.24463c1.62793-1.62622,1.62793-4.26514,0-5.89307-1.62646-1.62793-4.26685-1.62793-5.89307,0l-15.35229,15.35156-6.26733-6.26758c-1.62646-1.62793-4.26709-1.62793-5.89331,0-1.62793,1.62793-1.62793,4.26514,0,5.89307l12.16064,12.16064Z"
+                        />
+                      </svg>
+                    </span>
+                    <span className="nav-text">
+                      <span
+                        className="ml-2 "
+                        style={{ display: "inline-grid" }}
+                      >
+                        <span className="font-size-13 font-weight-400 text-dark">
+                          Kits
+                        </span>
                       </span>
                     </span>
-                  </span>
-                </NavLink>
-              </li>
-              {/* </ul>
-                  </li> 
-                </ul> 
-              </li>*/}
-              {/* <li>
-                <a
-                  className="has-arrow border-radius-50"
-                  href="#"
-                  aria-expanded="false"
-                >
-                  <span className="span-icon">
-                    <svg
-                      id="uuid-3abd2398-f403-4cd5-aa98-d6b336293d57"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 111.40183 111.48743"
-                    >
-                      <path
-                        className="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8"
-                        d="M83.78989,36.81138c-1.9519-1.95361-5.11963-1.95361-7.07178,0l-25.64136,25.64136-13.30103-13.30005c-1.95166-1.95361-5.1189-1.95361-7.07227,0-1.95288,1.95337-1.95288,5.11963,.00073,7.07153l20.37256,20.37183,32.71313-32.71313c1.95361-1.9519,1.95361-5.11987,0-7.07153Z"
-                      />
-                      <path
-                        className="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8"
-                        d="M23.43784,88.24058c-12.98267-12.98267-16.96533-32.38916-10.146-49.43848,1.02563-2.56396-.22217-5.47461-2.78613-6.5-2.56885-1.03076-5.47632,.21973-6.50122,2.78516-8.3064,20.76904-3.45435,44.40991,12.36182,60.2251,.78052,.78149,1.57983,1.53516,2.39526,2.25952,.95337,.84814,2.13916,1.26489,3.32178,1.26489,1.37817,0,2.75049-.56641,3.73877-1.67676,1.83545-2.06421,1.65063-5.22559-.41357-7.0603-.67065-.59741-1.32837-1.21753-1.9707-1.85913Z"
-                      />
-                      <path
-                        className="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8"
-                        d="M106.89756,55.94761c-2.74976-.26221-5.19971,1.73047-5.47388,4.47827-1.04688,10.47729-5.73193,20.354-13.19116,27.8147-7.66187,7.66113-17.81909,12.37061-28.6001,13.26123-2.7522,.22778-4.79907,2.64355-4.57202,5.39648,.21558,2.61279,2.40283,4.58911,4.97803,4.58911,.13843,0,.27759-.00488,.41772-.01636,13.13818-1.08569,25.5144-6.82422,34.84814-16.15869,9.08862-9.08691,14.79614-21.12402,16.07251-33.8916,.27417-2.74805-1.73145-5.198-4.47925-5.47314Z"
-                      />
-                      <path
-                        className="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8"
-                        d="M38.59214,13.38072c17.10229-6.93848,36.59009-2.9873,49.63867,10.06201,.8335,.83521,1.62891,1.69312,2.38428,2.57056,.98877,1.15088,2.38721,1.74023,3.79395,1.74023,1.15405,0,2.3147-.39722,3.2583-1.20947,2.09424-1.80054,2.33179-4.95874,.53052-7.05225-.9165-1.06616-1.8811-2.10645-2.89282-3.11914C79.40684,.47447,55.67002-4.3395,34.83335,4.11119c-2.55908,1.03857-3.79297,3.9541-2.75537,6.51318,1.03882,2.56079,3.95605,3.79004,6.51416,2.75635Z"
-                      />
-                    </svg>
-                  </span>
-                  <span className="nav-text">
-                    <span className="ml-2 " style={{ display: "inline-grid" }}>
-                      <span className="font-size-13 font-weight-400 text-dark">
-                        Solution
-                      </span>
-                    </span>
-                  </span>
-                </a>
-                <ul aria-expanded="false"> */}
+                  </NavLink>
+                </li>
+              }
+             
+             {packageValue[planName] > 2 &&
               <li>
                 <NavLink to="/portfolio" className="border-radius-50" activeClassName="active">
                   <span className="span-icon">
@@ -1279,7 +736,9 @@ export function SideBarComponent(props) {
                   </span>
                 </NavLink>
               </li>
-              <li>
+              }
+              {packageValue[planName] > 2 &&
+                <li>
                 <NavLink
                   to="/solutionBuilder/analytics"
                   className="border-radius-50"
@@ -1317,6 +776,7 @@ export function SideBarComponent(props) {
                   </span>
                 </NavLink>
               </li>
+              }
               {/* <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
@@ -1369,6 +829,7 @@ export function SideBarComponent(props) {
               </span>
             </a>
             <ul aria-expanded="false">
+            {packageValue[planName] > 2 &&
               <li>
                 <NavLink to="/SolutionQuote" className="border-radius-50">
                   <span className="span-icon">
@@ -1398,6 +859,7 @@ export function SideBarComponent(props) {
                   </span>
                 </NavLink>
               </li>
+            }
               <li>
                 <NavLink to={QUOTE_RECENT_REPAIR} className="border-radius-50">
                   <span className="span-icon">
@@ -1431,7 +893,8 @@ export function SideBarComponent(props) {
                   </span>
                 </NavLink>
               </li>
-              <li>
+              {packageValue[planName] > 1 &&
+                <li>
                 <NavLink to={QUOTE_SPARE_PARTS} className="border-radius-50">
                   <span className="span-icon">
                     <svg
@@ -1495,7 +958,8 @@ export function SideBarComponent(props) {
                     </span>
                   </span>
                 </NavLink>
-              </li>
+                </li>
+              }
             </ul>
           </li>
           <li className="has-subnav sub-li">

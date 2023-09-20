@@ -10,16 +10,9 @@ import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import folderaddIcon from '../../assets/icons/svg/folder-add.svg'
 import smalldeleteicon from '../../assets/icons/png/small-delete.png'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
-import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import { Users } from "./Users";
-import { PLANS } from "./CONSTANTS";
+import { PLANS, REGIONS } from "./CONSTANTS";
+import { FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
 
 export function AccountSettings(props) {
     const [value, setValue] = React.useState('packages');
@@ -31,33 +24,69 @@ export function AccountSettings(props) {
     const handleClose = () => setOpen(false);
 
 
-    const options = [
-        { value: 'chocolate', label: 'Construction-Heavy' },
-        { value: 'strawberry', label: 'Construction-Low' },
-        { value: 'vanilla', label: 'Construction-Medium' },
-        { value: 'Construction', label: 'Construction' },
+    const PAYMENT_FREQ_OPTIONS = [
+        { value: 'monthly', label: 'MONTHLY' },
+        { value: 'annually', label: 'ANNUALLY' },
+        { value: 'biannually', label: 'BIANNUALLY' },
     ];
-    const reasonForRequestOptions = [
-        { value: 'accountUnlock', label: 'Account unlock' },
-        { value: 'grantAccess', label: 'Grant access' },
-        { value: 'buildNewUseCase', label: 'Build new use case' },
-        { value: 'coDevelopUseCase', label: 'Co-develop use case' },
-        { value: 'traning', label: 'Training ' },
-        { value: 'systemDefect', label: 'System defect' },
-        { value: 'productSupport', label: 'Product support' },
+    const PAYMENT_MODE_OPTIONS = [
+        { value: 'credit_card', label: 'Credit Card' },
+        { value: 'stripe', label: 'Stripe' },
     ];
+    const CURRENCY_OPTIONS = [
+        { value: 'USD', label: 'USD' }
+    ]
+
+    const BUSINESS_TYPE_OPTIONS = [
+        { value: 'MANUFACTURER', label: 'Manufacturer' },
+        { value: 'OEM', label: 'OEM' },
+        { value: 'DEALER', label: 'Dealer' },
+        { value: 'SERVICE_PROVIDER', label: 'Service Provider' },
+    ]
+
+    const COMPANY_TYPE_OPTIONS = [
+        { value: 'LARGE', label: 'Large' },
+        { value: 'MEDIUM', label: 'Medium' },
+        { value: 'SMALL', label: 'Small' },
+    ]
+    const FISCAL_YEAR_OPTIONS = [
+        { value: 'JAN_DEC', label: 'Jan To Dec' },
+        { value: 'AUG_JULY', label: 'Aug To July' },
+    ]
+
+    const COMMUNICATION_PREF_OPTIONS = [
+        { value: 'EMAIL', label: "EMAIL" }
+    ]
+    const [selectedRegion, setSelectedRegion] = useState('US East');
+
     const [selectedOption, setSelectedOption] = useState(null);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
-    const handleChangeSelect = (e) => {
-        setDValue(e)
-    }
-    const handleRequestActivation = (e) => {
-        props.parentCallback()
-    }
+    const [accountSettings, setAccountSettings] = useState({
+        accountId: "",
+        accountName: "",
+        alias: "",
+        paymentFrequency: null,
+        paymentMode: null,
+        currency: null,
+        typeOfBusiness: null,
+        companyType: null,
+        fiscalYear: null
+    });
 
+    const [contact, setContact] = useState({
+        fullName: "",
+        address: "",
+        city: "",
+        state: "",
+        country: "",
+        phoneNumberPrimary: "",
+        phoneNumberSecondary: "",
+        communicationPreference: null,
+        website: ""
+    });
     return (
         <div className="content-body" style={{ minHeight: "884px" }}>
             <div class="container-fluid mt-3">
@@ -72,7 +101,6 @@ export function AccountSettings(props) {
                                     <li><a href="#users-v" data-toggle="tab">Users</a></li>
                                     <li><a href="#supportplans-v" data-toggle="tab">Support Plans</a></li>
                                     <li><a href="#cloudregions-v" data-toggle="tab">Cloud Regions</a></li>
-                                    {/* <li><a href="#requests-v" data-toggle="tab">Requests</a></li> */}
                                     <li><a href="#payment-v" data-toggle="tab">Payment Plan</a></li>
                                 </ul>
                             </div>
@@ -83,91 +111,105 @@ export function AccountSettings(props) {
                                         <div class="tab-pane active" id="settings-v">
                                             <div className="card mt-3 p-3">
                                                 <h5 className="d-flex align-items-center mb-0">
-                                                    <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Account settings</span></div>
+                                                    <div className="" style={{ display: 'contents' }}>
+                                                        <span className="mr-3" style={{ whiteSpace: 'pre' }}>Account settings</span></div>
                                                     <div className="hr"></div>
                                                 </h5>
-                                                <div className="row mt-3">
+                                                <div className="row input-fields mt-3">
                                                     <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group ">
-                                                            <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">ACCOUNT ID</label>
-                                                            <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Auto generated" />
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group ">
-                                                            <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">ACCOUNT NAME</label>
-                                                            <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Business Name" />
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">ACCOUNT ID</label>
+                                                            <input type="text"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                value={accountSettings.accountId}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, accountId: e.target.value })}
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
                                                         <div className="form-group ">
-                                                            <label class="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">ALIAS</label>
-                                                            <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Alias" />
+                                                            <label class="text-light-dark font-size-12 font-weight-500">ACCOUNT NAME</label>
+                                                            <input type="text"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                value={accountSettings.accountName}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, accountId: e.target.value })}
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
-                                                        <div className="form-group">
-                                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">payment frequency</label>
-                                                            <Select
-                                                                defaultValue={selectedOption}
-                                                                onChange={setSelectedOption}
-                                                                options={options}
-                                                                placeholder="Monthly / quarterly / annually"
+                                                        <div className="form-group ">
+                                                            <label class="text-light-dark font-size-12 font-weight-500">ALIAS</label>
+                                                            <input type="text"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                value={accountSettings.alias}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, alias: e.target.value })}
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
                                                         <div className="form-group">
-                                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">payment mode</label>
+                                                            <label className="text-light-dark font-size-12 font-weight-500">PAYMENT FREQUENCY</label>
                                                             <Select
-                                                                defaultValue={selectedOption}
-                                                                onChange={setSelectedOption}
-                                                                options={options}
-                                                                placeholder="Wire transfer / Stripe / Credit Card"
+                                                                value={accountSettings.paymentFrequency}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, paymentFrequency: e })}
+                                                                options={PAYMENT_FREQ_OPTIONS}
+                                                                styles={FONT_STYLE_SELECT}
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
                                                         <div className="form-group">
-                                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">currency for billing</label>
+                                                            <label className="text-light-dark font-size-12 font-weight-500">PAYMENT MODE</label>
                                                             <Select
-                                                                defaultValue={selectedOption}
-                                                                onChange={setSelectedOption}
-                                                                options={options}
-                                                                placeholder="USD"
+                                                                value={accountSettings.paymentMode}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, paymentMode: e })}
+                                                                options={PAYMENT_MODE_OPTIONS}
+                                                                styles={FONT_STYLE_SELECT}
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
                                                         <div className="form-group">
-                                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">type of business</label>
+                                                            <label className="text-light-dark font-size-12 font-weight-500">CURRENCY FOR BILLING</label>
                                                             <Select
-                                                                defaultValue={selectedOption}
-                                                                onChange={setSelectedOption}
-                                                                options={options}
-                                                                placeholder="Manufacturer / OEM / Dealer / Service Provider"
+                                                                value={accountSettings.currency}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, currency: e })}
+                                                                options={CURRENCY_OPTIONS}
+                                                                styles={FONT_STYLE_SELECT}
+
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
                                                         <div className="form-group">
-                                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">company type</label>
+                                                            <label className="text-light-dark font-size-12 font-weight-500">TYPE OF BUSINESS</label>
                                                             <Select
-                                                                defaultValue={selectedOption}
-                                                                onChange={setSelectedOption}
-                                                                options={options}
-                                                                placeholder="Large / Medium / Small"
+                                                                value={accountSettings.typeOfBusiness}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, typeOfBusiness: e })}
+                                                                options={BUSINESS_TYPE_OPTIONS}
+                                                                styles={FONT_STYLE_SELECT}
                                                             />
                                                         </div>
                                                     </div>
                                                     <div className="col-md-4 col-sm-4">
                                                         <div className="form-group">
-                                                            <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">fiscal year</label>
+                                                            <label className="text-light-dark font-size-12 font-weight-500">COMPANY TYPE</label>
                                                             <Select
-                                                                defaultValue={selectedOption}
-                                                                onChange={setSelectedOption}
-                                                                options={options}
-                                                                placeholder="Jan to Dec / August to July"
+                                                                value={accountSettings.companyType}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, companyType: e })}
+                                                                options={COMPANY_TYPE_OPTIONS}
+                                                                styles={FONT_STYLE_SELECT}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label className="text-light-dark font-size-12 font-weight-500">FISCAL YEAR</label>
+                                                            <Select
+                                                                value={accountSettings.fiscalYear}
+                                                                onChange={e => setAccountSettings({ ...accountSettings, fiscalYear: e })}
+                                                                options={FISCAL_YEAR_OPTIONS}
+                                                                styles={FONT_STYLE_SELECT}
                                                             />
                                                         </div>
                                                     </div>
@@ -197,69 +239,100 @@ export function AccountSettings(props) {
                                             <div className="card  mt-3 p-3">
                                                 <div>
                                                     <h5 className="d-flex align-items-center mb-0">
-                                                        <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{ whiteSpace: 'pre' }}>Contact Information</span></div>
+                                                        <div className="" style={{ display: 'contents' }}>
+                                                            <span className="mr-3" style={{ whiteSpace: 'pre' }}>Contact Information</span></div>
                                                         <div className="hr"></div>
                                                     </h5>
-                                                    <div className="row mt-3">
+                                                    <div className="row input-fields mt-3">
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">Full name</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                <label className="text-light-dark font-size-12 font-weight-500">FULL NAME</label>
+                                                                <input type="text"
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.fullName}
+                                                                    onChange={e => setContact({ ...contact, fullName: e.target.value })}
+                                                                />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">ADDRESS</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                <label className="text-light-dark font-size-12 font-weight-500">ADDRESS</label>
+                                                                <input type="text" 
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.address}
+                                                                    onChange={e => setContact({ ...contact, address: e.target.value })} 
+                                                                />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">CITY</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                <label className="text-light-dark font-size-12 font-weight-500">CITY</label>
+                                                                <input type="text" 
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.city}
+                                                                    onChange={e => setContact({ ...contact, city: e.target.value })} 
+                                                                />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">STATE</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                <label className="text-light-dark font-size-12 font-weight-500">STATE</label>
+                                                                <input type="text" 
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.state}
+                                                                    onChange={e => setContact({ ...contact, state: e.target.value })} 
+                                                                />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">COUNTRY</label>
-                                                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                <label className="text-light-dark font-size-12 font-weight-500">COUNTRY</label>
+                                                                <input type="text" 
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.country}
+                                                                    onChange={e => setContact({ ...contact, country: e.target.value })} 
+                                                                />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">PHONE NUMBER (PRIMARY)</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                <label className="text-light-dark font-size-12 font-weight-500">PHONE NUMBER (PRIMARY)</label>
+                                                                <input type="text" 
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.phoneNumberPrimary}
+                                                                    onChange={e => setContact({ ...contact, phoneNumberPrimary: e.target.value })} 
+                                                                />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group ">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">PHONE NUMBER (SECONDARY)</label>
-                                                                <input type="email" class="form-control " aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                                                            </div>
-                                                        </div>
-
-
-                                                        <div className="col-md-4 col-sm-4">
-                                                            <div className="form-group">
-                                                                <label className="font-size-14 " for="exampleInputEmail1">COMMUNICATION PREFERENCE</label>
-                                                                <Select
-                                                                    defaultValue={selectedOption}
-                                                                    onChange={setSelectedOption}
-                                                                    options={options}
-                                                                    placeholder="Manufacturer / OEM / Dealer / Service Provider"
+                                                                <label className="text-light-dark font-size-12 font-weight-500">PHONE NUMBER (SECONDARY)</label>
+                                                                <input type="text" 
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.phoneNumberSecondary}
+                                                                    onChange={e => setContact({ ...contact, phoneNumberSecondary: e.target.value })} 
                                                                 />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">WEBSITE URL</label>
-                                                                <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                                <label className="text-light-dark font-size-12 font-weight-500">COMMUNICATION PREFERENCE</label>
+                                                                <Select
+                                                                    defaultValue={contact.communicationPreference}
+                                                                    onChange={e => setContact({...contact, communicationPreference: e})}
+                                                                    options={COMMUNICATION_PREF_OPTIONS}
+                                                                    styles={FONT_STYLE_SELECT}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4 col-sm-4">
+                                                            <div className="form-group">
+                                                                <label className="text-light-dark font-size-12 font-weight-500">WEBSITE URL</label>
+                                                                <input type="text" 
+                                                                    className="form-control border-radius-10 text-primary"
+                                                                    value={contact.website}
+                                                                    onChange={e => setContact({ ...contact, website: e.target.value })} 
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -274,7 +347,7 @@ export function AccountSettings(props) {
                                                     <div className="row">
                                                         <div class="col-md-4 col-sm-4">
                                                             <div class="form-group">
-                                                                <p class="font-size-14 mb-2">Full name</p>
+                                                                <p class="font-size-14 mb-2">FULL NAME</p>
                                                                 <h6 class="font-weight-600">Jane</h6>
                                                             </div>
                                                         </div>
@@ -338,31 +411,31 @@ export function AccountSettings(props) {
                                                     <div className="row mt-3">
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">BILLING CONTACT</label>
+                                                                <label className="text-light-dark font-size-12 font-weight-500">BILLING CONTACT</label>
                                                                 <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">OPERATIONS CONTACT</label>
+                                                                <label className="text-light-dark font-size-12 font-weight-500">OPERATIONS CONTACT</label>
                                                                 <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">SECURITY CONTACT</label>
+                                                                <label className="text-light-dark font-size-12 font-weight-500">SECURITY CONTACT</label>
                                                                 <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">CONTACT EMAIL</label>
+                                                                <label className="text-light-dark font-size-12 font-weight-500">CONTACT EMAIL</label>
                                                                 <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4 col-sm-4">
                                                             <div className="form-group">
-                                                                <label class="font-size-14 " for="exampleInputEmail1">CONTACT NUMBER</label>
+                                                                <label className="text-light-dark font-size-12 font-weight-500">CONTACT NUMBER</label>
                                                                 <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                             </div>
                                                         </div>
@@ -471,67 +544,21 @@ export function AccountSettings(props) {
                                                         <div className="hr"></div>
                                                     </h5>
                                                     <RadioGroup className='my-3'
-                                                        row
-                                                        aria-labelledby="demo-form-control-label-placement"
-                                                        name="position"
-                                                        defaultValue="top"
-                                                    >
-
-                                                        <div className="col-md-3">
-                                                            <FormControlLabel
-                                                                className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart border"
-                                                                value="Asia"
-                                                                control={<Radio />}
-                                                                label="Asia"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <FormControlLabel
-                                                                className="w-100 m-0 mb-3 p-2 card py-4 align-itemsstart border"
-                                                                value="Africa"
-                                                                control={<Radio />}
-                                                                label="Africa"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <FormControlLabel
-                                                                className="w-100 m-0 mb-3 p-2 card py-4 align-itemsstart border"
-                                                                value="Australia"
-                                                                control={<Radio />}
-                                                                label="Australia"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <FormControlLabel
-                                                                className="w-100 m-0 mb-3 p-2 card py-4 align-itemsstart border"
-                                                                value="Europe"
-                                                                control={<Radio />}
-                                                                label="Europe"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <FormControlLabel
-                                                                className="w-100 m-0 mb-3 p-2 card py-4 align-itemsstart border"
-                                                                value="USA(East)"
-                                                                control={<Radio />}
-                                                                label="USA(East)"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <FormControlLabel
-                                                                className="w-100 m-0 mb-3 p-2 card py-4 align-itemsstart border"
-                                                                value="USA(West)"
-                                                                control={<Radio />}
-                                                                label="USA(West)"
-                                                                labelPlacement="bottom"
-                                                            />
-                                                        </div>
-                                                    </RadioGroup>
+                                                            row
+                                                            value={selectedRegion}
+                                                            onChange={e => setSelectedRegion(e.target.value)}
+                                                        >
+                                                            {REGIONS.map(region =>
+                                                                <div className="col-md-3">
+                                                                    <Card variant={'outlined'} sx={{ borderRadius: 2, p: 3, py: 4, my: 1 }}>
+                                                                        <FormControlLabel
+                                                                            value={region.value}
+                                                                            control={<Radio disabled={selectedRegion !== region.value}/>}
+                                                                            label={region.label}
+                                                                        />
+                                                                    </Card>
+                                                                </div>)}
+                                                        </RadioGroup>
 
                                                 </div>
                                             </div>

@@ -1,12 +1,12 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import { call } from 'redux-saga/effects';
-import { LoginPayload, authActions } from './authSlice';
-import { push } from 'connected-react-router';
+import { authActions } from './authSlice';
+// import { push } from 'connected-react-router';
 import { HttpService } from "../../apiService/HTTPService";
 import { USER_SERVICE_SIGNIN_URL } from "../../services/CONSTANTS";
 import Cookies from 'js-cookie';
 
-function* handleLogin(payload: LoginPayload) {
+function* handleLogin(payload) {
   try {
     const res = yield call(HttpService, 'post', USER_SERVICE_SIGNIN_URL(), payload.payload);
     console.log("login Response is : ", res);
@@ -36,7 +36,7 @@ function* handleLogin(payload: LoginPayload) {
         user_accessToken: res.data.accessToken,
         access_token: res.data.accessToken ? `Bearer ${res.data.accessToken}` : '',
         user_roles: res.data.roles,
-        user_planId: res.data.planId,
+        user_planName: res.data.planName,
         user_logIn_Status: true
       }
       var setAbleCookiesData = JSON.stringify(cookiesData);
@@ -48,7 +48,7 @@ function* handleLogin(payload: LoginPayload) {
       localStorage.setItem('user_accessToken', res.data.accessToken);
       localStorage.setItem('access_token', res.data.accessToken ? `Bearer ${res.data.accessToken}` : '');
       localStorage.setItem('user_roles', res.data.roles);
-      localStorage.setItem('user_planId', res.data.planId);
+      localStorage.setItem('user_planName', res.data.planName);
       localStorage.setItem('user_logIn_Status', true);
       // if (res.data.planId == null || res.data.planId == "FREE") {
       //   // yield put(push('/LandingPageLogin'));
@@ -56,7 +56,12 @@ function* handleLogin(payload: LoginPayload) {
       //   window.location.href = "/LandingPageLogin";
       // } else {
         // yield put(push('/'));
-        window.location.href = "/";
+        if(res.data.roles.includes('AUX_ADMIN')){
+          window.location.href = "/aux-admin/provision"
+        } else {
+          window.location.href = "/";
+        }
+
       // }
       // console.log("Login Success");
     } else {

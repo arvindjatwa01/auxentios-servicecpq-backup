@@ -164,7 +164,7 @@ export const Users = (props) => {
         let data = {
             firstName: subscriberData.firstName,
             lastName: subscriberData.lastName,
-            roleName: subscriberData.roles?.roleName,
+            roleName: subscriberData.roles?.roleDispName,
             // roleName: "PRODUCT_EXPERT",
             email: subscriberData.email,
             password: subscriberData.password,

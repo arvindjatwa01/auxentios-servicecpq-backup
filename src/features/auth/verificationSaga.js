@@ -1,10 +1,10 @@
 import { delay, put } from 'redux-saga/effects';
 import { call,takeLatest } from 'redux-saga/effects';
-import { SignUpPayload, signUpActions } from './signUpSlice';
+import { signUpActions } from './signUpSlice';
 import {HttpService} from "../../apiService/HTTPService";
 import Cookies from 'js-cookie';
 
-function* handleVerify(payload: SignUpPayload) {
+function* handleVerify(payload) {
   try {
     yield delay(500);
     const res =  yield call(HttpService, 'post',"http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/user-svc/v1/user/validate-user",payload.payload);

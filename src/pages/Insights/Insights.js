@@ -2,10 +2,7 @@ import { useState } from "react";
 import Propensity from "./Propensity";
 import {
   Card,
-  FormControl,
   Grid,
-  MenuItem,
-  Select,
   Typography,
   Box
 } from "@mui/material";

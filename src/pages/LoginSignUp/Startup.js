@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import logoIcon from '../../assets/icons/svg/Logo.svg';
 // import LoginImage from '../assets/images/1.jpg';
-import newLogoIcon from '../../assets/icons/svg/NewLogoIcon.svg';
-import newLogoIcon1 from '../../assets/icons/svg/latest-logo.svg';
 
-import erroricon from "../../assets/icons/png/error.png";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import { signUpActions } from "../../features/auth/signUpSlice";
 import { ToastMessageHandler } from "../../components/Common/ToastMessageHandler";
 import { authActions } from "../../features/auth/authSlice";
-import { history } from "../../utils";
 import { useLocation } from "react-router-dom";
 import Validator from "../../utils/validator";
 import { SignUp } from "./SignUp";

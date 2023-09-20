@@ -1,6 +1,4 @@
 import { Modal } from "react-bootstrap";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import SearchBox from "./SearchBox";
 import { useState } from "react";
 import { TextareaAutosize } from "@material-ui/core";

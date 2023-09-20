@@ -23,6 +23,7 @@ import { builderSearch, createBuilder } from "services/repairBuilderServices";
 import LoadingProgress from "../components/Loader";
 import { WITHOUT_PARTS, WITH_PARTS } from "../CONSTANTS";
 import { repairActions } from "../dropdowns/repairSlice";
+import { WITHOUT_SPARE_PARTS_DETAILS, WITH_SPARE_PARTS } from "navigation/CONSTANTS";
 
 const QuoteWithEvaluation = () => {
   const [value, setValue] = React.useState("1");
@@ -95,7 +96,7 @@ const QuoteWithEvaluation = () => {
     builderDetails.builderId = builder.builderId;
     builderDetails.bId = builder.id;
     history.push({
-      pathname: "/RepairWithoutSpareParts/BuilderDetails",
+      pathname: WITHOUT_SPARE_PARTS_DETAILS,
       state: builderDetails,
     });
   };
@@ -109,7 +110,7 @@ const QuoteWithEvaluation = () => {
     builderDetails.builderId = builder.builderId;
     builderDetails.bId = builder.id;
     history.push({
-      pathname: "/RepairWithSpareParts/BuilderDetails",
+      pathname: WITH_SPARE_PARTS,
       state: builderDetails,
     });
   };
@@ -149,7 +150,7 @@ const QuoteWithEvaluation = () => {
           builderDetails.bId = result.id;
 
           history.push({
-            pathname: "/RepairWithoutSpareParts/BuilderDetails",
+            pathname: WITHOUT_SPARE_PARTS_DETAILS,
             state: builderDetails,
           });
         })
@@ -169,7 +170,7 @@ const QuoteWithEvaluation = () => {
           builderDetails.bId = result.id;
 
           history.push({
-            pathname: "/RepairWithSpareParts/BuilderDetails",
+            pathname: WITH_SPARE_PARTS,
             state: builderDetails,
           });
         })

@@ -1,52 +1,31 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Dropdown, DropdownButton, Modal } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import penIcon from "../../../assets/images/pen.png";
-import EYEIcon from "@mui/icons-material/VisibilityOutlined";
-import CommentIcon from "@mui/icons-material/Chat";
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
   FONT_STYLE_UNIT_SELECT,
-  GRID_STYLE,
   OPTIONS_LEADTIME_UNIT,
 } from "../CONSTANTS";
 import Tab from "@mui/material/Tab";
 import { customerSearch, machineSearch } from "services/searchServices";
-import { toast } from "react-toastify";
-import { solutionQuoteCreation } from "../../../services/index";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 
 import DateFnsUtils from "@date-io/date-fns";
-import Menu from "@mui/material/Menu";
 import SearchBox from "pages/Repair/components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import AddIcon from "@mui/icons-material/Add";
-import { styled, alpha } from "@mui/material/styles";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import InputLabel from "@mui/material/InputLabel";
 import Select from "react-select";
-import FormControl from "@mui/material/FormControl";
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import MenuItem from "@mui/material/MenuItem";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import DataTable from "react-data-table-component";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import shareIcon from "../../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../../assets/icons/svg/upload.svg";
 import deleteIcon from "../../../assets/icons/svg/delete.svg";
 import copyIcon from "../../../assets/icons/svg/Copy.svg";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
-import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   selectQuoteDropdownOption,
   selectBillingFreqList,
@@ -57,7 +36,7 @@ import {
   selectQuoteStatusList,
   selectQuoteValidityList,
 } from "pages/Repair/dropdowns/quoteRepairSlice";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import {
   addQuoteItem,
   addQuotePayer,
@@ -65,8 +44,6 @@ import {
   fetchQuoteDetails,
   fetchQuoteSummary,
   fetchQuoteVersions,
-  removePLQuoteItem,
-  removePayer,
   removeRepQuoteItem,
   updatePayerData,
   updateQuoteHeader,
@@ -85,10 +62,10 @@ import TextSnippetIcon from "@mui/icons-material/TextSnippet";
 import { useAppSelector } from "app/hooks";
 import ModalCreateVersion from "../components/ModalCreateVersion";
 import QuoteSummary from "../components/QuoteSummary";
-import { DataGrid } from "@mui/x-data-grid";
 import PayerGridTable from "../components/PayerGridTable";
-import PriceSummaryTable from "../components/PriceSummaryTable";
 import QuotePriceSummaryTable from "../components/QuotePriceSummaryTable ";
+import { WITHOUT_SPARE_PARTS_DETAILS, WITH_SPARE_PARTS } from "navigation/CONSTANTS";
+
 const customStyles = {
   rows: {
     style: {
@@ -1222,15 +1199,28 @@ const RepairQuoteDetails = (props) => {
     }
   };
   const openSource = (builder) => {
-    let builderDetails = {
-      builderId: "",
-      bId: "",
-      type: "fetch",
-    };
-    history.push({
-      pathname: "/RepairWithoutSpareParts/BuilderDetails",
-      state: builderDetails,
-    });
+    if(savedQuoteDetails.standardJobId){
+
+    } else if(savedQuoteDetails.builderId) {
+      let builderDetails = {
+        builderId: "",
+        bId: "",
+        type: "fetch",
+      };
+      builderDetails.builderId = customerData.source;
+      builderDetails.bId = savedQuoteDetails.builderId;
+      if(savedQuoteDetails.builderType === 'BUILDER_WITHOUT_SPAREPART'){
+        history.push({
+          pathname: WITHOUT_SPARE_PARTS_DETAILS,
+          state: builderDetails,
+        });
+      } else {
+        history.push({
+          pathname: WITH_SPARE_PARTS,
+          state: builderDetails,
+        });
+      }
+    }
   };
   return (
     <>

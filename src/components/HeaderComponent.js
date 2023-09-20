@@ -1,30 +1,10 @@
 import React, { useEffect, useState } from "react";
-import logoIcon from "../assets/icons/png/logo.png";
-import shearchIcon from "../assets/icons/svg/search.svg";
-import notificationIcon from "../assets/icons/svg/notification-bing.svg";
-import profileIcon from "../assets/icons/svg/profile.svg";
-import messageIcon from "../assets/icons/svg/message-text.svg";
-import supportIcon from "../assets/icons/svg/24-support.svg";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { Link, useHistory } from "react-router-dom";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FormControl from "@mui/material/FormControl";
-import SearchIcon from "@mui/icons-material/Search";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
-import { useSelector, useDispatch } from "react-redux";
-
-import { history } from "utils";
 import {
-  WITH_SPARE_PARTS,
-  WITHOUT_SPARE_PARTS_DETAILS,
-  PART_LIST,
-  KITS,
-  PORTFOLIO_SUMMARY,
-  SOLUTION_BUILDER_ANALYTICS,
-  SOLUTION_QUOTE,
   REPAIR_SERVICE_PARTS_TEMPLATE,
   ACCOUNT_PACKAGES,
   ACCOUNT_SETTINGs,
@@ -38,11 +18,10 @@ import { Divider } from "@mui/material";
 export function HeaderComponent(props) {
   let history = useHistory();
   const [age, setAge] = React.useState("5");
-
-  const result = useSelector((state) => state.loginSuccess);
-  // console.log("result is : ", result)
-  // const [loginUserId, setLoginUserId] = useState(null);
   const [loginStatus, setLoginStatus] = useState(false);
+  const [planName, setPlanName] = useState('STARTER');
+  const [tenantId, setTenantId] = useState("");
+
 
   // console.log("login status Header component : ", result)
 
@@ -57,13 +36,14 @@ export function HeaderComponent(props) {
     // window.location.href = "/login";
   };
   useEffect(() => {
-    var userLoginStatus = localStorage.getItem("user_logIn_Status");
     var CookiesSetData = Cookies.get("loginTenantDtl");
 
     if (CookiesSetData != undefined) {
       var getCookiesJsonData = JSON.parse(CookiesSetData);
       if (getCookiesJsonData.user_logIn_Status) {
         setLoginStatus(true);
+        setPlanName(getCookiesJsonData.user_planName);
+        setTenantId(getCookiesJsonData.user_tenantId);
       } else {
         setLoginStatus(false);
         history.push("/login");
@@ -1398,7 +1378,7 @@ export function HeaderComponent(props) {
                       </li>
                       
                       <li>                        
-                        <span >Tenant ID #: {localStorage.getItem("user_tenantId")}</span>
+                        <span >Tenant ID #: {tenantId}</span>
                       </li>
                       <Divider />
                       <li>
@@ -1406,7 +1386,7 @@ export function HeaderComponent(props) {
                       </li>
                       <li>
                         <Link to={ACCOUNT_PACKAGES}>
-                          <span>My Packages </span>
+                          <span>My Packages <strong>({planName})</strong> </span>
                         </Link>
                       </li>
                       <li>
