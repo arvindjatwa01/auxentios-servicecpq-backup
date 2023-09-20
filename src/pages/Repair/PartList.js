@@ -115,7 +115,6 @@ import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import PriceMethodTable from "./components/PriceMethodTable";
 import PriceSummaryTable from "./components/PriceSummaryTable";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import NotesAddEdit from "../SolutionModules/NotesAddEdit";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -200,7 +199,6 @@ function PartList(props) {
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = useState("customer");
-  const [showNotes, setShowNotes] = useState(false);
   const [open, setOpen] = useState(false);
   const [addPartOpen, setAddPartOpen] = useState(false);
   const [searchResultOpen, setSearchResultOpen] = useState(false);
@@ -1699,9 +1697,6 @@ function PartList(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
-                  <DescriptionOutlinedIcon className="text-grey font-size-28" />
-                </a>
                 <button
                   className="ml-3 btn-no-border font-size-14"
                   title="Share"
@@ -3476,9 +3471,6 @@ function PartList(props) {
           </div>
         </div> */}
       </div>
-      {showNotes && (
-        <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
-      )}
     </>
   );
 }

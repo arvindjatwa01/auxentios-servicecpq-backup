@@ -64,7 +64,12 @@ import ModalCreateVersion from "../components/ModalCreateVersion";
 import QuoteSummary from "../components/QuoteSummary";
 import PayerGridTable from "../components/PayerGridTable";
 import QuotePriceSummaryTable from "../components/QuotePriceSummaryTable ";
-import { WITHOUT_SPARE_PARTS_DETAILS, WITH_SPARE_PARTS } from "navigation/CONSTANTS";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import {
+  WITHOUT_SPARE_PARTS_DETAILS,
+  WITH_SPARE_PARTS,
+} from "navigation/CONSTANTS";
+import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
 
 const customStyles = {
   rows: {
@@ -101,6 +106,7 @@ const RepairQuoteDetails = (props) => {
   const [quoteId, setQuoteId] = useState("");
   const [versionOpen, setVersionOpen] = useState(false);
   const [headerLoading, setHeaderLoading] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
     // source: "",
@@ -294,7 +300,7 @@ const RepairQuoteDetails = (props) => {
       format: (row) => (row.margin ? row.margin : 30),
     },
     {
-      name:"Total Price",
+      name: "Total Price",
       selector: (row) => row.totalPrice,
       wrap: true,
       sortable: true,
@@ -456,7 +462,9 @@ const RepairQuoteDetails = (props) => {
   };
   const populatePricingData = (result) => {
     let calculatedNetPrice = 0;
-    result.priceEstimates?.map(indEst => calculatedNetPrice = calculatedNetPrice + indEst.netPrice);
+    result.priceEstimates?.map(
+      (indEst) => (calculatedNetPrice = calculatedNetPrice + indEst.netPrice)
+    );
     setBillingDetail({
       priceDate: result.priceDate ? result.priceDate : new Date(),
       billingFrequency:
@@ -938,7 +946,7 @@ const RepairQuoteDetails = (props) => {
     setShippingDetail({ ...shippingDetail, serviceRecipientAddress });
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
-      handleSnack("error","Please enter the email address in correct format");
+      handleSnack("error", "Please enter the email address in correct format");
     } else {
       updateQuoteHeader(quoteId, data)
         .then((result) => {
@@ -1199,9 +1207,8 @@ const RepairQuoteDetails = (props) => {
     }
   };
   const openSource = (builder) => {
-    if(savedQuoteDetails.standardJobId){
-
-    } else if(savedQuoteDetails.builderId) {
+    if (savedQuoteDetails.standardJobId) {
+    } else if (savedQuoteDetails.builderId) {
       let builderDetails = {
         builderId: "",
         bId: "",
@@ -1209,7 +1216,7 @@ const RepairQuoteDetails = (props) => {
       };
       builderDetails.builderId = customerData.source;
       builderDetails.bId = savedQuoteDetails.builderId;
-      if(savedQuoteDetails.builderType === 'BUILDER_WITHOUT_SPAREPART'){
+      if (savedQuoteDetails.builderType === "BUILDER_WITHOUT_SPAREPART") {
         history.push({
           pathname: WITHOUT_SPARE_PARTS_DETAILS,
           state: builderDetails,
@@ -1273,7 +1280,16 @@ const RepairQuoteDetails = (props) => {
               </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
-              <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={openSource}>Go to Source</a>
+              <a
+                href={undefined}
+                className="cursor btn ml-3 font-size-14 bg-primary text-white"
+                onClick={openSource}
+              >
+                Go to Source
+              </a>
+              <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
+                <DescriptionOutlinedIcon className="text-grey font-size-28" />
+              </a>
               <a href="#" className="ml-3 font-size-14" title="Share">
                 <img src={shareIcon}></img>
               </a>
@@ -2725,6 +2741,9 @@ const RepairQuoteDetails = (props) => {
           </div>
         </div>
       </div>
+      {showNotes && (
+        <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
+      )}
     </>
   );
 };

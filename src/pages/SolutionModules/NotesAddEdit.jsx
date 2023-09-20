@@ -13,6 +13,17 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 
+const notesForOptions = [
+  { label: "Internal", value: "Internal" },
+  { label: "External", value: "External" },
+  { label: "General", value: "General" },
+];
+
+const notesTypeOptions = [ 
+  { label: "Instructions", value: "Instructions"},
+  { label: "Terms & Conditions", value: "Terms & Conditions"},
+  { label: "Long Descriptions", value: "Long Descriptions"},
+]
 const NotesAddEdit = ({ show, hideModal }) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -45,7 +56,11 @@ const NotesAddEdit = ({ show, hideModal }) => {
               <label className="text-light-dark font-size-12 font-weight-500">
                 Note For
               </label>
-              <Select className="text-primary" placeholder="Internal" />
+              <Select
+                options={notesForOptions}
+                className="text-primary"
+                placeholder="Internal"
+              />
             </div>
           </div>
           <div className="col-lg-4 col-md-4 col-sm-4 master-input-fields">
@@ -53,7 +68,7 @@ const NotesAddEdit = ({ show, hideModal }) => {
               <label className="text-light-dark font-size-12 font-weight-500">
                 Note Type
               </label>
-              <Select className="text-primary" placeholder="Instructions" />
+              <Select options={notesTypeOptions} className="text-primary" placeholder="Instructions" />
             </div>
           </div>
           <div className="col-lg-4 col-md-4 col-sm-4 master-input-fields">

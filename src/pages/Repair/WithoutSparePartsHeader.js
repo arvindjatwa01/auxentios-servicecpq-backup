@@ -79,7 +79,6 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import PriceSummaryTable from "./components/PriceSummaryTable";
 import PriceMethodTable from "./components/PriceMethodTable";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import NotesAddEdit from "../SolutionModules/NotesAddEdit";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -89,7 +88,6 @@ function WithoutSparePartsHeader(props) {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
-  const [showNotes, setShowNotes] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
   const [versionDescription, setVersionDescription] = useState("");
   const [noOptionsCust, setNoOptionsCust] = useState(false);
@@ -965,9 +963,6 @@ function WithoutSparePartsHeader(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                <a className="ml-3 cursor" onClick={() => setShowNotes(true)}>
-                  <DescriptionOutlinedIcon className="text-grey font-size-28" />
-                </a>
                 <a href="#" className="ml-3 font-size-14" title="Share">
                   <img src={shareIcon}></img>
                 </a>
@@ -2249,9 +2244,6 @@ function WithoutSparePartsHeader(props) {
         reference={templateReference}
         setReference={setTemplateReference}
       />
-      {showNotes && (
-        <NotesAddEdit show={showNotes} hideModal={() => setShowNotes(false)} />
-      )}
       <div style={{ height: "200px" }}></div>
     </React.Fragment>
   );
