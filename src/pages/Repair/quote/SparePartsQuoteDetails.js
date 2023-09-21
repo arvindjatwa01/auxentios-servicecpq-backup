@@ -27,7 +27,10 @@ import {
   FONT_STYLE_SELECT,
   FONT_STYLE_UNIT_SELECT,
   OPTIONS_LEADTIME_UNIT,
+  QUOTE_STATUS_SELECT,
+  QUOTE_VERSION_SELECT,
   STATUS_OPTIONS,
+  STYLE_QUOTEITEM_TABLE,
 } from "../CONSTANTS";
 // import SearchBox from "../ /components/SearchBox";
 import SearchBox from "pages/Repair/components/SearchBox";
@@ -80,37 +83,10 @@ import LoadingProgress from "../components/Loader";
 import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 
-
-const customStyles = {
-  rows: {
-    style: {
-      minHeight: "72px", // override the row height
-    },
-  },
-  headCells: {
-    style: {
-      paddingLeft: "8px", // override the cell padding for head cells
-      paddingRight: "8px",
-      backgroundColor: "#872ff7",
-      color: "#fff",
-      borderRight: "1px solid rgba(0,0,0,.12)",
-    },
-  },
-  cells: {
-    style: {
-      paddingLeft: "8px", // override the cell padding for data cells
-      paddingRight: "8px",
-      borderRight: "1px solid rgba(0,0,0,.12)",
-      fontSize: "12px",
-    },
-  },
-};
-
 export function SparePartsQuoteDetails(props) {
   const history = useHistory();
   const { state } = props.location;
   //   console.log("props are : ", props);
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [quoteItems, setQuoteItems] = useState([]);
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
@@ -1022,17 +998,6 @@ export function SparePartsQuoteDetails(props) {
       sortable: true,
       format: (row) => row.totalPrice,
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Payer Type</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.payerType,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.payerType,
-    // },
     {
       name: (
         <>
@@ -1077,7 +1042,7 @@ export function SparePartsQuoteDetails(props) {
     },
   ];
 
-  //Remove Spare Part
+  //Remove Quote Item
   const handleDeleteQuoteItem = (quoteItemId) => {
     removePLQuoteItem(quoteItemId)
       .then((res) => {
@@ -1270,7 +1235,8 @@ export function SparePartsQuoteDetails(props) {
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select
-                    className="customselectbtn"
+                    // className="customselectbtn"
+                    styles={QUOTE_VERSION_SELECT}
                     onChange={(e) => handleVersion(e)}
                     options={quoteVersionOptions}
                     value={selectedVersion}
@@ -1279,7 +1245,7 @@ export function SparePartsQuoteDetails(props) {
 
                 <div className="ml-3">
                   <Select
-                    className="customselectbtn"
+                    styles={QUOTE_STATUS_SELECT}
                     onChange={(e) => handleQuoteStatus(e)}
                     // isOptionDisabled={(e) => disableStatusOptions(e)}
                     options={statusOptions}
@@ -2318,7 +2284,6 @@ export function SparePartsQuoteDetails(props) {
                               </div>
                             </div>
                           </div>
-
                           <div className="col-md-3 col-sm-3">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
@@ -2453,10 +2418,6 @@ export function SparePartsQuoteDetails(props) {
                           />
                         </div>
                         <hr />
-                        {/* <a href="#" className="btn bg-primary text-white">
-                          <AddIcon className="mr-2" />
-                          ADD PAYER
-                        </a> */}
                         <div className="mt-3">
                           <PayerGridTable
                             handleSnack={handleSnack}
@@ -2464,23 +2425,7 @@ export function SparePartsQuoteDetails(props) {
                             quoteId={quoteId}
                           />
                         </div>
-                        {/* <div className="mt-3 d-flex align-items-center justify-content-between">
-                        <h6 className="mb-0 font-size-16 font-weight-600">
-                          PRICE/ESTIMATE SUMMARY
-                        </h6>
-                        <div className="d-flex align-items-center">
-                          <a href="#" className="text-primary mr-3">
-                            <ModeEditOutlineOutlinedIcon />
-                          </a>
-                          <a href="#" className="text-primary mr-3">
-                            <ShareOutlinedIcon />
-                          </a>
-                          <a href="#" className="btn bg-primary text-white">
-                            <AddIcon className="mr-2" />
-                            Add Price Summary Type
-                          </a>
-                        </div>
-                      </div> */}
+                        
                         <div className="mt-3">
                           <QuotePriceSummaryTable
                             handleSnack={handleSnack}
@@ -2735,21 +2680,16 @@ export function SparePartsQuoteDetails(props) {
                 </div>
               </div>
             </div>
-            {/* <div
-              className=""
-              style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
-            > */}
             <DataTable
               className=""
               title=""
               columns={quoteItemsColumns}
               data={quoteItems}
-              customStyles={customStyles}
+              customStyles={STYLE_QUOTEITEM_TABLE}
               pagination
               // onRowClicked={(e) => handleRowClick(e)}
               // selectableRows
             />
-            {/* </div> */}
           </div>
         </div>
       </div>

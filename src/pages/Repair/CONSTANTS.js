@@ -258,7 +258,7 @@ export const GRID_STYLE = {
     fontSize: 12,
   },
   "& .MuiInputBase-root": {
-    fontSize: 12, marginInline: 2, paddingInline: 1, 
+    fontSize: 12, marginInline: 2, paddingInline: 1,
   },
   '& .super-app-value': {
     backgroundColor: '#dabffd',
@@ -290,7 +290,7 @@ export const FONT_STYLE_UNIT_SELECT = {
   singleValue: (provided) => ({
     ...provided,
     ...FONT_STYLE,
-    minWidth:'80px !important'
+    minWidth: '80px !important'
   }),
 };
 export const FONT_STYLE_SELECT = {
@@ -390,3 +390,87 @@ export const LIFE_STAGE_OPTIONS = [
   { value: "MIDLIFE", label: "Midlife" },
   { value: "END_OF_LIFE", label: "End of Life" },
 ];
+
+export const QUOTE_STATUS_SELECT = {
+  control: (baseStyles, state) => ({
+    ...baseStyles,
+    fontSize: 12,
+    width: '180px',
+    height: 25,
+    minHeight: 25,
+    backgroundColor: '#f0f9ff',
+    borderRadius: '50px',
+    padding: '0 10px',
+    alignItems: 'baseline',
+    borderColor: 'hsl(0, 0%, 80%)',
+    boxShadow: 'none',
+  }),
+  input: (baseStyles, state) => ({
+    ...baseStyles,
+    margin: 0
+  }),
+  valueContainer: (baseStyles, state) => ({
+    ...baseStyles,
+    padding: 0,
+  }),
+  indicatorsContainer: (baseStyles, state) => ({
+    ...baseStyles,
+    padding: 0,
+    height: '25px'
+  }),
+}
+
+
+export const QUOTE_VERSION_SELECT = {
+  control: (baseStyles, state) => ({
+    ...baseStyles,
+    fontSize: 12,
+    width: '130px',
+    height: 25,
+    minHeight: 25,
+    backgroundColor: '#f0f9ff',
+    borderRadius: '50px',
+    padding: '0 10px',
+    alignItems: 'baseline',
+    borderColor: 'hsl(0, 0%, 80%)',
+    boxShadow: 'none',
+  }),
+  input: (baseStyles, state) => ({
+    ...baseStyles,
+    margin: 0
+  }),
+  valueContainer: (baseStyles, state) => ({
+    ...baseStyles,
+    padding: 0,
+  }),
+  indicatorsContainer: (baseStyles, state) => ({
+    ...baseStyles,
+    padding: 0,
+    height: '25px'
+  }),
+}
+
+export const STYLE_QUOTEITEM_TABLE = {
+  rows: {
+    style: {
+      minHeight: "72px", // override the row height
+    },
+  },
+  headCells: {
+    style: {
+      paddingLeft: "8px", // override the cell padding for head cells
+      paddingRight: "8px",
+      backgroundColor: "#872ff7",
+      color: "#fff",
+      borderRight: "1px solid rgba(0,0,0,.12)",
+    },
+  },
+  cells: {
+    style: {
+      paddingLeft: "8px", // override the cell padding for data cells
+      paddingRight: "8px",
+      borderRight: "1px solid rgba(0,0,0,.12)",
+      fontSize: "12px",
+    },
+  },
+};

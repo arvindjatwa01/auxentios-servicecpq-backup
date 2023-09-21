@@ -9,6 +9,9 @@ import {
   FONT_STYLE_SELECT,
   FONT_STYLE_UNIT_SELECT,
   OPTIONS_LEADTIME_UNIT,
+  QUOTE_STATUS_SELECT,
+  QUOTE_VERSION_SELECT,
+  STYLE_QUOTEITEM_TABLE,
 } from "../CONSTANTS";
 import Tab from "@mui/material/Tab";
 import { customerSearch, machineSearch } from "services/searchServices";
@@ -70,35 +73,6 @@ import {
   WITH_SPARE_PARTS,
 } from "navigation/CONSTANTS";
 import NotesAddEdit from "pages/SolutionModules/NotesAddEdit";
-
-const customStyles = {
-  rows: {
-    style: {
-      minHeight: "72px", // override the row height
-    },
-  },
-  headCells: {
-    style: {
-      paddingLeft: "8px", // override the cell padding for head cells
-      paddingRight: "8px",
-      backgroundColor: "#872ff7",
-      color: "#fff",
-      borderRight: "1px solid rgba(0,0,0,.12)",
-      minWidth: "100px !important",
-      maxWidth: "120px !important",
-    },
-  },
-  cells: {
-    style: {
-      paddingLeft: "8px", // override the cell padding for data cells
-      paddingRight: "8px",
-      borderRight: "1px solid rgba(0,0,0,.12)",
-      fontSize: "12px",
-      minWidth: "100px !important",
-      maxWidth: "120px !important",
-    },
-  },
-};
 
 const RepairQuoteDetails = (props) => {
   const history = useHistory();
@@ -223,84 +197,84 @@ const RepairQuoteDetails = (props) => {
   const [selQuoteStatus, setSelQuoteStatus] = useState("");
   const quoteItemsColumns = [
     {
-      name: "Component",
+      name: <div>Component</div>,
       selector: (row) => row.component,
       wrap: true,
       sortable: true,
       format: (row) => row.component,
     },
     {
-      name: "Job Desc.",
+      name: <div>Job Desc</div>,
       selector: (row) => row.jobDescription,
       wrap: true,
       sortable: true,
       format: (row) => row.jobDescription,
     },
     {
-      name: "Description",
+      name: <div>Description</div>,
       selector: (row) => row.description,
       wrap: true,
       sortable: true,
       format: (row) => row.description,
     },
     {
-      name: "Part List ID",
+      name: <div>Part List ID</div>,
       selector: (row) => row.partListId,
       wrap: true,
       sortable: true,
       format: (row) => row.partListId,
     },
     {
-      name: "Parts $",
+      name: <div>Parts $</div>,
       selector: (row) => row.partsPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.partsPrice,
     },
     {
-      name: "Labor $",
+      name: <div>Labor $</div>,
       selector: (row) => row.labourPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.labourPrice,
     },
     {
-      name: "Misc $",
+      name: <div>Misc $</div>,
       selector: (row) => row.miscPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.miscPrice,
     },
     {
-      name: "Net Price",
+      name: <div>Net Price</div>,
       selector: (row) => row.totalPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.totalPrice,
     },
     {
-      name: "Net Adjusted $",
+      name: <div>Net Adjusted $</div>,
       selector: (row) => row.adjustedPrice,
       wrap: true,
       sortable: true,
       format: (row) => row.adjustedPrice,
     },
     {
-      name: "Discount",
+      name: <div>Discount</div>,
       selector: (row) => row.discount,
       wrap: true,
       sortable: true,
       format: (row) => row.discount,
     },
     {
-      name: "Margin",
+      name: <div>Margin</div>,
       selector: (row) => row.margin,
       wrap: true,
       sortable: true,
       format: (row) => (row.margin ? row.margin : 30),
     },
     {
-      name: "Total Price",
+      name: <div>Total Price</div>,
       selector: (row) => row.totalPrice,
       wrap: true,
       sortable: true,
@@ -318,9 +292,9 @@ const RepairQuoteDetails = (props) => {
     //   format: (row) => row.payerType,
     // },
     {
-      name: "Actions",
+      name: <div>Actions</div>,
       wrap: true,
-      width: "30px",
+      width: "10px",
       sortable: true,
       format: (row) => row.action,
       cell: (row) => (
@@ -901,15 +875,7 @@ const RepairQuoteDetails = (props) => {
   };
 
   const [value, setValue] = React.useState("customer");
-  const steps = [
-    "Draft",
-    "Reviewed",
-    "Sent to Costomer",
-    "In revision",
-    "Revised",
-    "Accepted",
-  ];
-
+  
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -959,7 +925,6 @@ const RepairQuoteDetails = (props) => {
           //   }
 
           // })
-          console.log(payers);
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
           handleSnack("success", "Customer details updated!");
@@ -1261,7 +1226,8 @@ const RepairQuoteDetails = (props) => {
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select
-                    className="customselectbtn"
+                    // className="customselectbtn"
+                    styles={QUOTE_VERSION_SELECT}
                     onChange={(e) => handleVersion(e)}
                     options={quoteVersionOptions}
                     value={selectedVersion}
@@ -1270,7 +1236,8 @@ const RepairQuoteDetails = (props) => {
 
                 <div className="ml-3">
                   <Select
-                    className="customselectbtn"
+                    // className="customselectbtn"
+                    styles={QUOTE_STATUS_SELECT}
                     onChange={(e) => handleQuoteStatus(e)}
                     // isOptionDisabled={(e) => disableStatusOptions(e)}
                     options={statusOptions}
@@ -2725,21 +2692,21 @@ const RepairQuoteDetails = (props) => {
                 </div>
               </div>
             </div>
-            <div
+            {/* <div
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
-            >
+            > */}
               <DataTable
                 className=""
                 title=""
                 columns={quoteItemsColumns}
                 data={quoteItems}
-                customStyles={customStyles}
+                customStyles={STYLE_QUOTEITEM_TABLE}
                 pagination
                 // onRowClicked={(e) => handleRowClick(e)}
                 // selectableRows
               />
-            </div>
+            {/* </div> */}
           </div>
         </div>
       </div>
