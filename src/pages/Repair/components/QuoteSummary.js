@@ -73,22 +73,22 @@ return (
               <b>{summary.make}</b>
             </h6>
           </div>
-          <div className="hr"></div>
-          <div className="d-flex align-items-center justify-content-between">
+         {/* <div className="hr"></div>
+           <div className="d-flex align-items-center justify-content-between">
             <p className="mb-0 ">
               <span>Price Method</span>
             </p>
             <h6 className="mb-0 ">
               <b>{summary.priceMethod}</b>
             </h6>
-          </div>
+          </div> */}
           <div className="hr"></div>
           <div className="d-flex align-items-center justify-content-between">
             <p className="mb-0 ">
               <span>Net Price</span>
             </p>
             <h6 className="mb-0 ">
-              <b>${summary.totalPrice}</b>
+              <b>${summary.netPrice}</b>
             </h6>
           </div>
           <div className="hr"></div>
