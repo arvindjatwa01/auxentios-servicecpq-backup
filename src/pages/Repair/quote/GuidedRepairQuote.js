@@ -1545,21 +1545,7 @@ export const GuidedRepairQuote = (props) => {
                       autoHeight
                     />
                   </div>
-                </div>
-                <a
-                  href="/QuoteRepairOption"
-                  className="btn text-white bg-primary pull-right"
-                >
-                  Next
-                </a>
-                <div className="text-right" style={{ paddingTop: "18rem" }}>
-                  <a
-                    className="btn bg-primary text-white cursor"
-                    href="/SolutionTemplates"
-                  >
-                    Continue <ArrowForwardIcon className=" font-size-16" />
-                  </a>
-                </div>
+                </div>           
               </TabPanel>
               <TabPanel className="p-0" value="import">
                 <UploadQuoteItems handleUploadFile={handleUploadFile} handleReadFile={handleReadFile} file={file}/>

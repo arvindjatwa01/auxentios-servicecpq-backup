@@ -609,7 +609,7 @@ function WithoutSparePartsOperation(props) {
                 className="col-md-4 col-sm-4"
               />
             </div>
-            {operationData.serviceEstimation?.netPrice && (
+            {operationData.serviceEstimation?.netPrice > 0 && (
               <>
                 <h5 className="d-flex align-items-center  mx-2">
                   <div className="" style={{ display: "contents" }}>

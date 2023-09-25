@@ -815,7 +815,7 @@ function WithSparePartsOperation(props) {
                     })}
                   {/* </div>
                 <div className="row"> */}
-                  {operationData.serviceEstimation?.netPrice && (
+                  {operationData.serviceEstimation?.netPrice > 0 && (
                     <div className="col-md-6">
                       <div
                         className="card border"

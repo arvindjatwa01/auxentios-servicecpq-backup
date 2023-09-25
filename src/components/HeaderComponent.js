@@ -5,12 +5,12 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
 import {
-  REPAIR_SERVICE_PARTS_TEMPLATE,
   ACCOUNT_PACKAGES,
   ACCOUNT_SETTINGs,
   ACCOUNT_RENEWAL_BILLING,
   ACCOUNT_CONFIGURATION,
   ACCOUNT_SUPPORT,
+  TEMPLATE,
 } from "../navigation/CONSTANTS";
 import Cookies from "js-cookie";
 import { Divider } from "@mui/material";
@@ -799,7 +799,7 @@ export function HeaderComponent(props) {
                           <div
                             className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
                             onClick={() =>
-                              history.push(REPAIR_SERVICE_PARTS_TEMPLATE)
+                              history.push(TEMPLATE)
                             }
                             style={{ cursor: "pointer" }}
                           >

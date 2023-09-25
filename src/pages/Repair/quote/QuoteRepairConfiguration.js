@@ -5,10 +5,7 @@ import { Link } from "react-router-dom";
 import WithoutEvalIcon from "../../../assets/icons/svg/without_eval.svg";
 import WithEvalIcon from "../../../assets/icons/svg/with_eval.svg";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForwardIos";
-import {
-  GUIDED_REPAIR_QUOTE,
-  REPAIR_QUOTE_WITH_EVALUATION,
-} from "navigation/CONSTANTS";
+
 
 const QuoteRepairConfiguration = (props) => {
   return (
@@ -28,7 +25,6 @@ const QuoteRepairConfiguration = (props) => {
                     create a new quote.{" "}
                   </p>
                   <button
-                  // to={GUIDED_REPAIR_QUOTE}
                   className="btn bg-primary text-white"
                   onClick={() => props.setSelectedQuoteOption("without_eval")}
                 >

@@ -19,56 +19,13 @@ import SearchComponent from "../components/SearchComponent";
 import { QUOTE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
 import { builderSearch } from "services/repairBuilderServices";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { quoteRepairSearch } from "services/repairQuoteServices";
 
 const SearchSparePartQuote = () => {
   const [show, setShow] = React.useState(false);
   const handleClose = () => setShow(false);
 
-  const rows = [
-    {
-      id: 1,
-      GroupNumber: "Snow",
-      Type: "Jon",
-      Partnumber: 35,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Inconsistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    {
-      id: 2,
-      GroupNumber: "Lannister",
-      Type: "Cersei",
-      Partnumber: 42,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    {
-      id: 3,
-      GroupNumber: "Lannister",
-      Type: "Jaime",
-      Partnumber: 45,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Actions: "Inconsistent",
-    },
-    // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
-    // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
-    // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
-    // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
-    // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
-    // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
-  ];
-  // Snack Bar State
+    // Snack Bar State
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -115,7 +72,7 @@ const SearchSparePartQuote = () => {
 
     try {
       if (searchStr) {
-        const res = await builderSearch(
+        const res = await quoteRepairSearch(
           `quoteType:PARTS_QUOTE AND saved:true AND ${searchStr}`
         );
         setMasterData(res);
@@ -292,10 +249,10 @@ const SearchSparePartQuote = () => {
           <div>Total Price</div>
         </>
       ),
-      selector: (row) => row.totalPrice,
+      selector: (row) => row.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.totalPrice,
+      format: (row) => row.netPrice,
     },
   ];
 
@@ -340,20 +297,20 @@ const SearchSparePartQuote = () => {
                       <span>Spare Parts Quotes</span>
                     </h5>
                   </div>
-                  <p className=" mb-0">
+                  {/* <p className=" mb-0">
                     <a href="#" className="ml-2 text-white">
                       <EditOutlinedIcon />
                     </a>
                     <a href="#" className="ml-2 text-white">
                       <ShareOutlinedIcon />
                     </a>
-                  </p>
+                  </p> */}
                   <SearchComponent
                     querySearchSelector={querySearchSelector}
                     setQuerySearchSelector={setQuerySearchSelector}
                     clearFilteredData={clearFilteredData}
                     handleSnack={handleSnack}
-                    searchAPI={builderSearch}
+                    searchAPI={quoteRepairSearch}
                     searchClick={handleQuerySearchClick}
                     options={QUOTE_SEARCH_Q_OPTIONS}
                     color="white"

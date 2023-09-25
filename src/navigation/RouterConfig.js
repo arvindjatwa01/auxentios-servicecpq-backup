@@ -4,7 +4,7 @@ import Dashboard from "pages/Dashboard";
 import { NotFound } from "navigation/NotFound";
 
 
-import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, LANDING_PAGE_LOGIN, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, CREATED_CUSTOM_PORTFOLIO_DETAILS, SOLUTION_BUILDER_PORRTFOLIO_TEMP, SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT, RIPAIR_SERVICE_ESTIMATE, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_KITS, WITHOUT_SPARE_PARTS_DETAILS, QUOTE_SPARE_PARTS, QUOTE_REPAIR_OPTION, SPARE_PARTS_QUOTE_TEMPLATE, QUOTE_RECENT_REPAIR, QUOTE_REPAIR_SEARCH, SPARE_PARTS_QUOTE_REVIEWED, TERMS_CONDITIONS, SOLUTION_QUOTE, SOLUTION_QUOTE_SEARCH, SOLUTION_QUOTE_CONFIG, SOLUTION_SERVICE_PORTFOLIO, SPARE_PARTS_QUOTE_DETAILS, QUOTE_SOLUTION_BUILDER, SOLUTION_SEARCH_TEMPLATE, KITS, COMMERCE_PAGE_OPEN, ADD_TO_CART, REVIEW_ORDER, COMMERCE_GUIDED, COMMERCE_GUIDED_QUESTIONS, SHOPPING_CART_LIST, COMMERCE_PROFILE, QUOTE_SOLUTION_CONFIGURATION, PRICE_SETTING, COMMERCE_LANDING_PAGE, PRICE_CONFIGURATION, PRICE_GLOBAL_SETTING, PRICE_DETERMINATION, PRICE_MAINTENANCE, PRICE_COMPUTATION, STANDARD_JOB_DETAIL, GUIDED_REPAIR_QUOTE, QUOTE_SPARE_PARTS_TEMPLATE, QUOTE_SPARE_PARTS_REVIEWED, REPAIR_SERVICE_PARTS_TEMPLATE, SERVICE_PART_TEMPLATES, QUOTE_REPAIR_CREATE, REPAIR_QUOTE_WITH_EVALUATION, TEMPLATE, QUOTE_SPARE_PARTS_SEARCH, QUOTE_SPARE_PART_CONFIGURATION, REPAIR_QUOTE_DETAILS, OVERVIEW, INSIGHTS, EQUIPMENT_MASTER, PARTS_360, FORGOT_PASSWORD, SERVICE_MASTER, CONSUMABLE_MASTER, CUSTOMER_MASTER, AUX_ADMIN_PROVISION, AUX_ADMIN_ACCOUNT, ACCOUNT_SETTINGs, ACCOUNT_CONFIGURATION, ACCOUNT_RENEWAL_BILLING, ACCOUNT_PACKAGES, ACCOUNT_SUPPORT } from "navigation/CONSTANTS";
+import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, LANDING_PAGE_LOGIN, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, AUTH_PAGE1, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, CREATED_CUSTOM_PORTFOLIO_DETAILS, SOLUTION_BUILDER_PORRTFOLIO_TEMP, SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT, RIPAIR_SERVICE_ESTIMATE, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_KITS, WITHOUT_SPARE_PARTS_DETAILS, QUOTE_SPARE_PARTS, SPARE_PARTS_QUOTE_TEMPLATE, QUOTE_RECENT_REPAIR, QUOTE_REPAIR_SEARCH, SPARE_PARTS_QUOTE_REVIEWED, TERMS_CONDITIONS, SOLUTION_QUOTE, SOLUTION_QUOTE_SEARCH, SOLUTION_QUOTE_CONFIG, SOLUTION_SERVICE_PORTFOLIO, SPARE_PARTS_QUOTE_DETAILS, QUOTE_SOLUTION_BUILDER, SOLUTION_SEARCH_TEMPLATE, KITS, COMMERCE_PAGE_OPEN, ADD_TO_CART, REVIEW_ORDER, COMMERCE_GUIDED, COMMERCE_GUIDED_QUESTIONS, SHOPPING_CART_LIST, COMMERCE_PROFILE, QUOTE_SOLUTION_CONFIGURATION, PRICE_SETTING, COMMERCE_LANDING_PAGE, PRICE_CONFIGURATION, PRICE_GLOBAL_SETTING, PRICE_DETERMINATION, PRICE_MAINTENANCE, PRICE_COMPUTATION, STANDARD_JOB_DETAIL, GUIDED_REPAIR_QUOTE, QUOTE_SPARE_PARTS_TEMPLATE, QUOTE_SPARE_PARTS_REVIEWED, QUOTE_REPAIR_CREATE, REPAIR_QUOTE_WITH_EVALUATION, TEMPLATE, QUOTE_SPARE_PARTS_SEARCH, QUOTE_SPARE_PART_CONFIGURATION, REPAIR_QUOTE_DETAILS, OVERVIEW, INSIGHTS, EQUIPMENT_MASTER, PARTS_360, FORGOT_PASSWORD, SERVICE_MASTER, CONSUMABLE_MASTER, CUSTOMER_MASTER, AUX_ADMIN_PROVISION, AUX_ADMIN_ACCOUNT, ACCOUNT_SETTINGs, ACCOUNT_CONFIGURATION, ACCOUNT_RENEWAL_BILLING, ACCOUNT_PACKAGES, ACCOUNT_SUPPORT, PLAN_ENTERPRISE, PLAN_MOMENTUM, PLAN_GROWTH } from "navigation/CONSTANTS";
 
 import { Analytics, ServicePortfolio, SolutionBuilderCreate, CustomizedPortfolio, PortfolioTemplatesResult, CreatedCustomPortfolioTemplate, SolutionTemplateResult, CreateCustomPortfolio } from "../pages/SolutionModules/index"
 
@@ -24,7 +24,6 @@ import PartList from "pages/Repair/PartList";
 import { RepairPartlist } from "pages/Repair/RepairPartlist";
 import { RepairWithSpareParts } from "pages/Repair/RepairWithSpareParts";
 import { RepairWithoutSpareParts } from "pages/Repair/RepairWithoutSpareParts";
-import { RepairServicePartTemplate } from "pages/Repair/RepairServicePartTemplate";
 import { RepairKits } from "pages/Repair/RepairKits";
 import Kits from "pages/Repair/Kits";
 import { CommanComponents } from "../components/CommanComponents";
@@ -34,7 +33,6 @@ import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 import RecentSparePartQuote from "pages/Repair/quote/RecentSparePartQuote";
 import SearchSparePartQuote from "pages/Repair/quote/SearchSparePartQuote";
 import SparePartQuoteConfiguration from "pages/Repair/quote/SparePartQuoteConfiguration";
-import QuoteRepairOption from "pages/Repair/quote/QuoteRepairOption";
 import RecentRepairQuote from "pages/Repair/quote/RecentRepairQuote";
 import QuoteRepairSearch from "pages/Repair/quote/QuoteRepairSearch";
 import { LandingPageLogin } from "pages/Dashboard/LandingPageLogin";
@@ -84,6 +82,7 @@ import { AccountConfig } from "pages/User/AccountConfig";
 import { AccountBilling } from "pages/User/Billing";
 import { AccountPackage } from "pages/User/AccountPackage";
 import { AccountSupport } from "pages/User/AccountSupport";
+import { ProtectedRoute } from "./ProtectedRoute";
  
 
 // alert(window.location.pathname)
@@ -101,8 +100,7 @@ export const RouterConfig = () => {
         <Route exact path={LOGIN} component={Startup} />
         <Route exact path={VERIFY_EMAIL} component={VerifyEmail} />
         <Route exact path={ROOT} component={HomePage} />
-        <Route exact path={OVERVIEW} component={Dashboard} />
-        <Route exact path={INSIGHTS} component={Insights} />
+       
         <Route exact path={PERMISSION} component={Permissions} />
         <Route exact path={PERMISSION_SETTING} component={PermissionsSetting} />
         <Route exact path={WORK_LIST} component={WorkList} />
@@ -111,18 +109,12 @@ export const RouterConfig = () => {
         <Route exact path={FORGOT_PASSWORD} component={ForgotPassword} />
         <Route exact path={ANALYTICS} component={AnalyticsDashboard} />
         <Route exact path={LANDING_PAGE_LOGIN} component={LandingPageLogin} />
-        <Route exact path={REPORTS} component={ReportDashboard} />
-        <Route exact path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} />
         <Route exact path={SOLUTION_BUILDER_NEW} component={SolutionBuilderCreate} />
-        <Route exact path={PORTFOLIO_SUMMARY} component={PortfolioSummary} />
-        <Route exact path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} />
         <Route exact path={SOLUTION_TEMPLATES} component={SolutionTemplates} />
-        <Route exact path={PORTFOLIO_AND_BUILDER_NEW} component={CreatePortfolio} />
         <Route exact path={SERVICE_NEW} component={CreateService} />
-        <Route exact path={TEST_REACT_TABLE_NESTED} component={ReactTableNested} />
+        {/* <Route exact path={TEST_REACT_TABLE_NESTED} component={ReactTableNested} /> */}
         <Route exact path={SOLUTION_BUILDER_SERVICE_PORTFOLIO} component={ServicePortfolio} />
         <Route exact path={SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO} component={CustomizedPortfolio} />
-        <Route exact path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CreateCustomPortfolio} />
         <Route exact path={SOLUTION_BUILDER_PORRTFOLIO_TEMP} component={PortfolioTemplatesResult} />
         <Route exact path={CREATED_CUSTOM_PORTFOLIO_DETAILS} component={CreatedCustomPortfolioTemplate} />
         <Route exact path={SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT} component={SolutionTemplateResult} />
@@ -133,24 +125,15 @@ export const RouterConfig = () => {
         <Route exact path={ACCOUNT_PACKAGES} component={AccountPackage} />
         <Route exact path={ACCOUNT_SUPPORT} component={AccountSupport} />
         <Route exact path={RIPAIR_SERVICE_ESTIMATE} component={RepairServiceEstimate} />
-        <Route exact path={WITH_SPARE_PARTS} component={WithSpareParts} />
-        <Route exact path={PART_LIST} component={PartList} />
-        <Route exact path={REPAIR_PARTLIST} component={RepairPartlist} />
-        <Route exact path={WITHOUT_SPARE_PARTS_DETAILS} component={WithoutSparePartsHeader} />
+        {/* With Spare Parts Routes */}
         <Route exact path={REPAIR_WITH_SPARE_PARTS} component={RepairWithSpareParts} />
+        <Route exact path={WITH_SPARE_PARTS} component={WithSpareParts} />
+        {/* Without Spare Parts Routes */}
+        <Route exact path={WITHOUT_SPARE_PARTS_DETAILS} component={WithoutSparePartsHeader} />
         <Route exact path={REPAIR_WITHOUT_SPARE_PARTS} component={RepairWithoutSpareParts} />
-        <Route exact path={REPAIR_SERVICE_PARTS_TEMPLATE} component={RepairServicePartTemplate} />
-        <Route exact path={TEMPLATE} component={RepairServiceOnlyTemplate} />
-        <Route exact path={REPAIR_KITS} component={RepairKits} />
-        <Route exact path={STANDARD_JOB_DETAIL} component={ServiceOnlyTemplatesHeader} />
-        <Route exact path={SERVICE_PART_TEMPLATES} component={ServiceOnlyTemplatesHeader} />
-        <Route exact path={KITS} component={Kits} />
-        <Route exact path={QUOTE_SPARE_PARTS} component={RecentSparePartQuote} />
-        <Route exact path={QUOTE_SPARE_PARTS_SEARCH} component={SearchSparePartQuote} />
-        <Route exact path={QUOTE_SPARE_PART_CONFIGURATION} component={SparePartQuoteConfiguration} />
-        <Route exact path={QUOTE_REPAIR_OPTION} component={QuoteRepairOption} />
+
+       
         <Route exact path={QUOTE_RECENT_REPAIR} component={RecentRepairQuote} />
-        <Route exact path={GUIDED_REPAIR_QUOTE} component={GuidedRepairQuote} />
         <Route exact path={QUOTE_REPAIR_SEARCH} component={QuoteRepairSearch} />
         <Route exact path={SPARE_PARTS_QUOTE_TEMPLATE} component={SparePartsQuoteTemplate} />
         <Route exact path={QUOTE_SPARE_PARTS_TEMPLATE} component={QuoteSparepartsTemplate} />
@@ -158,12 +141,7 @@ export const RouterConfig = () => {
         <Route exact path={QUOTE_SPARE_PARTS_REVIEWED} component={QuoteSparepartsReviewed} />
         <Route exact path={QUOTE_REPAIR_CREATE} component={GuidedRepairQuote} />
         <Route exact path={TERMS_CONDITIONS} component={TermsConditions} />
-        <Route exact path={SOLUTION_QUOTE} component={SolutionQuote} />
-        <Route exact path={SOLUTION_QUOTE_SEARCH} component={SolutionQuoteSearch} />
-        <Route exact path={QUOTE_SOLUTION_CONFIGURATION} component={QuoteSolutionConfiguration} />
-        <Route exact path={SOLUTION_QUOTE_CONFIG} component={SolutionQuoteConfiguration} />
-        <Route exact path={SOLUTION_SERVICE_PORTFOLIO} component={SolutionServicePortfolio} />
-        <Route exact path={SPARE_PARTS_QUOTE_DETAILS} component={SparePartsQuoteDetails} />
+
         <Route exact path={QUOTE_SOLUTION_BUILDER} component={QuoteSolutionBuilder} />
         <Route exact path={REPAIR_QUOTE_WITH_EVALUATION} component={QuoteWithEvaluation} />
         <Route exact path={REPAIR_QUOTE_DETAILS} component={RepairQuoteDetails} />
@@ -176,18 +154,58 @@ export const RouterConfig = () => {
         <Route exact path={COMMERCE_GUIDED_QUESTIONS} component={CommerceGuidedQuestions} />
         <Route exact path={SHOPPING_CART_LIST} component={ShoppingCartList} />
         <Route exact path={COMMERCE_PROFILE} component={CommerceProfile} />
-        <Route exact path={PRICE_SETTING} component={PriceSetting} />
         <Route exact path={PRICE_CONFIGURATION} component={PriceConfiguration} />
         <Route exact path={PRICE_GLOBAL_SETTING} component={PriceGlobalSetting} />
         <Route exact path={PRICE_DETERMINATION} component={PriceDetermination} />
-        <Route exact path={PRICE_MAINTENANCE} component={PriceMaintenance} />
-        <Route exact path={PRICE_COMPUTATION} component={PriceComputation} />
+        {/* Master Table Routes */}
         <Route exact path={EQUIPMENT_MASTER} component={EquipmentMaster} />
         <Route exact path={PARTS_360} component={Parts360} />
         <Route exact path={SERVICE_MASTER} component={ServiceMaster} />
         <Route exact path={CONSUMABLE_MASTER} component={ConsumableMaster} />
         <Route exact path={CUSTOMER_MASTER} component={CustomerMaster} />
         <Route exact path="/indexing" component={CommanComponents} />
+
+        <ProtectedRoute path={INSIGHTS} component={Insights} plans={[PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={OVERVIEW} component={Dashboard} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={REPORTS} component={ReportDashboard} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+
+        {/* Part List Routes */}
+        <ProtectedRoute path={PART_LIST} component={PartList} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={REPAIR_PARTLIST} component={RepairPartlist} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+
+        {/* KIT Routes */}
+        <ProtectedRoute path={KITS} component={Kits} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={REPAIR_KITS} component={RepairKits} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+
+        {/* Standard Job Routes */}
+        <ProtectedRoute path={STANDARD_JOB_DETAIL} component={ServiceOnlyTemplatesHeader} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={TEMPLATE} component={RepairServiceOnlyTemplate} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+
+        {/* Spare Parts Quote Routes */}
+        <ProtectedRoute path={SPARE_PARTS_QUOTE_DETAILS} component={SparePartsQuoteDetails} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={QUOTE_SPARE_PARTS_SEARCH} component={SearchSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={QUOTE_SPARE_PART_CONFIGURATION} component={SparePartQuoteConfiguration} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={QUOTE_SPARE_PARTS} component={RecentSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        
+        {/* Price Routes */}
+        <ProtectedRoute path={PRICE_MAINTENANCE} component={PriceMaintenance} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={PRICE_COMPUTATION} component={PriceComputation} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={PRICE_SETTING} component={PriceSetting} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        {/* Portfolio Routes */}
+        <ProtectedRoute path={PORTFOLIO_SUMMARY} component={PortfolioSummary} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={PORTFOLIO_AND_BUILDER_NEW} component={CreatePortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+
+        {/* Solution Routes */}
+        <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CreateCustomPortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+
+        {/* Solution Quote Routes */}
+        <ProtectedRoute path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={SOLUTION_QUOTE} component={SolutionQuote} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={SOLUTION_QUOTE_SEARCH} component={SolutionQuoteSearch} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>      
+        <ProtectedRoute path={QUOTE_SOLUTION_CONFIGURATION} component={QuoteSolutionConfiguration} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={SOLUTION_QUOTE_CONFIG} component={SolutionQuoteConfiguration} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
+        <ProtectedRoute path={SOLUTION_SERVICE_PORTFOLIO} component={SolutionServicePortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]}/>
 
         {/* <Route exact path={PAGE1} component={Page1} /> */}
         <Route path="/gettingStart">

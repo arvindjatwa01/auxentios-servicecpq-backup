@@ -69,7 +69,7 @@ import ReviewAddIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import WithSparePartsSegments from "./WithSparePartsSegments";
 import WithSparePartsOperation from "./WithSparePartsOperation";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
-import { REPAIR_QUOTE_DETAILS, SERVICE_PART_TEMPLATES } from "navigation/CONSTANTS";
+import { REPAIR_QUOTE_DETAILS, STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import { createRepairQuote } from "services/repairQuoteServices";
 import QuoteModal from "./components/QuoteModal";
 import PriceMethodTable from "./components/PriceMethodTable";
@@ -801,7 +801,7 @@ function WithSparePartsHeader(props) {
         templateDetails.templateId = res.templateId;
         templateDetails.templateDBId = res.id;
         history.push({
-          pathname: SERVICE_PART_TEMPLATES,
+          pathname: STANDARD_JOB_DETAIL,
           state: templateDetails,
         });
       })

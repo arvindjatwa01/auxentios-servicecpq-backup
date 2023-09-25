@@ -10,7 +10,6 @@ import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined
 import $ from "jquery";
 import {
   QUOTE_REPAIR_CREATE,
-  QUOTE_SPARE_PARTS_TEMPLATE,
   REPAIR_QUOTE_DETAILS,
 } from "navigation/CONSTANTS";
 import SearchComponent from "../components/SearchComponent";

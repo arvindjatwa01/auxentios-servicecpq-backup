@@ -178,8 +178,8 @@ function ServiceOnlyTemplates(props) {
     // priceMethod: null,
     netPrice: 0.0,
     netPriceParts: 0.0,
-    netPriceLabor: 0.0,
-    netPriceMisc: 0.0,
+    // netPriceLabor: 0.0,
+    // netPriceMisc: 0.0,
     priceDate: new Date(),
     adjustedPrice: 0.0,
     currency: "",
@@ -385,8 +385,8 @@ function ServiceOnlyTemplates(props) {
       currency: currencyOptions.find(
         (element) => element.value === result.currency
       ),
-      netPriceLabor: result.totalLabourPrice,
-      netPriceMisc: result.totalMiscPrice,
+      // netPriceLabor: result.totalLabourPrice,
+      // netPriceMisc: result.totalMiscPrice,
       priceDetailDTO: result.priceDetailDTO,
       priceEstimateDTO: result.priceEstimateDTO,
     });
@@ -957,7 +957,7 @@ function ServiceOnlyTemplates(props) {
               <h5 className="font-weight-600 mb-0">Templates</h5>
               <div className="d-flex justify-content-center align-items-center">
                 {/* <div className="ml-3"><a href="#" className="bg-yellow text-white btn-sm rounded-pill">* Gold <KeyboardArrowDownIcon className="font-size-14"/></a></div> */}
-                <div className="ml-3">
+                <div className="ml-3" >
                   <Select
                     className="customselectbtn1"
                     onChange={(e) => handleVersionTemplate(e)}
@@ -1627,7 +1627,7 @@ function ServiceOnlyTemplates(props) {
                                 </div>
                               </div>
 
-                              <div className="col-md-4 col-sm-4">
+                              {/* <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PRICE METHOD
@@ -1645,7 +1645,7 @@ function ServiceOnlyTemplates(props) {
                                   />
                                   <div className="css-w8dmq8">*Mandatory</div>
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1709,7 +1709,7 @@ function ServiceOnlyTemplates(props) {
                                   />
                                 </div>
                               </div> */}
-                              <div className="col-md-4 col-sm-4">
+                              {/* <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     NET PRICE (LABOR)
@@ -1721,8 +1721,8 @@ function ServiceOnlyTemplates(props) {
                                     value={pricingData.netPriceLabor}
                                   />
                                 </div>
-                              </div>
-                              <div className="col-md-4 col-sm-4">
+                              </div> */}
+                              {/* <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     NET PRICE (MISC)
@@ -1734,7 +1734,7 @@ function ServiceOnlyTemplates(props) {
                                     value={pricingData.netPriceMisc}
                                   />
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-md-4 col-sm-4">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1773,11 +1773,11 @@ function ServiceOnlyTemplates(props) {
                         ) : (
                           <>
                           <div className="row mt-3">
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="PRICE METHOD"
                               value={pricingData.priceMethod?.label}
                               className="col-md-4 col-sm-4"
-                            />
+                            /> */}
                             <ReadOnlyField
                               label="CURRENCY"
                               value={pricingData.currency?.label}
@@ -1792,7 +1792,7 @@ function ServiceOnlyTemplates(props) {
                               }
                               className="col-md-4 col-sm-4"
                             />
-                            <ReadOnlyField
+                            {/* <ReadOnlyField
                               label="NET PRICE (LABOR)"
                               value={pricingData.netPriceLabor}
                               className="col-md-4 col-sm-4"
@@ -1801,7 +1801,7 @@ function ServiceOnlyTemplates(props) {
                               label="NET PRICE (MISC)"
                               value={pricingData.netPriceMisc}
                               className="col-md-4 col-sm-4"
-                            />
+                            /> */}
                             <ReadOnlyField
                               label="NET PRICE"
                               value={pricingData.netPrice}
