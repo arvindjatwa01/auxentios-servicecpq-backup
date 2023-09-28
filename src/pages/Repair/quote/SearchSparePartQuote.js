@@ -1,31 +1,24 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import SelectFilter from "react-select";
-import AddIcon from "@mui/icons-material/Add";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import SearchIcon from "@mui/icons-material/Search";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import $ from "jquery";
-import { QUOTE_SPARE_PARTS_TEMPLATE, QUOTE_SPARE_PART_CONFIGURATION } from "navigation/CONSTANTS";
+import { QUOTE_SPARE_PART_CONFIGURATION, SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import SearchComponent from "../components/SearchComponent";
 import { QUOTE_SEARCH_Q_OPTIONS } from "../CONSTANTS";
-import { builderSearch } from "services/repairBuilderServices";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { quoteRepairSearch } from "services/repairQuoteServices";
+import { Card, Divider, List, ListItem, ListItemText } from "@mui/material";
 
 const SearchSparePartQuote = () => {
   const [show, setShow] = React.useState(false);
   const handleClose = () => setShow(false);
 
-    // Snack Bar State
+  // Snack Bar State
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -35,14 +28,29 @@ const SearchSparePartQuote = () => {
     }
     setOpenSnack(false);
   };
+  const [clickedQuoteRowData, setClickedQuoteRowData] = useState(null);
 
+  const handleRowClick = (e) => {
+    setClickedQuoteRowData(e);
+    setShow(true);
+  };
   const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
     setOpenSnack(true);
   };
-  const handleRowClick = (e) => {
-    setShow(true);
+  const history = useHistory();
+
+  const handleSelectQuote = (quote) => {
+    let quoteDetails = {
+      quoteId: "",
+      type: "fetch",
+    };
+    quoteDetails.quoteId = quote.quoteId;
+    history.push({
+      pathname: SPARE_PARTS_QUOTE_DETAILS,
+      state: quoteDetails,
+    });
   };
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
@@ -269,7 +277,7 @@ const SearchSparePartQuote = () => {
           <div className="card p-4 mt-5">
             <div className="d-flex align-items-center mb-0">
               <div className="" style={{ display: "contents" }}>
-              <h5 className="col-10 mr-3 mb-0" style={{ whiteSpace: "pre" }}>
+                <h5 className="col-10 mr-3 mb-0" style={{ whiteSpace: "pre" }}>
                   Search Quote
                 </h5>
               </div>
@@ -335,7 +343,7 @@ const SearchSparePartQuote = () => {
                 pagination
                 selectableRows
                 onRowClicked={(e) => handleRowClick(e)}
-                // selectableRows
+              // selectableRows
               />
             </div>
           </div>
@@ -347,7 +355,7 @@ const SearchSparePartQuote = () => {
           className="tablerowmodal"
           show={show}
           onHide={() => handleClose()}
-          size="md"
+          // size="md"
           aria-labelledby="contained-modal-title-vcenter"
         >
           <Modal.Body className="">
@@ -362,60 +370,74 @@ const SearchSparePartQuote = () => {
               </div>
               <div>
                 <p className="text-light ml-3">
-                  This standard job is created for replacement of engne
-                  belonging to 797,797F & 793 models
+                  This repair quote was created by{" "}
+                  {clickedQuoteRowData?.preparedBy} on{" "}
+                  {clickedQuoteRowData?.preparedOn}
                 </p>
               </div>
             </div>
             <div class="p-3 bg-white">
-              <div>
-                <a href="#" className="btn bg-primary text-white">
-                  Template
-                </a>
+              <div className="d-flex justify-content-between mb-3">
+                <div>
+                  <a href="#" className="btn bg-primary text-white">
+                    Repair Quote
+                  </a>
+                </div>
+                <h4 className="text-light mt-3">
+                  {clickedQuoteRowData?.quoteId}
+                </h4>
               </div>
-              <h4 className="text-light mt-3">SJ671</h4>
-              {/* <p>Your current session will expire in 5 minutes. Please Save your changes to continue your session, otherwise you
-             will lose all unsaved data and your session will time out.</p> */}
-              <h4 className=" mt-3">SUMMARY</h4>
-              <ul>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  Spare Parts New (# 31)
-                </li>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  Spare Parts Remain (# 7)
-                </li>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  Number of Parts #38.
-                </li>
-                <li className="my-2">
-                  <span className="mr-3 ">
-                    <FormatListBulletedOutlinedIcon />
-                  </span>
-                  Total Price $4,100.00
-                </li>
-              </ul>
-              <div>
+              <hr />
+              <h5 className=" mt-3">Summary</h5>
+              <Card>
+                <List dense={true}>
+                  <ListItem >
+                    <ListItemText >Description </ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Service Organisation </ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.salesOffice}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Serial Number</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.serialNumber}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Customer</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.customerId +
+                      " " +
+                      clickedQuoteRowData?.customerName}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Model</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.model}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Manufacturer</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.make}</span>
+                  </ListItem>
+                </List>
+              </Card>
+
+              {/* <div>
                 <a href="#" style={{ textDecoration: "underline" }}>
                   View Details
                 </a>
-              </div>
+              </div> */}
             </div>
             <div class="modal-footer justify-content-between bg-primary">
               <div>
-                <b className="text-white">$50,000</b>
+                <b className="text-white">$ {clickedQuoteRowData?.netPrice}</b>
               </div>
               <div>
-                <a href={QUOTE_SPARE_PARTS_TEMPLATE} className="text-white">
-                  Select <ArrowRightAltOutlinedIcon className="" />
+                <a onClick={() => handleSelectQuote(clickedQuoteRowData)} className="text-white" style={{ cursor: 'pointer' }}>
+                  View <ArrowRightAltOutlinedIcon className="" />
                 </a>
               </div>
             </div>

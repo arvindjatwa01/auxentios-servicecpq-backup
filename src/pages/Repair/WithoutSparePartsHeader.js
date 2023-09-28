@@ -13,13 +13,10 @@ import MenuItem from "@mui/material/MenuItem";
 import Tab from "@mui/material/Tab";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { MuiMenuComponent } from "pages/Operational";
 import React, { useEffect, useState } from "react";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Moment from "react-moment";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
-import penIcon from "../../assets/images/pen.png";
 import {
   createBuilderVersion,
   createStandardJob,
@@ -39,7 +36,6 @@ import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
-import WithoutSparePartsSegments from "./WithoutSparePartsSegments";
 import { TextField, Tooltip } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
@@ -49,15 +45,9 @@ import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
-  GRID_STYLE,
-  QUOTE_OPTIONS,
   STATUS_OPTIONS,
 } from "./CONSTANTS";
 import { useAppSelector } from "app/hooks";
-import {
-  selectDropdownOption,
-  selectPricingMethodList,
-} from "./dropdowns/repairSlice";
 import LoadingProgress from "./components/Loader";
 import { MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -75,7 +65,6 @@ import {
 } from "navigation/CONSTANTS";
 import { createRepairQuote } from "services/repairQuoteServices";
 import QuoteModal from "./components/QuoteModal";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import PriceSummaryTable from "./components/PriceSummaryTable";
 import PriceMethodTable from "./components/PriceMethodTable";
 
@@ -211,9 +200,7 @@ function WithoutSparePartsHeader(props) {
   const [value, setValue] = useState("customer");
   const [open, setOpen] = useState(false);
   // Retrieve price methods
-  const priceMethodOptions = useAppSelector(
-    selectDropdownOption(selectPricingMethodList)
-  );
+
   const [segments, setSegments] = useState([]);
   const [builderType, setBuilderType] = useState("");
 

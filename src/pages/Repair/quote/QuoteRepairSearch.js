@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import SearchIcon from "@mui/icons-material/Search";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link, useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import ArrowRightAltOutlinedIcon from "@mui/icons-material/ArrowRightAltOutlined";
 import $ from "jquery";
@@ -344,7 +342,7 @@ const QuoteRepairSearch = () => {
                 customStyles={customStyles}
                 pagination
                 onRowClicked={(e) => handleRowClick(e)}
-                // selectableRows
+              // selectableRows
               />
             </div>
           </div>
@@ -391,41 +389,41 @@ const QuoteRepairSearch = () => {
               <hr />
               <h5 className=" mt-3">Summary</h5>
               <Card>
-              <List dense={true}>
-                <ListItem >
-                  <ListItemText >Description </ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Service Organisation </ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.salesOffice}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Serial Number</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.serialNumber}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Customer</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.customerId +
-                    " " +
-                    clickedQuoteRowData?.customerName}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Model</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.model}</span>
-                </ListItem>
-                <Divider />
-                <ListItem >
-                  <ListItemText >Manufacturer</ListItemText>
-                  <span className="font-weight-500">{clickedQuoteRowData?.make}</span>
-                </ListItem>
+                <List dense={true}>
+                  <ListItem >
+                    <ListItemText >Description </ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.description}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Service Organisation </ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.salesOffice}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Serial Number</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.serialNumber}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Customer</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.customerId +
+                      " " +
+                      clickedQuoteRowData?.customerName}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Model</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.model}</span>
+                  </ListItem>
+                  <Divider />
+                  <ListItem >
+                    <ListItemText >Manufacturer</ListItemText>
+                    <span className="font-weight-500">{clickedQuoteRowData?.make}</span>
+                  </ListItem>
                 </List>
               </Card>
-              
+
               {/* <div>
                 <a href="#" style={{ textDecoration: "underline" }}>
                   View Details
@@ -437,7 +435,7 @@ const QuoteRepairSearch = () => {
                 <b className="text-white">$ {clickedQuoteRowData?.netPrice}</b>
               </div>
               <div>
-                <a onClick={() => handleSelectQuote(clickedQuoteRowData)} className="text-white" style={{cursor: 'pointer'}}>
+                <a onClick={() => handleSelectQuote(clickedQuoteRowData)} className="text-white" style={{ cursor: 'pointer' }}>
                   View <ArrowRightAltOutlinedIcon className="" />
                 </a>
               </div>

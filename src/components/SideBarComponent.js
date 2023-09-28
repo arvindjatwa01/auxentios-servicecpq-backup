@@ -962,6 +962,7 @@ export function SideBarComponent(props) {
               }
             </ul>
           </li>
+          {packageValue[planName] > 2 && 
           <li className="has-subnav sub-li">
             <a
               className="has-arrow border-radius-50"
@@ -1113,6 +1114,7 @@ export function SideBarComponent(props) {
               </li>
             </ul>
           </li>
+          }
           <Divider sx={{ marginLeft: '5%', marginRight: '5%', marginBlock: 1 }} />
           <li className="has-subnav sub-li">
             <a
