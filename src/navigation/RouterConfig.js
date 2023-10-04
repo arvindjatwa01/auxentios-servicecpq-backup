@@ -83,8 +83,8 @@ export const RouterConfig = () => {
         <Route exact path={VERIFY_EMAIL} component={VerifyEmail} />
         <Route exact path={ROOT} component={HomePage} />
 
-        <Route exact path={PERMISSION} component={Permissions} />
-        <Route exact path={PERMISSION_SETTING} component={PermissionsSetting} />
+        {/* <Route exact path={PERMISSION} component={Permissions} /> */}
+        {/* <Route exact path={PERMISSION_SETTING} component={PermissionsSetting} /> */}
         <Route exact path={WORK_LIST} component={WorkList} />
         <Route exact path={WORK_LIST_NEW} component={CreateWorkList} />
         <Route exact path={RESET} component={ResetPassword} />

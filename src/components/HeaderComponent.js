@@ -21,7 +21,7 @@ export function HeaderComponent(props) {
   const [loginStatus, setLoginStatus] = useState(false);
   const [planName, setPlanName] = useState('STARTER');
   const [tenantId, setTenantId] = useState("");
-
+  const ENVIRONMENT = process.env.REACT_APP_ENV;
 
   // console.log("login status Header component : ", result)
 
@@ -650,14 +650,12 @@ export function HeaderComponent(props) {
                   </div>
                 </div>
               </li>
-              <li className="icons dropdown custom-modal">
+              {/* <li className="icons dropdown custom-modal">
                 <a
                   className="header-li-text"
                   href="javascript:void(0)"
                   data-toggle="dropdown"
                 >
-                  {/* <img src={notificationIcon}></img> */}
-                  {/* <span className="badge badge-pill gradient-2">3</span> */}
                   <div>
                     <svg
                       fill="#FFFFFF"
@@ -669,27 +667,12 @@ export function HeaderComponent(props) {
                       <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z" />
                     </svg>
                   </div>
-                  {/* <div className="li-contant">Search</div> */}
                 </a>
                 <div
                   className="drop-down animated fadeIn dropdown-menu dropdown-notfication p-0 border-radius-1"
                   style={{ minWidth: "600px !important" }}
                 >
-                  {/* <div className="dropdown-content-heading ">
-                    <div className="d-flex">
-                      <div class="input-group icons border overflow-hidden">
-                        <div class="input-group-prepend">
-                          <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
-                          <SearchIcon/></span>
-                        </div>
-                          <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
-                         </div>
-                    </div>
-                  </div> */}
                   <div className="dropdown-content-body m-2">
-                    {/* <div className="p-4 bg-light-grey">
-                    <h6 className="mb-0">GO TO</h6>
-                  </div> */}
                     <div className="bg-white p-3">
                       <div className="row search-dropdown-list">
                         <div className="col-md-3 col-sm-3 ">
@@ -873,7 +856,6 @@ export function HeaderComponent(props) {
                                 />
                               </svg>
                             </span>
-                            {/* <h6 className="mt-2">Portfolio and bundle</h6> */}
                             <h6 className="mt-2">
                               Portfolio, Bundles & Services
                             </h6>
@@ -903,7 +885,6 @@ export function HeaderComponent(props) {
                                 />
                               </svg>
                             </span>
-                            {/* <h6 className="mt-2">Solution builder Data</h6> */}
                             <h6 className="mt-2">Solutions</h6>
                           </div>
                         </div>
@@ -949,7 +930,6 @@ export function HeaderComponent(props) {
                             className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82"
                             style={{ cursor: "pointer" }}
                           >
-                            {/* <div className="dropdown-item border-radius-1 cursor-pointer bg-light-grey border white-space-normal height-82" onClick={() => history.push("/RepairWithoutSpareParts")} style={{ cursor: "pointer"}}></div> */}
                             <span className="span-icon">
                               <svg
                                 id="uuid-f3f687df-4645-4e7f-87f1-5ccb3e8264e2"
@@ -1001,7 +981,7 @@ export function HeaderComponent(props) {
                     </div>
                   </div>
                 </div>
-              </li>
+              </li> */}
               <li className="icons dropdown">
                 <a
                   className="header-li-text"
@@ -1371,15 +1351,17 @@ export function HeaderComponent(props) {
                 <div className="drop-down dropdown-profile animated fadeIn dropdown-menu">
                   <div className="dropdown-content-body">
                     <ul>
-                      <li>
+                    {ENVIRONMENT !== "TRIAL" && <li>
                         <Link to="/profile">
                           <span>Profile View</span>
                         </Link>
-                      </li>
+                      </li>}
                       
                       <li>                        
                         <span >Tenant ID #: {tenantId}</span>
                       </li>
+                      {ENVIRONMENT !== "TRIAL" && 
+                      <>
                       <Divider />
                       <li>
                         <span style={{fontSize: 18}}>Account</span>
@@ -1410,6 +1392,7 @@ export function HeaderComponent(props) {
                           <span>Help & Support</span>
                         </Link>
                       </li>
+                      </>}
                        <li>
                         <a className="cursor" onClick={handleLogout}>
                           
