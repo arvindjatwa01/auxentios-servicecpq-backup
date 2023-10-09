@@ -25,7 +25,8 @@ export const SignUp = (props) => {
       email: signUpInputData.workEmail,
       password: signUpInputData.password,
       isApproved: true,
-      type: "TENANT_ADMIN",
+      // type: "TENANT_ADMIN",
+      type: "TENANT_TRIAL_USER",
       roles: []
     };
     const validator = new Validator();
