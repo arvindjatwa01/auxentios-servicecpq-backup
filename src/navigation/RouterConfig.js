@@ -161,8 +161,8 @@ export const RouterConfig = () => {
         <ProtectedRoute path={PRICE_COMPUTATION} component={PriceComputation} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={PRICE_SETTING} component={PriceSetting} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         {/* Portfolio Routes */}
-        <ProtectedRoute path={PORTFOLIO_SUMMARY} component={PortfolioSummary} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={PORTFOLIO_AND_BUILDER_NEW} component={CreatePortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={PORTFOLIO_SUMMARY} component={PortfolioSummary} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Solution Routes */}
         <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
