@@ -69,6 +69,9 @@
     "build": "env-cmd -f .env.dev react-scripts build",
     "build:trial": "env-cmd -f .env.trial react-scripts build",
     "build:demo": "env-cmd -f .env.demo react-scripts build",
+    "server:dev": "env-cmd -f .env.dev node server.js",
+    "server:demo": "env-cmd -f .env.demo node server.js",
+    "server:trial": "env-cmd -f .env.trial node server.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
