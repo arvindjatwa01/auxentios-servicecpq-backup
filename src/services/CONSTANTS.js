@@ -18,7 +18,7 @@ const USER_SERVICE_URI = BASE_URL + "user-svc/v1/";
 const SEARCH_COVERAGE = BASE_URL + "data-svc/api/v1/coverage/"
 const DATA_SERVICE_URI = BASE_URL + "data-svc/api/v1/";
 const REPAIR_BUILDER_URI = BASE_URL + "repair-builder-svc/v1/";
-
+const COMMON_SERVICE_URI = BASE_URL + "common-svc/v1/";
 
 // search for coverage
 
@@ -58,7 +58,7 @@ export const GET_ALL_USERS = () => USER_SERVICE_URI + "tenant-user/user-list";
 export const GET_USER_DETAILS = (id) => USER_SERVICE_URI + `tenant-user/${id}`;
 export const REMOVE_USER = (id) => USER_SERVICE_URI + `tenant-user/${id}`;
 
-export const SEARCH_USERS = (query) => USER_SERVICE_URI + "tenant-user/search?search="+query;
+export const SEARCH_USERS = (query) => USER_SERVICE_URI + "tenant-user/search?search=" + query;
 
 export const FETCH_ROLES = () => USER_SERVICE_URI + "user-role";
 
@@ -249,8 +249,8 @@ export const RECENT_QUOTES = (quoteType) => QUOTE_REST_SERVICE + `/recent?quote_
 export const SEARCH_REPAIR_QUOTES = (searchStr) => QUOTE_REST_SERVICE + `/search?search=${searchStr}`;
 export const CREATE_REPAIR_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-rb-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const CREATE_SPARE_PART_QUOTE = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-pl-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
-export const CREATE_PART_QUOTE_FROM_KIT =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-kit-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
-export const CREATE_REPAIR_QUOTE_FROM_SJ =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-sj-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const CREATE_PART_QUOTE_FROM_KIT = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-kit-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
+export const CREATE_REPAIR_QUOTE_FROM_SJ = (builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-sj-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const UPLOAD_ITEMS_TO_REP_QUOTE = () => QUOTE_REST_SERVICE + `/repair-builder/item/upload`;
 export const UPLOAD_ITEMS_TO_PARTS_QUOTE = () => QUOTE_REST_SERVICE + `/part-list/item/upload`;
 
@@ -318,4 +318,9 @@ export const FETCH_PARTS_SEGMENT_DETAILS = (cluster) => `https://eoa6truj1j.exec
 export const FETCH_PARTS_SEGMENT = "https://hzrle4s7xi.execute-api.us-east-2.amazonaws.com/parts_segmentation_analysis";
 
 // Master Equipment 
-export const validate_Coverage_Get_Url =  DATA_SERVICE_URI + "equipment/validate-coverage" 
+export const validate_Coverage_Get_Url = DATA_SERVICE_URI + "equipment/validate-coverage"
+export const DATA_SVC_EQUIPMENT = () => DATA_SERVICE_URI + "equipment";
+
+//WorkList URIs
+export const WORKLIST = (pagination) => COMMON_SERVICE_URI + `worklist/cases${pagination}`
+export const CREATE_WORKLIST = () => COMMON_SERVICE_URI + `worklist/case`

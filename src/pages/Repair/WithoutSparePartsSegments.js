@@ -253,7 +253,7 @@ function WithoutSparePartsSegments(props) {
         });
     }
   };
-  // Select the job code from search result
+  // Select the Component code from search result
   const handleCompCodeSelect = (type, currentItem) => {
     setSegmentData({
       ...segmentData,
@@ -395,12 +395,12 @@ function WithoutSparePartsSegments(props) {
                 <EditIcon
                   onClick={() =>
                     ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                    -1
+                      -1
                       ? makeHeaderEditable()
                       : handleSnack(
-                          "info",
-                          "Set revised status to modify active builders"
-                        )
+                        "info",
+                        "Set revised status to modify active builders"
+                      )
                   }
                 />
               </Tooltip>
@@ -410,12 +410,12 @@ function WithoutSparePartsSegments(props) {
                   alt="Delete"
                   onClick={() =>
                     ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                    -1
+                      -1
                       ? setConfirmationOpen(true)
                       : handleSnack(
-                          "info",
-                          "Set revised status to modify active builders"
-                        )
+                        "info",
+                        "Set revised status to modify active builders"
+                      )
                   }
                 />
               </Tooltip>
@@ -451,7 +451,7 @@ function WithoutSparePartsSegments(props) {
               </button>
               {showAddNewButton &&
                 ["DRAFT", "REVISED"].indexOf(activeElement?.builderStatus) >
-                  -1 && (
+                -1 && (
                   <button
                     className="btn-no-border ml-2"
                     onClick={loadNewSegmentUI}

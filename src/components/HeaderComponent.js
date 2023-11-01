@@ -1351,51 +1351,50 @@ export function HeaderComponent(props) {
                 <div className="drop-down dropdown-profile animated fadeIn dropdown-menu">
                   <div className="dropdown-content-body">
                     <ul>
-                    {ENVIRONMENT !== "TRIAL" && <li>
+                      {ENVIRONMENT !== "TRIAL" && <li>
                         <Link to="/profile">
                           <span>Profile View</span>
                         </Link>
                       </li>}
-                      
-                      <li>                        
+
+                      <li>
                         <span >Tenant ID #: {tenantId}</span>
                       </li>
-                      {ENVIRONMENT !== "TRIAL" && 
-                      <>
-                      <Divider />
+                      {ENVIRONMENT !== "TRIAL" &&
+                        <>
+                          <Divider />
+                          <li>
+                            <span style={{ fontSize: 18 }}>Account</span>
+                          </li>
+                          <li>
+                            <Link to={ACCOUNT_PACKAGES}>
+                              <span>My Packages <strong>({planName})</strong> </span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link to={ACCOUNT_SETTINGs}>
+                              <span>Account Settings</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link to={ACCOUNT_RENEWAL_BILLING}>
+                              <span>Renewal & Billing</span>
+                            </Link>
+                          </li>
+                          <Divider sx={{ my: 1 }} />
+                          <li>
+                            <Link to={ACCOUNT_CONFIGURATION}>
+                              <span>Configuration</span>
+                            </Link>
+                          </li>
+                          <li>
+                            <Link to={ACCOUNT_SUPPORT}>
+                              <span>Help & Support</span>
+                            </Link>
+                          </li>
+                        </>}
                       <li>
-                        <span style={{fontSize: 18}}>Account</span>
-                      </li>
-                      <li>
-                        <Link to={ACCOUNT_PACKAGES}>
-                          <span>My Packages <strong>({planName})</strong> </span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to={ACCOUNT_SETTINGs}>
-                          <span>Account Settings</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to={ACCOUNT_RENEWAL_BILLING}>
-                          <span>Renewal & Billing</span>
-                        </Link>
-                      </li>
-                      <Divider sx={{my: 1}}/>
-                      <li>
-                        <Link to={ACCOUNT_CONFIGURATION}>
-                          <span>Configuration</span>
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to={ACCOUNT_SUPPORT}>
-                          <span>Help & Support</span>
-                        </Link>
-                      </li>
-                      </>}
-                       <li>
                         <a className="cursor" onClick={handleLogout}>
-                          
                           <span>{loginStatus ? "Logout" : "Login"}</span>
                         </a>
                       </li>

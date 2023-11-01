@@ -19,6 +19,8 @@ import {
   faWrench,
 
 } from "@fortawesome/free-solid-svg-icons";
+import ServiceRecommend from "./ServiceRecommend";
+import JobhourRecommend from "./JobhourRecommend";
 
 export default function Insights(props) {
   const [insightType, setInsightType] = useState("propensity");
@@ -67,6 +69,8 @@ export default function Insights(props) {
         {insightType === 'propensity' && <Propensity />}
         {insightType === 'entitlement' && <GapToEntitlement />}
         {insightType === 'product-segment' && <SparepartSegment />}
+        {insightType === 'service-recommend' && <ServiceRecommend />}
+        {insightType === 'job-hr-recommend' && <JobhourRecommend />}
 
       </div>
     </div>
