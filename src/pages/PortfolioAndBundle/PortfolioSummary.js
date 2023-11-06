@@ -82,11 +82,11 @@ import {
   getMachineTypeKeyValue,
   getTypeKeyValue,
   getPortfolioCommonConfig,
-  getSearchQueryCoverage,
-  getSearchCoverageForFamily,
-  getSearchForPortfolio,
-  getSearchForRecentPortfolio,
-  getSearchForRecentBundleService,
+  // getSearchQueryCoverage,
+  // getSearchCoverageForFamily,
+  // getSearchForPortfolio,
+  // getSearchForRecentPortfolio,
+  // getSearchForRecentBundleService,
   itemCreation,
   updateItemData,
   portfolioSearch,
@@ -103,9 +103,11 @@ import {
   updateItemPriceData,
   createItemPriceData,
   portfolioSearchTableDataList,
-  getServiceBundleItemPrices,
+  // getServiceBundleItemPrices,
   getPortfolioAndSolutionCommonConfig,
 } from "../../services/index";
+import { getApiCall, getSearchForRecentPortfolio } from "services/searchQueryService";
+import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, RECENT_PORTFOLIO_URL } from "services/CONSTANTS";
 
 export const PortfolioSummary = () => {
   var CookiesSetData = Cookies.get("loginTenantDtl");
@@ -388,10 +390,12 @@ export const PortfolioSummary = () => {
       .catch((err) => {
         alert(err);
       });
-    getSearchForRecentPortfolio()
+    // getSearchForRecentPortfolio()
+    let loading, data, failure;
+    getApiCall(RECENT_PORTFOLIO_URL + "/recent", loading, data, failure)
       .then((res) => {
         console.log("getSearchForRecentPortfolio res ", res)
-        setRecentPortfolio(res.data);
+        setRecentPortfolio(res);
       })
 
     // getSearchForRecentBundleService()
@@ -804,7 +808,10 @@ export const PortfolioSummary = () => {
             console.log("err in api call", err);
           });
       } else {
-        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+        const url = GET_SEARCH_FAMILY_COVERAGE + "?" + tempArray[id].selectFamily.value + "=" + e.target.value;
+        let loading, data, failure;
+        getApiCall(url, loading, data, failure)
+          // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
           .then((res) => {
             console.log("response coverage ", res);
             obj.selectOptions = res;
@@ -940,7 +947,9 @@ export const PortfolioSummary = () => {
 
     setCreateServiceOrBundle({ ...createServiceOrBundle, [e.target.name]: e.target.value, });
     var searchStr = "model~" + e.target.value;
-    getSearchQueryCoverage(searchStr)
+    let loading, data, failure;
+    getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+      // getSearchQueryCoverage(searchStr)
       .then((res) => {
         // console.log("search Query Result --------- :", res);
         // setMasterData(res);
@@ -1047,7 +1056,9 @@ export const PortfolioSummary = () => {
         // searchStr = "bundleFlag:BUNDLE_ITEM AND " + searchStr;
 
         // const res1 = await itemSearch(searchStr);
-        const res1 = await getServiceBundleItemPrices(searchStr);
+        let loading, data, failure;
+        const res1 = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, loading, data, failure);
+        // const res1 = await getServiceBundleItemPrices(searchStr);
         var bundleItemsArr = [];
         if (res1.status === 200) {
           if (res1.data.length > 0) {
@@ -1070,7 +1081,9 @@ export const PortfolioSummary = () => {
 
       } else if (selectedItemType === "SERVICE") {
         // searchStr = "bundleFlag:SERVICE AND " + searchStr;
-        const res1 = await getServiceBundleItemPrices(searchStr);
+        let loading, data, failure;
+        const res1 = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, loading, data, failure);
+        // const res1 = await getServiceBundleItemPrices(searchStr);
         var serviceItemsArr = [];
         if (res1.status === 200) {
           if (res1.data.length > 0) {
@@ -1124,7 +1137,9 @@ export const PortfolioSummary = () => {
     }
 
     console.log("searchStr", searchStr);
-    getSearchQueryCoverage(searchStr)
+    let loading, data, failure;
+    getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+      // getSearchQueryCoverage(searchStr)
       .then((res) => {
         console.log("search Query Result :", res);
         setMasterData(res);
@@ -1605,7 +1620,9 @@ export const PortfolioSummary = () => {
 
       if (editAbleBundleService.itemHeaderModel.model !== "") {
         var searchStr = "model~" + editAbleBundleService.itemHeaderModel.model;
-        getSearchQueryCoverage(searchStr)
+        let loading, data, failure;
+        getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+          // getSearchQueryCoverage(searchStr)
           .then((res) => {
             var preArr = [];
             for (var n = 0; n < res.length; n++) {

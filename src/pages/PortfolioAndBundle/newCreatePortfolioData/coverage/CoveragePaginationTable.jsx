@@ -14,11 +14,14 @@ import { getValidateCoverage, machineSearch } from 'services/searchServices';
 
 import {
     createCoverage,
-    getSearchQueryCoverage, updateCoverage
+    // getSearchQueryCoverage, 
+    updateCoverage
 } from "../../../../services/index";
 
 import { dataTableCustomStyle } from "../itemConstant"
 import { successMessage } from '../utilities/toastMessage';
+import { getApiCall } from 'services/searchQueryService';
+import { GET_SEARCH_COVERAGE } from 'services/CONSTANTS';
 
 const CoveragePaginationTable = (props) => {
     const { tableData, isSelectAble, setCheckedCoverageData, className, handleUpdateCoverageData, handlePortfolioCoverageIds } = props;
@@ -52,7 +55,9 @@ const CoveragePaginationTable = (props) => {
     const handleModelSearchInput = (e) => {
         // setEditSerialNo({ ...editSerialNo, modelNo: e.target.value })
         var searchStr = "model~" + e.target.value;
-        getSearchQueryCoverage(searchStr)
+        let loading, data, failure;
+        getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+        // getSearchQueryCoverage(searchStr)
             .then((res) => {
                 $(`.scrollbar-model`).css("display", "block");
                 setSearchedModalList(res)

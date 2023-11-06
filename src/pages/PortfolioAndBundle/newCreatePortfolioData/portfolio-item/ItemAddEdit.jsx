@@ -26,6 +26,18 @@ import { toast } from "react-toastify";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import { useHistory } from "react-router-dom";
 import { defaultItemObj, usageTypeKeyValuePair, defaultItemPriceObj } from "../itemConstant"
+import {
+    // createItemPriceData,
+    // getSearchKitId,
+    // getSearchStandardJobId, 
+    // updateItemPriceData
+} from "../../../../services/index";
+// import { toast } from "react-toastify";
+// import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
+// import { useHistory } from "react-router-dom";
+// import { defaultItemObj, usageTypeKeyValuePair, itemPriceDefaultObj } from "../itemConstant"
+import { getApiCall } from "services/searchQueryService";
+import { GET_SEARCH_COVERAGE, GET_SEARCH_KIT_ID } from "services/CONSTANTS";
 
 const itemRequestDefaultObj = {
     itemId: 0,
@@ -215,7 +227,9 @@ const ItemAddEdit = (props) => {
         if (e.target.value.length === 0) {
             setSearchedStandardJobIdList([])
         } else {
-            const result = await getSearchStandardJobId(e.target.value);
+            let loading, data, failure;
+            const result = await getApiCall(GET_SEARCH_COVERAGE + e.target.value, loading, data, failure);
+            // const result = await getSearchStandardJobId(e.target.value);
             if (result.status === 200) {
                 $(`.scrollbar-model`).css("display", "block");
                 setSearchedStandardJobIdList(result.data)
@@ -273,7 +287,9 @@ const ItemAddEdit = (props) => {
         if (e.target.value.length === 0) {
             setSearchedRepairKitIdList([])
         } else {
-            const result = await getSearchKitId(e.target.value);
+            let loading, data, failure;
+            const result = await getApiCall(GET_SEARCH_KIT_ID + e.target.value, loading, data, failure)
+            // const result = await getSearchKitId(e.target.value);
             if (result.status === 200) {
                 $(`.scrollbar-model`).css("display", "block");
                 setSearchedRepairKitIdList(result.data)

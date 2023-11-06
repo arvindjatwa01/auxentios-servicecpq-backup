@@ -110,7 +110,7 @@ import {
   getTypeKeyValue,
   getPortfolioCommonConfig,
   getSolutionPriceCommonConfig,
-  getSearchQueryCoverage,
+  // getSearchQueryCoverage,
   getSearchCoverageForFamily,
   itemCreation,
   createCoverage,
@@ -136,8 +136,8 @@ import {
   getItemDataById,
   getServiceItemsList,
   portfolioPriceAgreementCreation,
-  getServiceBundleItemPrices,
-  linkItemToPortfolio,
+  // getServiceBundleItemPrices,
+  // linkItemToPortfolio,
   getPortfolioAndSolutionCommonConfig,
   getServicesDetailsList,
 } from "../../services/index";
@@ -186,8 +186,10 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Cookies from "js-cookie";
 import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CONSTANTS";
 import Pagination from '@mui/material/Pagination';
+import { getApiCall } from "services/searchQueryService";
+import { GET_SEARCH_COVERAGE, LINK_ITEM_TO_PORTFOLIO, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from "services/CONSTANTS";
 
-
+let loading, data, failure;
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 // const customStyles = {
 //   rows: {
@@ -1090,7 +1092,9 @@ export function CreatePortfolio(props) {
 
     setEditSerialNo({ ...editSerialNo, modelNo: e.target.value })
     var searchStr = "model~" + e.target.value;
-    getSearchQueryCoverage(searchStr)
+    let loading, data, failure;
+    getApiCall(GET_SEARCH_COVERAGE + searchStr, loading, data, failure)
+      // getSearchQueryCoverage(searchStr)
       .then((res) => {
         // console.log("search Query Result --------- :", res);
         // setMasterData(res);
@@ -1122,7 +1126,9 @@ export function CreatePortfolio(props) {
   const handleBundleServiceInputSearch = (e) => {
     setCreateServiceOrBundle({ ...createServiceOrBundle, [e.target.name]: e.target.value, });
     var searchStr = "model~" + e.target.value;
-    getSearchQueryCoverage(searchStr)
+    let loading, data, failure;
+    getApiCall(GET_SEARCH_COVERAGE + searchStr, loading, data, failure)
+      // getSearchQueryCoverage(searchStr)
       .then((res) => {
         $(`.scrollbar-model`).css("display", "block");
         setBundleServiceQuerySearchModelResult(res)
@@ -1866,7 +1872,8 @@ export function CreatePortfolio(props) {
         }
 
         if (filterPortfolioItems.length > 0) {
-          const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+          const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+          // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
           console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
 
@@ -2578,7 +2585,8 @@ export function CreatePortfolio(props) {
           }
         }
 
-        const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+        const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+        // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
         let expandAblePortfolioItems = []
         let expendedBundleServiceItems = [];
@@ -2887,7 +2895,8 @@ export function CreatePortfolio(props) {
                 //   `itemIds=${data.itemId}`
                 // ).join('&');
 
-                const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+                const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+                // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
                 let expandAblePortfolioItems = []
                 let expendedBundleServiceItems = [];
                 if (tempBundleItemsColumnsData.status === 200) {
@@ -3184,7 +3193,8 @@ export function CreatePortfolio(props) {
               //   `itemIds=${data.itemId}`
               // ).join('&');
 
-              const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+              const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+              // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
               let expandAblePortfolioItems = []
               let expendedBundleServiceItems = [];
               if (tempBundleItemsColumnsData.status === 200) {
@@ -3787,7 +3797,8 @@ export function CreatePortfolio(props) {
             //   `itemIds=${data.itemId}`
             // ).join('&');
 
-            const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+            const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+            // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
             let expandAblePortfolioItems = []
             let expendedBundleServiceItems = [];
             if (tempBundleItemsColumnsData.status === 200) {
@@ -4059,7 +4070,8 @@ export function CreatePortfolio(props) {
             //   `itemIds=${data.itemId}`
             // ).join('&');
 
-            const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+            const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+            // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
             let expandAblePortfolioItems = []
             let expendedBundleServiceItems = [];
             if (tempBundleItemsColumnsData.status === 200) {
@@ -4530,7 +4542,8 @@ export function CreatePortfolio(props) {
         //   `itemIds=${data.itemId}`
         // ).join('&');
 
-        const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+        const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+        // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
         let expandAblePortfolioItems = []
         let expendedBundleServiceItems = [];
         if (tempBundleItemsColumnsData.status === 200) {
@@ -8963,7 +8976,9 @@ export function CreatePortfolio(props) {
         var tempBundleItemsUrl = checkedData.map(service => `item_id=${service.itemId}`).join('&');
         rUrl = rUrl + tempBundleItemsUrl;
 
-        const linkPortfolioItems = await linkItemToPortfolio(rUrl)
+        let loading, data, failure;
+        const linkPortfolioItems = await getApiCall(LINK_ITEM_TO_PORTFOLIO + rUrl, loading, data, failure)
+        // const linkPortfolioItems = await linkItemToPortfolio(rUrl)
       }
       setShowInclusionExclusionModal(false)
     } catch (error) {
@@ -8995,7 +9010,8 @@ export function CreatePortfolio(props) {
         tempBundleItemsUrl = tempBundleItemsUrl + "&portfolio_id=" + portfolioId;
       }
 
-      const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+      const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+      // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
       let expandAblePortfolioItems = []
       let expendedBundleServiceItems = [];
@@ -9031,7 +9047,8 @@ export function CreatePortfolio(props) {
         tempItemsUrl = tempItemsUrl + "&portfolio_id=" + portfolioId;
       }
 
-      const tempItemsColumnsData = await getServiceBundleItemPrices(tempItemsUrl);
+      const tempItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempItemsUrl, loading, data, failure);
+      // const tempItemsColumnsData = await getServiceBundleItemPrices(tempItemsUrl);
 
       let portfolioItemsArr = []
       let bundleServiceItemsExpendedArr = [];
@@ -9971,7 +9988,8 @@ export function CreatePortfolio(props) {
         }
       }
 
-      const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+      const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+      // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
       let expendedBundleServiceItems = [];
       if (tempBundleItemsColumnsData.status === 200) {
@@ -11645,7 +11663,7 @@ export function CreatePortfolio(props) {
       selector: (row) => row.itemName,
       wrap: true,
       sortable: true,
-      cell: (row) => <div className="d-flex align-items-baseline justify-content-center py-2 w-100">
+      cell: (row) => <div className="d-flex align-items-baseline justify-content-left py-2 w-100 elipsis">
         <div className="icons-table mr-2 align-items-center d-flex justify-content-center">
           <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
             <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
@@ -11681,7 +11699,7 @@ export function CreatePortfolio(props) {
       selector: (row) => row?.itemDescription,
       wrap: true,
       sortable: true,
-      cell: (row, i) => <div className="d-flex justify-content-between align-items-baseline py-2">
+      cell: (row, i) => <div className="d-flex justify-content-between align-items-baseline py-2 elipsis">
         <div className="d-flex align-items-center" data-tag="allowRowEvents">
           {row?.itemDescription}
         </div>
@@ -11690,7 +11708,7 @@ export function CreatePortfolio(props) {
             className="description cursor mr-1"
             onClick={() => handleExpendedBundleServiceUpdate(i, row)}
           >
-            <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+            {/* <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
               <g>
                 <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
                       c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
@@ -11702,9 +11720,9 @@ export function CreatePortfolio(props) {
                       c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
                       c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
               </g>
-            </svg>
+            </svg> */}
           </div>
-          <div className=""><KeyboardArrowDownIcon /></div>
+          {/* <div className=""><KeyboardArrowDownIcon /></div> */}
         </div>
       </div>,
       minWidth: "150px",
@@ -11719,7 +11737,7 @@ export function CreatePortfolio(props) {
       selector: (row) => row?.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      cell: (row) => <div className="d-flex align-items-baseline py-2 w-100">
+      cell: (row) => <div className="d-flex align-items-baseline py-2 w-100 elipsis">
         <div className="icons-table overflow-visible mr-2 align-items-center d-flex justify-content-center">
           <span className="bundle"><svg version="1.1" id="Layer_1" style={{ width: "12px" }} viewBox="0 0 200 200">
             <path class="st0" d="M191,51.6c-3.2-10.2-9.7-15.2-19.7-15.2c-0.5,0-1,0-1.5,0c-3.3,0.2-6.8,0.2-11.1,0.2c0,0,0,0,0,0
@@ -11763,7 +11781,7 @@ export function CreatePortfolio(props) {
             ((row?.repairKitId === "") || (row?.repairKitId === null) || (row?.repairKitId === undefined)) ? "" : row?.repairKitId : row?.standardJobId}
         </div>
         <div className="description cursor mr-1" onClick={() => handleExpendedBundleServiceUpdate(i, row)}>
-          <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
+          {/* <svg style={{ width: "12px" }} version="1.1" id="Layer_1" viewBox="0 0 200 200">
             <g>
               <path class="st0" d="M168.4,109.3c0-5.3-3.5-8.9-8.3-9c-5-0.1-8.5,3.7-8.5,9.5c0,19.7,0,39.3,0,59c0,5.5-1.9,7.4-7.4,7.4
                       c-38.2,0-76.3,0-114.5,0c-5.5,0-7.4-1.9-7.4-7.4c0-38.2,0-76.3,0-114.5c0-5.5,1.9-7.4,7.4-7.4c13,0,26,0,39,0c7,0,14.1,0,21.1,0
@@ -11775,7 +11793,7 @@ export function CreatePortfolio(props) {
                       c3.8,3.9,8.9,3.2,14-1.9c28.5-28.5,56.9-56.9,85.4-85.4c0.8-0.8,1.7-1.6,2.8-2.6c0.2,0.7,0.2,0.8,0.2,0.9c0,4.7,0,9.4,0.1,14
                       c0.1,5.5,3.5,9.2,8.4,9.2c4.9,0,8.4-3.8,8.4-9.2C193.8,38.7,193.8,26.3,193.7,13.9z"/>
             </g>
-          </svg>
+          </svg> */}
         </div>
       </div>,
     },
@@ -13596,7 +13614,8 @@ export function CreatePortfolio(props) {
               //   `itemIds=${data.itemId}`
               // ).join('&');
 
-              const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+              const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+              // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
               let expandAblePortfolioItems = []
               let expendedBundleServiceItems = [];
               if (tempBundleItemsColumnsData.status === 200) {
@@ -16552,7 +16571,9 @@ export function CreatePortfolio(props) {
         })
       }
       if (e.target.name === 'make') {
-        const res = await getSearchQueryCoverage(`make~${e.target.value}`)
+        let loading, data, failure;
+        const res = await getApiCall(GET_SEARCH_COVERAGE + `make~${e.target.value}`, loading, data, failure)
+        // const res = await getSearchQueryCoverage(`make~${e.target.value}`)
         $(`#scrollbarMake`).css("display", "block");
         setComponentData({ ...componentData, [e.target.name]: e.target.value, makeSuggestions: res })
       }
@@ -16560,7 +16581,9 @@ export function CreatePortfolio(props) {
         if (componentData.make == "") {
           throw "Please select make"
         }
-        const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model~${e.target.value}`)
+        let loading, data, failure;
+        const res = await getApiCall(GET_SEARCH_COVERAGE + `make:\"${componentData.make}\" AND model~${e.target.value}`, loading, data, failure)
+        // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model~${e.target.value}`)
         $(`#scrollbarModel`).css("display", "block");
         setComponentData({ ...componentData, [e.target.name]: e.target.value, modelSuggestions: res })
       }
@@ -16568,7 +16591,9 @@ export function CreatePortfolio(props) {
         // if(componentData.make=="" || componentData.model==""){
         //   throw "Please select make/model"
         // }
-        const res = await getSearchQueryCoverage(`family~${e.target.value}`)
+        let loading, data, failure;
+        const res = await getApiCall(GET_SEARCH_COVERAGE + `family~${e.target.value}`, loading, data, failure)
+        // const res = await getSearchQueryCoverage(`family~${e.target.value}`)
         // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model:\"${componentData.model}\" AND family~${e.target.value}`)
         $(`#scrolbarSerialNo`).css("display", "block");
         setComponentData({ ...componentData, [e.target.name]: e.target.value, serialNoSuggestions: res })
@@ -17362,7 +17387,8 @@ export function CreatePortfolio(props) {
             }
           }
 
-          const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+          const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+          // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
           console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
 
@@ -17562,7 +17588,8 @@ export function CreatePortfolio(props) {
             }
           }
 
-          const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
+          const tempBundleItemsColumnsData = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + tempBundleItemsUrl, loading, data, failure);
+          // const tempBundleItemsColumnsData = await getServiceBundleItemPrices(tempBundleItemsUrl);
 
           console.log("empBundleItemsColumnsData.status ======= ", tempBundleItemsColumnsData);
 
@@ -21562,6 +21589,7 @@ export function CreatePortfolio(props) {
                         style={{ minHeight: 200, height: "auto", width: "100%" }}
                       >
                         <DataTable
+                          className="portfolioItemsDataDatble"
                           title=""
                           columns={bundleItemColumns}
                           data={bundleItems}

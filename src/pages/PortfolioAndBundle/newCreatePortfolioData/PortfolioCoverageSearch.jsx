@@ -4,9 +4,16 @@ import Select from 'react-select';
 
 import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
-import { getSearchCoverageForFamily, getSearchQueryCoverage, getServiceBundleItemPrices, itemSearchDropdown } from '../../../services/index';
+import {
+    getSearchCoverageForFamily,
+    // getSearchQueryCoverage, 
+    // getServiceBundleItemPrices, 
+    itemSearchDropdown
+} from '../../../services/index';
 import { isEmpty, isEmptySelect } from './utilities/textUtilities';
 import { errorMessage } from './utilities/toastMessage';
+import { GET_SEARCH_COVERAGE, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from 'services/CONSTANTS';
+import { getApiCall } from 'services/searchQueryService';
 
 const operatorOptions = [
     { label: "And", value: "AND" },
@@ -237,12 +244,16 @@ const PortfolioCoverageSearch = (props) => {
             }
 
             if (searchFlag == "coverage") {
-                const coverageRes = await getSearchQueryCoverage(searchStr);
+                let loading, data, failure;
+                const coverageRes = await getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+                // const coverageRes = await getSearchQueryCoverage(searchStr);
                 handleAddSearchItem(coverageRes)
             }
 
             if (searchFlag === "bundleSearch") {
-                const bundleServiceRes = await getServiceBundleItemPrices(searchStr)
+                let loading, data, failure;
+                const bundleServiceRes = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, loading, data, failure);
+                // const bundleServiceRes = await getServiceBundleItemPrices(searchStr)
                 if (bundleServiceRes.status === 200) {
                     let bundleServiceItemsArr = [];
                     bundleServiceRes.data.length > 0 && bundleServiceRes.data.map(bundleServiceData => {
