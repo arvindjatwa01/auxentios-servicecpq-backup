@@ -32,6 +32,7 @@ export function HeaderComponent(props) {
   const handleLogout = () => {
     localStorage.clear();
     Cookies.remove("loginTenantDtl");
+    Cookies.remove("auxAuthToken");
     history.push("/login");
     // window.location.href = "/login";
   };

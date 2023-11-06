@@ -12,7 +12,7 @@ import Cookies from "js-cookie";
 
 import {
     getPortfolioCommonConfig,
-    getSearchQueryCoverage,
+    // getSearchQueryCoverage,
     getSearchCoverageForFamily,
     itemCreation,
     createCoverage,
@@ -22,20 +22,22 @@ import {
     getComponentCodeSuggetions,
     itemPriceDataId,
     updateItemPriceData,
-    getSearchStandardJobId,
-    getSearchKitId,
+    // getSearchStandardJobId,
+    // getSearchKitId,
     getItemPriceData,
     getSolutionPriceCommonConfig,
     getItemDataById,
     portfolioItemPriceRkId,
     portfolioItemPriceSjid,
     getPortfolioAndSolutionCommonConfig,
-    getServiceBundleItemPrices,
+    // getServiceBundleItemPrices,
     createItemPriceData,
     getPortfolio,
     updatePortfolio
 } from "../../services/index";
 import AddPortfolioItem from './AddPortfolioItem';
+import { GET_SEARCH_COVERAGE, GET_SEARCH_KIT_ID, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from 'services/CONSTANTS';
+import { getApiCall } from 'services/searchQueryService';
 
 const ExpendTablePopup = (props) => {
 
@@ -399,8 +401,9 @@ const ExpendTablePopup = (props) => {
                     rUrl = "itemIds=" + props.bundleServiceData.itemId + "&portfolio_id=" + 0;
                 }
             }
-
-            const getPriceByItemId = await getServiceBundleItemPrices(rUrl);
+            let loading, data, failure;
+            const getPriceByItemId = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrl, loading, data, failure);
+            // const getPriceByItemId = await getServiceBundleItemPrices(rUrl);
             if (getPriceByItemId.status === 200) {
                 if (props.compoFlag === "BUNDLE_ITEM") {
                     let bundleItemPriceData = getPriceByItemId.data[0].bundleItems[0];
@@ -1595,7 +1598,9 @@ const ExpendTablePopup = (props) => {
             templateId: e.target.value,
         })
         var searchStr = e.target.value;
-        getSearchStandardJobId(searchStr)
+        let loading, data, failure;
+        getApiCall(GET_SEARCH_COVERAGE + searchStr, loading, data, failure)
+            // getSearchStandardJobId(searchStr)
             .then((res) => {
                 if (res.status === 200) {
                     // console.log("search Query Result --------- :", res);
@@ -1620,7 +1625,9 @@ const ExpendTablePopup = (props) => {
             repairOption: e.target.value,
         })
         var searchStr = e.target.value;
-        getSearchKitId(searchStr)
+        let loading, data, failure;
+        getApiCall(GET_SEARCH_KIT_ID + searchStr, loading, data, failure)
+        // getSearchKitId(searchStr)
             .then((res) => {
                 if (res.status === 200) {
                     // console.log("search Query Result --------- :", res);

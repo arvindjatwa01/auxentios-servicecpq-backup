@@ -41,6 +41,7 @@ function* handleLogin(payload) {
       }
       var setAbleCookiesData = JSON.stringify(cookiesData);
       Cookies.set('loginTenantDtl', setAbleCookiesData, { expires: 1 });
+      Cookies.set('auxAuthToken', res.data.accessToken, { expires: 1 });
 
       localStorage.setItem('user_tenantId', res.data.tenantId);
       localStorage.setItem('user_userId', res.data.userId);
