@@ -3,8 +3,21 @@ import { Modal } from "react-bootstrap";
 import FormGroup from "@mui/material/FormGroup";
 import { FormControlLabel, Switch } from "@material-ui/core";
 import deleteIcon from "../../../../assets/icons/svg/delete.svg";
+import { errorMessage } from "../utilities/toastMessage";
+import { LINK_ITEM_TO_PORTFOLIO } from "services/CONSTANTS";
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
 
-const InclusionExclusionModal = ({ show, hideModal, optionalServices }) => {
+const InclusionExclusionModal = ({
+  show,
+  hideModal,
+  showOptionalServicesModal,
+  handleOptionalServiceModal,
+  checkedService,
+  setCheckedService,
+  selectedService,
+  setSelectedService,
+}) => {
   const [sparePartsSwitch, setSparePartsSwitch] = useState({
     withParts: false,
     haveParts: false,
@@ -21,50 +34,108 @@ const InclusionExclusionModal = ({ show, hideModal, optionalServices }) => {
     travelExpenses: false,
     tools: false,
     externalWork: false,
-  })
+  });
 
-  const [serviceRequired, setServiceRequired] = useState(false)
-  
+  const [serviceRequired, setServiceRequired] = useState(false);
+
   // handle spare parts Switch
-  const handleSparePartsCheckbox = (e) =>{
-    const {name} = e.target;
-    const _sparePartsSwitch = {...sparePartsSwitch}
+  const handleSparePartsCheckbox = (e) => {
+    const { name } = e.target;
+    const _sparePartsSwitch = { ...sparePartsSwitch };
     for (const key in _sparePartsSwitch) {
       if (_sparePartsSwitch.hasOwnProperty(key)) {
         _sparePartsSwitch[key] = key === name ? !sparePartsSwitch[key] : false;
       }
     }
-    setSparePartsSwitch(_sparePartsSwitch)
-  }
+    setSparePartsSwitch(_sparePartsSwitch);
+  };
 
   // handle Labour Switch
   const handleLabourSwitch = (e) => {
-    const {name} = e.target;
-    const _labourSwitch = {...labourSwitch}
+    const { name } = e.target;
+    const _labourSwitch = { ...labourSwitch };
     for (const key in _labourSwitch) {
       if (_labourSwitch.hasOwnProperty(key)) {
         _labourSwitch[key] = key === name ? !labourSwitch[key] : false;
       }
     }
-    setLabourSwitch(_labourSwitch)
-  }
+    setLabourSwitch(_labourSwitch);
+  };
 
   // handle Miscellaneous Switch
   const handleMiscellaneousSwitch = (e) => {
-    const {name} = e.target;
-    const _miscellaneousSwitch = {...miscellaneousSwitch}
+    const { name } = e.target;
+    const _miscellaneousSwitch = { ...miscellaneousSwitch };
     for (const key in _miscellaneousSwitch) {
       if (_miscellaneousSwitch.hasOwnProperty(key)) {
-        _miscellaneousSwitch[key] = key === name ? !miscellaneousSwitch[key] : false;
+        _miscellaneousSwitch[key] =
+          key === name ? !miscellaneousSwitch[key] : false;
       }
     }
-    setMiscellaneousSwitch(_miscellaneousSwitch)
-  }
+    setMiscellaneousSwitch(_miscellaneousSwitch);
+  };
 
-  // 
-  const handleToggleOptionaServices = () => {
+  // Toggle Selected Optional Services Switch
+  const handleToggleOptionaServices = (checked, serviceObj) => {
+    // check-uncheck in selected services
+    const _selectedService = [...selectedService];
+    _selectedService.forEach((obj) => {
+      if (obj.itemId === serviceObj.itemId) {
+        obj.checked = checked;
+      }
+    });
+    setSelectedService(_selectedService);
 
-  }
+    // check -uncheck in checked services
+    const _checkedService = [...checkedService];
+    _checkedService.forEach((obj) => {
+      if (obj.itemId === serviceObj.itemId) {
+        obj.checked = checked;
+      }
+    });
+    setCheckedService(_checkedService);
+  };
+
+  // Link Portfolio to Item
+  const handleLinkPortfolioToItem = async () => {
+    try {
+      let rUrl =
+        LINK_ITEM_TO_PORTFOLIO +
+        "portfolio_id=" +
+        "" +
+        "&portfolio_item_id=" +
+        "" +
+        "&";
+      // var rUrl = `portfolio_id=${portfolioId}&portfolio_item_id=${portfolioItemIdIs}&`
+      if (selectedService.length === 0) {
+        errorMessage("Please Select optional service items first.");
+        return;
+      }
+
+      if (selectedService.length !== 0) {
+        const selectedCheckedServices = selectedService.filter(
+          (service) => service.checked
+        );
+        if (selectedCheckedServices.length === 0) {
+          errorMessage("Please toggle at least one item checked.");
+          return;
+        }
+        rUrl =
+          rUrl +
+          selectedCheckedServices
+            .map((service) => `item_id=${service.itemId}`)
+            .join("&");
+
+        callGetApi(null, rUrl, (response) => {
+          if (response.status === API_SUCCESS) {
+            console.log("link portfolio to item response ===== . ", response);
+          }
+        });
+      }
+    } catch (error) {
+      return;
+    }
+  };
 
   return (
     <Modal className="right fade" id="myModal12" show={show} onHide={hideModal}>
@@ -149,13 +220,17 @@ const InclusionExclusionModal = ({ show, hideModal, optionalServices }) => {
               label="Travel Expenses"
               name="travelExpenses"
             />
-            <FormControlLabel control={<Switch disabled />} label="Tools" name="tools" />
+            <FormControlLabel
+              control={<Switch disabled />}
+              label="Tools"
+              name="tools"
+            />
             <FormControlLabel
               control={<Switch disabled={sparePartsSwitch.needOnly} />}
               label="External Work"
               name="externalWork"
               onChange={handleMiscellaneousSwitch}
-              checked={miscellaneousSwitch.externalWork}  
+              checked={miscellaneousSwitch.externalWork}
             />
           </FormGroup>
           <h5 className="d-flex align-items-center mb-0">
@@ -193,15 +268,18 @@ const InclusionExclusionModal = ({ show, hideModal, optionalServices }) => {
             <div className="hr"></div>
           </h5>
           <FormGroup>
-            {optionalServices.length !== 0 && optionalServices.map((data, i) => 
+            {selectedService.length !== 0 &&
+              selectedService.map((data, i) => (
                 <FormControlLabel
                   control={<Switch />}
                   checked={data.checked === true ? true : false}
-                  onChange={() => handleToggleOptionaServices(data)}
+                  onChange={(e) =>
+                    handleToggleOptionaServices(e.target.checked, data)
+                  }
                   label={data.itemName}
                   key={i}
                 />
-              )}
+              ))}
           </FormGroup>
           <h5 className="d-flex align-items-center mb-0">
             <div className="" style={{ display: "contents" }}>
@@ -234,7 +312,7 @@ const InclusionExclusionModal = ({ show, hideModal, optionalServices }) => {
               <a
                 href={undefined}
                 className="btn text-violet bg-light-blue"
-                // onClick={PopupOptionalShow}
+                onClick={handleOptionalServiceModal}
               >
                 <b>
                   <span className="mr-2">+</span>Add more services
@@ -245,7 +323,7 @@ const InclusionExclusionModal = ({ show, hideModal, optionalServices }) => {
           <div>
             <button
               className="btn text-violet mt-2"
-              // onClick={handleLinkPortfolioToItem}
+              onClick={handleLinkPortfolioToItem}
             >
               <b>Save Changes</b>
             </button>

@@ -52,3 +52,47 @@ export const callGetApi = (loading, url, successCallBack, failureCallBack) => {
     .then((res) => handleSuccess(res, successCallBack))
     .catch((error) => handleFailure(error, failureCallBack));
 };
+
+export const callPostApi = (
+  loading,
+  url,
+  requestObj,
+  successCallBack,
+  failureCallBack
+) => {
+  axios
+    .post(url, requestObj, {
+      headers: getHeaders(),
+    })
+    .then((res) => handleSuccess(res, successCallBack))
+    .catch((error) => handleFailure(error, failureCallBack));
+};
+
+export const callPutApi = (
+  loading,
+  url,
+  requestObj,
+  successCallBack,
+  failureCallBack
+) => {
+  axios
+    .put(url, requestObj, {
+      headers: getHeaders(),
+    })
+    .then((result) => handleSuccess(result, successCallBack))
+    .catch((error) => handleFailure(error, failureCallBack));
+};
+
+export const callDeleteApi = (
+  loading,
+  url,
+  successCallBack,
+  failedCallBack
+) => {
+  axios
+    .delete(url, {
+      headers: getHeaders(),
+    })
+    .then((result) => handleSuccess(result, successCallBack))
+    .catch((error) => handleFailure(error, failedCallBack));
+};
