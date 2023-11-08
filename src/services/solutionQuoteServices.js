@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios';
-import { SOLUTION_QUOTE_CREATION, SOLUTION_QUOTE_URL, RECENT_QUOTES_COMMON_PATH, SEARCH_SOLUTION_QUOTE } from "./CONSTANTS";
+import { SOLUTION_QUOTE_CREATION, SOLUTION_QUOTE_URL, RECENT_QUOTES_COMMON_PATH, SEARCH_SOLUTION_QUOTE, UPLOAD_ITEMS_TO_SOL_QUOTE } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 
@@ -157,3 +157,31 @@ export const searchSolutionQuotes = (searchText) => {
         }
     });
 };
+
+
+//upload Solution quote items through the excel sheet
+export const uploadItemsToSolutionQuote = (file) => {
+    console.log("service Solutionquote > upload items called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .post(UPLOAD_ITEMS_TO_SOL_QUOTE(), file, { headers: headersData })
+          .then((res) => {
+            console.log("uploadItemsToSolutionQuote response: ", res);
+            if (res.status === 200 || res.status === 201) {
+              resolve(res.data);
+            } else {
+              console.log("Error Status:", res.status);
+              reject("Error in uploadItemsToSolutionQuote axios!");
+            }
+          })
+          .catch((err) => {
+            console.log("uploadItemsToSolutionQuote > axios err=", err);
+            reject("Error in uploadItemsToSolutionQuote axios!");
+          });
+      } catch (error) {
+        console.error("uploadItemsToSolutionQuote general exception", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };

@@ -7,7 +7,7 @@
  * Other way to deal with this is to name every json file as per your service endpoint and use a basepath variable.
  * Toggle this basePath variable between "actual-domain.com/" or "/data/".
  */
-const BASE_URL = process.env.REACT_APP_API_BASEURL;
+const BASE_URL = "http://a22ce44ab44874947b49e4737a99e1da-0c39e8b84cfde139.elb.ap-south-1.amazonaws.com/";
 
 
 const PRICING_URI = BASE_URL + "pricing-svc/v1/";
@@ -252,6 +252,7 @@ export const CREATE_SPARE_PART_QUOTE = (builderId, description, reference) => QU
 export const CREATE_PART_QUOTE_FROM_KIT =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-kit-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const CREATE_REPAIR_QUOTE_FROM_SJ =(builderId, description, reference) => QUOTE_REST_SERVICE + `/convert-builder-sj-item-to-quote?builder_id=${builderId}&description=${description}&reference=${reference}`;
 export const UPLOAD_ITEMS_TO_REP_QUOTE = () => QUOTE_REST_SERVICE + `/repair-builder/item/upload`;
+export const UPLOAD_ITEMS_TO_SOL_QUOTE = () => QUOTE_REST_SERVICE + `/solution-builder/item/upload`;
 export const UPLOAD_ITEMS_TO_PARTS_QUOTE = () => QUOTE_REST_SERVICE + `/part-list/item/upload`;
 
 export const FETCH_REPAIR_QUOTE_DETAILS = (quoteId) => QUOTE_REST_SERVICE + `/${quoteId}`;
