@@ -67,6 +67,7 @@ import {
   PORTFOLIO_URL,
 } from "services/CONSTANTS";
 import { callGetApi } from "services/ApiCaller";
+import OptionalServiceModal from "./common/OptionalServiceModal";
 
 const portfolioHeaderType = [
   { label: "PORTFOLIO", value: "PORTFOLIO" },
@@ -116,6 +117,7 @@ export const CreatePortfolio = (props) => {
   const [priceHeadTypeKeyValuePair, setPriceHeadTypeKeyValuePair] = useState(
     []
   );
+  const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
 
   const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
   const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({
@@ -224,7 +226,10 @@ export const CreatePortfolio = (props) => {
   const [selectedService, setSelectedService] = useState([]);
   const [inclusionService, setInclusionService] = useState([]);
 
-  const [optionalServices, setOptionalServices] = useState([]);
+  const [showOptionalServicesModal, setShowOptionalServicesModal] =
+    useState(false);
+  const [showSelectedServicesModal, setShowSelectedServicesModal] =
+    useState(false);
 
   useEffect(() => {
     dispatch(taskActions.fetchTaskList());
@@ -351,6 +356,22 @@ export const CreatePortfolio = (props) => {
       })
       .catch((err) => {
         toast.error(err);
+      });
+
+    //  get currency  key-value pair
+    getSolutionPriceCommonConfig("currency")
+      .then((res) => {
+        const currencyOptions = [];
+        res.length !== 0 &&
+          res.map((d) => {
+            if (d.key != "EMPTY") {
+              currencyOptions.push({ value: d, label: d });
+            }
+          });
+        setCurrencyKeyValuePair(currencyOptions);
+      })
+      .catch((err) => {
+        return;
       });
   };
 
@@ -614,8 +635,11 @@ export const CreatePortfolio = (props) => {
     callGetApi(null, rUrl, (response) => {
       if (response.status === API_SUCCESS) {
         const res = response.data;
-        const _optionalServices = res.map(service => { return { ...service, checked: true, inclusionService: true, } })
-        setOptionalServices(_optionalServices);
+        const _optionalServices = res.map((service) => {
+          return { ...service, checked: true, inclusionService: true };
+        });
+        setSelectedService(_optionalServices);
+        setCheckedService(_optionalServices);
       }
     });
   };
@@ -1347,9 +1371,15 @@ export const CreatePortfolio = (props) => {
                         : selectedService.length + " Services Selected"}{" "}
                     </h6>
                     {selectedService.length !== 0 ? (
-                      <RemoveRedEyeIcon className="text-primary font-size-30 cursor" />
+                      <RemoveRedEyeIcon
+                        className="text-primary font-size-30 cursor"
+                        onClick={handleSelectedServiceModal}
+                      />
                     ) : (
-                      <AddCircleOutlineIcon className="text-primary font-size-30 cursor" />
+                      <AddCircleOutlineIcon
+                        className="text-primary font-size-30 cursor"
+                        onClick={handleOptionalServiceModal}
+                      />
                     )}
                   </div>
                 </div>
@@ -2630,10 +2660,26 @@ export const CreatePortfolio = (props) => {
     }
   };
 
+  // Optional Services Modal Show|Hide
+  const handleOptionalServiceModal = () => {
+    setShowOptionalServicesModal(!showOptionalServicesModal);
+  };
+
+  // Select Optional Services Modal Show|Hide
+  const handleSelectedServiceModal = () => {
+    setShowSelectedServicesModal(!showSelectedServicesModal);
+  };
+
   // handle next Click for Portfolio Create/Update
   const handleNextClick = async (e) => {
     try {
       let { id } = e.target;
+
+      // optionsalSerivce
+      let _optionalServices = "";
+      if (selectedService.length !== 0) {
+        _optionalServices = selectedService.map((obj) => obj.itemId).join(",");
+      }
       // strategyTabData
       let requestObj = {
         portfolioId: portfolioRecordId,
@@ -2652,8 +2698,7 @@ export const CreatePortfolio = (props) => {
         usageCategory: strategyTabData.categoryUsage?.value || "EMPTY",
         strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
         taskType: strategyTabData.taskType?.value || "EMPTY",
-        // optionalServices: [],
-        optionalServices: "",
+        optionalServices: _optionalServices,
         responseTime: strategyTabData.responseTime?.value || "EMPTY",
         productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
         geographic: strategyTabData.geographic?.value || "EMPTY",
@@ -2919,11 +2964,36 @@ export const CreatePortfolio = (props) => {
                 ? true
                 : false
             }
+            portfolioRecordId={portfolioRecordId}
             itemsList={portfolioItemsList}
-            optionalServices={optionalServices}
+            setPortfolioItemsList={setPortfolioItemsList}
+            portfolioItemsIds={portfolioItemsIds}
+            setPortfolioItemsIds={setPortfolioItemsIds}
+            priceMethodKeyValuePair={priceMethodKeyValuePair}
+            priceTypeKeyValuePair={priceTypeKeyValuePair}
+            priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+            currencyKeyValuePair={currencyKeyValuePair}
+            showOptionalServicesModal={showOptionalServicesModal}
+            handleOptionalServiceModal={handleOptionalServiceModal}
+            checkedService={checkedService}
+            setCheckedService={setCheckedService}
+            selectedService={selectedService}
+            setSelectedService={setSelectedService}
           />
         </div>
       </div>
+      {(showOptionalServicesModal || showSelectedServicesModal) && (
+        <OptionalServiceModal
+          showOptionalServicesModal={showOptionalServicesModal}
+          handleOptionalServiceModal={handleOptionalServiceModal}
+          checkedService={checkedService}
+          setCheckedService={setCheckedService}
+          selectedService={selectedService}
+          setSelectedService={setSelectedService}
+          showSelectedServicesModal={showSelectedServicesModal}
+          handleSelectedServiceModal={handleSelectedServiceModal}
+        />
+      )}
       <ToastContainer />
     </>
   );

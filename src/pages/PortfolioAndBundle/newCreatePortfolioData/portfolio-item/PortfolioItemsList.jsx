@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import { Modal,  Dropdown, DropdownButton } from "react-bootstrap";
+import { Modal, Dropdown, DropdownButton } from "react-bootstrap";
 import { FileUploader } from "react-drag-drop-files";
 
 import { DataGrid } from "@mui/x-data-grid";
@@ -57,8 +57,20 @@ import ItemPriceCalculator from "./ItemPriceCalculator";
 import { useDispatch } from "react-redux";
 import ExpendBundleServiceItem from "./ExpendBundleServiceItem";
 
-import { dataTableCustomStyle } from "../itemConstant";
+import {
+  additionalPriceKeyValuePair,
+  dataTableCustomStyle,
+  discountTypeKeyValuePair,
+  usageTypeKeyValuePair,
+  defaultItemHeaderObj,
+  defaultItemBodyObj,
+  defaultItemPriceObj,
+} from "../itemConstant";
 import InclusionExclusionModal from "../common/InclusionExclusionModal";
+import { API_SUCCESS } from "services/ResponseCode";
+import { successMessage } from "../utilities/toastMessage";
+import { callDeleteApi } from "services/ApiCaller";
+import { CREATE_PORTFOLIO_ITEM } from "services/CONSTANTS";
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 
@@ -245,7 +257,26 @@ const bundleServiceItemsColumns = [
   },
 ];
 
-const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices }) => {
+const PortfolioItemsList = (props) => {
+  const {
+    componentDataTabShow,
+    portfolioRecordId,
+    itemsList,
+    setPortfolioItemsList,
+    portfolioItemsIds,
+    setPortfolioItemsIds,
+    priceMethodKeyValuePair,
+    priceTypeKeyValuePair,
+    priceHeadTypeKeyValuePair,
+    currencyKeyValuePair,
+    showOptionalServicesModal,
+    handleOptionalServiceModal,
+    checkedService,
+    setCheckedService,
+    selectedService,
+    setSelectedService,
+  } = props;
+
   const dispatch = useDispatch();
   const [showDragAndDropModal, setShowDragAndDropModal] = useState(false);
   const [uploadFileImage, setUploadFileImage] = useState("general");
@@ -262,68 +293,24 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
   const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
   const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
   const [bundleServiceItemsList, setBundleServiceItemsList] = useState([]);
+  const [existBundleServiceItems, setExistBundleServiceItems] = useState([]);
 
-  const [showInclusionExclusionModal, setShowInclusionExclusionModal] = useState(false)
+  const [showInclusionExclusionModal, setShowInclusionExclusionModal] =
+    useState(false);
 
+  const [recorItemId, setRecorItemId] = useState(null);
+  const [editItem, setEditItem] = useState(false);
   const [itemRequestObj, setItemRequestObj] = useState({
     itemId: 0,
     itemName: "",
   });
+
   const [itemHeaderModelObj, setItemHeaderModelObj] = useState({
-    itemHeaderId: 0,
-    itemHeaderDescription: "",
-    bundleFlag: "",
-    withBundleService: true,
-    portfolioItemIds: [],
-    reference: "",
-    itemHeaderMake: "",
-    itemHeaderFamily: "",
-    model: "",
-    prefix: "",
-    type: "",
-    additional: "",
-    currency: "",
-    netPrice: 0,
-    itemProductHierarchy: "",
-    itemHeaderGeographic: "",
-    responseTime: "",
-    usage: "",
-    validFrom: "",
-    validTo: "",
-    estimatedTime: "",
-    servicePrice: 0,
-    status: "",
-    componentCode: "",
-    componentDescription: "",
-    serialNumber: "",
-    itemHeaderStrategy: "",
-    variant: "",
-    itemHeaderCustomerSegment: "",
-    jobCode: "",
-    preparedBy: "",
-    approvedBy: "",
-    preparedOn: "",
-    revisedBy: "",
-    revisedOn: "",
-    salesOffice: "",
-    offerValidity: "",
-    serviceChargable: true,
-    serviceOptional: true,
+    ...defaultItemHeaderObj,
   });
 
   const [itemBodyModelObj, setItemBodyModelObj] = useState({
-    itemBodyId: 0,
-    itemBodyDescription: "",
-    spareParts: "",
-    labours: "",
-    miscellaneous: "",
-    taskType: "",
-    solutionCode: "",
-    usageIn: "",
-    usage: "",
-    year: "",
-    avgUsage: 0,
-    itemPrices: [],
+    ...defaultItemBodyObj,
   });
 
   useEffect(() => {
@@ -362,14 +349,24 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
       });
   }, []);
 
+  useEffect(() => {
+    if (!showAddItemModal) {
+      setRecorItemId(null);
+      setEditItem(false);
+    }
+  }, [showAddItemModal]);
+
+  // drag-&-drop file modal box show|hide
   const handleDragAndDropModal = () => {
     setShowDragAndDropModal(!showDragAndDropModal);
   };
 
+  // Image|File upload Modal box show|hide
   const handleImageFileUpload = (e, value) => {
     setUploadFileImage(value);
   };
 
+  // Show|Hide Coverage Modal box
   const handleShowCoverageModal = () => {
     setShowCoverageModal(!showCoverageModal);
   };
@@ -414,26 +411,78 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     itemRequestObj,
     itemPriceDataId,
     isPortfolioItem
-  ) => {};
+  ) => {
+    const _itemPrice = [...itemBodyModelObj.itemPrices];
+    if (
+      !_itemPrice.some( (obj) => obj.itemPriceDataId === itemPriceDataId.itemPriceDataId) &&
+       
+      
+      !isEmpty(itemPriceDataId.itemPriceDataId)
+    ) {
+      _itemPrice.push({ itemPriceDataId: itemPriceDataId.itemPriceDataId });
+    }
+    const requestObj = {
+      itemId: itemRequestObj.itemId,
+      itemName: itemRequestObj.name,
+      itemHeaderModal: {
+        ...itemHeaderModelObj,
+        itemHeaderDescription: itemRequestObj.description,
+        usage: itemRequestObj.usageType?.value || "",
+      },
+      itemBodyModelObj: {
+        ...itemBodyModelObj,
+        itemBodyDescription: itemRequestObj.itemBodyDescription,
+      },
+    };
+
+    const _itemHeaderModelObj = {
+      ...itemHeaderModelObj,
+      usage: itemRequestObj.usageType?.value || "",
+    };
+
+    const _itemBodyModelObj = {
+      ...itemBodyModelObj,
+      itemBodyDescription: itemRequestObj.description,
+      taskType: itemRequestObj.taskType,
+      usageIn: itemRequestObj.usageIn,
+      usage: itemRequestObj.usageType,
+      year: itemPriceDataId.year?.value,
+      itemPrices: _itemPrice,
+    };
+
+    console.log("_itemHeaderModelObj ========== ", _itemHeaderModelObj);
+    console.log("_itemBodyModelObj ========== ", _itemBodyModelObj);
+
+    console.log("itemRequestObj ========== ", itemRequestObj);
+    console.log("itemPriceDataId ========== ", itemPriceDataId);
+    console.log("isPortfolioItem ========== ", isPortfolioItem);
+  };
 
   // get Portfolio Item Data
   const handleGetPortfolioItemsData = async (
     isViewModeOn,
     itemRequestObj,
-    itemPriceDataId,
-    isPortfolioItem
+    itemPriceData,
+    isPortfolioItem,
+    isEditable
   ) => {
     try {
+      console.log("isViewModeOn ========== ", isViewModeOn);
+      console.log("itemRequestObj ========== ", itemRequestObj);
+      console.log("itemPriceDataId ========== ", itemPriceData);
+      console.log("isPortfolioItem ========== ", isPortfolioItem);
+      console.log("isEditable ========== ", isEditable);
       if (isPortfolioItem) {
-        if (isViewModeOn) {
+        if (!isViewModeOn) {
           handlePortfolioItemAddUpdate(
             itemRequestObj,
-            itemPriceDataId,
-            isPortfolioItem
+            itemPriceData,
+            isPortfolioItem,
+            isEditable
           );
-          setActiveTab(bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4);
+          // setActiveTab(bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4);
         } else {
-          setActiveTab(bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4);
+          // setActiveTab(bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4);
         }
       }
     } catch (error) {
@@ -441,6 +490,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     }
   };
 
+  // drag and drop files Modal Box
   const dragAndDropFileModal = () => {
     return (
       <Modal
@@ -499,6 +549,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     );
   };
 
+  // Coverage Data Modal
   const viewCoverageModal = () => {
     return (
       <Modal
@@ -631,6 +682,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     );
   };
 
+  // Portfolio Items Modal box
   const viewPortfolioItemTabsModel = () => {
     return (
       <Modal show={showAddItemModal} onHide={hideItemAddUpdateModel} size="xl">
@@ -659,7 +711,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
               <TabPanel value={1}>
                 <ItemAddEdit
                   itemType="portfolioItem"
-                  isEditable={false}
+                  isEditable={editItem}
                   isPortfolioItem={true}
                   bundleServiceNeed={bundleServiceNeed}
                   componentDataTabShow={componentDataTabShow}
@@ -672,6 +724,9 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
                   itemHeaderModelObj={itemHeaderModelObj}
                   itemBodyModelObj={itemBodyModelObj}
                   itemRequestObj={itemRequestObj}
+                  itemId={recorItemId}
+                  portfolioId={portfolioRecordId}
+                  hideItemAddUpdateModel={hideItemAddUpdateModel}
                 />
               </TabPanel>
               <TabPanel value={2}>
@@ -724,8 +779,12 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
                       expandableRowsComponent={(row) => (
                         <ExpendBundleServiceItem
                           bundleServiceRowData={row.data}
+                          priceMethodKeyValuePair={priceMethodKeyValuePair}
+                          priceTypeKeyValuePair={priceTypeKeyValuePair}
                           frequencyKeyValuePairs={frequencyKeyValuePairs}
                           unitKeyValuePairs={unitKeyValuePairs}
+                          existBundleServiceItems={existBundleServiceItems}
+                          bundleServiceItemsList={bundleServiceItemsList}
                         />
                       )}
                       expandOnRowClicked
@@ -1048,7 +1107,18 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
                 </>
               </TabPanel>
               <TabPanel value={4}>
-                <ItemPriceCalculator />
+                <ItemPriceCalculator
+                  priceMethodKeyValuePair={priceMethodKeyValuePair}
+                  priceTypeKeyValuePair={priceTypeKeyValuePair}
+                  priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}
+                  unitKeyValuePairs={unitKeyValuePairs}
+                  frequencyKeyValuePairs={frequencyKeyValuePairs}
+                  currencyKeyValuePair={currencyKeyValuePair}
+                  additionalPriceKeyValuePair={additionalPriceKeyValuePair}
+                  discountTypeKeyValuePair={discountTypeKeyValuePair}
+                  usageTypeKeyValuePair={usageTypeKeyValuePair}
+                  itemId={recorItemId}
+                />
               </TabPanel>
               <TabPanel value={5}>
                 <div
@@ -1078,6 +1148,14 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     );
   };
 
+  //
+  const handleAddItem = () => {
+    setBundleServiceItemsList([]);
+    setExistBundleServiceItems([]);
+    setShowAddItemModal(true);
+  };
+
+  // Item columns
   const itemsColumns = [
     {
       id: "solutionSequence",
@@ -1180,10 +1258,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
         >
           <div>
             <Tooltip title="View">
-              <Link
-                className="px-1 cursor"
-                onClick={() => handleEditItem(row)}
-              >
+              <Link className="px-1 cursor" onClick={() => handleEditItem(row)}>
                 <VisibilityOutlinedIcon />
               </Link>
             </Tooltip>
@@ -1241,6 +1316,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     },
   ];
 
+  // expended bundle/Service item
   const expendItemsColums = [
     {
       id: "ExpendItemIndex",
@@ -1568,7 +1644,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     },
   ];
 
-  // expended Portfolio Bundle/Service Items
+  // expended Portfolio Bundle/Service Items data table component
   const expendPortfolioItems = ({ data }) => (
     <div className="expened-bundle-service-Items-data-table">
       <DataTable
@@ -1581,17 +1657,43 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
     </div>
   );
 
+  // Handle Delete Item
   const handleItemDelete = (row) => {
+    const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + row.itemId;
+    callDeleteApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        // remove selecte row from portfolio items list
+        const _itemsList = itemsList.filter(
+          (item) => item.itemId !== row.itemId
+        );
+        setPortfolioItemsList(_itemsList);
+        // get all itemId form select row item
+        const rowItemIds = [{ itemId: row.itemId }].concat(
+          row.associatedServiceOrBundle.map((item) => ({ itemId: item.itemId }))
+        );
+        // remove all item from portfolioId array list
+        const _portfolioItemsIds = portfolioItemsIds.filter(
+          (item1) => !rowItemIds.some((item2) => item2.itemId === item1.itemId)
+        );
+        setPortfolioItemsIds(_portfolioItemsIds);
+        successMessage("Item delete successfully.");
+      }
+    });
+  };
 
-  }
-
+  // handle Edit item
   const handleEditItem = (row) => {
+    setRecorItemId(row.itemId);
+    setEditItem(true);
+    setBundleServiceItemsList(row["associatedServiceOrBundle"]);
+    setExistBundleServiceItems(row["associatedServiceOrBundle"]);
+    setShowAddItemModal(true);
+  };
 
-  }
-
+  //Item Inclusion|Exclusion Modal show
   const handleItemInclusinExclusion = (row) => {
     setShowInclusionExclusionModal(true);
-  }
+  };
 
   return (
     <>
@@ -1634,7 +1736,7 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
           <div className="p-4 row">
             <div
               className="col-md-6 col-sm-6"
-              onClick={() => setShowAddItemModal(true)}
+              onClick={handleAddItem}
               // onClick={handleNewBundleItem}
             >
               <Link className="add-new-recod cursor">
@@ -1675,10 +1777,21 @@ const PortfolioItemsList = ({ componentDataTabShow, itemsList, optionalServices 
           </div>
         )}
       </div>
-      {dragAndDropFileModal()}
-      {viewCoverageModal()}
-      {viewPortfolioItemTabsModel()}
-      {showInclusionExclusionModal && <InclusionExclusionModal show={showInclusionExclusionModal} hideModal={() => setShowInclusionExclusionModal(false)} optionalServices={optionalServices} />}
+      {showDragAndDropModal && dragAndDropFileModal()}
+      {showCoverageModal && viewCoverageModal()}
+      {showAddItemModal && viewPortfolioItemTabsModel()}
+      {showInclusionExclusionModal && (
+        <InclusionExclusionModal
+          show={showInclusionExclusionModal}
+          hideModal={() => setShowInclusionExclusionModal(false)}
+          showOptionalServicesModal={showOptionalServicesModal}
+          handleOptionalServiceModal={handleOptionalServiceModal}
+          checkedService={checkedService}
+          setCheckedService={setCheckedService}
+          selectedService={selectedService}
+          setSelectedService={setSelectedService}
+        />
+      )}
       {/* {showAddItemModal && <PortfolioItemTabsModal
                 show={showAddItemModal}
                 hideModal={() => setShowAddItemModal(false)}
