@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import { Modal, Dropdown, DropdownButton } from "react-bootstrap";
+import { Modal, Dropdown, DropdownButton, Button } from "react-bootstrap";
 import { FileUploader } from "react-drag-drop-files";
 
 import { DataGrid } from "@mui/x-data-grid";
@@ -68,9 +68,18 @@ import {
 } from "../itemConstant";
 import InclusionExclusionModal from "../common/InclusionExclusionModal";
 import { API_SUCCESS } from "services/ResponseCode";
-import { successMessage } from "../utilities/toastMessage";
-import { callDeleteApi } from "services/ApiCaller";
-import { CREATE_PORTFOLIO_ITEM } from "services/CONSTANTS";
+import { errorMessage, successMessage } from "../utilities/toastMessage";
+import {
+  callDeleteApi,
+  callGetApi,
+  callPostApi,
+  callPutApi,
+} from "services/ApiCaller";
+import {
+  CREATE_PORTFOLIO_ITEM,
+  PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+} from "services/CONSTANTS";
+import { updateItemPriceSjRkId } from "./SJRKIdUpdate";
 
 const fileTypes = ["JPG", "PNG", "GIF"];
 
@@ -200,63 +209,6 @@ const coverageColumns = [
   },
 ];
 
-const bundleServiceItemsColumns = [
-  {
-    id: "itemName",
-    name: "Name",
-    selector: (row) => row.itemName,
-    sortable: false,
-    wrap: true,
-  },
-  {
-    id: "itemDescription",
-    name: "Description",
-    selector: (row) => row.itemDescription,
-    sortable: false,
-    wrap: true,
-  },
-  {
-    id: "itemHeaderStrategy",
-    name: "Strategy",
-    selector: (row) => row.itemHeaderStrategy,
-    sortable: false,
-    wrap: true,
-  },
-  {
-    id: "taskType",
-    name: "Task Type",
-    selector: (row) => row.taskType,
-    sortable: false,
-    wrap: true,
-  },
-  {
-    id: "quantity",
-    name: "Quantity",
-    selector: (row) => (isEmpty(row.quantity) ? 1 : row.quantity),
-    sortable: false,
-    wrap: true,
-  },
-  {
-    id: "recommendedValue",
-    name: "Recommended Value",
-    selector: (row) => row.recommendedValue,
-    sortable: false,
-    wrap: true,
-  },
-  {
-    id: "templateKitId",
-    name: "Template/Kit ID",
-    selector: (row) =>
-      !isEmpty(row?.standardJobId)
-        ? row?.standardJobId
-        : !isEmpty(row?.repairKitId)
-        ? row?.repairKitId
-        : "NA",
-    sortable: false,
-    wrap: true,
-  },
-];
-
 const PortfolioItemsList = (props) => {
   const {
     componentDataTabShow,
@@ -275,6 +227,7 @@ const PortfolioItemsList = (props) => {
     setCheckedService,
     selectedService,
     setSelectedService,
+    handleUpdatePortfolio,
   } = props;
 
   const dispatch = useDispatch();
@@ -294,6 +247,8 @@ const PortfolioItemsList = (props) => {
   const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
   const [bundleServiceItemsList, setBundleServiceItemsList] = useState([]);
   const [existBundleServiceItems, setExistBundleServiceItems] = useState([]);
+
+  const [reviewTabItemList, setReviewTabItemList] = useState([]);
 
   const [showInclusionExclusionModal, setShowInclusionExclusionModal] =
     useState(false);
@@ -356,6 +311,335 @@ const PortfolioItemsList = (props) => {
     }
   }, [showAddItemModal]);
 
+  // bundle service Items columns
+  const bundleServiceItemsColumns = [
+    {
+      id: "itemName",
+      name: "Name",
+      selector: (row) => row.itemName,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "itemDescription",
+      name: "Description",
+      selector: (row) => row.itemDescription,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "itemHeaderStrategy",
+      name: "Strategy",
+      selector: (row) => row.itemHeaderStrategy,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "taskType",
+      name: "Task Type",
+      selector: (row) => row.taskType,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "quantity",
+      name: "Quantity",
+      selector: (row) => (isEmpty(row.quantity) ? 1 : row.quantity),
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "recommendedValue",
+      name: "Recommended Value",
+      selector: (row) => row.recommendedValue,
+      sortable: false,
+      wrap: true,
+    },
+    {
+      id: "templateKitId",
+      name: "Template/Kit ID",
+      selector: (row) =>
+        !isEmpty(row?.standardJobId)
+          ? row?.standardJobId
+          : !isEmpty(row?.repairKitId)
+          ? row?.repairKitId
+          : "NA",
+      sortable: false,
+      wrap: true,
+    },
+  ];
+
+  // review tab columns
+  const reviewTabColumns = [
+    {
+      id: "select",
+      name: <div>Select</div>,
+      cell: (row) => (
+        <input
+          type="radio"
+          name="selectedId"
+          className="cursor"
+          // value={row.itemId}
+          // checked={tempBundleItemCheckList[row.itemId]}
+          onChange={(e) => reviewTabItemSelection(e, row)}
+          style={{ border: "1px solid #000" }}
+        />
+      ),
+      wrap: true,
+      sortable: false,
+      allowOverflow: true,
+      button: true,
+      maxWidth: "53px",
+      minWidth: "53px",
+    },
+    {
+      id: "solutionSequence",
+      name: (
+        <div className="d-flex align-items-baseline">
+          <span className="portfolio-icon mr-1">
+            <svg
+              style={{ width: "11px" }}
+              id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 119.30736 133.59966"
+            >
+              <path
+                className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+              />
+            </svg>
+          </span>
+          <p className="mb-0 font-size-12 font-weight-500">Solution Sequence</p>
+        </div>
+      ),
+      cell: (row, i) => <div>{(i + 1) * 10}</div>,
+      format: (row, i) => <div>{(i + 1) * 10}</div>,
+      wrap: true,
+      sortable: false,
+      minWidth: "100px",
+      maxWidth: "100px",
+    },
+    {
+      id: "itemName",
+      name: "Solution Id",
+      cell: (row) => row.itemName,
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "itemDescription",
+      name: "Solution Description",
+      cell: (row) => row.itemDescription,
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "itemHeaderStrategy",
+      name: "Strategy",
+      cell: (row) => row.itemHeaderStrategy,
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "taskType",
+      name: "Task Type",
+      cell: (row) => row.taskType,
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+
+    {
+      id: "quantity",
+      name: "Quantity",
+      cell: (row) => (isEmpty(row.quantity) ? 1 : row.quantity),
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "recommendedValue",
+      name: "Recommended Value",
+      cell: (row) => row.recommendedValue,
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "servicePrice",
+      name: "Service Price",
+      cell: (row) => row.servicePrice,
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "sparePartsPrice",
+      name: "Parts Price",
+      cell: (row) => row.sparePartsPrice,
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "calculatedPrice",
+      name: "Total $",
+      cell: (row) => row.calculatedPrice,
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "comments",
+      name: "Comments",
+      selector: "comments",
+      format: (row) => row.comments || "",
+    },
+  ];
+
+  // expended review Tab Items columns
+  const expendReviewTabColumns = [
+    {
+      id: "select",
+      name: "",
+      cell: () => null,
+    },
+    {
+      name: (
+        <div className="d-flex align-items-baseline">
+          <span className="portfolio-icon mr-1">
+            <svg
+              style={{ width: "11px" }}
+              id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 119.30736 133.59966"
+            >
+              <path
+                className="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9"
+                d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"
+              />
+            </svg>
+          </span>
+          <p className="mb-0 font-size-12 font-weight-500">Solution Sequence</p>
+        </div>
+      ),
+      cell: (row) => row.itemId,
+      format: (row, i) => row.itemId,
+      wrap: true,
+      sortable: false,
+      minWidth: "100px",
+      maxWidth: "100px",
+    },
+    {
+      id: "bundleId",
+      name: "Bundle Id",
+      cell: (row) => row.itemName,
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "bundleDescription",
+      name: "Bundle Description",
+      cell: (row) => row.itemDescription || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "bundleStrategy",
+      name: "Strategy",
+      cell: (row) => row.itemHeaderStrategy || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "bundleStandardJobId",
+      name: "Standard Job Id",
+      cell: (row) => row.standardJobId || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "bundleRepairOption",
+      name: "Repair Option",
+      cell: (row) => row?.repairKitId || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "bundleFrequency",
+      name: "Frequency",
+      cell: (row) => row?.frequency || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "bundleNumberOfEvents",
+      name: "No. of Events",
+      cell: (row) => row?.numberOfEvents || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "150px",
+      maxWidth: "150px",
+    },
+    {
+      id: "bundleSparePartsPrice",
+      name: "Part $",
+      cell: (row) => row?.sparePartsPrice || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "bundleServicePrice",
+      name: "Service $",
+      cell: (row) => row?.servicePrice || "",
+      wrap: true,
+      sortable: false,
+      minWidth: "120px",
+      maxWidth: "120px",
+    },
+    {
+      id: "bundleCalculatedPrice",
+      name: "Total $",
+      cell: (row) => row?.calculatedPrice || "",
+      wrap: true,
+      sortable: false,
+      // minWidth: "120px",
+      // maxWidth: "120px",
+    },
+    {
+      name: "Comments",
+      cell: (row) => row?.comments || "",
+      wrap: true,
+      sortable: false,
+    },
+  ];
+
   // drag-&-drop file modal box show|hide
   const handleDragAndDropModal = () => {
     setShowDragAndDropModal(!showDragAndDropModal);
@@ -390,104 +674,433 @@ const PortfolioItemsList = (props) => {
     setSearchBundleServiceItem(items);
   };
 
+  // Add Searched Service and bundle Items
   const addSelectedSearchedItems = () => {
-    let _portfolioItemsArr = [];
+    const _portfolioItemsIds = [...portfolioItemsIds];
     const _bundleServiceItemsList = [...bundleServiceItemsList];
     selectedSearchedItems.map((itemRow, i) => {
       const exist = bundleServiceItemsList.some(
         (item) => item.itemId === itemRow.itemId
       );
       if (!exist) {
-        _portfolioItemsArr.push({ itemId: itemRow.itemId });
+        _portfolioItemsIds.push({ itemId: itemRow.itemId });
         _bundleServiceItemsList.push(itemRow);
       }
     });
     setBundleServiceItemsList(_bundleServiceItemsList);
+    setPortfolioItemsIds(_portfolioItemsIds);
     handleAddSearchItems([]);
   };
 
-  // handle Item Create/Update
-  const handlePortfolioItemAddUpdate = async (
-    itemRequestObj,
-    itemPriceDataId,
-    isPortfolioItem
-  ) => {
-    const _itemPrice = [...itemBodyModelObj.itemPrices];
-    if (
-      !_itemPrice.some( (obj) => obj.itemPriceDataId === itemPriceDataId.itemPriceDataId) &&
-       
-      
-      !isEmpty(itemPriceDataId.itemPriceDataId)
-    ) {
-      _itemPrice.push({ itemPriceDataId: itemPriceDataId.itemPriceDataId });
+  // get selected Bundle|Service item details
+  const handleGetBundleServiceItemData = async (bundleServiceItemId) => {
+    console.log("bundleServiceItemId ", bundleServiceItemId);
+    const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceItemId;
+    await callGetApi(
+      null,
+      rUrl,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          const { itemId, itemName, itemHeaderModel, itemBodyModel } =
+            response.data;
+          const _portfolioItemIds = [...itemHeaderModel["portfolioItemIds"]];
+          _portfolioItemIds.push(recorItemId);
+          const requestObj = {
+            itemId: itemId,
+            itemName: itemName,
+            itemHeaderModel: {
+              ...itemHeaderModel,
+              portfolioItemIds: _portfolioItemIds,
+              bundleFlag: itemHeaderModel.bundleFlag,
+            },
+            itemBodyModel: {
+              ...itemBodyModel,
+            },
+          };
+
+          console.log("============ requestObj ", requestObj);
+          handleUpdateBundleServiceItem(bundleServiceItemId, requestObj)
+            .then((res) => {
+              return true;
+              // resolve(res);
+            })
+            .catch((error) => {
+              return false;
+              // resolve(false);
+            });
+        } else {
+          return false;
+          // resolve(false);
+        }
+      },
+      (error) => {
+        return false;
+        // resolve(false);
+      }
+    );
+
+    // return new Promise((resolve, reject) => {
+    //   const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + bundleServiceItemId;
+    // });
+  };
+
+  // update selected Bundle|Service item
+  const handleUpdateBundleServiceItem = async (itemId, requestObj) => {
+    const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + itemId;
+    callPutApi(
+      null,
+      rUrl,
+      requestObj,
+      (response) => {
+        if (response.status === API_SUCCESS) {
+          return true;
+          // resolve(true);
+        } else {
+          return false;
+          // resolve(false);
+        }
+      },
+      (error) => {
+        return false;
+        // resolve(false);
+      }
+    );
+    // return new Promise((resolve, reject) => {
+    // });
+  };
+
+  // go through with selected bundle and Service on save & Continue
+  const handleContinueWithSelectebundleService = () => {
+    try {
+      if (isEmpty(portfolioRecordId)) {
+        errorMessage("Create Portfolio First, then you can Add Items");
+      }
+
+      const selectedItemsLength = bundleServiceItemsList.length;
+      const existItemsLength = existBundleServiceItems.length;
+      const _portfolioItemsIds = [...portfolioItemsIds];
+
+      console.log("selectedItemsLength ==== ", bundleServiceItemsList);
+      for (let i = 0; i < selectedItemsLength; i++) {
+        handleGetBundleServiceItemData(bundleServiceItemsList[i].itemId).then(
+          (res) => {
+            _portfolioItemsIds.push({
+              itemId: bundleServiceItemsList[i].itemId,
+            });
+          }
+        );
+      }
+
+      const removeDuplicateIds = _portfolioItemsIds.filter((obj, i, self) => {
+        return (
+          i ===
+          self.findIndex(
+            (item) => item.itemId === obj.itemId // Compare object properties for uniqueness
+          )
+        );
+      });
+      setPortfolioItemsIds(removeDuplicateIds);
+      if (selectedItemsLength === existItemsLength) {
+        // check Component data tab is visiable
+        if (componentDataTabShow) {
+          setActiveTab(3);
+        } else {
+          setActiveTab(4);
+        }
+      } else {
+        handleAddUpdatePortfolioItem(
+          true,
+          itemRequestObj,
+          itemHeaderModelObj,
+          itemBodyModelObj
+        )
+          .then((res) => {
+            if (res) {
+              handleUpdatePortfolio(_portfolioItemsIds).then((res) => {
+                if (res) {
+                  handleReviewTabTableData(removeDuplicateIds);
+                  if (componentDataTabShow) {
+                    setActiveTab(3);
+                  } else {
+                    setActiveTab(4);
+                  }
+                } else {
+                  errorMessage("Something Went Wrong");
+                }
+              });
+            } else {
+              errorMessage("Something Went Wrong");
+            }
+          })
+          .catch((error) => {
+            return;
+          });
+      }
+    } catch (error) {
+      return;
     }
-    const requestObj = {
-      itemId: itemRequestObj.itemId,
-      itemName: itemRequestObj.name,
-      itemHeaderModal: {
-        ...itemHeaderModelObj,
-        itemHeaderDescription: itemRequestObj.description,
-        usage: itemRequestObj.usageType?.value || "",
-      },
-      itemBodyModelObj: {
-        ...itemBodyModelObj,
-        itemBodyDescription: itemRequestObj.itemBodyDescription,
-      },
-    };
+  };
 
-    const _itemHeaderModelObj = {
-      ...itemHeaderModelObj,
-      usage: itemRequestObj.usageType?.value || "",
-    };
+  // get Review Tab Table data list
+  const handleReviewTabTableData = async (itemIds = []) => {
+    if (itemIds.length !== 0) {
+      let rUrl = PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE;
+      const shortedItems = itemIds.sort(
+        (itemA, itemB) => itemA.itemId - itemB.itemId
+      );
+      rUrl =
+        rUrl + shortedItems.map((item) => `itemIds=${item.itemId}`).join("&");
+      await callGetApi(null, rUrl, (response) => {
+        if (response.status === API_SUCCESS) {
+          const res = response.data;
+          const _reviewTabItems = [];
 
-    const _itemBodyModelObj = {
-      ...itemBodyModelObj,
-      itemBodyDescription: itemRequestObj.description,
-      taskType: itemRequestObj.taskType,
-      usageIn: itemRequestObj.usageIn,
-      usage: itemRequestObj.usageType,
-      year: itemPriceDataId.year?.value,
-      itemPrices: _itemPrice,
-    };
+          res.map((data) => {
+            let portfolioBundleService = []; // Create a new array for each data object
 
-    console.log("_itemHeaderModelObj ========== ", _itemHeaderModelObj);
-    console.log("_itemBodyModelObj ========== ", _itemBodyModelObj);
+            for (let i = 0; i < data.bundleItems.length; i++) {
+              portfolioBundleService.push(data.bundleItems[i]);
+            }
 
-    console.log("itemRequestObj ========== ", itemRequestObj);
-    console.log("itemPriceDataId ========== ", itemPriceDataId);
-    console.log("isPortfolioItem ========== ", isPortfolioItem);
+            for (let j = 0; j < data.serviceItems.length; j++) {
+              portfolioBundleService.push(data.serviceItems[j]);
+            }
+
+            if (
+              data.portfolioItem &&
+              Object.keys(data.portfolioItem).length !== 0
+            ) {
+              _reviewTabItems.push({
+                ...data.portfolioItem,
+                associatedServiceOrBundle: portfolioBundleService,
+              });
+            }
+          });
+          setReviewTabItemList(_reviewTabItems);
+        }
+      });
+    }
+  };
+
+  // handle Item Create/Update
+  const handleAddUpdatePortfolioItem = (
+    isEditable,
+    itemRequestObj,
+    itemHeaderReqObj,
+    itemBodyReqObj
+  ) => {
+    return new Promise((resolve, reject) => {
+      let rUrl = CREATE_PORTFOLIO_ITEM();
+      if (isEditable) {
+        // rUrl = rUrl + "/" + itemRequestObj.itemId;
+        rUrl = rUrl + "/" + recorItemId;
+      }
+
+      const requestObj = {
+        itemId: itemRequestObj.itemId,
+        itemName: itemRequestObj.itemName,
+        itemHeaderModel: {
+          ...itemHeaderReqObj,
+          usage: itemHeaderReqObj.usage?.value || itemHeaderReqObj.usage || "",
+          bundleFlag: "PORTFOLIO",
+          type: itemHeaderReqObj.type || "EMPTY",
+        },
+        itemBodyModel: {
+          ...itemBodyReqObj,
+          // itemBodyDescription: itemBodyReqObj.itemBodyDescription,
+          taskType: [itemBodyReqObj.taskType?.value || "EMPTY"],
+          usageIn:
+            itemBodyReqObj.usageIn?.value || itemBodyReqObj.usageIn || "",
+          usage: itemBodyReqObj.usage?.value || itemBodyReqObj.usage || "",
+          year: itemBodyReqObj.year?.value || itemBodyReqObj.year || "",
+          // itemPrices: _itemPrice,
+        },
+      };
+
+      console.log("item request obj ======= ", requestObj);
+
+      if (isEditable) {
+        callPutApi(
+          null,
+          rUrl,
+          requestObj,
+          (response) => {
+            if (response.status === API_SUCCESS) {
+              resolve(true);
+            } else {
+              resolve(false);
+              errorMessage(response?.data.message);
+            }
+          },
+          (error) => {
+            resolve(false);
+          }
+        );
+      } else {
+        callPostApi(
+          null,
+          rUrl,
+          requestObj,
+          (response) => {
+            console.log(" item creation response :: ", response);
+            if (response.status === API_SUCCESS) {
+              const res = response.data;
+              const _portfolioItemsIds = [...portfolioItemsIds];
+              _portfolioItemsIds.push({ itemId: res.itemId });
+              setPortfolioItemsIds(_portfolioItemsIds);
+              setItemRequestObj({ ...itemRequestObj, itemId: res.itemId });
+              setRecorItemId(res.itemId);
+              // updateItemPriceSjRkId({
+              //   standardJobId: itemPriceObj.standardJobId,
+              //   repairKitId: itemPriceObj.repairKitId,
+              //   itemId: itemId,
+              //   itemPriceDataId:
+              //     itemBodyData.itemPrices[itemBodyData.itemPrices.length - 1]
+              //       .itemPriceDataId,
+              // });
+              resolve(true);
+            } else {
+              resolve(false);
+              errorMessage(response?.data.message);
+            }
+          },
+          (error) => {
+            resolve(false);
+          }
+        );
+      }
+    });
   };
 
   // get Portfolio Item Data
   const handleGetPortfolioItemsData = async (
     isViewModeOn,
-    itemRequestObj,
+    itemRecordObj,
     itemPriceData,
     isPortfolioItem,
     isEditable
   ) => {
     try {
-      console.log("isViewModeOn ========== ", isViewModeOn);
-      console.log("itemRequestObj ========== ", itemRequestObj);
-      console.log("itemPriceDataId ========== ", itemPriceData);
-      console.log("isPortfolioItem ========== ", isPortfolioItem);
-      console.log("isEditable ========== ", isEditable);
       if (isPortfolioItem) {
+        const _itemPrice = [...itemBodyModelObj.itemPrices];
+        if (
+          !_itemPrice.some(
+            (obj) => obj.itemPriceDataId === itemPriceData.itemPriceDataId
+          ) &&
+          !isEmpty(itemPriceData.itemPriceDataId)
+        ) {
+          _itemPrice.push({ itemPriceDataId: itemPriceData.itemPriceDataId });
+        }
+
+        // set Item basic details
+        const _itemRequestObj = {
+          ...itemRequestObj,
+          itemName: itemRecordObj.name,
+        };
+        setItemRequestObj({ ..._itemRequestObj });
+
+        // set item header modal Obj Value
+        const _itemHeaderModelObj = {
+          ...itemHeaderModelObj,
+          itemHeaderDescription: itemRecordObj.description,
+          usage: itemRecordObj.usageType?.value || "",
+          itemHeaderStrategy: itemRecordObj?.strategyTask?.value || "EMPTY",
+        };
+        setItemHeaderModelObj({ ..._itemHeaderModelObj });
+
+        // set item body modal obj value
+        const _itemBodyModelObj = {
+          ...itemBodyModelObj,
+          itemBodyDescription: itemRecordObj.description,
+          taskType: itemRecordObj.taskType,
+          usageIn: itemRecordObj.usageIn,
+          usage: itemRecordObj.usageType,
+          year: itemPriceData.year?.value,
+          itemPrices: _itemPrice,
+        };
+        setItemBodyModelObj({ ..._itemBodyModelObj });
+
+        // const sjRkIdRequestObj = {
+        //   standardJobId: itemPriceData.standardJobId,
+        //   repairKitId: itemPriceData.repairKitId,
+        //   itemId: itemId,
+        //   itemPriceDataId: itemPriceData.itemPriceDataId,
+        // };
+
         if (!isViewModeOn) {
-          handlePortfolioItemAddUpdate(
-            itemRequestObj,
-            itemPriceData,
-            isPortfolioItem,
-            isEditable
-          );
-          // setActiveTab(bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4);
+          handleAddUpdatePortfolioItem(
+            isEditable,
+            _itemRequestObj,
+            _itemHeaderModelObj,
+            _itemBodyModelObj
+          ).then((res) => {
+            if (res) {
+              setActiveTab(
+                bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4
+              );
+            }
+          });
         } else {
-          // setActiveTab(bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4);
+          setActiveTab(bundleServiceNeed ? 2 : componentDataTabShow ? 3 : 4);
         }
       }
     } catch (error) {
       return;
     }
+  };
+
+  // Save item price changes
+  const handleSaveItemPriceChanges = async (
+    requestItemObj,
+    headerModelObj,
+    bodyModelObj
+  ) => {
+    // set item header modal obj
+    const _itemHeaderModelObj = {
+      ...itemHeaderModelObj,
+      usage: headerModelObj.usage?.value || headerModelObj.usage || "",
+      currency: headerModelObj.currency?.value || headerModelObj.currency || "",
+      type: headerModelObj.type || "EMPTY",
+    };
+    setItemHeaderModelObj({ ..._itemHeaderModelObj });
+
+    // set item body modal obj
+    const _itemBodyModelObj = {
+      ...itemBodyModelObj,
+      usage: bodyModelObj.usage?.value || bodyModelObj.usage || "",
+      year: bodyModelObj.year?.value || bodyModelObj.year || "",
+    };
+    setItemBodyModelObj({ ..._itemBodyModelObj });
+
+    const requestObj = {
+      ...itemRequestObj,
+      itemHeaderModel: {
+        ...itemHeaderModelObj,
+        usage: headerModelObj.usage?.value || headerModelObj.usage || "",
+        currency:
+          headerModelObj.currency?.value || headerModelObj.currency || "",
+        type: headerModelObj.type || "EMPTY",
+      },
+      itemBodyModel: {
+        ...itemBodyModelObj,
+        taskType: [
+          itemBodyModelObj?.taskType?.value ||
+            itemBodyModelObj?.taskType ||
+            "EMPTY",
+        ],
+        usageIn:
+          itemBodyModelObj?.usageIn?.value || itemBodyModelObj?.usageIn || "",
+        usage: bodyModelObj.usage?.value || bodyModelObj.usage || "",
+        year: bodyModelObj.year?.value || bodyModelObj.year || "",
+      },
+    };
+
+    const rUrl = CREATE_PORTFOLIO_ITEM() + "/" + recorItemId;
+    callPutApi(null, rUrl, requestObj, (response) => {
+      if (response.status === API_SUCCESS) {
+        setActiveTab(5);
+      }
+    });
   };
 
   // drag and drop files Modal Box
@@ -796,7 +1409,7 @@ const PortfolioItemsList = (props) => {
                       <button
                         type="button"
                         className="btn bg-primary text-white"
-                        // onClick={handleContinueOfAddedServiceOrBundle}
+                        onClick={handleContinueWithSelectebundleService}
                       >
                         Save & Continue
                       </button>
@@ -1118,6 +1731,8 @@ const PortfolioItemsList = (props) => {
                   discountTypeKeyValuePair={discountTypeKeyValuePair}
                   usageTypeKeyValuePair={usageTypeKeyValuePair}
                   itemId={recorItemId}
+                  isEditable={editItem}
+                  handleSavePriceChanges={handleSaveItemPriceChanges}
                 />
               </TabPanel>
               <TabPanel value={5}>
@@ -1126,27 +1741,55 @@ const PortfolioItemsList = (props) => {
                   style={{ height: 400, width: "100%" }}
                 >
                   <DataTable
-                  // title=""
-                  // columns={tempBundleItemColumns}
-                  // expandableRowExpanded={(row) => (row === currentExpendModelComponentRow)}
-                  // expandOnRowClicked
-                  // onRowClicked={(row) => setCurrentExpendModelComponentRow(row)}
-                  // data={tempBundleItems}
-                  // customStyles={dataTableCustomStyle}
-                  // expandableRows
-                  // expandableRowsComponent={ReviewModalTabExpendableBundleServiceItems}
-                  // onRowExpandToggled={(bool, row) => setCurrentExpendModelComponentRow(row)}
-                  // expandableRowStyles={{ background: '#7f0606',}}
-                  // pagination
+                    columns={reviewTabColumns}
+                    data={reviewTabItemList}
+                    expandableRows={true}
+                    expandOnRowClicked
+                    expandableRowsComponent={viewReviewTabExpendedItems}
+                    customStyles={dataTableCustomStyle}
+                    pagination
                   />
                 </div>
               </TabPanel>
             </TabContext>
           </Box>
         </Modal.Body>
+        <Modal.Footer>
+          {activeTab === 5 && (
+            // <Button variant="primary" onClick={addTempItemIntobundleItem}>
+            <Button variant="primary" onClick={handleAddReviewTabItem}>
+              {/* {bundleServiceEditModeOn ? (Object.keys(tempBundleItemCheckList).length > 0 && tempBundleItemCheckList.selectedId !== currentItemId) ? "Add Selected" : "Close" : "Add Selected"} */}
+              Add Selected
+            </Button>
+          )}
+        </Modal.Footer>
       </Modal>
     );
   };
+
+  // Review Tab expend items
+  const viewReviewTabExpendedItems = ({ data }) => {
+    return (
+      <div style={{ paddingTop: "8px" }}>
+        <DataTable
+          columns={expendReviewTabColumns}
+          data={data.associatedServiceOrBundle}
+          customStyles={dataTableCustomStyle}
+          pagination={false}
+        />
+      </div>
+    );
+  };
+
+  // Review tab item selection
+  const reviewTabItemSelection = (e, row) => {
+    console.log("review tab item selection row :: ", row);
+  };
+
+  const handleAddReviewTabItem = () => {
+    setPortfolioItemsList([...reviewTabItemList]);
+    hideItemAddUpdateModel();
+  }
 
   //
   const handleAddItem = () => {
@@ -1683,6 +2326,7 @@ const PortfolioItemsList = (props) => {
 
   // handle Edit item
   const handleEditItem = (row) => {
+    setReviewTabItemList([...itemsList]);
     setRecorItemId(row.itemId);
     setEditItem(true);
     setBundleServiceItemsList(row["associatedServiceOrBundle"]);

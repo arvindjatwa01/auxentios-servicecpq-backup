@@ -99,6 +99,7 @@ export const PortfolioSummary = () => {
   const [itemFlag, setItemFlag] = useState("");
   const [itemId, setItemId] = useState(null);
   const [showLoader, setShowLoader] = useState(false);
+  const [itemEditModeOn, setItemEditModeOn] = useState(false)
 
   useEffect(() => {
     setShowLoader(true);
@@ -310,11 +311,13 @@ export const PortfolioSummary = () => {
     if (!showBundleServiceModel) {
       setItemId(null);
       setItemFlag("");
+      setItemEditModeOn(false);
     }
   }, [showBundleServiceModel]);
 
   // view Bundle/Service Details
   const viewBundleServiceDetails = (row) => {
+    setItemEditModeOn(true);
     setItemId(row.itemId);
     setItemFlag(row.bundleFlag === "SERVICE" ? "SERVICE" : "BUNDLE");
     setShowBundleServiceModel(true);
@@ -334,6 +337,7 @@ export const PortfolioSummary = () => {
       setItemFlag(e.value);
       setShowBundleServiceModel(true);
       setItemId(null);
+      setItemEditModeOn(false)
     }
   };
 
@@ -1275,6 +1279,8 @@ export const PortfolioSummary = () => {
           itemVersionKeyValuePairs={itemVersionKeyValuePairs}
           itemStatusKeyValuePairs={itemStatusKeyValuePairs}
           itemId={itemId}
+          setItemId={setItemId}
+          itemEditModeOn={itemEditModeOn}
           frequencyKeyValuePairs={frequencyKeyValuePairs}
           unitKeyValuePairs={unitKeyValuePairs}
           priceHeadTypeKeyValuePair={priceHeadTypeKeyValuePair}

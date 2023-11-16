@@ -480,6 +480,9 @@ const ItemAddEdit = (props) => {
           "Recommended Value is a required field, you can’t leave it blank"
         );
         return false;
+      } else if (parseInt(itemPriceRequestObj.recommendedValue) < 0) {
+        errorMessage("Recommended Value must not be negative");
+        return false;
       }
       return true;
     }
@@ -504,7 +507,9 @@ const ItemAddEdit = (props) => {
         isEmpty(itemPriceRequestObj.usageUnit) ||
         isEmpty(itemPriceRequestObj.recommendedValue)
       ) {
-        errorMessage("Somthing went wrong at Item Summary Tab, Please fill data properly");
+        errorMessage(
+          "Somthing went wrong at Item Summary Tab, Please fill data properly"
+        );
         return false;
       }
       return true;
@@ -515,14 +520,14 @@ const ItemAddEdit = (props) => {
   // Common function for item price add/Edit/ view
   const handleItemAddUpdateAction = async () => {
     try {
-      if (isEditable) {
+      if (editItemData) {
         // if Editable true,then we on call get API not Put/Post are acceptable
         handleGetPortfolioItemsData(
           editItemData,
           itemRequestObj,
           itemPriceRequestObj,
           isPortfolioItem,
-          isEditable
+          editItemData
         );
       } else {
         handleAddUpdateItemPrice(false).then((itemPriceData) => {
@@ -531,7 +536,7 @@ const ItemAddEdit = (props) => {
             itemRequestObj,
             itemPriceData,
             isPortfolioItem,
-            isEditable
+            editItemData
           );
         });
       }
@@ -1095,7 +1100,10 @@ const ItemAddEdit = (props) => {
                         placeholder="No. of Years"
                         name="noOfYear"
                         value={itemRequestObj.noOfYear}
-                        onChange={(e) => {handleInputTextChange(e); handlePriceInputChange(e)}}
+                        onChange={(e) => {
+                          handleInputTextChange(e);
+                          handlePriceInputChange(e);
+                        }}
                       />
                     </div>
                   </div>
