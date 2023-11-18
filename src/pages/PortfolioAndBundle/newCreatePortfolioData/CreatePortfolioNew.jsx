@@ -405,6 +405,20 @@ export const CreatePortfolio = (props) => {
 
   // map and set Selected Portfolio details
   const intilisePortfolioDetails = (recordData) => {
+
+    // set Portfolio Support Level 
+    const _portfolioSupportLevel = supportLevelKeyValuePair.find(
+      (obj) => obj.value === recordData.supportLevel
+    );
+    setPortfolioSupportLevel(_portfolioSupportLevel || "");
+
+    // set Portfolio Status
+    const _portfolioStatus = portfolioStatusKeyValuePair.find(
+      (obj) => obj.value === recordData.status
+    );
+    setPortfolioStatus(_portfolioStatus || "");
+    // setIsActivePortfolio={setIsActivePortfolio}
+
     // set Portfolio Tab Edit Mode true
     setPortfolioTabsEditView({
       generalTabEdit: true,
@@ -610,13 +624,15 @@ export const CreatePortfolio = (props) => {
               portfolioBundleService.push(data.serviceItems[j]);
             }
 
-            if(data.portfolioItem &&
-              Object.keys(data.portfolioItem).length !== 0){
-                _portfolioItems.push({
-                  ...data.portfolioItem,
-                  associatedServiceOrBundle: portfolioBundleService,
-                });
-              }
+            if (
+              data.portfolioItem &&
+              Object.keys(data.portfolioItem).length !== 0
+            ) {
+              _portfolioItems.push({
+                ...data.portfolioItem,
+                associatedServiceOrBundle: portfolioBundleService,
+              });
+            }
           });
           setPortfolioItemsList(_portfolioItems);
         }
@@ -2678,7 +2694,7 @@ export const CreatePortfolio = (props) => {
       if (selectedService.length !== 0) {
         _optionalServices = selectedService.map((obj) => obj.itemId).join(",");
       }
-      console.log("handleUpdatePortfolioOnItem itemIds ====== ", itemIds)
+      console.log("handleUpdatePortfolioOnItem itemIds ====== ", itemIds);
       let requestObj = {
         portfolioId: portfolioRecordId,
         headerType: generalTabData.headerType?.value || "",
@@ -2686,13 +2702,13 @@ export const CreatePortfolio = (props) => {
         description: generalTabData.description,
         externalReference: generalTabData.externalReference,
         customerSegment: generalTabData.customerSegment?.value || "",
-  
+
         validFrom: validityTabData.validFrom,
         validTo: validityTabData.validTo,
         startUsage: validityTabData.fromInput,
         endUsage: validityTabData.toInput,
         unit: validityTabData.from?.value || "EMPTY",
-  
+
         usageCategory: strategyTabData.categoryUsage?.value || "EMPTY",
         strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
         taskType: strategyTabData.taskType?.value || "EMPTY",
@@ -2700,13 +2716,13 @@ export const CreatePortfolio = (props) => {
         responseTime: strategyTabData.responseTime?.value || "EMPTY",
         productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
         geographic: strategyTabData.geographic?.value || "EMPTY",
-  
+
         portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
           ? null
           : {
               portfolioPriceId: priceTabData.portfolioPriceId,
             },
-  
+
         preparedBy: administrativeTabData.preparedBy,
         approvedBy: administrativeTabData.approvedBy,
         preparedOn: administrativeTabData.preparedOn,
@@ -2714,13 +2730,13 @@ export const CreatePortfolio = (props) => {
         revisedOn: administrativeTabData.revisedOn,
         salesOffice: administrativeTabData.salesOffice?.value || "",
         offerValidity: administrativeTabData.preparedBy?.value || "",
-  
+
         items: itemIds.length !== 0 ? itemIds : portfolioItemsIds,
         coverages: portfolioCoverageIds,
-  
+
         status: portfolioStatus?.value,
         supportLevel: portfolioSupportLevel?.value,
-  
+
         machineType: "EMPTY",
         searchTerm: "",
         lubricant: true,
@@ -2737,18 +2753,24 @@ export const CreatePortfolio = (props) => {
         template: true,
         visibleInCommerce: true,
       };
-  
+
       let rUrl = PORTFOLIO_URL() + "/" + portfolioRecordId;
-      callPutApi(null, rUrl, requestObj, (response) => {
-        if(response.status === API_SUCCESS){
-          resolve(true);
-        }else{
+      callPutApi(
+        null,
+        rUrl,
+        requestObj,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        },
+        (error) => {
           resolve(false);
         }
-      }, (error) => {
-        resolve(false);
-      })
-    })
+      );
+    });
   };
 
   // handle next Click for Portfolio Create/Update

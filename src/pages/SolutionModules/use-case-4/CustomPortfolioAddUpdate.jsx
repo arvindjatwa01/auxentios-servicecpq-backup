@@ -17,7 +17,7 @@ import {
   isEmpty,
   isEmptySelect,
 } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/textUtilities";
-import { Box, Tab } from "@mui/material";
+import { Box, FormControlLabel, FormGroup, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -58,6 +58,12 @@ import {
 import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/dateUtilities";
 import { sparePartSearch } from "services/searchServices";
 import { FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
+import SearchInputBox from "./useCase4Common/SearchInputBox";
+import { SEARCH_CUSTOMER } from "services/CONSTANTS";
+import { callGetApi } from "services/ApiCaller";
+import { API_SUCCESS } from "services/ResponseCode";
+import { Switch } from "@material-ui/core";
+import CustomPortfolioItemsList from "./customPortfolioItems/CustomPortfolioItemsList";
 
 const CustomPortfolioAddUpdate = () => {
   const history = useHistory();
@@ -128,13 +134,23 @@ const CustomPortfolioAddUpdate = () => {
   );
   const [currencyKeyValuePair, setCurrencyKeyValuePair] = useState([]);
 
+  const [customerSearchResult, setCustomerSearchResult] = useState([]);
+  const [customerSearchNoOptions, setCustomerSearchNoOptions] = useState(false);
   const [generalTabData, setGeneralTabData] = useState({
-    headerType: { label: "PORTFOLIO", value: "PORTFOLIO" },
     name: "",
     description: "",
     serviceDescription: "",
     externalReference: "",
     customerSegment: "",
+    source: "User Generated",
+    customerID: "",
+    customerName: "",
+    contactEmail: "",
+    contactName: "",
+    contactPhone: "",
+    customerGroup: "",
+    flagTemplate: false,
+    flagCommerce: false,
   });
 
   const [validityTabData, setValidityTabData] = useState({
@@ -298,8 +314,12 @@ const CustomPortfolioAddUpdate = () => {
 
   // handle general Tab input data change
   const handleGeneralTabTextChange = (e) => {
-    const { name, value } = e.target;
-    setGeneralTabData({ ...generalTabData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      setGeneralTabData({ ...generalTabData, [name]: checked });
+    } else {
+      setGeneralTabData({ ...generalTabData, [name]: value });
+    }
   };
 
   // handle validity Tab input data change
@@ -461,16 +481,59 @@ const CustomPortfolioAddUpdate = () => {
     }
   };
 
+  // handle Customer Search
+  const handleCustomerSearch = async (e) => {
+    const { value } = e.target;
+    setCustomerSearchNoOptions(true);
+    setGeneralTabData({
+      ...generalTabData,
+      customerID: value,
+    });
+    // generalTabData.customerID = value;
+    if (!isEmpty(value) && value.length !== 0) {
+      const rUrl = SEARCH_CUSTOMER(`customerId~${value}`);
+      callGetApi(
+        null,
+        rUrl,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            console.log("response ::", response);
+            setCustomerSearchResult(response.data);
+          } else {
+            errorMessage(response?.data?.mesage);
+          }
+        },
+        (error) => {
+          errorMessage(error);
+        }
+      );
+    }
+  };
+
+  // handle Selected Searched Customer
+  const handleCutomerSelect = (selectRes) => {
+    setCustomerSearchNoOptions(false);
+    setGeneralTabData({
+      ...generalTabData,
+      customerID: selectRes.customerId,
+      contactEmail: selectRes.email,
+      contactName: selectRes.contactName,
+      customerGroup: selectRes.customerGroup,
+      customerName: selectRes.fullName,
+    });
+    setCustomerSearchResult([]);
+  };
+
   const viewGeneralTabData = () => {
     return (
       <>
         {!portfolioTabsEditView.generalTabEdit ? (
           <>
             <div className="row input-fields">
-              <div className="col-md-6 col-sm-6">
+              <div className="col-md-4 col-sm-4">
                 <div className="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500">
-                    {generalTabData.headerType.value} NAME
+                    SOLUTION CODE
                   </label>
                   <input
                     type="text"
@@ -487,8 +550,7 @@ const CustomPortfolioAddUpdate = () => {
               <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500">
-                    {/* SERVICE {generalTabData.headerType.value} DESCRIPTION (IF ANY) */}
-                    {generalTabData.headerType.value} DESCRIPTION (IF ANY)
+                    SOLUTION DESCRIPTION
                   </label>
                   <input
                     type="text"
@@ -502,7 +564,62 @@ const CustomPortfolioAddUpdate = () => {
               </div>
             </div>
             <div className="row input-fields">
-              <div className="col-md-6 col-sm-6">
+              <div className="col-md-4 col-sm-4">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    CUSTOMER ID
+                  </label>
+                  <div
+                    class="form-group w-100 customerIdSearch"
+                    style={{ position: "relative" }}
+                  >
+                    <SearchInputBox
+                      value={generalTabData.customerID}
+                      placeHolder="Search Customer"
+                      searchType="customerId"
+                      handleSearch={handleCustomerSearch}
+                      searchResult={customerSearchResult}
+                      handleSelectSearchResult={handleCutomerSelect}
+                      noOptions={customerSearchNoOptions}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    CUSTOMER NAME
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control text-primary border-radius-10"
+                    name="customerName"
+                    placeholder="Customer Name"
+                    value={generalTabData.customerName}
+                    disabled
+                    // onChange={handleGeneralTabTextChange}
+                  />
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    CUSTOMER EMAIL
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control text-primary border-radius-10"
+                    name="contactEmail"
+                    placeholder="Customer Email"
+                    value={generalTabData.contactEmail}
+                    disabled
+                    // onChange={handleGeneralTabTextChange}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="row input-fields">
+              <div className="col-md-4 col-sm-4">
                 <div className="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500">
                     REFERENCE
@@ -518,7 +635,23 @@ const CustomPortfolioAddUpdate = () => {
                   <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
-              <div className="col-md-6 col-sm-6">
+              <div className="col-md-4 col-sm-4">
+                <div className="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    CUSTOMER GROUP
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control text-primary border-radius-10"
+                    name="customerGroup"
+                    placeholder="Customer Group"
+                    value={generalTabData.customerGroup}
+                    disabled
+                    // onChange={handleGeneralTabTextChange}
+                  />
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
                 <div className="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500">
                     CUSTOMER SEGMENT
@@ -535,10 +668,46 @@ const CustomPortfolioAddUpdate = () => {
                 </div>
               </div>
             </div>
+            <div className="row input-fields">
+              <div className="col-md-4 col-sm-4 d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={generalTabData.flagTemplate} />
+                        }
+                        name="flagTemplate"
+                        label=" FLAG FOR TEMPLATE"
+                        value={generalTabData.flagTemplate}
+                        onChange={handleGeneralTabTextChange}
+                      />
+                    </FormGroup>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4 d-flex justify-content-between align-items-center">
+                <div className=" d-flex justify-content-between align-items-center">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Switch checked={generalTabData.flagCommerce} />
+                        }
+                        name="flagCommerce"
+                        label=" FLAG FOR COMMERCE"
+                        value={generalTabData.flagCommerce}
+                        onChange={handleGeneralTabTextChange}
+                      />
+                    </FormGroup>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className="row" style={{ justifyContent: "right" }}>
               <button
                 type="button"
-                // onClick={handleNextClick}
+                onClick={handleNextClick}
                 className="btn btn-light"
                 id="general"
               >
@@ -552,34 +721,58 @@ const CustomPortfolioAddUpdate = () => {
               <div className="col-md-4 col-sm-3">
                 <div className="form-group">
                   <p className="font-size-12 font-weight-500 mb-2">
-                    SELECT TYPE
-                  </p>
-                  <h6 className="font-weight-500 text-primary font-size-17">
-                    {isEmptySelect(generalTabData.headerType?.value)
-                      ? "NA"
-                      : generalTabData.headerType?.value}
-                  </h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-3">
-                <div className="form-group">
-                  <p className="font-size-12 font-weight-500 mb-2">
-                    PORTFOLIO NAME
+                    SOLUTION CODE
                   </p>
                   <h6 className="font-weight-500 text-primary font-size-17">
                     {isEmpty(generalTabData.name) ? "NA" : generalTabData.name}
                   </h6>
                 </div>
               </div>
-              <div className="col-md-4 col-sm-3">
+              <div className="col-md-6 col-sm-5">
                 <div className="form-group">
                   <p className="font-size-12 font-weight-500 mb-2">
-                    PORTFOLIO DESCRIPTION
+                    SOLUTION DESCRIPTION
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                     {isEmpty(generalTabData.description)
                       ? "NA"
                       : generalTabData.description}
+                  </h6>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-3">
+                <div className="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    CUSTOMER ID
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {isEmpty(generalTabData.customerID)
+                      ? "NA"
+                      : generalTabData.customerID}
+                  </h6>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-3">
+                <div className="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    CUSTOMER NAME
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {isEmpty(generalTabData.customerName)
+                      ? "NA"
+                      : generalTabData.customerName}
+                  </h6>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-3">
+                <div className="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    CUSTOMER EMAIL
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {isEmpty(generalTabData.contactEmail)
+                      ? "NA"
+                      : generalTabData.contactEmail}
                   </h6>
                 </div>
               </div>
@@ -593,6 +786,19 @@ const CustomPortfolioAddUpdate = () => {
                     {isEmpty(generalTabData.externalReference)
                       ? "NA"
                       : generalTabData.externalReference}
+                  </h6>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-3">
+                <div className="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    {" "}
+                    CUSTOMER GROUP
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {isEmpty(generalTabData.customerGroup)
+                      ? "NA"
+                      : generalTabData.customerGroup}
                   </h6>
                 </div>
               </div>
@@ -780,7 +986,7 @@ const CustomPortfolioAddUpdate = () => {
           <div className="row" style={{ justifyContent: "right" }}>
             <button
               type="button"
-              //   onClick={handleNextClick}
+              onClick={handleNextClick}
               className="btn btn-light"
               id="validity"
             >
@@ -884,7 +1090,7 @@ const CustomPortfolioAddUpdate = () => {
             <div className="row" style={{ justifyContent: "right" }}>
               <button
                 type="button"
-                // onClick={handleNextClick}
+                onClick={handleNextClick}
                 className="btn btn-light"
                 id="strategy"
               >
@@ -1202,7 +1408,7 @@ const CustomPortfolioAddUpdate = () => {
             <div className="row" style={{ justifyContent: "right" }}>
               <button
                 type="button"
-                // onClick={handleNextClick}
+                onClick={handleNextClick}
                 className="btn btn-light"
                 id="price"
               >
@@ -1496,7 +1702,7 @@ const CustomPortfolioAddUpdate = () => {
         <div className="row" style={{ justifyContent: "right" }}>
           <button
             type="button"
-            // onClick={handleNextClick}
+            onClick={handleNextClick}
             className="btn btn-light"
             id="priceAgreement"
           >
@@ -1690,7 +1896,7 @@ const CustomPortfolioAddUpdate = () => {
                 type="button"
                 className="btn btn-light"
                 id="administrative"
-                // onClick={handleNextClick}
+                onClick={handleNextClick}
               >
                 Save
               </button>
@@ -1799,6 +2005,94 @@ const CustomPortfolioAddUpdate = () => {
     );
   };
 
+  // check General tab Input Validation
+  const checkInputValidation = (activeTab) => {
+    if (activeTab == "general" && !portfolioTabsEditView.generalViewOnly) {
+      if (isEmpty(generalTabData.name)) {
+        errorMessage(
+          "Solution code is a required field, you can’t leave it blank"
+        );
+        return false;
+      } else if (isEmpty(generalTabData.name)) {
+        errorMessage(
+          "Solution description is a required field, you can’t leave it blank"
+        );
+        return false;
+      } else if (isEmpty(generalTabData.externalReference)) {
+        errorMessage("Reference is a required field, you can’t leave it blank");
+        return false;
+      }
+      return true;
+    } else {
+      if (isEmpty(customPortfolioRecordId)) {
+        errorMessage("Please create Solution First.");
+        return false;
+      } else {
+        if (activeTab == "strategy" && !portfolioTabsEditView.strategyTabEdit) {
+          if (isEmpty(strategyTabData.categoryUsage?.value)) {
+            errorMessage(
+              "Category usage is a required field, you can’t leave it blank"
+            );
+            return false;
+          } else if (isEmpty(strategyTabData.strategyTask?.value)) {
+            errorMessage(
+              "Strategy Task is a required field, you can’t leave it blank"
+            );
+            return false;
+          }
+          return true;
+        } else if (
+          activeTab === "price" &&
+          !portfolioTabsEditView.priceTabEdit
+        ) {
+          if (isEmpty(priceTabData.priceMethod?.value)) {
+            errorMessage(
+              "Price method is a required field, you can’t leave it blank"
+            );
+            return false;
+          }
+          return true;
+        } else if (
+          activeTab === "administrative" &&
+          !portfolioTabsEditView.administrativeTabEdit
+        ) {
+          if (isEmpty(administrativeTabData.preparedBy)) {
+            errorMessage(
+              "Prepared By is a required field, you can’t leave it blank"
+            );
+            return false;
+          } else if (isEmptySelect(administrativeTabData.salesOffice?.value)) {
+            errorMessage(
+              "Sales Office/Branch is a required field, you can’t leave it blank"
+            );
+            return false;
+          } else if (
+            isEmptySelect(administrativeTabData.offerValidity?.value)
+          ) {
+            errorMessage(
+              "Offer validity is a required field, you can’t leave it blank"
+            );
+            return false;
+          }
+          return true;
+        }
+        return true;
+      }
+    }
+  };
+
+  const handleNextClick = (e) => {
+    try {
+      let { id } = e.target;
+      if (!checkInputValidation(id)) {
+        return;
+      }
+    } catch (error) {
+      errorMessage(error);
+      return;
+    }
+  };
+
   return (
     <>
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -1880,6 +2174,10 @@ const CustomPortfolioAddUpdate = () => {
               </TabContext>
             </Box>
           </div>
+          <CustomPortfolioItemsList
+            // customPortfolioId={customPortfolioRecordId}
+            customPortfolioId={816}
+          />
         </div>
       </div>
     </>
