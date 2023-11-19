@@ -55,11 +55,10 @@ const RecentRepairQuote = () => {
       })
       .catch((e) => {
         // console.log(e);
-        if(e.message === "Access is denied")
+        if (e.message === "Access is denied")
           handleSnack("error", "You don't have access to this section!");
-        else if(e.message !== "Quote(s) is/are not found")
+        else if (e.message !== "Quote(s) is/are not found")
           handleSnack("error", "Error occurred while fetching repair quotes!");
-         
         setRecentQuotesLoading(false);
       });
   };
@@ -89,24 +88,28 @@ const RecentRepairQuote = () => {
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Repair Quote</h5>
-            <div>
-              <Link
-                to={QUOTE_REPAIR_SEARCH}
-                style={{ cursor: "pointer" }}
-                className="btn bg-primary text-white pull-right"
-              >
-                Search Quote
-                <ChevronRightIcon className="" />
-              </Link>
-            </div>
+
           </div>
           <div className="card p-4 mt-5">
             <div className="">
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">
-                  RECENT REPAIR QUOTE
-                </h6>
+                <div className="d-flex align-items-center justify-content-between">
+
+                  <h6 className="font-weight-600 text-grey mb-0">
+                    RECENT REPAIR QUOTE
+                  </h6>
+                  <div>
+                    <Link
+                      to={QUOTE_REPAIR_SEARCH}
+                      style={{ cursor: "pointer" }}
+                      className="btn bg-primary text-white pull-right"
+                    >
+                      Search Quote
+                      <ChevronRightIcon className="" />
+                    </Link>
+                  </div>
+                </div>
                 <div className="row">
                   {recentQuotesLoading ? (
                     <LoadingProgress />
@@ -165,7 +168,7 @@ const RecentRepairQuote = () => {
                         </div>
                         <div className="d-flex justify-content-between align-items-center mt-2">
                           <p className="font-size-12 mb-0">
-                          <Moment format="HH:MM a">
+                            <Moment format="HH:MM a">
                               {indQuote.updatedAt}
                             </Moment>
                             ,{" "}
@@ -185,7 +188,7 @@ const RecentRepairQuote = () => {
                 </div>
               </div>
             </div>
-          </div>          
+          </div>
         </div>
       </div>
     </>

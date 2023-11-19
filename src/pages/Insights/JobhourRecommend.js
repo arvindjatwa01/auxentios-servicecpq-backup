@@ -120,8 +120,16 @@ export default function JobhourRecommend(props) {
                     padding: 2,
                 }}
             >
-                <Card sx={{ width: "100%", padding: 3 }}>
-                    <Grid container>
+                <Card
+                    sx={{
+                        borderRadius: 4,
+                        width: "100%",
+                        margin: 2,
+                    }}
+                    variant="outlined"
+                >
+                    <Typography sx={{ fontSize: 16, fontWeight: 600, margin: 2 }}>Job Hour Recommendation</Typography>
+                    <Grid container marginX={1}>
                         <Grid item xs={12} md={3}>
                             <Chip variant="outlined"
                                 label="Service Attributes"
@@ -153,7 +161,8 @@ export default function JobhourRecommend(props) {
                                         // deleteIcon={<KeyboardArrowDownIcon />}
                                         onClick={e => handleSelectSubService("prefix")}
                                         sx={() => getStyle("prefix")}
-                                    /></Fragment>}
+                                    />
+                                </Fragment>}
                         </Grid>
                         <Grid item xs={1} md={1}>
                             <Divider orientation="vertical" sx={{ mx: 1 }} />

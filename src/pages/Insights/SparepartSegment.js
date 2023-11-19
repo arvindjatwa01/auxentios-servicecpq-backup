@@ -2,25 +2,13 @@ import { useEffect, useState } from "react";
 
 import Typography from "@mui/material/Typography";
 
-import { Box, Card, Divider, Grid } from "@mui/material";
+import { Box, Card, Divider, Grid, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { getPartsSegmentDetails, getPartsSegment } from "services/dashboardServices";
 import LoadingProgress from "../Repair/components/Loader";
 import { GRID_STYLE } from "pages/Repair/CONSTANTS";
 import { DataGrid } from "@mui/x-data-grid";
 import FilterOptions from "./SliderCompnent";
 
-//For local testing
-// const partsSegmentValues = [
-//     { "cluster": "C_Low", "parts_count": 71575, "parts_percentage": 86.0, "revenue_percentage": 0.3 },
-//     { "cluster": "C_Mid", "parts_count": 6017, "parts_percentage": 7.23, "revenue_percentage": 0.22 },
-//     { "cluster": "C_High", "parts_count": 1585, "parts_percentage": 1.9, "revenue_percentage": 0.13 },
-//     { "cluster": "B_Low", "parts_count": 1541, "parts_percentage": 1.85, "revenue_percentage": 0.47 },
-//     { "cluster": "B_Mid", "parts_count": 955, "parts_percentage": 1.15, "revenue_percentage": 0.26 },
-//     { "cluster": "A_Low", "parts_count": 951, "parts_percentage": 1.14, "revenue_percentage": 48.46 },
-//     { "cluster": "B_High", "parts_count": 345, "parts_percentage": 0.41, "revenue_percentage": 0.2 },
-//     { "cluster": "A_Mid", "parts_count": 213, "parts_percentage": 0.26, "revenue_percentage": 15.11 },
-//     { "cluster": "A_High", "parts_count": 45, "parts_percentage": 0.05, "revenue_percentage": 34.86 }
-// ]
 const partsSegmentMatrix = [
     ["A_Low", "#872ff760"],
     ["A_Mid", "#872ff780"],
@@ -44,6 +32,11 @@ export default function SparepartSegment(props) {
     const [showSegmentDetails, setShowSegmentDetails] = useState(false);
     const [partsSegmentDetails, setPartsSegmentDetails] = useState([]);
     const [selectedCluster, setSelectedCluster] = useState("");
+    const [selectedItem, setSelectedItem] = useState('parts');
+
+    const handleChange = (event, newItem) => {
+        setSelectedItem(newItem);
+    };
     useEffect(() => {
         setIsLoading(true);
         getPartsSegment()
@@ -102,159 +95,178 @@ export default function SparepartSegment(props) {
                 <Card
                     sx={{
                         borderRadius: 4,
-                        height: 700,
                         width: "100%",
                         margin: 2,
                     }}
                     variant="outlined"
-                > {isLoading ? <LoadingProgress /> :
-                    <Grid container sx={{ marginBlock: 5, marginInline: 5 }}>
-                        <Grid item container xs={4}>
-                            <Grid
-                                item
-                                container
-                                xs={6}
-                                direction="row"
-                                justifyContent="center"
-                                alignItems="center"
-                            >
-                                Historical $ transaction value / % of total products
-                            </Grid>
-                            <Grid
-                                item
-                                container
-                                xs={1}
-                                direction="row"
-                                justifyContent={"end"}
-                            >
-                                <Divider orientation="vertical" flexItem />
-                            </Grid>
-                            <Grid
-                                item
-                                container
-                                xs={5}
-                                direction="row"
-                                justifyContent={"end"}
-                            >
-                                <Grid
-                                    item
-                                    container
-                                    xs={12}
-                                    direction="row"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                >
-                                    High
-                                </Grid>
-                                <Grid
-                                    item
-                                    container
-                                    xs={12}
-                                    direction="row"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                >
-                                    Medium
-                                </Grid>
-                                <Grid
-                                    item
-                                    container
-                                    xs={12}
-                                    direction="row"
-                                    justifyContent="center"
-                                    alignItems="center"
-                                >
-                                    Low
-                                </Grid>
-                            </Grid>
+                >
+                    <Grid container>
+                        <Grid item xs={3}>
+                            <Typography sx={{ fontSize: 16, fontWeight: 600, margin: 2 }}>
+                                Product Segment
+                            </Typography>
                         </Grid>
-                        <Grid item xs={6} lg={4}>
-                            <Grid container columnSpacing={2} rowSpacing={2}>
-                                {partsSegmentMatrix.map((indArray) => (
-                                    <Grid item container xs={4} justifyContent={'center'} alignItems={'center'}>
-                                        <Card
-                                            variant="outlined"
-                                            sx={{
-                                                display: 'flex',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                borderRadius: 2,
-                                                backgroundColor: indArray[1],
-                                                height: 150,
-                                                width: 150,
-                                                transition: "transform 0.15s ease-in-out",
-                                                ':hover': { transform: "scale3d(1.05, 1.05, 1)" },
-                                            }}
-                                            onClick={() =>
-                                                handleClickPartsSegment(indArray[0], indArray[1])
-                                            }
-                                            style={{ cursor: "pointer" }}
-                                        >
-                                            <Typography
-                                                textAlign="center"
-                                                style={{ fontSize: 18, fontWeight: "600" }}
-                                            >
-                                                {
-                                                    partsSegmentData.filter(
-                                                        (object) =>
-                                                            object.cluster === indArray[0]
-                                                    )[0]?.parts_count
-                                                }
-                                            </Typography>
-                                        </Card>
+                        <Grid item container xs={9} justifyContent={'flex-end'}>
+                            <ToggleButtonGroup
+                                color="primary"
+                                value={selectedItem}
+                                exclusive
+                                onChange={handleChange}
+                            >
+                                <ToggleButton value="parts">Parts</ToggleButton>
+                                <ToggleButton value="services">Services</ToggleButton>
+                                <ToggleButton value="products">Products</ToggleButton>
+                            </ToggleButtonGroup>
+                        </Grid>
+                    </Grid>
+                    {isLoading ? <LoadingProgress /> :
+                        <Grid container sx={{ marginBlock: 5, marginInline: 5 }}>
+                            <Grid item container xs={4}>
+                                <Grid
+                                    item
+                                    container
+                                    xs={6}
+                                    direction="row"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                >
+                                    Historical $ transaction value / % of total products
+                                </Grid>
+                                <Grid
+                                    item
+                                    container
+                                    xs={1}
+                                    direction="row"
+                                    justifyContent={"end"}
+                                >
+                                    <Divider orientation="vertical" flexItem />
+                                </Grid>
+                                <Grid
+                                    item
+                                    container
+                                    xs={5}
+                                    direction="row"
+                                    justifyContent={"end"}
+                                >
+                                    <Grid
+                                        item
+                                        container
+                                        xs={12}
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                    >
+                                        High
                                     </Grid>
-                                ))}
+                                    <Grid
+                                        item
+                                        container
+                                        xs={12}
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                    >
+                                        Medium
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        container
+                                        xs={12}
+                                        direction="row"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                    >
+                                        Low
+                                    </Grid>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid item container xs={4}>
+                            <Grid item xs={6} lg={4}>
+                                <Grid container columnSpacing={2} rowSpacing={2}>
+                                    {partsSegmentMatrix.map((indArray) => (
+                                        <Grid item container xs={4} justifyContent={'center'} alignItems={'center'}>
+                                            <Card
+                                                variant="outlined"
+                                                sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    borderRadius: 2,
+                                                    backgroundColor: indArray[1],
+                                                    height: 150,
+                                                    width: 150,
+                                                    transition: "transform 0.15s ease-in-out",
+                                                    ':hover': { transform: "scale3d(1.05, 1.05, 1)" },
+                                                }}
+                                                onClick={() =>
+                                                    handleClickPartsSegment(indArray[0], indArray[1])
+                                                }
+                                                style={{ cursor: "pointer" }}
+                                            >
+                                                <Typography
+                                                    textAlign="center"
+                                                    style={{ fontSize: 18, fontWeight: "600" }}
+                                                >
+                                                    {
+                                                        partsSegmentData.filter(
+                                                            (object) =>
+                                                                object.cluster === indArray[0]
+                                                        )[0]?.parts_count
+                                                    }
+                                                </Typography>
+                                            </Card>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Grid>
+                            <Grid item container xs={4}>
 
-                        </Grid>
-                        <Grid item xs={4}></Grid>
-                        <Grid item xs={6} lg={4} sx={{ marginTop: 5 }}>
-                            <Grid container>
-                                <Grid
-                                    item
-                                    container
-                                    xs={4}
-                                    direction="row"
-                                    justifyContent={"center"}
-                                >
-                                    Low
+                            </Grid>
+                            <Grid item xs={4}></Grid>
+                            <Grid item xs={6} lg={4} sx={{ marginTop: 5 }}>
+                                <Grid container>
+                                    <Grid
+                                        item
+                                        container
+                                        xs={4}
+                                        direction="row"
+                                        justifyContent={"center"}
+                                    >
+                                        Low
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        container
+                                        xs={4}
+                                        direction="row"
+                                        justifyContent={"center"}
+                                    >
+                                        Medium
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        container
+                                        xs={4}
+                                        direction="row"
+                                        justifyContent={"center"}
+                                    >
+                                        High
+                                    </Grid>
                                 </Grid>
-                                <Grid
-                                    item
-                                    container
-                                    xs={4}
-                                    direction="row"
-                                    justifyContent={"center"}
-                                >
-                                    Medium
-                                </Grid>
-                                <Grid
-                                    item
-                                    container
-                                    xs={4}
-                                    direction="row"
-                                    justifyContent={"center"}
-                                >
-                                    High
+                                <Divider sx={{ marginBlock: 3 }} />
+                                <Grid container>
+                                    <Grid
+                                        item
+                                        container
+                                        xs={12}
+                                        direction="row"
+                                        justifyContent={"center"}
+                                    >
+                                        Buying Frequency
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                            <Divider sx={{ marginBlock: 3 }} />
-                            <Grid container>
-                                <Grid
-                                    item
-                                    container
-                                    xs={12}
-                                    direction="row"
-                                    justifyContent={"center"}
-                                >
-                                    Buying Frequency
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={3}></Grid>
-                    </Grid>}
+                            <Grid item xs={3}></Grid>
+                        </Grid>}
                 </Card>
                 {showSegmentDetails && (
                     <Card sx={{

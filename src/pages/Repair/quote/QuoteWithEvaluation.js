@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 
@@ -10,9 +9,6 @@ import {
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
 import { useHistory } from "react-router-dom";
 
 import { Typography } from "@mui/material";
@@ -25,12 +21,8 @@ import { WITHOUT_PARTS, WITH_PARTS } from "../CONSTANTS";
 import { repairActions } from "../dropdowns/repairSlice";
 import { WITHOUT_SPARE_PARTS_DETAILS, WITH_SPARE_PARTS } from "navigation/CONSTANTS";
 
-const QuoteWithEvaluation = () => {
-  const [value, setValue] = React.useState("1");
+const QuoteWithEvaluation = (props) => {
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
   const history = useHistory();
 
   // Snack Bar State
@@ -125,7 +117,8 @@ const QuoteWithEvaluation = () => {
       width: "190px",
       display: "flex",
       justifyContent: "center",
-      padding: "5px 10px",
+      padding: "1px 4px",
+      borderRadius: '5px',
       color: "#fff !important",
       fontSize: "14px",
       fontWeight: "500",
@@ -193,6 +186,14 @@ const QuoteWithEvaluation = () => {
       <div className="card p-4 mt-3">
         <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
           <div className="d-flex align-items-center justify-content-end mt-2">
+            <button
+              className="btn bg-primary text-white mr-2"
+              onClick={() => {
+                props.setShowOptions(true);
+              }}
+            >
+              Back To Options
+            </button>
             <Select
               className="customselect1"
               id="custom"
@@ -292,6 +293,7 @@ const QuoteWithEvaluation = () => {
                 <h6 className="font-weight-600 text-grey mb-0">
                   RECENT BUILDERS (WITH SPARE PARTS)
                 </h6>
+
                 <div className="row">
                   {recentBuildersLoading ? (
                     <LoadingProgress />

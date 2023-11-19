@@ -23,7 +23,7 @@ import ServiceRecommend from "./ServiceRecommend";
 import JobhourRecommend from "./JobhourRecommend";
 
 export default function Insights(props) {
-  const [insightType, setInsightType] = useState("propensity");
+  const [insightType, setInsightType] = useState("");
   const insightTypes = [
     {
       type: 'propensity', label: 'Propensity To Buy', icon: <FontAwesomeIcon className="font-size-18 text-white" icon={faChartLine} />

@@ -18,7 +18,7 @@ export default function FilterOptions(props) {
         return `${value}`;
     }
     return (
-        <Card sx={{ width: '100%', mb: 1, p: 1, borderRadius: 3 }} variant='outlined'>
+        <Card sx={{ width: '100%', mb: 1, p: 4, borderRadius: 3 }} variant='outlined'>
             <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center" width={'100%'}>
                 <Typography sx={{ fontSize: 14, width: '70%' }}>{props.name}</Typography>
                 <Typography sx={{ fontSize: 12, fontWeight: 500 }}>{props.min}</Typography>
