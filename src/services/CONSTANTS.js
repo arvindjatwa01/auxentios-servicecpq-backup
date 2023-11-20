@@ -134,7 +134,7 @@ export const GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE = SOLUTION_BUILDER_U
 export const LINK_CUSTOM_ITEM_TO_PORTFOLIO = CREATE_CUSTOM_PORTFOLIO_ITEM() + "/link-item-to-portfolio?";
 
 export const COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-portfolios-items-to-custom-portfolio?"
-export const COPY_MATER_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-mater-to-custom-portfolio?"
+export const COPY_MASTER_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-master-to-custom-portfolio?"
 export const GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL = SOLUTION_BUILDER_URI + "item/custom";
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-rkid";
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";

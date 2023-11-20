@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG, CUSTOM_PORTFOLIO_SEARCH_QUERY, GET_RECENT_SOLUTION_PORTFOLIO_LIST, GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL, COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO, COPY_MATER_TO_CUSTOM_PORTFOLIO, SOLUTION_PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG, CUSTOM_PORTFOLIO_SEARCH_QUERY, GET_RECENT_SOLUTION_PORTFOLIO_LIST, GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL, COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO, COPY_MASTER_TO_CUSTOM_PORTFOLIO, SOLUTION_PORTFOLIO_ITEM_PRICE_HIERARCHY_SEARCH } from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -266,7 +266,7 @@ export const copyMaterToCustomPortfolio = (data) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(COPY_MATER_TO_CUSTOM_PORTFOLIO + data, { headers: headersData })
+                .get(COPY_MASTER_TO_CUSTOM_PORTFOLIO + data, { headers: headersData })
                 .then((res) => {
                     console.log("copyMaterToCustomPortfolio > axios res=", res);
                     resolve(res);

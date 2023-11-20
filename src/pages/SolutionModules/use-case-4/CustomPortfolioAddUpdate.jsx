@@ -107,6 +107,10 @@ const CustomPortfolioAddUpdate = () => {
   const [isActivePortfolio, setIsActivePortfolio] = useState(false);
 
   const [customPortfolioRecordId, setCustomPortfolioRecordId] = useState(null);
+
+  const [customItemsTableList, setCustomItemsTableList] = useState([]);
+  const [customItemIds, setCustomItemIds] = useState([]);
+
   const [portfolioHeaderActiveTab, setPortfolioHeaderActiveTab] =
     useState("general");
   const [portfolioTabsEditView, setPortfolioTabsEditView] = useState({
@@ -2177,6 +2181,10 @@ const CustomPortfolioAddUpdate = () => {
           <CustomPortfolioItemsList
             // customPortfolioId={customPortfolioRecordId}
             customPortfolioId={816}
+            customItemsTableList={customItemsTableList}
+            setCustomItemsTableList={setCustomItemsTableList}
+            customItemIds={customItemIds}
+            setCustomItemIds={setCustomItemIds}
           />
         </div>
       </div>

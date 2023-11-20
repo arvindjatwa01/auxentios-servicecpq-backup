@@ -29,7 +29,13 @@ import { API_SUCCESS } from "services/ResponseCode";
 import $ from "jquery";
 
 const PortfolioSolutionSearch = (props) => {
-  const { customPortfolioId } = props;
+  const {
+    customPortfolioId,
+    setCustomItemsTableList,
+    setSearchPortfolioSolutionItems,
+    setSelectedSearchSolutionItems,
+    setSearchBySolutionOrPortlio,
+  } = props;
   const [searchSelector, setSearchSelector] = useState({
     id: 0,
     selectFamily: "",
@@ -55,6 +61,7 @@ const PortfolioSolutionSearch = (props) => {
         portfolioSelectionOptions: [],
         disableNameSelect: true,
       });
+      setSearchBySolutionOrPortlio(e.value);
     } else if (keyName === "selectFamily") {
       setSearchSelector({
         ...searchSelector,
@@ -324,7 +331,7 @@ const PortfolioSolutionSearch = (props) => {
           ..._searchSelector,
           inputSearch: currentItem.split("#")[1],
           selectedOption: currentItem.split("#")[1],
-          selectedKeyValue: currentItem.split("#")[1],
+          selectedKeyValue: currentItem.split("#")[0],
           selectedName: "",
           disableNameSelect: false,
         };
@@ -361,7 +368,7 @@ const PortfolioSolutionSearch = (props) => {
           ..._searchSelector,
           inputSearch: currentItem.split("#")[1],
           selectedOption: currentItem.split("#")[1],
-          selectedKeyValue: currentItem.split("#")[1],
+          selectedKeyValue: currentItem.split("#")[0],
           selectedName: "",
           disableNameSelect: false,
         };
@@ -542,7 +549,10 @@ const PortfolioSolutionSearch = (props) => {
             itemSearchReqUrl +
             itemsArray.map((data) => `itemIds=${data}`).join("&");
 
-          handleGetPortfolioBundleServicePrice(itemSearchReqUrl);
+          handleGetPortfolioBundleServicePrice(
+            itemSearchReqUrl,
+            result.portfolioId
+          );
         } else {
           errorMessage(
             "Search Solution have not any Item realtion, change the Search criteria"
@@ -557,13 +567,41 @@ const PortfolioSolutionSearch = (props) => {
   };
 
   // get Portfolio bundle|Service Item Prices
-  const handleGetPortfolioBundleServicePrice = (rUrl) => {
+  const handleGetPortfolioBundleServicePrice = (rUrl, portfolioId) => {
     const bundleServiceReqUrl = PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + rUrl;
     callGetApi(
       null,
       bundleServiceReqUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
+          const res = response.data;
+          const _customPortfolioItems = [];
+
+          res.map((data) => {
+            let portfolioBundleService = []; // Create a new array for each data object
+
+            for (let i = 0; i < data.bundleItems.length; i++) {
+              portfolioBundleService.push(data.bundleItems[i]);
+            }
+
+            for (let j = 0; j < data.serviceItems.length; j++) {
+              portfolioBundleService.push(data.serviceItems[j]);
+            }
+
+            if (
+              data.portfolioItem &&
+              Object.keys(data.portfolioItem).length !== 0
+            ) {
+              _customPortfolioItems.push({
+                ...data.portfolioItem,
+                associatedServiceOrBundle: portfolioBundleService,
+                portfolioId: portfolioId || 0,
+              });
+            }
+            setSearchPortfolioSolutionItems(_customPortfolioItems);
+            setSelectedSearchSolutionItems([]);
+            // setCustomItemsTableList(_customPortfolioItems);
+          });
         } else {
         }
       },
@@ -577,7 +615,7 @@ const PortfolioSolutionSearch = (props) => {
       if (response.status === API_SUCCESS) {
         const result = response.data;
         if (result.itemRelations.length !== 0) {
-          const itemSearchReqUrl = `portfolio_id=${result.portfolioId}&`;
+          let itemSearchReqUrl = `portfolio_id=${result.portfolioId}&`;
           var itemsArray = [];
           result.itemRelations.length !== 0 &&
             result.itemRelations.map((data, i) => {
@@ -617,6 +655,32 @@ const PortfolioSolutionSearch = (props) => {
       customBundleServiceReqUrl,
       (response) => {
         if (response.status === API_SUCCESS) {
+          const res = response.data;
+          const _customPortfolioItems = [];
+          res.map((data) => {
+            let portfolioBundleService = []; // Create a new array for each data object
+
+            for (let i = 0; i < data.bundleItems.length; i++) {
+              portfolioBundleService.push(data.bundleItems[i]);
+            }
+
+            for (let j = 0; j < data.serviceItems.length; j++) {
+              portfolioBundleService.push(data.serviceItems[j]);
+            }
+
+            if (
+              data.portfolioItem &&
+              Object.keys(data.portfolioItem).length !== 0
+            ) {
+              _customPortfolioItems.push({
+                ...data.portfolioItem,
+                associatedServiceOrBundle: portfolioBundleService,
+              });
+            }
+            setSearchPortfolioSolutionItems(_customPortfolioItems);
+            setSelectedSearchSolutionItems([]);
+            // setCustomItemsTableList(_customPortfolioItems);
+          });
         } else {
         }
       },
