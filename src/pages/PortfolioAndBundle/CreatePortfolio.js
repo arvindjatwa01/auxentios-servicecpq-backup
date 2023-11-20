@@ -188,7 +188,7 @@ import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "../Repair/CON
 import Pagination from '@mui/material/Pagination';
 import { getApiCall } from "services/searchQueryService";
 import { GET_SEARCH_COVERAGE, LINK_ITEM_TO_PORTFOLIO, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from "services/CONSTANTS";
-
+let serialNumberList;
 let loading, data, failure;
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 // const customStyles = {
@@ -271,7 +271,21 @@ export function CreatePortfolio(props) {
 
   const [disable, setDisable] = useState(true);
   const [portfolioItemPriceEditable, setPortfolioItemPriceEditable] = useState(false);
-  const [quoteDataShow, setQuoteDataShow] = useState(false)
+  const [quoteDataShow, setQuoteDataShow] = useState(false);
+  const [searchCustResults, setSearchCustResults] = useState([]);
+  const [customerData, setCustomerData] = useState({
+    source: "User Generated",
+    customerID: "",
+    customerName: "",
+    contactEmail: "",
+    contactName: "",
+    contactPhone: "",
+    customerGroup: "",
+    customerSegment: "",
+    regionOrState: "",
+    country: "",
+  });
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [extWorkData, setExtWorkData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -1530,6 +1544,48 @@ export function CreatePortfolio(props) {
     setTypeOfSearchColumn(e);
     if (e == null) {
       setColumnSearchText("");
+    }
+  };
+
+
+  // Select the customer from search result
+  const handleCustSelect = (type, currentItem) => {
+    setCustomerData({
+      ...customerData,
+      customerID: currentItem.customerId,
+      contactEmail: currentItem.email,
+      contactName: currentItem.contactName,
+      customerGroup: currentItem.customerGroup,
+      customerName: currentItem.fullName,
+      customerSegment: currentItem.customerSegment,
+      country: currentItem.addressDTO?.country,
+      regionOrState: currentItem.addressDTO?.regionOrState,
+    });
+    let e = {
+      target: {
+        value: currentItem.customerId
+      }
+    };
+    handleSerialNoSearch(e);
+    console.log(currentItem);
+    setSearchCustResults([]);
+  };
+  const handleCustSearch = async (searchCustfieldName, searchText) => {
+    setSearchCustResults([]);
+    customerData.customerID = searchText;
+    if (searchText) {
+      await customerSearch(searchCustfieldName + "~" + searchText)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while searching the customer!");
+        });
     }
   };
 
@@ -13053,7 +13109,7 @@ export function CreatePortfolio(props) {
       format: (row) => row.noSeriese,
       cell: (row, i) => (
         <div>
-          {/* <SearchBox
+          <SearchBox
             value={row.noSeriese}
             onChange={(e) =>
               handleCoverageHandleMachineSearch(
@@ -13066,8 +13122,8 @@ export function CreatePortfolio(props) {
             result={searchCoverageSerialResults}
             onSelect={handleModelSelect}
             noOptions={noCoverageOptionSerial}
-          /> */}
-          <span className="cursor" onClick={() => { setShowSerialNoSearchModal(true); setShowRelatedModel(false) }}>{row.serialNumber ? row.serialNumber : "Click to Add"}</span>
+          />
+          {/* <span className="cursor" onClick={() => { showSerialModal(row); setShowRelatedModel(false) }}>{row.serialNumber ? row.serialNumber : "Click to Add"}</span> */}
           {/* <Select
             className="customselect"
             maxMenuHeight={80}
@@ -13145,6 +13201,7 @@ export function CreatePortfolio(props) {
       ),
     },
   ];
+
 
   // console.log("setSerialNumber 1234 : ", serialNumber);
 
@@ -13811,11 +13868,17 @@ export function CreatePortfolio(props) {
       searchString: e.target.value
     }
 
-    const searchedSerialNo = await getValidateCoverage(reqObj);
-    console.log("searchedSerialNo ========= ", searchedSerialNo);
+    serialNumberList = await getValidateCoverage(reqObj);
+    console.log("searchedSerialNo ========= ", serialNumberList);
 
 
     console.log("------------ ", selectedMasterData[includedModelIndex]);
+  }
+
+  const showSerialModal = (e) => {
+    handleSerialNoSearch(e);
+    //api call to fetch serial no
+    setShowSerialNoSearchModal(true);
   }
 
   const AddNewRowData = (rowItem) => {
@@ -23793,6 +23856,19 @@ export function CreatePortfolio(props) {
         <Modal.Header className="align-items-center">
           <div>
             <Modal.Title>Included Serial No</Modal.Title>
+            <SearchBox
+              value={customerData.customerID}
+              onChange={(e) =>
+                handleCustSearch(
+                  "customerId",
+                  e.target.value
+                )
+              }
+              type="customerId"
+              result={searchCustResults}
+              onSelect={handleCustSelect}
+              noOptions={noOptionsCust}
+            />
           </div>
           <div>
             <Link className=" btn bg-primary text-white cursor"
@@ -24986,18 +25062,7 @@ export function CreatePortfolio(props) {
                         <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
                         <span className="ml-2">Edit</span>
                       </span>
-                      <span className="mr-3">
-                        <SellOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related repair option</span>
-                      </span>
-                      <span className="mr-3">
-                        <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related Standard Job</span>
-                      </span>
-                      <span className="mr-3">
-                        <AccessAlarmOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related Kit</span>
-                      </span>
+
                     </div>
                   </div>
                   <div className="row input-fields">
