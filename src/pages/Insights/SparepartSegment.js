@@ -49,10 +49,6 @@ export default function SparepartSegment(props) {
                 setPartsSegmentData([]);
                 setIsLoading(false);
             });
-
-        return () => {
-            console.log("axios cleanup.");
-        };
     }, []);
 
 
@@ -63,12 +59,10 @@ export default function SparepartSegment(props) {
         getPartsSegmentDetails(cluster).then((res) => {
             setPartsSegmentDetails(res);
             setIsLoadingTable(false);
-        })
-            .catch((err) => {
-                console.log("axios err=", err);
-                setPartsSegmentDetails([]);
-                setIsLoadingTable(false);
-            });
+        }).catch((err) => {
+            setPartsSegmentDetails([]);
+            setIsLoadingTable(false);
+        });
         setShowSegmentDetails(true);
     };
     const customerDetailColumns = [

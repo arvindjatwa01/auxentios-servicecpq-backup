@@ -22,7 +22,6 @@ export default function GapToEntitlement(props) {
   const [pageSize, setPageSize] = useState(10);
   const [columnButtonEl, setColumnButtonEl] = useState(null);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    customer_name: false,
     customer_group: false,
     customer_segment: false,
     customer_level: false,
@@ -49,14 +48,9 @@ export default function GapToEntitlement(props) {
         setIsLoading(false);
       })
       .catch((err) => {
-        // console.log("axios err=", err);
         setEntitlementData([]);
         setIsLoading(false);
       });
-
-    return () => {
-      console.log("axios cleanup.");
-    };
   }, []);
 
 

@@ -68,14 +68,9 @@ export default function Propensity(props) {
         setIsLoading(false);
       })
       .catch((err) => {
-        console.log("axios err=", err);
         setPropensityData([]);
         setIsLoading(false);
       });
-
-    return () => {
-      console.log("axios cleanup.");
-    };
   }, []);
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({

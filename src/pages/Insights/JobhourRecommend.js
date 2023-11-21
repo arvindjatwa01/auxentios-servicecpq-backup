@@ -51,7 +51,7 @@ export default function JobhourRecommend(props) {
                     }
                 })
                 .catch((e) => {
-                    //   handleSnack("error", "Error occurred while searching the customer!");
+                    props.handleSnack("error", "Error occurred while searching the job code!");
                 });
         }
     };
@@ -68,7 +68,7 @@ export default function JobhourRecommend(props) {
                     }
                 })
                 .catch((e) => {
-                    //   handleSnack("error", "Error occurred while searching the component!");
+                    props.handleSnack("error", "Error occurred while searching the component!");
                 });
         }
     };

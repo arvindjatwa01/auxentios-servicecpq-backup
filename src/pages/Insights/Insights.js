@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Propensity from "./Propensity";
 import {
   Card,
@@ -21,6 +21,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ServiceRecommend from "./ServiceRecommend";
 import JobhourRecommend from "./JobhourRecommend";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import DiscountGuidance from "./DiscountGuidance";
 
 export default function Insights(props) {
   const [insightType, setInsightType] = useState("");
@@ -38,41 +40,64 @@ export default function Insights(props) {
   const handleChange = (value) => {
     setInsightType(value);
   };
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const [showOptions, setShowOptions] = useState(true);
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
   return (
-    <div className="content-body" style={{ minHeight: "884px" }}>
-      <div class="container-fluid mt-3">
-        <Grid container columnSpacing={3}>
-          {insightTypes.map(insight =>
-            <Grid item container lg={3} md={4} xs={6}>
-              <Card
-                sx={{ borderRadius: 5, padding: 1, marginBlock: 2, display: "flex", width: "100%", cursor: 'pointer', backgroundColor: insight.type === insightType ? "#872ff715" : "", border: insight.type === insightType ? "2px solid #872ff785" : "" }}
-                variant="outlined"
-                onClick={() => handleChange(insight.type)}
+    <Fragment>
+      <CustomizedSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
+      <div className="content-body" style={{ minHeight: "884px" }}>
+        <div class="container-fluid mt-3">
+          <Grid container columnSpacing={3}>
+            {insightTypes.map(insight =>
+              <Grid item container lg={3} md={4} xs={6}>
+                <Card
+                  sx={{ borderRadius: 5, padding: 1, marginBlock: 2, display: "flex", width: "100%", cursor: 'pointer', backgroundColor: insight.type === insightType ? "#872ff715" : "", border: insight.type === insightType ? "2px solid #872ff785" : "" }}
+                  variant="outlined"
+                  onClick={() => handleChange(insight.type)}
 
-              >
-                <Grid container >
-                  <Grid item xs={2}>
-                    <Card sx={{ borderRadius: 4, padding: 2, display: 'flex', justifyContent: 'center', backgroundColor: '#872ff7' }} variant="outlined">
-                      {insight.icon}
-                    </Card>
+                >
+                  <Grid container >
+                    <Grid item xs={2}>
+                      <Card sx={{ borderRadius: 4, padding: 2, display: 'flex', justifyContent: 'center', backgroundColor: '#872ff7' }} variant="outlined">
+                        {insight.icon}
+                      </Card>
+                    </Grid>
+                    <Grid item container xs={10} alignItems={'center'} sx={{ paddingLeft: 2 }}>
+                      <Box>
+                        <Typography fontSize={'0.9rem'}>{insight.label}</Typography>
+                      </Box>
+                    </Grid>
                   </Grid>
-                  <Grid item container xs={10} alignItems={'center'} sx={{ paddingLeft: 2 }}>
-                    <Box>
-                      <Typography fontSize={'0.9rem'}>{insight.label}</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Card>
-            </Grid>
-          )}
-        </Grid>
-        {insightType === 'propensity' && <Propensity />}
-        {insightType === 'entitlement' && <GapToEntitlement />}
-        {insightType === 'product-segment' && <SparepartSegment />}
-        {insightType === 'service-recommend' && <ServiceRecommend />}
-        {insightType === 'job-hr-recommend' && <JobhourRecommend />}
-
+                </Card>
+              </Grid>
+            )}
+          </Grid>
+          {insightType === 'propensity' && <Propensity handleSnack={handleSnack} />}
+          {insightType === 'entitlement' && <GapToEntitlement handleSnack={handleSnack} />}
+          {insightType === 'product-segment' && <SparepartSegment handleSnack={handleSnack} />}
+          {insightType === 'service-recommend' && <ServiceRecommend handleSnack={handleSnack} />}
+          {insightType === 'job-hr-recommend' && <JobhourRecommend handleSnack={handleSnack} />}
+          {insightType === 'discount' && <DiscountGuidance handleSnack={handleSnack} />}
+        </div>
       </div>
-    </div>
+    </Fragment>
   );
 }
