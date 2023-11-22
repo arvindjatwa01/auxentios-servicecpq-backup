@@ -1,72 +1,176 @@
-import Box from "@mui/material/Box";
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import penIcon from "../../../assets/images/pen.png";
-
 import { Card, Grid, Tooltip, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import $ from "jquery";
-import { REPAIR_QUOTE_DETAILS, STANDARD_JOB_DETAIL, WITHOUT_SPARE_PARTS_DETAILS, WITH_SPARE_PARTS } from "navigation/CONSTANTS";
+import { SPARE_PARTS_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { uploadItemsToRepairQuote } from "services/repairQuoteServices";
-import { templateSearch } from "services/templateService";
-import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
-import {
-  APPLICATION_OPTIONS,
-  GRID_STYLE,
-  TEMPLATE_SEARCH_Q_OPTIONS,
-  TEMPLATE_TYPES,
-  UPLOAD_OPTIONS,
-  WITHOUT_PARTS,
-  WITH_PARTS,
-} from "../CONSTANTS";
-import SearchComponentTemplate from "../components/SearchComponentTemplate";
-import QuoteWithEvaluation from "./QuoteWithEvaluation";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { kitSearch } from "services/kitService";
+import { addPartlist, builderSearch, createBuilder } from "services/repairBuilderServices";
+import { uploadItemsToPartsQuote } from "services/repairQuoteServices";
+import penIcon from "../../../assets/images/pen.png";
+import { APPLICATION_OPTIONS, GRID_STYLE, KIT_SEARCH_Q_OPTIONS, UPLOAD_OPTIONS } from "../CONSTANTS";
+import SearchComponent from "../components/SearchComponent";
+import { repairActions } from "../dropdowns/repairSlice";
 import { UploadQuoteItems } from "./UploadQuoteItems";
-import { createBuilder } from "services/repairBuilderServices";
-import SettingsSuggestTwoToneIcon from '@mui/icons-material/SettingsSuggestTwoTone';
-import ManageAccountsTwoToneIcon from '@mui/icons-material/ManageAccountsTwoTone';
-
+import PrecisionManufacturingTwoToneIcon from '@mui/icons-material/PrecisionManufacturingTwoTone';
 const CardWrapper = (props) => <Card sx={{ textAlign: 'center', borderRadius: 5, height: 400, paddingBlock: 3, border: 1, borderColor: '#00000050' }} variant="outlined">{props.children}</Card>
 
-export const CreateRepairQuote = (props) => {
+const CreatePartQuote = () => {
+  const [value, setValue] = React.useState("partlist");
   const history = useHistory();
-  const [selectedQuoteOption, setSelectedQuoteOption] = useState("");
-
-  const clearFilteredData = () => {
-    setMasterData([]);
-  };
-  const [querySearchSelector, setQuerySearchSelector] = useState([
-    {
-      id: 0,
-      selectCategory: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    },
-  ]);
-
-  const [masterData, setMasterData] = useState([]);
-  const [show, setShow] = React.useState(false);
+  const [showOptions, setShowOptions] = useState(true);
+  // Snack Bar State
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [showOptions, setShowOptions] = useState(true);
-  const handleSnack = (snackSeverity, snackMessage) => {
-    setSnackMessage(snackMessage);
-    setSeverity(snackSeverity);
-    setOpenSnack(true);
-  };
+  const [recentPartlists, setRecentPartlists] = useState([]);
+  const [recentBuildersLoading, setRecentBuildersLoading] = useState(true);
+  const [selectedQuoteOption, setSelectedQuoteOption] = useState("");
+
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setOpenSnack(false);
   };
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+  const makeKitEditable = (selectedKIT) => {
+    let kitDetails = {
+      kitId: "",
+      kitDBId: "",
+      partListNo: "",
+      partListId: "",
+      type: "fetch",
+    };
+    kitDetails.kitId = selectedKIT.kitId;
+    kitDetails.kitDBId = selectedKIT.id;
+    // kitDetails.partListNo = kitDetails.;
+    // kitDetails.partListId = selectedKIT.estimationNumber;
+    // kitDetails.versionNumber = selectedKIT.versionNumber;
+    history.push({
+      pathname: "/RepairKits/Kits",
+      state: kitDetails,
+    });
+  };
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
-  const searchTemplateColumns = [
-    { field: "standardJobId", headerName: "ID#", flex: 1, width: 70 },
+  const fileTypes = ["xls", "xlsx"];
+  // Once opetion has been selected clear the search results
+  const clearFilteredData = () => {
+    setMasterData([]);
+  };
+  const handleApplicationKIT = async (application) => {
+    let searchStr = "application:" + application;
+    try {
+      if (searchStr) {
+        const res = await kitSearch(`kitId~KT AND ${searchStr}`);
+        res.map((kit) => {
+          let family = [],
+            model = [];
+          kit.coverages.map((coverage) => {
+            family.push(coverage.coverageFamily);
+            model.push(coverage.coverageModel);
+          });
+          // return {...kit, family : family, model: model};
+          kit.family = family;
+          kit.model = model;
+        });
+        setMasterData(res);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching templates!");
+    }
+  }
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    var searchStr = "";
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        const res = await kitSearch(`kitId~KT AND ${searchStr}`);
+        res.map((kit) => {
+          let family = [],
+            model = [];
+          kit.coverages.map((coverage) => {
+            family.push(coverage.coverageFamily);
+            model.push(coverage.coverageModel);
+          });
+          // return {...kit, family : family, model: model};
+          kit.family = family;
+          kit.model = model;
+        });
+        setMasterData(res);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      console.log(err);
+      handleSnack("error", "Error occurred while fetching spare parts!");
+    }
+  };
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(repairActions.fetchDropdowns());
+    fetcheRecentPartlists();
+    if (JSON.parse(localStorage.getItem("exitingType"))) {
+      localStorage.removeItem("exitingType");
+    }
+  }, []);
+
+  const fetcheRecentPartlists = () => {
+    setRecentBuildersLoading(true);
+
+    builderSearch(
+      `builderType:PARTLIST AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
+    )
+      .then((result) => {
+        if (result) {
+          setRecentPartlists(result);
+          setRecentBuildersLoading(false);
+        }
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while fetching recent partlists");
+        setRecentBuildersLoading(false);
+      });
+  };
+
+  const searchKitColumns = [
+    { field: "kitId", headerName: "ID#", flex: 1, width: 70 },
     { field: "description", headerName: "Description", flex: 1, width: 130 },
     {
       field: "model",
@@ -76,7 +180,9 @@ export const CreateRepairQuote = (props) => {
       renderCell: (params) => (
         <div>
           {params.value?.map((model) => (
-            <Typography style={{ fontSize: 12 }}>{model}</Typography>
+            <Typography display="block" style={{ fontSize: 12 }}>
+              {model}
+            </Typography>
           ))}
         </div>
       ),
@@ -89,21 +195,17 @@ export const CreateRepairQuote = (props) => {
       renderCell: (params) => (
         <div>
           {params.value?.map((family) => (
-            <Typography style={{ fontSize: 12 }}>{family}</Typography>
+            <Typography display="block" style={{ fontSize: 12 }}>
+              {family}
+            </Typography>
           ))}
         </div>
       ),
     },
     { field: "version", headerName: "Version", flex: 1, width: 130 },
     {
-      field: "totalLabourPrice",
-      headerName: "Labor $",
-      flex: 1,
-      width: 130,
-    },
-    {
-      field: "totalMiscPrice",
-      headerName: "Misc $",
+      field: "source",
+      headerName: "Source",
       flex: 1,
       width: 130,
     },
@@ -127,114 +229,27 @@ export const CreateRepairQuote = (props) => {
             }
             label="Edit"
             className="textPrimary"
-            onClick={() => makeTemplateEditable(params.row)}
+            onClick={() => makeKitEditable(params.row)}
             color="inherit"
           />,
         ];
       },
     },
   ];
-  const makeTemplateEditable = (selectedTemplate) => {
-    let templateDetails = {
-      templateId: "",
-      templateDBId: "",
-      partListNo: "",
-      partListId: "",
-      type: "fetch",
-    };
-    templateDetails.templateId = selectedTemplate.templateId;
-    templateDetails.templateDBId = selectedTemplate.id;
-    // templateDetails.partListNo = templateDetails.;
-    // templateDetails.partListId = selectedTemplate.estimationNumber;
-    // templateDetails.versionNumber = selectedTemplate.versionNumber;
-    history.push({
-      pathname: STANDARD_JOB_DETAIL,
-      state: templateDetails,
-    });
-  };
 
-  const handleApplicationTemplates = async (application) => {
-    let searchStr = "application:" + application;
-    try {
-      if (searchStr) {
-        const res = await templateSearch(`standardJobId~SJ AND ${searchStr}`);
-        res.map((template) => {
-          let family = [],
-            model = [];
-          template.coverages.map((coverage) => {
-            family.push(coverage.coverageFamily);
-            model.push(coverage.coverageModel);
-          });
-          // return {...template, family : family, model: model};
-          template.family = family;
-          template.model = model;
-        });
-        setMasterData(res);
-      } else {
-        handleSnack("info", "Please fill the search criteria!");
-      }
-    } catch (err) {
-      handleSnack("error", "Error occurred while fetching templates!");
-    }
-  }
-  const handleQuerySearchClick = async (applicationType) => {
-    $(".scrollbar").css("display", "none");
-    var searchStr = "";
-    // console.log(querySearchSelector);
+  const [show, setShow] = React.useState(false);
+  const [masterData, setMasterData] = useState([]);
 
-    querySearchSelector.map(function (item, i) {
-      if (
-        i === 0 &&
-        item.selectCategory.value &&
-        item.inputSearch &&
-        item.selectType
-      ) {
-        searchStr =
-          "templateType:" +
-          item.selectType.value +
-          " AND " +
-          item.selectCategory.value +
-          ":" +
-          encodeURI('"' + item.inputSearch + '"');
-      } else if (
-        item.selectCategory.value &&
-        item.inputSearch &&
-        item.selectOperator.value
-      ) {
-        searchStr =
-          searchStr +
-          " " +
-          item.selectOperator.value +
-          " " +
-          item.selectCategory.value +
-          ":" +
-          encodeURI('"' + item.inputSearch + '"');
-      }
-      return searchStr;
-    });
-
-    try {
-      if (searchStr) {
-        const res = await templateSearch(`standardJobId~SJ AND ${searchStr}`);
-        res.map((template) => {
-          let family = [],
-            model = [];
-          template.coverages.map((coverage) => {
-            family.push(coverage.coverageFamily);
-            model.push(coverage.coverageModel);
-          });
-          // return {...template, family : family, model: model};
-          template.family = family;
-          template.model = model;
-        });
-        setMasterData(res);
-      } else {
-        handleSnack("info", "Please fill the search criteria!");
-      }
-    } catch (err) {
-      handleSnack("error", "Error occurred while fetching templates!");
-    }
-  };
+  const [querySearchSelector, setQuerySearchSelector] = useState([
+    {
+      id: 0,
+      selectFamily: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    },
+  ]);
 
   const [file, setFile] = useState(null);
 
@@ -244,12 +259,12 @@ export const CreateRepairQuote = (props) => {
       setFile(file);
     }
   };
-  //Uplaod quote through excel sheet
+  //Uplaod spare parts through excel sheet
   const handleUploadFile = async () => {
     // console.log("Upload");
     const form = new FormData();
     form.append("file", file);
-    await uploadItemsToRepairQuote(form)
+    await uploadItemsToPartsQuote(form)
       .then((createdQuote) => {
         handleSnack(
           "success",
@@ -257,13 +272,12 @@ export const CreateRepairQuote = (props) => {
         );
         let quoteDetails = {
           quoteId: "",
-          // templateDBId: "",
           type: "fetch",
         };
         quoteDetails.quoteId = createdQuote.quoteId;
         // templateDetails.templateDBId = createdQuote.id;
         history.push({
-          pathname: REPAIR_QUOTE_DETAILS,
+          pathname: SPARE_PARTS_QUOTE_DETAILS,
           state: quoteDetails,
         });
       })
@@ -272,60 +286,51 @@ export const CreateRepairQuote = (props) => {
       });
   };
 
-  const handleClickTemplate = (applicationType) => {
+  const handleClickKIT = (applicationType) => {
     setShowOptions(false);
     setSelectedQuoteOption("without_eval");
-    handleApplicationTemplates(applicationType)
+    handleApplicationKIT(applicationType)
   }
-  const createNewBuilder = (e) => {
+  const createNewBuilder = () => {
     let builderDetails = {
       builderId: "",
       bId: "",
+      partListNo: "",
+      partListId: "",
       type: "new",
     };
-    if (e === "without") {
-      createBuilder({
-        builderType: WITHOUT_PARTS,
-        activeVersion: true,
-        versionNumber: 1,
-        status: "DRAFT",
-      })
-        .then((result) => {
-          builderDetails.builderId = result.builderId;
-          builderDetails.bId = result.id;
+    createBuilder({
+      builderType: "PARTLIST",
+      activeVersion: true,
+      versionNumber: 1,
+      status: "DRAFT",
+    })
+      .then((result) => {
+        builderDetails.builderId = result.builderId;
+        builderDetails.bId = result.id;
 
-          history.push({
-            pathname: WITHOUT_SPARE_PARTS_DETAILS,
-            state: builderDetails,
-          });
+        addPartlist(result.id, {
+          activeVersion: true,
+          versionNumber: 1,
         })
-        .catch((err) => {
-          console.log("Error Occurred", err);
-          handleSnack("error", "Error occurred while creating builder!");
-        });
-    } else if (e === "with") {
-      createBuilder({
-        builderType: WITH_PARTS,
-        activeVersion: true,
-        versionNumber: 1,
-        status: "DRAFT",
+          .then((partlistResult) => {
+            builderDetails.partListNo = partlistResult.id;
+            builderDetails.partListId = partlistResult.partlistId;
+            history.push({
+              pathname: "/RepairPartList/PartList",
+              state: builderDetails,
+            });
+          })
+          .catch((err) => {
+            console.log("Error Occurred", err);
+            handleSnack("error", "Error occurred while creating partlist!");
+          });
       })
-        .then((result) => {
-          builderDetails.builderId = result.builderId;
-          builderDetails.bId = result.id;
-
-          history.push({
-            pathname: WITH_SPARE_PARTS,
-            state: builderDetails,
-          });
-        })
-        .catch((err) => {
-          console.log("Error Occurred", err);
-          handleSnack("error", "Error occurred while creating builder!");
-        });
-    }
+      .catch((err) => {
+        console.log("Error Occurred", err);
+        handleSnack("error", "Error occurred while creating partlist!");
+      });
   };
-
   const innerCard = (indAppOption, handleClick) => <Grid item container xs={12} md={7}
     sx={{
       border: 1,
@@ -360,7 +365,7 @@ export const CreateRepairQuote = (props) => {
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid mt-4">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Create Repair Quote</h5>
+            <h5 className="font-weight-600 mb-0">Create Sparepart Quote</h5>
             {showOptions ? <></> : <button
               className="btn bg-primary text-white mr-2"
               onClick={() => {
@@ -385,26 +390,31 @@ export const CreateRepairQuote = (props) => {
                       sx={{
                         margin: 'auto',
                         textAlign: 'left',
-                        width: "50%",
+                        width: "40%",
                         borderRadius: 2,
                         marginBlock: 1,
                         paddingBlock: 1,
                         cursor: 'pointer',
                         ':hover': { borderColor: '#872ff7' },
                       }}
-                      onClick={() => createNewBuilder("with")}>
-                      <SettingsSuggestTwoToneIcon sx={{ mx: 2, color: 'green' }} />Repair Option
+                      onClick={() => createNewBuilder()}>
+                      <PrecisionManufacturingTwoToneIcon sx={{ mx: 2, color: 'green' }} />Partlist
                     </Card>
 
+
                     <Card variant="outlined"
-                      sx={{ margin: 'auto', textAlign: 'left', width: "40%", borderRadius: 2, marginBlock: 1, paddingBlock: 1, cursor: 'pointer', ':hover': { borderColor: '#872ff7' }, }}
-                      onClick={() => createNewBuilder("without")}>
-                      <ManageAccountsTwoToneIcon sx={{ mx: 2, color: 'blue' }} />Service Estimate
-                    </Card>
-                    <Card variant="outlined"
-                      sx={{ margin: 'auto', width: "20%", borderRadius: 5, p: 5, my: 2 }}
+                      sx={{ margin: 'auto', width: "20%", borderRadius: 5, p: 5, my: 5, cursor: 'pointer' }}
                       className="border-primary"
-                    >+</Card>
+                    // onClick={() => { setShowOptions(false); setSelectedQuoteOption("with_eval") }}
+                    >
+                      +
+                    </Card>
+                    {/* <Typography variant="body1" sx={{ m: 4 }}>
+                      Create A Quote
+                    </Typography>
+                    <Typography variant="caption">
+                      Go To Partlist
+                    </Typography> */}
                   </CardWrapper>
 
                 </Grid>
@@ -414,10 +424,10 @@ export const CreateRepairQuote = (props) => {
                       Without Evaluation
                     </Typography>
                     <Typography variant="body2" paddingY={2}>
-                      Select a template to get started and customize as you go.
+                      Select a kit to get started and customize as you go.
                     </Typography>
                     <Grid container>
-                      {APPLICATION_OPTIONS.map(indAppOption => innerCard(indAppOption, handleClickTemplate))}
+                      {APPLICATION_OPTIONS.map(indAppOption => innerCard(indAppOption, handleClickKIT))}
                     </Grid>
                   </CardWrapper>
                 </Grid>
@@ -429,7 +439,7 @@ export const CreateRepairQuote = (props) => {
                     <Typography variant="body2" paddingY={2}>
                       Import your existing quotes from an Excel or CSV into Servicecpq.
                     </Typography>
-                    <Grid container>
+                    <Grid container >
                       {UPLOAD_OPTIONS.map(indAppOption =>
                         <Tooltip arrow placement='left' title={indAppOption.value === 'gsheet' || indAppOption.value === 'paste' ? "Will be available in next version" : ""}>
                           {innerCard(indAppOption, handleClickUpload)}
@@ -454,19 +464,16 @@ export const CreateRepairQuote = (props) => {
                               <h5 className="mr-2 mb-0 text-white">
                                 <span>Search</span>
                               </h5>
-
                             </div>
-                            <SearchComponentTemplate
+                            <SearchComponent
                               querySearchSelector={querySearchSelector}
                               setQuerySearchSelector={setQuerySearchSelector}
                               clearFilteredData={clearFilteredData}
                               handleSnack={handleSnack}
-                              searchAPI={templateSearch}
+                              searchAPI={kitSearch}
                               searchClick={handleQuerySearchClick}
-                              options={TEMPLATE_SEARCH_Q_OPTIONS}
-                              typeOptions={TEMPLATE_TYPES}
+                              options={KIT_SEARCH_Q_OPTIONS}
                               color="white"
-                              type="template"
                               buttonText={"SEARCH"}
                             />
                           </div>
@@ -474,24 +481,24 @@ export const CreateRepairQuote = (props) => {
                       </div>
                     </div>
                     <div className="card">
-                      <div
-                        className=""
-                        style={{
-                          height: 400,
-                          width: "100%",
-                          backgroundColor: "#fff",
+                      <DataGrid
+                        sx={GRID_STYLE}
+                        rows={masterData}
+                        columns={searchKitColumns}
+                        pageSize={5}
+                        rowsPerPageOptions={[5]}
+                        getRowHeight={() => "auto"}
+                        getEstimatedRowHeight={() => 200}
+                        autoHeight
+                      />
+                      <button
+                        className="btn bg-primary text-white mr-2"
+                        onClick={() => {
+                          setShowOptions(true);
                         }}
                       >
-                        <DataGrid
-                          sx={GRID_STYLE}
-                          rows={masterData}
-                          columns={searchTemplateColumns}
-                          pageSize={5}
-                          rowsPerPageOptions={[5]}
-                          autoHeight
-                        />
-                      </div>
-
+                        Back To Options
+                      </button>
                     </div>
                   </>
                 }
@@ -503,7 +510,9 @@ export const CreateRepairQuote = (props) => {
 
           </Box>
         </div>
-      </div >
+      </div>
     </>
   );
 };
+
+export default CreatePartQuote;

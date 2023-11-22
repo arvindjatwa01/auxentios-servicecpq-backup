@@ -13,7 +13,7 @@ import "owl.carousel/dist/assets/owl.theme.default.css";
 
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { quoteRecent } from "services/repairQuoteServices";
-import { QUOTE_REPAIR_SEARCH, REPAIR_QUOTE_DETAILS } from "navigation/CONSTANTS";
+import { QUOTE_REPAIR_CREATE, QUOTE_REPAIR_SEARCH, REPAIR_QUOTE_DETAILS } from "navigation/CONSTANTS";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { Typography } from "@mui/material";
 import LoadingProgress from "../components/Loader";
@@ -88,14 +88,20 @@ const RecentRepairQuote = () => {
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Repair Quote</h5>
-
+            <div >
+              <Link
+                to={QUOTE_REPAIR_CREATE}
+                className="btn bg-primary text-white"
+              >
+                Create New <ChevronRightIcon className="" />
+              </Link>
+            </div>
           </div>
           <div className="card p-4 mt-5">
             <div className="">
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
                 <div className="d-flex align-items-center justify-content-between">
-
                   <h6 className="font-weight-600 text-grey mb-0">
                     RECENT REPAIR QUOTE
                   </h6>

@@ -11,7 +11,7 @@ export default function DiscountGuidance(props) {
     const [rowSelectionModel, setRowSelectionModel] = useState([]);
     const [pageSize, setPageSize] = useState(10);
     const [page, setPage] = useState(0);
-    const [customerId, setCustomerId] = useState("");
+    const [customerId, setCustomerId] = useState("1023942");
     const [order, setOrder] = useState("");
     const [parts, setParts] = useState("");
     const [usage, setUsage] = useState("");
@@ -32,13 +32,13 @@ export default function DiscountGuidance(props) {
             : "";
         // let filter = filterQuery ? `&search=${filterQuery}` : "";
         // const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
-        const filter = `customer_id=${customerId}&order=${order}&parts=${parts}&usage=${usage}&machine=${machine}`
-        const query = `${filter}&pagenumber=${pageNo}&pagesize=${rowsPerPage}${sort}`;
+        const filter = `customer_id=${customerId}`
+        const query = `${filter}&pagenumber=${pageNo + 1}&pagesize=${rowsPerPage}${sort}`;
 
         await getDiscountDetails(query)
             .then((discountResult) => {
-                setTotalCount(discountResult.totalRows);
-                setDiscountData(discountResult.result);
+                setTotalCount(discountResult[0].number_of_rows);
+                setDiscountData(discountResult[0].data);
             })
             .catch((err) => {
                 props.handleSnack("error", "Error occured while fetching discount details");
@@ -95,7 +95,7 @@ export default function DiscountGuidance(props) {
                         <DataGrid
                             loading={isLoading}
                             sx={GRID_STYLE}
-                            getRowId={(row) => row.customer_id}
+                            getRowId={(row) => row.index}
                             page={page}
                             pageSize={pageSize}
                             onPageChange={(newPage) =>

@@ -27,7 +27,6 @@ import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
 import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 import RecentSparePartQuote from "pages/Repair/quote/RecentSparePartQuote";
 import SearchSparePartQuote from "pages/Repair/quote/SearchSparePartQuote";
-import SparePartQuoteConfiguration from "pages/Repair/quote/SparePartQuoteConfiguration";
 import RecentRepairQuote from "pages/Repair/quote/RecentRepairQuote";
 import QuoteRepairSearch from "pages/Repair/quote/QuoteRepairSearch";
 import { LandingPageLogin } from "pages/Dashboard/LandingPageLogin";
@@ -68,6 +67,7 @@ import { AccountSupport } from "pages/User/AccountSupport";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { WorkList } from "pages/Dashboard/WorkList";
 import { CreateWorkList } from "pages/Dashboard/CreateWorkList";
+import CreatePartQuote from "pages/Repair/quote/CreateSparepartQuote";
 
 
 // alert(window.location.pathname)
@@ -155,7 +155,7 @@ export const RouterConfig = () => {
         {/* Spare Parts Quote Routes */}
         <ProtectedRoute path={SPARE_PARTS_QUOTE_DETAILS} component={SparePartsQuoteDetails} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SPARE_PARTS_SEARCH} component={SearchSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-        <ProtectedRoute path={QUOTE_SPARE_PART_CONFIGURATION} component={SparePartQuoteConfiguration} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={QUOTE_SPARE_PART_CONFIGURATION} component={CreatePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SPARE_PARTS} component={RecentSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Price Routes */}
