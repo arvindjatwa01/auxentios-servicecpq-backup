@@ -68,6 +68,8 @@ import { AccountSupport } from "pages/User/AccountSupport";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { WorkList } from "pages/Dashboard/WorkList";
 import { CreateWorkList } from "pages/Dashboard/CreateWorkList";
+import SolutionAnalytics from "pages/SolutionModules/use-case-4/SolutionAnalytics";
+import CustomPortfolioAddUpdate from "pages/SolutionModules/use-case-4/CustomPortfolioAddUpdate";
 
 
 // alert(window.location.pathname)
@@ -169,7 +171,9 @@ export const RouterConfig = () => {
         {/* Solution Routes */}
         <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CreateCustomPortfolio} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-
+        {/* <ProtectedRoute path={SOLUTION_BUILDER_ANALYTICS} component={SolutionAnalytics} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} /> */}
+        {/* <ProtectedRoute path={SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE} component={CustomPortfolioAddUpdate} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} /> */}
+इ
         {/* Solution Quote Routes */}
         <ProtectedRoute path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={SOLUTION_QUOTE} component={SolutionQuote} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
