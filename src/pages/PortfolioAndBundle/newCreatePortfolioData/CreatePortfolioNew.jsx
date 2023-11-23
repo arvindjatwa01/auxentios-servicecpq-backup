@@ -376,7 +376,7 @@ export const CreatePortfolio = (props) => {
 
   // get exisiting portfolio details get by ApiCalling
   const getPortfolioDetails = async (portfolioId) => {
-    if (portfolioId) {
+    if (!isEmpty(portfolioId)) {
       setLoading(true);
       const rUrl = PORTFOLIO_URL() + "/" + portfolioId;
       await callGetApi(
@@ -387,7 +387,7 @@ export const CreatePortfolio = (props) => {
             intilisePortfolioDetails(response.data);
             const timeout = setTimeout(() => {
               setLoading(false);
-            }, 3000); // 5000 milliseconds = 5 seconds
+            }, 2000); // 5000 milliseconds = 5 seconds
 
             // Cleanup the timeout to avoid memory leaks
             return () => clearTimeout(timeout);
@@ -2203,7 +2203,7 @@ export const CreatePortfolio = (props) => {
                       handleAdministrativeTabTextChange(
                         e,
                         "preparedBy",
-                        "input"
+                        "text"
                       )
                     }
                     placeholder="Required (ex-abc@gmail.com)"
@@ -2227,7 +2227,7 @@ export const CreatePortfolio = (props) => {
                       handleAdministrativeTabTextChange(
                         e,
                         "approvedBy",
-                        "input"
+                        "text"
                       )
                     }
                   />
@@ -2250,7 +2250,7 @@ export const CreatePortfolio = (props) => {
                         onChange={(e) =>
                           handleAdministrativeTabTextChange(
                             e,
-                            "approvedBy",
+                            "preparedOn",
                             "date"
                           )
                         }
@@ -2276,8 +2276,8 @@ export const CreatePortfolio = (props) => {
                     onChange={(e) =>
                       handleAdministrativeTabTextChange(
                         e,
-                        "approvedBy",
-                        "input"
+                        "revisedBy",
+                        "text"
                       )
                     }
                   />
@@ -2792,8 +2792,8 @@ export const CreatePortfolio = (props) => {
         externalReference: generalTabData.externalReference,
         customerSegment: generalTabData.customerSegment?.value || "",
 
-        validFrom: validityTabData.validFrom,
-        validTo: validityTabData.validTo,
+        validFrom: validityTabData.fromDate,
+        validTo: validityTabData.toDate,
         startUsage: validityTabData.fromInput,
         endUsage: validityTabData.toInput,
         unit: validityTabData.from?.value || "EMPTY",

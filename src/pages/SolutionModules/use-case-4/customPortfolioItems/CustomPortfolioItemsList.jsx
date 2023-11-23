@@ -42,6 +42,12 @@ const CustomPortfolioItemsList = (props) => {
   const [searchBySolutionOrPortlio, setSearchBySolutionOrPortlio] =
     useState("");
 
+  // Search Bundle || Servicec items state data
+  const [searchBundleServiceItem, setSearchBundleServiceItem] = useState([]);
+  const [selectedSearchedItems, setSelectedSearchedItems] = useState([]);
+  const [bundleServiceItemsList, setBundleServiceItemsList] = useState([]);
+  const [existBundleServiceItems, setExistBundleServiceItems] = useState([]);
+
   const handleShowItemCreateModal = () => {
     setShowCustomItemModal(true);
   };
@@ -540,6 +546,11 @@ const CustomPortfolioItemsList = (props) => {
         <CustomItemTabsModal
           show={showCustomItemModal}
           hideModal={() => setShowCustomItemModal(false)}
+          customPortfolioId={customPortfolioId}
+          searchBundleServiceItem={searchBundleServiceItem}
+          setSearchBundleServiceItem={setSearchBundleServiceItem}
+          selectedSearchedItems={selectedSearchedItems}
+          setSelectedSearchedItems={setSelectedSearchedItems}
         />
       )}
     </>

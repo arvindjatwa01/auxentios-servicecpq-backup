@@ -29,7 +29,6 @@ import {
   getSearchStandardJobId,
   updateItemPriceData,
 } from "../../../../services/index";
-import { toast } from "react-toastify";
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 import { useHistory } from "react-router-dom";
 import {
@@ -42,7 +41,6 @@ import // createItemPriceData,
 // getSearchStandardJobId,
 // updateItemPriceData
 "../../../../services/index";
-// import { toast } from "react-toastify";
 // import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
 // import { useHistory } from "react-router-dom";
 // import { defaultItemObj, usageTypeKeyValuePair, itemPriceDefaultObj } from "../itemConstant"
@@ -255,9 +253,11 @@ const CustomItemAddEdit = (props) => {
     setItemRequestObj((prev) => ({ ...prev, [keyName]: e }));
     if (keyName === "usageIn") {
       dispatch(taskActions.updateList(e.value));
+      setItemRequestObj((prev) => ({ ...prev, [keyName]: e, strategyTask: "", taskType: "" }));
     }
     if (keyName === "strategyTask") {
       dispatch(taskActions.updateTask(e.value));
+      setItemRequestObj((prev) => ({ ...prev, [keyName]: e, taskType: "" }));
     }
   };
 
@@ -342,15 +342,7 @@ const CustomItemAddEdit = (props) => {
         state: templateDetails,
       });
     } catch (error) {
-      toast("😐" + error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      errorMessage(error);
     }
   };
 

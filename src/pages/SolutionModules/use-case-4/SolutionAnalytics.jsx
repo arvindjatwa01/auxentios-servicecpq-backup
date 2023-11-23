@@ -438,6 +438,17 @@ const SolutionAnalytics = () => {
     });
   };
 
+  // view the selected Soltuion Details
+  const handelViewSolutionDetails = (solutionRow) => {
+    history.push({
+      pathname: SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE,
+      state: {
+        portfolioId: solutionRow.customPortfolioId,
+        type: "fetch",
+      },
+    });
+  };
+
   return (
     <>
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -487,10 +498,10 @@ const SolutionAnalytics = () => {
                                   <i
                                     className="fa fa-pencil"
                                     aria-hidden="true"
-                                    // onClick={() =>
-                                    //   makePortfolioEditableEditable(solutionData)
-                                    // }
-                                  ></i>
+                                    onClick={() =>
+                                      handelViewSolutionDetails(solution)
+                                    }
+                                  />
                                 </a>
                                 <a className="ml-3 cursor font-size-14">
                                   <FontAwesomeIcon icon={faShareAlt} />

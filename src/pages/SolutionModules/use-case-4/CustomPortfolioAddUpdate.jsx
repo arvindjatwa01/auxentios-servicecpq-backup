@@ -22,7 +22,10 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import Select from "react-select";
-import { errorMessage } from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
+import {
+  errorMessage,
+  successMessage,
+} from "pages/PortfolioAndBundle/newCreatePortfolioData/utilities/toastMessage";
 import { useAppSelector } from "../../../app/hooks";
 import $ from "jquery";
 import editIcon from "../../../assets/icons/svg/edit.svg";
@@ -59,13 +62,25 @@ import { getFormatDateTime } from "pages/PortfolioAndBundle/newCreatePortfolioDa
 import { sparePartSearch } from "services/searchServices";
 import { FONT_STYLE_SELECT } from "pages/Repair/CONSTANTS";
 import SearchInputBox from "./useCase4Common/SearchInputBox";
-import { SEARCH_CUSTOMER } from "services/CONSTANTS";
-import { callGetApi } from "services/ApiCaller";
+import {
+  CUSTOM_PORTFOLIO_URL,
+  GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+  PORTFOLIO_PRICE_AGREEMENT_URL,
+  PORTFOLIO_PRICE_CREATE,
+  SEARCH_CUSTOMER,
+} from "services/CONSTANTS";
+import { callGetApi, callPostApi, callPutApi } from "services/ApiCaller";
 import { API_SUCCESS } from "services/ResponseCode";
 import { Switch } from "@material-ui/core";
 import CustomPortfolioItemsList from "./customPortfolioItems/CustomPortfolioItemsList";
+import { defaultCustomPortfolioObj } from "./Use_Case_4_Constansts";
+import LoadingProgress from "pages/Repair/components/Loader";
 
-const CustomPortfolioAddUpdate = () => {
+const CustomPortfolioAddUpdate = (props) => {
+  const {
+    location: { state: portfolioRecordData },
+    ...restProps
+  } = props;
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -99,6 +114,8 @@ const CustomPortfolioAddUpdate = () => {
   const [portfolioStatusKeyValuePair, setPortfolioStatusKeyValuePair] =
     useState([]);
   const [supportLevelKeyValuePair, setSupportLevelKeyValuePair] = useState([]);
+
+  const [loading, setLoading] = useState(false);
 
   const [portfolioSupportLevel, setPortfolioSupportLevel] = useState({
     ...defaultSupportLevel,
@@ -146,6 +163,11 @@ const CustomPortfolioAddUpdate = () => {
     serviceDescription: "",
     externalReference: "",
     customerSegment: "",
+    flagTemplate: false,
+    flagCommerce: false,
+  });
+
+  const [generalTabCustomerData, setGeneralTabCustomerData] = useState({
     source: "User Generated",
     customerID: "",
     customerName: "",
@@ -153,8 +175,6 @@ const CustomPortfolioAddUpdate = () => {
     contactName: "",
     contactPhone: "",
     customerGroup: "",
-    flagTemplate: false,
-    flagCommerce: false,
   });
 
   const [validityTabData, setValidityTabData] = useState({
@@ -201,6 +221,17 @@ const CustomPortfolioAddUpdate = () => {
   const [priceAgreementTableRow, setPriceAgreementTableRow] = useState([]);
   const [priceAgreementIds, setPriceAgreementIds] = useState([]);
 
+  const [searchCustomCoverageData, setSearchCustomCoverageData] = useState([]);
+  const [checkedCustomCoverageData, setCheckedCustomCoverageData] = useState(
+    []
+  );
+  const [selectedCustomCoverageData, setSelectedCustomCoverageData] = useState(
+    []
+  );
+  const [customPortfolioCoverageIds, setCustomPortfolioCoverageIds] = useState(
+    []
+  );
+
   const [administrativeTabData, setAdministrativeTabData] = useState({
     preparedBy: null,
     approvedBy: null,
@@ -210,6 +241,10 @@ const CustomPortfolioAddUpdate = () => {
     salesOffice: null,
     offerValidity: null,
   });
+
+  useEffect(() => {
+    dispatch(taskActions.fetchTaskList());
+  }, [dispatch]);
 
   useEffect(() => {
     // get Validity Key-Value Pair list
@@ -300,9 +335,372 @@ const CustomPortfolioAddUpdate = () => {
         setCurrencyKeyValuePair(currencyOptions);
       })
       .catch((err) => {
+        errorMessage(err);
         return;
       });
+
+    // get customer segment key value pair list
+    getPortfolioCommonConfig("customer-segment")
+      .then((res) => {
+        const customerSegmentOptions = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setCustomerSegmentKeyValue(customerSegmentOptions);
+      })
+      .catch((err) => {
+        errorMessage(err);
+      });
   }, []);
+
+  useEffect(() => {
+    // existing Portfolio
+    if (portfolioRecordData.type === "fetch") {
+      setCustomPortfolioRecordId(portfolioRecordData.portfolioId);
+      getCustomPortfolioDetails(portfolioRecordData.portfolioId);
+    }
+  }, [portfolioRecordData]);
+
+  // get exisiting Solution (Custom Portfolio) details get by ApiCalling
+  const getCustomPortfolioDetails = async (cutomPortfolioId) => {
+    if (!isEmpty(cutomPortfolioId)) {
+      setLoading(true);
+      const rUrl = `${CUSTOM_PORTFOLIO_URL()}/${cutomPortfolioId}`;
+      callGetApi(
+        null,
+        rUrl,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            intiliseCustomPortfolioDetails(response.data);
+            const timeout = setTimeout(() => {
+              setLoading(false);
+            }, 2000); // 5000 milliseconds = 5 seconds
+
+            // Cleanup the timeout to avoid memory leaks
+            return () => clearTimeout(timeout);
+          } else {
+            setLoading(false);
+          }
+        },
+        (error) => {
+          setLoading(false);
+        }
+      );
+    }
+  };
+
+  // map and set the initial data of Solution(Custom Portfolio)
+  const intiliseCustomPortfolioDetails = (recordData) => {
+    // set Portfolio Support Level
+    const _portfolioSupportLevel = supportLevelKeyValuePair.find(
+      (obj) => obj.value === recordData.supportLevel
+    );
+    setPortfolioSupportLevel(_portfolioSupportLevel || "");
+
+    // set Portfolio Status
+    const _portfolioStatus = portfolioStatusKeyValuePair.find(
+      (obj) => obj.value === recordData.status
+    );
+    setPortfolioStatus(_portfolioStatus || "");
+
+    // set Portfolio Tab Edit Mode true
+    setPortfolioTabsEditView({
+      generalTabEdit: true,
+      validityTabEdit: true,
+      strategyTabEdit: true,
+      priceTabEdit: true,
+      priceAgreementTabEdit: true,
+      coverageTabEdit: true,
+      administrativeTabEdit: true,
+    });
+
+    console.log(
+      "customerSegmentKeyValuePair ====== ",
+      customerSegmentKeyValuePair
+    );
+    // set General Tab data
+    setGeneralTabData({
+      ...generalTabData,
+      name: recordData.name || "",
+      description: recordData.description || "",
+      serviceDescription: "",
+      externalReference: recordData.externalReference || "",
+      customerSegment:
+        customerSegmentKeyValuePair.find(
+          (obj) => obj.value === recordData.customerSegment
+        ) || "",
+      flagTemplate: recordData.template,
+      flagCommerce: recordData.visibleInCommerce,
+    });
+
+    // fetch and set the Custom Details
+    if (!isEmpty(recordData.customerId)) {
+      handleFetchExistingCustomDetails(recordData.customerId);
+    }
+
+    // set Validity Tab data
+    setValidityTabData({
+      fromDate: recordData.validFrom,
+      toDate: recordData.validTo,
+      from:
+        validityKeyValuePair.find((obj) => obj.value === recordData.unit) || "",
+      to: null,
+      fromInput: recordData.startUsage,
+      toInput: recordData.endUsage,
+      dateFlag: true,
+      inputFlag: false,
+    });
+
+    // Response Time
+    const _responseTime = responseTimeKeyValuePair.find(
+      (obj) => obj.value === recordData.responseTime
+    );
+
+    // Prouct Hirerarchy
+    const _productHierarchy = productHierarchyKeyValuePair.find(
+      (obj) => obj.value === recordData.productHierarchy
+    );
+
+    // Geograpic
+    const _geographic = geographicKeyValuePair.find(
+      (obj) => obj.value === recordData.geographic
+    );
+    // Solution Type
+    const _solutionType = solutionTypeKeyValuePair.find(
+      (obj) => obj.value === recordData.solutionType && recordData.solutionType !== "EMPTY"
+    );
+
+    // Solution Value
+    const _solutionValue = solutionLevelKeyValuePair.find(
+      (obj) => obj.value === recordData.solutionLevel && recordData.solutionLevel !== "EMPTY"
+    );
+
+    // Set Strategy Tab data
+    setStrategyTabData({
+      // categoryUsage: _categoryUsage || "",
+      // strategyTask: _strategyTask || "",
+      // taskType: _taskType || "",
+      categoryUsage: "",
+      strategyTask: "",
+      taskType: "",
+      optionals: "",
+      responseTime: _responseTime || "",
+      productHierarchy: _productHierarchy || "",
+      geographic: _geographic || "",
+      solutionType: _solutionType || "",
+      solutionLevel: _solutionValue || "",
+    });
+
+    // administrative sales office
+    const _salesOffice = salesOfficeKeyValuePairs.find(
+      (obj) => obj.value === recordData.salesOffice
+    );
+
+    // administrative offer Validity
+    const _offerValidity = offerValidityKeyValuePairs.find(
+      (obj) => obj.value === recordData.offerValidity
+    );
+
+    // Set Administrative Tab data
+    setAdministrativeTabData({
+      preparedBy: recordData.preparedBy,
+      approvedBy: recordData.approvedBy,
+      preparedOn: recordData.preparedOn,
+      revisedBy: recordData.revisedBy,
+      revisedOn: recordData.revisedOn,
+      salesOffice: _salesOffice || "",
+      offerValidity: _offerValidity || "",
+    });
+
+    if (
+      recordData.portfolioPrice &&
+      Object.keys(recordData.portfolioPrice).length !== 0
+    ) {
+      // Price List
+      const _priceList = priceListKeyValuePair.find(
+        (obj) => obj.value === recordData.portfolioPrice?.priceList
+      );
+
+      // Price Method
+      const _priceMethod = priceMethodKeyValuePair.find(
+        (obj) => obj.value === recordData.portfolioPrice?.priceMethod
+      );
+
+      // Price Type
+      const _priceType = priceTypeKeyValuePair.find(
+        (obj) => obj.value === recordData.portfolioPrice?.priceType
+      );
+
+      // Set Price Tab Data
+      setPriceTabData({
+        portfolioPriceId: recordData.portfolioPrice?.portfolioPriceId || 0,
+        priceList: _priceList || "",
+        priceMethod: _priceMethod || "",
+        priceDate: recordData.portfolioPrice?.priceDate,
+        priceType: _priceType || "",
+        netPrice: recordData.portfolioPrice?.price,
+        additionalPriceType: "",
+        additionalPriceValue: "",
+        priceEscalatonType: "",
+        priceEscaltonValue: "",
+        calculatedPrice: recordData.portfolioPrice?.calculatedPrice,
+        priceBreakDownType: priceHeadTypeKeyValuePair[0],
+        priceBreakDownValue: "",
+      });
+
+      // set Portfolio Price brackdown Values
+      setPriceBrackdownValues({
+        sparePartsPrice: recordData.portfolioPrice?.sparePartsPrice,
+        labourPrice: recordData.portfolioPrice?.labourPrice,
+        miscPrice: recordData.portfolioPrice?.miscPrice,
+        servicePrice: recordData.portfolioPrice?.servicePrice,
+      });
+    }
+
+    // Set Portfolio Coverage Id's
+    const _customPortfolioCoverageIds = recordData.customCoverages.map(
+      (obj) => {
+        return { coverageId: obj.customCoverageId };
+      }
+    );
+    setCustomPortfolioCoverageIds(_customPortfolioCoverageIds);
+
+    // set Coverage Data
+    setSelectedCustomCoverageData(recordData.customCoverages);
+
+    // Map|Fetch the Portfolio Items for Table List
+    fetchCustomPortfolioItemsTableList(
+      recordData.customItems,
+      recordData.customPortfolioId
+    );
+  };
+
+  // fetch the existing customer Details
+  const handleFetchExistingCustomDetails = async (customerId) => {
+    const rUrl = SEARCH_CUSTOMER(`customerId~${customerId}`);
+    callGetApi(null, rUrl, (response) => {
+      if (response.status === API_SUCCESS) {
+        const customerRes = response.data[0];
+        setGeneralTabCustomerData({
+          ...generalTabCustomerData,
+          customerID: customerRes.customerId,
+          contactEmail: customerRes.email,
+          customerGroup: customerRes.customerGroup,
+          customerName: customerRes.fullName,
+        });
+      }
+    });
+  };
+
+  // get Portfolio Items data
+  const fetchCustomPortfolioItemsTableList = async (
+    items = [],
+    portfolioId = null
+  ) => {
+    let rUrl = GET_CUSTOM_PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE;
+    if (items.length !== 0) {
+      const shortedItems = items.sort(
+        (itemA, itemB) => itemA.customItemId - itemB.customItemId
+      );
+
+      //  set Portfolio Item Ids data
+      const _portfolioItemsIds = shortedItems.map((item) => ({
+        customItemId: item.customItemId,
+      }));
+      setCustomItemIds(_portfolioItemsIds);
+
+      rUrl =
+        rUrl +
+        shortedItems.map((item) => `itemIds=${item.customItemId}`).join("&");
+      if (!isEmpty(portfolioId)) {
+        rUrl = rUrl + "&portfolio_id=" + portfolioId;
+      }
+      await callGetApi(null, rUrl, (response) => {
+        if (response.status === API_SUCCESS) {
+          const res = response.data;
+          const _portfolioItems = [];
+
+          res.map((data) => {
+            let portfolioBundleService = []; // Create a new array for each data object
+
+            for (let i = 0; i < data.bundleItems.length; i++) {
+              portfolioBundleService.push(data.bundleItems[i]);
+            }
+
+            for (let j = 0; j < data.serviceItems.length; j++) {
+              portfolioBundleService.push(data.serviceItems[j]);
+            }
+
+            if (
+              data.portfolioItem &&
+              Object.keys(data.portfolioItem).length !== 0
+            ) {
+              _portfolioItems.push({
+                ...data.portfolioItem,
+                associatedServiceOrBundle: portfolioBundleService,
+              });
+            }
+          });
+          setCustomItemsTableList(_portfolioItems);
+        }
+      });
+    }
+  };
+
+  // handle portfolio tabs edit flag
+  const handlePortfolioHeaderTabDataViews = () => {
+    try {
+      if (portfolioStatus.value === "ACTIVE") {
+        errorMessage(
+          `The Solution data cannot be changed on active status, change to revise status to edit`
+        );
+      } else {
+        if (
+          portfolioHeaderActiveTab === "general" &&
+          portfolioTabsEditView.generalTabEdit
+        ) {
+          setPortfolioTabsEditView({
+            ...portfolioTabsEditView,
+            generalTabEdit: false,
+          });
+        } else if (
+          portfolioHeaderActiveTab === "validity" &&
+          portfolioTabsEditView.validityTabEdit
+        ) {
+          setPortfolioTabsEditView({
+            ...portfolioTabsEditView,
+            validityTabEdit: false,
+          });
+        } else if (
+          portfolioHeaderActiveTab === "strategy" &&
+          portfolioTabsEditView.strategyTabEdit
+        ) {
+          setPortfolioTabsEditView({
+            ...portfolioTabsEditView,
+            strategyTabEdit: false,
+          });
+        } else if (
+          portfolioHeaderActiveTab === "administrative" &&
+          portfolioTabsEditView.administrativeTabEdit
+        ) {
+          setPortfolioTabsEditView({
+            ...portfolioTabsEditView,
+            administrativeTabEdit: false,
+          });
+        } else if (
+          portfolioHeaderActiveTab === "price" &&
+          portfolioTabsEditView.priceTabEdit
+        ) {
+          setPortfolioTabsEditView({
+            ...portfolioTabsEditView,
+            priceTabEdit: false,
+          });
+        }
+      }
+    } catch (error) {
+      return;
+    }
+  };
 
   // Go back to Recent Portfolio Screen
   const goBackToRecentSolutions = () => {
@@ -330,6 +728,7 @@ const CustomPortfolioAddUpdate = () => {
   const handleValidityTabTextChange = (e, keyName, type) => {
     const _validityTabData = { ...validityTabData };
     if (type == "date") {
+      // setValidityTabData(prev => ({...prev, inputFlag: false, [keyName]: e.toISOString().substring(0, 10)}))
       _validityTabData.inputFlag = false;
       _validityTabData[keyName] = e.toISOString().substring(0, 10);
       if (keyName === "toDate") {
@@ -489,11 +888,11 @@ const CustomPortfolioAddUpdate = () => {
   const handleCustomerSearch = async (e) => {
     const { value } = e.target;
     setCustomerSearchNoOptions(true);
-    setGeneralTabData({
-      ...generalTabData,
+    setGeneralTabCustomerData({
+      ...generalTabCustomerData,
       customerID: value,
     });
-    // generalTabData.customerID = value;
+    // generalTabCustomerData.customerID = value;
     if (!isEmpty(value) && value.length !== 0) {
       const rUrl = SEARCH_CUSTOMER(`customerId~${value}`);
       callGetApi(
@@ -501,7 +900,6 @@ const CustomPortfolioAddUpdate = () => {
         rUrl,
         (response) => {
           if (response.status === API_SUCCESS) {
-            console.log("response ::", response);
             setCustomerSearchResult(response.data);
           } else {
             errorMessage(response?.data?.mesage);
@@ -517,8 +915,8 @@ const CustomPortfolioAddUpdate = () => {
   // handle Selected Searched Customer
   const handleCutomerSelect = (selectRes) => {
     setCustomerSearchNoOptions(false);
-    setGeneralTabData({
-      ...generalTabData,
+    setGeneralTabCustomerData({
+      ...generalTabCustomerData,
       customerID: selectRes.customerId,
       contactEmail: selectRes.email,
       contactName: selectRes.contactName,
@@ -528,6 +926,7 @@ const CustomPortfolioAddUpdate = () => {
     setCustomerSearchResult([]);
   };
 
+  // Solution Header General tab data
   const viewGeneralTabData = () => {
     return (
       <>
@@ -564,6 +963,7 @@ const CustomPortfolioAddUpdate = () => {
                     value={generalTabData.description}
                     onChange={handleGeneralTabTextChange}
                   />
+                  <div className="css-w8dmq8">*Mandatory</div>
                 </div>
               </div>
             </div>
@@ -578,7 +978,7 @@ const CustomPortfolioAddUpdate = () => {
                     style={{ position: "relative" }}
                   >
                     <SearchInputBox
-                      value={generalTabData.customerID}
+                      value={generalTabCustomerData.customerID}
                       placeHolder="Search Customer"
                       searchType="customerId"
                       handleSearch={handleCustomerSearch}
@@ -599,7 +999,7 @@ const CustomPortfolioAddUpdate = () => {
                     className="form-control text-primary border-radius-10"
                     name="customerName"
                     placeholder="Customer Name"
-                    value={generalTabData.customerName}
+                    value={generalTabCustomerData.customerName}
                     disabled
                     // onChange={handleGeneralTabTextChange}
                   />
@@ -615,7 +1015,7 @@ const CustomPortfolioAddUpdate = () => {
                     className="form-control text-primary border-radius-10"
                     name="contactEmail"
                     placeholder="Customer Email"
-                    value={generalTabData.contactEmail}
+                    value={generalTabCustomerData.contactEmail}
                     disabled
                     // onChange={handleGeneralTabTextChange}
                   />
@@ -649,7 +1049,7 @@ const CustomPortfolioAddUpdate = () => {
                     className="form-control text-primary border-radius-10"
                     name="customerGroup"
                     placeholder="Customer Group"
-                    value={generalTabData.customerGroup}
+                    value={generalTabCustomerData.customerGroup}
                     disabled
                     // onChange={handleGeneralTabTextChange}
                   />
@@ -750,9 +1150,9 @@ const CustomPortfolioAddUpdate = () => {
                     CUSTOMER ID
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(generalTabData.customerID)
+                    {isEmpty(generalTabCustomerData.customerID)
                       ? "NA"
-                      : generalTabData.customerID}
+                      : generalTabCustomerData.customerID}
                   </h6>
                 </div>
               </div>
@@ -762,9 +1162,9 @@ const CustomPortfolioAddUpdate = () => {
                     CUSTOMER NAME
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(generalTabData.customerName)
+                    {isEmpty(generalTabCustomerData.customerName)
                       ? "NA"
-                      : generalTabData.customerName}
+                      : generalTabCustomerData.customerName}
                   </h6>
                 </div>
               </div>
@@ -774,9 +1174,9 @@ const CustomPortfolioAddUpdate = () => {
                     CUSTOMER EMAIL
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(generalTabData.contactEmail)
+                    {isEmpty(generalTabCustomerData.contactEmail)
                       ? "NA"
-                      : generalTabData.contactEmail}
+                      : generalTabCustomerData.contactEmail}
                   </h6>
                 </div>
               </div>
@@ -800,9 +1200,9 @@ const CustomPortfolioAddUpdate = () => {
                     CUSTOMER GROUP
                   </p>
                   <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                    {isEmpty(generalTabData.customerGroup)
+                    {isEmpty(generalTabCustomerData.customerGroup)
                       ? "NA"
-                      : generalTabData.customerGroup}
+                      : generalTabCustomerData.customerGroup}
                   </h6>
                 </div>
               </div>
@@ -818,6 +1218,26 @@ const CustomPortfolioAddUpdate = () => {
                   </h6>
                 </div>
               </div>
+              <div className="col-md-4 col-sm-3">
+                <div className="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    FLAG FOR TEMPLATE
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {generalTabData.flagTemplate ? "YES" : "NO"}
+                  </h6>
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-3">
+                <div className="form-group">
+                  <p className="font-size-12 font-weight-500 mb-2">
+                    FLAG FOR COMMERCE
+                  </p>
+                  <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                    {generalTabData.flagCommerce ? "YES" : "NO"}
+                  </h6>
+                </div>
+              </div>
             </div>
           </>
         )}
@@ -825,6 +1245,7 @@ const CustomPortfolioAddUpdate = () => {
     );
   };
 
+  // Solution Header Validaty tab data
   const viewValidityTabData = () => {
     return (
       <>
@@ -1003,6 +1424,7 @@ const CustomPortfolioAddUpdate = () => {
     );
   };
 
+  // Solution Header Strategy tab data
   const viewStrategyTabData = () => {
     return (
       <>
@@ -1172,6 +1594,7 @@ const CustomPortfolioAddUpdate = () => {
     );
   };
 
+  // Solution Header Price tab data
   const viewPriceTabData = () => {
     return (
       <>
@@ -1555,6 +1978,7 @@ const CustomPortfolioAddUpdate = () => {
     );
   };
 
+  // Solution Header Price Agreement tab data
   const viewPriceAgreementTabData = () => {
     return (
       <>
@@ -1717,8 +2141,10 @@ const CustomPortfolioAddUpdate = () => {
     );
   };
 
+  // Solution Header Coverage tab data
   const viewCoverageTabData = () => {};
 
+  // Solution Header Administrative tab data
   const viewAdministrativeTabData = () => {
     return (
       <>
@@ -1739,7 +2165,7 @@ const CustomPortfolioAddUpdate = () => {
                       handleAdministrativeTabTextChange(
                         e,
                         "preparedBy",
-                        "input"
+                        "text"
                       )
                     }
                     placeholder="Required (ex-abc@gmail.com)"
@@ -1763,7 +2189,7 @@ const CustomPortfolioAddUpdate = () => {
                       handleAdministrativeTabTextChange(
                         e,
                         "approvedBy",
-                        "input"
+                        "text"
                       )
                     }
                   />
@@ -1786,7 +2212,7 @@ const CustomPortfolioAddUpdate = () => {
                         onChange={(e) =>
                           handleAdministrativeTabTextChange(
                             e,
-                            "approvedBy",
+                            "preparedOn",
                             "date"
                           )
                         }
@@ -1812,8 +2238,8 @@ const CustomPortfolioAddUpdate = () => {
                     onChange={(e) =>
                       handleAdministrativeTabTextChange(
                         e,
-                        "approvedBy",
-                        "input"
+                        "revisedBy",
+                        "text"
                       )
                     }
                   />
@@ -2009,7 +2435,203 @@ const CustomPortfolioAddUpdate = () => {
     );
   };
 
-  // check General tab Input Validation
+  // create Custom Portfolio
+  const handleCreateCustomPortfolio = (requestObj) => {
+    return new Promise((resolve, reject) => {
+      const rUrl = CUSTOM_PORTFOLIO_URL();
+      callPostApi(
+        null,
+        rUrl,
+        requestObj,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            resolve({
+              apiSuccess: true,
+              responsePacket: response.data,
+            });
+          } else {
+            resolve({
+              apiSuccess: false,
+              responsePacket: null,
+            });
+          }
+        },
+        (error) => {
+          resolve({
+            apiSuccess: false,
+            responsePacket: null,
+          });
+        }
+      );
+    });
+  };
+
+  // Update Custom Portfolio
+  const handleUpdateCustomPortfolio = (requestObj) => {
+    return new Promise((resolve, reject) => {
+      const rUrl = `${CUSTOM_PORTFOLIO_URL()}/${customPortfolioRecordId}`;
+      callPutApi(
+        null,
+        rUrl,
+        requestObj,
+        (response) => {
+          if (response.status === API_SUCCESS) {
+            resolve({
+              apiSuccess: true,
+              responsePacket: response.data,
+            });
+          } else {
+            resolve({
+              apiSuccess: false,
+              responsePacket: null,
+            });
+          }
+        },
+        (error) => {
+          resolve({
+            apiSuccess: false,
+            responsePacket: null,
+          });
+        }
+      );
+    });
+  };
+
+  // Create || Update Portfolio Price data
+  const handleCreateUpdateCustomPortfolioPrice = () => {
+    return new Promise((resolve, reject) => {
+      let priceReqObj = {
+        priceMethod: priceTabData.priceMethod?.value || "LIST_PRICE",
+        priceType: priceTabData.priceType?.value || "EVENT_BASSD",
+        priceList: priceTabData.priceList?.value || "COUNTRY",
+        priceDate: priceTabData.priceDate,
+        currency: "INR",
+        validFrom: validityTabData.validFrom,
+        validTo: validityTabData.validTo,
+        calculatedPriceRule: "",
+        userId: "",
+      };
+      if (isEmpty(priceTabData.portfolioPriceId)) {
+        const rUrl = PORTFOLIO_PRICE_CREATE();
+        callPostApi(
+          null,
+          rUrl,
+          priceReqObj,
+          (response) => {
+            if (response.status === 200) {
+              const priceResult = response.data;
+              setPriceTabData({
+                ...priceTabData,
+                portfolioPriceId: priceResult.portfolioPriceId,
+                netPrice: priceResult.totalPrice,
+                calculatedPrice: priceResult.calculatedPrice,
+              });
+              resolve({
+                apiSuccess: true,
+                responsePacket: priceResult.portfolioPriceId,
+                createMode: true,
+              });
+            } else {
+              errorMessage(response?.data?.message);
+              resolve({
+                apiSuccess: false,
+                responsePacket: null,
+                createMode: true,
+              });
+            }
+          },
+          (error) => {
+            errorMessage(error);
+            resolve({
+              apiSuccess: false,
+              responsePacket: null,
+              createMode: true,
+            });
+          }
+        );
+      } else {
+        const rUrl = `${PORTFOLIO_PRICE_CREATE()}/${
+          priceTabData.portfolioPriceId
+        }`;
+        callPutApi(
+          null,
+          rUrl,
+          priceReqObj,
+          (response) => {
+            if (response.status === 200) {
+              const priceResult = response.data;
+              setPriceTabData({
+                ...priceTabData,
+                netPrice: priceResult.totalPrice,
+                calculatedPrice: priceResult.calculatedPrice,
+              });
+              resolve({
+                apiSuccess: true,
+                responsePacket: priceResult,
+                createMode: false,
+              });
+            } else {
+              errorMessage(response?.data?.message);
+              resolve({
+                apiSuccess: false,
+                responsePacket: null,
+                createMode: false,
+              });
+            }
+          },
+          (error) => {
+            errorMessage(error);
+            resolve({
+              apiSuccess: false,
+              responsePacket: null,
+              createMode: false,
+            });
+          }
+        );
+      }
+    });
+  };
+
+  // Create Solution Price Agreement data
+  const handleCreateUpdateCutmPortfolioPriceAgreement = () => {
+    const _priceAgreementIds = [...priceAgreementIds];
+    if (priceAgreementTableRow.length !== 0) {
+      for (let i = 0; i < priceAgreementTableRow.length; i++) {
+        var reqObj = {
+          itemType: isEmpty(priceAgreementTableRow[i].itemType)
+            ? "EMPTY"
+            : priceAgreementTableRow[i].itemType,
+          itemNumber: priceAgreementTableRow[i].itemNumber,
+          specialPrice: parseFloat(priceAgreementTableRow[i].specialPrice),
+          discount: parseFloat(priceAgreementTableRow[i].discount),
+          absoluteDiscount: parseFloat(
+            priceAgreementTableRow[i].absoluteDiscount
+          ),
+        };
+        const priceAgreementReqUrl = PORTFOLIO_PRICE_AGREEMENT_URL();
+        callPostApi(
+          null,
+          priceAgreementReqUrl,
+          reqObj,
+          (response) => {
+            if (response.status === API_SUCCESS) {
+              _priceAgreementIds.push({
+                priceAgreementId: response.data.priceAgreementId,
+              });
+            } else {
+              errorMessage(response.data.message);
+            }
+          },
+          (error) => {
+            errorMessage(error);
+          }
+        );
+      }
+    }
+    setPriceAgreementIds(_priceAgreementIds);
+  };
+
+  // check custom portfolio tab Input Validation
   const checkInputValidation = (activeTab) => {
     if (activeTab == "general" && !portfolioTabsEditView.generalViewOnly) {
       if (isEmpty(generalTabData.name)) {
@@ -2017,7 +2639,7 @@ const CustomPortfolioAddUpdate = () => {
           "Solution code is a required field, you can’t leave it blank"
         );
         return false;
-      } else if (isEmpty(generalTabData.name)) {
+      } else if (isEmpty(generalTabData.description)) {
         errorMessage(
           "Solution description is a required field, you can’t leave it blank"
         );
@@ -2029,21 +2651,22 @@ const CustomPortfolioAddUpdate = () => {
       return true;
     } else {
       if (isEmpty(customPortfolioRecordId)) {
-        errorMessage("Please create Solution First.");
+        errorMessage("Please Create Solution First.");
+        setPortfolioHeaderActiveTab("general");
         return false;
       } else {
         if (activeTab == "strategy" && !portfolioTabsEditView.strategyTabEdit) {
-          if (isEmpty(strategyTabData.categoryUsage?.value)) {
-            errorMessage(
-              "Category usage is a required field, you can’t leave it blank"
-            );
-            return false;
-          } else if (isEmpty(strategyTabData.strategyTask?.value)) {
-            errorMessage(
-              "Strategy Task is a required field, you can’t leave it blank"
-            );
-            return false;
-          }
+          // if (isEmpty(strategyTabData.categoryUsage?.value)) {
+          //   errorMessage(
+          //     "Category usage is a required field, you can’t leave it blank"
+          //   );
+          //   return false;
+          // } else if (isEmpty(strategyTabData.strategyTask?.value)) {
+          //   errorMessage(
+          //     "Strategy Task is a required field, you can’t leave it blank"
+          //   );
+          //   return false;
+          // }
           return true;
         } else if (
           activeTab === "price" &&
@@ -2060,6 +2683,7 @@ const CustomPortfolioAddUpdate = () => {
           activeTab === "administrative" &&
           !portfolioTabsEditView.administrativeTabEdit
         ) {
+          console.log("administrativeTabData ====== ", administrativeTabData);
           if (isEmpty(administrativeTabData.preparedBy)) {
             errorMessage(
               "Prepared By is a required field, you can’t leave it blank"
@@ -2088,8 +2712,187 @@ const CustomPortfolioAddUpdate = () => {
   const handleNextClick = (e) => {
     try {
       let { id } = e.target;
+      const requestObj = {
+        ...defaultCustomPortfolioObj,
+        customPortfolioId: customPortfolioRecordId,
+        name: generalTabData.name,
+        description: generalTabData.description,
+        externalReference: generalTabData.externalReference,
+        customerSegment: generalTabData.customerSegment?.value || "",
+        template: generalTabData.flagTemplate,
+        visibleInCommerce: generalTabData.flagCommerce,
+
+        customerId: parseInt(generalTabCustomerData.customerID),
+        customerGroup: generalTabCustomerData.customerGroup,
+
+        validFrom: validityTabData.fromDate,
+        validTo: validityTabData.toDate,
+        startUsage: validityTabData.fromInput,
+        endUsage: validityTabData.toInput,
+        unit: validityTabData.from?.value || "EMPTY",
+
+        usageCategory: strategyTabData.categoryUsage?.value || "EMPTY",
+        strategyTask: strategyTabData.strategyTask?.value || "EMPTY",
+        taskType: strategyTabData.taskType?.value || "EMPTY",
+        // optionalServices: _optionalServices,
+        optionalServices: "",
+        responseTime: strategyTabData.responseTime?.value || "EMPTY",
+        productHierarchy: strategyTabData.productHierarchy?.value || "EMPTY",
+        geographic: strategyTabData.geographic?.value || "EMPTY",
+        solutionType: strategyTabData.solutionType?.value || "EMPTY",
+        solutionLevel: strategyTabData.solutionLevel?.value || "EMPTY",
+
+        portfolioPrice: isEmpty(priceTabData.portfolioPriceId)
+          ? null
+          : {
+              portfolioPriceId: priceTabData.portfolioPriceId,
+            },
+
+        preparedBy: administrativeTabData.preparedBy,
+        approvedBy: administrativeTabData.approvedBy,
+        preparedOn: administrativeTabData.preparedOn,
+        revisedBy: administrativeTabData.revisedBy,
+        revisedOn: administrativeTabData.revisedOn,
+        salesOffice: administrativeTabData.salesOffice?.value || "",
+        offerValidity: administrativeTabData.preparedBy?.value || "",
+
+        customItems: customItemIds,
+        customCoverages: customPortfolioCoverageIds,
+
+        status: portfolioStatus?.value,
+        supportLevel: portfolioSupportLevel?.value,
+      };
+
       if (!checkInputValidation(id)) {
         return;
+      }
+
+      if (id === "general") {
+        if (isEmpty(customPortfolioRecordId)) {
+          handleCreateCustomPortfolio(requestObj).then((res) => {
+            if (res.apiSuccess) {
+              successMessage(
+                `Solution ${generalTabData.name} Created Successfully`
+              );
+              setCustomPortfolioRecordId(res.responsePacket.customPortfolioId);
+              setPortfolioHeaderActiveTab("validity");
+              setPortfolioTabsEditView((prev) => ({
+                ...prev,
+                generalTabEdit: true,
+              }));
+            }
+          });
+        } else {
+          handleUpdateCustomPortfolio(requestObj).then((res) => {
+            if (res.apiSuccess) {
+              successMessage(
+                `Solution ${generalTabData.name} Updated Successfully`
+              );
+              setPortfolioHeaderActiveTab("validity");
+              setPortfolioTabsEditView((prev) => ({
+                ...prev,
+                generalTabEdit: true,
+              }));
+            }
+          });
+        }
+      } else {
+        if (isEmpty(customPortfolioRecordId)) {
+          setPortfolioHeaderActiveTab("general");
+          throw `Please Create Solution First.`;
+        } else {
+          if (id === "price") {
+            handleCreateUpdateCustomPortfolioPrice().then((priceResult) => {
+              if (priceResult.apiSuccess) {
+                console.log("price result ==== ", priceResult);
+                let requestObjWithPriceId = { ...requestObj };
+                if (priceResult.createMode) {
+                  requestObjWithPriceId = {
+                    ...requestObjWithPriceId,
+                    portfolioPrice: isEmpty(priceResult.responsePacket)
+                      ? null
+                      : {
+                          portfolioPriceId: priceResult.responsePacket,
+                        },
+                  };
+                }
+                handleUpdateCustomPortfolio(requestObjWithPriceId).then(
+                  (res) => {
+                    if (res.apiSuccess) {
+                      successMessage(
+                        `Solution ${generalTabData.name} Updated Successfully`
+                      );
+                      setPortfolioHeaderActiveTab("priceAgreement");
+                      setPortfolioTabsEditView((prev) => ({
+                        ...prev,
+                        priceTabEdit: true,
+                      }));
+                    }
+                  }
+                );
+              }
+            });
+          } else if (id === "priceAgreement") {
+            handleCreateUpdateCutmPortfolioPriceAgreement();
+            handleUpdateCustomPortfolio(requestObj).then((res) => {
+              if (res.apiSuccess) {
+                successMessage(
+                  `Solution ${generalTabData.name} Updated Successfully`
+                );
+
+                setPortfolioHeaderActiveTab("coverage");
+                setPortfolioTabsEditView((prev) => ({
+                  ...prev,
+                  priceAgreementTabEdit: true,
+                }));
+              }
+            });
+          } else {
+            handleUpdateCustomPortfolio(requestObj).then((res) => {
+              if (res.apiSuccess) {
+                successMessage(
+                  `Solution ${generalTabData.name} Updated Successfully`
+                );
+                if (id === "validity") {
+                  setPortfolioHeaderActiveTab("strategy");
+                  setPortfolioTabsEditView((prev) => ({
+                    ...prev,
+                    validityTabEdit: true,
+                  }));
+                } else if (id == "strategy") {
+                  setPortfolioHeaderActiveTab("price");
+                  setPortfolioTabsEditView((prev) => ({
+                    ...prev,
+                    strategyTabEdit: true,
+                  }));
+                } else if (id == "price") {
+                  setPortfolioHeaderActiveTab("priceAgreement");
+                  setPortfolioTabsEditView((prev) => ({
+                    ...prev,
+                    priceTabEdit: true,
+                  }));
+                } else if (id == "priceAgreement") {
+                  setPortfolioHeaderActiveTab("coverage");
+                  setPortfolioTabsEditView((prev) => ({
+                    ...prev,
+                    priceAgreementTabEdit: true,
+                  }));
+                } else if (id == "coverage") {
+                  setPortfolioHeaderActiveTab("administrative");
+                  setPortfolioTabsEditView((prev) => ({
+                    ...prev,
+                    coverageTabEdit: true,
+                  }));
+                } else if (id == "administrative") {
+                  setPortfolioTabsEditView((prev) => ({
+                    ...prev,
+                    administrativeTabEdit: true,
+                  }));
+                }
+              }
+            });
+          }
+        }
       }
     } catch (error) {
       errorMessage(error);
@@ -2100,93 +2903,103 @@ const CustomPortfolioAddUpdate = () => {
   return (
     <>
       <div className="content-body" style={{ minHeight: "884px" }}>
-        <div className="container-fluid ">
-          <CustomPortfolioHeader
-            portfolioSupportLevel={portfolioSupportLevel}
-            portfolioStatus={portfolioStatus}
-            supportLevelKeyValuePair={supportLevelKeyValuePair}
-            portfolioStatusKeyValuePair={portfolioStatusKeyValuePair}
-            setIsActivePortfolio={setIsActivePortfolio}
-            handlePortfolioSupportLevel={(e) => setPortfolioSupportLevel(e)}
-            handlePortfolioStatus={(e) => setPortfolioStatus(e)}
-          />
-          <div className="card p-4 mt-5">
-            <h5 className="d-flex justify-content-between align-items-center mb-0">
-              <div className="d-flex align-items-center">
-                <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                  {!isEmpty(customPortfolioRecordId)
-                    ? "Solution Details"
-                    : "Solution Header"}
-                </span>
-                <a className="btn-sm cursor">
-                  <i
-                    className="fa fa-pencil"
-                    aria-hidden="true"
-                    // onClick={handlePortfolioHeaderTabDataViews}
-                  />
-                </a>
-                <a className="btn-sm cursor">
-                  <i className="fa fa-bookmark-o" aria-hidden="true" />{" "}
-                </a>
-                <a className="btn-sm cursor">
-                  <img style={{ width: "14px" }} src={folderAddIcon} />{" "}
-                </a>
-              </div>
-              <button
-                onClick={goBackToRecentSolutions}
-                className="btn bg-primary text-white cursor"
-              >
-                Back
-              </button>
-            </h5>
-            <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={portfolioHeaderActiveTab}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList
-                    className="custom-tabs-div"
-                    aria-label="lab API tabs example"
-                    onChange={handleTabChange}
-                  >
-                    <Tab label="General" value={"general"} />
-                    <Tab label="Validity" value={"validity"} />
-                    <Tab label="Strategy" value={"strategy"} />
-                    <Tab
-                      label="Price"
-                      //   disabled={isPriceAgreementDisable}
-                      value={"price"}
-                    />
-                    <Tab
-                      label="Price Agreement"
-                      //   disabled={!isPriceAgreementDisable}
-                      value={"priceAgreement"}
-                    />
-                    <Tab label="Coverage" value={"coverage"} />
-                    <Tab label="Administrative" value={"administrative"} />
-                  </TabList>
-                </Box>
-                <TabPanel value={"general"}> {viewGeneralTabData()}</TabPanel>
-                <TabPanel value={"validity"}>{viewValidityTabData()}</TabPanel>
-                <TabPanel value={"strategy"}>{viewStrategyTabData()}</TabPanel>
-                <TabPanel value={"price"}>{viewPriceTabData()}</TabPanel>
-                <TabPanel value={"priceAgreement"} className="customTabPanel">
-                  {viewPriceAgreementTabData()}
-                </TabPanel>
-                <TabPanel value="coverage">{viewCoverageTabData()}</TabPanel>
-                <TabPanel value="administrative">
-                  {viewAdministrativeTabData()}
-                </TabPanel>
-              </TabContext>
-            </Box>
+        {loading ? (
+          <div className="d-flex justify-content-center">
+            <LoadingProgress />
           </div>
-          <CustomPortfolioItemsList
-            // customPortfolioId={customPortfolioRecordId}
-            customPortfolioId={816}
-            customItemsTableList={customItemsTableList}
-            setCustomItemsTableList={setCustomItemsTableList}
-            customItemIds={customItemIds}
-            setCustomItemIds={setCustomItemIds}
-          />
-        </div>
+        ) : (
+          <div className="container-fluid ">
+            <CustomPortfolioHeader
+              portfolioSupportLevel={portfolioSupportLevel}
+              portfolioStatus={portfolioStatus}
+              supportLevelKeyValuePair={supportLevelKeyValuePair}
+              portfolioStatusKeyValuePair={portfolioStatusKeyValuePair}
+              setIsActivePortfolio={setIsActivePortfolio}
+              handlePortfolioSupportLevel={(e) => setPortfolioSupportLevel(e)}
+              handlePortfolioStatus={(e) => setPortfolioStatus(e)}
+            />
+            <div className="card p-4 mt-5">
+              <h5 className="d-flex justify-content-between align-items-center mb-0">
+                <div className="d-flex align-items-center">
+                  <span className="mr-3" style={{ whiteSpace: "pre" }}>
+                    {!isEmpty(customPortfolioRecordId)
+                      ? "Solution Details"
+                      : "Solution Header"}
+                  </span>
+                  <a className="btn-sm cursor">
+                    <i
+                      className="fa fa-pencil"
+                      aria-hidden="true"
+                      onClick={handlePortfolioHeaderTabDataViews}
+                    />
+                  </a>
+                  <a className="btn-sm cursor">
+                    <i className="fa fa-bookmark-o" aria-hidden="true" />{" "}
+                  </a>
+                  <a className="btn-sm cursor">
+                    <img style={{ width: "14px" }} src={folderAddIcon} />{" "}
+                  </a>
+                </div>
+                <button
+                  onClick={goBackToRecentSolutions}
+                  className="btn bg-primary text-white cursor"
+                >
+                  Back
+                </button>
+              </h5>
+              <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
+                <TabContext value={portfolioHeaderActiveTab}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList
+                      className="custom-tabs-div"
+                      aria-label="lab API tabs example"
+                      onChange={handleTabChange}
+                    >
+                      <Tab label="General" value={"general"} />
+                      <Tab label="Validity" value={"validity"} />
+                      <Tab label="Strategy" value={"strategy"} />
+                      <Tab
+                        label="Price"
+                        //   disabled={isPriceAgreementDisable}
+                        value={"price"}
+                      />
+                      <Tab
+                        label="Price Agreement"
+                        //   disabled={!isPriceAgreementDisable}
+                        value={"priceAgreement"}
+                      />
+                      <Tab label="Coverage" value={"coverage"} />
+                      <Tab label="Administrative" value={"administrative"} />
+                    </TabList>
+                  </Box>
+                  <TabPanel value={portfolioHeaderActiveTab}>
+                    {portfolioHeaderActiveTab === "general" &&
+                      viewGeneralTabData()}
+                    {portfolioHeaderActiveTab === "validity" &&
+                      viewValidityTabData()}
+                    {portfolioHeaderActiveTab === "strategy" &&
+                      viewStrategyTabData()}
+                    {portfolioHeaderActiveTab === "price" && viewPriceTabData()}
+                    {portfolioHeaderActiveTab === "priceAgreement" &&
+                      viewPriceAgreementTabData()}
+                    {portfolioHeaderActiveTab === "coverage" &&
+                      viewCoverageTabData()}
+                    {portfolioHeaderActiveTab === "administrative" &&
+                      viewAdministrativeTabData()}
+                  </TabPanel>
+                </TabContext>
+              </Box>
+            </div>
+            <CustomPortfolioItemsList
+              // customPortfolioId={customPortfolioRecordId}
+              customPortfolioId={816}
+              customItemsTableList={customItemsTableList}
+              setCustomItemsTableList={setCustomItemsTableList}
+              customItemIds={customItemIds}
+              setCustomItemIds={setCustomItemIds}
+            />
+          </div>
+        )}
       </div>
     </>
   );
