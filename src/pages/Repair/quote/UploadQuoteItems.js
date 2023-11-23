@@ -32,7 +32,7 @@ export const UploadQuoteItems = (props) => {
                         <FileUploader
                             handleChange={props.handleReadFile}
                             name="file"
-                            types={["xls", "xlsx"]}
+                            types={["xls", "xlsx", "csv"]}
                             onClick={(event) => {
                                 event.currentTarget.value = null;
                             }}

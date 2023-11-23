@@ -316,7 +316,7 @@ export const FETCH_PROPENSITY_TO_BUY_DET = (propensityLevel, transLevel) => `htt
 export const FETCH_GAP_TO_ENTITLEMENT = `https://yr2btg0lie.execute-api.us-east-2.amazonaws.com/gap-to-entitlement`;
 export const FETCH_PARTS_SEGMENT_DETAILS = (cluster) => `https://eoa6truj1j.execute-api.us-east-2.amazonaws.com/parts_segmentation?cluster=${cluster}`;
 export const FETCH_PARTS_SEGMENT = "https://hzrle4s7xi.execute-api.us-east-2.amazonaws.com/parts_segmentation_analysis";
-
+export const FETCH_DISCOUNT_GUIDANCE = (filter) => `https://ymnnwbr1ch.execute-api.us-east-2.amazonaws.com/discount?${filter}`
 // Master Equipment 
 export const validate_Coverage_Get_Url = DATA_SERVICE_URI + "equipment/validate-coverage"
 export const DATA_SVC_EQUIPMENT = () => DATA_SERVICE_URI + "equipment";

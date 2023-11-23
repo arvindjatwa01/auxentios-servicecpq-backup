@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET } from "./CONSTANTS";
+import { FETCH_DISCOUNT_GUIDANCE, FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -17,74 +17,97 @@ const config = {
 };
 //Fetch Propensity To Buy
 export const getPropensityToBuy = () => {
-    console.log("Dashboard Service > propensity-to-buy called...");
-    return new Promise((resolve, reject) => {
-      try {
-        axios
-          .get(FETCH_PROPENSITY_TO_BUY, config)
-          .then((res) => {
-            console.log("getPropensityToBuy > axios res=", res);
-            if (res.status === 200) resolve(res.data);
-            else reject(res.data);
-          })
-          .catch((err) => {
-            console.log("getPropensityToBuy > axios err=", err);
-            reject("Error in getPropensityToBuy axios!");
-          });
-      } catch (error) {
-        console.error("in DashboardService > getPropensityToBuy, Err===", error);
-        reject(SYSTEM_ERROR);
-      }
-    });
-  };
+  console.log("Dashboard Service > propensity-to-buy called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_PROPENSITY_TO_BUY, config)
+        .then((res) => {
+          console.log("getPropensityToBuy > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getPropensityToBuy > axios err=", err);
+          reject("Error in getPropensityToBuy axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getPropensityToBuy, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
-  export const getPropensityDetails = (propensityLevel, transactionLevel) => {
-    console.log("Dashboard Service > propensity-to-buy called...");
-    return new Promise((resolve, reject) => {
-      try {
-        axios
-          .get(FETCH_PROPENSITY_TO_BUY_DET(propensityLevel, transactionLevel), config)
-          .then((res) => {
-            console.log("getPropensityToBuy > axios res=", res);
-            if (res.status === 200) resolve(res.data);
-            else reject(res.data);
-          })
-          .catch((err) => {
-            console.log("getPropensityToBuy > axios err=", err);
-            reject("Error in getPropensityToBuy axios!");
-          });
-      } catch (error) {
-        console.error("in DashboardService > getPropensityToBuy, Err===", error);
-        reject(SYSTEM_ERROR);
-      }
-    });
-  };
+export const getPropensityDetails = (propensityLevel, transactionLevel) => {
+  console.log("Dashboard Service > propensity-to-buy called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_PROPENSITY_TO_BUY_DET(propensityLevel, transactionLevel), config)
+        .then((res) => {
+          console.log("getPropensityToBuy > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getPropensityToBuy > axios err=", err);
+          reject("Error in getPropensityToBuy axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getPropensityToBuy, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 
-  //Fetch Gap To Entitlement
+//Fetch Gap To Entitlement
 export const getGapToEntitlement = () => {
-    console.log("Dashboard Service > getGapToEntitlement called...");
-    return new Promise((resolve, reject) => {
-      try {
-        axios
-          .get(FETCH_GAP_TO_ENTITLEMENT, config)
-          .then((res) => {
-            console.log("getGapToEntitlement > axios res=", res);
-            if (res.status === 200) resolve(res.data);
-            else reject(res.data);
-          })
-          .catch((err) => {
-            console.log("getGapToEntitlement > axios err=", err);
-            reject("Error in getGapToEntitlement axios!");
-          });
-      } catch (error) {
-        console.error("in DashboardService > getGapToEntitlement, Err===", error);
-        reject(SYSTEM_ERROR);
-      }
-    });
-  };
+  console.log("Dashboard Service > getGapToEntitlement called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_GAP_TO_ENTITLEMENT, config)
+        .then((res) => {
+          console.log("getGapToEntitlement > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getGapToEntitlement > axios err=", err);
+          reject("Error in getGapToEntitlement axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getGapToEntitlement, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
-  //Fetch parts segments
+//Fetch Discount Guidance
+export const getDiscountDetails = (filter) => {
+  console.log("Dashboard Service > getDiscountDetails called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_DISCOUNT_GUIDANCE(filter), config)
+        .then((res) => {
+          console.log("getDiscountDetails > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getDiscountDetails > axios err=", err);
+          reject("Error in getGapToEntitlement axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getDiscountDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch parts segments
 export const getPartsSegment = () => {
   console.log("Dashboard Service > partsSegment called...");
   return new Promise((resolve, reject) => {

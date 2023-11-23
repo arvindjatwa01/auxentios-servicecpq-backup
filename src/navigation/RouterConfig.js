@@ -27,7 +27,6 @@ import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
 import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 import RecentSparePartQuote from "pages/Repair/quote/RecentSparePartQuote";
 import SearchSparePartQuote from "pages/Repair/quote/SearchSparePartQuote";
-import SparePartQuoteConfiguration from "pages/Repair/quote/SparePartQuoteConfiguration";
 import RecentRepairQuote from "pages/Repair/quote/RecentRepairQuote";
 import QuoteRepairSearch from "pages/Repair/quote/QuoteRepairSearch";
 import { LandingPageLogin } from "pages/Dashboard/LandingPageLogin";
@@ -50,7 +49,7 @@ import PriceComputation from "pages/Price/PriceComputation";
 import { RepairServiceOnlyTemplate } from "pages/Repair/RepairServiceOnlyTemplate";
 import ServiceOnlyTemplatesHeader from "pages/Repair/ServiceOnlyTemplatesHeader";
 import { SparePartsQuoteDetails } from "pages/Repair/quote/SparePartsQuoteDetails";
-import { GuidedRepairQuote } from "pages/Repair/quote/GuidedRepairQuote";
+import { CreateRepairQuote } from "pages/Repair/quote/CreateRepairQuote";
 import { HomePage } from "pages/Dashboard/Home";
 import Insights from "pages/Insights/Insights";
 import EquipmentMaster from "pages/MasterData/EquipmentMaster";
@@ -70,6 +69,7 @@ import { WorkList } from "pages/Dashboard/WorkList";
 import { CreateWorkList } from "pages/Dashboard/CreateWorkList";
 import SolutionAnalytics from "pages/SolutionModules/use-case-4/SolutionAnalytics";
 import CustomPortfolioAddUpdate from "pages/SolutionModules/use-case-4/CustomPortfolioAddUpdate";
+import CreatePartQuote from "pages/Repair/quote/CreateSparepartQuote";
 
 
 // alert(window.location.pathname)
@@ -120,7 +120,7 @@ export const RouterConfig = () => {
 
         <Route exact path={QUOTE_RECENT_REPAIR} component={RecentRepairQuote} />
         <Route exact path={QUOTE_REPAIR_SEARCH} component={QuoteRepairSearch} />
-        <Route exact path={QUOTE_REPAIR_CREATE} component={GuidedRepairQuote} />
+        <Route exact path={QUOTE_REPAIR_CREATE} component={CreateRepairQuote} />
 
         <Route exact path={QUOTE_SOLUTION_BUILDER} component={QuoteSolutionBuilder} />
         <Route exact path={REPAIR_QUOTE_WITH_EVALUATION} component={QuoteWithEvaluation} />
@@ -157,7 +157,7 @@ export const RouterConfig = () => {
         {/* Spare Parts Quote Routes */}
         <ProtectedRoute path={SPARE_PARTS_QUOTE_DETAILS} component={SparePartsQuoteDetails} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SPARE_PARTS_SEARCH} component={SearchSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-        <ProtectedRoute path={QUOTE_SPARE_PART_CONFIGURATION} component={SparePartQuoteConfiguration} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={QUOTE_SPARE_PART_CONFIGURATION} component={CreatePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SPARE_PARTS} component={RecentSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Price Routes */}
