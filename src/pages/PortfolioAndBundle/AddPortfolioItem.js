@@ -27,11 +27,11 @@ import {
   getProductHierarchyKeyValue,
   getGergraphicKeyValue,
   getPortfolioCommonConfig,
-  getSearchQueryCoverage,
-  getSearchCoverageForFamily,
-  getSearchForPortfolio,
-  getSearchForRecentPortfolio,
-  getSearchForRecentBundleService,
+  // getSearchQueryCoverage,
+  // getSearchCoverageForFamily,
+  // getSearchForPortfolio,
+  // getSearchForRecentPortfolio,
+  // getSearchForRecentBundleService,
   itemCreation,
   updateItemData,
   portfolioSearch,
@@ -65,8 +65,8 @@ import {
   getTaskTypeKeyValue,
   getMachineTypeKeyValue,
   getTypeKeyValue,
-  getSearchStandardJobId,
-  getSearchKitId,
+  // getSearchStandardJobId,
+  // getSearchKitId,
   createItemPriceData,
   getItemPriceData,
 } from "../../services/index";
@@ -78,6 +78,9 @@ import {
   taskActions,
 } from "./customerSegment/strategySlice"
 import { STANDARD_JOB_DETAIL } from "navigation/CONSTANTS";
+import { GET_SEARCH_COVERAGE, GET_SEARCH_KIT_ID } from "services/CONSTANTS";
+import { getApiCall } from "services/searchQueryService";
+import { selectCustomStyle } from "./newCreatePortfolioData/itemConstant";
 
 
 const AddPortfolioItem = (props) => {
@@ -130,6 +133,7 @@ const AddPortfolioItem = (props) => {
   };
   const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("");
   const [openSearchSolution, setOpenSearchSolution] = useState(true);
+  const [portfolioItemType, setPortfolioItemType] = useState("TEMPLATE");
   const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([
     { label: "Bundle", value: "bundle" },
     { label: "Service", value: "service" },
@@ -935,7 +939,9 @@ const AddPortfolioItem = (props) => {
     }
 
     console.log("searchStr", searchStr);
-    getSearchQueryCoverage(searchStr)
+    let loading, data, failure;
+    getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+      // getSearchQueryCoverage(searchStr)
       .then((res) => {
         console.log("search Query Result :", res);
         setMasterData(res);
@@ -1339,7 +1345,9 @@ const AddPortfolioItem = (props) => {
       templateId: "",
     })
     var searchStr = e.target.value;
-    getSearchStandardJobId(searchStr)
+    let loading, data, failure;
+    getApiCall(GET_SEARCH_COVERAGE + searchStr, loading, data, failure)
+      // getSearchStandardJobId(searchStr)
       .then((res) => {
         // console.log("search Query Result --------- :", res);
         // setMasterData(res);
@@ -1364,7 +1372,9 @@ const AddPortfolioItem = (props) => {
       repairOption: e.target.value,
     })
     var searchStr = e.target.value;
-    getSearchKitId(searchStr)
+    let loading, data, failure;
+    getApiCall(GET_SEARCH_KIT_ID + searchStr, loading, data, failure)
+      // getSearchKitId(searchStr)
       .then((res) => {
         console.log("search Query Result --------- :", res);
         // setMasterData(res);
@@ -2838,14 +2848,14 @@ const AddPortfolioItem = (props) => {
         {/* <div className="ligt-greey-bg p-3">
           
         </div> */}
-        <div>
+        {/* <div>
           {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
               <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
               <span className="ml-2">Edit</span>
             </span>
           )}
-        </div>
+        </div> */}
         <TabContext value={tabs}>
           <Box
             sx={{
@@ -2881,7 +2891,11 @@ const AddPortfolioItem = (props) => {
                 label="Related template(s)"
                 value="relatedTemplate"
                 // disabled={addPortFolioItem.repairOption != "" && editable != true}
-                disabled={addPortFolioItem.repairOption != "" && addPortFolioItem.repairOption != null}
+                // disabled={addPortFolioItem.repairOption != "" && addPortFolioItem.repairOption != null}
+
+                disabled={portfolioItemType != 'TEMPLATE'}
+
+              // disabled={addPortFolioItem.repairOption != "" && addPortFolioItem.repairOption != null}
               />
               <div className="align-items-center d-flex justify-content-center"><ArrowForwardIosIcon /></div>
 
@@ -2889,10 +2903,35 @@ const AddPortfolioItem = (props) => {
                 label="Related Kit"
                 value="relatedKit"
                 // disabled={addPortFolioItem.templateId != "" && editable != true} />
-                disabled={addPortFolioItem.templateId != "" && addPortFolioItem.templateId != null} />
+                disabled={portfolioItemType != 'KIT'}
+              // disabled={addPortFolioItem.templateId != "" && addPortFolioItem.templateId != null} 
+              />
             </TabList>
           </Box>
           <TabPanel value="itemSummary">
+            <div>
+              {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
+                <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
+                  <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                  <span className="ml-2">Edit</span>
+                </span>
+              )}
+            </div>
+            <div className="d-flex align-items-center justify-content-between mt-2">
+              <span className="">
+
+              </span>
+              <Select className="customselect1" id="custom"
+                placeholder="Template"
+                styles={selectCustomStyle}
+                options={[
+                  { label: "Template", value: "TEMPLATE" },
+                  { label: "Kit", value: "KIT" }
+                ]}
+                onChange={(option) => { setPortfolioItemType(option.value) }}
+              />
+            </div>
+
             {/* <p className="mt-4">SUMMARY</p> */}
             {props.compoFlag === "itemEdit" && editable == true ?
               <>
@@ -2973,6 +3012,18 @@ const AddPortfolioItem = (props) => {
                   <div className="row">
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
+                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF YEARS</p>
+                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                          {(addPortFolioItem.noOfYear == "" ||
+                            addPortFolioItem.noOfYear == null ||
+                            addPortFolioItem.noOfYear == undefined ||
+                            addPortFolioItem.noOfYear == "string")
+                            ? "NA" : addPortFolioItem.noOfYear}
+                        </h6>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
                         <p className="text-light-dark font-size-12 font-weight-500 mb-2">YEAR</p>
                         <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                           {(addPortFolioItem.year.length == 0 ||
@@ -2984,20 +3035,9 @@ const AddPortfolioItem = (props) => {
                         </h6>
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF YEARS</p>
-                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                          {(addPortFolioItem.noOfYear == "" ||
-                            addPortFolioItem.noOfYear == null ||
-                            addPortFolioItem.noOfYear == undefined ||
-                            addPortFolioItem.noOfYear == "string")
-                            ? "NA" : addPortFolioItem.noOfYear}
-                        </h6>
-                      </div>
-                    </div>
+
                   </div>
-                  <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                  {/* <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p> */}
                   <div className="row">
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
@@ -3323,32 +3363,7 @@ const AddPortfolioItem = (props) => {
                 </div>
                 <div className="border border-radius-10 mt-3 py-2 px-3">
                   <div className="row input-fields">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          YEAR
-                        </label>
 
-
-                        <Select
-                          // options={[
-                          //   { value: "1", label: "1" },
-                          //   { value: "2", label: "2" },
-                          //   { value: "3", label: "3" },
-                          // ]}
-                          options={yearsOption}
-                          placeholder="Select..."
-                          className="text-primary"
-                          onChange={(e) =>
-                            setAddPortFolioItem({ ...addPortFolioItem, year: e })
-                          }
-                          value={addPortFolioItem.year}
-                        />
-                      </div>
-                    </div>
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label
@@ -3383,8 +3398,34 @@ const AddPortfolioItem = (props) => {
                         /> */}
                       </div>
                     </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          YEAR
+                        </label>
+
+
+                        <Select
+                          // options={[
+                          //   { value: "1", label: "1" },
+                          //   { value: "2", label: "2" },
+                          //   { value: "3", label: "3" },
+                          // ]}
+                          options={yearsOption}
+                          placeholder="Select..."
+                          className="text-primary"
+                          onChange={(e) =>
+                            setAddPortFolioItem({ ...addPortFolioItem, year: e })
+                          }
+                          value={addPortFolioItem.year}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p>
+                  {/* <p className="font-size-14 text-black font-weight-500 mb-1">USAGE</p> */}
                   <div className="row input-fields">
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
@@ -3672,6 +3713,14 @@ const AddPortfolioItem = (props) => {
 
           </TabPanel>
           <TabPanel value="relatedTemplate">
+            <div>
+              {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
+                <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
+                  <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                  <span className="ml-2">Edit</span>
+                </span>
+              )}
+            </div>
             {" "}
             <p className="mt-4">TEMPLATES</p>
             {props.compoFlag === "itemEdit" && editable == true ?
@@ -4117,6 +4166,14 @@ const AddPortfolioItem = (props) => {
 
           </TabPanel>
           <TabPanel value="relatedKit">
+            <div>
+              {props.bundleOrServiceEditOrNot === true && props.compoFlag === "itemEdit" && (
+                <span className="mr-3 cursor" onClick={makeHeaderDataEditable}>
+                  <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                  <span className="ml-2">Edit</span>
+                </span>
+              )}
+            </div>
             {/* <p className="mt-4">REPAIR OPTIONS</p> */}
             <p className="mt-4">RELATED KIT</p>
             {props.compoFlag === "itemEdit" && editable == true ?

@@ -207,3 +207,10 @@ export const selectCustomStyle = {
         cursor: "pointer"
     }),
 }
+
+export const brackdownPrices = {
+    sparePartsPrice: 0,
+    labourPrice: 0,
+    miscPrice: 0,
+    servicePrice: 0,
+};

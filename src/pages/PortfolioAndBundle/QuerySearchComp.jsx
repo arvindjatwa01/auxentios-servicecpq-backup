@@ -5,8 +5,16 @@ import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion, getSearchCustomPortfolio, itemSearchDropdown, getServiceBundleItemPrices, portfolioCoverageDropdownList } from "../../services/index"
+import {
+  // getSearchCoverageForFamily,
+  // getSearchQueryCoverage, 
+  itemSearch, itemSearchSuggestion, getSearchCustomPortfolio, itemSearchDropdown, 
+  // getServiceBundleItemPrices, 
+  portfolioCoverageDropdownList
+} from "../../services/index"
 import { useEffect } from 'react';
+import { getApiCall } from 'services/searchQueryService';
+import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE } from 'services/CONSTANTS';
 
 
 const QuerySearchComp = (props) => {
@@ -85,7 +93,10 @@ const QuerySearchComp = (props) => {
     console.log("evemt value is :- ", e.target.value);
     if (e.target.value.length > 0) {
       if (props.compoFlag === "coverage") {
-        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+        const url = GET_SEARCH_FAMILY_COVERAGE + "?" + tempArray[id].selectFamily.value + "=" + e.target.value;
+        let loading, data, failure;
+        getApiCall(url, loading, data, failure)
+        // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
           .then((res) => {
             console.log("response coverage ", res);
             obj.selectOptions = res;
@@ -327,7 +338,9 @@ const QuerySearchComp = (props) => {
       // searchStr is ready call API 
       if (props.compoFlag === "coverage") {
         props?.setFlagIs(false);
-        const res1 = await getSearchQueryCoverage(searchStr)
+        let loading, data, failure;
+        const res1 = await getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+        // const res1 = await getSearchQueryCoverage(searchStr)
         props?.setMasterData(res1);
       } else if (props.compoFlag === "itemSearch") {
         props?.setBundleItems([]);
@@ -384,7 +397,9 @@ const QuerySearchComp = (props) => {
         }
       } else {
         // for other cases or default case
-        const res = await getSearchQueryCoverage(searchStr)
+        let loading, data, failure;
+        const res = await getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+        // const res = await getSearchQueryCoverage(searchStr)
         console.log("else search str is : ", searchStr)
       }
 
@@ -460,7 +475,9 @@ const QuerySearchComp = (props) => {
         //   querySearchSelector[i].inputSearch + "\"";
       }
       // const res = await itemSearch(searchStr)
-      const res = await getServiceBundleItemPrices(searchStr)
+      let loading, data, failure;
+      const res = await getApiCall(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, loading, data, failure);
+      // const res = await getServiceBundleItemPrices(searchStr)
       var bundleItemsArr = [];
       if (res.status === 200) {
         if (res.data.length > 0) {

@@ -5,7 +5,7 @@ import { NotFound } from "navigation/NotFound";
 import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, LANDING_PAGE_LOGIN, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, AUTH_PAGE1, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, CREATED_CUSTOM_PORTFOLIO_DETAILS, SOLUTION_BUILDER_PORRTFOLIO_TEMP, SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT, RIPAIR_SERVICE_ESTIMATE, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_KITS, WITHOUT_SPARE_PARTS_DETAILS, QUOTE_SPARE_PARTS, SPARE_PARTS_QUOTE_TEMPLATE, QUOTE_RECENT_REPAIR, QUOTE_REPAIR_SEARCH, TERMS_CONDITIONS, SOLUTION_QUOTE, SOLUTION_QUOTE_SEARCH, SOLUTION_QUOTE_CONFIG, SOLUTION_SERVICE_PORTFOLIO, SPARE_PARTS_QUOTE_DETAILS, QUOTE_SOLUTION_BUILDER, SOLUTION_SEARCH_TEMPLATE, KITS, COMMERCE_PAGE_OPEN, ADD_TO_CART, REVIEW_ORDER, COMMERCE_GUIDED, COMMERCE_GUIDED_QUESTIONS, SHOPPING_CART_LIST, QUOTE_SOLUTION_CONFIGURATION, PRICE_SETTING, COMMERCE_LANDING_PAGE, PRICE_CONFIGURATION, PRICE_GLOBAL_SETTING, PRICE_DETERMINATION, PRICE_MAINTENANCE, PRICE_COMPUTATION, STANDARD_JOB_DETAIL, QUOTE_REPAIR_CREATE, REPAIR_QUOTE_WITH_EVALUATION, TEMPLATE, QUOTE_SPARE_PARTS_SEARCH, QUOTE_SPARE_PART_CONFIGURATION, REPAIR_QUOTE_DETAILS, OVERVIEW, INSIGHTS, EQUIPMENT_MASTER, PARTS_360, FORGOT_PASSWORD, SERVICE_MASTER, CONSUMABLE_MASTER, CUSTOMER_MASTER, AUX_ADMIN_PROVISION, AUX_ADMIN_ACCOUNT, ACCOUNT_SETTINGs, ACCOUNT_CONFIGURATION, ACCOUNT_RENEWAL_BILLING, ACCOUNT_PACKAGES, ACCOUNT_SUPPORT, PLAN_ENTERPRISE, PLAN_MOMENTUM, PLAN_GROWTH, SOLUTION_QUOTE_CREATE } from "navigation/CONSTANTS";
 import { Analytics, ServicePortfolio, SolutionBuilderCreate, CustomizedPortfolio, PortfolioTemplatesResult, CreatedCustomPortfolioTemplate, SolutionTemplateResult, CreateCustomPortfolio } from "../pages/SolutionModules/index"
 import { Profile } from '../pages/User/index'
-import { CreatePortfolio, WorkList, CreateWorkList, PortfolioSummary } from "../pages/PortfolioAndBundle/index"
+import { CreatePortfolio, PortfolioSummary } from "../pages/PortfolioAndBundle/index"
 import { CreateService } from "../pages/Service/index"
 import { AuthorizedPage1 } from "pages/AuthorizedPage1";
 import { PrivateRoute } from "../components/Common";
@@ -27,7 +27,6 @@ import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
 import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 import RecentSparePartQuote from "pages/Repair/quote/RecentSparePartQuote";
 import SearchSparePartQuote from "pages/Repair/quote/SearchSparePartQuote";
-import SparePartQuoteConfiguration from "pages/Repair/quote/SparePartQuoteConfiguration";
 import RecentRepairQuote from "pages/Repair/quote/RecentRepairQuote";
 import QuoteRepairSearch from "pages/Repair/quote/QuoteRepairSearch";
 import { LandingPageLogin } from "pages/Dashboard/LandingPageLogin";
@@ -50,7 +49,7 @@ import PriceComputation from "pages/Price/PriceComputation";
 import { RepairServiceOnlyTemplate } from "pages/Repair/RepairServiceOnlyTemplate";
 import ServiceOnlyTemplatesHeader from "pages/Repair/ServiceOnlyTemplatesHeader";
 import { SparePartsQuoteDetails } from "pages/Repair/quote/SparePartsQuoteDetails";
-import { GuidedRepairQuote } from "pages/Repair/quote/GuidedRepairQuote";
+import { CreateRepairQuote } from "pages/Repair/quote/CreateRepairQuote";
 import { HomePage } from "pages/Dashboard/Home";
 import Insights from "pages/Insights/Insights";
 import EquipmentMaster from "pages/MasterData/EquipmentMaster";
@@ -67,6 +66,10 @@ import { AccountPackage } from "pages/User/AccountPackage";
 import { AccountSupport } from "pages/User/AccountSupport";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { GuidedSolutionQuote } from "pages/SolutionModules/GuidedSolutionQuote";
+import { WorkList } from "pages/Dashboard/WorkList";
+import { CreateWorkList } from "pages/Dashboard/CreateWorkList";
+import CreatePartQuote from "pages/Repair/quote/CreateSparepartQuote";
+import { CreateSolutionQuote } from "pages/SolutionModules/CreateSolutionQuote";
 
 
 // alert(window.location.pathname)
@@ -117,7 +120,7 @@ export const RouterConfig = () => {
 
         <Route exact path={QUOTE_RECENT_REPAIR} component={RecentRepairQuote} />
         <Route exact path={QUOTE_REPAIR_SEARCH} component={QuoteRepairSearch} />
-        <Route exact path={QUOTE_REPAIR_CREATE} component={GuidedRepairQuote} />
+        <Route exact path={QUOTE_REPAIR_CREATE} component={CreateRepairQuote} />
 
         <Route exact path={QUOTE_SOLUTION_BUILDER} component={QuoteSolutionBuilder} />
         <Route exact path={REPAIR_QUOTE_WITH_EVALUATION} component={QuoteWithEvaluation} />
@@ -135,7 +138,7 @@ export const RouterConfig = () => {
         <Route exact path={CUSTOMER_MASTER} component={CustomerMaster} />
         <Route exact path="/indexing" component={CommanComponents} />
 
-        <ProtectedRoute path={INSIGHTS} component={Insights} plans={[PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={INSIGHTS} component={Insights} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={OVERVIEW} component={Dashboard} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={REPORTS} component={ReportDashboard} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
@@ -154,7 +157,7 @@ export const RouterConfig = () => {
         {/* Spare Parts Quote Routes */}
         <ProtectedRoute path={SPARE_PARTS_QUOTE_DETAILS} component={SparePartsQuoteDetails} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SPARE_PARTS_SEARCH} component={SearchSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
-        <ProtectedRoute path={QUOTE_SPARE_PART_CONFIGURATION} component={SparePartQuoteConfiguration} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <ProtectedRoute path={QUOTE_SPARE_PART_CONFIGURATION} component={CreatePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SPARE_PARTS} component={RecentSparePartQuote} plans={[PLAN_GROWTH, PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
         {/* Price Routes */}
@@ -172,7 +175,7 @@ export const RouterConfig = () => {
         {/* Solution Quote Routes */}
         <ProtectedRoute path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
-        <ProtectedRoute path={SOLUTION_QUOTE_CREATE} component={GuidedSolutionQuote} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
+        <Route exact path={SOLUTION_QUOTE_CREATE} component={CreateSolutionQuote} />
         <ProtectedRoute path={SOLUTION_QUOTE_SEARCH} component={SolutionQuoteSearch} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={SOLUTION_QUOTE} component={SolutionQuote} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SOLUTION_CONFIGURATION} component={QuoteSolutionConfiguration} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />

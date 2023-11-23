@@ -1,3 +1,13 @@
+import UploadFileTwoToneIcon from '@mui/icons-material/UploadFileTwoTone';
+import TextSnippetTwoToneIcon from '@mui/icons-material/TextSnippetTwoTone';
+import GridOnIcon from '@mui/icons-material/GridOn';
+import ContentCopyTwoToneIcon from '@mui/icons-material/ContentCopyTwoTone';
+import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
+import BuildIcon from '@mui/icons-material/Build';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ConstructionIcon from '@mui/icons-material/Construction';
+import EngineeringTwoToneIcon from '@mui/icons-material/EngineeringTwoTone';
+
 export const INITIAL_PAGE_NO = 0;
 export const INITIAL_PAGE_SIZE = 5;
 export const PARTS_TAG_OPTIONS = [
@@ -474,3 +484,9 @@ export const STYLE_QUOTEITEM_TABLE = {
     },
   },
 };
+
+export const UPLOAD_OPTIONS = [
+  { label: 'CSV File', value: "csv", icon: <UploadFileTwoToneIcon sx={{ mx: 2, color: "green" }} /> },
+  { label: 'Microsoft Excel', value: 'excel', icon: <TextSnippetTwoToneIcon sx={{ mx: 2, color: "blue" }} /> },
+  { label: 'Google Sheets', value: 'gsheet', icon: <GridOnIcon sx={{ mx: 2 }} /> },
+  { label: 'Paste Table Data', value: 'paste', icon: <ContentCopyTwoToneIcon sx={{ mx: 2 }} /> }]

@@ -1,6 +1,17 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
-import axios from 'axios'
-import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID, PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE, GET_SEARCH_FAMILY_CUSTOM_COVERAGE, LINK_ITEM_TO_PORTFOLIO } from "./CONSTANTS";
+import axios from "axios";
+import {
+  GET_SEARCH_COVERAGE,
+  GET_SEARCH_FAMILY_COVERAGE,
+  PORTFOLIO_SEARCH_URL,
+  RECENT_PORTFOLIO_URL,
+  GET_RECENT_BUNDLE_SERVICE_URL,
+  GET_SEARCH_KIT_ID,
+  GET_SEARCH_STANDARD_JOB_ID,
+  PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE,
+  GET_SEARCH_FAMILY_CUSTOM_COVERAGE,
+  LINK_ITEM_TO_PORTFOLIO,
+} from "./CONSTANTS";
 import Cookies from "js-cookie";
 
 /* ----------------- Authorization ------------------- */
@@ -18,15 +29,74 @@ if (CookiesSetData != undefined) {
 // }
 // var getCookiesJsonData = JSON.parse(CookiesSetData);
 const headersData = {
-  'content-type': 'application/json',
-  'Accept': 'application/json',
+  "content-type": "application/json",
+  Accept: "application/json",
   // 'Authorization': accessToken != undefined ? accessToken : ''
-  'Authorization': CookiesSetData != undefined ? getCookiesJsonData?.access_token : ''
+  Authorization:
+    CookiesSetData != undefined ? getCookiesJsonData?.access_token : "",
   // 'Authorization': url.Auth_Token
-}
+};
 
 /* ------------------------------------------------------------ */
 
+export const getApiCall = (url, loading, data, failure) => {
+  console.log("Get Api call for url: ", url);
+  return new Promise((data, failure) => {
+    try {
+      // loading(true);
+      axios
+        .get(url, { headers: headersData })
+        .then((res) => {
+          // loading(false);
+          console.log("Get Api call > axios res=", res);
+          if (url.includes(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE)) {
+            data(res);
+          } else {
+            data(res.data);
+          }
+        })
+        .catch((err) => {
+          console.log("Get Api call > axios err=", err);
+          failure("Error in Get Api call axios!");
+          // loading(false);
+        });
+    } catch (error) {
+      console.error("Get Api call > Err===", error);
+      failure(SYSTEM_ERROR);
+      // loading(false);
+    }
+  });
+};
+
+export const callGetApi = (url, loading, successCallBack, failureCallBack) => {
+  // loading(true)
+  return new Promise((successCallBack, failureCallBack) => {
+    try {
+      // loading(true);
+      axios
+        .get(url, { headers: headersData })
+        .then((res) => {
+          // loading(false);
+          console.log("Get Api call > axios res=", res);
+          // if (url.includes(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE)) {
+          //   successCallBack(res);
+          // } else {
+          //   successCallBack(res.data);
+          // }
+          successCallBack(res);
+        })
+        .catch((err) => {
+          console.log("Get Api call > axios err=", err);
+          failureCallBack("Error in Get Api call axios!");
+          // loading(false);
+        });
+    } catch (error) {
+      console.error("Get Api call > Err===", error);
+      failureCallBack(SYSTEM_ERROR);
+      // loading(false);
+    }
+  });
+};
 
 export const getSearchQueryCoverage = (searchStr) => {
   console.log("Query coverageService > getSearchQueryCoverage called...");
@@ -43,20 +113,27 @@ export const getSearchQueryCoverage = (searchStr) => {
           reject("Error in getSearchQueryCoverage axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchQueryCoverage, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchQueryCoverage, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
 };
 
-
 export const getSearchCoverageForFamily = (family, familyValue) => {
   console.log("Query coverageService > getSearchCoverageForFamily called...");
   return new Promise((resolve, reject) => {
-    console.log("GET_SEARCH_FAMILY_COVERAGE", `${GET_SEARCH_FAMILY_COVERAGE}${family}?${family}=${familyValue}`)
+    console.log(
+      "GET_SEARCH_FAMILY_COVERAGE",
+      `${GET_SEARCH_FAMILY_COVERAGE}${family}?${family}=${familyValue}`
+    );
     try {
       axios
-        .get(GET_SEARCH_FAMILY_COVERAGE + "?" + family + "=" + familyValue, { headers: headersData })
+        .get(GET_SEARCH_FAMILY_COVERAGE + "?" + family + "=" + familyValue, {
+          headers: headersData,
+        })
         .then((res) => {
           console.log("getSearchCoverageForFamily > axios res=", res);
           resolve(res.data);
@@ -66,22 +143,29 @@ export const getSearchCoverageForFamily = (family, familyValue) => {
           reject("Error in getSearchCoverageForFamily axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchCoverageForFamily, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchCoverageForFamily, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
 };
 
-
 export const getSearchForPortfolio = (family, familyValue) => {
   console.log("Query coverageService > getSearchForPortfolio called...");
   return new Promise((resolve, reject) => {
-    console.log("PORTFOLIO_SEARCH_URL", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
+    console.log(
+      "PORTFOLIO_SEARCH_URL",
+      `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`
+    );
     try {
-      console.log("PORTFOLIO_SEARCH_URL is : ", PORTFOLIO_SEARCH_URL)
+      console.log("PORTFOLIO_SEARCH_URL is : ", PORTFOLIO_SEARCH_URL);
       console.log("family is : ", family);
       axios
-        .get(RECENT_PORTFOLIO_URL + family + "~" + familyValue, { headers: headersData })
+        .get(RECENT_PORTFOLIO_URL + family + "~" + familyValue, {
+          headers: headersData,
+        })
         .then((res) => {
           console.log("getSearchForPortfolio > axios res=", res);
           resolve(res.data);
@@ -91,20 +175,30 @@ export const getSearchForPortfolio = (family, familyValue) => {
           reject("Error in getSearchForPortfolio axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchForPortfolio, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchForPortfolio, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
-}
-
+};
 
 export const getSearchCustomCoverageForFamily = (family, familyValue) => {
-  console.log("Query coverageService > getSearchCustomCoverageForFamily called...");
+  console.log(
+    "Query coverageService > getSearchCustomCoverageForFamily called..."
+  );
   return new Promise((resolve, reject) => {
-    console.log("GET_SEARCH_FAMILY_CUSTOM_COVERAGE", `${GET_SEARCH_FAMILY_CUSTOM_COVERAGE}${family}?${family}=${familyValue}`)
+    console.log(
+      "GET_SEARCH_FAMILY_CUSTOM_COVERAGE",
+      `${GET_SEARCH_FAMILY_CUSTOM_COVERAGE}${family}?${family}=${familyValue}`
+    );
     try {
       axios
-        .get(GET_SEARCH_FAMILY_CUSTOM_COVERAGE + "?" + family + "=" + familyValue, { headers: headersData })
+        .get(
+          GET_SEARCH_FAMILY_CUSTOM_COVERAGE + "?" + family + "=" + familyValue,
+          { headers: headersData }
+        )
         .then((res) => {
           console.log("getSearchCustomCoverageForFamily > axios res=", res);
           resolve(res.data);
@@ -114,13 +208,16 @@ export const getSearchCustomCoverageForFamily = (family, familyValue) => {
           reject("Error in getSearchCustomCoverageForFamily axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchCustomCoverageForFamily, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchCustomCoverageForFamily, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
 };
 
-// Recent Portfolio List 
+// Recent Portfolio List
 export const getSearchForRecentPortfolio = () => {
   console.log("Query coverageService > getSearchForRecentPortfolio called...");
   return new Promise((resolve, reject) => {
@@ -140,21 +237,30 @@ export const getSearchForRecentPortfolio = () => {
           reject("Error in getSearchForRecentPortfolio axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchForRecentPortfolio, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchForRecentPortfolio, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
-}
+};
 
-// Recent Bundle/Service List 
+// Recent Bundle/Service List
 export const getSearchForRecentBundleService = () => {
-  console.log("Query coverageService > getSearchForRecentBundleService called...");
+  console.log(
+    "Query coverageService > getSearchForRecentBundleService called..."
+  );
   return new Promise((resolve, reject) => {
     // pageSize=10&sortColumn=updatedAt&orderBY=DESC
     // console.log("RECENT_PORTFOLIO_URL", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
     try {
       axios
-        .get(GET_RECENT_BUNDLE_SERVICE_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersData })
+        .get(
+          GET_RECENT_BUNDLE_SERVICE_URL +
+            "?pageSize=10&sortColumn=updatedAt&orderBY=DESC",
+          { headers: headersData }
+        )
         .then((res) => {
           console.log("getSearchForRecentBundleService > axios res=", res);
           resolve(res.data);
@@ -164,11 +270,14 @@ export const getSearchForRecentBundleService = () => {
           reject("Error in getSearchForRecentBundleService axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchForRecentBundleService, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchForRecentBundleService, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
-}
+};
 
 // Search Query Coverage Master
 export const getSearchQueryCoverageMaster = (searchStr) => {
@@ -186,7 +295,10 @@ export const getSearchQueryCoverageMaster = (searchStr) => {
           reject("Error in getSearchQueryCoverageMaster axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchQueryCoverageMaster, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchQueryCoverageMaster, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
@@ -209,7 +321,10 @@ export const getSearchStandardJobId = (searchStr) => {
           reject("Error in getSearchStandardJobId axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getSearchStandardJobId, Err===", error);
+      console.error(
+        "in Query coverageService > getSearchStandardJobId, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
@@ -243,7 +358,9 @@ export const getServiceBundleItemPrices = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, { headers: headersData })
+        .get(PORTFOLIO_SERVICE_BUNDLE_ITEM_PRICE + searchStr, {
+          headers: headersData,
+        })
         .then((res) => {
           console.log("getServiceBundleItemPrices > axios res=", res);
           resolve(res);
@@ -253,7 +370,10 @@ export const getServiceBundleItemPrices = (searchStr) => {
           reject("Error in getServiceBundleItemPrices axios!");
         });
     } catch (error) {
-      console.error("in Query coverageService > getServiceBundleItemPrices, Err===", error);
+      console.error(
+        "in Query coverageService > getServiceBundleItemPrices, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
@@ -275,8 +395,11 @@ export const linkItemToPortfolio = (payLoadUrl) => {
           reject("Error in linkItemToPortfolio axios!");
         });
     } catch (error) {
-      console.error("in portfolioItemService > linkItemToPortfolio, Err===", error);
+      console.error(
+        "in portfolioItemService > linkItemToPortfolio, Err===",
+        error
+      );
       reject(SYSTEM_ERROR);
     }
   });
-}
+};

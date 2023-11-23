@@ -26,7 +26,7 @@ import { getFormatDateTime } from './utilities/dateUtilities';
 import { FONT_STYLE_SELECT } from 'pages/Repair/CONSTANTS';
 import {
     getItemDataById,
-    getSearchQueryCoverage,
+    // getSearchQueryCoverage,
     itemCreation,
     updateItemData
 } from '../../../services/index';
@@ -43,6 +43,8 @@ import {
     defaultItemBodyObj,
     defaultItemPriceObj,
 } from "./itemConstant"
+import { callGetApi, getApiCall } from 'services/searchQueryService';
+import { GET_SEARCH_COVERAGE } from 'services/CONSTANTS';
 
 const activityOptions = ["None", "Atria", "Callisto"];
 
@@ -179,15 +181,20 @@ const BundleServiceAddUpdate = (props) => {
     const handleModelSearch = (e) => {
         setModelSelect(false);
         var searchStr = "model~" + e.target.value;
-        getSearchQueryCoverage(searchStr)
+        let loading, data, failure;
+        getApiCall((GET_SEARCH_COVERAGE + searchStr), loading, data, failure)
+        // getSearchQueryCoverage(searchStr)
             .then((res) => {
-                $(`.scrollbar-model`).css("display", "block");
-                setModelSearchList(res)
-                var prefixOptions = [];
-                for (var n = 0; n < res.length; n++) {
-                    prefixOptions.push({ label: res[n].prefix, value: res[n].prefix })
+                if(res || res !== undefined){
+                    $(`.scrollbar-model`).css("display", "block");
+                    setModelSearchList(res)
+                    var prefixOptions = [];
+                    const resultLength = res.length;
+                    for (var n = 0; n < resultLength; n++) {
+                        prefixOptions.push({ label: res[n].prefix, value: res[n].prefix })
+                    }
+                    setPrefixKeyValuePair(prefixOptions);
                 }
-                setPrefixKeyValuePair(prefixOptions);
             })
             .catch((err) => {
                 return;
@@ -253,10 +260,10 @@ const BundleServiceAddUpdate = (props) => {
     const checkHeaderValidation = () => {
         try {
             if (isEmpty(bundleServiceObj.name)) {
-                errorMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Name is a required field, you can’t leave it blank");
+                errorMessage((itemFlag === "SERVICE" ? "Service" : "Bundle") + " Name is a required field, you can’t leave it blank");
                 return false;
             } else if (isEmpty(bundleServiceObj.description)) {
-                errorMessage(itemFlag === "SERVICE" ? "Service" : "Bundle" + " Description is a required field, you can’t leave it blank");
+                errorMessage((itemFlag === "SERVICE" ? "Service" : "Bundle") + " Description is a required field, you can’t leave it blank");
                 return false;
             } else if (isEmpty(bundleServiceObj.model)) {
                 errorMessage("Model is a required field, you can’t leave it blank");
@@ -651,7 +658,7 @@ const BundleServiceAddUpdate = (props) => {
                                                     <div className="css-w8dmq8">*Mandatory</div>
                                                     {
                                                         <ul className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`} id="style">
-                                                            {modelSearchList.map((currentItem, j) => (
+                                                            {modelSearchList.length !==0 && modelSearchList.map((currentItem, j) => (
                                                                 <li className="list-group-item text-primary" key={j}
                                                                     onClick={() => handleSelectModel(currentItem)}>
                                                                     {currentItem.model}
@@ -684,6 +691,7 @@ const BundleServiceAddUpdate = (props) => {
                                                         className="text-primary"
                                                         value={bundleServiceObj.prefix}
                                                         options={prefixKeyValuePair}
+                                                        noOptionsMessage={() => bundleServiceObj.model === 0 ? "Search Modal First" : "No Options"}
                                                     />
                                                 </div>
                                             </div>
