@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { FETCH_DISCOUNT_GUIDANCE, FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET } from "./CONSTANTS";
+import { FETCH_BOTTOM_TEN, FETCH_DISCOUNT_GUIDANCE, FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET, FETCH_QUOTE_LIFE_CYCLE, FETCH_QUOTE_PERFORMANCE, FETCH_QUOTE_WIN_LOSS, FETCH_TOP_TEN } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -147,6 +147,116 @@ export const getPartsSegmentDetails = (cluster) => {
         });
     } catch (error) {
       console.error("in DashboardService > getPartsSegmentDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getQuotePerformance = () => {
+  console.log("Dashboard Service > getQuotePerformance called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_QUOTE_PERFORMANCE(), config)
+        .then((res) => {
+          console.log("getQuotePerformance > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getQuotePerformance > axios err=", err);
+          reject("Error in getQuotePerformance axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getQuotePerformance, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getQuoteWinLoss = () => {
+  console.log("Dashboard Service > getQuoteWinLOSS called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_QUOTE_WIN_LOSS(), config)
+        .then((res) => {
+          console.log("getQuoteWinLOSS > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getQuoteWinLOSS > axios err=", err);
+          reject("Error in getQuotePerformance axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getQuoteWinLOSS, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getQuoteLifeCycleStatus = () => {
+  console.log("Dashboard Service > getQuoteLifeCycleStatus called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_QUOTE_LIFE_CYCLE(), config)
+        .then((res) => {
+          console.log("getQuoteLifeCycleStatus > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getQuoteLifeCycleStatus > axios err=", err);
+          reject("Error in getQuoteLifeCycleStatus axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getQuoteLifeCycleStatus, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getTopTen = () => {
+  console.log("Dashboard Service > getQuoteLifeCycleStatus called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_TOP_TEN(), config)
+        .then((res) => {
+          console.log("getQuoteLifeCycleStatus > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getQuoteLifeCycleStatus > axios err=", err);
+          reject("Error in getQuoteLifeCycleStatus axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getQuoteLifeCycleStatus, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getBottomTen = () => {
+  console.log("Dashboard Service > getQuoteLifeCycleStatus called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_BOTTOM_TEN(), config)
+        .then((res) => {
+          console.log("getQuoteLifeCycleStatus > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getQuoteLifeCycleStatus > axios err=", err);
+          reject("Error in getQuoteLifeCycleStatus axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getQuoteLifeCycleStatus, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

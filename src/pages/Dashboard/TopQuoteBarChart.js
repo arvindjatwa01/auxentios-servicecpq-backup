@@ -48,26 +48,26 @@ const data = [
 
 export default function TopQuoteBarChart(props) {
 
-    return (
-        <ResponsiveContainer width="98%" height={300}>
-        <BarChart
-          width={500}
-          height={300}
-          data={props.data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <XAxis dataKey="name" tickLine={false}/>
-          <YAxis tickLine={false}/>
-          <Tooltip cursor={{fill: 'transparent'}} />
-          <Legend />
-          <Bar dataKey="value" fill="#896dfe" barSize={20} radius={[4, 4, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
-    );
-  
+  return (
+    <ResponsiveContainer width="98%" height={300}>
+      <BarChart
+        width={500}
+        height={300}
+        data={props.data}
+        margin={{
+          top: 5,
+          right: 30,
+          left: 20,
+          bottom: 5,
+        }}
+      >
+        <XAxis dataKey="quoteName" tickLine={false} />
+        <YAxis tickLine={false} />
+        <Tooltip cursor={{ fill: 'transparent' }} />
+        <Legend />
+        <Bar dataKey="netPrice" fill="#896dfe" barSize={20} radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+
 }
