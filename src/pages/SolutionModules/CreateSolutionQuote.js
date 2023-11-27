@@ -14,6 +14,7 @@ import ManageHistoryIcon from '@mui/icons-material/ManageHistory';
 import {
     APPLICATION_OPTIONS,
     GRID_STYLE,
+    TEMPLATE_OPTIONS,
     TEMPLATE_SEARCH_Q_OPTIONS,
     TEMPLATE_TYPES,
     UPLOAD_OPTIONS,
@@ -26,7 +27,9 @@ import { createBuilder } from "services/repairBuilderServices";
 import SettingsSuggestTwoToneIcon from '@mui/icons-material/SettingsSuggestTwoTone';
 import ManageAccountsTwoToneIcon from '@mui/icons-material/ManageAccountsTwoTone';
 import SearchComponentTemplate from "pages/Repair/components/SearchComponentTemplate";
-
+import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
+import Button from "@material-ui/core/Button";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 const CardWrapper = (props) => <Card sx={{ textAlign: 'center', borderRadius: 5, height: 400, paddingBlock: 3, border: 1, borderColor: '#00000050' }} variant="outlined">{props.children}</Card>
 
 export const CreateSolutionQuote = (props) => {
@@ -382,9 +385,9 @@ export const CreateSolutionQuote = (props) => {
                                             Create a new quote with an evaluation.
                                         </Typography>
 
-                                        <Card variant="outlined"
+                                        <Card variant="outlined" onClick={() => { history.push("/solutionBuilder/analytics") }}
                                             sx={{ margin: 'auto', width: "20%", borderRadius: 5, p: 5, my: 2 }}
-                                            className="border-primary"
+                                            className="border-primary mouse-pointer"
                                         >+</Card>
                                     </CardWrapper>
 
@@ -397,7 +400,12 @@ export const CreateSolutionQuote = (props) => {
                                         <Typography variant="body2" paddingY={2}>
                                             Select a template to get started and customize as you go.
                                         </Typography>
-                                        
+                                        <Grid container>
+                                            {TEMPLATE_OPTIONS.map(indAppOption =>
+                                                <Tooltip arrow placement='left' title={indAppOption.value === 'gsheet' || indAppOption.value === 'paste' ? "Will be available in next version" : ""}>
+                                                    {innerCard(indAppOption, handleClickUpload)}
+                                                </Tooltip>)}
+                                        </Grid>
                                     </CardWrapper>
                                 </Grid>
                                 <Grid item xs={12} md={4}>

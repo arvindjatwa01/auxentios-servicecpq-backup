@@ -831,7 +831,7 @@ export function SideBarComponent(props) {
             <ul aria-expanded="false">
               {packageValue[planName] > 2 &&
                 <li>
-                  <NavLink to="/SolutionQuote" className="border-radius-50">
+                  <NavLink to="/solution-quote" className="border-radius-50">
                     <span className="span-icon">
                       <svg
                         id="uuid-e1f64c88-ce49-4df1-a848-c28d42dd73fb"

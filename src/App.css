@@ -3124,6 +3124,10 @@ nav.main-menu>ul>li>ul>li.active>a {
   padding-right: 15px;
 }
 
+.mouse-pointer {
+  cursor: pointer;
+}
+
 .tableheader .templateResultheading {
   width: 100%;
   margin: 30px auto 20px;
