@@ -388,11 +388,11 @@ export const TEMPLATE_VERSION_OPTIONS = [
 ];
 
 export const APPLICATION_OPTIONS = [
-  { value: "PREVENTIVE_MAINTENANCE", label: "Preventive Maintenance", icon: <BuildIcon sx={{ mx: 2, color: "green" }} /> },
-  { value: "MSCHEDULED_MAINTENANCE", label: "Scheduled Maintenance", icon: <ManageHistoryIcon sx={{ mx: 2, color: "blue" }} /> },
-  { value: "COMPONENT_REPLACEMENT", label: "Component Replacement", icon: <SettingsIcon sx={{ mx: 2, color: "grey" }} /> },
-  { value: "OVERHAUL", label: "Overhaul", icon: <ConstructionIcon sx={{ mx: 2, color: "blueviolet" }} /> },
-  { value: "WARRANTY", label: "Service Programs", icon: <EngineeringTwoToneIcon sx={{ mx: 2, color: "orange" }} /> },
+  { value: "PREVENTIVE_MAINTENANCE", label: "Preventive Maintenance" },
+  { value: "MSCHEDULED_MAINTENANCE", label: "Scheduled Maintenance" },
+  { value: "COMPONENT_REPLACEMENT", label: "Component Replacement" },
+  { value: "OVERHAUL", label: "Overhaul" },
+  { value: "WARRANTY", label: "Warranty/Service Programs" },
 ];
 export const LIFE_STAGE_OPTIONS = [
   { value: "NEW", label: "New" },

@@ -24,6 +24,10 @@ import {
   getSearchQuoteData,
   getQuoteSearchDropdown,
 } from "../../services/index";
+import { QUOTE_REPAIR_CREATE, SOLUTION_QUOTE_CREATE } from "navigation/CONSTANTS";
+import SearchComponent from "pages/Repair/components/SearchComponent";
+import { quoteRepairSearch } from "services/repairQuoteServices";
+import { QUOTE_SEARCH_Q_OPTIONS } from "pages/Repair/CONSTANTS";
 
 const SolutionQuoteSearch = () => {
   const history = useHistory();
@@ -157,6 +161,10 @@ const SolutionQuoteSearch = () => {
               for (let i = 0; i < res.data.length; i++) {
                 SearchResArr.push(res.data[i].description)
               }
+            } else if (tempArray[id].selectFamily.value == "quoteName") {
+              for (let i = 0; i < res.data.length; i++) {
+                SearchResArr.push(res.data[i].quoteName)
+              }
             }
             obj.selectOptions = SearchResArr;
 
@@ -244,6 +252,27 @@ const SolutionQuoteSearch = () => {
     setValue(newValue);
   };
 
+  const clearFilteredData = () => {
+    setMasterData([]);
+  };
+
+  // Snack Bar State
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+
   const handleQuoteSearchClick = () => {
     try {
 
@@ -252,14 +281,14 @@ const SolutionQuoteSearch = () => {
       console.log("handleQuerySearchClick", querySearchSelector)
 
       if (
-        querySearchSelector[0]?.selectFamily?.value == "" ||
+        querySearchSelector[0]?.selectCategory?.value == "" ||
         querySearchSelector[0]?.inputSearch == "" ||
-        querySearchSelector[0]?.selectFamily?.value === undefined
+        querySearchSelector[0]?.selectCategory?.value === undefined
       ) {
-        throw "Please fill data properly"
+        // throw "Please fill data properly"
       }
 
-      var searchStr = `SOLUTION_QUOTE&field_name=${querySearchSelector[0].selectFamily.value}&field_value=${querySearchSelector[0].inputSearch}`;
+      var searchStr = `SOLUTION_QUOTE&field_name=${querySearchSelector[0].selectCategory.value}&field_value=${querySearchSelector[0].inputSearch}`;
       // var searchText = "quoteType:SOLUTION_QUOTE AND " + querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
 
       for (let i = 1; i < querySearchSelector.length; i++) {
@@ -538,204 +567,74 @@ const SolutionQuoteSearch = () => {
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
-          <div className="card p-4 mt-5">
-            <div className="d-flex align-items-center mb-0">
-              <div className="" style={{ display: 'contents' }}><h5 className="mr-3 mb-0" style={{ whiteSpace: 'pre' }}>Search Quotes</h5></div>
-              <div class="input-group icons border-radius-10 border overflow-hidden">
-                <div class="input-group-prepend">
-                  <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
-                    <SearchIcon /></span>
-                </div>
-                <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
-
+        <div className="card p-4 mt-5">
+            <div className="row d-flex align-items-center mb-0">
+              <div className="" style={{ display: "contents" }}>
+                <h5 className="col-10 mr-3 mb-0" style={{ whiteSpace: "pre" }}>
+                  Search Quotes
+                </h5>
               </div>
               <div className="ml-2">
-                <Link className="btn bg-primary text-white">Search</Link>
-              </div>
-              <div className="ml-2">
-                <Link to="/QuoteSolutionConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className="" /></Link>
+                <Link
+                  to={SOLUTION_QUOTE_CREATE}
+                  className="btn bg-primary text-white"
+                >
+                  Create New <ChevronRightIcon className="" />
+                </Link>
               </div>
             </div>
           </div>
           <div className="bg-primary px-3 mb-3 border-radius-6">
-            <div className="row align-items-center height-66">
-              <div className="col-2">
-                <div className="d-flex ">
-                  <h5 className="mb-0 text-white"><span>Quotes</span></h5>
-                  <p className=" mb-0">
-                    <a href="#" className="ml-3 text-white"><EditOutlinedIcon /></a>
-                    <a href="#" className="ml-3 text-white"><ShareOutlinedIcon /></a>
-                  </p>
-                </div>
-              </div>
-              <div className="col-10">
-                <div className="d-flex justify-content-between align-items-center w-100 ">
-                  <div className="row align-items-center m-0 ">
-                    {querySearchSelector.map((obj, i) => {
-                      return (
-                        <>
-                          <div className={`customselect ${i < ((querySearchSelector.length - 1)) ? "p-2" : ""} border-white d-flex align-items-center mr-3 my-2 border-radius-10`}>
-                            {i > 0 ? (
-                              <SelectFilter
-                                // isClearable={true}
-                                defaultValue={{ label: "And", value: "AND" }}
-                                options={[
-                                  { label: "And", value: "AND", id: i },
-                                  { label: "Or", value: "OR", id: i },
-                                ]}
-                                placeholder="Search By.."
-                                onChange={(e) => handleOperator(e, i)}
-                                // value={querySearchOperator[i]}
-                                value={obj.selectOperator}
-                              />
-                            ) : (
-                              <></>
-                            )}
-
-                            <div>
-                              <SelectFilter
-                                // isClearable={true}
-                                options={[
-                                  { label: "Created By", value: "preparedBy" },
-                                  { label: "Customer Number", value: "customerId" },
-                                  { label: "Model", value: "model" },
-                                  { label: "Serial Number", value: "serialNumber" },
-                                  { label: "Name/Id", value: "quoteId" },
-                                  { label: "Description", value: "description" },
-                                  // { label: "Created Between", value: "CreatedBetween"},
-                                ]}
-                                placeholder="Search By.."
-                                onChange={(e) => handleFamily(e, i)}
-                                value={obj.selectFamily}
-                              />
-                            </div>
-                            <div className="customselectsearch customize">
-
-                              {/* <span className={((i === 0) || ((querySearchSelector.length - 1) === i)) ? "search-icon-postn" : (i < querySearchSelector.length) ? "search-icon-quote" : ""}> */}
-                              <span className={(i < (querySearchSelector.length - 1)) ? "search-icon-quote" : "search-icon-postn"}>
-                                <SearchIcon className="text-primary" />
-                              </span>
-                              <input
-                                className="custom-input-sleact "
-                                style={{ position: "relative" }}
-                                type="text"
-                                placeholder="Search Parts"
-                                value={obj.inputSearch}
-                                onChange={(e) => handleInputSearch(e, i)}
-                                id={"inputSearch-" + i}
-                                autoComplete="off"
-                              />
-
-                              {/* {querySearchSelector.length} and {i} */}
-                              {(querySearchSelector.length - 1) === i ?
-                                <>
-                                  <div className="bg-primary text-white btn" onClick={handleQuoteSearchClick}>
-                                    <span className="mr-2">
-                                      <AddIcon />
-                                    </span>
-                                    Add Item
-                                  </div>
-                                </> : <></>}
-
-
-                              {
-                                <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
-                                  {obj.selectOptions.map((currentItem, j) => (
-                                    <li
-                                      className="list-group-item"
-                                      key={j}
-                                      onClick={(e) =>
-                                        handleSearchListClick(
-                                          e,
-                                          currentItem,
-                                          obj,
-                                          i
-                                        )
-                                      }
-                                    >
-                                      {currentItem}
-                                    </li>
-                                  ))}
-                                </ul>
-                              }
-                            </div>
-                          </div>
-                        </>
-                      );
-                    })}
-                    <div onClick={(e) => addSearchQueryHtml(e)}>
-                      <Link
-                        to="#"
-                        className="btn-sm text-white border mr-2"
-                        style={{ border: "1px solid #872FF7" }}
-                      >
-                        +
-                      </Link>
-                    </div>
-                    <div onClick={handleDeletQuerySearch}>
-                      <Link to="#" className="btn-sm border">
-                        <svg
-                          data-name="Layer 41"
-                          id="Layer_41"
-                          fill="#ffffff"
-                          viewBox="0 0 50 50"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <title />
-                          <path
-                            className="cls-1"
-                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                          />
-                          <path
-                            className="cls-1"
-                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                          />
-                          <path
-                            className="cls-1"
-                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                          />
-                        </svg>
-                        {/* <DeleteIcon className="font-size-16" /> */}
-                      </Link>
-                    </div>
+            <div className="row align-items-center">
+              <div className="col-11 mx-2">
+                <div className="d-flex align-items-center bg-primary w-100">
+                  <div
+                    className="d-flex mr-3 py-3"
+                    style={{ whiteSpace: "pre" }}
+                  >
+                    <h5 className="mr-2 mb-0 text-white">
+                      <span>Quotes</span>
+                    </h5>
                   </div>
+                  {/* <p className="mb-0">
+                    <a href="#" className="ml-2 text-white">
+                      <EditOutlinedIcon />
+                    </a>
+                    <a href="#" className="ml-2 text-white">
+                      <ShareOutlinedIcon />
+                    </a>
+                  </p> */}
+                  <SearchComponent
+                    querySearchSelector={querySearchSelector}
+                    setQuerySearchSelector={setQuerySearchSelector}
+                    clearFilteredData={clearFilteredData}
+                    handleSnack={handleSnack}
+                    searchAPI={quoteRepairSearch}
+                    searchClick={handleQuoteSearchClick}
+                    options={QUOTE_SEARCH_Q_OPTIONS}
+                    color="white"
+                    quoteType={"SOLUTION_QUOTE"}
+                    buttonText="SEARCH"
+                  />
                 </div>
-
               </div>
-              {/* <div className="col-3">
-            <div className="d-flex align-items-center">
-              <div className="col-8 text-center">
-              <a href="#" className="p-1 more-btn text-white">+ 3 more
-              <span className="c-btn">C</span>
-              <span className="b-btn">B</span>
-              <span className="a-btn">A</span>
-              </a>
-              </div>
-              <div className="col-4 text-center border-left py-3">
-              <Link to="/QuoteRepairOption" className="p-1 text-white">+ Add Part</Link>
-              </div>
-            </div>
-          </div> */}
             </div>
           </div>
           <div className="card">
-
-            <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-
-              {searchQuoteMasterData.length > 0 &&
-                <>
-                  <DataTable
-                    className=""
-                    title=""
-                    columns={masterColumns}
-                    data={searchQuoteMasterData}
-                    customStyles={customStyles}
-                    pagination
-                    onRowClicked={(e) => handleRowClick(e)}
-                  // selectableRows
-                  />
-                </>
-              }
+            <div
+              className=""
+              style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
+            >
+              <DataTable
+                className=""
+                title=""
+                columns={masterColumns}
+                data={searchQuoteMasterData}
+                customStyles={customStyles}
+                pagination
+                onRowClicked={(e) => handleRowClick(e)}
+              // selectableRows
+              />
             </div>
           </div>
           {/* <div className="text-right">
