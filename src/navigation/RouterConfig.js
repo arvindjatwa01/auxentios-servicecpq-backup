@@ -175,7 +175,7 @@ export const RouterConfig = () => {
         {/* Solution Quote Routes */}
         <ProtectedRoute path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
 
-        <Route exact path={SOLUTION_QUOTE_CREATE} component={CreateSolutionQuote} />
+        <ProtectedRoute path={SOLUTION_QUOTE_CREATE} component={CreateSolutionQuote} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={SOLUTION_QUOTE_SEARCH} component={SolutionQuoteSearch} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={SOLUTION_QUOTE} component={SolutionQuote} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />
         <ProtectedRoute path={QUOTE_SOLUTION_CONFIGURATION} component={QuoteSolutionConfiguration} plans={[PLAN_MOMENTUM, PLAN_ENTERPRISE]} />

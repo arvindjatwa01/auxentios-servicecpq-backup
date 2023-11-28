@@ -194,12 +194,16 @@ export const AnalyticsDashboard = () => {
         setQuotePerformance([]);
       });
     await getQuoteWinLoss().then(data => {
-      setWinLossData([{ name: "Win", value: parseFloat(data?.[0]["Win%"]) }, { name: "Loss", value: parseFloat(data?.[0]["Loss%"]) }]);
+      setWinLossData([
+        { name: "Win", value: parseFloat(data?.[0]["Win%"]) },
+        { name: "Loss", value: parseFloat(data?.[0]["Loss%"]) }]);
+    }).catch(e => {
+      setWinLossData([])
     });
     await getQuoteLifeCycleStatus().then(data => {
       // setWinLossData([{ name: "Win", value: parseFloat(data?.[0]["Win%"]) }, { name: "Loss", value: parseFloat(data?.[0]["Loss%"]) }]);
     });
-    setOrderQuotes("top10")
+    setOrderQuotes("top10");
     setIsLoading(false);
   }
   const [catValues, setCatValues] = useState(["Sales", "Corporate", "Retail"]);
@@ -232,7 +236,7 @@ export const AnalyticsDashboard = () => {
           {orderQuotes === "top10" ? "Top 10 Quotes" : "Bottom 10 Quotes"}
         </Typography>
         <RadioGroup
-          sx={{ marginInline: 2, width: "20%", justifyContent: 'space-between' }}
+          sx={{ marginInline: 2, width: "23%", justifyContent: 'space-between' }}
           row value={orderQuotes} onChange={handleOrderQuotes}>
           <FormControlLabel
             label={<Typography sx={{ fontSize: 14, marginRight: 2 }}>Top 10</Typography>}

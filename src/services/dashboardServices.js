@@ -1,7 +1,7 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import Cookies from "js-cookie";
-import { FETCH_BOTTOM_TEN, FETCH_DISCOUNT_GUIDANCE, FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET, FETCH_QUOTE_LIFE_CYCLE, FETCH_QUOTE_PERFORMANCE, FETCH_QUOTE_WIN_LOSS, FETCH_TOP_TEN } from "./CONSTANTS";
+import { FETCH_BOTTOM_TEN, FETCH_DISCOUNT_COLUMNS, FETCH_DISCOUNT_GUIDANCE, FETCH_GAP_TO_ENTITLEMENT, FETCH_PARTS_SEGMENT, FETCH_PARTS_SEGMENT_DETAILS, FETCH_PROPENSITY_TO_BUY, FETCH_PROPENSITY_TO_BUY_DET, FETCH_QUOTE_LIFE_CYCLE, FETCH_QUOTE_PERFORMANCE, FETCH_QUOTE_WIN_LOSS, FETCH_TOP_TEN } from "./CONSTANTS";
 var CookiesSetData = Cookies.get("loginTenantDtl");
 var getCookiesJsonData;
 if (CookiesSetData != undefined) {
@@ -106,6 +106,32 @@ export const getDiscountDetails = (filter) => {
     }
   });
 };
+
+
+//Fetch Discount Guidance Columns
+export const getDiscountColumns = () => {
+  console.log("Dashboard Service > getDiscountColumns called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_DISCOUNT_COLUMNS(), config)
+        .then((res) => {
+          console.log("getDiscountColumns > axios res=", res);
+          if (res.status === 200) resolve(res.data);
+          else reject(res.data);
+        })
+        .catch((err) => {
+          console.log("getDiscountColumns > axios err=", err);
+          reject("Error in getGapToEntitlement axios!");
+        });
+    } catch (error) {
+      console.error("in DashboardService > getDiscountColumns, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
 
 //Fetch parts segments
 export const getPartsSegment = () => {
